@@ -8,49 +8,48 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests
 {
-    [TestClass]
     public class ResponseTests
     {
-        [TestMethod]
+        [Fact]
         public void ReceiveResponse_Streams_Zero()
         {
             var r = new ReceiveResponse();
-            Assert.IsNotNull(r.Streams);
-            Assert.AreEqual(0, r.Streams.Count);
+            Assert.NotNull(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
-        [TestMethod]
+        [Fact]
         public void ReceiveResponse_NullProperties()
         {
             var r = new ReceiveResponse();
-            Assert.AreEqual(0, r.StatusCode);
+            Assert.Equal(0, r.StatusCode);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_NullProperties()
         {
             var r = new StreamingResponse();
-            Assert.AreEqual(0, r.StatusCode);
-            Assert.IsNull(r.Streams);
+            Assert.Equal(0, r.StatusCode);
+            Assert.Null(r.Streams);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_AddStream_Null_Throws()
         {
             var r = new StreamingResponse();
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
             {
                 r.AddStream(null);
             });
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_AddStream_Success()
         {
             var r = new StreamingResponse();
@@ -58,12 +57,12 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             r.AddStream(s);
 
-            Assert.IsNotNull(r.Streams);
-            Assert.AreEqual(1, r.Streams.Count);
-            Assert.AreEqual(s, r.Streams[0].Content);
+            Assert.NotNull(r.Streams);
+            Assert.Single(r.Streams);
+            Assert.Equal(s, r.Streams[0].Content);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_AddStream_ExistingList_Success()
         {
             var r = new StreamingResponse();
@@ -74,75 +73,75 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             r.AddStream(s);
 
-            Assert.IsNotNull(r.Streams);
-            Assert.AreEqual(2, r.Streams.Count);
-            Assert.AreEqual(s2, r.Streams[0].Content);
-            Assert.AreEqual(s, r.Streams[1].Content);
+            Assert.NotNull(r.Streams);
+            Assert.Equal(2, r.Streams.Count);
+            Assert.Equal(s2, r.Streams[0].Content);
+            Assert.Equal(s, r.Streams[1].Content);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_NotFound_Success()
         {
             var r = StreamingResponse.NotFound();
 
-            Assert.AreEqual((int)HttpStatusCode.NotFound, r.StatusCode);
-            Assert.IsNull(r.Streams);
+            Assert.Equal((int)HttpStatusCode.NotFound, r.StatusCode);
+            Assert.Null(r.Streams);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_Forbidden_Success()
         {
             var r = StreamingResponse.Forbidden();
 
-            Assert.AreEqual((int)HttpStatusCode.Forbidden, r.StatusCode);
-            Assert.IsNull(r.Streams);
+            Assert.Equal((int)HttpStatusCode.Forbidden, r.StatusCode);
+            Assert.Null(r.Streams);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_OK_Success()
         {
             var r = StreamingResponse.OK();
 
-            Assert.AreEqual((int)HttpStatusCode.OK, r.StatusCode);
-            Assert.IsNull(r.Streams);
+            Assert.Equal((int)HttpStatusCode.OK, r.StatusCode);
+            Assert.Null(r.Streams);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_InternalServerError_Success()
         {
             var r = StreamingResponse.InternalServerError();
 
-            Assert.AreEqual((int)HttpStatusCode.InternalServerError, r.StatusCode);
-            Assert.IsNull(r.Streams);
+            Assert.Equal((int)HttpStatusCode.InternalServerError, r.StatusCode);
+            Assert.Null(r.Streams);
         }
 
-        [TestMethod]
+        [Fact]
         public void Response_Create_WithBody_Success()
         {
             var s = new StringContent("hi");
             var r = StreamingResponse.CreateResponse(HttpStatusCode.OK, s);
 
-            Assert.AreEqual((int)HttpStatusCode.OK, r.StatusCode);
-            Assert.IsNotNull(r.Streams);
-            Assert.AreEqual(1, r.Streams.Count);
-            Assert.AreEqual(s, r.Streams[0].Content);
+            Assert.Equal((int)HttpStatusCode.OK, r.StatusCode);
+            Assert.NotNull(r.Streams);
+            Assert.Single(r.Streams);
+            Assert.Equal(s, r.Streams[0].Content);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ResponseExtensions_SetBodyString_Success()
         {
             var r = new StreamingResponse();
             r.SetBody("123");
 
-            Assert.IsNotNull(r.Streams);
-            Assert.AreEqual(1, r.Streams.Count);
-            Assert.AreEqual(typeof(StringContent), r.Streams[0].Content.GetType());
+            Assert.NotNull(r.Streams);
+            Assert.Single(r.Streams);
+            Assert.Equal(typeof(StringContent), r.Streams[0].Content.GetType());
 
             var s = await r.Streams[0].Content.ReadAsStringAsync().ConfigureAwait(false);
-            Assert.AreEqual("123", s);
+            Assert.Equal("123", s);
         }
 
-        [TestMethod]
+        [Fact]
         public void ResponseExtensions_SetBodyString_Null_Does_Not_Throw()
         {
             var r = new StreamingResponse();
@@ -158,27 +157,27 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
             finally
             {
-                Assert.AreEqual(ex, null);
+                Assert.Null(ex);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ResponseExtensions_SetBody_Success()
         {
             var r = new StreamingResponse();
             var a = new Activity() { Text = "hi", Type = "message" };
             r.SetBody(a);
 
-            Assert.IsNotNull(r.Streams);
-            Assert.AreEqual(1, r.Streams.Count);
-            Assert.AreEqual(typeof(StringContent), r.Streams[0].Content.GetType());
+            Assert.NotNull(r.Streams);
+            Assert.Single(r.Streams);
+            Assert.Equal(typeof(StringContent), r.Streams[0].Content.GetType());
 
             var s = JsonConvert.DeserializeObject<Activity>(await r.Streams[0].Content.ReadAsStringAsync().ConfigureAwait(false));
-            Assert.AreEqual(a.Text, s.Text);
-            Assert.AreEqual(a.Type, s.Type);
+            Assert.Equal(a.Text, s.Text);
+            Assert.Equal(a.Type, s.Type);
         }
 
-        [TestMethod]
+        [Fact]
         public void ResponseExtensions_SetBody_Null_Does_Not_Throw()
         {
             var r = new StreamingResponse();
@@ -194,11 +193,11 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
             finally
             {
-                Assert.AreEqual(ex, null);
+                Assert.Null(ex);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ReceiveBase_ReadBodyAsString_NoContent_EmptyString()
         {
             var r = new ReceiveResponse();
@@ -206,7 +205,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             var result = r.ReadBodyAsString();
 
-            Assert.AreEqual(string.Empty, result);
+            Assert.Equal(string.Empty, result);
         }
     }
 }
