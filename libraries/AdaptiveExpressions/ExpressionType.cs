@@ -114,17 +114,18 @@ namespace AdaptiveExpressions
         public const string DateTimeDiff = "dateTimeDiff";
 
         // Timex 
-        public const string IsDefinite = "isDefinite";
-        public const string IsTime = "isTime";
-        public const string IsDuration = "isDuration";
-        public const string IsDate = "isDate";
-        public const string IsTimeRange = "isTimeRange";
-        public const string IsDateRange = "isDateRange";
-        public const string IsPresent = "isPresent";
-        public const string GetNextViableDate = "getNextViableDate";
-        public const string GetPreviousViableDate = "getPreviousViableDate";
-        public const string GetNextViableTime = "getNextViableTime";
-        public const string GetPreviousViableTime = "getPreviousViableTime";
+        public const string IsDefinite = "timex.isDefinite";
+        public const string IsTime = "timex.isTime";
+        public const string IsDuration = "timex.isDuration";
+        public const string IsDate = "timex.isDate";
+        public const string IsTimeRange = "timex.isTimeRange";
+        public const string IsDateRange = "timex.isDateRange";
+        public const string IsPresent = "timex.isPresent";
+        public const string GetNextViableDate = "timex.getNextViableDate";
+        public const string GetPreviousViableDate = "timex.getPreviousViableDate";
+        public const string GetNextViableTime = "timex.getNextViableTime";
+        public const string GetPreviousViableTime = "timex.getPreviousViableTime";
+        public const string TimexResolve = "timex.resolve";
 
         // Conversions
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
