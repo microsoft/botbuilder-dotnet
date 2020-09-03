@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private ICredentialProvider _credentialProvider;
         private ICloudEnvironmentProvider _cloudEnvironmentProvider;
+        private AuthenticationConfiguration _authConfiguration;
         private IHttpClientFactory _httpClientFactory;
         private ILogger _logger;
 
@@ -36,17 +37,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
         /// <param name="credentialProvider">The credential provider.</param>
-        /// <param name="cloudEnvironmentProvider">The authentication configuration.</param>
+        /// <param name="cloudEnvironmentProvider">The cloud environment used for validating and creating tokens.</param>
+        /// <param name="authConfiguration">The authentication configuration used for authenticating Skills.</param>
         /// <param name="httpClientFactory">The IHttpClientFactory implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
             ICredentialProvider credentialProvider,
             ICloudEnvironmentProvider cloudEnvironmentProvider,
+            AuthenticationConfiguration authConfiguration,
             ILogger logger = null,
             IHttpClientFactory httpClientFactory = null)
         {
             _credentialProvider = credentialProvider;
             _cloudEnvironmentProvider = cloudEnvironmentProvider;
+            _authConfiguration = authConfiguration;
             _httpClientFactory = httpClientFactory;
             _logger = logger ?? NullLogger.Instance;
         }
@@ -64,6 +68,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             : this(
                   new ConfigurationCredentialProvider(configuration),
                   new ConfigurationCloudEnvironmentProvider(configuration),
+                  new AuthenticationConfiguration(),
                   logger,
                   httpClientFactory)
         {
@@ -232,7 +237,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var httpClient = _httpClientFactory?.CreateClient("cloudEnvironment");
 
             // Use the cloud environment to authenticate the inbound request and create credentials for outbound requests.
-            var (claimsIdentity, credentials, scope, callerId) = await cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, _credentialProvider, httpClient, _logger).ConfigureAwait(false);
+            var (claimsIdentity, credentials, scope, callerId) = await cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, _credentialProvider, _authConfiguration, httpClient, _logger).ConfigureAwait(false);
 
             // Set the callerId on the activity.
             activity.CallerId = callerId;

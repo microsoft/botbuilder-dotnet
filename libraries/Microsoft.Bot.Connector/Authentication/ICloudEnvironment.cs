@@ -21,9 +21,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="activity">The inbound Activity.</param>
         /// <param name="authHeader">The http auth header.</param>
         /// <param name="credentialProvider">The credential provider.</param>
+        /// <param name="authConfiguration">The AuthenticationConfiguration used for Skills.</param>
         /// <param name="httpClient">The httpClient to use for making calls to teh auth service.</param>
         /// <param name="logger">A ILogger to use while performing authentication.</param>
         /// <returns>Asynchronous Task with Authentication results.</returns>
-        Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, HttpClient httpClient, ILogger logger);
+        Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger);
     }
 }

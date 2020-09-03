@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Net.Http;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
@@ -10,8 +11,13 @@ namespace Microsoft.Bot.Connector.Authentication
     internal class GovernmentCloudEnvironment : BuiltinCloudEnvironment
     {
         public GovernmentCloudEnvironment()
-            : base(GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope)
+            : base(GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, CallerIdConstants.USGovChannel)
         {
+        }
+
+        protected override IChannelProvider GetChannelProvider()
+        {
+            return new SimpleChannelProvider(GovernmentAuthenticationConstants.ChannelService);
         }
 
         protected override ServiceClientCredentials CreateServiceClientCredentials(string appId, string appPassword, HttpClient httpClient, ILogger logger, string scope)

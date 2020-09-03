@@ -14,19 +14,33 @@ namespace Microsoft.Bot.Connector.Authentication
     internal abstract class BuiltinCloudEnvironment : ICloudEnvironment
     {
         private string _toChannelFromBotOAuthScope;
+        private string _callerId;
 
-        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope)
+        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string callerId)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
+            _callerId = callerId;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, HttpClient httpClient, ILogger logger)
+        public static string GetAppId(ClaimsIdentity claimsIdentity)
         {
-            // TODO: wire through AuthenticationConfiguration
+            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
+            // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
+            // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
+            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
+            if (botAppIdClaim == null)
+            {
+                botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
+            }
 
-            var authConfiguration = new AuthenticationConfiguration();
+            return botAppIdClaim?.Value;
+        }
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, credentialProvider, null, authConfiguration, httpClient).ConfigureAwait(false);
+        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        {
+            var channelProvider = GetChannelProvider();
+
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, credentialProvider, channelProvider, authConfiguration, httpClient).ConfigureAwait(false);
 
             var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
             
@@ -39,9 +53,11 @@ namespace Microsoft.Bot.Connector.Authentication
             return (claimsIdentity, credentials, scope, callerId);
         }
 
+        protected abstract IChannelProvider GetChannelProvider();
+
         protected abstract ServiceClientCredentials CreateServiceClientCredentials(string appId, string appPassword, HttpClient httpClient, ILogger logger, string scope);
 
-        private static async Task<string> GenerateCallerIdAsync(ICredentialProvider credentialProvider, ClaimsIdentity claimsIdentity)
+        private async Task<string> GenerateCallerIdAsync(ICredentialProvider credentialProvider, ClaimsIdentity claimsIdentity)
         {
             // Is the bot accepting all incoming messages?
             if (await credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
@@ -56,21 +72,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
             }
 
-            return CallerIdConstants.PublicAzureChannel;
-        }
-
-        private static string GetAppId(ClaimsIdentity claimsIdentity)
-        {
-            // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
-            // unauthenticated requests we have anonymous claimsIdentity provided auth is disabled.
-            // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
-            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
-            if (botAppIdClaim == null)
-            {
-                botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
-            }
-
-            return botAppIdClaim?.Value;
+            return _callerId;
         }
 
         private async Task<ServiceClientCredentials> CreateAppCredentialsAsync(ICredentialProvider credentialProvider, string appId, HttpClient httpClient, ILogger logger, string scope)
