@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
             Assert.Equal(7, pagedResult.Items.Length);
             Assert.Equal("how do I clean the stove?", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.True(pagedResult.Items[1].Type.CompareTo(ActivityTypes.Trace) == 0);
+            Assert.Equal(0, pagedResult.Items[1].Type.CompareTo(ActivityTypes.Trace));
             var traceInfo = ((JObject)((ITraceActivity)pagedResult.Items[1]).Value).ToObject<QnAMakerTraceInfo>();
             Assert.NotNull(traceInfo);
             Assert.NotNull(pagedResult.Items[2].AsTypingActivity());
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Equal("echo:bar", pagedResult.Items[6].AsMessageActivity().Text);
             foreach (var activity in pagedResult.Items)
             {
-                Assert.True(!string.IsNullOrWhiteSpace(activity.Id));
+                Assert.False(string.IsNullOrWhiteSpace(activity.Id));
                 Assert.True(activity.Timestamp > default(DateTimeOffset));
             }
         }
