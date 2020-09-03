@@ -44,7 +44,7 @@ variables:
 #  WebexTestBotBotGroup: define this in Azure
 #  WebexTestBotBotName: define this in Azure
 #  WebexTestBotRefreshToken: define this in Azure
-#  WebexTestBotWebexBotAccessToken: define this in Azure
+#  WebexTestBotWebexBotAccessToken: define this in Azure. Expires in 90 days, i.e. Sunday, November 15, 2020
 #  WebexTestBotWebexBotUserName: define this in Azure
 #  WebexTestBotWebexIntegrationClientId: define this in Azure
 #  WebexTestBotWebexIntegrationClientSecret: define this in Azure
@@ -73,11 +73,11 @@ steps:
      :: Comment out either Option 1 or Option 2 below. Ultimately, both templates should be exercised to ensure they continue to work.
      
      :: Option 1: Use the "new-rg" template:
-     call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" groupName="$(BotGroup)" groupLocation="westus"
+     ::call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" groupName="$(BotGroup)" groupLocation="westus"
      
      :: Option 2: Use the "preexisting-rg" template:
-     ::call az group create --location westus --name $(BotGroup)
-     ::call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" --name "$(BotName)"
+     call az group create --location westus --name $(BotGroup)
+     call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" --name "$(BotName)"
 
 - task: AzureCLI@1
   displayName: 'Deploy the bot'
@@ -87,13 +87,6 @@ steps:
     inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"
 
-- task: AzureCLI@1
-  displayName: 'Zip Deploy Bot'
-  inputs:
-    azureSubscription: '$(AzureSubscription)'
-    scriptLocation: inlineScript
-    inlineScript: 'call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
@@ -101,7 +94,7 @@ steps:
     projects: 'FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter WebexClientTest'
   env:
-    XXXWebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
+    WebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
     WebexTestBotRefreshToken: $(WebexTestBotRefreshToken)
     WebexTestBotWebexIntegrationClientId: $(WebexTestBotWebexIntegrationClientId)
     WebexTestBotWebexIntegrationClientSecret: $(WebexTestBotWebexIntegrationClientSecret)
@@ -114,3 +107,10 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()
