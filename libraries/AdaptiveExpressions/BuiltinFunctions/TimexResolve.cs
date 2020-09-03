@@ -36,7 +36,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             // if the parsed TimexProperty has no types, then it cannot be resolved 
             if (error == null && parsed.Types.Count == 0)
             {
-                error = $"{args[0]} in {expression} can not be resolved as a valid TimexProperty.";
+                error = $"The parsed TimexProperty of {args[0]} in {expression} has no types. It can't be resolved to a string value.";
             }
 
             if (error == null)
