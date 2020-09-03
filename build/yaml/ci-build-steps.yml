@@ -8,7 +8,6 @@ steps:
   displayName: 'Tag build with package version'
   inputs:
     tags: 'Version=$(ReleasePackageVersion)'
-  condition: and(succeeded(), ne(variables['ReleasePackageVersion'], ''))
   continueOnError: true
 
 - task: NuGetToolInstaller@0
