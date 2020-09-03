@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -12,11 +11,11 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
     [Trait("TestCategory", "Template")]
     public class TemplateManagerTests : IClassFixture<TemplateFixture>
     {
-        private readonly TemplateFixture templateFixture;
+        private readonly TemplateFixture _templateFixture;
 
         public TemplateManagerTests(TemplateFixture templateFixture)
         {
-            this.templateFixture = templateFixture;
+            _templateFixture = templateFixture;
         }
 
         [Fact]
@@ -25,13 +24,14 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             var templateManager = new TemplateManager();
             Assert.Empty(templateManager.List());
 
-            var templateEngine1 = new DictionaryRenderer(templateFixture.Templates1);
-            var templateEngine2 = new DictionaryRenderer(templateFixture.Templates2);
+            var templateEngine1 = new DictionaryRenderer(_templateFixture.Templates1);
+            var templateEngine2 = new DictionaryRenderer(_templateFixture.Templates2);
             templateManager.Register(templateEngine1);
             Assert.Single(templateManager.List());
 
+            // Test that only one has to be registered.
             templateManager.Register(templateEngine1);
-            Assert.Equal(1, templateManager.List().Count);
+            Assert.Single(templateManager.List()); 
 
             templateManager.Register(templateEngine2);
             Assert.Equal(2, templateManager.List().Count);
@@ -43,13 +43,14 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             var templateManager = new TemplateManager();
             Assert.Empty(templateManager.List());
 
-            var templateEngine1 = new DictionaryRenderer(templateFixture.Templates1);
-            var templateEngine2 = new DictionaryRenderer(templateFixture.Templates2);
+            var templateEngine1 = new DictionaryRenderer(_templateFixture.Templates1);
+            var templateEngine2 = new DictionaryRenderer(_templateFixture.Templates2);
             templateManager.Register(templateEngine1);
             Assert.Single(templateManager.List());
 
+            // Test that only one has to be registered.
             templateManager.Register(templateEngine1);
-            Assert.Equal(1, templateManager.List().Count);
+            Assert.Single(templateManager.List());
 
             templateManager.Register(templateEngine2);
             Assert.Equal(2, templateManager.List().Count);
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [Fact]
         public async Task DictionaryTemplateEngine_SimpleStringBinding()
         {
-            var engine = new DictionaryRenderer(templateFixture.Templates1);
+            var engine = new DictionaryRenderer(_templateFixture.Templates1);
             var result = await engine.RenderTemplate(null, "en", "stringTemplate", new { name = "joe" });
             Assert.Equal(typeof(string), result.GetType());
             Assert.Equal("en: joe", (string)result);
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [Fact]
         public async Task DictionaryTemplateEngine_SimpleActivityBinding()
         {
-            var engine = new DictionaryRenderer(templateFixture.Templates1);
+            var engine = new DictionaryRenderer(_templateFixture.Templates1);
             var result = await engine.RenderTemplate(null, "en", "activityTemplate", new { name = "joe" });
             Assert.Equal(typeof(Activity), result.GetType());
 
@@ -83,8 +84,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templateFixture.Templates1))
-                .Register(new DictionaryRenderer(templateFixture.Templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -106,8 +107,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
             {
                 Renderers =
                 {
-                    new DictionaryRenderer(templateFixture.Templates1),
-                    new DictionaryRenderer(templateFixture.Templates2)
+                    new DictionaryRenderer(_templateFixture.Templates1),
+                    new DictionaryRenderer(_templateFixture.Templates2)
                 }
             };
 
@@ -128,8 +129,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templateFixture.Templates1))
-                .Register(new DictionaryRenderer(templateFixture.Templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -149,8 +150,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templateFixture.Templates1))
-                .Register(new DictionaryRenderer(templateFixture.Templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -170,8 +171,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templateFixture.Templates1))
-                .Register(new DictionaryRenderer(templateFixture.Templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -191,8 +192,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templateFixture.Templates1))
-                .Register(new DictionaryRenderer(templateFixture.Templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -202,52 +203,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Send("stringTemplate").AssertReply("default: joe")
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
                 .StartTestAsync();
-        }
-    }
-
-#pragma warning disable SA1402
-    public class TemplateFixture : IDisposable
-    {
-        public TemplateFixture()
-        {
-            Templates1 = new LanguageTemplateDictionary
-            {
-                ["default"] = new TemplateIdMap
-                {
-                    { "stringTemplate", (context, data) => $"default: {data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)default: {data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"default: Yo {data.name}" },
-                },
-                ["en"] = new TemplateIdMap
-                {
-                    { "stringTemplate", (context, data) => $"en: {data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)en: {data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"en: Yo {data.name}" },
-                },
-                ["fr"] = new TemplateIdMap
-                {
-                    { "stringTemplate", (context, data) => $"fr: {data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)fr: {data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"fr: Yo {data.name}" },
-                },
-            };
-            Templates2 = new LanguageTemplateDictionary
-            {
-                ["en"] = new TemplateIdMap
-                {
-                    { "stringTemplate2", (context, data) => $"en: StringTemplate2 override {data.name}" },
-                },
-            };
-        }
-
-        public LanguageTemplateDictionary Templates1 { get; private set; }
-
-        public LanguageTemplateDictionary Templates2 { get; private set; }
-
-        public void Dispose()
-        {
-            Templates1 = null;
-            Templates2 = null;
         }
     }
 }
