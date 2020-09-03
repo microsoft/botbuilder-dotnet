@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
@@ -31,22 +31,20 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var botConfig = BotConfiguration.Load("testbot.bot", null);
+            BotConfiguration.Load("testbot.bot", null);
             services.AddBotApplicationInsights(_telemClient.Object);
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
-            services.AddSingleton<IConfiguration>(this.Configuration);
+            services.AddSingleton(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             app.UseBotApplicationInsights();
-#pragma warning restore CS0618 // Type or member is obsolete
             var telemetryClient = app.ApplicationServices.GetService<IBotTelemetryClient>();
-            Assert.IsNotNull(telemetryClient);
-            Assert.AreEqual(telemetryClient, _telemClient.Object);
+            Assert.NotNull(telemetryClient);
+            Assert.Equal(telemetryClient, _telemClient.Object);
         }
     }
 }

@@ -4,7 +4,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Configuration;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,14 +31,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
-            services.AddSingleton<IConfiguration>(this.Configuration);
+            services.AddSingleton(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
             app.UseBotApplicationInsights();
-#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }
