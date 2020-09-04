@@ -32,8 +32,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             this.resourceExplorer = resourceExplorer;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Newtonsoft.Json.JsonConverter"/> can read JSON.
+        /// </summary>
+        /// <value>
+        /// true.
+        /// </value>
         public override bool CanRead => true;
 
+        /// <summary>
+        /// Reads the JSON representation of a <see cref="DialogExpression"/> object.
+        /// </summary>
+        /// <param name="reader">The <see cref="Newtonsoft.Json.JsonReader"/> to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of <see cref="DialogExpression"/> being read. If there is no existing value then null will be used.</param>
+        /// <param name="hasExistingValue">The existing value has a value.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>The interpreted <see cref="DialogExpression"/> object.</returns>
         public override DialogExpression ReadJson(JsonReader reader, Type objectType, DialogExpression existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var jToken = JToken.Load(reader);
@@ -75,6 +90,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             return result;
         }
 
+        /// <summary>
+        /// Writes the JSON representation of a <see cref="DialogExpression"/> object.
+        /// </summary>
+        /// <param name="writer">The <see cref="Newtonsoft.Json.JsonWriter"/> to write to.</param>
+        /// <param name="value">The value <see cref="DialogExpression"/>.</param>
+        /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, DialogExpression value, JsonSerializer serializer)
         {
             if (value.ExpressionText != null)
@@ -101,6 +122,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             RegisterObserver(new JsonLoadObserverWrapper(observer));
         }
 
+        /// <summary>
+        /// Registers an observer to receive notifications on converter events.
+        /// </summary>
+        /// <param name="observer">The <see cref="IJsonLoadObserver"/> to be registered.</param>
         public void RegisterObserver(IJsonLoadObserver observer)
         {
             if (observer == null)
