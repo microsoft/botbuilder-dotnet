@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -79,9 +80,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Gets or sets LUIS prediction options.
         /// </summary>
-        /// <value>Prediction options.</value>
+        /// <value>Prediction options for backward compat code.</value>
+        [JsonIgnore]
+        [Obsolete("You should use Options instead as it supports expression properties.")]
+        public AI.LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets LUIS Prediction options (with expressions).
+        /// </summary>
+        /// <value>Predictions options (Declarative with expression support).</value>
         [JsonProperty("predictionOptions")]
-        public AI.LuisV3.LuisPredictionOptions PredictionOptions { get; set; } = new AI.LuisV3.LuisPredictionOptions();
+        public LuisAdaptivePredictionOptions Options { get; set; }
 
         /// <summary>
         /// Gets or sets HTTP client handler.
@@ -128,7 +137,22 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>LUIS Recognizer options.</returns>
         public LuisRecognizerOptionsV3 RecognizerOptions(DialogContext dialogContext)
         {
-            var options = new AI.LuisV3.LuisPredictionOptions(PredictionOptions);
+            AI.LuisV3.LuisPredictionOptions options = new LuisV3.LuisPredictionOptions();
+            if (this.PredictionOptions != null)
+            {
+                options = new LuisV3.LuisPredictionOptions(this.PredictionOptions);
+            }
+            else if (this.Options != null)
+            {
+                options.DateTimeReference = this.Options.DateTimeReference?.GetValue(dialogContext);
+                options.ExternalEntities = this.Options.ExternalEntities?.GetValue(dialogContext);
+                options.IncludeAllIntents = this.Options.IncludeAllIntents?.GetValue(dialogContext) ?? false;
+                options.IncludeInstanceData = this.Options.IncludeInstanceData?.GetValue(dialogContext) ?? true;
+                options.Log = this.Options.Log?.GetValue(dialogContext) ?? true;
+                options.PreferExternalEntities = this.Options.PreferExternalEntities?.GetValue(dialogContext) ?? true;
+                options.Slot = this.Options.Slot?.GetValue(dialogContext);
+            }
+
             if (this.Version != null)
             {
                 options.Version = this.Version?.GetValue(dialogContext);
