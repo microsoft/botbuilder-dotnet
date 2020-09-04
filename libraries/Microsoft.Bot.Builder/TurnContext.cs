@@ -42,9 +42,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TurnContext"/> class from another turncontext class.
+        /// Initializes a new instance of the <see cref="TurnContext"/> class from another turncontext class to target an alternate Activity.
         /// </summary>
-        /// <remarks>For supporting calling legacy systems that always assume turncontext.Activity should be processed.</remarks>
+        /// <remarks>
+        /// For supporting calling legacy systems that always assume turncontext.Activity is the activity should be processed.
+        /// This class clones the turncontext and then replaces the original.activity with the passed in activity.
+        /// </remarks>
         /// <param name="turnContext">context to clone.</param>
         /// <param name="activity">activity to put into the new turn context.</param>
         public TurnContext(ITurnContext turnContext, Activity activity)

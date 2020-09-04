@@ -41,13 +41,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public StringExpression ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets LUIS version.
-        /// </summary>
-        /// <value>application version.</value>
-        [JsonProperty("version")]
-        public StringExpression Version { get; set; }
-
-        /// <summary>
         /// Gets or sets LUIS endpoint like https://westus.api.cognitive.microsoft.com to query.
         /// </summary>
         /// <value>LUIS Endpoint.</value>
@@ -123,14 +116,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>LUIS Recognizer options.</returns>
         public LuisRecognizerOptionsV3 RecognizerOptions(DialogContext dialogContext)
         {
-            var options = new AI.LuisV3.LuisPredictionOptions(PredictionOptions);
-            if (this.Version != null)
-            {
-                options.Version = this.Version?.GetValue(dialogContext);
-            }
-
+            var options = PredictionOptions;
             if (DynamicLists != null)
             {
+                options = new AI.LuisV3.LuisPredictionOptions(options);
                 var list = new List<AI.LuisV3.DynamicList>();
                 foreach (var listEntity in DynamicLists.GetValue(dialogContext.State))
                 {

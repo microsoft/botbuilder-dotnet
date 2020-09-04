@@ -3,11 +3,10 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
 
@@ -54,6 +53,14 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal("two", c2.Activity.Text);
             Assert.Equal(c1.Adapter, c2.Adapter);
             Assert.Equal(c1.TurnState, c2.TurnState);
+
+            var binding = BindingFlags.Instance | BindingFlags.NonPublic;
+            var onSendField = typeof(TurnContext).GetField("_onSendActivities", binding);
+            var onDeleteField = typeof(TurnContext).GetField("_onDeleteActivity", binding);
+            var onUpdateField = typeof(TurnContext).GetField("_onUpdateActivity", binding);
+            Assert.Equal(onSendField.GetValue(c1), onSendField.GetValue(c2));
+            Assert.Equal(onDeleteField.GetValue(c1), onDeleteField.GetValue(c2));
+            Assert.Equal(onUpdateField.GetValue(c1), onUpdateField.GetValue(c2));
         }
 
         [Fact]
