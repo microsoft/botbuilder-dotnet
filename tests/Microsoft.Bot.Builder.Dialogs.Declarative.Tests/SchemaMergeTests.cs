@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// </remarks>
     public class SchemaMergeTests
     {
-        public SchemaMergeTests()
+        static SchemaMergeTests()
         {
             // static field initialization
             var projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     var error = process.StandardError.ReadToEnd();
                     process.WaitForExit();
 
-                    Assert.Equal(error, string.Empty);
+                    Assert.Equal(string.Empty, error);
                 }
             }
             catch (Exception err)
