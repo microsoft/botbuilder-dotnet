@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.LuisV3;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -26,6 +27,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// True for returning all intents.
         /// </value>
+        [JsonProperty("includeAllIntents")]
         public BoolExpression IncludeAllIntents { get; set; } = false;
 
         /// <summary>
@@ -34,7 +36,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// A value indicating whether or not instance data should be included in response.
         /// </value>
+        [JsonProperty("includeInstanceData")]
         public BoolExpression IncludeInstanceData { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether API results should be included.
+        /// </summary>
+        /// <value>True to include API results.</value>
+        /// <remarks>This is mainly useful for testing or getting access to LUIS features not yet in the SDK.</remarks>
+        [JsonProperty("includeAPIResults")]
+        public BoolExpression IncludeAPIResults { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether queries should be logged in LUIS.
@@ -43,6 +54,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// If queries should be logged in LUIS in order to help build better models through active learning.
         /// </value>
         /// <remarks>The default is to log queries to LUIS in order to support active learning.  To default to the Luis setting set to null.</remarks>
+        [JsonProperty("log")]
         public BoolExpression Log { get; set; } = true;
 
         /// <summary>
@@ -51,6 +63,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// External entities recognized in query.
         /// </value>
+        [JsonProperty("externalEntities")]
         public ArrayExpression<ExternalEntity> ExternalEntities { get; set; }
 
         /// <summary>
@@ -59,6 +72,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// Boolean for if external entities should be preferred to the results from LUIS models.
         /// </value>
+        [JsonProperty("preferExternalEntities")]
         public BoolExpression PreferExternalEntities { get; set; } = true;
 
         /// <summary>
@@ -67,6 +81,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// DateTimeReference.
         /// </value>
+        [JsonProperty("dateTimeReference")]
         public StringExpression DateTimeReference { get; set; }
 
         /// <summary>
@@ -79,6 +94,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// By default this uses the production slot.  You can find other standard slots in <see cref="LuisSlot"/>.
         /// If you specify a Version, then a private version of the application is used instead of a slot.
         /// </remarks>
+        [JsonProperty("slot")]
         public StringExpression Slot { get; set; } = LuisSlot.Production;
     }
 }
