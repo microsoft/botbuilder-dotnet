@@ -14,10 +14,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         private Regex regex;
         private string pattern;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntentPattern"/> class.
+        /// </summary>
         public IntentPattern()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IntentPattern"/> class.
+        /// </summary>
+        /// <param name="intent">The intent.</param>
+        /// <param name="pattern">The regex pattern to match.</param>
         public IntentPattern(string intent, string pattern)
         {
             this.Intent = intent;
@@ -54,6 +62,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
         }
 
+        /// <summary>
+        /// Gets the <see cref="Regex"/> instance.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Regex"/> instance.
+        /// </value>
         [JsonIgnore]
         public Regex Regex => this.regex;
     }
