@@ -12,7 +12,7 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - master
+     - main
   paths:
     include:
       - '*'

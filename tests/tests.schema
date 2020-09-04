@@ -8472,6 +8472,28 @@
             "https://contoso.com"
           ]
         },
+        "matchType": {
+          "type": "string",
+          "title": "Body Match Type",
+          "description": "The match type for body.",
+          "enum": [
+            "Exact",
+            "Partial"
+          ],
+          "examples": [
+            "Exact",
+            "Partial"
+          ],
+          "default": "Partial"
+        },
+        "body": {
+          "type": "string",
+          "title": "Body",
+          "description": "The body to match against request's body.",
+          "examples": [
+            "content"
+          ]
+        },
         "responses": {
           "type": "array",
           "title": "Responses",

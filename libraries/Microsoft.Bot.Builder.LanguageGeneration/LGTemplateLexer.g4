@@ -41,7 +41,7 @@ fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 fragment IDENTIFIER : (LETTER | NUMBER | '_') (LETTER | NUMBER | '_')*;
 
 fragment OBJECT_DEFINITION
-  : '{' ((WHITESPACE) | ((IDENTIFIER | STRING_LITERAL) ':' ( STRING_LITERAL | ~[{}\r\n'"`] | OBJECT_DEFINITION)+))* '}'
+  : '{' ((WHITESPACE) | ((IDENTIFIER | STRING_LITERAL) ':' ( STRING_LITERAL | ~[{}'"`] | OBJECT_DEFINITION)+))* '}'
   ;
   
 fragment EXPRESSION_FRAGMENT

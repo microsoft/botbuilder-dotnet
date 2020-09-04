@@ -3,6 +3,8 @@
     "$kind": "Microsoft.Test.Script",
     "description": "Test HttpRequestMock",
     "httpRequestMocks": [
+        "httpexact.mock",
+        "httppartial.mock",
         "get.mock",
         "all.mock"
     ],
@@ -121,6 +123,41 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${dialog.result.content.data}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "url": "http://127.0.0.2",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.statuscode} ${dialog.result.reasonphrase}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "PATCH",
+                        "url": "http://127.0.0.1",
+                        "body": "full body or partial body",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "PATCH",
+                        "body": "full body",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
                     }
                 ]
             }
@@ -170,6 +207,18 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "repeated ByteArray response"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "404 No matching mock handler for \"POST http://127.0.0.2/\""
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "partial match"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "exact match"
         }
     ]
 }

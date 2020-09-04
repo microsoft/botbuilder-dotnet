@@ -13,3 +13,16 @@
 ${evaluateNow} \${name}
 \```
 ``` 
+
+# template3
+- ```markdown
+## Manage the knowledge base
+```
+
+> inline multiline
+# template4
+- ```## Manage the knowledge base```
+
+> empty multiline
+# template5
+- ``````
