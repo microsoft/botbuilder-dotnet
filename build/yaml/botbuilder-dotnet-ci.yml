@@ -15,12 +15,12 @@ pool:
 trigger: # ci trigger
   branches:
     include:
-     - master
+     - main
 
 pr: # pr trigger
   branches:
     include:
-     - master
+     - main
 
 variables:
   ApiCompatVersion: 4.6.3
@@ -62,7 +62,7 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
-      NoCoverageUpload: true
+      PublishCoverage: true
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
@@ -70,7 +70,7 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
       BuildTarget: 'netcoreapp31' # set the TargetFramework property for tests to use netcoreapp3.1
-      NoCoverageUpload: true
+      PublishCoverage: true
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml

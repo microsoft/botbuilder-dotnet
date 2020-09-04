@@ -1,0 +1,172 @@
+
+@ list ToppingsEntity =
+  - tomato :
+		- tomato
+  - lettuce :
+		- lettuce
+  - pickles :
+		- pickles
+  - greenPeppers :
+		- green
+		- peppers
+		- green peppers
+  - redPeppers :
+		- red
+		- peppers
+		- red peppers
+  - whiteOnions :
+		- white
+		- onions
+		- white onions
+  - redOnions :
+		- red
+		- onions
+		- red onions
+
+
+> Define phrase list for Toppings property.
+@ phraselist ToppingsPhrases(interchangeable)=
+		- toppings
+
+> Define property entity and optional value for Toppings property.
+@ ml Toppings usesFeature ToppingsPhrases
+    - @ ToppingsEntity ToppingsEntity
+
+> Define operations on 'Toppings' property.
+@ ml Add() usesFeature AddPhrases
+	-@ ml Toppings usesFeature Toppings
+		- @ ToppingsEntity ToppingsEntity
+
+@ ml Remove() usesFeature RemovePhrases
+	-@ ml Toppings usesFeature Toppings
+		- @ ToppingsEntity ToppingsEntity
+
+@ ml Clear() usesFeature ClearPhrases
+	-@ ml Toppings usesFeature Toppings
+		- @ ToppingsEntity ToppingsEntity
+
+@ ml Change() usesFeature ChangePhrases
+	-@ ml Toppings usesFeature Toppings
+		- @ ToppingsEntity ToppingsEntity
+
+@ ml Show() usesFeature ShowPhrases
+	-@ ml Toppings usesFeature Toppings
+		- @ ToppingsEntity ToppingsEntity
+
+@ ml Help() usesFeature HelpPhrases
+	-@ ml Toppings usesFeature Toppings
+		- @ ToppingsEntity ToppingsEntity
+
+
+> Add examples for operations on the 'Toppings' property to the intent 'sandwich'.
+# sandwich
+>> entity: Standalone Toppings with ToppingsEntity
+- {@Toppings={@ToppingsEntity=tomato}}
+- {@Toppings={@ToppingsEntity=lettuce}}
+- {@Toppings={@ToppingsEntity=pickles}}
+- {@Toppings={@ToppingsEntity=green}}
+- {@Toppings={@ToppingsEntity=peppers}}
+- {@Toppings={@ToppingsEntity=green peppers}}
+- {@Toppings={@ToppingsEntity=red}}
+- {@Toppings={@ToppingsEntity=red peppers}}
+- {@Toppings={@ToppingsEntity=white}}
+- {@Toppings={@ToppingsEntity=onions}}
+- {@Toppings={@ToppingsEntity=white onions}}
+- {@Toppings={@ToppingsEntity=red onions}}
+- {@Toppings={@ToppingsEntity=tomato} toppings}
+- {@Toppings={@ToppingsEntity=lettuce} toppings}
+- {@Toppings={@ToppingsEntity=pickles} toppings}
+- {@Toppings={@ToppingsEntity=green} toppings}
+- {@Toppings={@ToppingsEntity=peppers} toppings}
+- {@Toppings={@ToppingsEntity=green peppers} toppings}
+- {@Toppings={@ToppingsEntity=red} toppings}
+- {@Toppings={@ToppingsEntity=red peppers} toppings}
+- {@Toppings={@ToppingsEntity=white} toppings}
+- {@Toppings={@ToppingsEntity=onions} toppings}
+- {@Toppings={@ToppingsEntity=white onions} toppings}
+- {@Toppings={@ToppingsEntity=red onions} toppings}
+
+>> property: Standalone Toppings name
+- {@Toppings=toppings}
+
+> Add() examples for Toppings and ToppingsEntity
+- {@Add()=add {@Toppings={@ToppingsEntity=onions} toppings}}
+- {@Add()=add {@Toppings={@ToppingsEntity=red} toppings}}
+- {@Add()=add {@Toppings={@ToppingsEntity=tomato} toppings}}
+- {@Add()=with {@Toppings={@ToppingsEntity=onions}}}
+- {@Add()=with {@Toppings={@ToppingsEntity=green peppers}}}
+- {@Add()=with {@Toppings={@ToppingsEntity=peppers}}}
+- {@Add()={@Toppings=toppings is {@ToppingsEntity=red onions}}}
+- {@Add()={@Toppings=toppings is {@ToppingsEntity=lettuce}}}
+- {@Add()={@Toppings=toppings is {@ToppingsEntity=peppers}}}
+- {@Add()={@Toppings=toppings of {@ToppingsEntity=green peppers}}}
+- {@Add()={@Toppings=toppings of {@ToppingsEntity=red peppers}}}
+- {@Add()={@Toppings=toppings of {@ToppingsEntity=onions}}}
+
+> Add() examples with multiple ToppingsEntity
+- {@Add()={@Toppings=toppings are {@ToppingsEntity=peppers}}}
+- {@Add()={@Toppings=toppings are {@ToppingsEntity=onions}}}
+- {@Add()={@Toppings=toppings are {@ToppingsEntity=lettuce}}}
+- {@Add()=add {@Toppings={@ToppingsEntity=tomato} and {@ToppingsEntity=white} toppings}
+- {@Add()=add {@Toppings={@ToppingsEntity=pickles} and {@ToppingsEntity=red peppers} toppings}
+- {@Add()=add {@Toppings={@ToppingsEntity=green peppers} and {@ToppingsEntity=green} toppings}
+- {@Add()=set {@Toppings={@ToppingsEntity=white onions} and {@ToppingsEntity=white onions}}
+- {@Add()=set {@Toppings={@ToppingsEntity=green} and {@ToppingsEntity=red onions}}
+- {@Add()=set {@Toppings={@ToppingsEntity=green} and {@ToppingsEntity=red}}
+- {@Add()=with {@Toppings={@ToppingsEntity=green peppers}, {@ToppingsEntity=red peppers} and {@ToppingsEntity=green peppers} toppings}
+- {@Add()=with {@Toppings={@ToppingsEntity=peppers}, {@ToppingsEntity=pickles} and {@ToppingsEntity=white onions} toppings}
+- {@Add()=with {@Toppings={@ToppingsEntity=white onions}, {@ToppingsEntity=lettuce} and {@ToppingsEntity=onions} toppings}
+- {@Add()=add {@Toppings={@ToppingsEntity=green peppers}, {@ToppingsEntity=red} and {@ToppingsEntity=red peppers}} 
+- {@Add()=add {@Toppings={@ToppingsEntity=lettuce}, {@ToppingsEntity=white} and {@ToppingsEntity=red peppers}} 
+- {@Add()=add {@Toppings={@ToppingsEntity=peppers}, {@ToppingsEntity=tomato} and {@ToppingsEntity=white onions}} 
+- {@Add()={@Toppings=toppings are {@ToppingsEntity=peppers} and {@ToppingsEntity=red peppers}}}
+- {@Add()={@Toppings=toppings are {@ToppingsEntity=green} and {@ToppingsEntity=lettuce}}}
+- {@Add()={@Toppings=toppings are {@ToppingsEntity=white} and {@ToppingsEntity=red peppers}}}
+- {@Add()={@Toppings=toppings of {@ToppingsEntity=red peppers}, {@ToppingsEntity=white} and {@ToppingsEntity=green peppers}}}
+- {@Add()={@Toppings=toppings of {@ToppingsEntity=red peppers}, {@ToppingsEntity=onions} and {@ToppingsEntity=onions}}}
+- {@Add()={@Toppings=toppings of {@ToppingsEntity=green peppers}, {@ToppingsEntity=white onions} and {@ToppingsEntity=peppers}}}
+
+> Remove() examples for Toppings and ToppingsEntity
+- {@Remove()=remove {@Toppings={@ToppingsEntity=peppers}}
+- {@Remove()=remove {@Toppings={@ToppingsEntity=red}}
+- {@Remove()=remove {@Toppings={@ToppingsEntity=white onions}}
+- {@Remove()=with no {@ToppingsEntity=onions} toppings}
+- {@Remove()=with no {@ToppingsEntity=tomato} toppings}
+- {@Remove()=with no {@ToppingsEntity=red peppers} toppings}
+
+> Remove() examples for Toppings and 2-3 ToppingsEntity
+- {@Remove()=delete {@Toppings={@ToppingsEntity=onions} and {@ToppingsEntity=green}}}
+- {@Remove()=delete {@Toppings={@ToppingsEntity=onions} and {@ToppingsEntity=red}}}
+- {@Remove()=delete {@Toppings={@ToppingsEntity=red} and {@ToppingsEntity=lettuce}}}
+- {@Remove()=without {@Toppings={@ToppingsEntity=white}, {@ToppingsEntity=tomato} and {@ToppingsEntity=green}}}
+- {@Remove()=without {@Toppings={@ToppingsEntity=green}, {@ToppingsEntity=green peppers} and {@ToppingsEntity=red}}}
+- {@Remove()=without {@Toppings={@ToppingsEntity=white onions}, {@ToppingsEntity=red} and {@ToppingsEntity=red onions}}}
+- {@Remove()=remove {@Toppings={@ToppingsEntity=pickles} and {@ToppingsEntity=peppers} toppings}}
+- {@Remove()=remove {@Toppings={@ToppingsEntity=onions} and {@ToppingsEntity=red onions} toppings}}
+- {@Remove()=remove {@Toppings={@ToppingsEntity=red peppers} and {@ToppingsEntity=green peppers} toppings}}
+- {@Remove()=delete {@Toppings={@ToppingsEntity=white}, {@ToppingsEntity=white onions} and {@ToppingsEntity=tomato} toppings}}
+- {@Remove()=delete {@Toppings={@ToppingsEntity=tomato}, {@ToppingsEntity=pickles} and {@ToppingsEntity=onions} toppings}}
+- {@Remove()=delete {@Toppings={@ToppingsEntity=peppers}, {@ToppingsEntity=green} and {@ToppingsEntity=tomato} toppings}}
+
+> Clear() examples for Toppings
+- {@Clear()=clear {@Toppings=toppings}}
+- {@Clear()=reset {@Toppings=toppings}}
+
+> Show() examples for Toppings
+- {@Show()=show {@Toppings=toppings}}
+- {@Show()=value of {@Toppings=toppings}}
+- {@Show()={@Toppings=toppings} values}
+- {@Show()={@Toppings=toppings} selection}
+
+> Help() examples for Toppings
+- {@Help()=help {@Toppings=toppings}}
+- {@Help()=what can I say for {@Toppings=toppings}}
+- {@Help()={@Toppings=toppings} help}
+
+> Change() examples for Toppings
+- {@Change()=change {@Toppings=toppings}}
+- {@Change()=goto {@Toppings=toppings}}
+
+
+
+> Generator: fdb672764542dbfa5a8f5e69c8b5a4ee

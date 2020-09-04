@@ -45,7 +45,7 @@ For more information jump to a section below.
 | Microsoft.Bot.Schema                  | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Schema?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Schema/)                                   | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Schema?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Schema) |
 | Microsoft.Bot.Streaming                  | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Streaming?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Streaming/)                                   | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Streaming?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Streaming) |
 
-You can refer to the [dependency graph](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.9.2/InterdependencyGraph.html) for our libraries.
+To view our libraries' interdependencies, see [this dependency graph](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/latest/InterdependencyGraph.html).
 
 To use the daily builds, which are published to MyGet, please follow the instructions [here](UsingMyGet.md).
 
