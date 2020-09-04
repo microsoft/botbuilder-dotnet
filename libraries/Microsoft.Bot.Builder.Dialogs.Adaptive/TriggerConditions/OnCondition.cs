@@ -24,6 +24,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     [DebuggerDisplay("{GetIdentity()}")]
     public class OnCondition : IItemIdentity, IDialogDependencies
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.OnCondition";
 
@@ -35,6 +38,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         // cached expression representing all constraints (constraint AND extraConstraints AND childrenConstraints)
         private Expression fullConstraint = null;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnCondition"/> class.
+        /// </summary>
+        /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
+        /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public OnCondition(string condition = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -67,6 +77,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Gets the source.
+        /// </summary>
+        /// <value>Source map value from <see cref="DebugSupport"/>.</value>
         [JsonIgnore]
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
@@ -91,6 +105,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonIgnore]
         public string Id { get; set; }
 
+        /// <summary>
+        /// Gets the action scope.
+        /// </summary>
+        /// <value>The scope obtained from the action.</value>
         protected ActionScope ActionScope
         {
             get
@@ -251,11 +269,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}()";
         }
 
+        /// <summary>
+        /// Enumerate child dialog dependencies so they can be added to the containers dialog set.
+        /// </summary>
+        /// <returns>dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             yield return this.ActionScope;
         }
 
+        /// <summary>
+        /// Called when a change list is created.
+        /// </summary>
+        /// <param name="actionContext">Context to use for evaluation.</param>
+        /// <param name="dialogOptions">Optional, object with dialog options.</param>
+        /// <returns>An <see cref="ActionChangeList"/> with the list of actions.</returns>
         protected virtual ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
             var changeList = new ActionChangeList()
@@ -272,6 +300,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return changeList;
         }
 
+        /// <summary>
+        /// Registers the source location.
+        /// </summary>
+        /// <param name="path">Path to source file.</param>
+        /// <param name="lineNumber">Line number in source file.</param>
         protected void RegisterSourceLocation(string path, int lineNumber)
         {
             if (path != null)
