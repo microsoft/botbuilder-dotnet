@@ -17,9 +17,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class NumberInput : InputDialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.NumberInput";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberInput"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -43,6 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public NumberExpression OutputFormat { get; set; }
 
+        /// <summary>
+        /// Called when input has been received.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
         protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);

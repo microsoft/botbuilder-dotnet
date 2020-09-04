@@ -15,9 +15,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class TextInput : InputDialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.TextInput";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextInput"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -29,8 +37,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <remarks>The default output is a string, if this property is set then the output of the expression is the string returned by the dialog.</remarks>
         /// <value>an expression which resolves to a string.</value>
         [JsonProperty("outputFormat")]
-        public StringExpression OutputFormat { get; set; } 
+        public StringExpression OutputFormat { get; set; }
 
+        /// <summary>
+        /// Called when input has been received.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
         protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var input = dc.State.GetValue<string>(VALUE_PROPERTY);
