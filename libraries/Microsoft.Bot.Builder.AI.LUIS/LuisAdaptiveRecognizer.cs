@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     public class LuisAdaptiveRecognizer : Recognizer
     {
         /// <summary>
-        /// The Kind name for this recognizer.
+        /// The Kind value for this recognizer.
         /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.LuisRecognizer";
