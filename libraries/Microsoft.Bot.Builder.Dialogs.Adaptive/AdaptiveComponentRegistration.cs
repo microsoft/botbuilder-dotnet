@@ -24,8 +24,14 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// <see cref="ComponentRegistration"/> implementation for adaptive components.
+    /// </summary>
     public class AdaptiveComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdaptiveComponentRegistration"/> class.
+        /// </summary>
         public AdaptiveComponentRegistration()
         {
             // adaptive dialog functions
@@ -34,6 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             Expression.Functions.Add(HasPendingActionsFunction.Name, new HasPendingActionsFunction());
         }
 
+        /// <summary>
+        /// Gets adaptive <see cref="DeclarativeType"/> resources.
+        /// </summary>
+        /// <param name="resourceExplorer"><see cref="ResourceExplorer"/> with expected path to get all schema resources.</param>
+        /// <returns>Adaptive <see cref="DeclarativeType"/> resources.</returns>
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Conditionals
@@ -172,6 +183,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Gets adaptive <see cref="JsonConverter"/> resources.
+        /// </summary>
+        /// <param name="resourceExplorer">ResourceExplorer to use to resolve references.</param>
+        /// <param name="sourceContext">SourceContext to build debugger source map.</param>
+        /// <returns>Adaptive <see cref="JsonConverter"/> resources.</returns>
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new InterfaceConverter<OnCondition>(resourceExplorer, sourceContext);

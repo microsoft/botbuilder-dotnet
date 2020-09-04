@@ -9,6 +9,9 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// Implements resource extensions.
+    /// </summary>
     public static class ResourceExtensions
     {
         /// <summary>
