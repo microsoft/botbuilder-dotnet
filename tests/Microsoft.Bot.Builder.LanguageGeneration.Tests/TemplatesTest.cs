@@ -1107,9 +1107,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public void TestEvaluateOnce()
+        public void TestTemplateCache()
         {
-            var templates = Templates.ParseFile(GetExampleFilePath("EvaluateOnce.lg"));
+            var templates = Templates.ParseFile(GetExampleFilePath("TemplateCache.lg"));
 
             var evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
             Assert.NotNull(evaled);
@@ -1120,6 +1120,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // may be has different values
             evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
+
+            // global cache test
+            evaled = templates.Evaluate("globalCache", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
+
+            resultList = evaled.ToString().Split(" ");
+            Assert.True(resultList.Length == 2);
+            Assert.True(resultList[0] == resultList[1]);
         }
 
         [Fact]
