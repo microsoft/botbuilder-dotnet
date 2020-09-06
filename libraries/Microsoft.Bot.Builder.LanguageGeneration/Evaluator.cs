@@ -96,25 +96,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             object result = null;
             var hasResult = false;
-            if (_lgOptions.CacheScope == LGCacheScope.Global)
+            if (!reExecute)
             {
-                if (_historyResult.ContainsKey(currentEvaluateId))
+                if (_lgOptions.CacheScope == LGCacheScope.Global)
                 {
-                    result = _historyResult[currentEvaluateId];
-                    hasResult = true;
-                }
-            }
-            else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template) 
-            {
-                EvaluationTarget previousEvaluateTarget = null;
-                if (_evaluationTargetStack.Count != 0)
-                {
-                    previousEvaluateTarget = _evaluationTargetStack.Peek();
-
-                    if (!reExecute && previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                    if (_historyResult.ContainsKey(currentEvaluateId))
                     {
-                        result = previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                        result = _historyResult[currentEvaluateId];
                         hasResult = true;
+                    }
+                }
+                else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template)
+                {
+                    EvaluationTarget previousEvaluateTarget = null;
+                    if (_evaluationTargetStack.Count != 0)
+                    {
+                        previousEvaluateTarget = _evaluationTargetStack.Peek();
+
+                        if (previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                        {
+                            result = previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                            hasResult = true;
+                        }
                     }
                 }
             }
