@@ -1136,6 +1136,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // may be has different values
             var evaled = templates.Evaluate("templateWithSameParams", new { param1 = "ms", param2 = "newms" });
+
+            // the third one should be the same with the first one
+            var resultList = evaled.ToString().Split(" ");
+            Assert.True(resultList.Length == 3);
+            Assert.True(resultList[0] == resultList[2]);
         }
 
         [Fact]

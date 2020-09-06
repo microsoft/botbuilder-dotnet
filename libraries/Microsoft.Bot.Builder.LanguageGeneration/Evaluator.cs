@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private const string ReExecuteSuffix = "!";
 
-        private static readonly Dictionary<string, object> _historyResult = new Dictionary<string, object>();
+        private static readonly Dictionary<string, object> _cachedResult = new Dictionary<string, object>();
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions _lgOptions;
 
@@ -100,9 +100,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (_lgOptions.CacheScope == LGCacheScope.Global)
                 {
-                    if (_historyResult.ContainsKey(currentEvaluateId))
+                    if (_cachedResult.ContainsKey(currentEvaluateId))
                     {
-                        result = _historyResult[currentEvaluateId];
+                        result = _cachedResult[currentEvaluateId];
                         hasResult = true;
                     }
                 }
@@ -113,9 +113,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         previousEvaluateTarget = _evaluationTargetStack.Peek();
 
-                        if (previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                        if (previousEvaluateTarget.CachedEvaluatedChildren.ContainsKey(currentEvaluateId))
                         {
-                            result = previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                            result = previousEvaluateTarget.CachedEvaluatedChildren[currentEvaluateId];
                             hasResult = true;
                         }
                     }
@@ -132,13 +132,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (_lgOptions.CacheScope == LGCacheScope.Global)
                     {
-                        _historyResult[currentEvaluateId] = result;
+                        _cachedResult[currentEvaluateId] = result;
                     }
                     else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template)
                     {
                         if (_evaluationTargetStack.Count > 0)
                         {
-                            _evaluationTargetStack.Peek().EvaluatedChildren[currentEvaluateId] = result;
+                            _evaluationTargetStack.Peek().CachedEvaluatedChildren[currentEvaluateId] = result;
                         }
                     }
                 }
