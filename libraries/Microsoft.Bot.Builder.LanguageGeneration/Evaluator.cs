@@ -128,15 +128,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
                 _evaluationTargetStack.Pop();
 
-                if (_lgOptions.CacheScope == LGCacheScope.Global)
+                if (!reExecute)
                 {
-                    _historyResult[currentEvaluateId] = result;
-                }
-                else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template)
-                {
-                    if (_evaluationTargetStack.Count > 0)
+                    if (_lgOptions.CacheScope == LGCacheScope.Global)
                     {
-                        _evaluationTargetStack.Peek().EvaluatedChildren[currentEvaluateId] = result;
+                        _historyResult[currentEvaluateId] = result;
+                    }
+                    else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template)
+                    {
+                        if (_evaluationTargetStack.Count > 0)
+                        {
+                            _evaluationTargetStack.Peek().EvaluatedChildren[currentEvaluateId] = result;
+                        }
                     }
                 }
             }
