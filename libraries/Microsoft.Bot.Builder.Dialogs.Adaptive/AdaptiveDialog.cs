@@ -389,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
-        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for the task.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
         {
@@ -404,7 +404,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
-        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for the task.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
         {
@@ -628,7 +628,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="options">Options used in evaluation. </param>
-        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for the task.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representation of <see cref="DialogTurnResult"/>.</returns>
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
         {
@@ -779,7 +779,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
         /// <param name="activity"><see cref="Activity"/> to recognize.</param>
-        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> for the task.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing a <see cref="RecognizerResult"/>.</returns>
         protected async Task<RecognizerResult> OnRecognizeAsync(ActionContext actionContext, Activity activity, CancellationToken cancellationToken = default)
         {
