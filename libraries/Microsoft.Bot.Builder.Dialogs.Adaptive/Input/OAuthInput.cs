@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Called when input has been received.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
-        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for the task.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
         /// <remark>Method not implemented.</remark>
         protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
