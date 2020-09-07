@@ -1,34 +1,25 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
-    public class JsonLoadTests : IDisposable
+    public class JsonLoadTests : IClassFixture<JsonLoadFixture>
     {
-        private static ResourceExplorer _resourceExplorer;
+        // private static ResourceExplorer _resourceExplorer;
+        private readonly JsonLoadFixture _jsonLoadFixture;
 
-        public JsonLoadTests()
+        public JsonLoadTests(JsonLoadFixture jsonLoadFixture)
         {
-            var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
-            _resourceExplorer = new ResourceExplorer()
-                .LoadProject(projPath, monitorChanges: false);
-        }
-
-        public void Dispose()
-        {
-            _resourceExplorer.Dispose();
+            _jsonLoadFixture = jsonLoadFixture;
         }
 
         [Fact]
@@ -389,7 +380,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildQnAMakerTestFlow(string testName)
         {
             var adapter = InitializeAdapter(testName);
-            var dialog = _resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
+            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
 
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
@@ -400,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildQnAMakerTestFlow_IsTest_True(string testName)
         {
             var adapter = InitializeAdapter(testName);
-            var dialog = _resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
+            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
             qnaMakerDialog.IsTest = true;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
@@ -411,7 +402,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildQnAMakerTestFlow_RankerType_QuestionOnly(string testName)
         {
             var adapter = InitializeAdapter(testName);
-            var dialog = _resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
+            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnAMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
             var qnaMakerDialog = qnAMakerDialog;
             qnaMakerDialog.RankerType = RankerTypes.QuestionOnly;
@@ -437,7 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter)
         {
             var dm = new DialogManager(dialog)
-                .UseResourceExplorer(_resourceExplorer)
+                .UseResourceExplorer(_jsonLoadFixture.ResourceExplorer)
                 .UseLanguageGeneration();
             dm.InitialTurnState.Add<IQnAMakerClient>(new MockQnAMakerClient());
 
@@ -450,7 +441,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string resourceName, string testName, bool sendTrace = false)
         {
             var adapter = InitializeAdapter(testName, sendTrace);
-            var dialog = _resourceExplorer.LoadType<Dialog>(resourceName);
+            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<Dialog>(resourceName);
             return GetTestFlow(dialog, adapter);
         }
     }

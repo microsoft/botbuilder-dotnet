@@ -14,17 +14,8 @@ using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
-    public class ResourceTests
+    public class ResourceTests : IClassFixture<ResourceFixture>
     {
-        public ResourceTests()
-        {
-            var path = Path.GetFullPath(PathUtils.NormalizePath(Path.Combine(Environment.CurrentDirectory, @"..\..")));
-            foreach (var file in Directory.EnumerateFiles(path, "*.dialog", SearchOption.AllDirectories))
-            {
-                File.Delete(file);
-            }
-        }
-
         [Fact]
         public void TestFolderSource()
         {
