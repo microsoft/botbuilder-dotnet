@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialog"/> class.
         /// </summary>
-        /// <param name="dialogId">Optioonal, dialog identifier.</param>
+        /// <param name="dialogId">Optional, dialog identifier.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
-        /// Called when a child dialog completed this turn, returning control to this dialog.
+        /// Called when a child dialog completed its turn, returning control to this dialog.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
@@ -744,7 +744,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
-        /// Called when the dialog's action ends, finishes turn.
+        /// Awaits for completed actions to finish processing entity assignments and finishes turn.
         /// </summary>
         /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects.</param>

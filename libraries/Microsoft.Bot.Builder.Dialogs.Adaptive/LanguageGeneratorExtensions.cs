@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
-    /// Implements language generator extensions.
+    /// Implements extension methods for language generator.
     /// </summary>
     public static class LanguageGeneratorExtensions
     {
