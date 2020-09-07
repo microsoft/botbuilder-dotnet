@@ -114,11 +114,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         [Fact]
         public void LuisRecognizer_NullLuisAppArg()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                var recognizerWithNullLuisApplication = new LuisRecognizer(new LuisRecognizerOptionsV2(application: null));
-                Assert.NotNull(recognizerWithNullLuisApplication);
-            });
+            Assert.Throws<ArgumentNullException>(() => new LuisRecognizer(new LuisRecognizerOptionsV2(application: null)));
         }
 
         [Fact]
@@ -267,8 +263,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.Throws<ArgumentNullException>(() =>
             {
                 RecognizerResult nullResults = null;
-                var noIntent = LuisRecognizer.TopIntent(nullResults);
-                Assert.NotNull(noIntent);
+                LuisRecognizer.TopIntent(nullResults);
             });
         }
 
