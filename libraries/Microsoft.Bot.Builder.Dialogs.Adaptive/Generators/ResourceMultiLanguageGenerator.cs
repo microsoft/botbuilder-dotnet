@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Gets or sets the resource id.
         /// </summary>
         /// <value>
-        /// resource id.
+        /// Resource id.
         /// </value>
         [JsonProperty("resourceId")]
         public string ResourceId { get; set; }
