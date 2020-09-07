@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         /// <param name="reader">The <see cref="Newtonsoft.Json.JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of <see cref="DialogExpression"/> being read. If there is no existing value then null will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
+        /// <param name="hasExistingValue">Indicates if existingValue has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The interpreted <see cref="DialogExpression"/> object.</returns>
         public override DialogExpression ReadJson(JsonReader reader, Type objectType, DialogExpression existingValue, bool hasExistingValue, JsonSerializer serializer)

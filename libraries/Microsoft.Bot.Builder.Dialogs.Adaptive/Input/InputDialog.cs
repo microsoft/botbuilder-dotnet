@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Called when a child dialog completed this turn, returning control to this dialog.
+        /// Called when a child dialog completes its turn, returning control to this dialog.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
@@ -304,7 +304,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Called when input has been received, override this method to cutomize recognition of the input.
+        /// Called when input has been received, override this method to customize recognition of the input.
         /// </summary>
         /// <param name="dc">dialogContext.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
