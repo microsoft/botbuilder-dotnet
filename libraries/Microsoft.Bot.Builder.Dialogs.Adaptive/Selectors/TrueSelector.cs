@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private bool _evaluate;
 
         /// <summary>
-        /// Initialize the selector with the set of rules.
+        /// Initializes the selector with the set of rules.
         /// </summary>
         /// <param name="conditionals">Possible rules to match.</param>
         /// <param name="evaluate">Optional, true by default if rules should be evaluated on select.</param>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         }
 
         /// <summary>
-        /// Select the best rule to execute.
+        /// Selects the best rule to execute.
         /// </summary>
         /// <param name="context">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/> of the task.</param>
