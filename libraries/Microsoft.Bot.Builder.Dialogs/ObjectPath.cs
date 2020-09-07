@@ -120,7 +120,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            value = MapValueTo<T>(result);
+            try
+            {
+                value = MapValueTo<T>(result);
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+
             return true;
         }
 

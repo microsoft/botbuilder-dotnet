@@ -284,6 +284,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 // complex type paths
                 dc.State.SetValue("user.name.first", "joe");
+                Assert.AreEqual(false, dc.State.TryGetValue<bool>("user.name.first", out var val));
                 Assert.AreEqual("joe", dc.State.GetValue<string>("user.name.first"));
 
                 Assert.AreEqual(null, dc.State.GetValue<string>("user.xxx"));
@@ -296,6 +297,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         Assert.AreEqual(dc.State.GetValue<object>(key), dc.State[key]);
                     }
                 }
+            }).StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestTryGetValueWithWrongType()
+        {
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                dc.State.SetValue("user.name.first", "joe");
+                Assert.AreEqual(false, dc.State.TryGetValue<int>("user.name.first", out var val));
+                Assert.AreEqual(true, dc.State.TryGetValue<string>("user.name.first", out var val2));
+                Assert.AreEqual("joe", val2);
+
+                dc.State.SetValue("user.age", 19);
+                Assert.AreEqual(true, dc.State.TryGetValue<string>("user.age", out var val3));
+                Assert.AreEqual("19", val3);
+                Assert.AreEqual(true, dc.State.TryGetValue<int>("user.age", out var val4));
+                Assert.AreEqual(19, val4);
+
+                dc.State.SetValue("user.salary", "10000");
+                Assert.AreEqual(true, dc.State.TryGetValue<string>("user.salary", out var val5));
+                Assert.AreEqual("10000", val5);
+                Assert.AreEqual(true, dc.State.TryGetValue<int>("user.salary", out var val6));
+                Assert.AreEqual(10000, val6);
             }).StartTestAsync();
         }
 
