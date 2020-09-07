@@ -50,24 +50,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             var policy = new List<string>();
-            if (activity.Locale != null && LanguagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
+            if (activity.Locale != null)
             {
-                policy.AddRange(targetpolicy);
-            }
-
-            if (activity.Locale.Length != 0 && LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
-            {
-                // we now explictly add defaultPolicy instead of coding that into target's policy
-                policy.AddRange(defaultPolicy);
-            }
-
-            foreach (var option in policy)
-            {
-                if (this.Recognizers.TryGetValue(option, out var recognizer))
+                if (LanguagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
                 {
-                    var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                    this.TrackRecognizerResult(dialogContext, "MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
-                    return result;
+                    policy.AddRange(targetpolicy);
+                }
+
+                if (activity.Locale.Length != 0 && LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
+                {
+                    // we now explictly add defaultPolicy instead of coding that into target's policy
+                    policy.AddRange(defaultPolicy);
+                }
+
+                foreach (var option in policy)
+                {
+                    if (this.Recognizers.TryGetValue(option, out var recognizer))
+                    {
+                        var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                        this.TrackRecognizerResult(dialogContext, "MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+                        return result;
+                    }
                 }
             }
 
