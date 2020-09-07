@@ -4,51 +4,36 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
+using Microsoft.Bot.Builder.AI.QnA.Tests;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Tests
 {
-    public class QnAMakerRecognizerTests
+    public class QnAMakerRecognizerTests : IClassFixture<QnAMakerRecognizerFixture>
     {
-        private const string _knowledgeBaseId = "dummy-id";
-        private const string _endpointKey = "dummy-key";
-        private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
+        private const string KnowledgeBaseId = "dummy-id";
+        private const string EndpointKey = "dummy-key";
+        private const string Hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
-        public QnAMakerRecognizerTests()
+        private readonly QnAMakerRecognizerFixture _qnaMakerRecognizerFixture;
+
+        public QnAMakerRecognizerTests(QnAMakerRecognizerFixture qnaMakerRecognizerFixture)
         {
-            var parent = Environment.CurrentDirectory;
-            while (!string.IsNullOrEmpty(parent))
-            {
-                if (Directory.EnumerateFiles(parent, "*proj").Any())
-                {
-                    break;
-                }
-                else
-                {
-                    parent = Path.GetDirectoryName(parent);
-                }
-            }
-
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(parent, monitorChanges: false);
+            _qnaMakerRecognizerFixture = qnaMakerRecognizerFixture;
         }
-
-        public static ResourceExplorer ResourceExplorer { get; set; }
 
         public AdaptiveDialog QnAMakerRecognizer_DialogBase()
         {
@@ -134,7 +119,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(false)));
 
             var dm = new DialogManager(rootDialog)
-                .UseResourceExplorer(ResourceExplorer)
+                .UseResourceExplorer(_qnaMakerRecognizerFixture.ResourceExplorer)
                 .UseLanguageGeneration();
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -147,18 +132,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            const string host = "https://dummy-hostname.azurewebsites.net/qnamaker";
-            const string knowledgeBaseId = "dummy-id";
-            const string endpointKey = "dummy-key";
-
             var rootDialog = new AdaptiveDialog("outer")
             {
                 AutoEndDialog = false,
                 Recognizer = new QnAMakerRecognizer
                 {
-                    KnowledgeBaseId = knowledgeBaseId,
-                    HostName = host,
-                    EndpointKey = endpointKey,
+                    KnowledgeBaseId = KnowledgeBaseId,
+                    HostName = Hostname,
+                    EndpointKey = EndpointKey,
                     HttpClient = client
                 },
                 Triggers = new List<OnCondition>
@@ -221,13 +202,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return rootDialog;
         }
 
-        private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
+        private string GetV2LegacyRequestUrl() => $"{Hostname}/v2.0/knowledgebases/{KnowledgeBaseId}/generateanswer";
 
-        private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowledgeBaseId}/generateanswer";
+        private string GetV3LegacyRequestUrl() => $"{Hostname}/v3.0/knowledgebases/{KnowledgeBaseId}/generateanswer";
 
-        private string GetRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/generateanswer";
+        private string GetRequestUrl() => $"{Hostname}/knowledgebases/{KnowledgeBaseId}/generateanswer";
 
-        private string GetTrainRequestUrl() => $"{_hostname}/knowledgebases/{_knowledgeBaseId}/train";
+        private string GetTrainRequestUrl() => $"{Hostname}/knowledgebases/{KnowledgeBaseId}/train";
 
         private Stream GetResponse(string fileName)
         {
