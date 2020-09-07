@@ -303,12 +303,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var version1 = ds.GetInternalVersion_Test();
             Assert.NotNull(version1);
 
-            var ds2 = new TestAdaptiveDialog();
-            var version2 = ds2.GetInternalVersion_Test();
+            var version2 = ds.GetInternalVersion_Test();
             Assert.NotNull(version2);
             Assert.Equal(version1, version2);
 
-            ds2 = new TestAdaptiveDialog()
+            var ds2 = new TestAdaptiveDialog()
             {
                 Triggers = new List<OnCondition>()
                 {
