@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Converts a string into a <see cref="DialogExpression"/>.
         /// </summary>
-        /// <param name="dialogIdOrExpression">string to convert to a <see cref="DialogExpression"/></param>
+        /// <param name="dialogIdOrExpression">String to convert to a <see cref="DialogExpression"/></param>
         public static implicit operator DialogExpression(string dialogIdOrExpression) => new DialogExpression(dialogIdOrExpression);
 
         /// <summary>

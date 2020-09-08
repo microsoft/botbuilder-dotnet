@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
         /// Gets a value indicating whether this <see cref="Newtonsoft.Json.JsonConverter"/> can read JSON.
         /// </summary>
         /// <value>
-        /// true.
+        /// <c>true</c>.
         /// </value>
         public override bool CanRead => true;
 

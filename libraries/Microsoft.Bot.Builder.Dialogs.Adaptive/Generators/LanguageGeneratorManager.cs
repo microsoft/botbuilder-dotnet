@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="locale">Locale to identify language.</param>
         /// <param name="resourceMapping">Template resource loader delegate.</param>
-        /// <returns>resolver.</returns>
+        /// <returns>The delegate to resolve the resource.</returns>
         public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<Resource>> resourceMapping)
         {
             return (LGResource lgResource, string id) =>
