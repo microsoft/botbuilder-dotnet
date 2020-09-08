@@ -11,18 +11,13 @@ namespace Microsoft.Bot.Connector.Authentication
     internal class GovernmentCloudEnvironment : BuiltinCloudEnvironment
     {
         public GovernmentCloudEnvironment()
-            : base(GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, CallerIdConstants.USGovChannel)
+            : base(GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, CallerIdConstants.USGovChannel)
         {
         }
 
         protected override IChannelProvider GetChannelProvider()
         {
             return new SimpleChannelProvider(GovernmentAuthenticationConstants.ChannelService);
-        }
-
-        protected override ServiceClientCredentials CreateServiceClientCredentials(string appId, string appPassword, HttpClient httpClient, ILogger logger, string scope)
-        {
-            return new MicrosoftGovernmentAppCredentials(appId, appPassword, httpClient, logger, scope);
         }
     }
 }

@@ -14,11 +14,13 @@ namespace Microsoft.Bot.Connector.Authentication
     internal abstract class BuiltinCloudEnvironment : ICloudEnvironment
     {
         private string _toChannelFromBotOAuthScope;
+        private string _loginEndpoint;
         private string _callerId;
 
-        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string callerId)
+        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
+            _loginEndpoint = loginEndpoint;
             _callerId = callerId;
         }
 
@@ -36,31 +38,27 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, ICredentialProvider credentialProvider, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
         {
-            var channelProvider = GetChannelProvider();
-
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, credentialProvider, channelProvider, authConfiguration, httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(credentialFactory), GetChannelProvider(), authConfiguration, httpClient).ConfigureAwait(false);
 
             var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
             
-            var callerId = await GenerateCallerIdAsync(credentialProvider, claimsIdentity).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(credentialFactory, claimsIdentity).ConfigureAwait(false);
 
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await CreateAppCredentialsAsync(credentialProvider, appId, httpClient, logger, scope).ConfigureAwait(false);
+            var credentials = await credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
         }
 
         protected abstract IChannelProvider GetChannelProvider();
 
-        protected abstract ServiceClientCredentials CreateServiceClientCredentials(string appId, string appPassword, HttpClient httpClient, ILogger logger, string scope);
-
-        private async Task<string> GenerateCallerIdAsync(ICredentialProvider credentialProvider, ClaimsIdentity claimsIdentity)
+        private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity)
         {
             // Is the bot accepting all incoming messages?
-            if (await credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+            if (await credentialFactory.IsAuthenticationDisabledAsync().ConfigureAwait(false))
             {
                 // Return null so that the callerId is cleared.
                 return null;
@@ -73,22 +71,6 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return _callerId;
-        }
-
-        private async Task<ServiceClientCredentials> CreateAppCredentialsAsync(ICredentialProvider credentialProvider, string appId, HttpClient httpClient, ILogger logger, string scope)
-        {
-            if (appId == null)
-            {
-                return MicrosoftAppCredentials.Empty;
-            }
-            else
-            {
-                // Get the password from the credential provider.
-                var appPassword = await credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-
-                // Construct an AppCredentials using the app + password combination.
-                return CreateServiceClientCredentials(appId, appPassword, httpClient, logger, scope);
-            }
         }
     }
 }

@@ -13,7 +13,32 @@ namespace Microsoft.Bot.Connector.Authentication
     public interface IServiceClientCredentialsFactory
     {
         /// <summary>
-        /// A factiry method for creating ServiceClientCredentials.
+        /// Validates an app ID.
+        /// </summary>
+        /// <param name="appId">The app ID to validate.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful, the result is true if <paramref name="appId"/>
+        /// is valid for the controller; otherwise, false.
+        /// <para>
+        /// This method is async to enable custom implementations
+        /// that may need to call out to serviced to validate the appId / password pair.
+        /// </para></remarks>
+        Task<bool> IsValidAppIdAsync(string appId);
+
+        /// <summary>
+        /// Checks whether bot authentication is disabled.
+        /// </summary>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful and bot authentication is disabled, the result
+        /// is true; otherwise, false.
+        /// <para>
+        /// This method is async to enable custom implementations
+        /// that may need to call out to serviced to validate the appId / password pair.
+        /// </para></remarks>
+        Task<bool> IsAuthenticationDisabledAsync();
+
+        /// <summary>
+        /// A factory method for creating ServiceClientCredentials.
         /// </summary>
         /// <param name="appId">The appId.</param>
         /// <param name="oauthScope">The oauth scope.</param>
