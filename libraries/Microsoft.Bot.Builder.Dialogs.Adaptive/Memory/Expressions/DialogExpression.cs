@@ -56,13 +56,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Converts a string into a <see cref="DialogExpression"/>.
         /// </summary>
-        /// <param name="dialogIdOrExpression">String to convert to a <see cref="DialogExpression"/></param>
+        /// <param name="dialogIdOrExpression">String to convert to a <see cref="DialogExpression"/>.</param>
         public static implicit operator DialogExpression(string dialogIdOrExpression) => new DialogExpression(dialogIdOrExpression);
 
         /// <summary>
         /// Converts a <see cref="JToken"/> into a <see cref="DialogExpression"/>.
         /// </summary>
-        /// <param name="value"><see cref="JToken"/> to convert to a <see cref="DialogExpression"/></param>
+        /// <param name="value"><see cref="JToken"/> to convert to a <see cref="DialogExpression"/>.</param>
         public static implicit operator DialogExpression(JToken value) => new DialogExpression(value);
 
         /// <summary>
