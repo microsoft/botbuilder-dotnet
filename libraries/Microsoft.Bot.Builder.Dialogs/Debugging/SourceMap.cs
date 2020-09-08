@@ -5,11 +5,14 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
+    /// <summary>
+    /// A simple ISourceMap of objects -> SourceRange.
+    /// </summary>
+    public class SourceMap : Dictionary<object, SourceRange>, ISourceMap
+    {
         /// <summary>
-        /// A simple ISourceMap of objects -> SourceRange.
+        /// Initializes a read-only new instance of the <see cref="SourceMap"/>.
         /// </summary>
-        public class SourceMap : Dictionary<object, SourceRange>, ISourceMap
-        {
-            public static readonly SourceMap Instance = new SourceMap();
-        }
+        public static readonly SourceMap Instance = new SourceMap();
+    }
 }
