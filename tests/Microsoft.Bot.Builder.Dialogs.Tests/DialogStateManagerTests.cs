@@ -321,6 +321,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual("10000", val5);
                 Assert.AreEqual(true, dc.State.TryGetValue<int>("user.salary", out var val6));
                 Assert.AreEqual(10000, val6);
+                dc.State.SetValue("user.foo", foo);
+
+                Assert.AreEqual(false, dc.State.TryGetValue<string>("user.foo", out var val7));
+                Assert.AreEqual(true, dc.State.TryGetValue<Foo>("user.foo", out var val8));
+                Assert.AreEqual(false, dc.State.TryGetValue<IDictionary<string, string>>("user.foo", out var val9));
+                Assert.AreEqual(true, dc.State.TryGetValue<Bar>("user.foo", out var val10));
             }).StartTestAsync();
         }
 
