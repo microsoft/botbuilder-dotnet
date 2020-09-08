@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class ActionScope : Dialog, IDialogDependencies
     {
         /// <summary>
-        /// Defines the path for the off set key.
+        /// Defines the path for the offset key.
         /// </summary>
         protected const string OFFSETKEY = "this.offset";
 
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets a unique string which represents the version of this dialog.  If the version
+        /// Gets a unique string which represents the version of this dialog. If the version
         /// changes between turns the dialog system will emit a DialogChanged event.
         /// </summary>
         /// <returns>Unique string which should only change when dialog has changed in a
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Enumerate child dialog dependencies so they can be added to the containers dialog set.
         /// </summary>
-        /// <returns>dialog enumeration.</returns>
+        /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             foreach (var action in Actions)
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a returning control to this dialog with an <see cref="ActionScopeResult"/>.
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="actionScopeResult">Contains the actions scope result.</param>
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a returning control to this dialog with an <see cref="ActionScopeResult"/>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>
         /// with the property ActionCommand set to <c>GoToAction</c>.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a returning control to this dialog with an <see cref="ActionScopeResult"/>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>
         /// with the property ActionCommand set to <c>BreakLoop</c>.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a returning control to this dialog with an <see cref="ActionScopeResult"/>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>
         /// with the property ActionCommand set to <c>ContinueLoop</c>.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
