@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class ParameterizedCloudEnvironment : ICloudEnvironment
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         private string _channelService;
         private string _toChannelFromBotLoginUrl;
         private string _toChannelFromBotOAuthScope;
@@ -105,7 +107,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<ClaimsIdentity> JwtTokenValidation_ValidateAuthHeaderAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient)
         {
-            var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, credentialFactory, channelId, authConfiguration, serviceUrl, httpClient).ConfigureAwait(false);
+            var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, credentialFactory, channelId, authConfiguration, serviceUrl, httpClient ?? _httpClient).ConfigureAwait(false);
 
             await JwtTokenValidation_ValidateClaimsAsync(authConfiguration, identity.Claims).ConfigureAwait(false);
 
