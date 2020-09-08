@@ -41,8 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Initializes a new instance of the <see cref="OnCondition"/> class.
         /// </summary>
-        /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
         /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
+        /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Enumerate child dialog dependencies so they can be added to the containers dialog set.
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
         /// </summary>
         /// <returns>dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()

@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Get the expression for this rule.
+        /// Gets the expression for this rule.
         /// </summary>
         /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
         public override Expression GetExpression()
