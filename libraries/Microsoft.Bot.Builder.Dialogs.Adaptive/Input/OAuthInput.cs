@@ -186,7 +186,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
-            var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, expires) > 0);
+            var isTimeoutActivityType = isMessage
+                                        || IsTokenResponseEvent(dc.Context)
+                                        || IsTeamsVerificationInvoke(dc.Context)
+                                        || IsTokenExchangeRequestInvoke(dc.Context);
+            var hasTimedOut = isTimeoutActivityType && (DateTime.Compare(DateTime.Now, expires) > 0);
 
             if (hasTimedOut)
             {
