@@ -41,6 +41,22 @@ variables:
 jobs:
 - job: Build_and_Sign
   steps:
+  - powershell: |
+     # Replace {DateStamp} and {CommitHash} tokens with the actual values in vars ReleasePackageVersion and PreviewPackageVersion
+     $dateStamp = (Get-Date -format "yyyyMMdd");
+     $commitHash = "$(Build.SourceVersion)".SubString(0,7);
+
+     "Raw ReleasePackageVersion = $(ReleasePackageVersion)";
+     $v = "$(ReleasePackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     Write-Host "##vso[task.setvariable variable=ReleasePackageVersion;]$v"
+     "Resolved ReleasePackageVersion = $v";
+
+     "Raw PreviewPackageVersion = $(PreviewPackageVersion)";
+     $ppv = "$(PreviewPackageVersion)".Replace("{DateStamp}",$dateStamp).Replace("{CommitHash}",$commitHash);
+     Write-Host "##vso[task.setvariable variable=PreviewPackageVersion;]$ppv"
+     "Resolved PreviewPackageVersion = $ppv";
+    displayName: 'Resolve package version variables'
+
   - template: ci-build-steps.yml
   - template: sign-steps.yml
 #  - template: functional-test-setup-steps.yml
