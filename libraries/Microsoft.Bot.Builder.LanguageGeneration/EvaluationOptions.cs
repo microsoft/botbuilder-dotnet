@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     }
 
     /// <summary>
-    /// Options for LG rendering the line break in text.
+    /// LG cache scope options.
     /// </summary>
     public enum LGCacheScope
     {
