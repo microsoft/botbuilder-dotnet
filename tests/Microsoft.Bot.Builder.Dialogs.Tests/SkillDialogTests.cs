@@ -267,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
             Assert.NotNull(finalActivity);
-            Assert.True(finalActivity.Attachments.Count == 1);
+            Assert.Single(finalActivity.Attachments);
         }
 
         [Fact]
