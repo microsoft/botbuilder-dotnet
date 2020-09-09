@@ -10,11 +10,10 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class DialogExtensionsTests
     {
         // An App ID for a parent bot.
@@ -52,11 +51,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             LeafSkill
         }
 
-        [TestMethod]
-        [DataRow(FlowTestCase.RootBotOnly, false)]
-        [DataRow(FlowTestCase.RootBotConsumingSkill, false)]
-        [DataRow(FlowTestCase.MiddleSkill, true)]
-        [DataRow(FlowTestCase.LeafSkill, true)]
+        [Theory]
+        [InlineData(FlowTestCase.RootBotOnly, false)]
+        [InlineData(FlowTestCase.RootBotConsumingSkill, false)]
+        [InlineData(FlowTestCase.MiddleSkill, true)]
+        [InlineData(FlowTestCase.LeafSkill, true)]
         public async Task HandlesBotAndSkillsTestCases(FlowTestCase testCase, bool shouldSendEoc)
         {
             var dialog = new SimpleComponentDialog();
@@ -66,24 +65,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Send("SomeName")
                 .AssertReply("Hello SomeName, nice to meet you!")
                 .StartTestAsync();
-            
-            Assert.AreEqual(DialogReason.EndCalled, dialog.EndReason);
+
+            Assert.Equal(DialogReason.EndCalled, dialog.EndReason);
 
             if (shouldSendEoc)
             {
-                Assert.IsNotNull(_eocSent, "Skills should send EndConversation to channel");
-                Assert.AreEqual(ActivityTypes.EndOfConversation, _eocSent.Type);
-                Assert.AreEqual(EndOfConversationCodes.CompletedSuccessfully, _eocSent.Code);
-                Assert.AreEqual("SomeName", _eocSent.Value);
-                Assert.AreEqual("en-GB", _eocSent.Locale);
+                Assert.NotNull(_eocSent);
+                Assert.Equal(ActivityTypes.EndOfConversation, _eocSent.Type);
+                Assert.Equal(EndOfConversationCodes.CompletedSuccessfully, _eocSent.Code);
+                Assert.Equal("SomeName", _eocSent.Value);
+                Assert.Equal("en-GB", _eocSent.Locale);
             }
             else
             {
-                Assert.IsNull(_eocSent, "Root bot should not send EndConversation to channel");
+                Assert.Null(_eocSent);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SkillHandlesEocFromParent()
         {
             var dialog = new SimpleComponentDialog();
@@ -93,11 +92,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Send(new Activity(ActivityTypes.EndOfConversation) { CallerId = _parentBotId })
                 .StartTestAsync();
 
-            Assert.IsNull(_eocSent, "Skill should not send back EoC when an EoC is sent from a parent");
-            Assert.AreEqual(DialogReason.CancelCalled, dialog.EndReason);
+            Assert.Null(_eocSent);
+            Assert.Equal(DialogReason.CancelCalled, dialog.EndReason);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SkillHandlesRepromptFromParent()
         {
             var dialog = new SimpleComponentDialog();
@@ -112,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("Hello, what is your name?")
                 .StartTestAsync();
 
-            Assert.AreEqual(DialogReason.BeginCalled, dialog.EndReason);
+            Assert.Equal(DialogReason.BeginCalled, dialog.EndReason);
         }
 
         /// <summary>
