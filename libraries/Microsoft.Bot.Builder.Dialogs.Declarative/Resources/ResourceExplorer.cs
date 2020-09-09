@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<string, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<string, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
+        private readonly bool allowCycle;
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private List<IComponentDeclarativeTypes> declarativeTypes;
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
@@ -41,8 +42,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
-        public ResourceExplorer()
+        /// <param name="allowCycle">If allowCycle is set to true, throw an exception when detecting cycle.</param>
+        public ResourceExplorer(bool allowCycle = true)
         {
+            this.allowCycle = allowCycle;
         }
 
         /// <summary>
@@ -589,7 +592,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             // Create a cycle detection observer
-            var cycleDetector = new CycleDetectionObserver();
+            var cycleDetector = new CycleDetectionObserver(allowCycle);
 
             // Register our cycle detector on the converters that support observer registration
             foreach (var observableConverter in converters.Where(c => c is IObservableJsonConverter))

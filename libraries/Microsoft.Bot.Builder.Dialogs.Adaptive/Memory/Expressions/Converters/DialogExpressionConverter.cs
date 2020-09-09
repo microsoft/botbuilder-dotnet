@@ -49,19 +49,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 }
                 else
                 {
-                    try
-                    {
-                        using (var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\"")))
-                        {
-                            result = new DialogExpression((Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer));
-                        }
-                    }
-#pragma warning disable CA1031 // Do not catch general exception types (return an empty if an exception happens).
-                    catch (Exception)
-#pragma warning restore CA1031 // Do not catch general exception types
-                    {
-                        result = new DialogExpression($"='{id}'");
-                    }
+                    using var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\""));
+                    result = new DialogExpression((Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer));
                 }
             }
             else
