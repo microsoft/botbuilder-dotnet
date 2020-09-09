@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Enumerate child dialog dependencies so they can be added to the containers dialog set.
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
         /// </summary>
         /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()

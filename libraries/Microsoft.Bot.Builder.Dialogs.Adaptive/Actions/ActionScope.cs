@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a child dialog completed this turn, returning control to this dialog.
+        /// Called when a child dialog completed its turn, returning control to this dialog.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Enumerate child dialog dependencies so they can be added to the containers dialog set.
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
         /// </summary>
         /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()

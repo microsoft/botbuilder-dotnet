@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a child dialog completed this turn, returning control to this dialog.
+        /// Called when a child dialog completed its turn, returning control to this dialog.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>

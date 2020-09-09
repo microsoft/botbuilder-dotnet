@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public EnumExpression<ActionChangeType> ChangeType { get; set; } = new EnumExpression<ActionChangeType>();
 
         /// <summary>
-        /// Enumerate child dialog dependencies so they can be added to the containers dialogset.
+        /// Enumerates child dialog dependencies so they can be added to the containers dialogset.
         /// </summary>
-        /// <returns>dialog enumeration.</returns>
+        /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;

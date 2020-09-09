@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Called when a child dialog completed this turn, returning control to this dialog.
+        /// Called when a child dialog completed its turn, returning control to this dialog.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {

@@ -41,11 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
-        /// BindOptions - evaluate expressions in options.
+        /// Evaluates expressions in options.
         /// </summary>
-        /// <param name="dc">dialog context.</param>
-        /// <param name="options">options to bind.</param>
-        /// <returns>merged options with expressions bound to values.</returns>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="options">The options to bind.</param>
+        /// <returns>The merged options with expressions bound to values.</returns>
         protected override object BindOptions(DialogContext dc, object options)
         {
             // use overflow properties of deserialized object instead of the passed in option.
