@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class TurnMemoryScope : MemoryScope
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TurnMemoryScope"/> class.
+        /// </summary>
         public TurnMemoryScope()
             : base(ScopePath.Turn)
         {

@@ -25,6 +25,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class NumberPrompt<T> : Prompt<T>
         where T : struct
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberPrompt{T}"/> class.
+        /// </summary>
+        /// <param name="dialogId">Unique ID of the dialog within its parent <see cref="DialogSet"/> or <see cref="ComponentDialog"/>.</param>
+        /// <param name="validator">Validator that will be called each time the user responds to the prompt.</param>
+        /// <param name="defaultLocale">Locale to use.</param>
         public NumberPrompt(string dialogId, PromptValidator<T> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
