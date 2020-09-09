@@ -5,10 +5,12 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    public sealed class IgnoreOnHasNoEmulatorFact : FactAttribute
+    public sealed class IgnoreOnNoEmulatorFact : FactAttribute
     {
+        private const string NoEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+        
         private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-
+        
         private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
         {
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
@@ -36,11 +38,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return false;
         });
 
-        public IgnoreOnHasNoEmulatorFact()
+        public IgnoreOnNoEmulatorFact()
         {
             if (!HasEmulator.Value)
             {
                 Skip = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
+            }
+
+            if (Debugger.IsAttached)
+            {
+                Assert.True(HasEmulator.Value, NoEmulatorMessage);
             }
         }
     }

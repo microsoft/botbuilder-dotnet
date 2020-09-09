@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public void Sanitize_Key_Should_Work()
         {
             // Note: The SanitizeKey method delegates to the CosmosDBKeyEscape class. The method is
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 #pragma warning restore 0618
         }
 
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw.
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
         }
 
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public void CustomConstructor_Should_Throw_On_InvalidOptions()
         {
             var customClient = GetDocumentClient().Object;
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
         }
 
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public void Connection_Policy_Configurator_Should_Be_Called_If_Present()
         {
             var wasCalled = false;
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.True(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task Database_Creation_Request_Options_Should_Be_Used()
         {
             var documentClientMock = GetDocumentClient();
@@ -240,42 +240,42 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task CreateObjectCosmosDBTest()
         {
             await CreateObjectTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadUnknownCosmosDBTest()
         {
             await ReadUnknownTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task UpdateObjectCosmosDBTest()
         {
             await UpdateObjectTest<DocumentClientException>(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteObjectCosmosDBTest()
         {
             await DeleteObjectTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task HandleCrazyKeysCosmosDB()
         {
             await HandleCrazyKeys(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public void ConnectionPolicyConfiguratorShouldBeCalled()
         {
             ConnectionPolicy policyRef = null;
@@ -293,7 +293,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
             var state = await _storage.ReadAsync(new string[] { });
@@ -302,21 +302,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadingNullKeysThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.ReadAsync(null));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task WritingNullStoreItemsThrowException()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.WriteAsync(null));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task WritingNoStoreItemsDoesntThrow()
         {
             var changes = new Dictionary<string, object>();
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // The problem was reintroduced when the prompt retry count feature was implemented:
         // https://github.com/microsoft/botbuilder-dotnet/issues/1859
         // The waterfall in this test has been modified to include a prompt.
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task WaterfallCosmos()
         {
             var convoState = new ConversationState(_storage);
@@ -410,7 +410,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteAsyncFromSingleCollection()
         {
             var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
@@ -426,7 +426,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteAsyncFromPartitionedCollection()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -450,7 +450,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteAsyncFromPartitionedCollectionWithoutPartitionKey()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -474,7 +474,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadAsyncWithPartitionKey()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -498,7 +498,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadAsyncWithoutPartitionKey()
         {
             // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
@@ -539,7 +539,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [IgnoreOnHasNoEmulatorFact]
+        [IgnoreOnNoEmulatorFact]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
             var storage = new CosmosDbStorage(
