@@ -214,6 +214,20 @@ namespace AdaptiveExpressions
 
             lookup.Add("&", lookup[ExpressionType.Concat]);
 
+            //Timex functions without namespace alias
+            lookup.Add("isDefinite", lookup[ExpressionType.IsDefinite]);
+            lookup.Add("isTime", lookup[ExpressionType.IsTime]);
+            lookup.Add("isDuration", lookup[ExpressionType.IsDuration]);
+            lookup.Add("isDate", lookup[ExpressionType.IsDate]);
+            lookup.Add("isTimeRange", lookup[ExpressionType.IsTimeRange]);
+            lookup.Add("isDateRange", lookup[ExpressionType.IsDateRange]);
+            lookup.Add("isPresent", lookup[ExpressionType.IsPresent]);
+            lookup.Add("getNextViableDate", lookup[ExpressionType.GetNextViableDate]);
+            lookup.Add("getPreviousViableDate", lookup[ExpressionType.GetPreviousViableDate]);
+            lookup.Add("getNextViableTime", lookup[ExpressionType.GetNextViableTime]);
+            lookup.Add("getPreviousViableTime", lookup[ExpressionType.GetPreviousViableTime]);
+            lookup.Add("resolve", lookup[ExpressionType.TimexResolve]);
+
             return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }
     }
