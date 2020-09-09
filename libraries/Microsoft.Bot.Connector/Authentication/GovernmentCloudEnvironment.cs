@@ -4,20 +4,22 @@
 using System.Net.Http;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
     internal class GovernmentCloudEnvironment : BuiltinCloudEnvironment
     {
-        public GovernmentCloudEnvironment()
-            : base(GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope, GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl, CallerIdConstants.USGovChannel)
+        public GovernmentCloudEnvironment(IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
+            : base(
+                  GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
+                  GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
+                  CallerIdConstants.USGovChannel,
+                  GovernmentAuthenticationConstants.ChannelService,
+                  credentialFactory,
+                  authConfiguration,
+                  httpClient,
+                  logger)
         {
-        }
-
-        protected override IChannelProvider GetChannelProvider()
-        {
-            return new SimpleChannelProvider(GovernmentAuthenticationConstants.ChannelService);
         }
     }
 }

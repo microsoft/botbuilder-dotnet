@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
+
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
@@ -19,6 +22,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="toBotFromChannelOpenIdMetadataUrl">The to bot from Channel Open Id Metadata url.</param>
         /// <param name="toBotFromEmulatorOpenIdMetadataUrl">The to bot from Emulator Open Id Metadata url.</param>
         /// <param name="callerId">The Microsoft app password.</param>
+        /// <param name="credentialFactory">The IServiceClientCredentialsFactory to use to create credentials.</param>
+        /// <param name="authConfiguration">The AuthenticationConfiguration to use.</param>
+        /// <param name="httpClient">The HttpClient to use.</param>
+        /// <param name="logger">The ILogger instance to use.</param>
         /// <returns>A new cloud environment.</returns>
         public static ICloudEnvironment Create(
             string channelService,
@@ -28,15 +35,19 @@ namespace Microsoft.Bot.Connector.Authentication
             string oAuthUrl,
             string toBotFromChannelOpenIdMetadataUrl,
             string toBotFromEmulatorOpenIdMetadataUrl,
-            string callerId)
+            string callerId,
+            IServiceClientCredentialsFactory credentialFactory,
+            AuthenticationConfiguration authConfiguration,
+            HttpClient httpClient,
+            ILogger logger)
         {
             if (string.IsNullOrEmpty(channelService))
             {
-                return new PublicCloudEnvironment();
+                return new PublicCloudEnvironment(credentialFactory, authConfiguration, httpClient, logger);
             }
             else if (channelService == GovernmentAuthenticationConstants.ChannelService)
             {
-                return new GovernmentCloudEnvironment();
+                return new GovernmentCloudEnvironment(credentialFactory, authConfiguration, httpClient, logger);
             }
             else
             {
@@ -48,7 +59,11 @@ namespace Microsoft.Bot.Connector.Authentication
                     oAuthUrl,
                     toBotFromChannelOpenIdMetadataUrl,
                     toBotFromEmulatorOpenIdMetadataUrl,
-                    callerId);
+                    callerId,
+                    credentialFactory,
+                    authConfiguration,
+                    httpClient,
+                    logger);
             }
         }
     }

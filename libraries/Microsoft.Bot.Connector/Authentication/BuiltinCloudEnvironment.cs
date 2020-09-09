@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -16,12 +17,22 @@ namespace Microsoft.Bot.Connector.Authentication
         private string _toChannelFromBotOAuthScope;
         private string _loginEndpoint;
         private string _callerId;
+        private string _channelService;
+        private IServiceClientCredentialsFactory _credentialFactory;
+        private AuthenticationConfiguration _authConfiguration;
+        private HttpClient _httpClient;
+        private ILogger _logger;
 
-        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId)
+        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
             _callerId = callerId;
+            _channelService = channelService;
+            _credentialFactory = credentialFactory;
+            _authConfiguration = authConfiguration;
+            _httpClient = httpClient;
+            _logger = logger;
         }
 
         public static string GetAppId(ClaimsIdentity claimsIdentity)
@@ -38,22 +49,30 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader)
         {
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(credentialFactory), GetChannelProvider(), authConfiguration, httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), _authConfiguration, _httpClient).ConfigureAwait(false);
 
             var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
             
-            var callerId = await GenerateCallerIdAsync(credentialFactory, claimsIdentity).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity).ConfigureAwait(false);
 
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
         }
 
-        protected abstract IChannelProvider GetChannelProvider();
+        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IChannelProvider GetChannelProvider()
+        {
+            return _channelService != null ? new SimpleChannelProvider(_channelService) : null;
+        }
 
         private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity)
         {

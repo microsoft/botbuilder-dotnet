@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
@@ -15,7 +16,6 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -26,30 +26,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
-        private IServiceClientCredentialsFactory _credentialFactory;
-        private ICloudEnvironmentProvider _cloudEnvironmentProvider;
-        private AuthenticationConfiguration _authConfiguration;
+        private ICloudEnvironment _cloudEnvironment;
         private IHttpClientFactory _httpClientFactory;
         private ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
-        /// <param name="credentialFactory">The credential provider.</param>
-        /// <param name="cloudEnvironmentProvider">The cloud environment used for validating and creating tokens.</param>
-        /// <param name="authConfiguration">The authentication configuration used for authenticating Skills.</param>
+        /// <param name="cloudEnvironment">The cloud environment used for validating and creating tokens.</param>
         /// <param name="httpClientFactory">The IHttpClientFactory implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
-            IServiceClientCredentialsFactory credentialFactory,
-            ICloudEnvironmentProvider cloudEnvironmentProvider,
-            AuthenticationConfiguration authConfiguration,
+            ICloudEnvironment cloudEnvironment,
             ILogger logger = null,
             IHttpClientFactory httpClientFactory = null)
         {
-            _credentialFactory = credentialFactory;
-            _cloudEnvironmentProvider = cloudEnvironmentProvider;
-            _authConfiguration = authConfiguration;
+            _cloudEnvironment = cloudEnvironment;
             _httpClientFactory = httpClientFactory;
             _logger = logger ?? NullLogger.Instance;
         }
@@ -65,9 +57,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             ILogger logger = null,
             IHttpClientFactory httpClientFactory = null)
             : this(
-                  new ConfigurationServiceClientCredentialFactory(configuration),
-                  new ConfigurationCloudEnvironmentProvider(configuration),
-                  new AuthenticationConfiguration(),
+                  new ConfigurationCloudEnvironment(configuration),
                   logger,
                   httpClientFactory)
         {
@@ -208,41 +198,133 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
         }
 
-        // TODO: continue conversation implementation
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
+        /// generally found in the "MicrosoftAppId" parameter in appSettings.json.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(botAppId))
+            {
+                throw new ArgumentNullException(nameof(botAppId));
+            }
+
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            // Hand craft Claims Identity.
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            {
+                // Adding claims for both Emulator and Channel.
+                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+            });
+
+            return ProcessProactiveAsync(claimsIdentity, reference, null, callback, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            if (claimsIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(claimsIdentity));
+            }
+
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            return ProcessProactiveAsync(claimsIdentity, reference, null, callback, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends a proactive message from the bot to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="audience">The target audience for the connector.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            if (claimsIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(claimsIdentity));
+            }
+
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            if (string.IsNullOrWhiteSpace(audience))
+            {
+                throw new ArgumentNullException($"{nameof(audience)} cannot be null or white space.");
+            }
+
+            return ProcessProactiveAsync(claimsIdentity, reference, audience, callback, cancellationToken);
+        }
 
         // TODO: oauth prompt support
 
-        /// <summary>
-        /// Override this to specialize the creation of a connectror client.
-        /// </summary>
-        /// <param name="serviceUrl">The serviceUrl for this connectror client.</param>
-        /// <param name="credentials">The credentials for this connectror client.</param>
-        /// <returns>A new connector client.</returns>
-        protected virtual IConnectorClient CreateConnectorClient(string serviceUrl, ServiceClientCredentials credentials)
+        private async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            // Create the http client for the connector to use. 
-            var httpClient = _httpClientFactory?.CreateClient("connectorClient");
+            // Use the cloud environment to create the credentials for proactive requests.
+            var credentials = await _cloudEnvironment.GetProactiveCredentialsAsync(claimsIdentity, audience).ConfigureAwait(false);
 
-            // Create a new connector.
-            return new ConnectorClient(new Uri(serviceUrl), credentials, httpClient);
+            // Create the connector client to use for outbound requests.
+            var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), credentials, _httpClientFactory?.CreateClient("connectorClient"));
+
+            // Create a turn context and run the pipeline.
+            using (var context = CreateTurnContext(reference.GetContinuationActivity(), claimsIdentity, audience, connectorClient, callback))
+            {
+                // Run the pipeline.
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         private async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            // Create a cloud environment.
-            var cloudEnvironment = await _cloudEnvironmentProvider.GetCloudEnvironmentAsync().ConfigureAwait(false);
-
-            // Create the http client for the cloud environment to use
-            var httpClient = _httpClientFactory?.CreateClient("cloudEnvironment");
-
             // Use the cloud environment to authenticate the inbound request and create credentials for outbound requests.
-            var (claimsIdentity, credentials, scope, callerId) = await cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, _credentialFactory, _authConfiguration, httpClient, _logger).ConfigureAwait(false);
+            var (claimsIdentity, credentials, scope, callerId) = await _cloudEnvironment.AuthenticateRequestAsync(activity, authHeader).ConfigureAwait(false);
 
             // Set the callerId on the activity.
             activity.CallerId = callerId;
 
-            // create the connector client to use for outbound requests.
-            var connectorClient = CreateConnectorClient(activity.ServiceUrl, credentials);
+            // Create the connector client to use for outbound requests.
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), credentials, _httpClientFactory?.CreateClient("connectorClient"));
 
             // Create a turn context and run the pipeline.
             using (var context = CreateTurnContext(activity, claimsIdentity, scope, connectorClient, callback))

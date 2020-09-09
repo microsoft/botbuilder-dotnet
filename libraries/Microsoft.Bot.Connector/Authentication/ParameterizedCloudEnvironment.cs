@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class ParameterizedCloudEnvironment : ICloudEnvironment
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static HttpClient _defaultHttpClient = new HttpClient();
 
         private string _channelService;
         private string _toChannelFromBotLoginUrl;
@@ -26,6 +26,10 @@ namespace Microsoft.Bot.Connector.Authentication
         private string _toBotFromChannelOpenIdMetadataUrl;
         private string _toBotFromEmulatorOpenIdMetadataUrl;
         private string _callerId;
+        private IServiceClientCredentialsFactory _credentialFactory;
+        private AuthenticationConfiguration _authConfiguration;
+        private HttpClient _httpClient;
+        private ILogger _logger;
 
         public ParameterizedCloudEnvironment(
             string channelService,
@@ -35,7 +39,11 @@ namespace Microsoft.Bot.Connector.Authentication
             string oAuthUrl,
             string toBotFromChannelOpenIdMetadataUrl,
             string toBotFromEmulatorOpenIdMetadataUrl,
-            string callerId)
+            string callerId,
+            IServiceClientCredentialsFactory credentialFactory,
+            AuthenticationConfiguration authConfiguration,
+            HttpClient httpClient = null,
+            ILogger logger = null)
         {
             _channelService = channelService;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
@@ -45,21 +53,30 @@ namespace Microsoft.Bot.Connector.Authentication
             _toBotFromChannelOpenIdMetadataUrl = toBotFromChannelOpenIdMetadataUrl;
             _toBotFromEmulatorOpenIdMetadataUrl = toBotFromEmulatorOpenIdMetadataUrl;
             _callerId = callerId;
+            _credentialFactory = credentialFactory;
+            _authConfiguration = authConfiguration;
+            _httpClient = httpClient ?? _defaultHttpClient;
+            _logger = logger;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader)
         {
-            var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, credentialFactory, authConfiguration, httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, _credentialFactory, _authConfiguration, _httpClient).ConfigureAwait(false);
 
             var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
 
-            var callerId = await GenerateCallerIdAsync(credentialFactory, claimsIdentity).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity).ConfigureAwait(false);
 
             var appId = BuiltinCloudEnvironment.GetAppId(claimsIdentity);
 
-            var credentials = await credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
+        }
+
+        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity)
@@ -107,7 +124,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private async Task<ClaimsIdentity> JwtTokenValidation_ValidateAuthHeaderAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient)
         {
-            var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, credentialFactory, channelId, authConfiguration, serviceUrl, httpClient ?? _httpClient).ConfigureAwait(false);
+            var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, credentialFactory, channelId, authConfiguration, serviceUrl, httpClient).ConfigureAwait(false);
 
             await JwtTokenValidation_ValidateClaimsAsync(authConfiguration, identity.Claims).ConfigureAwait(false);
 
