@@ -7,13 +7,14 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class MultiLanguageRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public MultiLanguageRecognizerTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(MultiLanguageRecognizerTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(MultiLanguageRecognizerTests));
         }
 
         [Fact]

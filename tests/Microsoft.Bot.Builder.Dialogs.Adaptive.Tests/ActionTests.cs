@@ -23,13 +23,14 @@ using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class ActionTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public ActionTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(ActionTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ActionTests));
         }
 
         [Fact]

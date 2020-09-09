@@ -7,13 +7,14 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class ActionScopeTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public ActionScopeTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(ActionScopeTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ActionScopeTests));
         }
 
         [Fact]

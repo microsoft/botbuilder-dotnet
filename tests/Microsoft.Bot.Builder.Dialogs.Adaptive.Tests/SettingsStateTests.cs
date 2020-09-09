@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class SettingsStateTests : IClassFixture<ResourceExplorerFixture>, IClassFixture<ConfigurationFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
@@ -13,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public SettingsStateTests(ResourceExplorerFixture resourceExplorerFixture, ConfigurationFixture configurationFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(SettingsStateTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(SettingsStateTests));
             _configurationFixture = configurationFixture;
         }
 

@@ -13,13 +13,14 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class FunctionsTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public FunctionsTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(FunctionsTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(FunctionsTests));
 
             // this will test that we are registering the custom functions
             new AdaptiveComponentRegistration();

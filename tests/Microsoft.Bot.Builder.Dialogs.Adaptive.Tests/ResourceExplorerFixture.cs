@@ -3,30 +3,27 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     public class ResourceExplorerFixture : IDisposable
     {
-        private string _projectPath;
+        private string _folderPath = string.Empty;
 
         public ResourceExplorerFixture()
         {
             ResourceExplorer = new ResourceExplorer();
-            _projectPath = TestUtils.GetProjectPath();
         }
 
         public ResourceExplorer ResourceExplorer { get; private set; }
 
-        public ResourceExplorerFixture AddFolder(string resourceFolder)
+        public ResourceExplorerFixture Initialize(string resourceFolder)
         {
-            var folderPath = Path.Combine(_projectPath, "Tests", resourceFolder);
-            
-            if (!ResourceExplorer.ResourceProviders.Any(e => e.Id == folderPath))
+            if (_folderPath.Length == 0)
             {
-                ResourceExplorer.AddFolder(folderPath, monitorChanges: false);
+                _folderPath = Path.Combine(TestUtils.GetProjectPath(), "Tests", resourceFolder);
+                ResourceExplorer = ResourceExplorer.AddFolder(_folderPath, monitorChanges: false);
             }
 
             return this;
@@ -34,8 +31,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public void Dispose()
         {
+            _folderPath = string.Empty;
             ResourceExplorer.Dispose();
-            _projectPath = null;
         }
     }
 }

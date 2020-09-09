@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class EntityRecognizerTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };

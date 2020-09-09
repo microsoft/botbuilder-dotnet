@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public ObjectExpression<ChoiceSet> Choices { get; set; }
     }
 
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class ChoiceSetTests
     {
         private readonly JsonSerializerSettings settings = new JsonSerializerSettings()

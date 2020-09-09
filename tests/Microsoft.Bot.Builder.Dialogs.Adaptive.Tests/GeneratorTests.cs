@@ -9,6 +9,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class GeneratorTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public GeneratorTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(GeneratorTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(GeneratorTests));
 
             _configuration = new ConfigurationBuilder()
                 .UseMockLuisSettings(sandwichDirectory, "TestBot")

@@ -18,13 +18,14 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class AdaptiveDialogTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public AdaptiveDialogTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(AdaptiveDialogTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(AdaptiveDialogTests));
         }
 
         [Fact]

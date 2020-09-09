@@ -12,6 +12,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class DebugComposer
     {
         // This test can be used to debug a composer bot, simple point botPath => composer bot

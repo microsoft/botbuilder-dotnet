@@ -7,13 +7,14 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class ValueRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public ValueRecognizerTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(ValueRecognizerTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ValueRecognizerTests));
         }
 
         [Fact]

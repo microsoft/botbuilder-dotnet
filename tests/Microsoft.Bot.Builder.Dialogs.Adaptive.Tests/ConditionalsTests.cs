@@ -10,13 +10,14 @@ using dbg = System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class ConditionalsTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public ConditionalsTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(ConditionalsTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ConditionalsTests));
         }
         
         [Fact]

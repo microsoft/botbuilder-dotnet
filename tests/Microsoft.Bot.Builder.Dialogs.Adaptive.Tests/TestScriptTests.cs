@@ -12,6 +12,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class TestScriptTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly string luisMockDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\TestScriptTests\LuisMock\");
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public TestScriptTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _resourceExplorerFixture = resourceExplorerFixture.AddFolder(nameof(TestScriptTests));
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(TestScriptTests));
         }
 
 #if AUTO
