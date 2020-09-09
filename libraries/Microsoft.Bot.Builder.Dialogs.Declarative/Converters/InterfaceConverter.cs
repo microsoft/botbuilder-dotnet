@@ -24,6 +24,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
 
+        private Dictionary<string, JToken> cachedRefJsons = new Dictionary<string, JToken>();
+        private Dictionary<string, T> cachedRefDialogs = new Dictionary<string, T>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.
         /// </summary>
@@ -67,10 +70,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             using (new SourceScope(sourceContext, range))
             {
+                string refDialogName = null;
                 if (this.resourceExplorer.IsRef(jToken))
                 {
-                    // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
+                    refDialogName = jToken.Value<string>();
+                    if (cachedRefJsons.ContainsKey(refDialogName))
+                    {
+                        jToken = cachedRefJsons[refDialogName];
+                    }
+                    else
+                    {
+                        // We can't do this asynchronously as the Json.NET interface is synchronous
+                        jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
+                        cachedRefJsons.Add(refDialogName, jToken);
+                    }
                 }
 
                 var kind = (string)jToken["$kind"];
@@ -101,13 +114,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                     var tokenToBuild = TryAssignId(jToken, sourceContext);
 
-                    T result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+                    T result;
+                    if (refDialogName != null && cachedRefDialogs.ContainsKey(refDialogName))
+                    {
+                        result = cachedRefDialogs[refDialogName];
+                    }
+                    else
+                    {
+                        result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+                        if (refDialogName != null)
+                        {
+                            cachedRefDialogs.Add(refDialogName, result);
+                        }
+                    }
 
                     // Associate the most specific source context information with this item
                     if (sourceContext.CallStack.Count > 0)
                     {
                         range = sourceContext.CallStack.Peek().DeepClone();
-                        DebugSupport.SourceMap.Add(result, range);
+                        if ((DebugSupport.SourceMap as Dictionary<object, SourceRange>).ContainsKey(result))
+                        {
+                            DebugSupport.SourceMap.Add(result, range);
+                        }
                     }
 
                     foreach (var observer in this.observers)
