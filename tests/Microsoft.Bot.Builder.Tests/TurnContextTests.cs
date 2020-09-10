@@ -3,11 +3,10 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
 
@@ -18,7 +17,13 @@ namespace Microsoft.Bot.Builder.Tests
         [Fact]
         public void ConstructorNullAdapter()
         {
-            Assert.Throws<ArgumentNullException>(() => new TurnContext(null, new Activity()));
+            Assert.Throws<ArgumentNullException>(() => new TurnContext((BotAdapter)null, new Activity()));
+        }
+
+        [Fact]
+        public void ConstructorNullAdapter2()
+        {
+            Assert.Throws<ArgumentNullException>(() => new TurnContext((TurnContext)null, new Activity()));
         }
 
         [Fact]
@@ -33,6 +38,29 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var c = new TurnContext(new TestAdapter(TestAdapter.CreateConversation("Constructor")), new Activity());
             Assert.NotNull(c);
+        }
+
+        [Fact]
+        public void TestTurnContextClone()
+        {
+            var c1 = new TurnContext(new SimpleAdapter(), new Activity() { Text = "one" });
+            c1.TurnState.Add("x", "test");
+            c1.OnSendActivities((context, activities, next) => next());
+            c1.OnDeleteActivity((context, activity, next) => next());
+            c1.OnUpdateActivity((context, activity, next) => next());
+            var c2 = new TurnContext(c1, new Activity() { Text = "two" });
+            Assert.Equal("one", c1.Activity.Text);
+            Assert.Equal("two", c2.Activity.Text);
+            Assert.Equal(c1.Adapter, c2.Adapter);
+            Assert.Equal(c1.TurnState, c2.TurnState);
+
+            var binding = BindingFlags.Instance | BindingFlags.NonPublic;
+            var onSendField = typeof(TurnContext).GetField("_onSendActivities", binding);
+            var onDeleteField = typeof(TurnContext).GetField("_onDeleteActivity", binding);
+            var onUpdateField = typeof(TurnContext).GetField("_onUpdateActivity", binding);
+            Assert.Equal(onSendField.GetValue(c1), onSendField.GetValue(c2));
+            Assert.Equal(onDeleteField.GetValue(c1), onDeleteField.GetValue(c2));
+            Assert.Equal(onUpdateField.GetValue(c1), onUpdateField.GetValue(c2));
         }
 
         [Fact]
