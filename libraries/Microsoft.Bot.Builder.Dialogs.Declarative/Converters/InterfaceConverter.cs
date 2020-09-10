@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -24,8 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
 
-        private Dictionary<string, JToken> cachedRefJsons = new Dictionary<string, JToken>();
-        private Dictionary<string, T> cachedRefDialogs = new Dictionary<string, T>();
+        private readonly ConcurrentDictionary<string, JToken> cachedRefJsons = new ConcurrentDictionary<string, JToken>();
+        private readonly ConcurrentDictionary<string, T> cachedRefDialogs = new ConcurrentDictionary<string, T>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.
@@ -82,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     {
                         // We can't do this asynchronously as the Json.NET interface is synchronous
                         jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
-                        cachedRefJsons.Add(refDialogName, jToken);
+                        cachedRefJsons[refDialogName] = jToken;
                     }
                 }
 
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                         result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
                         if (refDialogName != null)
                         {
-                            cachedRefDialogs.Add(refDialogName, result);
+                            cachedRefDialogs[refDialogName] = result;
                         }
                     }
 
@@ -132,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     if (sourceContext.CallStack.Count > 0)
                     {
                         range = sourceContext.CallStack.Peek().DeepClone();
-                        if ((DebugSupport.SourceMap as Dictionary<object, SourceRange>).ContainsKey(result))
+                        if (!DebugSupport.SourceMap.TryGetValue(result, out var _))
                         {
                             DebugSupport.SourceMap.Add(result, range);
                         }
