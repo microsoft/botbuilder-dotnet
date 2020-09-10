@@ -1,18 +1,16 @@
-﻿using Microsoft.Bot.Builder.Dialogs.Adaptive;
+﻿using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
-
-[assembly: TestFramework("Microsoft.Bot.Builder.Startup", "Microsoft.Bot.Builder.Dialogs.Tests")]
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder
 {
-    public class Startup : XunitTestFramework
+    [TestClass]
+    public class Startup
     {
-        public Startup(IMessageSink messageSink)
-            : base(messageSink)
+        [AssemblyInitialize]
+        public static void Initialize(TestContext testContext)
         {
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
