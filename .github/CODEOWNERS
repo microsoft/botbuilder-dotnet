@@ -31,9 +31,13 @@
 /libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty,@mrivera-ms
 /tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty,@mrivera-ms
 
-# AI: LUIS + QnA Maker
+# AI: LUIS + Orchestrator
 /libraries/Microsoft.Bot.Builder.AI*/**                                             @microsoft/bf-cog-services
 /tests/Microsoft.Bot.Builder.AI*/**                                                 @microsoft/bf-cog-services
+
+# AI: QnA Maker
+/libraries/Microsoft.Bot.Builder.AI.QnA/**					    @mrivera-ms,@microsoft/bf-cog-services
+/tests/Microsoft.Bot.Builder.AI.QnA.Tests/**					    @mrivera-ms,@microsoft/bf-cog-services
 
 # Azure (Storage)
 /libraries/Microsoft.Bot.Builder.Azure/**                                           @EricDahlvang @mrivera-ms
