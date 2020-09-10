@@ -1,0 +1,422 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/main/experimental/generation/runbot/runbot.schema",
+  "id": "unittests",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "recognizer": "unittests.lu",
+  "generator": "unittests.lg",
+  "schema": "unittests.json",
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnEndOfActions",
+      "condition": "=!$Bread || $PropertyToChange == 'Bread'",
+      "priority": "=lib.missingPriority('Bread')",
+      "actions": [
+        {
+          "$kind": "Microsoft.Ask",
+          "activity": "${Bread_getPromptText()}",
+          "expectedProperties": [
+            "Bread"
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "Bread - Missing()"
+      },
+      "$source": "unittests-Bread-missing",
+      "$Generator": "52b64ed5685345214877a7ed082511df"
+    },
+    {
+      "$kind": "Microsoft.OnEndOfActions",
+      "condition": "$retries > 0 && $lastIntent != 'Help'",
+      "runOnce": true,
+      "priority": "=lib.missingPriority('Bread')",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getHelpText()}"
+        }
+      ],
+      "$designer": {
+        "name": "Bread - Help()"
+      },
+      "$source": "unittests-Bread-help",
+      "$Generator": "717b5c156b9b4b09d03cd2b12b6428a8"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Clear()",
+      "property": "Bread",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getClearPropertyText('Bread')}"
+        },
+        {
+          "$kind": "Microsoft.DeleteProperty",
+          "property": "$Bread"
+        }
+      ],
+      "$designer": {
+        "name": "Bread - Clear()"
+      },
+      "$source": "unittests-Bread-clear",
+      "$Generator": "f14d0cf8ffe318d8c58f7c311b68a7d9"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Show()",
+      "property": "Bread",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getShowPropertyText('Bread')}"
+        }
+      ],
+      "$designer": {
+        "name": "Bread - Show()"
+      },
+      "$source": "unittests-Bread-show",
+      "$Generator": "07caf3b8388a096373fa28a5e93b7cd0"
+    },
+    {
+      "$kind": "Microsoft.OnChooseEntity",
+      "entity": "BreadEntity",
+      "actions": [
+        {
+          "$kind": "Microsoft.Ask",
+          "activity": "${BreadEntity_getChooseEntityText()}",
+          "expectedProperties": [
+            "Bread"
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "BreadEntity - Choose()"
+      },
+      "$source": "unittests-BreadEntity-choose",
+      "$Generator": "e31cf2b25bb61d27a84b41a750b91b2f"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Add()",
+      "property": "Bread",
+      "entity": "BreadEntity",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getSetPropertyText('Bread', @BreadEntity)}"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "$Bread",
+          "value": "=@BreadEntity"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "condition": "$PropertyToChange == 'Bread'",
+          "actions": [
+            {
+              "$kind": "Microsoft.DeleteProperty",
+              "property": "$PropertyToChange"
+            }
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "Bread - Add(@BreadEntity)"
+      },
+      "$source": "unittests-Bread-add-BreadEntity",
+      "$Generator": "e2edd199f766f45972175a77c7d00a5a"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Remove()",
+      "property": "Bread",
+      "entity": "BreadEntity",
+      "actions": [
+        {
+          "$kind": "Microsoft.IfCondition",
+          "condition": "$Bread == @BreadEntity",
+          "actions": [
+            {
+              "$kind": "Microsoft.SendActivity",
+              "activity": "${getRemovePropertyText('Bread', @BreadEntity)}"
+            },
+            {
+              "$kind": "Microsoft.DeleteProperty",
+              "property": "Bread"
+            }
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "Bread - Remove(@BreadEntity)"
+      },
+      "$source": "unittests-Bread-remove-BreadEntity",
+      "$Generator": "dc22d941be307f3023e84815ba4a784e"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Set()",
+      "property": "CancelConfirmation",
+      "entity": "boolean",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "$CancelConfirmation",
+          "value": "=@boolean"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "condition": "$CancelConfirmation == 'true'",
+          "actions": [
+            {
+              "$kind": "Microsoft.EndDialog"
+            }
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "CancelConfirmation - Set(@boolean)"
+      },
+      "$source": "unittests-CancelConfirmation-add-boolean",
+      "$Generator": "d7499a8b49edb9398a8e564e5a60b4d5"
+    },
+    {
+      "$kind": "Microsoft.OnEndOfActions",
+      "condition": "empty(where(dialog.requiredProperties, property, !dialog[property]))",
+      "priority": 1000,
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getPropertiesAsActivity('unittests', publicProperties())}"
+        },
+        {
+          "$kind": "Microsoft.Ask",
+          "activity": "${getConfirmChangeText()}",
+          "expectedProperties": [
+            "CompleteConfirmation"
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "PropertyToChange - Missing()"
+      },
+      "$source": "unittests-library-CompleteConfirmation",
+      "$Generator": "e9431968417db42aa3f767fbe28bfb28"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Set()",
+      "property": "CompleteConfirmation",
+      "entity": "boolean",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "$CompleteConfirmation",
+          "value": "=@boolean"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "condition": "$CompleteConfirmation == 'false'",
+          "actions": [
+            {
+              "$kind": "Microsoft.EndDialog"
+            }
+          ],
+          "elseActions": [
+            {
+              "$kind": "Microsoft.Ask",
+              "activity": "${getChoosePropertyText()}",
+              "expectedProperties": [
+                "PropertyToChange"
+              ]
+            }
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "CompleteConfirmation - Set(@boolean)"
+      },
+      "$source": "unittests-CompleteConfirmation-add-boolean",
+      "$Generator": "8acd694b9723c536422a28fa966eacc8"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Set()",
+      "property": "CompleteConfirmation",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "$PropertyToChange",
+          "value": "=turn.dialogEvent.value.entity.name"
+        }
+      ],
+      "$designer": {
+        "name": "CompleteConfirmation - Set(@PROPERTYName)"
+      },
+      "$source": "unittests-CompleteConfirmation-add-PROPERTYName",
+      "$Generator": "7548b045b2c164d612341d9589dea25c"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Add()",
+      "property": "PropertyToChange",
+      "actions": [
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "$PropertyToChange",
+          "value": "=turn.dialogEvent.value.entity.name"
+        }
+      ],
+      "$designer": {
+        "name": "PropertyToChange - Set(@PROPERTYName)"
+      },
+      "$source": "unittests-PropertyToChange-add-PROPERTYName",
+      "$Generator": "aa48dfd4372332b4aa5c41154afe53a7"
+    },
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "$comment": "TODO: This is a hack to work around the lack of a way to remit activity or not when invoked.",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getWelcomeText()}"
+        }
+      ],
+      "$source": "unittests-library-BeginDialog",
+      "$Generator": "337cfed123ba3317060a5abd10c8c89e"
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "Cancel",
+      "condition": "turn.recognized.score > 0.5",
+      "actions": [
+        {
+          "$kind": "Microsoft.Ask",
+          "activity": "${getCancelText()}",
+          "expectedProperties": [
+            "CancelConfirmation"
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "OnCancel"
+      },
+      "$source": "unittests-library-CancelIntent",
+      "$Generator": "a8d59513933738a1b17d9c5a8f6a1d9b"
+    },
+    {
+      "$kind": "Microsoft.OnChooseProperty",
+      "actions": [
+        {
+          "$kind": "Microsoft.Ask",
+          "activity": "${getChoosePropertiesText()}",
+          "expectedProperties": [
+            "PropertyToChange"
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "PropertyToChange - ChooseProperty()"
+      },
+      "$source": "unittests-library-ChooseProperty",
+      "$Generator": "74828c6c6f7dd5f8be02fbf7e054650c"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Help()",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getPropertyHelpText('')}"
+        }
+      ],
+      "$designer": {
+        "name": "OnHelp"
+      },
+      "$source": "unittests-library-Help",
+      "$Generator": "9daeca0d5c5c0d4fb513ad8f9a64dda0"
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "None",
+      "condition": "count(turn.recognizedentities) == 0",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getNotUnderstoodText()}"
+        }
+      ],
+      "$designer": {
+        "name": "OnNone"
+      },
+      "$source": "unittests-library-NotUnderstood",
+      "$Generator": "258e861a36f88e57d9aa46ccb12df48b"
+    },
+    {
+      "$kind": "Microsoft.OnAssignEntity",
+      "operation": "Show()",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getPropertiesAsActivity('unittests', dialogClass.schema.$public)}"
+        }
+      ],
+      "$designer": {
+        "name": "OnShow"
+      },
+      "$source": "unittests-library-Show",
+      "$Generator": "ae9a12690078c10a7d8bbf9d3a725b40"
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "Skip",
+      "condition": "turn.recognized.score > 0.5",
+      "actions": [
+        {
+          "$kind": "Microsoft.IfCondition",
+          "condition": "count(dialog.events.Assignments) > 0",
+          "actions": [
+            {
+              "$kind": "Microsoft.EditArray",
+              "changeType": "take",
+              "itemsProperty": "dialog.events.Assignments"
+            }
+          ],
+          "elseActions": [
+            {
+              "$kind": "Microsoft.DeleteProperty",
+              "property": "$PropertyToChange"
+            }
+          ]
+        }
+      ],
+      "$designer": {
+        "name": "OnSkip"
+      },
+      "$source": "unittests-library-SkipIntent",
+      "$Generator": "2f7b32ccedb02a6bc2637f15b7792f87"
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "intent": "unittests",
+      "condition": "count(turn.recognizedentities) == 0",
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${getNotUnderstoodText()}"
+        }
+      ],
+      "$designer": {
+        "name": "Onunittests"
+      },
+      "$source": "unittests-trigger",
+      "$Generator": "f2e9aa9f91284b4b32add0fd6eb9e692"
+    }
+  ],
+  "$designer": {
+    "name": "unittests main dialog"
+  },
+  "$Generator": "834fce2608e5b78a00867e9c879811ee"
+}

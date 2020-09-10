@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "NotFound",
+    "message": "The application 00000000-0000-0000-0000-000000000000 is not published or doesn't exist."
+  }
+}

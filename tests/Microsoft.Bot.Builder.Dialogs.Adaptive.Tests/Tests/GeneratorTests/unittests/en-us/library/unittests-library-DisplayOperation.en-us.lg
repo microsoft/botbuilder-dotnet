@@ -1,0 +1,23 @@
+[unittests-library.en-us.lg](unittests-library.en-us.lg)
+
+# displayOperation(op, property, text)
+- ${operationName(op)} "${text}"" to ${getPropertyNameText(property)}
+
+# operationName(op) 
+- SWITCH: ${op}
+    - CASE: ${'Add()'}
+        - add
+    - CASE: ${'Remove()'}
+        - remove
+    - CASE: ${'Clear()'}
+        - clear
+    - CASE: ${'Show()'}
+        - show
+    - CASE: ${'Help()'}
+        - help
+    - CASE: ${'Change()'}
+        - change
+    - DEFAULT: 
+        - I don't understand ${op}
+
+> Generator: bf5c9f9a07a7f85266d3cd17a2bdf01b

@@ -1,0 +1,103 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Test HttpRequestMock Luis for Generated Dialog",
+  "httpRequestMocks": [
+    "httpluis.mock"
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "=settings.luis.unittests_en_us_lu",
+      "endpointKey": "=settings.luis.endpointKey",
+      "endpoint": "=settings.luis.endpoint",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "$comment": "TODO: This is a hack to work around the lack of a way to remit activity or not when invoked.",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "welcome"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnEndOfActions",
+        "condition": "=!$Bread || $PropertyToChange == 'Bread'",
+        "priority": "0",
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "which value do you what for bread ?",
+            "expectedProperties": [
+              "Bread"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Add()",
+        "property": "Bread",
+        "entity": "BreadEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Bread",
+            "value": "=@BreadEntity"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnChooseEntity",
+        "entity": "BreadEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Please choose a value for bread from [multi grain wheat, whole wheat]",
+            "expectedProperties": [
+              "Bread"
+            ]
+          }
+        ]
+      }
+
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "welcome"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "which value do you what for bread ?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "wheat"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please choose a value for bread from [multi grain wheat, whole wheat]"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "whole wheat"
+    }
+  ]
+}

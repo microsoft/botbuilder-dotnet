@@ -1,0 +1,85 @@
+
+> Add examples for operations across properties
+# unittests
+> Example operations across properties and operations
+> Add() examples across properties
+- {@Add()=add {@Bread={@BreadEntity=grain wheat}} and {@Bread={@BreadEntity=multi grain wheat} bread}}
+- {@Add()=add {@Bread={@BreadEntity=multi} bread} and {@Bread={@BreadEntity=multi}}}
+- {@Add()=add {@Bread={@BreadEntity=multi} bread} and {@Bread={@BreadEntity=grain}}}
+- {@Add()=add {@Bread={@BreadEntity=grain}} and {@Bread={@BreadEntity=rye} bread}}
+- {@Add()=add {@Bread={@BreadEntity=grain wheat} bread} and {@Bread={@BreadEntity=rye} bread}}
+- {@Add()=add {@Bread={@BreadEntity=multi grain wheat}} and {@Bread={@BreadEntity=multi grain wheat}}}
+- {@Add()=without {@Bread={@BreadEntity=multi grain}}, {@Bread={@BreadEntity=grain wheat} bread} and {@Bread={@BreadEntity=multi grain} bread}}
+- {@Add()=without {@Bread={@BreadEntity=white}}, {@Bread={@BreadEntity=wheat}} and {@Bread={@BreadEntity=rye}}}
+- {@Add()=without {@Bread={@BreadEntity=wheat} bread}, {@Bread={@BreadEntity=multi grain} bread} and {@Bread={@BreadEntity=wheat} bread}}
+- {@Add()=without {@Bread={@BreadEntity=multi grain} bread}, {@Bread={@BreadEntity=rye}} and {@Bread={@BreadEntity=white}}}
+- {@Add()=without {@Bread={@BreadEntity=multi grain} bread}, {@Bread={@BreadEntity=wheat}} and {@Bread={@BreadEntity=multi}}}
+- {@Add()=without {@Bread={@BreadEntity=grain} bread}, {@Bread={@BreadEntity=grain wheat} bread} and {@Bread={@BreadEntity=wheat}}}
+
+> Remove() examples across properties
+- {@Remove()=delete {@Bread={@BreadEntity=white} bread} and {@Bread={@BreadEntity=multi grain wheat} bread}}
+- {@Remove()=delete {@Bread={@BreadEntity=grain}} and {@Bread={@BreadEntity=wheat} bread}}
+- {@Remove()=delete {@Bread={@BreadEntity=multi grain} bread} and {@Bread={@BreadEntity=whole}}}
+- {@Remove()=delete {@Bread={@BreadEntity=white}} and {@Bread={@BreadEntity=multi grain} bread}}
+- {@Remove()=delete {@Bread={@BreadEntity=white}} and {@Bread={@BreadEntity=multi}}}
+- {@Remove()=delete {@Bread={@BreadEntity=grain} bread} and {@Bread={@BreadEntity=whole} bread}}
+- {@Remove()=without {@Bread={@BreadEntity=white} bread}, {@Bread={@BreadEntity=whole wheat} bread} and {@Bread={@BreadEntity=wheat}}}
+- {@Remove()=without {@Bread={@BreadEntity=whole}}, {@Bread={@BreadEntity=multi} bread} and {@Bread={@BreadEntity=multi} bread}}
+- {@Remove()=without {@Bread={@BreadEntity=multi grain wheat}}, {@Bread={@BreadEntity=wheat} bread} and {@Bread={@BreadEntity=wheat}}}
+- {@Remove()=without {@Bread={@BreadEntity=white}}, {@Bread={@BreadEntity=wheat}} and {@Bread={@BreadEntity=rye} bread}}
+- {@Remove()=without {@Bread={@BreadEntity=wheat} bread}, {@Bread={@BreadEntity=multi} bread} and {@Bread={@BreadEntity=whole} bread}}
+- {@Remove()=without {@Bread={@BreadEntity=whole wheat}}, {@Bread={@BreadEntity=whole} bread} and {@Bread={@BreadEntity=multi grain}}}
+
+> Clear() examples across properties
+- {@Clear()=clear {@Bread=bread} and {@Bread=bread}}
+- {@Clear()=reset {@Bread=bread}, {@Bread=bread} and {@Bread=bread}}
+
+> Show() examples across properties
+- {@Show()=show {@Bread=bread} and {@Bread=bread}}
+- {@Show()=value of {@Bread=bread}, {@Bread=bread} and {@Bread=bread}}
+- {@Show()={@Bread=bread} and {@Bread=bread} values}
+
+> Help() examples across properties
+- {@Help()=help for {@Bread=bread} and {@Bread=bread}}
+- {@Help()=help on {@Bread=bread} and {@Bread=bread}}
+- {@Help()={@Bread=bread} and {@Bread=bread} help}
+
+> Change() examples across properties
+- {@Change()=change {@Bread=bread} and {@Bread=bread}}
+- {@Change()=goto {@Bread=bread}, {@Bread=bread} and {@Bread=bread}}
+
+> Global help
+- {@Help()=help}
+- {@Help()=what do you know?}
+- {@Help()=what can I say?}
+- {@Help()=what do you want to know?}
+- {@Help()=I don't understand}
+
+> Mixed operations
+- {@Add()=add {@Bread={@BreadEntity=grain}}, {@Bread={@BreadEntity=whole wheat}}} and {@Show()=display {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=wheat} bread}, {@Bread={@BreadEntity=rye} bread}} and {@Show()=display {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=multi grain}}, {@Bread={@BreadEntity=rye} bread}} and {@Show()=display {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=wheat} bread}, {@Bread={@BreadEntity=grain wheat}}} and {@Show()=display {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=grain}}, {@Bread={@BreadEntity=multi grain} bread}} and {@Show()=display {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=wheat}}, {@Bread={@BreadEntity=multi grain wheat} bread}} and {@Show()=display {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=multi grain} bread}, {@Bread={@BreadEntity=whole wheat}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=wheat}}, {@Bread={@BreadEntity=grain}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=rye} bread}, {@Bread={@BreadEntity=multi grain} bread}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=multi}}, {@Bread={@BreadEntity=multi grain} bread}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=multi grain} bread}, {@Bread={@BreadEntity=multi}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=rye}}, {@Bread={@BreadEntity=grain}}} and {@Show()=show {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=whole wheat} bread}}, {@Remove()=remove {@Bread={@BreadEntity=white} bread}} and {@Show()=show {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=grain wheat}}}, {@Remove()=remove {@Bread={@BreadEntity=whole} bread}} and {@Show()=show {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=whole wheat}}}, {@Remove()=remove {@Bread={@BreadEntity=white}}} and {@Show()=show {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=white}}}, {@Remove()=remove {@Bread={@BreadEntity=multi grain wheat} bread}} and {@Show()=show {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=multi grain wheat}}}, {@Remove()=remove {@Bread={@BreadEntity=white} bread}} and {@Show()=show {@Bread=bread}}
+- {@Add()=add {@Bread={@BreadEntity=grain wheat} bread}}, {@Remove()=remove {@Bread={@BreadEntity=multi grain wheat}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=white}}}, {@Add()=add {@Bread={@BreadEntity=rye} bread}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=multi} bread}}, {@Add()=add {@Bread={@BreadEntity=grain wheat}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=rye} bread}}, {@Add()=add {@Bread={@BreadEntity=grain} bread}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=whole} bread}}, {@Add()=add {@Bread={@BreadEntity=multi grain wheat}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=rye}}}, {@Add()=add {@Bread={@BreadEntity=grain}}} and {@Show()=show {@Bread=bread}}
+- {@Remove()=remove {@Bread={@BreadEntity=grain wheat}}}, {@Add()=add {@Bread={@BreadEntity=multi}}} and {@Show()=show {@Bread=bread}}
+
+
+> Generator: 42b8f22a82a5b6a970272b585b9f7a1b

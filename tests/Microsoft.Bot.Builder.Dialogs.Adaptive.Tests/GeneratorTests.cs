@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class GeneratorTests
     {
-        private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
+        private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\generated\");
         private readonly string unitTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\unittests\");
 
         public TestContext TestContext { get; set; }
@@ -27,6 +27,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseMockLuisSettings(sandwichDirectory, "TestBot")
                 .Build();
             
+            var resourceExplorer = new ResourceExplorer()
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
+
+            await TestUtils.RunTestScript(resourceExplorer, configuration: config);
+        }
+
+        [TestMethod]
+        public async Task Generator_unittests()
+        {
+            var config = new ConfigurationBuilder()
+                .UseMockLuisSettings(unitTestsDirectory, "TestBot")
+                .Build();
+
             var resourceExplorer = new ResourceExplorer()
                 .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
                 .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
