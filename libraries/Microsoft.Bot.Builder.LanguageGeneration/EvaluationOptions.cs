@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         Global,
 
         /// <summary>
-        /// Only cache result in the same layer of children.
+        /// Only cache result in the same layer of children in template.
         /// </summary>
-        Template,
+        Local,
 
         /// <summary>
         /// Without cache.

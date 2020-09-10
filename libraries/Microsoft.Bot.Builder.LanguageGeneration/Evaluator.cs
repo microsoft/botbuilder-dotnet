@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private const string ReExecuteSuffix = "!";
 
-        private static readonly Dictionary<string, object> _cachedResult = new Dictionary<string, object>();
+        private static readonly ConcurrentDictionary<string, object> _cachedResult = new ConcurrentDictionary<string, object>();
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions _lgOptions;
 
@@ -106,7 +107,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         hasResult = true;
                     }
                 }
-                else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template)
+                else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Local)
                 {
                     EvaluationTarget previousEvaluateTarget = null;
                     if (_evaluationTargetStack.Count != 0)
@@ -134,7 +135,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     {
                         _cachedResult[currentEvaluateId] = result;
                     }
-                    else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Template)
+                    else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Local)
                     {
                         if (_evaluationTargetStack.Count > 0)
                         {
