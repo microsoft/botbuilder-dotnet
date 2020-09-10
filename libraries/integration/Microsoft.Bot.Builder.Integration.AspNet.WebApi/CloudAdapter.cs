@@ -6,13 +6,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
     /// <summary>
     /// An adapter that implements the Bot Framework Protocol and can be hosted in different cloud environmens both public and private.
@@ -36,19 +34,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
-        /// <param name="configuration">The application configuration instance.</param>
         /// <param name="httpClient">The HttpClient implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
-            IConfiguration configuration,
             ILogger logger = null,
             HttpClient httpClient = null)
-            : base(new ConfigurationCloudEnvironment(configuration), logger, httpClient)
+            : base(new ConfigurationCloudEnvironment(), logger, httpClient)
         {
         }
 
         /// <inheritdoc/>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
             {
@@ -65,36 +61,36 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            if (httpRequest.Method == HttpMethods.Get)
+            if (httpRequest.Method == HttpMethod.Get)
             {
                 throw new NotImplementedException("web sockets is not yet implemented");
             }
             else
             {
-                // Deserialize the incoming Activity
-                var activity = await HttpHelper.ReadRequestAsync<Activity>(httpRequest).ConfigureAwait(false);
+                // deserialize the incoming Activity
+                var activity = await HttpHelper.ReadRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(activity?.Type))
                 {
-                    httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                    httpResponse.StatusCode = HttpStatusCode.BadRequest;
                     return;
                 }
 
-                // Grab the auth header from the inbound http request
-                var authHeader = httpRequest.Headers["Authorization"];
+                // grab the auth header from the inbound http request
+                var authHeader = httpRequest.Headers.Authorization?.ToString();
 
                 try
                 {
-                    // Process the inbound activity with the bot
+                    // process the inbound activity with the bot
                     var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                     // write the response, potentially serializing the InvokeResponse
-                    await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
+                    HttpHelper.WriteResponse(httpRequest, httpResponse, invokeResponse);
                 }
                 catch (UnauthorizedAccessException)
                 {
                     // handle unauthorized here as this layer creates the http response
-                    httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    httpResponse.StatusCode = HttpStatusCode.Unauthorized;
                 }
             }
         }
