@@ -20,16 +20,16 @@
 /build/**                                                                           @microsoft/bb-dotnet
 
 # Adapters
-/libraries/Adapters/**                                                              @garypretty
-/tests/Adapters/**                                                                  @garypretty  
+/libraries/Adapters/**                                                              @garypretty,@mrivera-ms
+/tests/Adapters/**                                                                  @garypretty,@mrivera-ms
 
 # Platform Integration Libaries (.NET Core and WebApi)
 /libraries/integration/**                                                           @microsoft/bb-dotnet-integration
 /tests/integration/**                                                               @microsoft/bb-dotnet-integration
 
 # Application Insights/Telemetry
-/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty
-/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty
+/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty,@mrivera-ms
+/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty,@mrivera-ms
 
 # AI: LUIS + QnA Maker
 /libraries/Microsoft.Bot.Builder.AI*/**                                             @microsoft/bf-cog-services
