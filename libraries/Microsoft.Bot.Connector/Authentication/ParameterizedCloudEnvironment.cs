@@ -139,6 +139,10 @@ namespace Microsoft.Bot.Connector.Authentication
                 var claimsList = claims as IList<Claim> ?? claims.ToList();
                 await authConfig.ClaimsValidator.ValidateClaimsAsync(claimsList).ConfigureAwait(false);
             }
+            else if (SkillValidation.IsSkillClaim(claims))
+            {
+                throw new UnauthorizedAccessException("ClaimsValidator is required for validation of Skill Host calls.");
+            }
         }
 
         private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient)

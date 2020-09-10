@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Net.Http;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -21,6 +20,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="activity">The inbound Activity.</param>
         /// <param name="authHeader">The http auth header.</param>
         /// <returns>Asynchronous Task with Authentication results.</returns>
+        /// <exception cref="UnauthorizedAccessException">If the validation returns false.</exception>
         Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader);
 
         /// <summary>
