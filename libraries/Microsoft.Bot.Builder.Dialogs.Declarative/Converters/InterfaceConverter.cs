@@ -105,8 +105,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
                 using (var newScope = found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
+                    var passTwo = false;
                     foreach (var observer in this.observers)
                     {
+                        if (observer is CycleDetectionObserver cycDetectObserver && cycDetectObserver.CycleDetectionPass == CycleDetectionPasses.PassTwo)
+                        {
+                            passTwo = true;
+                        }
+
                         if (observer.OnBeforeLoadToken(sourceContext, rangeResolved ?? range, jToken, out T interceptResult))
                         {
                             return interceptResult;
@@ -116,14 +122,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     var tokenToBuild = TryAssignId(jToken, sourceContext);
 
                     T result;
-                    if (refDialogName != null && cachedRefDialogs.ContainsKey(refDialogName))
+                    if (passTwo && refDialogName != null && cachedRefDialogs.ContainsKey(refDialogName))
                     {
                         result = cachedRefDialogs[refDialogName];
                     }
                     else
                     {
                         result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
-                        if (refDialogName != null)
+                        if (passTwo && refDialogName != null)
                         {
                             cachedRefDialogs[refDialogName] = result;
                         }
