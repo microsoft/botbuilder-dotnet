@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
         /// <summary>
         /// Initializes a new instance of the <see cref="CycleDetectionObserver"/> class.
         /// </summary>
-        /// <param name="allowCycle">If allowCycle is set to true, throw an exception when detecting cycle.</param>
+        /// <param name="allowCycle">If allowCycle is set to false, throw an exception when detecting cycle.</param>
         public CycleDetectionObserver(bool allowCycle = true)
         {
             this.allowCycle = allowCycle;
