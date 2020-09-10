@@ -126,10 +126,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
-        /// Gets the default HttpClient to be used when calling the LUIS API.
+        /// Gets the default <see cref="System.Net.Http.HttpClient"/> to use when calling the LUIS API.
         /// </summary>
         /// <value>
-        /// A <see cref="HttpClient"/>.
+        /// The default HTTP client to use.
         /// </value>
         [Obsolete("This property is deprecated and will be removed in future versions of the SDK.")]
         public static HttpClient DefaultHttpClient { get; private set; }

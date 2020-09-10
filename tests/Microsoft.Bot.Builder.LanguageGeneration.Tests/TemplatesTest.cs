@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("4.lg"));
 
-            var userName = "DL";
+            const string userName = "DL";
             var evaled = templates.Evaluate("welcome_user", new { userName = userName }).ToString();
             var options = new List<string> { "Hi", "Hello", "Hiya ", "Hi :)", "Hello :)", "Hiya  :)" };
 
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
 
-            string evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "morning" }).ToString();
+            var evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "morning" }).ToString();
             Assert.True(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
             evaled = templates.Evaluate("time_of_day_readout", new { timeOfDay = "evening" }).ToString();
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestMultiline()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("Multiline.lg"));
-            string evaled = templates.Evaluate("template1").ToString();
+            var evaled = templates.Evaluate("template1").ToString();
             var generatedTemplates = Templates.ParseResource(new LGResource(string.Empty, string.Empty, evaled));
             var result = generatedTemplates.Evaluate("generated1");
             Assert.Equal("hi", result);
@@ -92,13 +92,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));
 
-            string evaled = templates.Evaluate("time_of_day_readout_without_default", new { timeOfDay = "morning" }).ToString();
+            var evaled = templates.Evaluate("time_of_day_readout_without_default", new { timeOfDay = "morning" }).ToString();
             Assert.True(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
             evaled = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "morning" }).ToString();
             Assert.True(evaled == "Good morning" || evaled == "Morning! ", $"Evaled is {evaled}");
 
-            object evaledNull = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "evening" });
+            var evaledNull = templates.Evaluate("time_of_day_readout_without_default2", new { timeOfDay = "evening" });
             Assert.Null(evaledNull);
         }
 
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("MultiLineExpr.lg"));
 
-            string evaled = templates.Evaluate("ExprInCondition", new { userName = "Henry", day = "Monday" }).ToString();
+            var evaled = templates.Evaluate("ExprInCondition", new { userName = "Henry", day = "Monday" }).ToString();
             Assert.True(evaled == "Not today", $"Evaled is {evaled}");
 
             evaled = templates.Evaluate("definition").ToString();
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("switchcase.lg"));
 
-            string evaled = templates.Evaluate("greetInAWeek", new { day = "Saturday" }).ToString();
+            var evaled = templates.Evaluate("greetInAWeek", new { day = "Saturday" }).ToString();
             Assert.True(evaled == "Happy Saturday!");
 
             evaled = templates.Evaluate("greetInAWeek", new { day = "Monday" }).ToString();
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestBasicTemplateRefWithParameters()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("6.lg"));
-            string evaled = templates.Evaluate("welcome", null).ToString();
+            var evaled = templates.Evaluate("welcome", null).ToString();
             Assert.True(evaled == "Hi DongLei :)" ||
                 evaled == "Hey DongLei :)" ||
                 evaled == "Hello DongLei :)");
@@ -184,9 +184,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestBasicListSupport()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("BasicList.lg"));
-            Assert.Equal(templates.Evaluate("BasicJoin", new { items = new[] { "1" } }), "1");
-            Assert.Equal(templates.Evaluate("BasicJoin", new { items = new[] { "1", "2" } }), "1, 2");
-            Assert.Equal(templates.Evaluate("BasicJoin", new { items = new[] { "1", "2", "3" } }), "1, 2 and 3");
+            Assert.Equal("1", templates.Evaluate("BasicJoin", new { items = new[] { "1" } }));
+            Assert.Equal("1, 2", templates.Evaluate("BasicJoin", new { items = new[] { "1", "2" } }));
+            Assert.Equal("1, 2 and 3", templates.Evaluate("BasicJoin", new { items = new[] { "1", "2", "3" } }));
         }
 
         [Fact]
@@ -267,8 +267,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestTemplateNameWithDotIn()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("TemplateNameWithDot.lg"));
-            Assert.Equal(templates.Evaluate("Hello.World", null), "Hello World");
-            Assert.Equal(templates.Evaluate("Hello", null), "Hello World");
+            Assert.Equal("Hello World", templates.Evaluate("Hello.World", null));
+            Assert.Equal("Hello World", templates.Evaluate("Hello", null));
         }
 
         [Fact]
@@ -300,7 +300,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 time = "morning",
                 name = "Dong Lei"
             };
-            Assert.Equal(templates.Evaluate("Hello", scope), "Good morning Dong Lei");
+            Assert.Equal("Good morning Dong Lei", templates.Evaluate("Hello", scope));
         }
 
         [Fact]
@@ -308,47 +308,47 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled = templates.Evaluate("wPhrase", null);
-            Assert.Equal(evaled, "Hi \r\n\t\\");
+            Assert.Equal("Hi \r\n\t\\", evaled);
 
             evaled = templates.Evaluate("AtEscapeChar", null);
-            Assert.Equal(evaled, "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}");
+            Assert.Equal("Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}", evaled);
 
             evaled = templates.Evaluate("otherEscape", null);
-            Assert.Equal(evaled, @"Hi \y \");
+            Assert.Equal(@"Hi \y \", evaled);
 
             evaled = templates.Evaluate("escapeInExpression", null);
-            Assert.Equal(evaled, "Hi hello\\\\");
+            Assert.Equal("Hi hello\\\\", evaled);
 
             evaled = templates.Evaluate("escapeInExpression2", null);
-            Assert.Equal(evaled, "Hi hello'");
+            Assert.Equal("Hi hello'", evaled);
 
             evaled = templates.Evaluate("escapeInExpression3", null);
-            Assert.Equal(evaled, "Hi hello\"");
+            Assert.Equal("Hi hello\"", evaled);
 
             evaled = templates.Evaluate("escapeInExpression4", null);
-            Assert.Equal(evaled, "Hi hello\"");
+            Assert.Equal("Hi hello\"", evaled);
 
             evaled = templates.Evaluate("escapeInExpression5", null);
-            Assert.Equal(evaled, "Hi hello\n");
+            Assert.Equal("Hi hello\n", evaled);
 
             evaled = templates.Evaluate("escapeInExpression6", null);
-            Assert.Equal(evaled, "Hi hello\n");
+            Assert.Equal("Hi hello\n", evaled);
 
             var todos = new[] { "A", "B", "C" };
             evaled = templates.Evaluate("showTodo", new { todos });
-            Assert.Equal(((string)evaled).Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
+            Assert.Equal("\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ", ((string)evaled).Replace("\r\n", "\n"));
             
             evaled = templates.Evaluate("showTodo", null);
-            Assert.Equal(((string)evaled).Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
+            Assert.Equal("\n    You don't have any \"t\\\\odo'\".\n    ", ((string)evaled).Replace("\r\n", "\n"));
 
             evaled = templates.Evaluate("getUserName", null);
-            Assert.Equal(evaled, "super \"x man\"");
+            Assert.Equal("super \"x man\"", evaled);
 
             evaled = templates.Evaluate("structure1", null);
-            Assert.Equal(evaled.ToString().Replace("\r\n", "\n").Replace("\n", string.Empty), "{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}");
+            Assert.Equal("{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}", evaled.ToString().Replace("\r\n", "\n").Replace("\n", string.Empty));
 
             evaled = templates.Evaluate("nestedSample", null);
-            Assert.Equal(evaled.ToString(), "i like three movies, they are \"\\\"name1\", \"name2\" and \"{name3\"");
+            Assert.Equal("i like three movies, they are \"\\\"name1\", \"name2\" and \"{name3\"", evaled.ToString());
 
             evaled = templates.Evaluate("dollarsymbol");
             Assert.Equal("$ $ ${'hi'} hi", evaled);
@@ -400,11 +400,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 var variableEvaled = evaled1.Variables;
                 var variableEvaledOptions = testItem.GetType().GetProperty("variableOptions").GetValue(testItem) as string[];
                 Assert.Equal(variableEvaledOptions.Length, variableEvaled.Count);
-                variableEvaledOptions.ToList().ForEach(element => Assert.Equal(variableEvaled.Contains(element), true));
+                variableEvaledOptions.ToList().ForEach(element => Assert.Contains(element, variableEvaled));
                 var templateEvaled = evaled1.TemplateReferences;
                 var templateEvaledOptions = testItem.GetType().GetProperty("templateRefOptions").GetValue(testItem) as string[];
                 Assert.Equal(templateEvaledOptions.Length, templateEvaled.Count);
-                templateEvaledOptions.ToList().ForEach(element => Assert.Equal(templateEvaled.Contains(element), true));
+                templateEvaledOptions.ToList().ForEach(element => Assert.Contains(element, templateEvaled));
             }
         }
 
@@ -414,33 +414,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("lgTemplate.lg"));
             var evaled = templates.Evaluate("TemplateC", string.Empty);
             var options = new List<string> { "Hi", "Hello" };
-            Assert.Equal(options.Contains(evaled), true);
+            Assert.Contains(evaled, options);
 
             evaled = templates.Evaluate("TemplateD", new { b = "morning" });
             options = new List<string> { "Hi morning", "Hello morning" };
-            Assert.Equal(options.Contains(evaled), true);
+            Assert.Contains(evaled, options);
         }
 
         [Fact]
         public void TestTemplateAsFunction()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("TemplateAsFunction.lg"));
-            string evaled = templates.Evaluate("Test2", string.Empty).ToString();
+            var evaled = templates.Evaluate("Test2", string.Empty).ToString();
 
-            Assert.Equal(evaled, "hello world");
+            Assert.Equal("hello world", evaled);
 
             evaled = templates.Evaluate("Test3", string.Empty).ToString();
-            Assert.Equal(evaled, "hello world");
+            Assert.Equal("hello world", evaled);
 
             evaled = templates.Evaluate("Test4", string.Empty).ToString();
 
-            Assert.Equal(evaled.Trim(), "hello world");
+            Assert.Equal("hello world", evaled.Trim());
 
             evaled = templates.Evaluate("dupNameWithTemplate").ToString();
-            Assert.Equal(evaled, "2");
+            Assert.Equal("2", evaled);
 
             evaled = templates.Evaluate("foo", new { property = "Show" }).ToString();
-            Assert.Equal(evaled, "you made it!");
+            Assert.Equal("you made it!", evaled);
         }
 
         [Fact]
@@ -451,7 +451,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var variableEvaled = evaled.Variables;
             var options = new List<string>() { "b" };
             Assert.Equal(variableEvaled.Count, options.Count);
-            options.ForEach(e => Assert.Equal(variableEvaled.Contains(e), true));
+            options.ForEach(e => Assert.Contains(e, variableEvaled));
         }
 
         [Fact]
@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             // Assert import cycle loop is handled well as expected when a file imports itself.
             Assert.Equal(14, templates.AllTemplates.Count());
 
-            string evaled = templates.Evaluate("basicTemplate", null).ToString();
+            var evaled = templates.Evaluate("basicTemplate", null).ToString();
             Assert.True(evaled == "Hi" || evaled == "Hello");
 
             evaled = templates.Evaluate("welcome", null).ToString();
@@ -505,13 +505,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("Regex.lg"));
             var evaled = templates.Evaluate("wPhrase", string.Empty);
-            Assert.Equal(evaled, "Hi");
+            Assert.Equal("Hi", evaled);
 
             evaled = templates.Evaluate("wPhrase", new { name = "jack" });
-            Assert.Equal(evaled, "Hi jack");
+            Assert.Equal("Hi jack", evaled);
 
             evaled = templates.Evaluate("wPhrase", new { name = "morethanfive" });
-            Assert.Equal(evaled, "Hi");
+            Assert.Equal("Hi", evaled);
         }
 
         [Fact]
@@ -523,19 +523,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = templates.ExpandTemplate("FinalGreeting");
             Assert.Equal(4, evaled.Count);
             var expectedResults = new List<string>() { "Hi Morning", "Hi Evening", "Hello Morning", "Hello Evening" };
-            expectedResults.ForEach(x => Assert.Equal(true, evaled.Contains(x)));
+            expectedResults.ForEach(x => Assert.True(evaled.Contains(x)));
 
             // with scope
             evaled = templates.ExpandTemplate("TimeOfDayWithCondition", new { time = "evening" });
             Assert.Equal(2, evaled.Count);
             expectedResults = new List<string>() { "Hi Evening", "Hello Evening" };
-            expectedResults.ForEach(x => Assert.Equal(true, evaled.Contains(x)));
+            expectedResults.ForEach(x => Assert.True(evaled.Contains(x)));
 
             // with scope
             evaled = templates.ExpandTemplate("greetInAWeek", new { day = "Sunday" });
             Assert.Equal(2, evaled.Count);
             expectedResults = new List<string>() { "Nice Sunday!", "Happy Sunday!" };
-            expectedResults.ForEach(x => Assert.Equal(true, evaled.Contains(x)));
+            expectedResults.ForEach(x => Assert.True(evaled.Contains(x)));
         }
 
         [Fact]
@@ -586,8 +586,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(2, evaled.Count);
             var eval1Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm at tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm at tomorrow\n" };
             var eval2Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm of tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm of tomorrow\n" };
-            Assert.Equal(true, eval1Options.Contains(evaled[0]));
-            Assert.Equal(true, eval2Options.Contains(evaled[1]));
+            Assert.Contains(evaled[0], eval1Options);
+            Assert.Contains(evaled[1], eval2Options);
         }
 
         [Fact]
@@ -619,19 +619,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             };
 
             Assert.Equal(1, evaled.Count);
-            Assert.Equal(true, evalOptions.Contains(evaled[0]));
+            Assert.Contains(evaled[0], evalOptions);
 
             evaled = templates.ExpandTemplate("T2");
             Assert.Equal(1, evaled.Count);
-            Assert.Equal(true, evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
+            Assert.True(evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
 
             evaled = templates.ExpandTemplate("T3");
             Assert.Equal(1, evaled.Count);
-            Assert.Equal(true, evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
+            Assert.True(evaled[0].ToString() == "3" || evaled[0].ToString() == "5");
 
             evaled = templates.ExpandTemplate("T4");
             Assert.Equal(1, evaled.Count);
-            Assert.Equal(true, evaled[0].ToString() == "ey" || evaled[0].ToString() == "el");
+            Assert.True(evaled[0].ToString() == "ey" || evaled[0].ToString() == "el");
         }
 
         [Fact]
@@ -685,47 +685,47 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EscapeCharacter.lg"));
             var evaled = templates.ExpandTemplate("wPhrase", null);
-            Assert.Equal(evaled[0], "Hi \r\n\t\\");
+            Assert.Equal("Hi \r\n\t\\", evaled[0]);
 
             evaled = templates.ExpandTemplate("AtEscapeChar", null);
-            Assert.Equal(evaled[0], "Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}");
+            Assert.Equal("Hi{1+1}[wPhrase]{wPhrase()}${wPhrase()}2${1+1}", evaled[0]);
 
             evaled = templates.ExpandTemplate("otherEscape", null);
-            Assert.Equal(evaled[0], @"Hi \y \");
+            Assert.Equal(@"Hi \y \", evaled[0]);
 
             evaled = templates.ExpandTemplate("escapeInExpression", null);
-            Assert.Equal(evaled[0], "Hi hello\\\\");
+            Assert.Equal("Hi hello\\\\", evaled[0]);
 
             evaled = templates.ExpandTemplate("escapeInExpression2", null);
-            Assert.Equal(evaled[0], "Hi hello'");
+            Assert.Equal("Hi hello'", evaled[0]);
 
             evaled = templates.ExpandTemplate("escapeInExpression3", null);
-            Assert.Equal(evaled[0], "Hi hello\"");
+            Assert.Equal("Hi hello\"", evaled[0]);
 
             evaled = templates.ExpandTemplate("escapeInExpression4", null);
-            Assert.Equal(evaled[0], "Hi hello\"");
+            Assert.Equal("Hi hello\"", evaled[0]);
 
             evaled = templates.ExpandTemplate("escapeInExpression5", null);
-            Assert.Equal(evaled[0], "Hi hello\n");
+            Assert.Equal("Hi hello\n", evaled[0]);
 
             evaled = templates.ExpandTemplate("escapeInExpression6", null);
-            Assert.Equal(evaled[0], "Hi hello\n");
+            Assert.Equal("Hi hello\n", evaled[0]);
 
             var todos = new[] { "A", "B", "C" };
             evaled = templates.ExpandTemplate("showTodo", new { todos });
-            Assert.Equal(evaled[0].ToString().Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
+            Assert.Equal("\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ", evaled[0].ToString().Replace("\r\n", "\n"));
 
             evaled = templates.ExpandTemplate("showTodo", null);
-            Assert.Equal(evaled[0].ToString().Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
+            Assert.Equal("\n    You don't have any \"t\\\\odo'\".\n    ", evaled[0].ToString().Replace("\r\n", "\n"));
 
             evaled = templates.ExpandTemplate("getUserName", null);
-            Assert.Equal(evaled[0], "super \"x man\"");
+            Assert.Equal("super \"x man\"", evaled[0]);
 
             evaled = templates.ExpandTemplate("structure1", null);
-            Assert.Equal(evaled[0].ToString().Replace("\r\n", "\n").Replace("\n", string.Empty), "{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}");
+            Assert.Equal("{  \"lgType\": \"struct\",  \"list\": [    \"a\",    \"b|c\"  ]}", evaled[0].ToString().Replace("\r\n", "\n").Replace("\n", string.Empty));
 
             evaled = templates.ExpandTemplate("dollarsymbol");
-            Assert.Equal(evaled[0], "$ $ ${'hi'} hi");
+            Assert.Equal("$ $ ${'hi'} hi", evaled[0]);
         }
 
         [Fact]
@@ -746,11 +746,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var name = "PointOfInterestSuggestedActionName";
             var evaled = templates.ExpandTemplate(name, input).ToList();
-            Assert.Equal(JObject.Parse(evaled[0].ToString())["text"].ToString(), "NAME at ADDRESS");
-            Assert.Equal(JObject.Parse(evaled[0].ToString())["speak"].ToString(), "NAME at ADDRESS");
-            Assert.Equal(JObject.Parse(evaled[0].ToString())["attachments"].Count(), 0);
-            Assert.Equal(JObject.Parse(evaled[0].ToString())["attachmentlayout"].ToString(), "list");
-            Assert.Equal(JObject.Parse(evaled[0].ToString())["inputhint"].ToString(), "ignoringInput");
+            Assert.Equal("NAME at ADDRESS", JObject.Parse(evaled[0].ToString())["text"].ToString());
+            Assert.Equal("NAME at ADDRESS", JObject.Parse(evaled[0].ToString())["speak"].ToString());
+            Assert.Empty(JObject.Parse(evaled[0].ToString())["attachments"]);
+            Assert.Equal("list", JObject.Parse(evaled[0].ToString())["attachmentlayout"].ToString());
+            Assert.Equal("ignoringInput", JObject.Parse(evaled[0].ToString())["inputhint"].ToString());
         }
 
         [Fact]
@@ -764,7 +764,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
             var exception = Assert.Throws<Exception>(() => templates.ExpandTemplate("StrictTrue"));
-            Assert.True(exception.Message.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating '-${variable_not_defined}'"));
+            Assert.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating '-${variable_not_defined}'", exception.Message);
         }
 
         [Fact]
@@ -774,40 +774,40 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var userName = "MS";
             var evaled = templates.Evaluate("template1", new { userName });
-            Assert.Equal(evaled, "Hi MS");
+            Assert.Equal("Hi MS", evaled);
 
             evaled = templates.Evaluate("template2", new { userName });
-            Assert.Equal(evaled, "Hi MS");
+            Assert.Equal("Hi MS", evaled);
 
             evaled = templates.Evaluate("template3", new { userName });
-            Assert.Equal(evaled, "HiMS");
+            Assert.Equal("HiMS", evaled);
 
             evaled = templates.Evaluate("template4", new { userName });
             var eval1Options = new List<string>() { "\r\nHi MS\r\n", "\nHi MS\n" };
-            Assert.True(eval1Options.Contains(evaled));
+            Assert.Contains(evaled, eval1Options);
 
             evaled = templates.Evaluate("template5", new { userName });
             var eval2Options = new List<string>() { "\r\nHiMS\r\n", "\nHiMS\n" };
-            Assert.True(eval2Options.Contains(evaled));
+            Assert.Contains(evaled, eval2Options);
 
             evaled = templates.Evaluate("template6", new { userName });
-            Assert.Equal(evaled, "goodmorning");
+            Assert.Equal("goodmorning", evaled);
 
             evaled = templates.Evaluate("template7");
-            Assert.Equal(evaled, "{\"a\":\"hello\"}");
+            Assert.Equal("{\"a\":\"hello\"}", evaled);
 
             evaled = templates.Evaluate("template8");
-            Assert.Equal(evaled, "{\"user\":{\"name\":\"Allen\"}}");
+            Assert.Equal("{\"user\":{\"name\":\"Allen\"}}", evaled);
 
             var value = JToken.FromObject(new { count = 13 });
             evaled = templates.Evaluate("template9", new { value });
-            Assert.Equal(evaled, "{\"ctx\":{\"count\":13}}");
+            Assert.Equal("{\"ctx\":{\"count\":13}}", evaled);
 
             evaled = templates.Evaluate("template10");
-            Assert.Equal(evaled, 13L);
+            Assert.Equal(13L, evaled);
 
             evaled = templates.Evaluate("template11");
-            Assert.Equal(evaled, 18L);
+            Assert.Equal(18L, evaled);
         }
 
         [Fact]
@@ -815,13 +815,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("RecursiveTemplate.lg"));
             var evaled = templates.Evaluate("RecursiveAccumulate", new { number = 10 });
-            Assert.Equal(evaled, 55L);
+            Assert.Equal(55L, evaled);
 
             evaled = templates.Evaluate("RecursiveFactorial", new { number = 5 });
             Assert.Equal(evaled, 1 * 2 * 3 * 4 * 5L);
 
             evaled = templates.Evaluate("RecursiveFibonacciSequence", new { number = 5 });
-            Assert.Equal(evaled, 5L);
+            Assert.Equal(5L, evaled);
         }
 
         [Fact]
@@ -859,7 +859,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(0, templates.Diagnostics.Count);
             newTemplate = templates[3];
             Assert.Equal("newtemplate2", newTemplate.Name);
-            Assert.Equal(0, newTemplate.Parameters.Count);
+            Assert.Empty(newTemplate.Parameters);
             Assert.Equal("- hi2 ", newTemplate.Body);
             Assert.Equal(16, newTemplate.SourceRange.Range.Start.Line);
             Assert.Equal(17, newTemplate.SourceRange.Range.End.Line);
@@ -932,7 +932,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(0, templates.Diagnostics.Count);
             newTemplate = templates[3];
             Assert.Equal("newtemplate2", newTemplate.Name);
-            Assert.Equal(0, newTemplate.Parameters.Count);
+            Assert.Empty(newTemplate.Parameters);
             Assert.Equal("- hi2 ", newTemplate.Body);
             Assert.Equal(16, newTemplate.SourceRange.Range.Start.Line);
             Assert.Equal(17, newTemplate.SourceRange.Range.End.Line);
@@ -949,7 +949,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // Delete template
             templates.DeleteTemplate("template1");
-            Assert.Equal(1, templates.Count);
+            Assert.Single(templates);
             Assert.Equal(0, templates.Imports.Count);
             Assert.Equal(0, templates.Diagnostics.Count);
             Assert.Equal("template2", templates[0].Name);
@@ -958,7 +958,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // Delete a template that does not exist
             templates.DeleteTemplate("xxx");
-            Assert.Equal(1, templates.Count);
+            Assert.Single(templates);
             Assert.Equal(0, templates.Imports.Count);
             Assert.Equal(0, templates.Diagnostics.Count);
             Assert.Equal("template2", templates[0].Name);
@@ -967,7 +967,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // Delete all template
             templates.DeleteTemplate("template2");
-            Assert.Equal(0, templates.Count);
+            Assert.Empty(templates);
             Assert.Equal(0, templates.Imports.Count);
             Assert.Equal(1, templates.Diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Warning, templates.Diagnostics[0].Severity);
@@ -999,7 +999,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             templates.UpdateTemplate("newtemplateName", "newtemplateName", null, "- ${NoTemplate()}");
             Assert.Equal(1, templates.Diagnostics.Count);
             diagnostic = templates.Diagnostics[0];
-            Assert.True(diagnostic.Message.Contains("it's not a built-in function or a custom function"));
+            Assert.Contains("it's not a built-in function or a custom function", diagnostic.Message);
             Assert.Equal(15, diagnostic.Range.Start.Line);
             Assert.Equal(15, diagnostic.Range.End.Line);
 
@@ -1013,7 +1013,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("MemoryScope.lg"));
             var evaled = templates.Evaluate("T1", new { turn = new { name = "Dong", count = 3 } });
-            Assert.Equal(evaled, "Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?");
+            Assert.Equal("Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?", evaled);
 
             var scope = new SimpleObjectMemory(new
             {
@@ -1032,7 +1032,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("AskBread", scope);
 
-            Assert.Equal(evaled, "Which Bread, A or B do you want?");
+            Assert.Equal("Which Bread, A or B do you want?", evaled);
         }
 
         private string GetExampleFilePath(string fileName)
@@ -1083,7 +1083,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "{\r\n  \"lgType\": \"Activity\",\r\n  \"speak\": \"I can also speak!\"\r\n} {\r\n  \"lgType\": \"MyStruct\",\r\n  \"text\": \"hi\"\r\n}",
                 "{\n  \"lgType\": \"Activity\",\n  \"speak\": \"I can also speak!\"\n} {\n  \"lgType\": \"MyStruct\",\n  \"text\": \"hi\"\n}"
             };
-            Assert.True(options.Contains(evaled.ToString()));
+            Assert.Contains(evaled.ToString(), options);
 
             evaled = templates.Evaluate("StructuredTemplateRef");
 
@@ -1138,19 +1138,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled = templates.Evaluate("conditionTemplate", new { num = 1 });
 
-            Assert.Equal(evaled, "Your input is one");
+            Assert.Equal("Your input is one", evaled);
 
             evaled = templates.Evaluate("conditionTemplate", new { num = 2 });
 
-            Assert.Equal(evaled, "Your input is two");
+            Assert.Equal("Your input is two", evaled);
 
             evaled = templates.Evaluate("conditionTemplate", new { num = 3 });
 
-            Assert.Equal(evaled, "Your input is three");
+            Assert.Equal("Your input is three", evaled);
 
             evaled = templates.Evaluate("conditionTemplate", new { num = 4 });
 
-            Assert.Equal(evaled, "Your input is not one, two or three");
+            Assert.Equal("Your input is not one, two or three", evaled);
         }
 
         [Fact]
@@ -1215,34 +1215,34 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled1 = templates.Evaluate("templateWithBrackets");
             var evaled2 = templates.Evaluate("templateWithBrackets2");
             var evaled3 = templates.Evaluate("templateWithBrackets3").ToString().Trim();
-            var espectedResult = "don't mix {} and '{}'";
-            Assert.Equal(evaled1, espectedResult);
-            Assert.Equal(evaled2, espectedResult);
-            Assert.Equal(evaled3, espectedResult);
+            var expectedResult = "don't mix {} and '{}'";
+            Assert.Equal(evaled1, expectedResult);
+            Assert.Equal(evaled2, expectedResult);
+            Assert.Equal(evaled3, expectedResult);
 
             evaled1 = templates.Evaluate("templateWithQuotationMarks");
             evaled2 = templates.Evaluate("templateWithQuotationMarks2");
             evaled3 = templates.Evaluate("templateWithQuotationMarks3").ToString().Trim();
-            espectedResult = "don't mix {\"} and \"\"'\"";
-            Assert.Equal(evaled1, espectedResult);
-            Assert.Equal(evaled2, espectedResult);
-            Assert.Equal(evaled3, espectedResult);
+            expectedResult = "don't mix {\"} and \"\"'\"";
+            Assert.Equal(evaled1, expectedResult);
+            Assert.Equal(evaled2, expectedResult);
+            Assert.Equal(evaled3, expectedResult);
 
             evaled1 = templates.Evaluate("templateWithUnpairedBrackets1");
             evaled2 = templates.Evaluate("templateWithUnpairedBrackets12");
             evaled3 = templates.Evaluate("templateWithUnpairedBrackets13").ToString().Trim();
-            espectedResult = "{prefix 5 sufix";
-            Assert.Equal(evaled1, espectedResult);
-            Assert.Equal(evaled2, espectedResult);
-            Assert.Equal(evaled3, espectedResult);
+            expectedResult = "{prefix 5 sufix";
+            Assert.Equal(evaled1, expectedResult);
+            Assert.Equal(evaled2, expectedResult);
+            Assert.Equal(evaled3, expectedResult);
 
             evaled1 = templates.Evaluate("templateWithUnpairedBrackets2");
             evaled2 = templates.Evaluate("templateWithUnpairedBrackets22");
             evaled3 = templates.Evaluate("templateWithUnpairedBrackets23").ToString().Trim();
-            espectedResult = "prefix 5 sufix}";
-            Assert.Equal(evaled1, espectedResult);
-            Assert.Equal(evaled2, espectedResult);
-            Assert.Equal(evaled3, espectedResult);
+            expectedResult = "prefix 5 sufix}";
+            Assert.Equal(evaled1, expectedResult);
+            Assert.Equal(evaled2, expectedResult);
+            Assert.Equal(evaled3, expectedResult);
         }
 
         [Fact]
@@ -1269,6 +1269,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("hello jack , welcome. nice weather!", evaled);
         }
 
+        [Fact]
         public void TestMemoryAccessPath()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("MemoryAccess.lg"));
@@ -1291,17 +1292,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
             };
 
-            // this evaulate will hit memory access twice
+            // this evaluate will hit memory access twice
             // first for "property", and get "p1", from local
-            // sencond for "turn.property[p1].enum" and get "p1enum" from global
+            // second for "turn.property[p1].enum" and get "p1enum" from global
             var result = templates.Evaluate("T1", memory);
-            Assert.Equal(result, "p1enum");
+            Assert.Equal("p1enum", result);
 
-            // this evaulate will hit memory access twice
+            // this evaluate will hit memory access twice
             // first for "myProperty.name", and get "p1", from global
-            // sencond for "turn.property[p1].enum" and get "p1enum" from global 
+            // second for "turn.property[p1].enum" and get "p1enum" from global 
             result = templates.Evaluate("T3", memory);
-            Assert.Equal(result, "p1enum");
+            Assert.Equal("p1enum", result);
         }
 
         [Fact]
@@ -1320,7 +1321,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public void TestEmptyArratAndObject()
+        public void TestEmptyArrayAndObject()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("EmptyArrayAndObject.lg"));
 
@@ -1376,7 +1377,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal($"m\n\ns\n\nf\n\nt\n\n", evaled.ToString().Replace("\r\n", "\n"));
 
             //a1.lg imports b1.lg. 
-            //a1's option is strictMode is false, replaceNull = ${path} is undefined, and defalut lineBreakStyle.
+            //a1's option is strictMode is false, replaceNull = ${path} is undefined, and default lineBreakStyle.
             //b1's option is strictMode is true, replaceNull = The ${path} is undefined, and markdown lineBreakStyle.
             var templates2 = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/a1.lg"));
 
@@ -1384,7 +1385,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.Equal("hi user.name is undefined", evaled2);
 
-            Assert.Equal(templates2.LgOptions.LineBreakStyle, LGLineBreakStyle.Default);
+            Assert.Equal(LGLineBreakStyle.Default, templates2.LgOptions.LineBreakStyle);
 
             //a2.lg imports b2.lg and c2.lg. 
             //a2.lg: replaceNull = The ${path} is undefined  
@@ -1396,7 +1397,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.Equal("hi The user.name is undefined", evaled3);
 
-            Assert.Equal(templates3.LgOptions.LineBreakStyle, null);
+            Assert.Null(templates3.LgOptions.LineBreakStyle);
 
             //a3.lg imports b3.lg and c3.lg in sequence. 
             //b3.lg imports d3.lg 
@@ -1410,7 +1411,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.Equal("hi the user.name is undefined a3!", evaled4);
 
-            Assert.Equal(templates4.LgOptions.LineBreakStyle, LGLineBreakStyle.Markdown);
+            Assert.Equal(LGLineBreakStyle.Markdown, templates4.LgOptions.LineBreakStyle);
 
             //Test use an defined option in Evaluate method, which will override all options in LG files.
             var optionStrList = new string[] { "@strictMode = false", "@replaceNull = ${ path } is undefined", "@lineBreakStyle = defalut" };
@@ -1435,9 +1436,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.Equal("hi the user.name is undefined a4!", evaled5);
 
-            Assert.Equal(templates5.LgOptions.StrictMode, null);
+            Assert.Null(templates5.LgOptions.StrictMode);
 
-            Assert.Equal(templates5.LgOptions.LineBreakStyle, null);
+            Assert.Null(templates5.LgOptions.LineBreakStyle);
         }
 
         [Fact]
@@ -1456,7 +1457,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.True(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
             var exception = Assert.Throws<Exception>(() => templates.EvaluateText("${ErrrorTemplate()}"));
-            Assert.True(exception.Message.Contains("it's not a built-in function or a custom function"));
+            Assert.Contains("it's not a built-in function or a custom function", exception.Message);
         }
 
         [Fact]
@@ -1505,7 +1506,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void TestInjectLG()
         {
-            var templates = Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
+            Templates.ParseFile(GetExampleFilePath("./InjectionTest/inject.lg"));
 
             var (evaled, error) = Expression.Parse("general.greeting()").TryEvaluate(new { name = "Alice" });
             Assert.Equal("hi Alice", evaled.ToString());

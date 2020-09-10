@@ -79,6 +79,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Gets the information of the cref="SourceRange"/>.
+        /// </summary>
+        /// <value>The cref="SourceRange"/> information.</value>
         [JsonIgnore]
         public virtual SourceRange Source => DebugSupport.SourceMap.TryGetValue(this, out var range) ? range : null;
 
@@ -247,11 +251,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.FromResult(false);
         }
 
+        /// <summary>
+        /// Computes an unique ID for a dialog.
+        /// </summary>
+        /// <returns>An unique ID.</returns>
         protected virtual string OnComputeId()
         {
             return this.GetType().Name;
         }
 
+        /// <summary>
+        /// Registers a cref="SourceRange"/> in the provided location.
+        /// </summary>
+        /// <param name="path">The path to the source file.</param>
+        /// <param name="lineNumber">The line number where the source will be located on the file.</param>
         protected void RegisterSourceLocation(string path, int lineNumber)
         {
             if (!string.IsNullOrEmpty(path))

@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using AdaptiveExpressions.Converters;
+using Microsoft.Bot.Builder.AI.LuisV3;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -34,6 +35,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new ArrayExpressionConverter<DynamicList>();
+            yield return new ArrayExpressionConverter<ExternalEntity>();
         }
     }
 }

@@ -44,7 +44,7 @@ variables:
 #  WebexTestBotBotGroup: define this in Azure
 #  WebexTestBotBotName: define this in Azure
 #  WebexTestBotRefreshToken: define this in Azure
-#  WebexTestBotWebexBotAccessToken: define this in Azure
+#  WebexTestBotWebexBotAccessToken: define this in Azure. Expires in 90 days, i.e. Sunday, November 15, 2020
 #  WebexTestBotWebexBotUserName: define this in Azure
 #  WebexTestBotWebexIntegrationClientId: define this in Azure
 #  WebexTestBotWebexIntegrationClientSecret: define this in Azure
@@ -87,13 +87,6 @@ steps:
     inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"
 
-- task: AzureCLI@1
-  displayName: 'Zip Deploy Bot'
-  inputs:
-    azureSubscription: '$(AzureSubscription)'
-    scriptLocation: inlineScript
-    inlineScript: 'call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
@@ -101,7 +94,7 @@ steps:
     projects: 'FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter WebexClientTest'
   env:
-    XXXWebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
+    WebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
     WebexTestBotRefreshToken: $(WebexTestBotRefreshToken)
     WebexTestBotWebexIntegrationClientId: $(WebexTestBotWebexIntegrationClientId)
     WebexTestBotWebexIntegrationClientSecret: $(WebexTestBotWebexIntegrationClientSecret)
@@ -114,3 +107,10 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()
