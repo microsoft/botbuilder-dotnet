@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                     await TranscriptStore.LogActivityAsync(a);
                     
-                    throw new XunitException("Should have thrown ");
+                    throw new XunitException("Should have thrown an error");
                 }
                 catch (StorageException)
                 {

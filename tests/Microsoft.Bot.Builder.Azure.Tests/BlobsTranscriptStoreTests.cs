@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     var a = CreateActivity(0, 0, LongId);
 
                     await TranscriptStore.LogActivityAsync(a);
-                    throw new XunitException("Should have thrown ");
+                    throw new XunitException("Should have thrown an error");
                 }
                 catch (System.Xml.XmlException xmlEx)
                 {
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     }
                 }
 
-                throw new XunitException("Should have thrown ");
+                throw new XunitException("Should have thrown an error");
             }
         }
 
