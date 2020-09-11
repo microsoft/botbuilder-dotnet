@@ -20,24 +20,24 @@
 /build/**                                                                           @microsoft/bb-dotnet
 
 # Adapters
-/libraries/Adapters/**                                                              @garypretty,@mrivera-ms
-/tests/Adapters/**                                                                  @garypretty,@mrivera-ms
+/libraries/Adapters/**                                                              @garypretty @mrivera-ms
+/tests/Adapters/**                                                                  @garypretty @mrivera-ms
 
 # Platform Integration Libaries (.NET Core and WebApi)
 /libraries/integration/**                                                           @microsoft/bb-dotnet-integration
 /tests/integration/**                                                               @microsoft/bb-dotnet-integration
 
 # Application Insights/Telemetry
-/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty,@mrivera-ms
-/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty,@mrivera-ms
+/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty @mrivera-ms
+/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty @mrivera-ms
 
 # AI: LUIS + Orchestrator
 /libraries/Microsoft.Bot.Builder.AI*/**                                             @microsoft/bf-cog-services
 /tests/Microsoft.Bot.Builder.AI*/**                                                 @microsoft/bf-cog-services
 
 # AI: QnA Maker
-/libraries/Microsoft.Bot.Builder.AI.QnA/**					    @mrivera-ms,@microsoft/bf-cog-services
-/tests/Microsoft.Bot.Builder.AI.QnA.Tests/**					    @mrivera-ms,@microsoft/bf-cog-services
+/libraries/Microsoft.Bot.Builder.AI.QnA/**					    @mrivera-ms @microsoft/bf-cog-services
+/tests/Microsoft.Bot.Builder.AI.QnA.Tests/**					    @mrivera-ms @microsoft/bf-cog-services
 
 # Azure (Storage)
 /libraries/Microsoft.Bot.Builder.Azure/**                                           @EricDahlvang @mrivera-ms
