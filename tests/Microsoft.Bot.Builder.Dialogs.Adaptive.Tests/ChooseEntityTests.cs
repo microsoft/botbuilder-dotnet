@@ -13,21 +13,21 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     [TestClass]
-    public class GeneratorTests
+    public class ChooseEntityTests
     {
-        private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\generated\");
+        private readonly string chooseEntityTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\ChooseEntityTests\");
 
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task Generator_sandwich()
+        public async Task ChooseEntity()
         {
             var config = new ConfigurationBuilder()
-                .UseMockLuisSettings(sandwichDirectory, "TestBot")
+                .UseMockLuisSettings(chooseEntityTestsDirectory, "TestBot")
                 .Build();
-            
+
             var resourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
+                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ChooseEntityTests)), monitorChanges: false)
                 .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
 
             await TestUtils.RunTestScript(resourceExplorer, configuration: config);

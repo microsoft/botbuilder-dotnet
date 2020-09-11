@@ -1,25 +1,25 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Test HttpRequestMock Luis for Generated Dialog",
+  "description": "Test Choose Entity",
   "httpRequestMocks": [
-    "httpluis.mock"
+    "LuisChooseEntity.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
     "recognizer": {
       "$kind": "Microsoft.LuisRecognizer",
-      "applicationId": "=settings.luis.unittests_en_us_lu",
-      "endpointKey": "=settings.luis.endpointKey",
-      "endpoint": "=settings.luis.endpoint",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
       "predictionOptions": {
         "IncludeAPIResults": true
       }
     },
+    "schema": "oneProperty.json",
     "triggers": [
       {
         "$kind": "Microsoft.OnBeginDialog",
-        "$comment": "TODO: This is a hack to work around the lack of a way to remit activity or not when invoked.",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",
@@ -29,7 +29,7 @@
       },
       {
         "$kind": "Microsoft.OnEndOfActions",
-        "condition": "=!$Bread || $PropertyToChange == 'Bread'",
+        "condition": "=!$Bread",
         "priority": "0",
         "actions": [
           {
@@ -67,7 +67,6 @@
           }
         ]
       }
-
     ]
   },
   "script": [

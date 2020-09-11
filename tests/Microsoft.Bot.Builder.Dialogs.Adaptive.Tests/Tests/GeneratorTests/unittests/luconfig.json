@@ -1,9 +1,0 @@
-
-{
-    "botName": "unittests",
-    "deleteOldVersion": true, 
-    "out": ".",
-    "dialog": "multiLanguage",
-    "models": ["en-us/unittests.en-us.lu"],
-    "schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/main/experimental/generation/runbot/runbot.schema"
-}
