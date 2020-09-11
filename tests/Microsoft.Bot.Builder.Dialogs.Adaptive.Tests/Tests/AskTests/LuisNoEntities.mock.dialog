@@ -3,11 +3,11 @@
     "$kind": "Microsoft.Test.HttpRequestSequenceMock",
     "method": "POST",
     "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
-    "body": "\"query\": \"nothing\"",
+    "body": "\"query\": \"no entities\"",
     "responses": [
         {
             "content": {
-                "query": "nothing",
+                "query": "no entities",
                 "prediction": {
                     "topIntent": "none",
                     "intents": {

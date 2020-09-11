@@ -1,9 +1,10 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Test retries from Ask",
+  "description": "Test retries from Ask with SetProperty",
   "httpRequestMocks": [
-    "httpluis.mock"
+    "LuisNoEntities.mock",
+    "LuisBreadEntity.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -18,6 +19,15 @@
     },
     "schema": "oneProperty.json",
     "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "welcome"
+          }
+        ]
+      },
       {
         "$kind": "Microsoft.OnEndOfActions",
         "condition": "=!$Bread",
@@ -39,26 +49,16 @@
         "entity": "BreadEntity",
         "actions": [
           {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Set bread to rye"
+          },
+          {
             "$kind": "Microsoft.SetProperty",
             "property": "$Bread",
             "value": "=@BreadEntity"
           }
         ]
-      },
-      {
-        "$kind": "Microsoft.OnChooseEntity",
-        "entity": "BreadEntity",
-        "actions": [
-          {
-            "$kind": "Microsoft.Ask",
-            "activity": "Please choose a value for bread from [multi grain wheat, whole wheat]",
-            "expectedProperties": [
-              "Bread"
-            ]
-          }
-        ]
       }
-
     ]
   },
   "script": [
@@ -75,21 +75,39 @@
       "text": "welcome"
     },
     {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "which value do you what for bread ?"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "wheat"
+      "$kind": "Microsoft.Test.AssertCondition",
+      "condition": "!$retries"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Please choose a value for bread from [multi grain wheat, whole wheat]"
+      "text": "Bread?",
+      "assertions": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertCondition",
+      "condition": "!$retries"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "whole wheat"
+      "text": "no entities"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please choose a value for bread from [multi grain wheat, whole wheat]",
+      "assertions": [
+        "$retries == 1"
+      ]
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "rye"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Set bread to rye",
+      "assertions": [
+        "!$retries"
+      ]
     }
   ]
 }
-
