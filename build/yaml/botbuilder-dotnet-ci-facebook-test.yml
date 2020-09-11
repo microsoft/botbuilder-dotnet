@@ -48,15 +48,13 @@ variables:
 #  FacebookTestBotSenderId: define this in Azure?: This var not needed in build 156862. Revisit this after the build's test is fixed & running.
 
 steps:
-- template: ci-build-steps.yml
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish testbot'
   inputs:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
 - task: AzureCLI@1
@@ -87,7 +85,7 @@ steps:
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter FacebookChatTest'
+    arguments: '-v n --configuration $(BuildConfiguration) --filter FacebookChatTest'
   env:
     BOT_ENDPOINT: https://$(BotName).azurewebsites.net/api/messages
     FacebookTestBotFacebookAccessToken: $(FacebookTestBotFacebookAccessToken)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Antlr4.Runtime;
 using Xunit;
 using static Microsoft.Bot.Builder.LanguageGeneration.LGTemplateParser;
 
@@ -21,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             // - ${welcomeword} ${name}
             Assert.Equal("-${welcomeword} ${name}", normalTemplateBody.GetText());
             var templateStrings = normalTemplateBody.normalTemplateBody().templateString();
-            Assert.Equal(1, templateStrings.Length);
+            Assert.Single(templateStrings);
             var expressions = templateStrings[0].normalTemplateString().expression();
             Assert.Equal("${welcomeword}", expressions[0].GetText());
             Assert.Equal("${name}", expressions[1].GetText());
@@ -32,7 +31,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             Assert.Equal(3, rules.Length);
 
             // - IF:${a > 0}
-            // -positve
+            // -positive
             var ifCondition = rules[0].ifCondition();
             Assert.Equal("-IF:${a > 0}", ifCondition.GetText());
             var expressionContext = ifCondition.expression()[0];
@@ -77,12 +76,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
             var nameLine = structureBody.structuredTemplateBody().structuredBodyNameLine();
             Assert.Equal("MyStruct", nameLine.STRUCTURE_NAME().GetText());
             var bodyLines = structureBody.structuredTemplateBody().structuredBodyContentLine();
-            Assert.Equal(1, bodyLines.Length);
+            Assert.Single(bodyLines);
 
             //body =${ body}
             var contentLine = bodyLines[0].keyValueStructureLine();
             Assert.Equal("body", contentLine.STRUCTURE_IDENTIFIER().GetText());
-            Assert.Equal(1, contentLine.keyValueStructureValue().Length);
+            Assert.Single(contentLine.keyValueStructureValue());
             Assert.Equal("${body}", contentLine.keyValueStructureValue()[0].expressionInStructure()[0].GetText());
         }
 
