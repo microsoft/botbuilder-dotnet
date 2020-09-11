@@ -1164,7 +1164,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                         Value = "Walden",
                     },
                 },
-                StrictFiltersCompoundOperationType = StrictFiltersCompoundOperationType.OR
+                StrictFiltersJoinOperator = JoinOperator.OR
             };
             var qna = GetQnAMaker(
                             interceptHttp,
@@ -1180,7 +1180,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
             var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
             Assert.AreEqual(2, oneFilteredOption.StrictFilters.Length);
-            Assert.AreEqual(StrictFiltersCompoundOperationType.OR, oneFilteredOption.StrictFiltersCompoundOperationType);
+            Assert.AreEqual(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
         }
 
         [TestMethod]
@@ -1878,8 +1878,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
             public Metadata[] MetadataBoost { get; set; }
 
             public float ScoreThreshold { get; set; }
-
-            public StrictFiltersCompoundOperationType StrictFiltersCompoundOperationType { get; set; }
            }
     }
 }

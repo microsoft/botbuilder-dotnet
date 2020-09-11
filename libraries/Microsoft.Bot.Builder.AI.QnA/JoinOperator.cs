@@ -1,23 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using Newtonsoft.Json;
-
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// Compound Filter for Metadata Join Expression.
+    /// Join Operator for Strict Filters.
     /// </summary>
-    public enum StrictFiltersCompoundOperationType
+    public enum JoinOperator
     {
         /// <summary>
-        /// Default Search Filter Operation Type, AND.
+        /// Default Join Operator, AND.
         /// </summary>
         AND,
 
         /// <summary>
-        /// Search Filter Operation Type OR.
+        /// Join Operator, OR.
         /// </summary>
         OR
     }

@@ -7811,11 +7811,11 @@
         "strictFiltersCompoundOperationType": {
             "$ref": "#/definitions/stringExpression",
             "title": "StrictFiltersCompoundOperationType",
-            "description": "Strict Filters Compound Operation Type.",
+            "description": "Join operator for Strict Filters.",
             "oneOf": [
                 {
                     "title": "StrictFilters CompoundOperation Type",
-                    "description": "Strict Filters Compound Operation Type.",
+                    "description": "Value of Join Operator to be used as Conjunction with Strict Filter Value.",
                     "enum": [
                         "AND",
                         "OR"

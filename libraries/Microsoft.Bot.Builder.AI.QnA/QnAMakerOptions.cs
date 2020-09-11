@@ -113,13 +113,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string RankerType { get; set; }
 
         /// <summary>
-        /// Gets or Sets a value of Compound Filter for Metadata Join Expression.
+        /// Gets or sets <see cref="StrictFilters"/> join operator.
         /// </summary>
-        /// [JsonProperty("strictFiltersCompoundOperationType")]
         /// <value>
-        /// A value used for join operation of Metadata <see cref="Metadata"/>.
+        /// A value used for join operation of StrictFilters <see cref="StrictFilters"/>.
         /// </value>
-        [JsonProperty("strictFiltersCompoundOperationType")]
-        public StrictFiltersCompoundOperationType StrictFiltersCompoundOperationType { get; set; }
+        [JsonProperty("strictFiltersJoinOperator")]
+        public JoinOperator StrictFiltersJoinOperator { get; set; }
     }
 }

@@ -113,14 +113,14 @@
                 }
             ]
         },
-        "strictFiltersCompoundOperationType": {
+        "strictFiltersJoinOperator": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "StrictFilters Compound Operation Type",
-            "description": "Type of Operation for Strict Filters.",
+            "title": "StrictFiltersJoinOperator",
+            "description": "Join operator for Strict Filters.",
             "oneOf": [
                 {
-                    "title": "StrictFiltersCompoundOperationType",
-                    "description": "StrictFiltersCompoundOperationType.",
+                    "title": "Join Operator",
+                    "description": "Value of Join Operator to be used as conjunction with Strict Filter values.",
                     "enum": [
                         "AND",
                         "OR"

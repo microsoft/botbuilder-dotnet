@@ -7485,25 +7485,25 @@
 						}
 					]
 				},
-				"strictFiltersCompoundOperationType": {
-					"title": "Strict Filters Compound OperationType",
-					"description": "Strict Filters Compound OperationType.",
-					"oneOf": [
-						{
-							"type": "string",
-							"title": "Strict Filters Compound OperationType",
-							"description": "Strict Filters Compound OperationType.",
-							"enum": [
-								"AND",
-								"OR"
-							],
-							"default": "AND"
-						},
-						{
-							"$ref": "#/definitions/equalsExpression"
-						}
-					]
-				},
+                "strictFiltersCompoundOperationType": {
+                    "title": "Strict Filters Compound OperationType",
+                    "description": "Join operator for Strict Filters.",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "Strict Filters Compound OperationType",
+                            "description": "Value of Join Operator to be used as Conjunction with Strict Filter Values",
+                            "enum": [
+                                "AND",
+                                "OR"
+                            ],
+                            "default": "AND"
+                        },
+                        {
+                            "$ref": "#/definitions/equalsExpression"
+                        }
+                    ]
+                },
 				"includeDialogNameInMetadata": {
 					"$ref": "#/definitions/booleanExpression",
 					"title": "Include Dialog Name",
