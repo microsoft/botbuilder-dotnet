@@ -2,19 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
+using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -55,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// IConfiguration to use for the test.
         /// </value>
         [JsonIgnore]
-        public IConfiguration Configuration { get; set; } 
+        public IConfiguration Configuration { get; set; }
 
         /// <summary>
         /// Gets or sets the description property.
@@ -101,15 +97,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<UserTokenMock> UserTokenMocks { get; } = new List<UserTokenMock>();
 
         /// <summary>
-        /// Gets the mock data for properties.
-        /// </summary>
-        /// <value>
-        /// A list of property mocks. In first match first use order.
-        /// </value>
-        [JsonProperty("propertyMocks")]
-        public List<PropertyMock> PropertyMocks { get; } = new List<PropertyMock>();
-
-        /// <summary>
         /// Gets the test script actions.
         /// </summary>
         /// <value>
@@ -140,12 +127,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             var userState = new UserState(storage);
 
             var adapter = (TestAdapter)new TestAdapter(TestAdapter.CreateConversation(testName))
-                .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
+                .Use(new RegisterClassMiddleware<IConfiguration>(Configuration))
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
                 .Use(new SetTestOptionsMiddleware());
-            
+
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;
         }
@@ -167,10 +154,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 adapter = DefaultTestAdapter(resourceExplorer, testName);
             }
 
-            adapter.EnableTrace = this.EnableTrace;
-            adapter.Locale = this.Locale;
+            adapter.EnableTrace = EnableTrace;
+            adapter.Locale = Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
-            adapter.Use(new MockSettingsMiddleware(PropertyMocks));
 
             foreach (var userToken in UserTokenMocks)
             {
@@ -179,18 +165,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             if (callback != null)
             {
-                foreach (var testAction in this.Script)
+                foreach (var testAction in Script)
                 {
                     await testAction.ExecuteAsync(adapter, callback).ConfigureAwait(false);
                 }
             }
             else
             {
-                var dm = new DialogManager(WrapDialogForPropertyMocks(this.Dialog))
+                var dm = new DialogManager(new MockDialog(Dialog))
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
-                foreach (var testAction in this.Script)
+                foreach (var testAction in Script)
                 {
                     await testAction.ExecuteAsync(adapter, dm.OnTurnAsync).ConfigureAwait(false);
                 }
@@ -207,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
         public TestScript Send(string userSays, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserSays(path: path, line: line) { Text = userSays });
+            Script.Add(new UserSays(path: path, line: line) { Text = userSays });
             return this;
         }
 
@@ -221,7 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
         public TestScript Send(IActivity userActivity, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserActivity(path: path, line: line) { Activity = (Activity)userActivity });
+            Script.Add(new UserActivity(path: path, line: line) { Activity = (Activity)userActivity });
             return this;
         }
 
@@ -233,7 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <returns>Modified TestScript.</returns>
         public TestScript SendConversationUpdate([CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserConversationUpdate(path: path, line: line));
+            Script.Add(new UserConversationUpdate(path: path, line: line));
             return this;
         }
 
@@ -247,7 +233,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
         public TestScript Delay(uint ms, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserDelay(path: path, line: line) { Timespan = ms });
+            Script.Add(new UserDelay(path: path, line: line) { Timespan = ms });
             return this;
         }
 
@@ -262,7 +248,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
         public TestScript Event(string name, object value, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new CustomEvent(path: path, line: line) { Name = name, Value = value });
+            Script.Add(new CustomEvent(path: path, line: line) { Name = name, Value = value });
             return this;
         }
 
@@ -276,7 +262,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
         public TestScript Delay(TimeSpan timespan, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserDelay(path: path, line: line) { Timespan = (uint)timespan.TotalMilliseconds });
+            Script.Add(new UserDelay(path: path, line: line) { Timespan = (uint)timespan.TotalMilliseconds });
             return this;
         }
 
@@ -300,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 action.Assertions.AddRange(assertions);
             }
 
-            this.Script.Add(action);
+            Script.Add(action);
             return this;
         }
 
@@ -323,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 action.Assertions.AddRange(assertions);
             }
 
-            this.Script.Add(action);
+            Script.Add(action);
             return this;
         }
 
@@ -340,7 +326,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestScript AssertReplyContains(string expected, string description = null, uint timeout = 3000, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new AssertReply(path: path, line: line) { Text = expected, Description = description, Timeout = timeout, Exact = false });
+            Script.Add(new AssertReply(path: path, line: line) { Text = expected, Description = description, Timeout = timeout, Exact = false });
             return this;
         }
 
@@ -358,85 +344,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
         public TestScript Test(string userSays, string expected, string description = null, uint timeout = 3000, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
         {
-            this.Script.Add(new UserSays(path: path, line: line) { Text = userSays });
-            this.Script.Add(new AssertReply(path: path, line: line) { Text = expected, Description = description, Timeout = timeout, Exact = true });
+            Script.Add(new UserSays(path: path, line: line) { Text = userSays });
+            Script.Add(new AssertReply(path: path, line: line) { Text = expected, Description = description, Timeout = timeout, Exact = true });
             return this;
-        }
-
-        /// <summary>
-        /// Adds an assertion that the bot's response is contained within a set of acceptable responses.
-        /// </summary>
-        /// <param name="candidates">The set of acceptable messages.</param>
-        /// <param name="description">A message to send if the actual response is not as expected.</param>
-        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
-        /// <param name="path">path.</param>
-        /// <param name="line">line number.</param>
-        /// <returns>A new <see cref="TestScript"/> object that appends this assertion to the modeled exchange.</returns>
-        /// <remarks>This method does not modify the original <see cref="TestScript"/> object.</remarks>
-        /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestScript AssertReplyOneOf(string[] candidates, string description = null, uint timeout = 3000, [CallerFilePath] string path = "", [CallerLineNumber] int line = 0)
-        {
-            var assertReplyOneOf = new AssertReplyOneOf(path: path, line: line)
-            {
-                Description = description,
-                Timeout = timeout,
-                Exact = true
-            };
-            assertReplyOneOf.Text.AddRange(candidates.ToList());
-            Script.Add(assertReplyOneOf);
-            return this;
-        }
-
-        private Dialog WrapDialogForPropertyMocks(Dialog dialog)
-        {
-            string settingsPrefix = $"{ScopePath.Settings}.";
-            var setPropertiesDialog = new SetProperties();
-            var hasSet = new HashSet<string>();
-            foreach (var property in PropertyMocks)
-            {
-                if (property is PropertiesMock mock)
-                {
-                    foreach (var assignment in mock.Assignments)
-                    {
-                        // Note we only check if it is for settings here.
-                        if (!assignment.Property.StartsWith(settingsPrefix, StringComparison.Ordinal))
-                        {
-                            if (!hasSet.Contains(assignment.Property))
-                            {
-                                setPropertiesDialog.Assignments.Add(new Adaptive.Actions.PropertyAssignment
-                                {
-                                    Property = new StringExpression(assignment.Property),
-                                    Value = new ValueExpression(assignment.Value)
-                                });
-
-                                hasSet.Add(assignment.Property);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (hasSet.Count == 0)
-            {
-                return dialog;
-            }
-            else
-            {
-                var rootDialog = new AdaptiveDialog();
-                rootDialog.Triggers.Add(new OnBeginDialog
-                {
-                    Actions = new List<Dialog>
-                    {
-                        setPropertiesDialog,
-                        new ReplaceDialog
-                        {
-                            Dialog = dialog
-                        }
-                    }
-                });
-
-                return rootDialog;
-            }
         }
 
 #if SAVESCRIPT
@@ -448,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 Directory.CreateDirectory(folder);
             }
 
-            if (this.Dialog is DialogContainer container && container.Dialogs.GetDialogs().Any())
+            if (Dialog is DialogContainer container && container.Dialogs.GetDialogs().Any())
             {
                 folder = Path.Combine(folder, testName);
 
@@ -497,37 +407,116 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         }
 #endif
 
-#pragma warning disable CA1812 // Internal class is apparently never used (ignoring for now but consider removing it)
-        internal class IgnoreEmptyEnumerablesResolver : DefaultContractResolver
-#pragma warning restore CA1812 // Internal class is apparently never used
+        // Dialog wrapper for handling SetProperties and MemoryAssertions events.
+        private class MockDialog : Dialog
         {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            private Dialog _innerDialog;
+
+            public MockDialog(Dialog innerDialog)
             {
-                var property = base.CreateProperty(member, memberSerialization);
+                _innerDialog = innerDialog;
+            }
 
-                if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType) && property.PropertyType != typeof(string))
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                var result = new DialogTurnResult(DialogTurnStatus.Complete);
+                if (!HandleTestEvents(dc))
                 {
-                    property.ShouldSerialize = instance =>
-                    {
-                        var enumer = instance
-                            .GetType()
-                            .GetProperty(member.Name)
-                            .GetValue(instance, null) as IEnumerable;
-
-                        if (enumer != null)
-                        {
-                            // check to see if there is at least one item in the Enumerable
-                            return enumer.GetEnumerator().MoveNext();
-                        }
-                        else
-                        {
-                            // if the enumerable is null, we defer the decision to NullValueHandling
-                            return true;
-                        }
-                    };
+                    return await _innerDialog.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
                 }
 
-                return property;
+                return result;
+            }
+
+            public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                var result = new DialogTurnResult(DialogTurnStatus.Complete);
+                if (!HandleTestEvents(dc))
+                {
+                    result = await _innerDialog.ContinueDialogAsync(dc, cancellationToken).ConfigureAwait(false);
+                }
+
+                return result;
+            }
+
+            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            {
+                var dialogResult = new DialogTurnResult(DialogTurnStatus.Complete);
+                if (!HandleTestEvents(dc))
+                {
+                    dialogResult = await _innerDialog.ResumeDialogAsync(dc, reason, result, cancellationToken).ConfigureAwait(false);
+                }
+
+                return dialogResult;
+            }
+
+            public async override Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
+            {
+                await _innerDialog.RepromptDialogAsync(turnContext, instance, cancellationToken).ConfigureAwait(false);
+            }
+
+            public async override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
+            {
+                await _innerDialog.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
+            }
+
+            public override string GetVersion()
+            {
+                return _innerDialog.GetVersion();
+            }
+
+            public async override Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+            {
+                var result = true;
+                if (!HandleTestEvents(dc))
+                {
+                    result = await _innerDialog.OnDialogEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
+                }
+
+                return result;
+            }
+
+            protected override string OnComputeId()
+            {
+                return _innerDialog.Id;
+            }
+
+            private bool HandleTestEvents(DialogContext dc)
+            {
+                var isTestEvent = false;
+                if (dc.Context.Activity.Type == "event")
+                {
+                    if (dc.Context.Activity.Name == "SetProperties")
+                    {
+                        if (dc.Context.Activity.Value is List<PropertyAssignment> assignments)
+                        {
+                            foreach (var assignment in assignments)
+                            {
+                                dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
+                            }
+                        }
+
+                        isTestEvent = true;
+                    }
+                    else if (dc.Context.Activity.Name == "MemoryAssertions")
+                    {
+                        if (dc.Context.Activity.Value is List<string> assertions)
+                        {
+                            foreach (var assertion in assertions)
+                            {
+                                var (val, error) = Expression.Parse(assertion).TryEvaluate<bool>(dc.State);
+                                if (error != null || !val)
+                                {
+                                    throw new Exception($"{assertion} failed");
+                                }
+                            }
+                        }
+
+                        isTestEvent = true;
+                    }
+                }
+
+                return isTestEvent;
             }
         }
     }

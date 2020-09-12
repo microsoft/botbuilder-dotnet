@@ -10,10 +10,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.Luis.Testing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
@@ -33,12 +36,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
+            var path = Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(AskTests));
             ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(AskTests)), monitorChanges: false);
+                .AddFolder(path, monitorChanges: false)
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader());
         }
 
         [TestMethod]
         public async Task AskRetriesSetProperty()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AskRetriesSetProperties()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AskRetriesDeleteProperty()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AskRetriesDeleteProperties()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
+        public async Task AskRetriesEditArray()
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }

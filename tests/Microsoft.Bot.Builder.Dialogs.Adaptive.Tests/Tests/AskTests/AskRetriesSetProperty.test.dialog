@@ -75,17 +75,14 @@
       "text": "welcome"
     },
     {
-      "$kind": "Microsoft.Test.AssertCondition",
-      "condition": "!$retries"
-    },
-    {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Bread?",
-      "assertions": []
+      "text": "Bread?"
     },
     {
-      "$kind": "Microsoft.Test.AssertCondition",
-      "condition": "!$retries"
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "$retries == 0"
+      ]
     },
     {
       "$kind": "Microsoft.Test.UserSays",
@@ -93,7 +90,10 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Please choose a value for bread from [multi grain wheat, whole wheat]",
+      "text": "Bread?"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
       "assertions": [
         "$retries == 1"
       ]
@@ -104,7 +104,10 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Set bread to rye",
+      "text": "Set bread to rye"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
       "assertions": [
         "!$retries"
       ]

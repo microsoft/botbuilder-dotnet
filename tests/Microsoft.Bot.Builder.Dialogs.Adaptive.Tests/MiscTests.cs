@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Intent = "no",
                         Actions = new List<Dialog>()
                         {
-                            new SetProperties()
+                            new Actions.SetProperties()
                             {
                                 Assignments = new List<PropertyAssignment>()
                                 {
