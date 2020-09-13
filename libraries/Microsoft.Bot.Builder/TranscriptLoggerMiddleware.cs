@@ -109,20 +109,13 @@ namespace Microsoft.Bot.Builder
             await nextTurn(cancellationToken).ConfigureAwait(false);
 
             // flush transcript at end of turn
-            var logTasks = new List<Task>();
             while (transcript.Count > 0)
             {
                 // Process the queue and log all the activities in parallel.
                 var activity = transcript.Dequeue();
 
-                // Add the logging task to the list (we don't call await here, we await all the calls together later).
-                logTasks.Add(TryLogActivityAsync(_logger, activity));
-            }
-
-            if (logTasks.Any())
-            {
-                // Wait for all the activities to be logged before continuing.
-                await Task.WhenAll(logTasks).ConfigureAwait(false);
+                // NOTE: We are not awaiting this task by design, TryLogActivity() observes all exceptions and we don't need to or want to block execution on the completion.
+                _ = TryLogActivityAsync(_logger, activity);
             }
         }
 
