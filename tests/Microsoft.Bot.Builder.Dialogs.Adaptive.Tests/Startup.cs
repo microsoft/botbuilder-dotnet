@@ -42,10 +42,5 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             // registered.
             services.AddSingleton(Configuration);
         }
-
-        public new void Dispose()
-        {
-            base.Dispose();
-        }
     }
 }
