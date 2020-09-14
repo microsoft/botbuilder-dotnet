@@ -1146,8 +1146,8 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var context = GetContext("up");
             var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
             var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
-            Assert.AreEqual(2, oneFilteredOption.StrictFilters.Length);
-            Assert.AreEqual(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
+            Assert.Equal(2, oneFilteredOption.StrictFilters.Length);
+            Assert.Equal(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
         }
 
         [Fact]
