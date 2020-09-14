@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 { AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(Timeout.GetValue(dc.State));
+            state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(Timeout.GetValue(dc.State));
 
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                                         || IsTokenResponseEvent(dc.Context)
                                         || IsTeamsVerificationInvoke(dc.Context)
                                         || IsTokenExchangeRequestInvoke(dc.Context);
-            var hasTimedOut = isTimeoutActivityType && (DateTime.Compare(DateTime.Now, expires) > 0);
+            var hasTimedOut = isTimeoutActivityType && (DateTime.Compare(DateTime.UtcNow, expires) > 0);
 
             if (hasTimedOut)
             {
