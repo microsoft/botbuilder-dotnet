@@ -132,6 +132,12 @@ namespace Microsoft.Bot.Builder.Azure
                         .ConfigureAwait(false);
 
                     var documentStoreItem = readItemResponse.Resource;
+
+                    if (_cosmosDbStorageOptions.OptimisticConcurrencyEnabled)
+                    {
+                        documentStoreItem.Document["eTag"] = documentStoreItem.ETag;
+                    }
+
                     var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
 
                     if (item is IStoreItem storeItem)
@@ -188,6 +194,7 @@ namespace Microsoft.Bot.Builder.Azure
             foreach (var change in changes)
             {
                 var json = JObject.FromObject(change.Value, _jsonSerializer);
+                var etag = TryGetETag(change.Value, json);
 
                 // Remove etag from JSON object that was copied from IStoreItem.
                 // The ETag information is updated as an _etag attribute in the document metadata.
@@ -200,7 +207,6 @@ namespace Microsoft.Bot.Builder.Azure
                     Document = json,
                 };
 
-                var etag = (change.Value as IStoreItem)?.ETag;
                 if (etag == null || etag == "*")
                 {
                     // if new item or * then insert or replace unconditionally
@@ -301,6 +307,30 @@ namespace Microsoft.Bot.Builder.Azure
             }
 
             _disposed = true;
+        }
+
+        private string TryGetETag(object value, JObject valueJson)
+        {
+            if (value is IStoreItem item)
+            {
+                return item.ETag;
+            }
+            else if (valueJson.TryGetValue(nameof(IStoreItem.ETag), StringComparison.OrdinalIgnoreCase, out var token) 
+                && token != null
+                && token.Type != JTokenType.Null
+                && token.Type != JTokenType.Undefined)
+            {
+                if (token.Type != JTokenType.String)
+                {
+                    throw new ArgumentException($"Unexpected value '{token.ToString()}' ({token.Type}) in path {token.Path}. Expected a string or no value.");
+                }
+
+                return token.Value<string>();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private PartitionKey GetPartitionKey(string key)

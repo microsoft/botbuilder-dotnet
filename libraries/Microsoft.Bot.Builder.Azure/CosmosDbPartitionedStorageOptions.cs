@@ -85,5 +85,15 @@ namespace Microsoft.Bot.Builder.Azure
         /// The default for backwards compatibility is 255 <see cref="CosmosDbKeyEscape.MaxKeyLength"/>.
         /// </value>
         public bool CompatibilityMode { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to look for ETag property values in store 
+        /// values. The property name is not case sensitive. Objects that already implement 
+        /// <see cref="IStoreItem"/> use optimistic concurrency behavior regardless of this flag.
+        /// </summary>
+        /// <value>
+        /// True if optimistic concurrency should be checked explicitly, otherwise false.
+        /// </value>
+        public bool OptimisticConcurrencyEnabled { get; set; } = false;
     }
 }
