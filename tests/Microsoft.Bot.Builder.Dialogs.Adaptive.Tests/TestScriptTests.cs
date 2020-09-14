@@ -109,6 +109,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task TestScriptTests_HttpRequestQnAMakerRecognizerMock()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestScriptTests_HttpRequestQnAMakerDialogMock()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task TestScriptTests_CustomEvent()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

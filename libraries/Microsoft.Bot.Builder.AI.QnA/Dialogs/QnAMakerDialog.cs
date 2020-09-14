@@ -459,6 +459,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 return qnaClient;
             }
 
+            var httpClient = dc.Context.TurnState.Get<HttpClient>();
+            if (httpClient == null)
+            {
+                httpClient = HttpClient;
+            }
+
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.EndpointKey.GetValue(dc.State),
@@ -466,7 +472,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
                 KnowledgeBaseId = this.KnowledgeBaseId.GetValue(dc.State)
             };
             var options = await GetQnAMakerOptionsAsync(dc).ConfigureAwait(false);
-            return new QnAMaker(endpoint, options, HttpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
+            return new QnAMaker(endpoint, options, httpClient, this.TelemetryClient, this.LogPersonalInformation.GetValue(dc.State));
         }
 
         /// <summary>

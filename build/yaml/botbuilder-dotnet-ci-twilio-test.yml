@@ -43,7 +43,8 @@ variables:
 #  TwilioNumber: define this in Azure
 
 steps:
-- template: ci-build-steps.yml
+- powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
+  displayName: 'Display env vars'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish Twilio.TestBot'
@@ -51,7 +52,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\Microsoft.Bot.Builder.Adapters.Twilio.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot'
     modifyOutputPath: false
 
 - task: AzureCLI@1
@@ -76,7 +77,7 @@ steps:
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter TwilioNumberTests'
+    arguments: '-v n --configuration $(BuildConfiguration) --filter TwilioNumberTests'
 
 - task: AzureCLI@1
   displayName: 'Delete resources'

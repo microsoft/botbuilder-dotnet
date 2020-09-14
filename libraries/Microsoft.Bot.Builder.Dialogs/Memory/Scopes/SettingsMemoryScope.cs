@@ -16,12 +16,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     {
         private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
+        /// </summary>
         public SettingsMemoryScope()
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
         }
 
+        /// <summary>
+        /// Gets the backing memory for this scope.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
+        /// <returns>Memory for the scope.</returns>
         public override object GetMemory(DialogContext dc)
         {
             if (dc == null)
@@ -42,6 +50,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             return settings ?? _emptySettings;
         }
 
+        /// <summary>
+        /// Changes the backing object for the memory scope.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
+        /// <param name="memory">Memory object to set for the scope.</param>
+        /// <remarks>Method not supported. You cannot set the memory for a readonly memory scope.</remarks>
         public override void SetMemory(DialogContext dc, object memory)
         {
             throw new NotSupportedException("You cannot set the memory for a readonly memory scope");

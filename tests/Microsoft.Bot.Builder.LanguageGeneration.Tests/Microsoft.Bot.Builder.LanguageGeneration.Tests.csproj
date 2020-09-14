@@ -51,13 +51,13 @@
     <None Remove="Examples\NonAdaptiveCardActivity.lg" />
     <None Remove="Examples\StrictModeFalse.lg" />
     <None Remove="Examples\switchcase.lg" />
+    <None Remove="Examples\TemplateCache.lg" />
     <None Remove="Examples\TemplateNameWithDot.lg" />
     <None Remove="Examples\TemplateRef.lg" />
     <None Remove="Examples\Regex.lg" />
     <None Remove="Examples\EvalExpression.lg" />
     <None Remove="Examples\StructuredTemplate.lg" />
     <None Remove="Examples\ConditionExpression.lg" />
-    <None Remove="Examples\EvaluateOnce.lg" />
     <None Remove="Examples\LoopScope.lg" />
     <None Remove="Examples\ExpressionExtract.lg" />
     <None Remove="Examples\StringInterpolation.lg" />
@@ -233,7 +233,7 @@
     <Content Include="Examples\StructuredTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Examples\EvaluateOnce.lg">
+    <Content Include="Examples\TemplateCache.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\ReExecute.lg">
