@@ -240,6 +240,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal(501, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
+        [Fact]
         public async Task TestMessagingExtensionSubmitAction()
         {
             // Arrange

@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
@@ -13,17 +11,16 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
-    [TestClass]
-    [TestCategory("ApplicationInsights")]
+    [Trait("TestCategory", "ApplicationInsights")]
     public class TelemetryInitializerTests
     {
-        [TestMethod]
+        [Fact]
         public void VerifyAllTelemtryPropoerties()
         {
             var configuration = new TelemetryConfiguration();
@@ -60,20 +57,20 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             telemetryClient.TrackEvent("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
 
-            Assert.IsTrue(sentItems.Count == 1);
+            Assert.Single(sentItems);
             var telem = sentItems[0] as EventTelemetry;
-            Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Properties["activityId"] == activityID);
-            Assert.IsTrue(telem.Properties["activityType"] == "message");
-            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
-            Assert.IsTrue(telem.Context.Session.Id == sessionId);
-            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
-            Assert.IsTrue(telem.Properties["hello"] == "value");
-            Assert.IsTrue(telem.Metrics["metric"] == 0.6);
+            Assert.NotNull(telem);
+            Assert.Equal(activityID, telem.Properties["activityId"]);
+            Assert.Equal("message", telem.Properties["activityType"]);
+            Assert.Equal("CHANNELID", telem.Properties["channelId"]);
+            Assert.Equal(conversationID, telem.Properties["conversationId"]);
+            Assert.Equal(sessionId, telem.Context.Session.Id);
+            Assert.Equal(channelID + fromID, telem.Context.User.Id);
+            Assert.Equal("value", telem.Properties["hello"]);
+            Assert.Equal(0.6, telem.Metrics["metric"]);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyOverriddenProperties()
         {
             var configuration = new TelemetryConfiguration();
@@ -121,37 +118,37 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
                     0.6
                 },
             };
-            telemetryClient.TrackEvent("test", new Dictionary<string, string>()
+
+            var properties = new Dictionary<string, string>()
             {
                 { "activityId", activityIdValue },  // The activityId can be overridden.
                 { "channelId", channelIdValue },
                 { "activityType", activityTypeValue },
-            },
-#pragma warning disable SA1117 // Parameters should be on same line or separate lines
-            metrics);
-#pragma warning restore SA1117 // Parameters should be on same line or separate lines
+            };
 
-            Assert.IsTrue(sentItems.Count == 1);
+            telemetryClient.TrackEvent("test", properties, metrics);
+
+            Assert.Single(sentItems);
             var telem = sentItems[0] as EventTelemetry;
-            Assert.IsTrue(telem != null);
+            Assert.NotNull(telem);
 
-            Assert.IsTrue(telem.Context.Session.Id == sessionId);
-            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
+            Assert.Equal(sessionId, telem.Context.Session.Id);
+            Assert.Equal(channelID + fromID, telem.Context.User.Id);
 
             // The TelemetryInitializer honors being overridden
             // What we get out should be what we originally put in, and not what the Initializer
             // normally does.
-            Assert.IsFalse(telem.Properties["activityId"] == activityID);
-            Assert.IsTrue(telem.Properties["activityId"] == activityIdValue);
-            Assert.IsTrue(telem.Properties["channelId"] == channelIdValue);
-            Assert.IsFalse(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Properties["activityType"] == activityTypeValue);
-            Assert.IsFalse(telem.Properties["activityType"] == "message");
-            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
-            Assert.IsTrue(telem.Metrics["metric"] == 0.6);
+            Assert.NotEqual(activityID, telem.Properties["activityId"]);
+            Assert.Equal(activityIdValue, telem.Properties["activityId"]);
+            Assert.Equal(channelIdValue, telem.Properties["channelId"]);
+            Assert.NotEqual("CHANNELID", telem.Properties["channelId"]);
+            Assert.Equal(activityTypeValue, telem.Properties["activityType"]);
+            Assert.NotEqual("message", telem.Properties["activityType"]);
+            Assert.Equal(conversationID, telem.Properties["conversationId"]);
+            Assert.Equal(0.6, telem.Metrics["metric"]);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyTraceProperties()
         {
             var configuration = new TelemetryConfiguration();
@@ -188,18 +185,18 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             telemetryClient.TrackTrace("test");
 
-            Assert.IsTrue(sentItems.Count == 1);
+            Assert.Single(sentItems);
             var telem = sentItems[0] as TraceTelemetry;
-            Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Properties["activityId"] == activityID);
-            Assert.IsTrue(telem.Properties["activityType"] == "message");
-            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
-            Assert.IsTrue(telem.Context.Session.Id == sessionId);
-            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
+            Assert.NotNull(telem);
+            Assert.Equal(activityID, telem.Properties["activityId"]);
+            Assert.Equal("message", telem.Properties["activityType"]);
+            Assert.Equal("CHANNELID", telem.Properties["channelId"]);
+            Assert.Equal(conversationID, telem.Properties["conversationId"]);
+            Assert.Equal(sessionId, telem.Context.Session.Id);
+            Assert.Equal(channelID + fromID, telem.Context.User.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyRequestProperties()
         {
             var configuration = new TelemetryConfiguration();
@@ -236,18 +233,18 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             telemetryClient.TrackRequest("Foo", DateTimeOffset.Now, TimeSpan.FromSeconds(1.0), "response", true);
 
-            Assert.IsTrue(sentItems.Count == 1);
+            Assert.Single(sentItems);
             var telem = sentItems[0] as RequestTelemetry;
-            Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Properties["activityId"] == activityID);
-            Assert.IsTrue(telem.Properties["activityType"] == "message");
-            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
-            Assert.IsTrue(telem.Context.Session.Id == sessionId);
-            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
+            Assert.NotNull(telem);
+            Assert.Equal(activityID, telem.Properties["activityId"]);
+            Assert.Equal("message", telem.Properties["activityType"]);
+            Assert.Equal("CHANNELID", telem.Properties["channelId"]);
+            Assert.Equal(conversationID, telem.Properties["conversationId"]);
+            Assert.Equal(sessionId, telem.Context.Session.Id);
+            Assert.Equal(channelID + fromID, telem.Context.User.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifyDependencyProperties()
         {
             var configuration = new TelemetryConfiguration();
@@ -284,18 +281,18 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             telemetryClient.TrackDependency("Foo", "Bar", "Data", DateTimeOffset.Now, TimeSpan.FromSeconds(1.0), true);
 
-            Assert.IsTrue(sentItems.Count == 1);
+            Assert.Single(sentItems);
             var telem = sentItems[0] as DependencyTelemetry;
-            Assert.IsTrue(telem != null);
-            Assert.IsTrue(telem.Properties["activityId"] == activityID);
-            Assert.IsTrue(telem.Properties["activityType"] == "message");
-            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Properties["conversationId"] == conversationID);
-            Assert.IsTrue(telem.Context.Session.Id == sessionId);
-            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
+            Assert.NotNull(telem);
+            Assert.Equal(activityID, telem.Properties["activityId"]);
+            Assert.Equal("message", telem.Properties["activityType"]);
+            Assert.Equal("CHANNELID", telem.Properties["channelId"]);
+            Assert.Equal(conversationID, telem.Properties["conversationId"]);
+            Assert.Equal(sessionId, telem.Context.Session.Id);
+            Assert.Equal(channelID + fromID, telem.Context.User.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void InvalidMessage_NoConversation()
         {
             var configuration = new TelemetryConfiguration();
@@ -329,20 +326,20 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             telemetryClient.TrackEvent("test", new Dictionary<string, string>() { { "hello", "value" } }, new Dictionary<string, double>() { { "metric", 0.6 } });
 
-            Assert.IsTrue(sentItems.Count == 1);
+            Assert.Single(sentItems);
             var telem = sentItems[0] as EventTelemetry;
             var properties = (ISupportProperties)telem;
-            Assert.IsTrue(telem != null);
-            Assert.IsTrue(properties.Properties["activityId"] == activityID);
-            Assert.IsTrue(properties.Properties["activityType"] == "message");
-            Assert.IsTrue(telem.Properties["channelId"] == "CHANNELID");
-            Assert.IsTrue(telem.Context.User.Id == channelID + fromID);
-            Assert.IsTrue(telem.Properties["hello"] == "value");
-            Assert.IsTrue(telem.Metrics["metric"] == 0.6);
+            Assert.NotNull(telem);
+            Assert.Equal(activityID, properties.Properties["activityId"]);
+            Assert.Equal("message", properties.Properties["activityType"]);
+            Assert.Equal("CHANNELID", telem.Properties["channelId"]);
+            Assert.Equal(channelID + fromID, telem.Context.User.Id);
+            Assert.Equal("value", telem.Properties["hello"]);
+            Assert.Equal(0.6, telem.Metrics["metric"]);
         }
 
-        [TestMethod]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_InitializerMiddleware_LogActivities_Enabled()
         {
             // Arrange
@@ -372,21 +369,21 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
             // Assert
-            Assert.IsNotNull(mockHttpContextAccessor.Object.HttpContext.Items);
-            Assert.IsTrue(mockHttpContextAccessor.Object.HttpContext.Items.Count == 1);
-            Assert.AreEqual(mockTelemetryClient.Invocations.Count, 6);
+            Assert.NotNull(mockHttpContextAccessor.Object.HttpContext.Items);
+            Assert.Single(mockHttpContextAccessor.Object.HttpContext.Items);
+            Assert.Equal(6, mockTelemetryClient.Invocations.Count);
         }
 
-        [TestMethod]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_InitializerMiddleware_LogActivities_Disabled()
         {
             // Arrange
@@ -416,21 +413,21 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
             // Assert
-            Assert.IsNotNull(mockHttpContextAccessor.Object.HttpContext.Items);
-            Assert.IsTrue(mockHttpContextAccessor.Object.HttpContext.Items.Count == 1);
-            Assert.AreEqual(mockTelemetryClient.Invocations.Count, 0);
+            Assert.NotNull(mockHttpContextAccessor.Object.HttpContext.Items);
+            Assert.Single(mockHttpContextAccessor.Object.HttpContext.Items);
+            Assert.Empty(mockTelemetryClient.Invocations);
         }
 
-        [TestMethod]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_InitializerMiddleware_Null_HttpContext_NoError()
         {
             // Arrange
@@ -459,16 +456,16 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("foo")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:foo")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(ActivityTypes.Typing, activity.Type))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
             // Assert
-            Assert.IsNull(mockHttpContextAccessor.Object.HttpContext);
-            Assert.AreEqual(mockTelemetryClient.Invocations.Count, 0);
+            Assert.Null(mockHttpContextAccessor.Object.HttpContext);
+            Assert.Empty(mockTelemetryClient.Invocations);
         }
     }
 }

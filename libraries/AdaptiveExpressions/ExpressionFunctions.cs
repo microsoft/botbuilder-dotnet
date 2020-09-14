@@ -114,6 +114,7 @@ namespace AdaptiveExpressions
                 new BuiltinFunctions.Join(),
                 new BuiltinFunctions.JPath(),
                 new BuiltinFunctions.Json(),
+                new BuiltinFunctions.JsonStringify(),
                 new BuiltinFunctions.Last(),
                 new BuiltinFunctions.LastIndexOf(),
                 new BuiltinFunctions.Length(),

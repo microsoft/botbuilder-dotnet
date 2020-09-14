@@ -2,21 +2,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class LuisAdaptiveRecognizerTests
+    public class LuisAdaptiveRecognizerTests : IClassFixture<LuisAdaptiveRecognizerFixture>
     {
         private const string DynamicListJSon = @"[
                 {
@@ -65,82 +60,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             'endpoint': '=settings.luis.endpoint',
             'endpointKey': '=settings.luis.endpointKey', 'dynamicLists': " + DynamicListJSon + "}";
 
-        private static readonly string DynamicListsDirectory = PathUtils.NormalizePath(@"..\..\..\tests\LuisAdaptiveRecognizerTests");
-        
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly LuisAdaptiveRecognizerFixture _luisAdaptiveRecognizerFixture;
 
-        public static IConfiguration Configuration { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public LuisAdaptiveRecognizerTests(LuisAdaptiveRecognizerFixture luisAdaptiveRecognizerFixture)
         {
-            Configuration = new ConfigurationBuilder()
-                .UseMockLuisSettings(DynamicListsDirectory, "TestBot")
-                .Build();
-            
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "tests", nameof(LuisAdaptiveRecognizerTests)), monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(Configuration));
+            _luisAdaptiveRecognizerFixture = luisAdaptiveRecognizerFixture;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DynamicLists()
         {
-            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
+            await TestUtils.RunTestScript(_luisAdaptiveRecognizerFixture.ResourceExplorer, configuration: _luisAdaptiveRecognizerFixture.Configuration);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DynamicListsExpression()
         {
-            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
+            await TestUtils.RunTestScript(_luisAdaptiveRecognizerFixture.ResourceExplorer, configuration: _luisAdaptiveRecognizerFixture.Configuration);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ExternalEntities()
         {
-            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
+            await TestUtils.RunTestScript(_luisAdaptiveRecognizerFixture.ResourceExplorer, configuration: _luisAdaptiveRecognizerFixture.Configuration);
         }
 
-        [TestMethod]
+        [Fact]
         public void DeserializeDynamicList()
         {
             var dl = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon);
-            Assert.AreEqual(2, dl.Count);
-            Assert.AreEqual("alphaEntity", dl[0].Entity);
-            Assert.AreEqual(2, dl[0].List.Count);
+            Assert.Equal(2, dl.Count);
+            Assert.Equal("alphaEntity", dl[0].Entity);
+            Assert.Equal(2, dl[0].List.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void DeserializeSerializedDynamicList()
         {
             var ol = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon);
             var json = JsonConvert.SerializeObject(ol);
             var dl = JsonConvert.DeserializeObject<List<DynamicList>>(json);
-            Assert.AreEqual(2, dl.Count);
-            Assert.AreEqual("alphaEntity", dl[0].Entity);
-            Assert.AreEqual(2, dl[0].List.Count);
+            Assert.Equal(2, dl.Count);
+            Assert.Equal("alphaEntity", dl[0].Entity);
+            Assert.Equal(2, dl[0].List.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void DeserializeArrayExpression()
         {
             var ae = JsonConvert.DeserializeObject<ArrayExpression<DynamicList>>(DynamicListJSon, new ArrayExpressionConverter<DynamicList>());
             var dl = ae.GetValue(null);
-            Assert.AreEqual(2, dl.Count);
-            Assert.AreEqual("alphaEntity", dl[0].Entity);
-            Assert.AreEqual(2, dl[0].List.Count);
+            Assert.Equal(2, dl.Count);
+            Assert.Equal("alphaEntity", dl[0].Entity);
+            Assert.Equal(2, dl[0].List.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void DeserializeLuisAdaptiveRecognizer()
         {
             var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(RecognizerJson, new ArrayExpressionConverter<DynamicList>());
             var dl = recognizer.DynamicLists.GetValue(null);
-            Assert.AreEqual(2, dl.Count);
-            Assert.AreEqual("alphaEntity", dl[0].Entity);
-            Assert.AreEqual(2, dl[0].List.Count);
+            Assert.Equal(2, dl.Count);
+            Assert.Equal("alphaEntity", dl[0].Entity);
+            Assert.Equal(2, dl[0].List.Count);
         }
     }
 }

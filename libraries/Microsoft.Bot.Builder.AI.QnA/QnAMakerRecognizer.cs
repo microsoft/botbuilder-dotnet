@@ -108,6 +108,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         public StringExpression RankerType { get; set; } = RankerTypes.DefaultRankerType;
 
         /// <summary>
+        /// Gets or sets <see cref="Metadata"/> join operator.
+        /// </summary>
+        /// <value>
+        /// A value used for Join operation of Metadata <see cref="Metadata"/>.
+        /// </value>
+        [JsonProperty("strictFiltersJoinOperator")]
+        public JoinOperator StrictFiltersJoinOperator { get; set; }
+
+        /// <summary>
         /// Gets or sets the whether to include the dialog name metadata for QnA context.
         /// </summary>
         /// <value>
@@ -209,7 +218,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                     Top = Top.GetValue(dialogContext.State),
                     QnAId = QnAId.GetValue(dialogContext.State),
                     RankerType = RankerType.GetValue(dialogContext.State),
-                    IsTest = IsTest
+                    IsTest = IsTest,
+                    StrictFiltersJoinOperator = StrictFiltersJoinOperator
                 },
                 null).ConfigureAwait(false);
 
@@ -270,6 +280,12 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 return Task.FromResult(qnaClient);
             }
 
+            var httpClient = dc.Context.TurnState.Get<HttpClient>();
+            if (httpClient == null)
+            {
+                httpClient = HttpClient;
+            }
+
             var (epKey, error) = EndpointKey.TryGetValue(dc.State);
             var (hn, error2) = HostName.TryGetValue(dc.State);
             var (kbId, error3) = KnowledgeBaseId.TryGetValue(dc.State);
@@ -282,7 +298,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 KnowledgeBaseId = kbId ?? throw new InvalidOperationException($"Unable to get a value for {nameof(KnowledgeBaseId)} from state. {error3}")
             };
 
-            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), HttpClient, TelemetryClient, logPersonalInfo));
+            return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), httpClient, TelemetryClient, logPersonalInfo));
         }
     }
 }

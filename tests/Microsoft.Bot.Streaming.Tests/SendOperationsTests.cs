@@ -12,15 +12,14 @@ using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Bot.Streaming.PayloadTransport;
 using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests
 {
-    [TestClass]
     public class SendOperationsTests
     {
-        [TestMethod]
+        [Fact]
         public async Task SendRequestAsync_WaitsTillAllDataSent()
         {
             var payLoadSender = new PayloadSender();
@@ -49,7 +48,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestDisassembler_WithVariableStream_Sends()
         {
             var sender = new PayloadSender();
@@ -64,10 +63,10 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             await ops.SendRequestAsync(Guid.NewGuid(), request);
 
-            Assert.AreEqual(5, transport.Buffers.Count);
+            Assert.Equal(5, transport.Buffers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestDisassembler_WithJsonStream_Sends()
         {
             var sender = new PayloadSender();
@@ -80,14 +79,14 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             await ops.SendRequestAsync(Guid.NewGuid(), request);
 
-            Assert.AreEqual(4, transport.Buffers.Count);
+            Assert.Equal(4, transport.Buffers.Count);
         }
 
         // Creates a stream that throws if read from after Disposal. Otherwise returns a buffer of byte data
         private Stream GetMockedStream(int length)
         {
-            int read = 0;
-            int isStreamDisposed = 1;
+            var read = 0;
+            var isStreamDisposed = 1;
             var mockedStream = new Mock<Stream>(MockBehavior.Strict);
             mockedStream.SetupGet(a => a.Length).Returns(length);
             mockedStream.SetupGet(a => a.CanSeek).Returns(false);
