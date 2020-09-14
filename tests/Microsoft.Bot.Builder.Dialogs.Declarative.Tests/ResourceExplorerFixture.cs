@@ -7,17 +7,25 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
-    public class JsonLoadFixture : IDisposable
+    public class ResourceExplorerFixture : IDisposable
     {
-        public JsonLoadFixture()
+        public ResourceExplorerFixture()
         {
-            var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
-            
-            ResourceExplorer = new ResourceExplorer()
-                .LoadProject(projPath, monitorChanges: false);
+            ResourceExplorer = new ResourceExplorer();
+            Initialize();
         }
 
         public ResourceExplorer ResourceExplorer { get; set; }
+
+        public ResourceExplorerFixture Initialize()
+        {
+            var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
+
+            ResourceExplorer = new ResourceExplorer()
+                .LoadProject(projPath, monitorChanges: false);
+
+            return this;
+        }
 
         public void Dispose()
         {

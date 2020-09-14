@@ -7,19 +7,19 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
-    public class JsonLoadTests : IClassFixture<JsonLoadFixture>
+    public class JsonLoadTests : IClassFixture<ResourceExplorerFixture>
     {
-        // private static ResourceExplorer _resourceExplorer;
-        private readonly JsonLoadFixture _jsonLoadFixture;
+        private static ResourceExplorer _resourceExplorer;
 
-        public JsonLoadTests(JsonLoadFixture jsonLoadFixture)
+        public JsonLoadTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            _jsonLoadFixture = jsonLoadFixture;
+            _resourceExplorer = resourceExplorerFixture.ResourceExplorer;
         }
 
         [Fact]
@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildQnAMakerTestFlow(string testName)
         {
             var adapter = InitializeAdapter(testName);
-            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
+            var dialog = _resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
 
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildQnAMakerTestFlow_IsTest_True(string testName)
         {
             var adapter = InitializeAdapter(testName);
-            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
+            var dialog = _resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
             qnaMakerDialog.IsTest = true;
             dialog.Triggers[0].Actions[0] = qnaMakerDialog;
@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildQnAMakerTestFlow_RankerType_QuestionOnly(string testName)
         {
             var adapter = InitializeAdapter(testName);
-            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
+            var dialog = _resourceExplorer.LoadType<AdaptiveDialog>("QnAMakerBot.main.dialog");
             var qnAMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
             var qnaMakerDialog = qnAMakerDialog;
             qnaMakerDialog.RankerType = RankerTypes.QuestionOnly;
@@ -428,7 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter)
         {
             var dm = new DialogManager(dialog)
-                .UseResourceExplorer(_jsonLoadFixture.ResourceExplorer)
+                .UseResourceExplorer(_resourceExplorer)
                 .UseLanguageGeneration();
             dm.InitialTurnState.Add<IQnAMakerClient>(new MockQnAMakerClient());
 
@@ -441,7 +441,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string resourceName, string testName, bool sendTrace = false)
         {
             var adapter = InitializeAdapter(testName, sendTrace);
-            var dialog = _jsonLoadFixture.ResourceExplorer.LoadType<Dialog>(resourceName);
+            var dialog = _resourceExplorer.LoadType<Dialog>(resourceName);
             return GetTestFlow(dialog, adapter);
         }
     }

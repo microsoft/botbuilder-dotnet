@@ -14,7 +14,7 @@ using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
-    public class ResourceTests : IClassFixture<ResourceFixture>
+    public class ResourceTests : IClassFixture<DeleteTestResourceFixture>
     {
         [Fact]
         public void TestFolderSource()

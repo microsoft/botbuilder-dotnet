@@ -19,10 +19,5 @@ namespace Microsoft.Bot.Builder
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
             ComponentRegistration.Add(new QnAMakerComponentRegistration());
         }
-
-        public new void Dispose()
-        {
-            base.Dispose();
-        }
     }
 }

@@ -6,9 +6,9 @@ using System.IO;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
-    public class ResourceFixture : IDisposable
+    public class DeleteTestResourceFixture : IDisposable
     {
-        public ResourceFixture()
+        public DeleteTestResourceFixture()
         {
             var path = Path.GetFullPath(PathUtils.NormalizePath(Path.Combine(Environment.CurrentDirectory, @"..\..")));
             foreach (var file in Directory.EnumerateFiles(path, "*.dialog", SearchOption.AllDirectories))
