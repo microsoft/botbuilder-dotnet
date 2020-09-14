@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
 
-            var noAnswerActivity = "No match found, please as another question.";
+            var noAnswerActivity = "No match found, please ask another question.";
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
@@ -1690,7 +1690,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var noAnswerActivity = new ActivityTemplate("No match found, please ask another question.");
             var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
             var knowlegeBaseId = "dummy-id";
             var endpointKey = "dummy-key";
