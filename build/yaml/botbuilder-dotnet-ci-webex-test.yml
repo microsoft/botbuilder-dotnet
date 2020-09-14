@@ -44,7 +44,7 @@ variables:
 #  WebexTestBotBotGroup: define this in Azure
 #  WebexTestBotBotName: define this in Azure
 #  WebexTestBotRefreshToken: define this in Azure
-#  WebexTestBotWebexBotAccessToken: define this in Azure
+#  WebexTestBotWebexBotAccessToken: define this in Azure. Expires in 90 days, i.e. Sunday, November 15, 2020
 #  WebexTestBotWebexBotUserName: define this in Azure
 #  WebexTestBotWebexIntegrationClientId: define this in Azure
 #  WebexTestBotWebexIntegrationClientSecret: define this in Azure
@@ -53,7 +53,8 @@ variables:
 #  WebexTestBotWebexWebhookSecret: define this in Azure
 
 steps:
-- template: ci-build-steps.yml
+- powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
+  displayName: 'Display env vars'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
@@ -61,7 +62,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
 - task: AzureCLI@1
@@ -87,21 +88,14 @@ steps:
     inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"
 
-- task: AzureCLI@1
-  displayName: 'Zip Deploy Bot'
-  inputs:
-    azureSubscription: '$(AzureSubscription)'
-    scriptLocation: inlineScript
-    inlineScript: 'call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: test
     projects: 'FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter WebexClientTest'
+    arguments: '-v n --configuration $(BuildConfiguration) --filter WebexClientTest'
   env:
-    XXXWebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
+    WebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
     WebexTestBotRefreshToken: $(WebexTestBotRefreshToken)
     WebexTestBotWebexIntegrationClientId: $(WebexTestBotWebexIntegrationClientId)
     WebexTestBotWebexIntegrationClientSecret: $(WebexTestBotWebexIntegrationClientSecret)
@@ -114,3 +108,10 @@ steps:
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
   condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

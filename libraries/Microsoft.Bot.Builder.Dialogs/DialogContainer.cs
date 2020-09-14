@@ -11,13 +11,24 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// A container for a set of Dialogs.
+    /// </summary>
     public abstract class DialogContainer : Dialog
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogContainer"/> class.
+        /// </summary>
+        /// <param name="dialogId">The ID to assign to the dialog.</param>
         protected DialogContainer(string dialogId = null)
             : base(dialogId)
         {
         }
 
+        /// <summary>
+        /// Gets or sets the containers <see cref="DialogSet"/>.
+        /// </summary>
+        /// <value>The containers Dialog Set.</value>
         [JsonIgnore]
         public DialogSet Dialogs { get; set; } = new DialogSet();
 
@@ -43,8 +54,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Creates an inner dialog context for the containers active child.
+        /// </summary>
+        /// <param name="dc">Parents dialog context.</param>
+        /// <returns>A new dialog context for the active child.</returns>
         public abstract DialogContext CreateChildContext(DialogContext dc);
 
+        /// <summary>
+        /// Finds a child dialog that was previously added to the container.
+        /// </summary>
+        /// <param name="dialogId">The ID of the dialog to lookup.</param>
+        /// <returns>The Dialog if found; otherwise null.</returns>
         public virtual Dialog FindDialog(string dialogId)
         {
             return this.Dialogs.Find(dialogId);

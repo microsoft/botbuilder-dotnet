@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
@@ -63,14 +64,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void SendMessageAsyncShouldReturnAnEmptyStringWithWrongPath()
+        public async void SendMessageAsyncShouldThrowAnExceptionWithWrongPath()
         {
             var facebookMessageJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/FacebookMessages.json");
             var facebookMessage = JsonConvert.DeserializeObject<List<FacebookMessage>>(facebookMessageJson)[5];
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
-            var response = await facebookWrapper.SendMessageAsync("wrongPath", facebookMessage, null, default(CancellationToken));
 
-            Assert.Equal(string.Empty, response);
+            await Assert.ThrowsAsync<HttpRequestException>(async () => 
+            {
+                await facebookWrapper.SendMessageAsync("wrongPath", facebookMessage, null, default(CancellationToken));
+            });
         }
 
         [Fact]

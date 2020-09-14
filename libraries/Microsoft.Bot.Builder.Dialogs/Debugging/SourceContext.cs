@@ -10,6 +10,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// </summary>
     public class SourceContext
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SourceContext"/> class.
+        /// </summary>
         public SourceContext()
         {
         }

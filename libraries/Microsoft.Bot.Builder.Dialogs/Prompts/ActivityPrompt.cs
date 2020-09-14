@@ -205,6 +205,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default)
             => await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
 
+        /// <summary>
+        /// When overridden in a derived class, prompts the user for input.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="state">Contains state for the current instance of the prompt on the dialog stack.</param>
+        /// <param name="options">A prompt options object constructed from the options initially provided
+        /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
+        /// <param name="isRetry">A <see cref="bool"/> representing if the prompt is a retry.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         protected virtual async Task OnPromptAsync(
             ITurnContext turnContext,
             IDictionary<string, object> state,

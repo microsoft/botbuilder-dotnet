@@ -37,11 +37,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
 
-            const string noAnswerActivity = "No match found, please as another question.";
+            const string noAnswerActivity = "No match found, please ask another question.";
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
@@ -103,9 +103,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -1108,6 +1108,51 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Fact]
         [Trait("TestCategory", "AI")]
         [Trait("TestCategory", "QnaMaker")]
+        public async Task QnaMaker_StrictFilters_Compound_OperationType()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+            var oneFilteredOption = new QnAMakerOptions()
+            {
+                Top = 30,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "movie",
+                        Value = "disney",
+                    },
+                    new Metadata()
+                    {
+                        Name = "production",
+                        Value = "Walden",
+                    },
+                },
+                StrictFiltersJoinOperator = JoinOperator.OR
+            };
+            var qna = GetQnAMaker(
+                            interceptHttp,
+                            new QnAMakerEndpoint
+                            {
+                                KnowledgeBaseId = _knowledgeBaseId,
+                                EndpointKey = _endpointKey,
+
+                                Host = _hostname,
+                            }, oneFilteredOption);
+            
+            var context = GetContext("up");
+            var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
+            var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+            Assert.AreEqual(2, oneFilteredOption.StrictFilters.Length);
+            Assert.AreEqual(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
+        }
+
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_NullTelemetryClient()
         {
@@ -1610,7 +1655,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var noAnswerActivity = new ActivityTemplate("No match found, please ask another question.");
             const string host = "https://dummy-hostname.azurewebsites.net/qnamaker";
             const string knowledgeBaseId = "dummy-id";
             const string endpointKey = "dummy-key";
@@ -1798,6 +1843,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
             public Metadata[] MetadataBoost { get; set; }
 
             public float ScoreThreshold { get; set; }
-        }
+           }
     }
 }

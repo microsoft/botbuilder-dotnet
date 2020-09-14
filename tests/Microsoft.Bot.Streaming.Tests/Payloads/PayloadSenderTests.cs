@@ -9,14 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Bot.Streaming.PayloadTransport;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 {
-    [TestClass]
     public class PayloadSenderTests
     {
-        [TestMethod]
+        [Fact]
         public async Task PayloadSender_WhenLengthNotSet_Sends()
         {
             var sender = new PayloadSender();
@@ -32,22 +31,22 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             };
 
             var stream = new MemoryStream(new byte[100]);
-            TaskCompletionSource<string> done = new TaskCompletionSource<string>();
+            var done = new TaskCompletionSource<string>();
 
             sender.SendPayload(header, stream, false, (Header sentHeader) =>
             {
-                Assert.AreEqual(100, sentHeader.PayloadLength);
-                Assert.IsFalse(sentHeader.End);
+                Assert.Equal(100, sentHeader.PayloadLength);
+                Assert.False(sentHeader.End);
                 done.SetResult("done");
                 return Task.CompletedTask;
             });
 
             await done.Task;
 
-            Assert.AreEqual(2, transport.Buffers.Count);
+            Assert.Equal(2, transport.Buffers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PayloadSender_WhenLengthNotSet_AndNoData_SendsZeroLengthEnd()
         {
             var sender = new PayloadSender();
@@ -64,22 +63,22 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var stream = new MemoryStream(new byte[100]);
             stream.Position = 100;
-            TaskCompletionSource<string> done = new TaskCompletionSource<string>();
+            var done = new TaskCompletionSource<string>();
 
             sender.SendPayload(header, stream, false, (Header sentHeader) =>
             {
-                Assert.AreEqual(0, sentHeader.PayloadLength);
-                Assert.IsTrue(sentHeader.End);
+                Assert.Equal(0, sentHeader.PayloadLength);
+                Assert.True(sentHeader.End);
                 done.SetResult("done");
                 return Task.CompletedTask;
             });
 
             await done.Task;
 
-            Assert.AreEqual(1, transport.Buffers.Count);
+            Assert.Single(transport.Buffers);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PayloadSender_WhenLengthSet_Sends()
         {
             var sender = new PayloadSender();
@@ -95,23 +94,23 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             };
 
             var stream = new MemoryStream(new byte[100]);
-            TaskCompletionSource<string> done = new TaskCompletionSource<string>();
+            var done = new TaskCompletionSource<string>();
 
             sender.SendPayload(header, stream, true, (Header sentHeader) =>
             {
-                Assert.AreEqual(55, sentHeader.PayloadLength);
-                Assert.IsFalse(sentHeader.End);
+                Assert.Equal(55, sentHeader.PayloadLength);
+                Assert.False(sentHeader.End);
                 done.SetResult("done");
                 return Task.CompletedTask;
             });
 
             await done.Task;
 
-            Assert.AreEqual(2, transport.Buffers.Count);
-            Assert.AreEqual(55, stream.Position);
+            Assert.Equal(2, transport.Buffers.Count);
+            Assert.Equal(55, stream.Position);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HttpContentStreamDisassembler_StringContent_SendsAsFixedLength()
         {
             var sender = new PayloadSender();
@@ -123,16 +122,14 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 Content = new StringContent("blah blah blah", Encoding.ASCII),
             };
 
-            TaskCompletionSource<string> done = new TaskCompletionSource<string>();
-
             var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
             await disassembler.DisassembleAsync();
 
-            Assert.AreEqual(2, transport.Buffers.Count);
+            Assert.Equal(2, transport.Buffers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HttpContentStreamDisassembler_ObjectContent_SendsAsFixedLength()
         {
             var sender = new PayloadSender();
@@ -148,10 +145,10 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             await disassembler.DisassembleAsync();
 
-            Assert.AreEqual(2, transport.Buffers.Count);
+            Assert.Equal(2, transport.Buffers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HttpContentStreamDisassembler_StreamContent_SendsAsVariableLength()
         {
             var sender = new PayloadSender();
@@ -171,10 +168,10 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             await disassembler.DisassembleAsync();
 
-            Assert.AreEqual(3, transport.Buffers.Count);
+            Assert.Equal(3, transport.Buffers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestDisassembler_SendsAsFixedLength()
         {
             var sender = new PayloadSender();
@@ -185,10 +182,10 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             await disassembler.DisassembleAsync();
 
-            Assert.AreEqual(2, transport.Buffers.Count);
+            Assert.Equal(2, transport.Buffers.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ResponseDisassembler_SendsAsFixedLength()
         {
             var sender = new PayloadSender();
@@ -199,7 +196,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             await disassembler.DisassembleAsync();
 
-            Assert.AreEqual(2, transport.Buffers.Count);
+            Assert.Equal(2, transport.Buffers.Count);
         }
     }
 }
