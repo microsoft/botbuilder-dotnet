@@ -41,12 +41,6 @@ variables:
 jobs:
 - job: Build_and_Sign
   steps:
-  - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
-    displayName: 'Tag build with package version'
-    inputs:
-      tags: 'Version=$(ReleasePackageVersion)'
-    continueOnError: true
-
   - powershell: |
      # Replace {DateStamp} and {CommitHash} tokens with the actual values in vars ReleasePackageVersion and PreviewPackageVersion
      $dateStamp = (Get-Date -format "yyyyMMdd");
@@ -62,6 +56,14 @@ jobs:
      Write-Host "##vso[task.setvariable variable=PreviewPackageVersion;]$ppv";
      "Resolved PreviewPackageVersion = $ppv";
     displayName: 'Resolve package version variables'
+
+  - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
+    displayName: 'Tag build with release and preview versions'
+    inputs:
+      tags: |
+       Release: $(ReleasePackageVersion)
+       Preview: $(PreviewPackageVersion)
+    continueOnError: true
 
   - template: ci-build-steps.yml
   - template: sign-steps.yml
