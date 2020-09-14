@@ -56,15 +56,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                             result = new DialogExpression((Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer));
                         }
                     }
+                    catch (InvalidOperationException)
+                    {
+                        throw;
+                    }
 #pragma warning disable CA1031 // Do not catch general exception types (return an empty if an exception happens).
-                    catch (Exception e)
+                    catch (Exception)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
-                        if (e.Message.StartsWith("Cycle detected", StringComparison.InvariantCulture))
-                        {
-                            throw;
-                        }
-
                         result = new DialogExpression($"='{id}'");
                     }
                 }
