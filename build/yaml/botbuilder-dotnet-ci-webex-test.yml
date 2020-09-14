@@ -60,17 +60,17 @@ steps:
     $InvalidVariables = $FALSE
     $Message = "Required variable 'REPLACE_VARIABLE' either null, empty or whitespaced. Please set up this variable in the pipeline configuration."
 
-    if(!"$env:WebexTestBotAppSecret".Trim())                     {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotAppSecret")}
-    if(!"$env:WebexTestBotBotGroup".Trim())                      {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotBotGroup")}
-    if(!"$env:WebexTestBotBotName".Trim())                       {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotBotName")}
-    if(!"$env:WebexTestBotRefreshToken".Trim())                  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotRefreshToken")}
-    if(!"$env:WebexTestBotWebexBotAccessToken".Trim())           {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexBotAccessToken")}
-    if(!"$env:WebexTestBotWebexBotUserName".Trim())              {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexBotUserName")}
-    if(!"$env:WebexTestBotWebexIntegrationClientId".Trim())      {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexIntegrationClientId")}
-    if(!"$env:WebexTestBotWebexIntegrationClientSecret".Trim())  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexIntegrationClientSecret")}
-    if(!"$env:WebexTestBotWebexRoomId".Trim())                   {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexRoomId")}
-    if(!"$env:WebexTestBotWebexWebhookName".Trim())              {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexWebhookName")}
-    if(!"$env:WebexTestBotWebexWebhookSecret".Trim())            {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexWebhookSecret")}
+    if(!"$(WebexTestBotAppSecret)".Trim())                     {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotAppSecret")}
+    if(!"$(WebexTestBotBotGroup)".Trim())                      {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotBotGroup")}
+    if(!"$(WebexTestBotBotName)".Trim())                       {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotBotName")}
+    if(!"$(WebexTestBotRefreshToken)".Trim())                  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotRefreshToken")}
+    if(!"$(WebexTestBotWebexBotAccessToken)".Trim())           {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexBotAccessToken")}
+    if(!"$(WebexTestBotWebexBotUserName)".Trim())              {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexBotUserName")}
+    if(!"$(WebexTestBotWebexIntegrationClientId)".Trim())      {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexIntegrationClientId")}
+    if(!"$(WebexTestBotWebexIntegrationClientSecret)".Trim())  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexIntegrationClientSecret")}
+    if(!"$(WebexTestBotWebexRoomId)".Trim())                   {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexRoomId")}
+    if(!"$(WebexTestBotWebexWebhookName)".Trim())              {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexWebhookName")}
+    if(!"$(WebexTestBotWebexWebhookSecret)".Trim())            {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexWebhookSecret")}
 
     if($InvalidVariables){
       Write-Host "##vso[task.setvariable variable=InvalidVariables;]true"
