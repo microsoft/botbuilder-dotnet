@@ -175,6 +175,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 hydratedOptions.QnAId = queryOptions.QnAId;
                 hydratedOptions.IsTest = queryOptions.IsTest;
                 hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
+                hydratedOptions.StrictFiltersJoinOperator = queryOptions.StrictFiltersJoinOperator;
             }
 
             return hydratedOptions;
@@ -193,7 +194,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     context = options.Context,
                     qnaId = options.QnAId,
                     isTest = options.IsTest,
-                    rankerType = options.RankerType
+                    rankerType = options.RankerType,
+                    StrictFiltersCompoundOperationType = options.StrictFiltersJoinOperator,
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(_httpClient);

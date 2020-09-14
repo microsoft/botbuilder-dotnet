@@ -143,6 +143,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return List(ToChoices(choices), text, speak, options);
         }
 
+        /// <summary>
+        /// Creates a message activity containing a list of choices that has been formatted as a numbered or bulleted list.
+        /// </summary>
+        /// <param name="choices">The list of choices to render.</param>
+        /// <param name="text">Optional, text of the message.</param>
+        /// <param name="speak">Optional, SSML text to be spoken by the bot on a speech-enabled channel.</param>
+        /// <param name="options">Optional, formatting options to tweak the rendering of the list.</param>
+        /// <returns>An activity with choices as a numbered or bulleted list.</returns>
         public static Activity List(IList<Choice> choices, string text = null, string speak = null, ChoiceFactoryOptions options = null)
         {
             choices ??= new List<Choice>();
@@ -181,17 +189,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.Text(txtBuilder.ToString(), speak, InputHints.ExpectingInput);
         }
 
+        /// <summary>
+        /// Creates a message activity containing a list of choices that have been added as suggested actions.
+        /// </summary>
+        /// <param name="choices">List of strings representing the choices to add.</param>
+        /// <param name="text">Optional, text of the message.</param>
+        /// <param name="speak">Optional, SSML text to be spoken by the bot on a speech-enabled channel.</param>
+        /// <returns>An activity with choices as suggested actions.</returns>
         public static IMessageActivity SuggestedAction(IList<string> choices, string text = null, string speak = null)
         {
             return SuggestedAction(ToChoices(choices), text, speak);
         }
 
+        /// <summary>
+        /// Creates a message activity containing a list of choices that have been added as suggested actions.
+        /// </summary>
+        /// <param name="choices">The list of choices to add.</param>
+        /// <param name="text">Optional, text of the message.</param>
+        /// <param name="speak">Optional, SSML text to be spoken by the bot on a speech-enabled channel.</param>
+        /// <returns>An activity with choices as suggested actions.</returns>
         public static IMessageActivity SuggestedAction(IList<Choice> choices, string text = null, string speak = null)
         {
             // Return activity with choices as suggested actions
             return MessageFactory.SuggestedActions(ExtractActions(choices), text, speak, InputHints.ExpectingInput);
         }
 
+        /// <summary>
+        /// Creates a message activity that includes a list of choices that have been added as `HeroCard`'s.
+        /// </summary>
+        /// <param name="choices">The list of choices to add.</param>
+        /// <param name="text">Optional, text of the message.</param>
+        /// <param name="speak">Optional, SSML text to be spoken by the bot on a speech-enabled channel.</param>
+        /// <returns>An activity with choices as HeroCard with buttons.</returns>
         public static IMessageActivity HeroCard(IList<Choice> choices, string text = null, string speak = null)
         {
             var attachments = new List<Attachment>
@@ -203,6 +232,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return MessageFactory.Attachment(attachments, null, speak, InputHints.ExpectingInput);
         }
 
+        /// <summary>
+        /// Takes a list of strings and returns them as <see cref="Choice"/>.
+        /// </summary>
+        /// <param name="choices">The list of choices to add.</param>
+        /// <returns>A list of choices.</returns>
         public static IList<Choice> ToChoices(IList<string> choices)
         {
             return choices == null

@@ -6,21 +6,26 @@ using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Bot.Streaming.UnitTests
 {
-    [TestClass]
     public class NamedPipeTransportTests
     {
-        public TestContext TestContext { get; set; }
+        private readonly ITestOutputHelper _output;
 
-        [TestMethod]
+        public NamedPipeTransportTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
+        [Fact]
         public void CanWriteAndRead()
         {
             var tasks = new List<Task>();
 
-            byte[] data = new byte[100];
+            var data = new byte[100];
             for (var b = 0; b < data.Length; b++)
             {
                 data[b] = (byte)b;
@@ -38,29 +43,29 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before WaitForConnectAsync");
+                        _output.WriteLine("Before WaitForConnectAsync");
                         await readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                        TestContext.WriteLine("After WaitForConnectAsync");
+                        _output.WriteLine("After WaitForConnectAsync");
 
                         var readBuffer = new byte[data.Length];
                         var length = await reader.ReceiveAsync(readBuffer, 0, readBuffer.Length).ConfigureAwait(false);
 
-                        TestContext.WriteLine("After Read");
-                        Assert.AreEqual(length, data.Length);
+                        _output.WriteLine("After Read");
+                        Assert.Equal(length, data.Length);
                         for (var b = 0; b < data.Length; b++)
                         {
-                            Assert.AreEqual(readBuffer[b], data[b]);
+                            Assert.Equal(readBuffer[b], data[b]);
                         }
                     }));
 
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before ConnectAsync");
+                        _output.WriteLine("Before ConnectAsync");
                         await writeStream.ConnectAsync(500).ConfigureAwait(false);
-                        TestContext.WriteLine("After ConnectAsync");
+                        _output.WriteLine("After ConnectAsync");
                         await writer.SendAsync(data, 0, data.Length).ConfigureAwait(false);
-                        TestContext.WriteLine("After Write");
+                        _output.WriteLine("After Write");
                     }));
 
                 Task.WaitAll(tasks.ToArray());
@@ -73,18 +78,18 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ClosedStream_Not_IsConnected()
         {
             var pipeName = Guid.NewGuid().ToString();
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var reader = new NamedPipeTransport(readStream);
 
-            Assert.AreEqual(false, reader.IsConnected);
+            Assert.False(reader.IsConnected);
             readStream.Dispose();
         }
 
-        [TestMethod]
+        [Fact]
         public void ActiveStream_IsConnected()
         {
             var pipeName = Guid.NewGuid().ToString();
@@ -100,23 +105,23 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before WaitForConnectAsync");
+                        _output.WriteLine("Before WaitForConnectAsync");
                         await readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                        TestContext.WriteLine("After WaitForConnectAsync");
+                        _output.WriteLine("After WaitForConnectAsync");
                     }));
 
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before ConnectAsync");
+                        _output.WriteLine("Before ConnectAsync");
                         await writeStream.ConnectAsync(500).ConfigureAwait(false);
-                        TestContext.WriteLine("After ConnectAsync");
+                        _output.WriteLine("After ConnectAsync");
                     }));
 
                 Task.WaitAll(tasks.ToArray());
 
-                Assert.AreEqual(true, reader.IsConnected);
-                Assert.AreEqual(true, writer.IsConnected);
+                Assert.True(reader.IsConnected);
+                Assert.True(writer.IsConnected);
             }
             finally
             {
@@ -126,7 +131,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Dispose_DisconnectsStream()
         {
             var pipeName = Guid.NewGuid().ToString();
@@ -142,26 +147,26 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before WaitForConnectAsync");
+                        _output.WriteLine("Before WaitForConnectAsync");
                         await readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                        TestContext.WriteLine("After WaitForConnectAsync");
+                        _output.WriteLine("After WaitForConnectAsync");
                     }));
 
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before ConnectAsync");
+                        _output.WriteLine("Before ConnectAsync");
                         await writeStream.ConnectAsync(500).ConfigureAwait(false);
-                        TestContext.WriteLine("After ConnectAsync");
+                        _output.WriteLine("After ConnectAsync");
                     }));
 
                 Task.WaitAll(tasks.ToArray());
 
-                Assert.AreEqual(true, reader.IsConnected);
+                Assert.True(reader.IsConnected);
 
                 reader.Dispose();
 
-                Assert.AreEqual(false, reader.IsConnected);
+                Assert.False(reader.IsConnected);
             }
             finally
             {
@@ -170,7 +175,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Close_DisconnectsStream()
         {
             var pipeName = Guid.NewGuid().ToString();
@@ -186,26 +191,26 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before WaitForConnectAsync");
+                        _output.WriteLine("Before WaitForConnectAsync");
                         await readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                        TestContext.WriteLine("After WaitForConnectAsync");
+                        _output.WriteLine("After WaitForConnectAsync");
                     }));
 
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before ConnectAsync");
+                        _output.WriteLine("Before ConnectAsync");
                         await writeStream.ConnectAsync(500).ConfigureAwait(false);
-                        TestContext.WriteLine("After ConnectAsync");
+                        _output.WriteLine("After ConnectAsync");
                     }));
 
                 Task.WaitAll(tasks.ToArray());
 
-                Assert.AreEqual(true, reader.IsConnected);
+                Assert.True(reader.IsConnected);
 
                 reader.Close();
 
-                Assert.AreEqual(false, reader.IsConnected);
+                Assert.False(reader.IsConnected);
             }
             finally
             {
@@ -214,7 +219,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Read_ReturnsZeroLength_WhenClosedDuringRead()
         {
             var tasks = new List<Task>();
@@ -227,34 +232,34 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 var reader = new NamedPipeTransport(readStream);
                 var writer = new NamedPipeTransport(writeStream);
 
-                TaskCompletionSource<string> waiter = new TaskCompletionSource<string>();
+                var waiter = new TaskCompletionSource<string>();
 
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before WaitForConnectAsync");
+                        _output.WriteLine("Before WaitForConnectAsync");
                         await readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                        TestContext.WriteLine("After WaitForConnectAsync");
+                        _output.WriteLine("After WaitForConnectAsync");
 
                         Task.WaitAll(Task.Run(() => waiter.SetResult("go")));
                         var readBuffer = new byte[100];
                         var length = await reader.ReceiveAsync(readBuffer, 0, readBuffer.Length).ConfigureAwait(false);
 
-                        Assert.AreEqual(0, length);
+                        Assert.Equal(0, length);
                     }));
 
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before ConnectAsync");
+                        _output.WriteLine("Before ConnectAsync");
                         await writeStream.ConnectAsync(500).ConfigureAwait(false);
-                        TestContext.WriteLine("After ConnectAsync");
+                        _output.WriteLine("After ConnectAsync");
 
                         var r = await waiter.Task.ConfigureAwait(false);
 
                         writer.Close();
 
-                        TestContext.WriteLine("After Close");
+                        _output.WriteLine("After Close");
                     }));
 
                 Task.WaitAll(tasks.ToArray());
@@ -267,12 +272,12 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Write_ReturnsZeroLength_WhenClosedDuringWrite()
         {
             var tasks = new List<Task>();
 
-            byte[] data = new byte[100];
+            var data = new byte[100];
             for (var b = 0; b < data.Length; b++)
             {
                 data[b] = (byte)b;
@@ -282,7 +287,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var readStream = new NamedPipeServerStream(pipeName, PipeDirection.In, NamedPipeServerStream.MaxAllowedServerInstances, PipeTransmissionMode.Byte, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
             var writeStream = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.WriteThrough | PipeOptions.Asynchronous);
 
-            TaskCompletionSource<string> waiter = new TaskCompletionSource<string>();
+            var waiter = new TaskCompletionSource<string>();
 
             try
             {
@@ -292,9 +297,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before WaitForConnectAsync");
+                        _output.WriteLine("Before WaitForConnectAsync");
                         await readStream.WaitForConnectionAsync().ConfigureAwait(false);
-                        TestContext.WriteLine("After WaitForConnectAsync");
+                        _output.WriteLine("After WaitForConnectAsync");
 
                         reader.Close();
 
@@ -304,15 +309,15 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 tasks.Add(Task.Run(
                     async () =>
                     {
-                        TestContext.WriteLine("Before ConnectAsync");
+                        _output.WriteLine("Before ConnectAsync");
                         await writeStream.ConnectAsync(500).ConfigureAwait(false);
-                        TestContext.WriteLine("After ConnectAsync");
+                        _output.WriteLine("After ConnectAsync");
 
                         var r = await waiter.Task.ConfigureAwait(false);
 
                         var length = await writer.SendAsync(data, 0, data.Length).ConfigureAwait(false);
 
-                        Assert.AreEqual(0, length);
+                        Assert.Equal(0, length);
                     }));
 
                 Task.WaitAll(tasks.ToArray());

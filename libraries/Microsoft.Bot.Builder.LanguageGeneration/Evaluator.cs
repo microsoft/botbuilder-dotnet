@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         internal const string LGType = "lgType";
 
         private const string ReExecuteSuffix = "!";
+
+        private static readonly ConcurrentDictionary<string, object> _cachedResult = new ConcurrentDictionary<string, object>();
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions _lgOptions;
 
@@ -85,7 +88,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var templateTarget = new EvaluationTarget(templateName, memory);
-
             var currentEvaluateId = templateTarget.GetId();
 
             if (_evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
@@ -93,26 +95,55 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
-            EvaluationTarget previousEvaluateTarget = null;
-            if (_evaluationTargetStack.Count != 0)
+            object result = null;
+            var hasResult = false;
+            if (!reExecute)
             {
-                previousEvaluateTarget = _evaluationTargetStack.Peek();
-
-                if (!reExecute && previousEvaluateTarget.EvaluatedChildren.ContainsKey(currentEvaluateId))
+                if (_lgOptions.CacheScope == LGCacheScope.Global)
                 {
-                    return previousEvaluateTarget.EvaluatedChildren[currentEvaluateId];
+                    if (_cachedResult.ContainsKey(currentEvaluateId))
+                    {
+                        result = _cachedResult[currentEvaluateId];
+                        hasResult = true;
+                    }
+                }
+                else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Local)
+                {
+                    EvaluationTarget previousEvaluateTarget = null;
+                    if (_evaluationTargetStack.Count != 0)
+                    {
+                        previousEvaluateTarget = _evaluationTargetStack.Peek();
+
+                        if (previousEvaluateTarget.CachedEvaluatedChildren.ContainsKey(currentEvaluateId))
+                        {
+                            result = previousEvaluateTarget.CachedEvaluatedChildren[currentEvaluateId];
+                            hasResult = true;
+                        }
+                    }
                 }
             }
 
-            // Using a stack to track the evaluation trace
-            _evaluationTargetStack.Push(templateTarget);
-            var result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
-            if (previousEvaluateTarget != null)
+            if (!hasResult)
             {
-                previousEvaluateTarget.EvaluatedChildren[currentEvaluateId] = result;
-            }
+                _evaluationTargetStack.Push(templateTarget);
+                result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
+                _evaluationTargetStack.Pop();
 
-            _evaluationTargetStack.Pop();
+                if (!reExecute)
+                {
+                    if (_lgOptions.CacheScope == LGCacheScope.Global)
+                    {
+                        _cachedResult[currentEvaluateId] = result;
+                    }
+                    else if (_lgOptions.CacheScope == null || _lgOptions.CacheScope == LGCacheScope.Local)
+                    {
+                        if (_evaluationTargetStack.Count > 0)
+                        {
+                            _evaluationTargetStack.Peek().CachedEvaluatedChildren[currentEvaluateId] = result;
+                        }
+                    }
+                }
+            }
 
             return result;
         }

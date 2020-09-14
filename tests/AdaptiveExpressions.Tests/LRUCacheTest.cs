@@ -46,10 +46,10 @@ namespace AdaptiveExpressions.Tests
             var cache = new LRUCache<int, int>(2);
             cache.Set(0, 1);
             cache.Set(1, 1);
-            var fib9999 = 1242044891;
-            var fib100000 = 2132534333;
-            var maxIdx = 10000;
-            for (int i = 2; i <= maxIdx; i++)
+            const int fib9999 = 1242044891;
+            const int fib100000 = 2132534333;
+            const int maxIdx = 10000;
+            for (var i = 2; i <= maxIdx; i++)
             {
                 cache.TryGet(i - 2,  out var prev2);
                 cache.TryGet(i - 1, out var prev1);
@@ -74,10 +74,10 @@ namespace AdaptiveExpressions.Tests
             var cache = new LRUCache<int, int>(500);
             cache.Set(0, 1);
             cache.Set(1, 1);
-            var fib9999 = 1242044891;
-            var fib100000 = 2132534333;
-            var maxIdx = 10000; 
-            for (int i = 2; i <= 10000; i++)
+            const int fib9999 = 1242044891;
+            const int fib100000 = 2132534333;
+            const int maxIdx = 10000; 
+            for (var i = 2; i <= 10000; i++)
             {
                 cache.TryGet(i - 2, out var prev2);
                 cache.TryGet(i - 1, out var prev1);
@@ -101,8 +101,8 @@ namespace AdaptiveExpressions.Tests
         {
             var cache = new LRUCache<int, int>(10);
             var tasks = new List<Task>();
-            var numOfThreads = 10;
-            var numOfOps = 1000;
+            const int numOfThreads = 10;
+            const int numOfOps = 1000;
             for (var i = 0; i < numOfThreads; i++)
             {
                 tasks.Add(Task.Run(() => StoreElement(cache, numOfOps, i)));
@@ -116,9 +116,9 @@ namespace AdaptiveExpressions.Tests
             }
         }
 
-        public void StoreElement(LRUCache<int, int> cache, int numOfOps, int idx)
+        private void StoreElement(LRUCache<int, int> cache, int numOfOps, int idx)
         {
-            for (int i = 0; i < numOfOps; i++)
+            for (var i = 0; i < numOfOps; i++)
             {
                 var key = i;
                 var value = i;
