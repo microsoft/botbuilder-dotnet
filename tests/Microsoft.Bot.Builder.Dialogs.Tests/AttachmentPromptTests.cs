@@ -6,39 +6,31 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class AttachmentPromptTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void AttachmentPromptWithEmptyIdShouldFail()
         {
-            var emptyId = string.Empty;
-            var attachmentPrompt = new AttachmentPrompt(emptyId);
+            Assert.Throws<ArgumentNullException>(() => new AttachmentPrompt(string.Empty));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void AttachmentPromptWithNullIdShouldFail()
         {
-            var nullId = string.Empty;
-            nullId = null;
-            var attachmentPrompt = new AttachmentPrompt(nullId);
+            Assert.Throws<ArgumentNullException>(() => new AttachmentPrompt(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BasicAttachmentPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(BasicAttachmentPrompt)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -79,13 +71,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RetryAttachmentPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(RetryAttachmentPrompt)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
