@@ -58,7 +58,7 @@ steps:
     if(!"$(FacebookTestBotAppId)".Trim())               {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotAppId")}
     if(!"$(FacebookTestBotAppSecret)".Trim())           {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotAppSecret")}
     if(!"$(AzureSubscription)".Trim())                  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "AzureSubscription")}
-    if(!"$FacebookTestBotBotGroup)".Trim())            {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotBotGroup")}
+    if(!"$(FacebookTestBotBotGroup)".Trim())            {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotBotGroup")}
     if(!"$(FacebookTestBotBotName)".Trim())             {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotBotName")}
     if(!"$(FacebookTestBotFacebookAccessToken)".Trim()) {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotFacebookAccessToken")}
     if(!"$(FacebookTestBotFacebookAppSecret)".Trim())   {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "FacebookTestBotFacebookAppSecret)")}
