@@ -86,8 +86,11 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                         var stringResponse = JsonConvert.DeserializeObject<FacebookResponseOk>(responseBody);
                         return stringResponse.MessageId;
                     }
-
-                    return string.Empty;
+                    else
+                    {
+                        // In Azure view this exception via Application Insights/Failures.
+                        throw new HttpRequestException($"SendMessageAsync(): {res.ToString()}");
+                    }
                 }
             }
         }

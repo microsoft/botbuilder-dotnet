@@ -3,42 +3,41 @@
 
 using System;
 using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 {
-    [TestClass]
     public class PayloadAssemblerTests
     {
-        [TestMethod]
+        [Fact]
         public void PayloadAssembler_ctor_Id()
         {
             var id = Guid.NewGuid();
             var a = new PayloadStreamAssembler(new StreamManager(), id);
 
-            Assert.AreEqual(id, a.Id);
+            Assert.Equal(id, a.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void PayloadAssembler_ctor_End_false()
         {
             var id = Guid.NewGuid();
             var a = new PayloadStreamAssembler(new StreamManager(), id);
 
-            Assert.IsFalse(a.End);
+            Assert.False(a.End);
         }
 
-        [TestMethod]
+        [Fact]
         public void PayloadAssembler_GetStream()
         {
             var id = Guid.NewGuid();
             var a = new PayloadStreamAssembler(new StreamManager(), id);
             var s = a.GetPayloadAsStream();
 
-            Assert.IsNotNull(a);
+            Assert.NotNull(s);
         }
 
-        [TestMethod]
+        [Fact]
         public void PayloadAssembler_GetStream_DoesNotMakeNewEachTime()
         {
             var id = Guid.NewGuid();
@@ -46,23 +45,23 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var s = a.GetPayloadAsStream();
             var s2 = a.GetPayloadAsStream();
 
-            Assert.AreEqual(s, s2);
+            Assert.Equal(s, s2);
         }
 
-        [TestMethod]
+        [Fact]
         public void PayloadAssembler_OnReceive_SetsEnd()
         {
             var id = Guid.NewGuid();
             var a = new PayloadStreamAssembler(new StreamManager(), id);
 
-            var header = new Header() { End = true };
+            var header = new Header { End = true };
 
             a.OnReceive(header, new PayloadStream(a), 100);
 
-            Assert.IsTrue(a.End);
+            Assert.True(a.End);
         }
 
-        [TestMethod]
+        [Fact]
         public void PayloadAssembler_Close__DoesNotSetEnd()
         {
             var id = Guid.NewGuid();
@@ -70,7 +69,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             a.Close();
 
-            Assert.IsFalse(a.End);
+            Assert.False(a.End);
         }
     }
 }

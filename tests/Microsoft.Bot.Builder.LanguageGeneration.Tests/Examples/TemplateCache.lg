@@ -10,3 +10,10 @@
 - item3
 - item4
 - item5
+
+
+# globalCache(param)
+- ${subTemplate(param)} ${listTemplate1(param)}
+
+# subTemplate(param)
+- ${listTemplate1(param)}

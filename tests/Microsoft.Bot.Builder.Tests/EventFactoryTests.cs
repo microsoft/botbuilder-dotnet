@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal(state, stateFormEvent);
 
             var messageFormEvent = (handoffEvent.Value as JObject)?.Value<string>("message");
-            Assert.Equal(null, messageFormEvent);
+            Assert.Null(messageFormEvent);
         }
     }
 }
