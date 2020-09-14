@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public ConfigurationCloudEnvironment(IServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
         {
             var channelService = ConfigurationManager.AppSettings["ChannelService"];
+            var validateAuthority = ConfigurationManager.AppSettings["ValidateAuthority"];
             var toChannelFromBotLoginUrl = ConfigurationManager.AppSettings["ToChannelFromBotLoginUrl"];
             var toChannelFromBotOAuthScope = ConfigurationManager.AppSettings["ToChannelFromBotOAuthScope"];
             var toBotFromChannelTokenIssuer = ConfigurationManager.AppSettings["ToBotFromChannelTokenIssuer"];
@@ -39,6 +40,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             _inner = CloudEnvironment.Create(
                 channelService,
+                bool.Parse(validateAuthority ?? "true"),
                 toChannelFromBotLoginUrl,
                 toChannelFromBotOAuthScope,
                 toBotFromChannelTokenIssuer,

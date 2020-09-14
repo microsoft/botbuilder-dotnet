@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Creates the appropriate cloud environment instance.
         /// </summary>
         /// <param name="channelService">The Channel Service.</param>
+        /// <param name="validateAuthority">The validate authority value to use.</param>
         /// <param name="toChannelFromBotLoginUrl">The to Channel from bot login url.</param>
         /// <param name="toChannelFromBotOAuthScope">The to Channel from bot oauth scope.</param>
         /// <param name="toBotFromChannelTokenIssuer">The to bot from Channel Token Issuer.</param>
@@ -29,6 +30,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A new cloud environment.</returns>
         public static ICloudEnvironment Create(
             string channelService,
+            bool validateAuthority,
             string toChannelFromBotLoginUrl,
             string toChannelFromBotOAuthScope,
             string toBotFromChannelTokenIssuer,
@@ -53,6 +55,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 return new ParameterizedCloudEnvironment(
                     channelService,
+                    validateAuthority,
                     toChannelFromBotLoginUrl,
                     toChannelFromBotOAuthScope,
                     toBotFromChannelTokenIssuer,

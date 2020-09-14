@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
         }

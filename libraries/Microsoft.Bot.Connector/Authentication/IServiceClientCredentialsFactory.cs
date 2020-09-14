@@ -43,7 +43,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="appId">The appId.</param>
         /// <param name="oauthScope">The oauth scope.</param>
         /// <param name="loginEndpoint">The login url.</param>
+        /// <param name="validateAuthority">The validate authority vale to use.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint);
+        Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority);
     }
 }

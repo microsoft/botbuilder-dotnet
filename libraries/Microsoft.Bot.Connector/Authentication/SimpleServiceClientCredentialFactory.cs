@@ -58,38 +58,20 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </value>
         public string Password { get; set; }
 
-        /// <summary>
-        /// Validates an app ID.
-        /// </summary>
-        /// <param name="appId">The app ID to validate.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful, the result is true if <paramref name="appId"/>
-        /// is valid for the controller; otherwise, false.</remarks>
+        /// <inheritdoc/>
         public Task<bool> IsValidAppIdAsync(string appId)
         {
             return Task.FromResult(appId == AppId);
         }
 
-        /// <summary>
-        /// Checks whether bot authentication is disabled.
-        /// </summary>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful and bot authentication is disabled, the result
-        /// is true; otherwise, false.
-        /// </remarks>
+        /// <inheritdoc/>
         public Task<bool> IsAuthenticationDisabledAsync()
         {
             return Task.FromResult(string.IsNullOrEmpty(AppId));
         }
 
-        /// <summary>
-        /// Creates a ServiceClientCredentials instance.
-        /// </summary>
-        /// <param name="appId">The bot appId.</param>
-        /// <param name="oauthScope">The oauth scope to use.</param>
-        /// <param name="loginEndpoint">The login endpoint.</param>
-        /// <returns>A ServiceClientCredentials.</returns>
-        public Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint)
+        /// <inheritdoc/>
+        public Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority)
         {
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
@@ -114,25 +96,32 @@ namespace Microsoft.Bot.Connector.Authentication
                 return Task.FromResult<ServiceClientCredentials>(
                     AppId == null
                         ?
-                    new PrivateCloudAppCredentials(null, null, null, null, null, loginEndpoint)
+                    new PrivateCloudAppCredentials(null, null, null, null, null, loginEndpoint, validateAuthority)
                         :
-                    new PrivateCloudAppCredentials(AppId, Password, _httpClient, _logger, oauthScope, loginEndpoint));
+                    new PrivateCloudAppCredentials(AppId, Password, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
             }
         }
 
         private class PrivateCloudAppCredentials : MicrosoftAppCredentials
         {
             private readonly string _oauthEndpoint;
+            private readonly bool _validateAuthority;
 
-            public PrivateCloudAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope, string oauthEndpoint)
+            public PrivateCloudAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger, string oAuthScope, string oauthEndpoint, bool validateAuthority)
             : base(appId, password, customHttpClient, logger, oAuthScope)
             {
                 _oauthEndpoint = oauthEndpoint;
+                _validateAuthority = validateAuthority;
             }
 
             public override string OAuthEndpoint
             {
                 get { return _oauthEndpoint; }
+            }
+
+            public override bool ValidateAuthority
+            {
+                get { return _validateAuthority; }
             }
         }
     }

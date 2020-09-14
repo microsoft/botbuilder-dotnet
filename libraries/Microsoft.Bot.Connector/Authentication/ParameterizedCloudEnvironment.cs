@@ -18,21 +18,23 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private static HttpClient _defaultHttpClient = new HttpClient();
 
-        private string _channelService;
-        private string _toChannelFromBotLoginUrl;
-        private string _toChannelFromBotOAuthScope;
-        private string _toBotFromChannelTokenIssuer;
-        private string _oAuthUrl;
-        private string _toBotFromChannelOpenIdMetadataUrl;
-        private string _toBotFromEmulatorOpenIdMetadataUrl;
-        private string _callerId;
-        private IServiceClientCredentialsFactory _credentialFactory;
-        private AuthenticationConfiguration _authConfiguration;
-        private HttpClient _httpClient;
-        private ILogger _logger;
+        private readonly string _channelService;
+        private readonly bool _validateAuthority;
+        private readonly string _toChannelFromBotLoginUrl;
+        private readonly string _toChannelFromBotOAuthScope;
+        private readonly string _toBotFromChannelTokenIssuer;
+        private readonly string _oAuthUrl;
+        private readonly string _toBotFromChannelOpenIdMetadataUrl;
+        private readonly string _toBotFromEmulatorOpenIdMetadataUrl;
+        private readonly string _callerId;
+        private readonly IServiceClientCredentialsFactory _credentialFactory;
+        private readonly AuthenticationConfiguration _authConfiguration;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
         public ParameterizedCloudEnvironment(
             string channelService,
+            bool validateAuthority,
             string toChannelFromBotLoginUrl,
             string toChannelFromBotOAuthScope,
             string toBotFromChannelTokenIssuer,
@@ -46,6 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
             ILogger logger = null)
         {
             _channelService = channelService;
+            _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _toBotFromChannelTokenIssuer = toBotFromChannelTokenIssuer;
@@ -69,7 +72,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var appId = BuiltinCloudEnvironment.GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl, _validateAuthority).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
         }
