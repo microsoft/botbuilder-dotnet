@@ -8,6 +8,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// </summary>
     public class PercentPathResolver : AliasPathResolver
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PercentPathResolver"/> class.
+        /// </summary>
         public PercentPathResolver()
             : base(alias: "%", prefix: "class.")
         {

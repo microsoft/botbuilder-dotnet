@@ -33,6 +33,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         private readonly DialogContext _dialogContext;
         private int _version;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogStateManager"/> class.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="configuration">Configuration for the dialog state manager. Default is <c>null</c>.</param>
         public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
             ComponentRegistration.Add(new DialogsComponentRegistration());
@@ -66,16 +71,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             dc.Context.TurnState.Set(Configuration);
         }
 
+        /// <summary>
+        /// Gets or sets the configured path resolvers and memory scopes for the dialog state manager.
+        /// </summary>
+        /// <value>A <see cref="DialogStateManagerConfiguration"/> with the configuration.</value>
         public DialogStateManagerConfiguration Configuration { get; set; }
 
+        /// <summary>
+        /// Gets an <see cref="ICollection{T}"/> containing the keys of the memory scopes.
+        /// </summary>
+        /// <value>Keys of the memory scopes.</value>
         public ICollection<string> Keys => Configuration.MemoryScopes.Select(ms => ms.Name).ToList();
 
+        /// <summary>
+        /// Gets an <see cref="ICollection{T}"/> containing the values of the memory scopes.
+        /// </summary>
+        /// <value>Values of the memory scopes.</value>
         public ICollection<object> Values => Configuration.MemoryScopes.Select(ms => ms.GetMemory(_dialogContext)).ToList();
 
+        /// <summary>
+        /// Gets the number of memory scopes in the dialog state manager.
+        /// </summary>
+        /// <value>Number of memory scopes in the configuration.</value>
         public int Count => Configuration.MemoryScopes.Count;
 
+        /// <summary>
+        /// Gets a value indicating whether the dialog state manager is read-only.
+        /// </summary>
+        /// <value><c>true</c>.</value>
         public bool IsReadOnly => true;
 
+        /// <summary>
+        /// Gets or sets the elements with the specified key.
+        /// </summary>
+        /// <param name="key">Key to get or set the element.</param>
+        /// <returns>The element with the specified key.</returns>
         public object this[string key]
         {
             get => GetValue<object>(key, () => null);
@@ -407,41 +437,90 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+        /// <summary>
+        /// Adds an element to the dialog state manager.
+        /// </summary>
+        /// <param name="key">Key of the element to add.</param>
+        /// <param name="value">Value of the element to add.</param>
         public void Add(string key, object value)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Determines whether the dialog state manager contains an element with the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate in the dialog state manager.</param>
+        /// <returns><c>true</c> if the dialog state manager contains an element with 
+        /// the key; otherwise, <c>false</c>.</returns>
         public bool ContainsKey(string key)
         {
             return Configuration.MemoryScopes.Any(ms => ms.Name.ToUpperInvariant() == key.ToUpperInvariant());
         }
 
+        /// <summary>
+        /// Removes the element with the specified key from the dialog state manager.
+        /// </summary>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <returns><c>true</c> if the element is succesfully removed; otherwise, false.</returns>
+        /// <remarks>This method is not supported.</remarks>
         public bool Remove(string key)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key whose value to get.</param>
+        /// <param name="value">When this method returns, the value associated with the specified key, if the
+        /// key is found; otherwise, the default value for the type of the value parameter.
+        /// This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if the dialog state manager contains an element with the specified key; 
+        /// otherwise, <c>false</c>.</returns>
         public bool TryGetValue(string key, out object value)
         {
             return TryGetValue<object>(key, out value);
         }
 
+        /// <summary>
+        /// Adds an item to the dialog state manager.
+        /// </summary>
+        /// <param name="item">The <see cref="KeyValuePair{TKey, TValue}"/> with the key and object of 
+        /// the item to add.</param>
+        /// <remarks>This method is not supported.</remarks>
         public void Add(KeyValuePair<string, object> item)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Removes all items from the dialog state manager.
+        /// </summary>
+        /// <remarks>This method is not supported.</remarks>
         public void Clear()
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Determines whether the dialog state manager contains a specific value.
+        /// </summary>
+        /// <param name="item">The <see cref="KeyValuePair{TKey, TValue}"/> of the item to locate.</param>
+        /// <returns><c>true</c> if item is found in the dialog state manager; otherwise,
+        /// <c>false</c>.</returns>
+        /// <remarks>This method is not supported.</remarks>
         public bool Contains(KeyValuePair<string, object> item)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Copies the elements of the dialog state manager to an array starting at a particular index.
+        /// </summary>
+        /// <param name="array">The one-dimensional array that is the destination of the elements copied
+        /// from the dialog state manager. The array must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
             foreach (var ms in Configuration.MemoryScopes)
@@ -450,11 +529,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the dialog state manager.
+        /// </summary>
+        /// <param name="item">The object to remove from the dialog state manager.</param>
+        /// <returns><c>true</c> if the item was successfully removed from the dialog state manager;
+        /// otherwise, <c>false</c>.</returns>
+        /// <remarks>This method is not supported.</remarks>
         public bool Remove(KeyValuePair<string, object> item)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             foreach (var ms in Configuration.MemoryScopes)

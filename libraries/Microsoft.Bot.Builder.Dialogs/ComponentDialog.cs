@@ -16,6 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// which provides an inner dialog stack that is hidden from the parent dialog.</remarks>
     public class ComponentDialog : DialogContainer
     {
+        /// <summary>
+        /// The id for the persisted dialog state.
+        /// </summary>
         public const string PersistedDialogState = "dialogs";
 
         private bool _initialized;
@@ -29,6 +32,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
+        /// <summary>
+        /// Gets or sets the id assigned to the initial dialog.
+        /// </summary>
+        /// <value>The id of the initial dialog.</value>
         public string InitialDialogId { get; set; }
 
         /// <summary>
@@ -226,11 +233,21 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this;
         }
 
+        /// <summary>
+        /// Creates an inner <see cref="DialogContext"/>.
+        /// </summary>
+        /// <param name="dc">The parent <see cref="DialogContext"/>.</param>
+        /// <returns>The created Dialog Context.</returns>
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             return this.CreateInnerDc(dc, dc.ActiveDialog);
         }
 
+        /// <summary>
+        /// Ensures the dialog is initialized.
+        /// </summary>
+        /// <param name="outerDc">The outer <see cref="DialogContext"/>.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected async Task EnsureInitializedAsync(DialogContext outerDc)
         {
             if (!this._initialized)
@@ -240,6 +257,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Initilizes the dialog.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> to initialize.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual Task OnInitializeAsync(DialogContext dc)
         {
             if (this.InitialDialogId == null)

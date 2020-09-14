@@ -64,6 +64,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             throw new NotSupportedException("You cannot replace the root BotState object");
         }
 
+        /// <summary>
+        /// Populates the state cache for this <see cref="BotState"/> from the storage layer.
+        /// </summary>
+        /// <param name="dialogContext">The dialog context object for this turn.</param>
+        /// <param name="force">Optional, <c>true</c> to overwrite any existing state cache;
+        /// or <c>false</c> to load state from storage only if the cache doesn't already exist.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public override async Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
             var botState = GetBotState(dialogContext);
@@ -74,6 +83,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
         }
 
+        /// <summary>
+        /// Writes the state cache for this <see cref="BotState"/> to the storage layer.
+        /// </summary>
+        /// <param name="dialogContext">The dialog context object for this turn.</param>
+        /// <param name="force">Optional, <c>true</c> to save the state cache to storage;
+        /// or <c>false</c> to save state to storage only if a property in the cache has changed.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public override async Task SaveChangesAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
         {
             var botState = GetBotState(dialogContext);
@@ -84,6 +102,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             }
         }
 
+        /// <summary>
+        /// Deletes any state in storage and the cache for this <see cref="BotState"/>.
+        /// </summary>
+        /// <param name="dialogContext">The dialog context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public override Task DeleteAsync(DialogContext dialogContext, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;

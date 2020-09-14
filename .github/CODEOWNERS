@@ -19,21 +19,29 @@
 /tests/Microsoft.Bot.Builder.TestBot*/**                                            @gabog @mrivera-ms
 /build/**                                                                           @microsoft/bb-dotnet
 
+# Specific Test Projects
+/tests/Microsoft.Bot.Builder.TestBot.Json/**                                        @chrimc62 @tomlm @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.TestProtocol/**                                        @gabog @microsoft/bf-skills
+
 # Adapters
-/libraries/Adapters/**                                                              @garypretty
-/tests/Adapters/**                                                                  @garypretty  
+/libraries/Adapters/**                                                              @garypretty @mrivera-ms
+/tests/Adapters/**                                                                  @garypretty @mrivera-ms
 
 # Platform Integration Libaries (.NET Core and WebApi)
 /libraries/integration/**                                                           @microsoft/bb-dotnet-integration
 /tests/integration/**                                                               @microsoft/bb-dotnet-integration
 
 # Application Insights/Telemetry
-/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty
-/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty
+/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty @mrivera-ms
+/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty @mrivera-ms
 
-# AI: LUIS + QnA Maker
+# AI: LUIS + Orchestrator
 /libraries/Microsoft.Bot.Builder.AI*/**                                             @microsoft/bf-cog-services
 /tests/Microsoft.Bot.Builder.AI*/**                                                 @microsoft/bf-cog-services
+
+# AI: QnA Maker
+/libraries/Microsoft.Bot.Builder.AI.QnA/**					    @mrivera-ms @microsoft/bf-cog-services
+/tests/Microsoft.Bot.Builder.AI.QnA.Tests/**					    @mrivera-ms @microsoft/bf-cog-services
 
 # Azure (Storage)
 /libraries/Microsoft.Bot.Builder.Azure/**                                           @EricDahlvang @mrivera-ms

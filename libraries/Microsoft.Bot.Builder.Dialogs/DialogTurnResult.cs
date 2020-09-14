@@ -15,6 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DebuggerDisplay("[DialogTurnStatus.{Status}]{Result ?? string.Empty}")]
     public class DialogTurnResult
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogTurnResult"/> class.
+        /// </summary>
+        /// <param name="status">The status of the stack.</param>
+        /// <param name="result">The result return by the dialog.</param>
         public DialogTurnResult(DialogTurnStatus status, object result = null)
         {
             Status = status;
