@@ -197,20 +197,20 @@ namespace AdaptiveExpressions.Tests
             #endregion
             
             #region Date and time function test
-            Test("timex.isDefinite(12345)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isDefinite('world', 123445)"), // should have only one parameter
-            Test("timex.isTime(123445)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isTime('world', 123445)"), // should have only one parameter
-            Test("timex.isDuration(123445)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isDuration('world', 123445)"), // should have only one parameter
-            Test("timex.isDate(123445)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isDate('world', 123445)"), // should have only one parameter
-            Test("timex.isTimeRange(123445)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isTimeRange('world', 123445)"), // should have only one parameter
-            Test("timex.isDateRange(123445)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isDateRange('world', 123445)"), // should have only one parameter
-            Test("timex.isPresent(123445)"), // should hava a string or a TimexProperty parameter
-            Test("timex.isPresent('world', 123445)"), // should have only one parameter
+            Test("isDefinite(12345)"), // should hava a string or a TimexProperty parameter
+            Test("isDefinite('world', 123445)"), // should have only one parameter
+            Test("isTime(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTime('world', 123445)"), // should have only one parameter
+            Test("isDuration(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDuration('world', 123445)"), // should have only one parameter
+            Test("isDate(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDate('world', 123445)"), // should have only one parameter
+            Test("isTimeRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isTimeRange('world', 123445)"), // should have only one parameter
+            Test("isDateRange(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isDateRange('world', 123445)"), // should have only one parameter
+            Test("isPresent(123445)"), // should hava a string or a TimexProperty parameter
+            Test("isPresent('world', 123445)"), // should have only one parameter
             Test("addDays('errortime', 1)"), // error datetime format
             Test("addDays(timestamp, 'hi')"), // second param should be integer
             Test("addDays(timestamp)"), // should have 2 or 3 or 4 params
@@ -320,22 +320,22 @@ namespace AdaptiveExpressions.Tests
             Test("dateTimeDiff(notValidTimeStamp,'2018-01-01T08:00:00.000Z')"), // the first parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z',notValidTimeStamp)"), // the second parameter is not a valid timestamp
             Test("dateTimeDiff('2017-01-01T08:00:00.000Z','2018-01-01T08:00:00.000Z', 'years')"), // should only have 2 parameters
-            Test("timex.getNextViableDate(hello)"), // should have a "XXXX-MM-DD" format string
-            Test("timex.getNextViableDate(one)"), // should have a string parameter
-            Test("timex.getNextViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
-            Test("timex.getPreviousViableDate(hello)"), // should have a "XXXX-MM-DD" format string
-            Test("timex.getPreviousViableDate(one)"), // should have a string parameter
-            Test("timex.getPreviousViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
-            Test("timex.getNextViableTime(hello)"), // should have a "XX:mm:ss" format string
-            Test("timex.getNextViableTime(one)"), // should have a string parameter
-            Test("timex.getNextViableTime('XX:12:12', 20)"), // should only have 1 parameter
-            Test("timex.getPreviousViableTime(hello)"), // should have a "XX:mm:ss" format string
-            Test("timex.getPreviousViableTime(one)"), // should have a string parameter
-            Test("timex.getPreviousViableTime('XX:12:12', 20)"), // should only have 1 parameter
-            Test("timex.resolve(one)"), // should have string or TimexProperty arguments
-            Test("timex.resolve('T14', 'Asia/Tokyo')"), // should only have one parameter
-            Test("timex.resolve('12-20')"), // should have a valid TimexPropterty after parsing
-            Test("timex.resolve('XXXX-WXX-6')"), // not a valid argument
+            Test("getNextViableDate(hello)"), // should have a "XXXX-MM-DD" format string
+            Test("getNextViableDate(one)"), // should have a string parameter
+            Test("getNextViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
+            Test("getPreviousViableDate(hello)"), // should have a "XXXX-MM-DD" format string
+            Test("getPreviousViableDate(one)"), // should have a string parameter
+            Test("getPreviousViableDate('XXXX-10-10', 20)"), // should only have 1 parameter
+            Test("getNextViableTime(hello)"), // should have a "XX:mm:ss" format string
+            Test("getNextViableTime(one)"), // should have a string parameter
+            Test("getNextViableTime('XX:12:12', 20)"), // should only have 1 parameter
+            Test("getPreviousViableTime(hello)"), // should have a "XX:mm:ss" format string
+            Test("getPreviousViableTime(one)"), // should have a string parameter
+            Test("getPreviousViableTime('XX:12:12', 20)"), // should only have 1 parameter
+            Test("resolve(one)"), // should have string or TimexProperty arguments
+            Test("resolve('T14', 'Asia/Tokyo')"), // should only have one parameter
+            Test("resolve('12-20')"), // should have a valid TimexPropterty after parsing
+            Test("resolve('XXXX-WXX-6')"), // not a valid argument
             #endregion
 
             #region uri parsing function test
