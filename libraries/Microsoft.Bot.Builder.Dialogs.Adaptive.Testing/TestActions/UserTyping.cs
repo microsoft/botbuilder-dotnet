@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -49,17 +48,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             var typing = adapter.MakeActivity();
             typing.Type = ActivityTypes.Typing;
 
-            if (!string.IsNullOrEmpty(this.User))
+            if (!string.IsNullOrEmpty(User))
             {
                 typing.From = ObjectPath.Clone(typing.From);
-                typing.From.Id = this.User;
-                typing.From.Name = this.User;
+                typing.From.Id = User;
+                typing.From.Name = User;
             }
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            await adapter.ProcessActivityAsync((Activity)typing, callback, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.ProcessActivityAsync((Activity)typing, callback, default).ConfigureAwait(false);
 
             sw.Stop();
 

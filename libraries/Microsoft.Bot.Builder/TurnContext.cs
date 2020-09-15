@@ -42,6 +42,40 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TurnContext"/> class from another turncontext class to target an alternate Activity.
+        /// </summary>
+        /// <remarks>
+        /// For supporting calling legacy systems that always assume turncontext.Activity is the activity should be processed.
+        /// This class clones the turncontext and then replaces the original.activity with the passed in activity.
+        /// </remarks>
+        /// <param name="turnContext">context to clone.</param>
+        /// <param name="activity">activity to put into the new turn context.</param>
+        public TurnContext(ITurnContext turnContext, Activity activity)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+
+            // all properties should be copied over except for activity.
+            Adapter = turnContext.Adapter;
+            TurnState = turnContext.TurnState;
+            Responded = turnContext.Responded;
+
+            if (turnContext is TurnContext tc)
+            {
+                BufferedReplyActivities = tc.BufferedReplyActivities;
+
+                // keep private middelware pipeline hooks.
+                _onSendActivities = tc._onSendActivities;
+                _onUpdateActivity = tc._onUpdateActivity;
+                _onDeleteActivity = tc._onDeleteActivity;
+            }
+        }
+
+        /// <summary>
         /// Gets the bot adapter that created this context object.
         /// </summary>
         /// <value>The bot adapter that created this context object.</value>
