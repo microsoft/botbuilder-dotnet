@@ -1,38 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
-    [TestClass]
-    public class RecognizerSetTests
+    [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
+    public class RecognizerSetTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public RecognizerSetTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(RecognizerSetTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(RecognizerSetTests));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RecognizerSetTests_Merge()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RecognizerSetTests_None()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
     }
 }

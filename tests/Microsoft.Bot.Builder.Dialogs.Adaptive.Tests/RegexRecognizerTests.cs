@@ -2,40 +2,34 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
-    [TestClass]
-    public class RegexRecognizerTests
+    [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
+    public class RegexRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public RegexRecognizerTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(RegexRecognizerTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(RegexRecognizerTests));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RegexRecognizerTests_Entities()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RegexRecognizerTests_Intents()
         {
             var recognizer = new RegexRecognizer()
@@ -85,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var activity = Activity.CreateMessageActivity();
             activity.Text = "intent a1 b2";
             activity.Locale = Culture.English;
-            result = await recognizer.RecognizeAsync(dc,  (Activity)activity, CancellationToken.None);
+            result = await recognizer.RecognizeAsync(dc, (Activity)activity, CancellationToken.None);
             ValidateCodeIntent(result);
 
             activity.Text = "I would like color red and orange";
@@ -95,31 +89,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
         private static void ValidateColorIntent(RecognizerResult result)
         {
-            Assert.AreEqual(1, result.Intents.Count, "Should recognize one intent");
-            Assert.AreEqual("colorIntent", result.Intents.Select(i => i.Key).First(), "Should recognize colorIntent");
+            Assert.Single(result.Intents);
+            Assert.Equal("colorIntent", result.Intents.Select(i => i.Key).First());
 
             // entity assertions from capture group
             dynamic entities = result.Entities;
-            Assert.IsNotNull(entities.color, "should find color");
-            Assert.IsNull(entities.code, "should not find code");
-            Assert.AreEqual(2, entities.color.Count, "should find 2 colors");
-            Assert.AreEqual("red", (string)entities.color[0], "should find red");
-            Assert.AreEqual("orange", (string)entities.color[1], "should find orange");
+            Assert.NotNull(entities.color);
+            Assert.Null(entities.code);
+            Assert.Equal(2, entities.color.Count);
+            Assert.Equal("red", (string)entities.color[0]);
+            Assert.Equal("orange", (string)entities.color[1]);
         }
 
         private static void ValidateCodeIntent(RecognizerResult result)
         {
             // intent assertions
-            Assert.AreEqual(1, result.Intents.Count, "Should recognize one intent");
-            Assert.AreEqual("codeIntent", result.Intents.Select(i => i.Key).First(), "Should recognize codeIntent");
+            Assert.Single(result.Intents);
+            Assert.Equal("codeIntent", result.Intents.Select(i => i.Key).First());
 
             // entity assertions from capture group
             dynamic entities = result.Entities;
-            Assert.IsNotNull(entities.code, "should find code");
-            Assert.IsNull(entities.color, "should not find color");
-            Assert.AreEqual(2, entities.code.Count, "should find 2 codes");
-            Assert.AreEqual("a1", (string)entities.code[0], "should find a1");
-            Assert.AreEqual("b2", (string)entities.code[1], "should find b2");
+            Assert.NotNull(entities.code);
+            Assert.Null(entities.color);
+            Assert.Equal(2, entities.code.Count);
+            Assert.Equal("a1", (string)entities.code[0]);
+            Assert.Equal("b2", (string)entities.code[1]);
         }
 
         private static DialogContext CreateContext(string text)
