@@ -1,37 +1,37 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class GeneratorTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class GeneratorTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
-        private readonly string unitTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\unittests\");
+        private readonly IConfiguration _configuration;
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        public async Task Generator_sandwich()
+        public GeneratorTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            var config = new ConfigurationBuilder()
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(GeneratorTests));
+
+            _configuration = new ConfigurationBuilder()
                 .UseMockLuisSettings(sandwichDirectory, "TestBot")
                 .Build();
-            
-            var resourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(GeneratorTests)), monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
 
-            await TestUtils.RunTestScript(resourceExplorer, configuration: config);
+            _resourceExplorerFixture.ResourceExplorer
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(_configuration));
+        }
+
+        [Fact]
+        public async Task Generator_sandwich()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: _configuration);
         }
     }
 }
