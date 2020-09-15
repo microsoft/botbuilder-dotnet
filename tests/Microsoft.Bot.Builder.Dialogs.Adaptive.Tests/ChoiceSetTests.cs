@@ -8,9 +8,9 @@ using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -23,19 +23,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public ObjectExpression<ChoiceSet> Choices { get; set; }
     }
 
-    [TestClass]
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class ChoiceSetTests
     {
-        private JsonSerializerSettings settings = new JsonSerializerSettings()
+        private readonly JsonSerializerSettings settings = new JsonSerializerSettings()
         {
-            Converters = new List<JsonConverter>() 
-            { 
+            Converters = new List<JsonConverter>()
+            {
                 new ChoiceSetConverter(),
                 new ObjectExpressionConverter<ChoiceSet>()
             }
         };
 
-        [TestMethod]
+        [Fact]
         public void TestExpressionAccess()
         {
             var state = new
@@ -50,12 +50,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ep = new ObjectExpression<ChoiceSet>("choices");
             var (result, error) = ep.TryGetValue(state);
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestValueAccess()
         {
             var state = new object();
@@ -66,12 +66,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new Choice() { Value = "test3" }
                 });
             var (result, error) = ep.TryGetValue(state);
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestJObjectAccess()
         {
             var foo = new List<Choice>()
@@ -83,23 +83,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ep = new ObjectExpression<ChoiceSet>(new ChoiceSet(JArray.FromObject(foo)));
             var (result, error) = ep.TryGetValue(new object());
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestStringArrayAccess()
         {
             var foo = new List<string>() { "test1", "test2", "test3" };
             var ep = new ObjectExpression<ChoiceSet>(new ChoiceSet(JArray.FromObject(foo)));
             var (result, error) = ep.TryGetValue(new object());
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestConverterExpressionAccess()
         {
             var state = new
@@ -119,15 +119,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var json = JsonConvert.SerializeObject(sample, settings);
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
-            Assert.AreEqual(typeof(Bar), bar.GetType());
-            Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
+            Assert.Equal(typeof(Bar), bar.GetType());
+            Assert.Equal(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestConverterObjectAccess()
         {
             var state = new
@@ -146,15 +146,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var json = JsonConvert.SerializeObject(sample, settings);
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
-            Assert.AreEqual(typeof(Bar), bar.GetType());
-            Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
+            Assert.Equal(typeof(Bar), bar.GetType());
+            Assert.Equal(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestConverterStringAccess()
         {
             var state = new
@@ -174,15 +174,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var json = JsonConvert.SerializeObject(sample, settings);
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
-            Assert.AreEqual(typeof(Bar), bar.GetType());
-            Assert.AreEqual(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
+            Assert.Equal(typeof(Bar), bar.GetType());
+            Assert.Equal(typeof(ObjectExpression<ChoiceSet>), bar.Choices.GetType());
             var (result, error) = bar.Choices.TryGetValue(state);
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
 
-        [TestMethod]
+        [Fact]
         public void ChoiceSet_RoundTrip()
         {
             var foo = new ChoiceSet()
@@ -193,24 +193,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 };
 
             var bar = JsonConvert.DeserializeObject<ChoiceSet>(JsonConvert.SerializeObject(foo));
-            for (int i = 0; i < foo.Count; i++)
+            for (var i = 0; i < foo.Count; i++)
             {
-                Assert.AreEqual(foo[i].Value, bar[i].Value);
+                Assert.Equal(foo[i].Value, bar[i].Value);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ChoiceSet_StringArray()
         {
-            var values = new JArray();
-            values.Add("test1");
-            values.Add("test2");
-            values.Add("test3");
+            var values = new JArray
+            {
+                "test1",
+                "test2",
+                "test3"
+            };
 
             var result = JsonConvert.DeserializeObject<ChoiceSet>(values.ToString());
-            Assert.AreEqual("test1", result[0].Value);
-            Assert.AreEqual("test2", result[1].Value);
-            Assert.AreEqual("test3", result[2].Value);
+            Assert.Equal("test1", result[0].Value);
+            Assert.Equal("test2", result[1].Value);
+            Assert.Equal("test3", result[2].Value);
         }
     }
 }
