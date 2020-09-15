@@ -318,31 +318,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 dc.State.SetValue("user.name.first", "joe");
-                Assert.AreEqual(false, dc.State.TryGetValue<int>("user.name.first", out var val));
-                Assert.AreEqual(true, dc.State.TryGetValue<string>("user.name.first", out var val2));
-                Assert.AreEqual("joe", val2);
+                Assert.Equal(false, dc.State.TryGetValue<int>("user.name.first", out var val));
+                Assert.Equal(true, dc.State.TryGetValue<string>("user.name.first", out var val2));
+                Assert.Equal("joe", val2);
 
                 dc.State.SetValue("user.age", 19);
-                Assert.AreEqual(true, dc.State.TryGetValue<string>("user.age", out var val3));
-                Assert.AreEqual("19", val3);
-                Assert.AreEqual(true, dc.State.TryGetValue<int>("user.age", out var val4));
-                Assert.AreEqual(19, val4);
+                Assert.Equal(true, dc.State.TryGetValue<string>("user.age", out var val3));
+                Assert.Equal("19", val3);
+                Assert.Equal(true, dc.State.TryGetValue<int>("user.age", out var val4));
+                Assert.Equal(19, val4);
 
                 dc.State.SetValue("user.salary", "10000");
-                Assert.AreEqual(true, dc.State.TryGetValue<string>("user.salary", out var val5));
-                Assert.AreEqual("10000", val5);
-                Assert.AreEqual(true, dc.State.TryGetValue<int>("user.salary", out var val6));
-                Assert.AreEqual(10000, val6);
+                Assert.Equal(true, dc.State.TryGetValue<string>("user.salary", out var val5));
+                Assert.Equal("10000", val5);
+                Assert.Equal(true, dc.State.TryGetValue<int>("user.salary", out var val6));
+                Assert.Equal(10000, val6);
                 dc.State.SetValue("user.foo", foo);
 
-                Assert.AreEqual(false, dc.State.TryGetValue<string>("user.foo", out var val7));
-                Assert.AreEqual(true, dc.State.TryGetValue<Foo>("user.foo", out var val8));
-                Assert.AreEqual(false, dc.State.TryGetValue<IDictionary<string, string>>("user.foo", out var val9));
-                Assert.AreEqual(true, dc.State.TryGetValue<Bar>("user.foo", out var val10));
+                Assert.Equal(false, dc.State.TryGetValue<string>("user.foo", out var val7));
+                Assert.Equal(true, dc.State.TryGetValue<Foo>("user.foo", out var val8));
+                Assert.Equal(false, dc.State.TryGetValue<IDictionary<string, string>>("user.foo", out var val9));
+                Assert.Equal(true, dc.State.TryGetValue<Bar>("user.foo", out var val10));
             }).StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGetValueT()
         {
             await CreateDialogContext(async (dc, ct) =>
