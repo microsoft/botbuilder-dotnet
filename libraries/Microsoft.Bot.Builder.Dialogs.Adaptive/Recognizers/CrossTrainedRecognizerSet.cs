@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -142,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     // we have a second recognizer result which is either none or real
 
                     // if one of them is None intent, then go with the other one.
-                    if (intent == NoneIntent || string.IsNullOrEmpty(intent))
+                    if (string.IsNullOrEmpty(intent))
                     {
                         // then we are fine with the one we have, just ignore this one
                         continue;
@@ -169,11 +168,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 return recognizerResults[consensusRecognizerId];
             }
 
+            //find if there is missing entities matched
+            var mergedEntities = new JObject();
+            foreach (var rocogResult in results)
+            {            
+                if (rocogResult.Entities.Count > 0)
+                {
+                    mergedEntities.Merge(rocogResult.Entities);
+                }
+            }
+
             // return none.
             return new RecognizerResult()
             {
                 Text = recognizerResults.Values.First().Text,
-                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } },
+                Entities = mergedEntities
             };
         }
 
