@@ -4,11 +4,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 {
-    [TestClass]
     public sealed class IdentifierTests
     {
         public static IEnumerable<ulong> Bytes => new[]
@@ -25,14 +24,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             from two in Items
             select new object[] { one, two };
 
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
+        [Theory]
+        [MemberData(nameof(Data), DisableDiscoveryEnumeration = true)]
         public void Identifier_Encode_Decode(ulong one, ulong two)
         {
             var item = Identifier.Encode(one, two);
             Identifier.Decode(item, out var oneX, out var twoX);
-            Assert.AreEqual(one, oneX);
-            Assert.AreEqual(two, twoX);
+            Assert.Equal(one, oneX);
+            Assert.Equal(two, twoX);
         }
     }
 }

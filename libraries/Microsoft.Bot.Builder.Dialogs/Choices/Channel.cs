@@ -113,6 +113,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             ? string.Empty
             : turnContext.Activity.ChannelId;
 
+        /// <summary>
+        /// Ids of the channels supported by the Bot Builder.
+        /// </summary>
         // This class has been deprecated in favor of the class in Microsoft.Bot.Connector.Channels located
         // at https://github.com/Microsoft/botbuilder-dotnet/libraries/Microsoft.Bot.Connector/Channels.cs.
         // This change is non-breaking and this class now inherits from the class in the connector library.

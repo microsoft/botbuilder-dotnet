@@ -16,15 +16,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </remarks>
     public class DialogContextMemoryScope : MemoryScope
     {
+        /// <summary>
+        /// Stack name.
+        /// </summary>
         public const string Stack = "stack";
+
+        /// <summary>
+        /// Active dialog name.
+        /// </summary>
         public const string ActiveDialog = "activeDialog";
+
+        /// <summary>
+        /// Parent name.
+        /// </summary>
         public const string Parent = "parent";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogContextMemoryScope"/> class.
+        /// </summary>
         public DialogContextMemoryScope()
             : base(ScopePath.DialogContext, includeInSnapshot: false)
         {
         }
 
+        /// <summary>
+        /// Gets the backing memory for this scope.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
+        /// <returns>Memory for the scope.</returns>
         public override object GetMemory(DialogContext dc)
         {
             if (dc == null)
@@ -64,6 +83,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             return memory;
         }
 
+        /// <summary>
+        /// Changes the backing object for the memory scope.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
+        /// <param name="memory">Memory object to set for the scope.</param>
+        /// <remarks>Method not supported. You can't modify the dialogcontext scope.</remarks>
         public override void SetMemory(DialogContext dc, object memory)
         {
             throw new NotSupportedException("You can't modify the dialogcontext scope");
