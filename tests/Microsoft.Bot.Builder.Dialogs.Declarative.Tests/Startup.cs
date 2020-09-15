@@ -1,16 +1,18 @@
 ﻿using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
+[assembly: TestFramework("Microsoft.Bot.Builder.Startup", "Microsoft.Bot.Builder.Dialogs.Declarative.Tests")]
 
 namespace Microsoft.Bot.Builder
 {
-    [TestClass]
-    public class Startup
+    public class Startup : XunitTestFramework
     {
-        [AssemblyInitialize]
-        public static void Initialize(TestContext testContext)
+        public Startup(IMessageSink messageSink)
+            : base(messageSink)
         {
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
