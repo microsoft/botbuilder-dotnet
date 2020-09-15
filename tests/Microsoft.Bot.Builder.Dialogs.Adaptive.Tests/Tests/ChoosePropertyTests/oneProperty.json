@@ -1,0 +1,54 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "Bread": {
+      "type": "string",
+      "enum": [
+        "multiGrainWheat",
+        "rye",
+        "white",
+        "wholeWheat"
+      ],
+      "$entities": [
+        "BreadEntity"
+      ]
+    },
+    "Meat": {
+      "type": "string",
+      "enum": [
+        "Bacon",
+        "rye",
+        "white",
+        "wholeWheat"
+      ],
+      "$entities": [
+        "MeatEntity"
+      ]
+    },
+    "PropertyToChange": {
+      "type": "string",
+      "$entities": [
+        "Bread",
+        "Meat"
+      ]
+    }
+  },
+  "required": [
+    "Bread",
+    "Meat"
+  ],
+  "$operations": [
+    "Add()",
+    "Remove()",
+    "Clear()",
+    "Show()",
+    "Help()",
+    "Change()"
+  ],
+  "$defaultOperation": {
+    "": {
+      "": "Add()"
+    }
+  }
+}

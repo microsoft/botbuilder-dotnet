@@ -30,7 +30,7 @@
       {
         "$kind": "Microsoft.OnEndOfActions",
         "condition": "=!$Bread",
-        "priority": "0",
+        "priority": 0,
         "actions": [
           {
             "$kind": "Microsoft.Ask",

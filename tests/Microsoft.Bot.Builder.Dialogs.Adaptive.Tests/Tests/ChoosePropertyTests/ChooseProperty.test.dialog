@@ -1,0 +1,48 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Test Choose Property",
+  "httpRequestMocks": [
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "schema": "oneProperty.json",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnChooseProperty",
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Bread or Meat ?",
+            "expectedProperties": [
+              "PropertyToChange"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Bread or Meat ?"
+    }
+  ]
+}
