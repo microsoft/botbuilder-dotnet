@@ -1,18 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All righ reserved.
 // Licensed under the MIT License.
 
-using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
-    [TestClass]
     public class QnAMakerSettingsTests
     {
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory ", "AI")]
+        [Trait("TestCategory ", "QnAMaker")]
         public void QnAMakerSettings_GetUserJsonSettingFiles()
         {
             var builder = new ConfigurationBuilder();
@@ -24,7 +22,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             builder.UseQnAMakerSettings(botRoot, region, environment);
 
             var source = builder.Sources[1] as Microsoft.Extensions.Configuration.Json.JsonConfigurationSource;
-            Assert.AreEqual("qnamaker.settings.development.westus.json", source.Path);
+            Assert.Equal("qnamaker.settings.development.westus.json", source.Path);
         }
     }
 }

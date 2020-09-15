@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Payloads;
 using Xunit;
@@ -18,7 +16,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         {
             var sender = new MockPayloadSender();
             var id = Guid.NewGuid();
-            char type = 'X';
+            const char type = 'X';
 
             var disassembler = new CancelDisassembler(sender, id, type);
 

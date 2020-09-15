@@ -8,6 +8,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// </summary>
     public class HashPathResolver : AliasPathResolver
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HashPathResolver"/> class.
+        /// </summary>
         public HashPathResolver()
             : base(alias: "#", prefix: "turn.recognized.intents.")
         {

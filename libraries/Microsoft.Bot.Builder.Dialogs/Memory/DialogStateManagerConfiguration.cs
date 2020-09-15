@@ -6,6 +6,9 @@ using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
+    /// <summary>
+    /// Configures the path resolvers and memory scopes for the dialog state manager.
+    /// </summary>
     public class DialogStateManagerConfiguration
     {
         /// <summary>
