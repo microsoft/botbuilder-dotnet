@@ -9,4 +9,4 @@
 - Hi
 
 #TestTimexResolve
-- ${formatDateTime(concat(timex.resolve("2009-01-23"), "T", timex.resolve("T14")))}
+- ${formatDateTime(concat(resolve("2009-01-23"), "T", resolve("T14")))}
