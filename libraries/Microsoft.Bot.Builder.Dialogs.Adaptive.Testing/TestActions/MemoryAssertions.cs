@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Run assertions against memory.
     /// </summary>
+    [DebuggerDisplay("MemoryAssertions")]
     public class MemoryAssertions : TestAction
     {
         /// <summary>

@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <summary>
     /// Mock one or more property values.
     /// </summary>
+    [DebuggerDisplay("SetProperties")]
     public class SetProperties : TestAction
     {
         /// <summary>

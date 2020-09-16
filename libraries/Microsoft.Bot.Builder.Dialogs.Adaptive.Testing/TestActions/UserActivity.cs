@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Send an activity to the bot.
     /// </summary>
+    [DebuggerDisplay("UserActivity")]
     public class UserActivity : TestAction
     {
         /// <summary>
