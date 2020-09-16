@@ -25,9 +25,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
             ICloudEnvironment cloudEnvironment,
-            ILogger logger = null,
-            HttpClient httpClient = null)
-            : base(cloudEnvironment, logger, httpClient)
+            HttpClient httpClient = null,
+            ILogger logger = null)
+            : base(cloudEnvironment, httpClient, logger)
         {
         }
 
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <param name="httpClient">The HttpClient implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
-            ILogger logger = null,
-            HttpClient httpClient = null)
-            : base(new ConfigurationCloudEnvironment(), logger, httpClient)
+            HttpClient httpClient = null,
+            ILogger logger = null)
+            : base(new ConfigurationCloudEnvironment(), httpClient, logger)
         {
         }
 

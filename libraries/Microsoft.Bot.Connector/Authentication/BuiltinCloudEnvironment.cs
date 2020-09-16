@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -49,22 +50,22 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader)
+        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), _authConfiguration, _httpClient).ConfigureAwait(false);
 
             var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
             
-            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, cancellationToken).ConfigureAwait(false);
 
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
         }
 
-        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience)
+        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -74,10 +75,10 @@ namespace Microsoft.Bot.Connector.Authentication
             return _channelService != null ? new SimpleChannelProvider(_channelService) : null;
         }
 
-        private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity)
+        private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             // Is the bot accepting all incoming messages?
-            if (await credentialFactory.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+            if (await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
             {
                 // Return null so that the callerId is cleared.
                 return null;

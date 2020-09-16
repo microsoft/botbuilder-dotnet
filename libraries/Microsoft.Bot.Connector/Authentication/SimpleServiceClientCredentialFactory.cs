@@ -3,6 +3,7 @@
 
 using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
@@ -59,19 +60,19 @@ namespace Microsoft.Bot.Connector.Authentication
         public string Password { get; set; }
 
         /// <inheritdoc/>
-        public Task<bool> IsValidAppIdAsync(string appId)
+        public Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken)
         {
             return Task.FromResult(appId == AppId);
         }
 
         /// <inheritdoc/>
-        public Task<bool> IsAuthenticationDisabledAsync()
+        public Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(string.IsNullOrEmpty(AppId));
         }
 
         /// <inheritdoc/>
-        public Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority)
+        public Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
         {
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {

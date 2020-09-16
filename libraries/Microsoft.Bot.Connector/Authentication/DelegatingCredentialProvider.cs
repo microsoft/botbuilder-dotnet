@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -25,12 +26,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public Task<bool> IsAuthenticationDisabledAsync()
         {
-            return _credentialFactory.IsAuthenticationDisabledAsync();
+            return _credentialFactory.IsAuthenticationDisabledAsync(CancellationToken.None);
         }
 
         public Task<bool> IsValidAppIdAsync(string appId)
         {
-            return _credentialFactory.IsValidAppIdAsync(appId);
+            return _credentialFactory.IsValidAppIdAsync(appId, CancellationToken.None);
         }
     }
 }

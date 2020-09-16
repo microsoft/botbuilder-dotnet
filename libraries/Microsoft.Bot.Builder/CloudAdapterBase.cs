@@ -36,8 +36,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected CloudAdapterBase(
             ICloudEnvironment cloudEnvironment,
-            ILogger logger = null,
-            HttpClient httpClient = null)
+            HttpClient httpClient = null,
+            ILogger logger = null)
         {
             _cloudEnvironment = cloudEnvironment;
             _httpClient = httpClient;
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder
         protected async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to create the credentials for proactive requests.
-            var credentials = await _cloudEnvironment.GetProactiveCredentialsAsync(claimsIdentity, audience).ConfigureAwait(false);
+            var credentials = await _cloudEnvironment.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
 
             // Create the connector client to use for outbound requests.
             var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), credentials, _httpClient);
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder
         protected async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to authenticate the inbound request and create credentials for outbound requests.
-            var (claimsIdentity, credentials, scope, callerId) = await _cloudEnvironment.AuthenticateRequestAsync(activity, authHeader).ConfigureAwait(false);
+            var (claimsIdentity, credentials, scope, callerId) = await _cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
 
             // Set the callerId on the activity.
             activity.CallerId = callerId;

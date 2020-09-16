@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -62,30 +63,30 @@ namespace Microsoft.Bot.Connector.Authentication
             _logger = logger;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader)
+        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
-            var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, _credentialFactory, _authConfiguration, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, _credentialFactory, _authConfiguration, _httpClient, cancellationToken).ConfigureAwait(false);
 
             var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
 
-            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, cancellationToken).ConfigureAwait(false);
 
             var appId = BuiltinCloudEnvironment.GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl, _validateAuthority).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
             return (claimsIdentity, credentials, scope, callerId);
         }
 
-        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience)
+        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity)
+        private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             // Is the bot accepting all incoming messages?
-            if (await credentialFactory.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+            if (await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
             {
                 // Return null so that the callerId is cleared.
                 return null;
@@ -101,11 +102,11 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         // The following code is based on JwtTokenValidation.AuthenticateRequest
-        private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateRequestAsync(Activity activity, string authHeader, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient)
+        private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateRequestAsync(Activity activity, string authHeader, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
-                var isAuthDisabled = await credentialFactory.IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                var isAuthDisabled = await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
                 if (isAuthDisabled)
                 {
                     // In the scenario where Auth is disabled, we still want to have the
@@ -118,16 +119,16 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, credentialFactory, activity.ChannelId, authConfiguration, activity.ServiceUrl, httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, credentialFactory, activity.ChannelId, authConfiguration, activity.ServiceUrl, httpClient, cancellationToken).ConfigureAwait(false);
 
             AppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
             return claimsIdentity;
         }
 
-        private async Task<ClaimsIdentity> JwtTokenValidation_ValidateAuthHeaderAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient)
+        private async Task<ClaimsIdentity> JwtTokenValidation_ValidateAuthHeaderAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient, CancellationToken cancellationToken)
         {
-            var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, credentialFactory, channelId, authConfiguration, serviceUrl, httpClient).ConfigureAwait(false);
+            var identity = await JwtTokenValidation_AuthenticateTokenAsync(authHeader, credentialFactory, channelId, authConfiguration, serviceUrl, httpClient, cancellationToken).ConfigureAwait(false);
 
             await JwtTokenValidation_ValidateClaimsAsync(authConfiguration, identity.Claims).ConfigureAwait(false);
 
@@ -148,23 +149,23 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
-        private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient)
+        private async Task<ClaimsIdentity> JwtTokenValidation_AuthenticateTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string channelId, AuthenticationConfiguration authConfiguration, string serviceUrl, HttpClient httpClient, CancellationToken cancellationToken)
         {
             if (SkillValidation.IsSkillToken(authHeader))
             {
-                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, credentialFactory, httpClient, channelId, authConfiguration).ConfigureAwait(false);
+                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, credentialFactory, httpClient, channelId, authConfiguration, cancellationToken).ConfigureAwait(false);
             }
 
             if (EmulatorValidation.IsTokenFromEmulator(authHeader))
             {
-                return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, credentialFactory, httpClient, channelId, authConfiguration).ConfigureAwait(false);
+                return await EmulatorValidation_AuthenticateEmulatorTokenAsync(authHeader, credentialFactory, httpClient, channelId, authConfiguration, cancellationToken).ConfigureAwait(false);
             }
 
-            return await GovernmentChannelValidation_AuthenticateChannelTokenAsync(authHeader, credentialFactory, serviceUrl, httpClient, channelId, authConfiguration).ConfigureAwait(false);
+            return await GovernmentChannelValidation_AuthenticateChannelTokenAsync(authHeader, credentialFactory, serviceUrl, httpClient, channelId, authConfiguration, cancellationToken).ConfigureAwait(false);
         }
 
         // The following code is based on SkillValidation.AuthenticateChannelToken
-        private async Task<ClaimsIdentity> SkillValidation_AuthenticateChannelTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfiguration)
+        private async Task<ClaimsIdentity> SkillValidation_AuthenticateChannelTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfiguration, CancellationToken cancellationToken)
         {
             var tokenValidationParameters =
                 new TokenValidationParameters
@@ -194,12 +195,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfiguration.RequiredEndorsements).ConfigureAwait(false);
 
-            await SkillValidation_ValidateIdentityAsync(identity, credentialFactory).ConfigureAwait(false);
+            await SkillValidation_ValidateIdentityAsync(identity, credentialFactory, cancellationToken).ConfigureAwait(false);
 
             return identity;
         }
 
-        private async Task SkillValidation_ValidateIdentityAsync(ClaimsIdentity identity, IServiceClientCredentialsFactory credentialFactory)
+        private async Task SkillValidation_ValidateIdentityAsync(ClaimsIdentity identity, IServiceClientCredentialsFactory credentialFactory, CancellationToken cancellationToken)
         {
             if (identity == null)
             {
@@ -228,7 +229,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"'{AuthenticationConstants.AudienceClaim}' claim is required on skill Tokens.");
             }
 
-            if (!await credentialFactory.IsValidAppIdAsync(audienceClaim).ConfigureAwait(false))
+            if (!await credentialFactory.IsValidAppIdAsync(audienceClaim, cancellationToken).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException("Invalid audience.");
@@ -243,7 +244,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         // The following code is based on EmulatorValidation.AuthenticateEmulatorToken
-        private async Task<ClaimsIdentity> EmulatorValidation_AuthenticateEmulatorTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfiguration)
+        private async Task<ClaimsIdentity> EmulatorValidation_AuthenticateEmulatorTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfiguration, CancellationToken cancellationToken)
         {
             var toBotFromEmulatorTokenValidationParameters =
                 new TokenValidationParameters()
@@ -329,7 +330,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Unknown Emulator Token version '{tokenVersion}'.");
             }
 
-            if (!await credentialFactory.IsValidAppIdAsync(appID).ConfigureAwait(false))
+            if (!await credentialFactory.IsValidAppIdAsync(appID, cancellationToken).ConfigureAwait(false))
             {
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appID}");
             }
@@ -339,7 +340,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         // The following code is based on GovernmentChannelValidation.AuthenticateChannelToken
 
-        private async Task<ClaimsIdentity> GovernmentChannelValidation_AuthenticateChannelTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+        private async Task<ClaimsIdentity> GovernmentChannelValidation_AuthenticateChannelTokenAsync(string authHeader, IServiceClientCredentialsFactory credentialFactory, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig, CancellationToken cancellationToken)
         {
             var tokenValidationParameters = GovernmentChannelValidation_GetTokenValidationParameters();
 
@@ -351,7 +352,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
 
-            await GovernmentChannelValidation_ValidateIdentityAsync(identity, credentialFactory, serviceUrl).ConfigureAwait(false);
+            await GovernmentChannelValidation_ValidateIdentityAsync(identity, credentialFactory, serviceUrl, cancellationToken).ConfigureAwait(false);
 
             return identity;
         }
@@ -372,7 +373,7 @@ namespace Microsoft.Bot.Connector.Authentication
             };
         }
 
-        private async Task GovernmentChannelValidation_ValidateIdentityAsync(ClaimsIdentity identity, IServiceClientCredentialsFactory credentialFactory, string serviceUrl)
+        private async Task GovernmentChannelValidation_ValidateIdentityAsync(ClaimsIdentity identity, IServiceClientCredentialsFactory credentialFactory, string serviceUrl, CancellationToken cancellationToken)
         {
             if (identity == null)
             {
@@ -410,7 +411,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            if (!await credentialFactory.IsValidAppIdAsync(appIdFromClaim).ConfigureAwait(false))
+            if (!await credentialFactory.IsValidAppIdAsync(appIdFromClaim, cancellationToken).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
