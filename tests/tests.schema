@@ -3844,10 +3844,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+            "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+            "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -7157,14 +7157,14 @@
             }
           ]
         },
-        "strictFiltersJoinOperator": {
+        "strictFiltersCompoundOperationType": {
           "$ref": "#/definitions/stringExpression",
-          "title": "StrictFiltersJoinOperator",
+          "title": "strictFiltersCompoundOperationType",
           "description": "Join operator for Strict Filters.",
           "oneOf": [
             {
-              "title": "Join Operator",
-              "description": "Value of Join Operator to be used as conjunction with Strict Filter values.",
+              "title": "StrictFilters CompoundOperation Type",
+              "description": "Value of Join Operator to be used as Conjunction with Strict Filter Value.",
               "enum": [
                 "AND",
                 "OR"
@@ -7294,25 +7294,6 @@
                 "autoSuggestQuestion"
               ],
               "default": "default"
-            },
-            {
-              "$ref": "#/definitions/equalsExpression"
-            }
-          ]
-        },
-        "strictFiltersJoinOperator": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "StrictFiltersJoinOperator",
-          "description": "Join operator for Strict Filters.",
-          "oneOf": [
-            {
-              "title": "Join Operator",
-              "description": "Value of Join Operator to be used as onjuction with Strict Filter values.",
-              "enum": [
-                "AND",
-                "OR"
-              ],
-              "default": "AND"
             },
             {
               "$ref": "#/definitions/equalsExpression"
