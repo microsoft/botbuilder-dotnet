@@ -57,6 +57,14 @@ jobs:
      "Resolved PreviewPackageVersion = $ppv";
     displayName: 'Resolve package version variables'
 
+  - task: colinsalmcorner.colinsalmcorner-buildtasks.tag-build-task.tagBuildOrRelease@0
+    displayName: 'Tag build with release and preview versions'
+    inputs:
+      tags: |
+       Release: $(ReleasePackageVersion)
+       Preview: $(PreviewPackageVersion)
+    continueOnError: true
+
   - template: ci-build-steps.yml
   - template: sign-steps.yml
 #  - template: functional-test-setup-steps.yml
