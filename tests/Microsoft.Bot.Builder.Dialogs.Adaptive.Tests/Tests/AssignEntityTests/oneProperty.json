@@ -20,7 +20,8 @@
   ],
   "$operations": [
     "Add()",
-    "Show()"
+    "Show()",
+    "Clear()"
   ],
   "$defaultOperation": {
     "": {

@@ -1,8 +1,9 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Test Choose Property",
+  "description": "Tests for Choosing Property",
   "httpRequestMocks": [
+    "LuisChooseProperty.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -15,8 +16,17 @@
         "IncludeAPIResults": true
       }
     },
-    "schema": "oneProperty.json",
+    "schema": "twoProperties.json",
     "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "welcome"
+          }
+        ]
+      },
       {
         "$kind": "Microsoft.OnChooseProperty",
         "actions": [
@@ -42,7 +52,15 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
+      "text": "welcome"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
       "text": "Bread or Meat ?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "Bread"
     }
   ]
 }

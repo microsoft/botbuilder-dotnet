@@ -1,0 +1,58 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"Bread\"",
+    "responses": [
+        {
+          "content": {
+            "query": "Bread",
+            "prediction": {
+              "entities": {
+                "$instance": {
+                  "Bread": [
+                    {
+                      "length": 5,
+                      "modelType": "Entity Extractor",
+                      "modelTypeId": 1,
+                      "recognitionSources": [
+                        "model"
+                      ],
+                      "startIndex": 0,
+                      "text": "Bread",
+                      "type": "Bread"
+                    }
+                  ],
+                  "personName": [
+                    {
+                      "length": 5,
+                      "modelType": "Prebuilt Entity Extractor",
+                      "modelTypeId": 2,
+                      "recognitionSources": [
+                        "model"
+                      ],
+                      "startIndex": 0,
+                      "text": "Bread",
+                      "type": "builtin.personName"
+                    }
+                  ]
+                },
+                "Bread": [
+                  {}
+                ],
+                "personName": [
+                  "Bread"
+                ]
+              },
+              "intents": {
+                "sandwich": {
+                  "score": 0.9986043
+                }
+              },
+              "topIntent": "sandwich"
+            }
+          }
+        }
+    ]
+}

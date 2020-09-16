@@ -46,5 +46,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript(ResourceExplorer);
         }
+
+        [TestMethod]
+        public async Task ClearEntity()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Test Choose Entity",
+  "description": "Tests for Choosing Entity",
   "httpRequestMocks": [
     "LuisChooseEntity.mock"
   ],
@@ -97,6 +97,12 @@
     {
       "$kind": "Microsoft.Test.UserSays",
       "text": "whole wheat"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "$Bread == 'whole wheat'"
+      ]
     }
   ]
 }

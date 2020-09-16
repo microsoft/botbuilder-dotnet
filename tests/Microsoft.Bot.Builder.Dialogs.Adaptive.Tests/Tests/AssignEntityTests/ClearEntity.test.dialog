@@ -1,9 +1,10 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Tests for Adding Entity",
+  "description": "Tests for Clearing Entity",
   "httpRequestMocks": [
-    "LuisAddEntity.mock"
+    "LuisAddEntity.mock",
+    "LuisClearEntity.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -18,15 +19,6 @@
     },
     "schema": "oneProperty.json",
     "triggers": [
-      {
-        "$kind": "Microsoft.OnBeginDialog",
-        "actions": [
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "welcome"
-          }
-        ]
-      },
       {
         "$kind": "Microsoft.OnEndOfActions",
         "condition": "=!$Bread",
@@ -57,6 +49,21 @@
             "value": "=@BreadEntity"
           }
         ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Clear()",
+        "property": "Bread",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "bread has been cleared."
+          },
+          {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "$Bread"
+          }
+        ]
       }
     ]
   },
@@ -71,10 +78,6 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "welcome"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
       "text": "Bread?"
     },
     {
@@ -86,10 +89,19 @@
       "text": "Set bread to rye"
     },
     {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "clear bread"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "bread has been cleared."
+    },
+    {
       "$kind": "Microsoft.Test.MemoryAssertions",
       "assertions": [
-        "$Bread == 'rye'"
+        "!$Bread"
       ]
     }
+
   ]
 }

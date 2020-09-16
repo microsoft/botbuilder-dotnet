@@ -17,10 +17,14 @@
     "Meat": {
       "type": "string",
       "enum": [
-        "Bacon",
-        "rye",
-        "white",
-        "wholeWheat"
+        "bacon",
+        "chicken",
+        "ham",
+        "pulled pork",
+        "roast beef",
+        "salami",
+        "turkey",
+        "none"
       ],
       "$entities": [
         "MeatEntity"
