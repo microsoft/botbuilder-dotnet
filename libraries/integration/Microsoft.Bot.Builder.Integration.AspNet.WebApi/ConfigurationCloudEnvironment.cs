@@ -4,6 +4,7 @@
 using System.Configuration;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -55,15 +56,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <inheritdoc/>
-        public Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader)
+        public Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
-            return _inner.AuthenticateRequestAsync(activity, authHeader);
+            return _inner.AuthenticateRequestAsync(activity, authHeader, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience)
+        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
-            return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience);
+            return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken);
         }
     }
 }
