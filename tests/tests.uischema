@@ -446,6 +446,19 @@
       "subtitle": "Handoff activity"
     }
   },
+  "Microsoft.OnInstallationUpdateActivity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Installation updated",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Installation updated activity"
+    }
+  },
   "Microsoft.OnIntent": {
     "form": {
       "hidden": [
