@@ -2,8 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.AI.Luis.Testing;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -17,15 +20,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <summary>
     /// Component registration for AdaptiveTesting resources.
     /// </summary>
+    /// <remarks>This should be the last registration since it may add testing overrides for other components.</remarks>
     public class AdaptiveTestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         /// <inheritdoc/>
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
-            // Action
+            // Actions for within normal bot flow
             yield return new DeclarativeType<AssertCondition>(AssertCondition.Kind);
 
-            // test actions
+            // Test script actions
             yield return new DeclarativeType<TestScript>(TestScript.Kind);
             yield return new DeclarativeType<UserSays>(UserSays.Kind);
             yield return new DeclarativeType<UserTyping>(UserTyping.Kind);

@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public List<string> MembersRemoved { get; } = new List<string>();
 
         /// <inheritdoc/>
-        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
         {
             var activity = adapter.MakeActivity();
             activity.Type = ActivityTypes.ConversationUpdate;

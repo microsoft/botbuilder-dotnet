@@ -3,26 +3,12 @@
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 #pragma warning disable SA1210 // namespace order
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using RichardSzalay.MockHttp;
-using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
