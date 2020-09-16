@@ -247,6 +247,12 @@
       "subtitle": "Switch Condition"
     }
   },
+  "Microsoft.ThrowException": {
+    "form": {
+      "label": "Throw an exception event",
+      "subtitle": "Throw an exception"
+    }
+  },
   "Microsoft.TraceActivity": {
     "form": {
       "helpLink": "https://aka.ms/bfc-debugging-bots",
