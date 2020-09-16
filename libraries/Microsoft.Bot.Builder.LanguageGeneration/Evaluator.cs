@@ -291,6 +291,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (result.Count == 1 && !(result[0] is string))
             {
+                if (result[0] == null && _lgOptions.StrictMode == true)
+                {
+                    throw new Exception(TemplateErrors.NullResult(CurrentTarget().TemplateName));
+                }
+
                 return result[0];
             }
 
@@ -440,17 +445,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var exp = expressionContext.GetText().TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (_lgOptions.StrictMode == true && (error != null || result == null))
-            {
-                var templateName = CurrentTarget().TemplateName;
-                if (_evaluationTargetStack.Count > 0)
-                {
-                    _evaluationTargetStack.Pop();
-                }
-
-                CheckExpressionResult(exp, error, result, templateName, contentLine, errorPrefix);
-            }
-            else if (error != null
+            if (error != null
                 || result == null
                 || (result is bool r1 && r1 == false)
                 || (result is int r2 && r2 == 0))
@@ -466,7 +461,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
 
-            if (error != null || (result == null && _lgOptions.StrictMode == true))
+            if (error != null)
             {
                 var templateName = CurrentTarget().TemplateName;
                 if (_evaluationTargetStack.Count > 0)
@@ -475,10 +470,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
-            }
-            else if (result == null && _lgOptions.StrictMode != true)
-            {
-                result = "null";
             }
 
             return result;

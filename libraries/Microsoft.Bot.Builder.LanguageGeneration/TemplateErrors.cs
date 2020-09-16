@@ -91,6 +91,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static string NullExpression(string expression) => $"'{expression}' evaluated to null.";
 
+        public static string NullResult(string templateName) => $"template '{templateName}' evaluated to null.";
+
         public static string ArgumentMismatch(string templateName, int expectedCount, int actualCount) => $"arguments mismatch for template '{templateName}'. Expecting '{expectedCount}' arguments, actual '{actualCount}'.";
 
         public static string TemplateExist(string templateName) => $"template '{templateName}' already exists.";
