@@ -25,6 +25,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     }
 
     /// <summary>
+    /// LG cache scope options.
+    /// </summary>
+    public enum LGCacheScope
+    {
+        /// <summary>
+        /// Global template cache scope.
+        /// </summary>
+        Global,
+
+        /// <summary>
+        /// Only cache result in the same layer of children in template.
+        /// </summary>
+        Local,
+
+        /// <summary>
+        /// Without cache.
+        /// </summary>
+        None
+    }
+
+    /// <summary>
     /// Options for evaluating LG templates.
     /// </summary>
     public class EvaluationOptions
@@ -43,6 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = null;
             LineBreakStyle = null;
             Locale = null;
+            CacheScope = null;
         }
 
         /// <summary>
@@ -55,6 +77,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = opt.NullSubstitution;
             LineBreakStyle = opt.LineBreakStyle;
             Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
+            CacheScope = opt.CacheScope;
         }
 
         /// <summary>
@@ -124,6 +147,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A function.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets cache scope of the evaluation result.
+        /// </summary>
+        /// <value>
+        /// Cache scope of the evaluation result.
+        /// </value>
+        public LGCacheScope? CacheScope { get; set; } = null;
 
         /// <summary>
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current

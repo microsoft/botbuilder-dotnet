@@ -9,45 +9,44 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class DialogContainerTests
     {
-        [TestMethod]
+        [Fact]
         public void DialogContainer_GetVersion()
         {
             var ds = new TestContainer();
             var version1 = ds.GetInternalVersion_Test();
-            Assert.IsNotNull(version1);
+            Assert.NotNull(version1);
 
             var ds2 = new TestContainer();
             var version2 = ds.GetInternalVersion_Test();
-            Assert.IsNotNull(version2);
-            Assert.AreEqual(version1, version2, "Same configuration should give same version");
+            Assert.NotNull(version2);
+            Assert.Equal(version1, version2);
 
             ds2.Dialogs.Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
             var version3 = ds2.GetInternalVersion_Test();
-            Assert.IsNotNull(version3);
-            Assert.AreNotEqual(version2, version3, "version should change if there is a dialog added");
+            Assert.NotNull(version3);
+            Assert.NotEqual(version2, version3);
 
             var version4 = ds2.GetInternalVersion_Test();
-            Assert.IsNotNull(version3);
-            Assert.AreEqual(version3, version4, "version be same if there is no change");
+            Assert.NotNull(version3);
+            Assert.Equal(version3, version4);
 
             var ds3 = new TestContainer();
             ds3.Dialogs.Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
 
             var version5 = ds3.GetInternalVersion_Test();
-            Assert.IsNotNull(version5);
-            Assert.AreEqual(version5, version4, "version be same if there is no change");
+            Assert.NotNull(version5);
+            Assert.Equal(version5, version4);
 
             ds3.Property = "foobar";
             var version6 = ds3.GetInternalVersion_Test();
-            Assert.IsNotNull(version6);
-            Assert.AreNotEqual(version6, version5, "version should change if property changes");
+            Assert.NotNull(version6);
+            Assert.NotEqual(version6, version5);
 
             var ds4 = new TestContainer()
             {
@@ -56,8 +55,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             ds4.Dialogs.Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
             var version7 = ds4.GetInternalVersion_Test();
-            Assert.IsNotNull(version7);
-            Assert.AreEqual(version7, version6, "version be the same when constructed the same way");
+            Assert.NotNull(version7);
+            Assert.Equal(version7, version6);
         }
     }
 

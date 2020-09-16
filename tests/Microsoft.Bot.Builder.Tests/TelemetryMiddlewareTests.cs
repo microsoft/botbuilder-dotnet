@@ -589,7 +589,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsTenantId"] == "tenantId");
             Assert.True(((Dictionary<string, string>)mockTelemetryClient.Invocations[0].Arguments[1])["TeamsTeamInfo"] == JsonConvert.SerializeObject(teamInfo));
         }
-      
+
+        [Fact]
         public async Task DoNotThrowOnNullActivity()
         {
             // Arrange

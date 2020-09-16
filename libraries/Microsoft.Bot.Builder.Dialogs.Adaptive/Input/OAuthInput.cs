@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 { AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(Timeout.GetValue(dc.State));
+            state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(Timeout.GetValue(dc.State));
 
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
@@ -186,7 +186,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
-            var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, expires) > 0);
+            var isTimeoutActivityType = isMessage
+                                        || IsTokenResponseEvent(dc.Context)
+                                        || IsTeamsVerificationInvoke(dc.Context)
+                                        || IsTokenExchangeRequestInvoke(dc.Context);
+            var hasTimedOut = isTimeoutActivityType && (DateTime.Compare(DateTime.UtcNow, expires) > 0);
 
             if (hasTimedOut)
             {
@@ -372,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
-                else
+                else if (!ChannelRequiresSignInLink(turnContext.Activity.ChannelId))
                 {
                     value = null;
                 }
@@ -620,6 +624,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return true;
+        }
+
+        private bool ChannelRequiresSignInLink(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                    return true;
+            }
+
+            return false;
         }
 
         private async Task SendInvokeResponseAsync(ITurnContext turnContext, HttpStatusCode statusCode, object body, CancellationToken cancellationToken)

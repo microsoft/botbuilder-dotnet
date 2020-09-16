@@ -20,37 +20,34 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Tests
 {
-    [TestClass]
     public class QnAMakerTests
     {
         private const string _knowledgeBaseId = "dummy-id";
         private const string _endpointKey = "dummy-key";
         private const string _hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
 
-        public TestContext TestContext { get; set; }
-
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse()
         {
             var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
@@ -59,7 +56,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithProperResponse")
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("Q1")
@@ -67,18 +64,18 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse()
         {
             var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
 
-            var noAnswerActivity = "No match found, please as another question.";
+            const string noAnswerActivity = "No match found, please ask another question.";
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithNoResponse")
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("Q12")
@@ -86,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery()
         {
             var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
@@ -95,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, "QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery")
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("None of the above.")
@@ -106,15 +103,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
         {
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":0,\"previousUserQuery\":\"\"},\"qnaId\":0,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\"}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1,\"isTest\":false,\"rankerType\":\"Default\",\"StrictFiltersCompoundOperationType\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerAction_MultiTurnDialogBase_WithAnswer()
         {
             var rootDialog = QnAMakerAction_MultiTurnDialogBase();
@@ -123,7 +120,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, nameof(QnAMakerAction_MultiTurnDialogBase_WithAnswer))
             .Send("I have issues related to KB")
                 .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("Accidently deleted KB")
@@ -131,7 +128,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer()
         {
             var rootDialog = QnAMakerAction_MultiTurnDialogBase();
@@ -140,7 +137,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
-            await CreateFlow(rootDialog)
+            await CreateFlow(rootDialog, nameof(QnAMakerAction_MultiTurnDialogBase_WithNoAnswer))
             .Send("I have issues related to KB")
                 .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("None of the above.")
@@ -148,9 +145,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TraceActivity()
         {
             // Mock Qna
@@ -172,7 +169,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             // Invoke flow which uses mock
             var transcriptStore = new MemoryTranscriptStore();
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity)))
                 .Use(new TranscriptLoggerMiddleware(transcriptStore));
             string conversationId = null;
 
@@ -182,9 +179,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 if (context?.Activity?.Text.CompareTo("how do I clean the stove?") == 0)
                 {
                     var results = await qna.GetAnswersAsync(context);
-                    Assert.IsNotNull(results);
-                    Assert.AreEqual(results.Length, 1, "should get one result");
-                    StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+                    Assert.NotNull(results);
+                    Assert.Single(results);
+                    Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
                 }
 
                 conversationId = context.Activity.Conversation.Id;
@@ -198,43 +195,42 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 await context.SendActivityAsync("echo:" + context.Activity.Text);
             })
                 .Send("how do I clean the stove?")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
                     .AssertReply("echo:how do I clean the stove?")
                 .Send("bar")
-                    .AssertReply((activity) => Assert.AreEqual(activity.Type, ActivityTypes.Typing))
+                    .AssertReply((activity) => Assert.Equal(activity.Type, ActivityTypes.Typing))
                     .AssertReply("echo:bar")
                 .StartTestAsync();
 
             // Validate Trace Activity created
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync("test", conversationId);
-            Assert.AreEqual(7, pagedResult.Items.Length);
-            Assert.AreEqual("how do I clean the stove?", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.IsTrue(pagedResult.Items[1].Type.CompareTo(ActivityTypes.Trace) == 0);
+            Assert.Equal(7, pagedResult.Items.Length);
+            Assert.Equal("how do I clean the stove?", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.Equal(0, pagedResult.Items[1].Type.CompareTo(ActivityTypes.Trace));
             var traceInfo = ((JObject)((ITraceActivity)pagedResult.Items[1]).Value).ToObject<QnAMakerTraceInfo>();
-            Assert.IsNotNull(traceInfo);
-            Assert.IsNotNull(pagedResult.Items[2].AsTypingActivity());
-            Assert.AreEqual("echo:how do I clean the stove?", pagedResult.Items[3].AsMessageActivity().Text);
-            Assert.AreEqual("bar", pagedResult.Items[4].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[5].AsTypingActivity());
-            Assert.AreEqual("echo:bar", pagedResult.Items[6].AsMessageActivity().Text);
+            Assert.NotNull(traceInfo);
+            Assert.NotNull(pagedResult.Items[2].AsTypingActivity());
+            Assert.Equal("echo:how do I clean the stove?", pagedResult.Items[3].AsMessageActivity().Text);
+            Assert.Equal("bar", pagedResult.Items[4].AsMessageActivity().Text);
+            Assert.NotNull(pagedResult.Items[5].AsTypingActivity());
+            Assert.Equal("echo:bar", pagedResult.Items[6].AsMessageActivity().Text);
             foreach (var activity in pagedResult.Items)
             {
-                Assert.IsTrue(!string.IsNullOrWhiteSpace(activity.Id));
-                Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
+                Assert.False(string.IsNullOrWhiteSpace(activity.Id));
+                Assert.True(activity.Timestamp > default(DateTimeOffset));
             }
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TraceActivity_EmptyText()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_EmptyText)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -245,20 +241,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
             var context = new TurnContext(adapter, activity);
 
-            var results = await qna.GetAnswersAsync(context);
+            await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TraceActivity_NullText()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_NullText)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -269,32 +264,30 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
             var context = new TurnContext(adapter, activity);
 
-            var results = await qna.GetAnswersAsync(context);
+            await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TraceActivity_NullContext()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
-            var results = await qna.GetAnswersAsync(null);
+            await Assert.ThrowsAsync<ArgumentNullException>(() => qna.GetAnswersAsync(null));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TraceActivity_BadMessage()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_BadMessage)));
             var activity = new Activity
             {
                 Type = ActivityTypes.Trace,
@@ -305,28 +298,27 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
             var context = new TurnContext(adapter, activity);
 
-            var results = await qna.GetAnswersAsync(context);
+            await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TraceActivity_NullActivity()
         {
             // Get basic Qna
             var qna = QnaReturnsAnswer();
 
             // No text
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(QnaMaker_TraceActivity_NullActivity)));
             var context = new MyTurnContext(adapter, null);
 
-            var results = await qna.GetAnswersAsync(context);
+            await Assert.ThrowsAsync<ArgumentException>(() => qna.GetAnswersAsync(context));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswer()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -347,14 +339,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswerRaw()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -377,15 +369,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 options);
 
             var results = await qna.GetAnswersRawAsync(GetContext("how do I clean the stove?"), options);
-            Assert.IsNotNull(results.Answers);
-            Assert.IsTrue(results.ActiveLearningEnabled);
-            Assert.AreEqual(results.Answers.Length, 1, "should get one result");
-            StringAssert.StartsWith(results.Answers[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.NotNull(results.Answers);
+            Assert.True(results.ActiveLearningEnabled);
+            Assert.Single(results.Answers);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results.Answers[0].Answer);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_LowScoreVariation()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -406,29 +398,29 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 4, "should get four results");
+            Assert.NotNull(results);
+            Assert.Equal(4, results.Length);
 
             var filteredResults = qna.GetLowScoreVariation(results);
-            Assert.IsNotNull(filteredResults);
-            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+            Assert.NotNull(filteredResults);
+            Assert.Equal(3, filteredResults.Length);
 
             mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer_DisableActiveLearning.json"));
            
             results = await qna.GetAnswersAsync(GetContext("Q11"));
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 4, "should get four results");
+            Assert.NotNull(results);
+            Assert.Equal(4, results.Length);
 
             filteredResults = qna.GetLowScoreVariation(results);
-            Assert.IsNotNull(filteredResults);
-            Assert.AreEqual(filteredResults.Length, 3, "should get three results");
+            Assert.NotNull(filteredResults);
+            Assert.Equal(3, filteredResults.Length);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_CallTrain()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -465,9 +457,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             await qna.CallTrainAsync(feedbackRecords);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswer_Configuration()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -490,14 +482,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var qna = new QnAMaker(service, options, client);
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswerWithFiltering()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -525,22 +517,22 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), options);
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            Assert.AreEqual("topic", results[0].Metadata[0].Name);
-            Assert.AreEqual("value", results[0].Metadata[0].Value);
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.Equal("topic", results[0].Metadata[0].Name);
+            Assert.Equal("value", results[0].Metadata[0].Value);
 
             // verify we are actually passing on the options
             var obj = JObject.Parse(interceptHttp.Content);
-            Assert.AreEqual(1, obj["top"].Value<int>());
-            Assert.AreEqual("topic", obj["strictFilters"][0]["name"].Value<string>());
-            Assert.AreEqual("value", obj["strictFilters"][0]["value"].Value<string>());
+            Assert.Equal(1, obj["top"].Value<int>());
+            Assert.Equal("topic", obj["strictFilters"][0]["name"].Value<string>());
+            Assert.Equal("value", obj["strictFilters"][0]["value"].Value<string>());
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_SetScoreThresholdWhenThresholdIsZero()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -563,13 +555,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var results = await qnaWithZeroValueThreshold
                 .GetAnswersAsync(GetContext("how do I clean the stove?"), new QnAMakerOptions() { Top = 1 });
 
-            Assert.IsNotNull(results);
-            Assert.AreEqual(1, results.Length);
+            Assert.NotNull(results);
+            Assert.Single(results);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TestThreshold()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -591,14 +583,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 0, "should get zero result because threshold");
+            Assert.NotNull(results);
+            Assert.Empty(results);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public void QnaMaker_Test_ScoreThresholdTooLarge_OutOfRange()
         {
             var endpoint = new QnAMakerEndpoint
@@ -614,13 +605,12 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 1,
             };
 
-            var qnaWithLargeThreshold = new QnAMaker(endpoint, tooLargeThreshold);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(endpoint, tooLargeThreshold));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public void QnaMaker_Test_ScoreThresholdTooSmall_OutOfRange()
         {
             var endpoint = new QnAMakerEndpoint
@@ -636,12 +626,12 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Top = 1,
             };
 
-            var qnaWithSmallThreshold = new QnAMaker(endpoint, tooSmallThreshold);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(endpoint, tooSmallThreshold));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswerWithContext()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -668,15 +658,15 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
 
             var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
-            Assert.IsNotNull(results);
-            Assert.AreEqual(1, results.Length, "should get one result");
-            Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
-            Assert.AreEqual(1, results[0].Score, "Score should be high");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.Equal(55, results[0].Id);
+            Assert.Equal(1, results[0].Score);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswerWithoutContext()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -698,14 +688,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
 
             var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
-            Assert.IsNotNull(results);
-            Assert.AreEqual(2, results.Length, "should get two result");
-            Assert.AreNotEqual(1, results[0].Score, "Score should be low");
+            Assert.NotNull(results);
+            Assert.Equal(2, results.Length);
+            Assert.NotEqual(1, results[0].Score);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsHighScoreWhenIdPassed()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -728,80 +718,70 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
 
             var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
-            Assert.IsNotNull(results);
-            Assert.AreEqual(1, results.Length, "should get one result");
-            Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
-            Assert.AreEqual(1, results[0].Score, "Score should be high");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.Equal(55, results[0].Id);
+            Assert.Equal(1, results[0].Score);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public void QnaMaker_Test_Top_OutOfRange()
         {
-            var qna = new QnAMaker(
+            Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname,
+                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = _endpointKey, Host = _hostname,
                 },
                 new QnAMakerOptions
                 {
-                    Top = -1,
-                    ScoreThreshold = 0.5F,
-                });
+                    Top = -1, ScoreThreshold = 0.5F,
+                }));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public void QnaMaker_Test_Endpoint_EmptyKbId()
         {
-            var qnaNullEndpoint = new QnAMaker(
-                new QnAMakerEndpoint()
-                {
-                    KnowledgeBaseId = string.Empty,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname,
-                });
+            Assert.Throws<ArgumentException>(() =>
+            {
+                new QnAMaker(
+                    new QnAMakerEndpoint
+                    {
+                        KnowledgeBaseId = string.Empty, EndpointKey = _endpointKey, Host = _hostname,
+                    });
+            });
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public void QnaMaker_Test_Endpoint_EmptyEndpointKey()
         {
-            var qnaNullEndpoint = new QnAMaker(
-                new QnAMakerEndpoint()
+            Assert.Throws<ArgumentException>(() => new QnAMaker(
+                new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
-                    EndpointKey = string.Empty,
-                    Host = _hostname,
-                });
+                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = string.Empty, Host = _hostname,
+                }));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public void QnaMaker_Test_Endpoint_EmptyHost()
         {
-            var qnaNullEndpoint = new QnAMaker(
-                new QnAMakerEndpoint()
+            Assert.Throws<ArgumentException>(() => new QnAMaker(
+                new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = string.Empty,
-                });
+                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = _endpointKey, Host = string.Empty,
+                }));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_UserAgent()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -825,19 +805,18 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
 
             // Verify that we added the bot.builder package details.
-            Assert.IsTrue(interceptHttp.UserAgent.Contains("Microsoft.Bot.Builder.AI.QnA/4"));
+            Assert.Contains("Microsoft.Bot.Builder.AI.QnA/4", interceptHttp.UserAgent);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(NotSupportedException))]
-        public async Task QnaMaker_V2LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        public void QnaMaker_V2LegacyEndpoint_Should_Throw()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetV2LegacyRequestUrl())
@@ -850,19 +829,13 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Host = $"{_hostname}/v2.0"
             };
 
-            var v2Qna = GetQnAMaker(mockHttp, v2LegacyEndpoint);
-
-            var v2legacyResult = await v2Qna.GetAnswersAsync(GetContext("How do I be the best?"));
-
-            Assert.IsNotNull(v2legacyResult);
-            Assert.IsTrue(v2legacyResult[0]?.Id != null);
+            Assert.Throws<NotSupportedException>(() => GetQnAMaker(mockHttp, v2LegacyEndpoint));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(NotSupportedException))]
-        public async Task QnaMaker_V3LegacyEndpoint_ConvertsToHaveIdPropertyInResult()
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        public void QnaMaker_V3LegacyEndpoint_ShouldThrow()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetV3LegacyRequestUrl())
@@ -875,17 +848,12 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 Host = $"{_hostname}/v3.0"
             };
 
-            var v3Qna = GetQnAMaker(mockHttp, v3LegacyEndpoint);
-
-            var v3legacyResult = await v3Qna.GetAnswersAsync(GetContext("How do I be the best?"));
-
-            Assert.IsNotNull(v3legacyResult);
-            Assert.IsTrue(v3legacyResult[0]?.Id != null);
+            Assert.Throws<NotSupportedException>(() => GetQnAMaker(mockHttp, v3LegacyEndpoint));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_ReturnsAnswerWithMetadataBoost()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -910,14 +878,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
 
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "Kiki");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("Kiki", results[0].Answer);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_TestThresholdInQueryOption()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -928,14 +896,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var qna = GetQnAMaker(
                 interceptHttp,
-                new QnAMakerEndpoint()
+                new QnAMakerEndpoint
                 {
                     KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
 
-            var queryOptionsWithScoreThreshold = new QnAMakerOptions()
+            var queryOptionsWithScoreThreshold = new QnAMakerOptions
             {
                 ScoreThreshold = 0.5F,
                 Top = 2,
@@ -945,38 +913,37 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     GetContext("What happens when you hug a porcupine?"),
                     queryOptionsWithScoreThreshold);
 
-            Assert.IsNotNull(result);
+            Assert.NotNull(result);
 
             var obj = JObject.Parse(interceptHttp.Content);
-            Assert.AreEqual(2, obj["top"].Value<int>());
-            Assert.AreEqual(0.5F, obj["scoreThreshold"].Value<float>());
+            Assert.Equal(2, obj["top"].Value<int>());
+            Assert.Equal(0.5F, obj["scoreThreshold"].Value<float>());
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [ExpectedException(typeof(HttpRequestException))]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_Test_UnsuccessfulResponse()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond(System.Net.HttpStatusCode.BadGateway);
+                .Respond(HttpStatusCode.BadGateway);
 
             var qna = GetQnAMaker(
                 mockHttp,
-                new QnAMakerEndpoint()
+                new QnAMakerEndpoint
                 {
                     KnowledgeBaseId = _knowledgeBaseId,
                     EndpointKey = _endpointKey,
                     Host = _hostname,
                 });
 
-            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
+            await Assert.ThrowsAsync<HttpRequestException>(() => qna.GetAnswersAsync(GetContext("how do I clean the stove?")));
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_IsTest_True()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -992,20 +959,20 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     Host = _hostname,
                 });
 
-            var qnaamkerOptions = new QnAMakerOptions
+            var qnaMakerOptions = new QnAMakerOptions
             {
                 Top = 1,
                 IsTest = true
             };
 
-            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaamkerOptions);
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 0, "should get no results");
+            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaMakerOptions);
+            Assert.NotNull(results);
+            Assert.Empty(results);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_RankerType_QuestionOnly()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -1021,20 +988,20 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     Host = _hostname,
                 });
 
-            var qnamakerOptions = new QnAMakerOptions
+            var qnaMakerOptions = new QnAMakerOptions
             {
                 Top = 1,
                 RankerType = "QuestionOnly"
             };
 
-            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnamakerOptions);
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 2, "should get two results");
+            var results = await qna.GetAnswersAsync(GetContext("Q11"), qnaMakerOptions);
+            Assert.NotNull(results);
+            Assert.Equal(2, results.Length);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
         public async Task QnaMaker_Test_Options_Hydration()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -1043,7 +1010,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var interceptHttp = new InterceptRequestHandler(mockHttp);
 
-            var noFiltersOptions = new QnAMakerOptions()
+            var noFiltersOptions = new QnAMakerOptions
             {
                 Top = 30,
             };
@@ -1058,12 +1025,12 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 noFiltersOptions);
 
-            var oneFilteredOption = new QnAMakerOptions()
+            var oneFilteredOption = new QnAMakerOptions
             {
                 Top = 30,
                 StrictFilters = new Metadata[]
                 {
-                    new Metadata()
+                    new Metadata
                     {
                         Name = "movie",
                         Value = "disney",
@@ -1071,7 +1038,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
             };
 
-            var twoStrictFiltersOptions = new QnAMakerOptions()
+            var twoStrictFiltersOptions = new QnAMakerOptions
             {
                 Top = 30,
                 StrictFilters = new Metadata[]
@@ -1088,7 +1055,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     },
                 },
             };
-            var allChangedRequestOptions = new QnAMakerOptions()
+            var allChangedRequestOptions = new QnAMakerOptions
             {
                 Top = 2000,
                 ScoreThreshold = 0.42F,
@@ -1106,42 +1073,87 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             // Ensure that options from previous requests do not bleed over to the next,
             // And that the options set in the constructor are not overwritten improperly by options passed into .GetAnswersAsync()
-            var noFilterResults1 = await qna.GetAnswersAsync(context, noFiltersOptions);
+            await qna.GetAnswersAsync(context, noFiltersOptions);
             var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            var twoFiltersResults = await qna.GetAnswersAsync(context, twoStrictFiltersOptions);
+            await qna.GetAnswersAsync(context, twoStrictFiltersOptions);
             var requestContent2 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            var oneFilterResults = await qna.GetAnswersAsync(context, oneFilteredOption);
+            await qna.GetAnswersAsync(context, oneFilteredOption);
             var requestContent3 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            var noFilterResults2 = await qna.GetAnswersAsync(context);
+            await qna.GetAnswersAsync(context);
             var requestContent4 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            var allChangedOptionsResult = await qna.GetAnswersAsync(context, allChangedRequestOptions);
+            await qna.GetAnswersAsync(context, allChangedRequestOptions);
             var requestContent5 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            var noOptionsResults = await qna.GetAnswersAsync(context);
+            await qna.GetAnswersAsync(context);
             var requestContent6 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
 
-            Assert.AreEqual(0, requestContent1.StrictFilters.Length);
-            Assert.AreEqual(2, requestContent2.StrictFilters.Length);
-            Assert.AreEqual(1, requestContent3.StrictFilters.Length);
-            Assert.AreEqual(0, requestContent4.StrictFilters.Length);
+            Assert.Empty(requestContent1.StrictFilters);
+            Assert.Equal(2, requestContent2.StrictFilters.Length);
+            Assert.Single(requestContent3.StrictFilters);
+            Assert.Empty(requestContent4.StrictFilters);
 
-            Assert.AreEqual(2000, requestContent5.Top);
-            Assert.AreEqual(0.42, Math.Round(requestContent5.ScoreThreshold, 2));
-            Assert.AreEqual(1, requestContent5.StrictFilters.Length);
+            Assert.Equal(2000, requestContent5.Top);
+            Assert.Equal(0.42, Math.Round(requestContent5.ScoreThreshold, 2));
+            Assert.Single(requestContent5.StrictFilters);
 
-            Assert.AreEqual(30, requestContent6.Top);
-            Assert.AreEqual(0.3, Math.Round(requestContent6.ScoreThreshold, 2));
-            Assert.AreEqual(0, requestContent6.StrictFilters.Length);
+            Assert.Equal(30, requestContent6.Top);
+            Assert.Equal(0.3, Math.Round(requestContent6.ScoreThreshold, 2));
+            Assert.Empty(requestContent6.StrictFilters);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        public async Task QnaMaker_StrictFilters_Compound_OperationType()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var interceptHttp = new InterceptRequestHandler(mockHttp);
+            var oneFilteredOption = new QnAMakerOptions()
+            {
+                Top = 30,
+                StrictFilters = new Metadata[]
+                {
+                    new Metadata()
+                    {
+                        Name = "movie",
+                        Value = "disney",
+                    },
+                    new Metadata()
+                    {
+                        Name = "production",
+                        Value = "Walden",
+                    },
+                },
+                StrictFiltersJoinOperator = JoinOperator.OR
+            };
+            var qna = GetQnAMaker(
+                            interceptHttp,
+                            new QnAMakerEndpoint
+                            {
+                                KnowledgeBaseId = _knowledgeBaseId,
+                                EndpointKey = _endpointKey,
+
+                                Host = _hostname,
+                            }, oneFilteredOption);
+            
+            var context = GetContext("up");
+            var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
+            var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
+            Assert.Equal(2, oneFilteredOption.StrictFilters.Length);
+            Assert.Equal(JoinOperator.OR, oneFilteredOption.StrictFiltersJoinOperator);
+        }
+
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_NullTelemetryClient()
         {
             // Arrange
@@ -1163,21 +1175,21 @@ namespace Microsoft.Bot.Builder.AI.Tests
             };
 
             // Act (Null Telemetry client)
-            //    This will default to the NullTelemetryClient which no-ops all calls.
+            // This will default to the NullTelemetryClient which no-ops all calls.
             var qna = new QnAMaker(endpoint, options, client, null, true);
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Validate we didn't break QnA functionality.
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            StringAssert.StartsWith(results[0].Source, "Editorial");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.StartsWith("Editorial", results[0].Source);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_ReturnsAnswer()
         {
             // Arrange
@@ -1204,30 +1216,30 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Check Telemetry logged
-            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
-            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.Equal("BaseCamp: You can use a damp rag to clean around the Power Pack", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.Single((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]);
+            Assert.True(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
 
             // Assert - Validate we didn't break QnA functionality.
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            StringAssert.StartsWith(results[0].Source, "Editorial");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.StartsWith("Editorial", results[0].Source);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_ReturnsAnswer_WhenNoAnswerFoundInKB()
         {
             // Arrange
@@ -1254,28 +1266,28 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var results = await qna.GetAnswersAsync(GetContext("what is the answer to my nonsense question?"));
 
             // Assert - Check Telemetry logged
-            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["matchedQuestion"], "No Qna Question matched");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "No Qna Answer matched");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 0);
+            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
+            Assert.Equal("No Qna Question matched", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["matchedQuestion"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.Equal("No Qna Answer matched", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.Empty((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]);
 
             // Assert - Validate we didn't break QnA functionality.
-            Assert.IsNotNull(results);
-            Assert.AreEqual(0, results.Length);
+            Assert.NotNull(results);
+            Assert.Empty(results);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_PII()
         {
             // Arrange
@@ -1302,30 +1314,30 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"));
 
             // Assert - Validate PII properties not logged.
-            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
-            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
-            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
+            Assert.False(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.Equal("BaseCamp: You can use a damp rag to clean around the Power Pack", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.Single((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]);
+            Assert.True(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
 
             // Assert - Validate we didn't break QnA functionality.
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            StringAssert.StartsWith(results[0].Source, "Editorial");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.StartsWith("Editorial", results[0].Source);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_Override()
         {
             // Arrange
@@ -1356,30 +1368,30 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties);
 
             // Assert
-            Assert.AreEqual(telemetryClient.Invocations.Count, 2);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 2);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("Id"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["Id"], "MyID");
+            Assert.Equal(2, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 2);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("Id"));
+            Assert.Equal("MyID", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["Id"]);
 
-            Assert.AreEqual(telemetryClient.Invocations[1].Arguments[0], "MySecondEvent");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1]).ContainsKey("MyImportantProperty2"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1])["MyImportantProperty2"], "myImportantValue2");
+            Assert.Equal("MySecondEvent", telemetryClient.Invocations[1].Arguments[0]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1]).ContainsKey("MyImportantProperty2"));
+            Assert.Equal("myImportantValue2", ((Dictionary<string, string>)telemetryClient.Invocations[1].Arguments[1])["MyImportantProperty2"]);
 
             // Validate we didn't break QnA functionality.
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            StringAssert.StartsWith(results[0].Source, "Editorial");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.StartsWith("Editorial", results[0].Source);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_AdditionalPropsMetrics()
         {
             // Arrange
@@ -1415,34 +1427,34 @@ namespace Microsoft.Bot.Builder.AI.Tests
             var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
             // Assert - added properties were added.
-            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.KnowledgeBaseIdProperty));
-            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.QuestionProperty));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.MatchedQuestionProperty));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.QuestionIdProperty));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.AnswerProperty));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
+            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.KnowledgeBaseIdProperty));
+            Assert.False(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.QuestionProperty));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.MatchedQuestionProperty));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.QuestionIdProperty));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey(QnATelemetryConstants.AnswerProperty));
+            Assert.Equal("BaseCamp: You can use a damp rag to clean around the Power Pack", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"]);
 
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 2);
-            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
-            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("MyImportantMetric"));
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["MyImportantMetric"], 3.14159);
+            Assert.Equal(2, ((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count);
+            Assert.True(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.True(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("MyImportantMetric"));
+            Assert.Equal(3.14159, ((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["MyImportantMetric"]);
 
             // Validate we didn't break QnA functionality.
-            Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1, "should get one result");
-            StringAssert.StartsWith(results[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            StringAssert.StartsWith(results[0].Source, "Editorial");
+            Assert.NotNull(results);
+            Assert.Single(results);
+            Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
+            Assert.StartsWith("Editorial", results[0].Source);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_AdditionalPropsOverride()
         {
             // Arrange
@@ -1477,31 +1489,31 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 { "score", 3.14159 },
             };
 
-            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
+            await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
             // Assert - added properties were added.
-            Assert.AreEqual(telemetryClient.Invocations.Count, 1);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["knowledgeBaseId"], "myImportantValue");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["originalQuestion"], "myImportantValue2");
-            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            Assert.IsFalse(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.Equal(1, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["knowledgeBaseId"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
+            Assert.Equal("myImportantValue2", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["originalQuestion"]);
+            Assert.False(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("question"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.Equal("BaseCamp: You can use a damp rag to clean around the Power Pack", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
+            Assert.False(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
 
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
-            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
+            Assert.Single((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]);
+            Assert.True(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.Equal(3.14159, ((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"]);
         }
 
-        [TestMethod]
-        [TestCategory("AI")]
-        [TestCategory("QnAMaker")]
-        [TestCategory("Telemetry")]
+        [Fact]
+        [Trait("TestCategory", "AI")]
+        [Trait("TestCategory", "QnaMaker")]
+        [Trait("TestCategory", "Telemetry")]
         public async Task Telemetry_FillPropsOverride()
         {
             // Arrange
@@ -1542,27 +1554,27 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 { "score", 3.14159 },
             };
 
-            var results = await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
+            await qna.GetAnswersAsync(GetContext("how do I clean the stove?"), null, telemetryProperties, telemetryMetrics);
 
             // Assert - added properties were added.
-            Assert.AreEqual(telemetryClient.Invocations.Count, 2);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments.Count, 3);
-            Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count, 6);
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["knowledgeBaseId"], "myImportantValue");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["matchedQuestion"], "myImportantValue2");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"], "BaseCamp: You can use a damp rag to clean around the Power Pack");
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
-            Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
-            Assert.AreEqual(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"], "myImportantValue");
+            Assert.Equal(2, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations[0].Arguments.Count);
+            Assert.Equal(telemetryClient.Invocations[0].Arguments[0], QnATelemetryConstants.QnaMsgEvent);
+            Assert.Equal(6, ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("knowledgeBaseId"));
+            Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["knowledgeBaseId"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("matchedQuestion"));
+            Assert.Equal("myImportantValue2", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["matchedQuestion"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("questionId"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("answer"));
+            Assert.Equal("BaseCamp: You can use a damp rag to clean around the Power Pack", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["answer"]);
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("articleFound"));
+            Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
+            Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"]);
 
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).Count, 1);
-            Assert.IsTrue(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
-            Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"], 3.14159);
+            Assert.Single((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]);
+            Assert.True(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2]).ContainsKey("score"));
+            Assert.Equal(3.14159, ((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["score"]);
         }
 
         private static TurnContext GetContext(string utterance)
@@ -1579,23 +1591,23 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return new TurnContext(b, a);
         }
 
-        private TestFlow CreateFlow(Dialog rootDialog)
+        private TestFlow CreateFlow(Dialog rootDialog, string testName)
         {
             var storage = new MemoryStorage();
             var userState = new UserState(storage);
             var conversationState = new ConversationState(storage);
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(testName));
             adapter
                 .UseStorage(storage)
                 .UseBotState(userState, conversationState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(false)));
 
-            DialogManager dm = new DialogManager(rootDialog);
+            var dm = new DialogManager(rootDialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -1609,7 +1621,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             public override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
             {
-                return this.ContinueDialogAsync(outerDc, cancellationToken);
+                return ContinueDialogAsync(outerDc, cancellationToken);
             }
 
             public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
@@ -1617,12 +1629,10 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 if (dc.Context.Activity.Text == "moo")
                 {
                     await dc.Context.SendActivityAsync("Yippee ki-yay!");
-                    return Dialog.EndOfTurn;
+                    return EndOfTurn;
                 }
-                else
-                {
-                    return await dc.BeginDialogAsync("qnaDialog");
-                }
+                
+                return await dc.BeginDialogAsync("qnaDialog");
             }
 
             public IEnumerable<Dialog> GetDependencies()
@@ -1645,24 +1655,24 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
-            var host = "https://dummy-hostname.azurewebsites.net/qnamaker";
-            var knowlegeBaseId = "dummy-id";
-            var endpointKey = "dummy-key";
-            var activeLearningCardTitle = "QnAMaker Active Learning";
+            var noAnswerActivity = new ActivityTemplate("No match found, please ask another question.");
+            const string host = "https://dummy-hostname.azurewebsites.net/qnamaker";
+            const string knowledgeBaseId = "dummy-id";
+            const string endpointKey = "dummy-key";
+            const string activeLearningCardTitle = "QnAMaker Active Learning";
 
             var outerDialog = new AdaptiveDialog("outer")
             {
                 AutoEndDialog = false,
-                Triggers = new List<OnCondition>()
+                Triggers = new List<OnCondition>
                 {
-                    new OnBeginDialog()
+                    new OnBeginDialog
                     {
-                        Actions = new List<Dialog>()
+                        Actions = new List<Dialog>
                         {
-                            new QnAMakerDialog()
+                            new QnAMakerDialog
                             {
-                                KnowledgeBaseId = knowlegeBaseId,
+                                KnowledgeBaseId = knowledgeBaseId,
                                 HostName = host,
                                 EndpointKey = endpointKey,
                                 HttpClient = client,
@@ -1677,19 +1687,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<OnCondition>()
+                Triggers = new List<OnCondition>
                 {
-                    new OnBeginDialog()
+                    new OnBeginDialog
                     {
-                        Actions = new List<Dialog>()
+                        Actions = new List<Dialog>
                         {
                             new BeginDialog(outerDialog.Id)
                         }
                     },
-                    new OnDialogEvent()
+                    new OnDialogEvent
                     {
                         Event = "UnhandledUnknownIntent",
-                        Actions = new List<Dialog>()
+                        Actions = new List<Dialog>
                         {
                             new EditArray(),
                             new SendActivity("magenta")
@@ -1766,7 +1776,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                                         ITurnContext turnContext,
                                         Dictionary<string, string> telemetryProperties = null,
                                         Dictionary<string, double> telemetryMetrics = null,
-                                        CancellationToken cancellationToken = default(CancellationToken))
+                                        CancellationToken cancellationToken = default)
             {
                 var properties = telemetryProperties ?? new Dictionary<string, string>();
 
@@ -1833,6 +1843,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
             public Metadata[] MetadataBoost { get; set; }
 
             public float ScoreThreshold { get; set; }
-        }
+           }
     }
 }
