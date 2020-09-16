@@ -4,6 +4,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Newtonsoft.Json;
 
@@ -27,9 +29,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// Initializes a new instance of the <see cref="DialogInspector"/> class.
         /// </summary>
         /// <param name="rootDialog">Root dialog to use.</param>
+        /// <param name="resourceExplorer">Resource explorer for expression access to .lg templates.</param>
         /// <param name="dialogStateProperty">Alternate name for the dialogState property. (Default is "DialogState").</param>
-        public DialogInspector(Dialog rootDialog = null, string dialogStateProperty = null)
+        public DialogInspector(Dialog rootDialog = null, ResourceExplorer resourceExplorer = null, string dialogStateProperty = null)
         {
+            if (resourceExplorer != null)
+            {
+                // Add language generator for function access
+                InitialTurnState.Add(new LanguageGeneratorManager(resourceExplorer));
+            }
+
             if (rootDialog != null)
             {
                 RootDialog = rootDialog;

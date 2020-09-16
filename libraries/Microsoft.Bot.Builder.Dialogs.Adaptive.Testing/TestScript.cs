@@ -160,8 +160,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 userToken.Setup(adapter);
             }
 
-            var inspector = new DialogInspector(Dialog);
-
+            var inspector = new DialogInspector(Dialog, resourceExplorer);
             if (callback != null)
             {
                 foreach (var testAction in Script)
