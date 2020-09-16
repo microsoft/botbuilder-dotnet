@@ -24,9 +24,9 @@ namespace Microsoft.Bot.Builder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
-        private ICloudEnvironment _cloudEnvironment;
-        private HttpClient _httpClient;
-        private ILogger _logger;
+        private readonly ICloudEnvironment _cloudEnvironment;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapterBase"/> class.
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder
             HttpClient httpClient = null,
             ILogger logger = null)
         {
-            _cloudEnvironment = cloudEnvironment;
+            _cloudEnvironment = cloudEnvironment ?? throw new ArgumentNullException(nameof(cloudEnvironment));
             _httpClient = httpClient;
             _logger = logger ?? NullLogger.Instance;
         }

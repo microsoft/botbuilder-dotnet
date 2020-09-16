@@ -13,18 +13,18 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    internal abstract class BuiltinCloudEnvironment : ICloudEnvironment
+    internal class BuiltinCloudEnvironment : ICloudEnvironment
     {
-        private string _toChannelFromBotOAuthScope;
-        private string _loginEndpoint;
-        private string _callerId;
-        private string _channelService;
-        private IServiceClientCredentialsFactory _credentialFactory;
-        private AuthenticationConfiguration _authConfiguration;
-        private HttpClient _httpClient;
-        private ILogger _logger;
+        private readonly string _toChannelFromBotOAuthScope;
+        private readonly string _loginEndpoint;
+        private readonly string _callerId;
+        private readonly string _channelService;
+        private readonly IServiceClientCredentialsFactory _credentialFactory;
+        private readonly AuthenticationConfiguration _authConfiguration;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
-        public BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        protected BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;

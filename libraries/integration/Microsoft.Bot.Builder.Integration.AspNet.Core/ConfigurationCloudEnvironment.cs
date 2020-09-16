@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     public class ConfigurationCloudEnvironment : ICloudEnvironment
     {
-        private ICloudEnvironment _inner;
+        private readonly ICloudEnvironment _inner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationCloudEnvironment"/> class.

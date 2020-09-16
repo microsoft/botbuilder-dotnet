@@ -15,9 +15,8 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class SimpleServiceClientCredentialFactory : IServiceClientCredentialsFactory
     {
-        private HttpClient _httpClient;
-
-        private ILogger _logger;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleServiceClientCredentialFactory"/> class.
