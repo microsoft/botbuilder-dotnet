@@ -6,7 +6,7 @@
 name: $(Build.BuildId)
 
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'vs2017-win2016' # This gets an agent quicker than 'windows-2019'.
 
 trigger: none
 
