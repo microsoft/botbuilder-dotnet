@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
-            services.AddSingleton<IConfiguration>(this.Configuration);
+            services.AddSingleton(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -43,8 +43,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             app.UseBotApplicationInsights();
 #pragma warning restore CS0618 // Type or member is obsolete
             var telemetryClient = app.ApplicationServices.GetService<IBotTelemetryClient>();
-            Assert.IsNotNull(telemetryClient);
-            Assert.IsTrue(telemetryClient is BotTelemetryClient);
+            Assert.NotNull(telemetryClient);
+            Assert.Equal(typeof(BotTelemetryClient), telemetryClient.GetType());
         }
     }
 }

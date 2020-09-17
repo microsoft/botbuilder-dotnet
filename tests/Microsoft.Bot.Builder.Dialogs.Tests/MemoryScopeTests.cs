@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
@@ -19,36 +20,45 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class MemoryScopeTests
     {
-        public TestContext TestContext { get; set; }
+        private readonly string _testName;
+
+        public MemoryScopeTests(ITestOutputHelper testOutputHelper)
+        {
+            // Obtains the current running test name.
+            var helper = (TestOutputHelper)testOutputHelper;
+            var test = (ITest)helper.GetType().GetField("test", BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetValue(helper);
+            _testName = test.TestCase.TestMethod.Method.Name;
+        }
 
         public TestFlow CreateDialogContext(Func<DialogContext, CancellationToken, Task> handler)
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName));
             adapter
                 .UseStorage(new MemoryStorage())
                 .UseBotState(new UserState(new MemoryStorage()))
                 .UseBotState(new ConversationState(new MemoryStorage()));
-            DialogManager dm = new DialogManager(new LamdaDialog(handler));
+            var dm = new DialogManager(new LamdaDialog(handler));
             return new TestFlow(adapter, (context, ct) =>
             {
                 return dm.OnTurnAsync(context, ct);
             }).SendConversationUpdate();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SimpleMemoryScopesTest()
         {
             await CreateDialogContext(async (dc, ct) =>
@@ -61,26 +71,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     ms is DialogContextMemoryScope)))
                 {
                     var memory = memoryScope.GetMemory(dc);
-                    Assert.IsNotNull(memory, "should get memory without any set");
+                    Assert.NotNull(memory);
                     ObjectPath.SetPathValue(memory, "test", 15);
                     memory = memoryScope.GetMemory(dc);
-                    Assert.AreEqual(15, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory");
+                    Assert.Equal(15, ObjectPath.GetPathValue<int>(memory, "test"));
                     ObjectPath.SetPathValue(memory, "test", 25);
                     memory = memoryScope.GetMemory(dc);
-                    Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
+                    Assert.Equal(25, ObjectPath.GetPathValue<int>(memory, "test"));
                     memory = memoryScope.GetMemory(dc);
                     ObjectPath.SetPathValue(memory, "source", "destination");
                     ObjectPath.SetPathValue(memory, "{source}", 24);
-                    Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
+                    Assert.Equal(24, ObjectPath.GetPathValue<int>(memory, "{source}"));
                     ObjectPath.RemovePathValue(memory, "{source}");
-                    Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
+                    Assert.False(ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _));
                     ObjectPath.RemovePathValue(memory, "source");
-                    Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
+                    Assert.False(ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _));
                 }
             }).StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateMemoryScopeTest()
         {
             await CreateDialogContext(async (dc, ct) =>
@@ -109,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                     var memory = stateScope.Scope.GetMemory(dc);
 
-                    Assert.AreEqual(Value, ObjectPath.GetPathValue<string>(memory, Name), "Memory scope should have correct value");
+                    Assert.Equal(Value, ObjectPath.GetPathValue<string>(memory, Name));
                 }
             }).StartTestAsync();
         }
@@ -122,41 +132,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
 
             protected override string GetStorageKey(ITurnContext turnContext) => $"botstate/custom/etc";
-        }
-
-        public async Task MissingBotStateScopeTest()
-        {
-            // test that missing MemoryScope (UserState) behaves like NULL value, aka read ops return null, write ops throw 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            var conversationState = new ConversationState(new MemoryStorage());
-            adapter
-                .UseStorage(new MemoryStorage())
-                .Use(new RegisterClassMiddleware<ConversationState>(conversationState))
-                .Use(new AutoSaveStateMiddleware(conversationState));
-
-            DialogManager dm = new DialogManager(new LamdaDialog(async (dc, ct) =>
-            {
-                Assert.IsNull(dc.State.GetValue<string>("user"));
-                Assert.IsNull(dc.State.GetValue<string>("user.x"));
-                try
-                {
-                    dc.State.SetValue("user.x", "foo");
-                    Assert.Fail("Should have throw exception");
-                }
-                catch (ArgumentException)
-                {
-                }
-
-                Assert.IsNull(dc.State.GetValue<string>("user"));
-                Assert.IsNull(dc.State.GetValue<string>("user.x"));
-            }));
-
-            await new TestFlow(adapter, (context, ct) =>
-            {
-                return dm.OnTurnAsync(context, ct);
-            })
-                .SendConversationUpdate()
-            .StartTestAsync();
         }
 
         public class Foo
@@ -188,15 +163,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ClassMemoryScopeTest()
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName));
             adapter
                 .UseStorage(new MemoryStorage())
                 .UseBotState(new UserState(new MemoryStorage()))
                 .UseBotState(new ConversationState(new MemoryStorage()));
-            DialogManager dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
+            var dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
             {
                 Triggers = new List<Adaptive.Conditions.OnCondition>()
                 {
@@ -229,15 +204,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogContextMemoryScopeTest()
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName));
             adapter
                 .UseStorage(new MemoryStorage())
                 .UseBotState(new UserState(new MemoryStorage()))
                 .UseBotState(new ConversationState(new MemoryStorage()));
-            DialogManager dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
+            var dm = new DialogManager(new AdaptiveDialog("adaptiveDialog")
             {
                 Triggers = new List<Adaptive.Conditions.OnCondition>()
                 {
@@ -282,15 +257,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogContextMemoryScopeTest_Interruption()
         {
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName));
             adapter
                 .UseStorage(new MemoryStorage())
                 .UseBotState(new UserState(new MemoryStorage()))
                 .UseBotState(new ConversationState(new MemoryStorage()));
-            DialogManager dm = new DialogManager(new AdaptiveDialog("rootDialog")
+            var dm = new DialogManager(new AdaptiveDialog("rootDialog")
             {
                 AutoEndDialog = false,
                 Generator = new TemplateEngineLanguageGenerator(),
@@ -363,7 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         internal class BotStateTestDialog : Dialog
         {
-            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 {
                     var botState = dc.Context.TurnState.Get<ConversationState>();
@@ -371,9 +346,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await property.SetAsync(dc.Context, "cool").ConfigureAwait(false);
 
                     var result = dc.State.GetValue<string>("conversation.test");
-                    Assert.AreEqual("cool", result);
+                    Assert.Equal("cool", result);
                     dc.State.SetValue("conversation.test", "cool2");
-                    Assert.AreEqual("cool2", await property.GetAsync(dc.Context));
+                    Assert.Equal("cool2", await property.GetAsync(dc.Context));
                 }
 
                 {
@@ -382,9 +357,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     await property.SetAsync(dc.Context, "cool").ConfigureAwait(false);
 
                     var result = dc.State.GetValue<string>("user.test");
-                    Assert.AreEqual("cool", result);
+                    Assert.Equal("cool", result);
                     dc.State.SetValue("user.test", "cool2");
-                    Assert.AreEqual("cool2", await property.GetAsync(dc.Context));
+                    Assert.Equal("cool2", await property.GetAsync(dc.Context));
                 }
 
                 await dc.Context.SendActivityAsync("next");
@@ -392,17 +367,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateScopes()
         {
             var storage = new MemoryStorage();
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName))
                 .UseStorage(storage)
                 .UseBotState(new UserState(storage))
                 .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(new BotStateTestDialog());
+            var dm = new DialogManager(new BotStateTestDialog());
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
                {
@@ -413,17 +388,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogMemoryScopeTest()
         {
             var storage = new MemoryStorage();
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName))
                 .UseStorage(storage)
                 .UseBotState(new UserState(storage))
                 .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(new MemoryScopeTestDialog());
+            var dm = new DialogManager(new MemoryScopeTestDialog());
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
@@ -434,7 +409,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SettingsMemoryScopeTest()
         {
             var configuration = new ConfigurationBuilder()
@@ -443,14 +418,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .Build();
 
             var storage = new MemoryStorage();
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName))
                 .Use(new RegisterClassMiddleware<IConfiguration>(configuration))
                 .UseStorage(storage)
                 .UseBotState(new UserState(storage))
                 .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(new SettingsScopeTestDialog());
+            var dm = new DialogManager(new SettingsScopeTestDialog());
 
             await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
@@ -483,17 +458,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestPathResolvers()
         {
             var storage = new MemoryStorage();
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName))
                 .UseStorage(storage)
                 .UseBotState(new UserState(storage))
                 .UseBotState(new ConversationState(storage))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            DialogManager dm = new DialogManager(new PathResolverTestDialog())
+            var dm = new DialogManager(new PathResolverTestDialog())
                 .UseResourceExplorer(new ResourceExplorer())
                 .UseLanguageGeneration();
 
@@ -505,20 +480,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("next")
             .StartTestAsync();
         }
+
+        private async Task MissingBotStateScopeTest()
+        {
+            // test that missing MemoryScope (UserState) behaves like NULL value, aka read ops return null, write ops throw 
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName));
+            var conversationState = new ConversationState(new MemoryStorage());
+            adapter
+                .UseStorage(new MemoryStorage())
+                .Use(new RegisterClassMiddleware<ConversationState>(conversationState))
+                .Use(new AutoSaveStateMiddleware(conversationState));
+
+            var dm = new DialogManager(new LamdaDialog(async (dc, ct) =>
+            {
+                Assert.Null(dc.State.GetValue<string>("user"));
+                Assert.Null(dc.State.GetValue<string>("user.x"));
+                try
+                {
+                    dc.State.SetValue("user.x", "foo");
+                    throw new XunitException("Should have throw exception");
+                }
+                catch (ArgumentException)
+                {
+                }
+
+                Assert.Null(dc.State.GetValue<string>("user"));
+                Assert.Null(dc.State.GetValue<string>("user.x"));
+            }));
+
+            await new TestFlow(adapter, (context, ct) =>
+            {
+                return dm.OnTurnAsync(context, ct);
+            })
+                .SendConversationUpdate()
+            .StartTestAsync();
+        }
     }
 
     internal class MemoryScopeTestDialog : Dialog
     {
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var dsm = new DialogStateManager(dc);
             foreach (var scope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && ms.IncludeInSnapshot == true).Select(ms => ms.Name))
             {
                 var path = $"{scope}.test";
-                Assert.IsNull(dc.State.GetValue<string>(path), $"{path} should be null");
+                Assert.Null(dc.State.GetValue<string>(path));
                 dc.State.SetValue(path, scope);
-                Assert.IsNotNull(dc.State.GetValue<string>(path), $"{path} should not be null");
-                Assert.AreEqual(scope, dc.State.GetValue<string>(path), $"{path} should be {scope}");
+                Assert.NotNull(dc.State.GetValue<string>(path));
+                Assert.Equal(scope, dc.State.GetValue<string>(path));
             }
 
             await dc.Context.SendActivityAsync("next");
@@ -528,7 +538,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
     internal class SettingsScopeTestDialog : Dialog
     {
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             await dc.Context.SendActivityAsync(dc.State.GetValue<string>(dc.Context.Activity.Text));
             return await dc.EndDialogAsync();
@@ -537,15 +547,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
     internal class PathResolverTestDialog : Dialog
     {
-        private string[] entities = new string[] { "test1", "test2" };
+        private readonly string[] entities = new string[] { "test1", "test2" };
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             ValidateSetValue(dc, "#test", "turn.recognized.intents.test");
             ValidateSetValue(dc, "$test", "dialog.test");
             ValidateSetValue(dc, "@@test", "turn.recognized.entities.test", entities);
-            Assert.AreEqual("test1", dc.State.GetValue<string>("@test"));
-            Assert.AreEqual("test2", dc.State.GetValue<string[]>("@@test")[1]);
+            Assert.Equal("test1", dc.State.GetValue<string>("@test"));
+            Assert.Equal("test2", dc.State.GetValue<string[]>("@@test")[1]);
 
             ValidateRemoveValue(dc, "#test", "turn.recognized.intents.test");
             ValidateRemoveValue(dc, "$test", "dialog.test");
@@ -558,7 +568,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private void ValidateSetValue(DialogContext dc, string alias, string path, object value = null)
         {
-            Assert.IsNull(dc.State.GetValue<object>(alias), $"{alias} should be null");
+            Assert.Null(dc.State.GetValue<object>(alias));
             dc.State.SetValue(path, value ?? alias);
             ValidateValue(dc, alias, path);
         }
@@ -566,19 +576,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private void ValidateValue(DialogContext dc, string alias, string path)
         {
             var p = dc.State.GetValue<object>(path);
-            Assert.IsNotNull(p);
+            Assert.NotNull(p);
             var a = dc.State.GetValue<object>(alias);
-            Assert.IsNotNull(a);
+            Assert.NotNull(a);
 
-            Assert.AreEqual(JsonConvert.SerializeObject(p), JsonConvert.SerializeObject(a), $"{alias} should be same as {path}");
+            Assert.Equal(JsonConvert.SerializeObject(p), JsonConvert.SerializeObject(a));
         }
 
         private void ValidateRemoveValue(DialogContext dc, string alias, string path)
         {
             ValidateValue(dc, alias, path);
             dc.State.RemoveValue(alias);
-            Assert.IsNull(dc.State.GetValue<object>(path), $"property should be removed by alias {alias}");
-            Assert.IsNull(dc.State.GetValue<object>(alias), $"property should be removed by alias {alias}");
+            Assert.Null(dc.State.GetValue<object>(path));
+            Assert.Null(dc.State.GetValue<object>(alias));
         }
     }
 }

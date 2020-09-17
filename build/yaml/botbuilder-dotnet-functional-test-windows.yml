@@ -44,7 +44,8 @@ variables:
 #  WinTestBotBotName: define this in Azure
 
 steps:
-- template: ci-build-steps.yml
+- powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
+  displayName: 'Display env vars'
 
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet Publish TestBot'
@@ -52,7 +53,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
 - task: AzureCLI@1
@@ -92,12 +93,8 @@ steps:
   displayName: 'dotnet test'
   inputs:
     command: test
-    projects: |
-     **/**Tests.csproj
-     !**/Microsoft.Bot.Builder.Classic.Tests.csproj
-     !**/Microsoft.Bot.ApplicationInsights.WebApi.Tests.csproj
-     !**/Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter "TestCategory=FunctionalTests&TestCategory!=Adapters"'
+    projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
+    arguments: '-v n --configuration $(BuildConfiguration) --filter "TestCategory=FunctionalTests&TestCategory!=Adapters"'
     workingDirectory: tests
 
 - task: AzureCLI@1
