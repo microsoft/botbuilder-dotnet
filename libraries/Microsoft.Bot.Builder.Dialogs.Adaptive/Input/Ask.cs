@@ -25,9 +25,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </remarks>
     public class Ask : SendActivity
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public new const string Kind = "Microsoft.Ask";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Ask"/> class.
+        /// </summary>
+        /// <param name="text">Optional, text value.</param>
+        /// <param name="expectedProperties">Optional, expected properties values.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public Ask(
             string text = null,
@@ -60,6 +70,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("defaultOperation")]
         public StringExpression DefaultOperation { get; set; }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             //get number of retries from memory

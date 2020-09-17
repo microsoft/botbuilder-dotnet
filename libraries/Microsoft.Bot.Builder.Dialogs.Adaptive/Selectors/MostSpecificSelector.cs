@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class MostSpecificSelector : TriggerSelector
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.MostSpecificSelector";
 
@@ -29,6 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         [JsonProperty("selector")]
         public TriggerSelector Selector { get; set; }
 
+        /// <summary>
+        /// Initializes the selector with the set of rules.
+        /// </summary>
+        /// <param name="conditionals">Possible rules to match.</param>
+        /// <param name="evaluate">Optional, true by default if rules should be evaluated on select.</param>
         public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             foreach (var conditional in conditionals)
@@ -37,6 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
+        /// <summary>
+        /// Selects the best rule to execute.
+        /// </summary>
+        /// <param name="context">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/> of the task.</param>
+        /// <returns>Best rule in original list to execute or -1 if none.</returns>
         public override async Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext context, CancellationToken cancellationToken)
         {
             var triggers = _tree.Matches(context.State);
