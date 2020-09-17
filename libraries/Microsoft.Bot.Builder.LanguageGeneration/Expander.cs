@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    var propertyObjects = EvalExpression(body.expressionInStructure().GetText(), body.GetText()).Select(x => JObject.Parse(x)).ToList();
+                    var propertyObjects = EvalExpression(body.expressionInStructure().GetText(), body.GetText()).Select(x => JObject.Parse(x.ToString())).ToList();
                     var tempResult = new List<JObject>();
                     foreach (var res in expandedResult)
                     {
@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var values = context.keyValueStructureValue();
 
-            var result = new List<List<string>>();
+            var result = new List<List<object>>();
             foreach (var item in values)
             {
                 if (item.IsPureExpression())
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                     }
 
-                    result.Add(itemStringResult);
+                    result.Add(itemStringResult.Cast<object>().ToList());
                 }
             }
 
@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return true;
         }
 
-        private List<string> EvalExpression(string exp, string lineContent = "", string errorPrefix = "")
+        private List<object> EvalExpression(string exp, string lineContent = "", string errorPrefix = "")
         {
             exp = exp.TrimExpression();
             var (result, error) = EvalByAdaptiveExpression(exp, CurrentTarget().Scope);
@@ -446,10 +446,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 Evaluator.CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
             }
-            else if (result == null && _lgOptions.StrictMode != true)
-            {
-                result = "null";
-            }
 
             if (result is IList &&
                 result.GetType().IsGenericType &&
@@ -457,10 +453,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var listRes = result as List<object>;
 
-                return listRes.Select(x => x.ToString()).ToList();
+                return listRes.ToList();
             }
 
-            return new List<string>() { result.ToString() };
+            return new List<object>() { result };
         }
 
         // just don't want to write evaluationTargetStack.Peek() everywhere
@@ -480,14 +476,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (value, error);
         }
 
-        private List<string> StringListConcat(List<string> list1, List<string> list2)
+        private List<string> StringListConcat(ICollection list1, ICollection list2)
         {
             var result = new List<string>();
             foreach (var item1 in list1)
             {
                 foreach (var item2 in list2)
                 {
-                    result.Add(item1 + item2);
+                    result.Add(string.Concat(item1, item2));
                 }
             }
 
