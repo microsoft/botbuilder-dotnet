@@ -8,10 +8,10 @@ using Microsoft.Rest;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// IServiceClientCredentialsFactory interface. This interface allows Bots to provide their own
-    /// credentials for bot to channel or skill bot to parent bot calls.
+    /// The <see cref="ServiceClientCredentialsFactory"/> abstract class to allows Bots to provide their own
+    /// <see cref="ServiceClientCredentials"/> for bot to channel or skill bot to parent bot calls.
     /// </summary>
-    public interface IServiceClientCredentialsFactory
+    public abstract class ServiceClientCredentialsFactory
     {
         /// <summary>
         /// Validates an app ID.
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// This method is async to enable custom implementations
         /// that may need to call out to serviced to validate the appId / password pair.
         /// </para></remarks>
-        Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken);
+        public abstract Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Checks whether bot authentication is disabled.
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// This method is async to enable custom implementations
         /// that may need to call out to serviced to validate the appId / password pair.
         /// </para></remarks>
-        Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken);
+        public abstract Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// A factory method for creating ServiceClientCredentials.
@@ -49,6 +49,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="validateAuthority">The validate authority vale to use.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken);
+        public abstract Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken);
     }
 }

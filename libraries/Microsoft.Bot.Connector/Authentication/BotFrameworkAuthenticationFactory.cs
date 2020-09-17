@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Cloud environments capture the environment specific Bot Framework Protocol auth code.
     /// </summary>
-    public static class CloudEnvironment
+    public static class BotFrameworkAuthenticationFactory
     {
         /// <summary>
         /// Creates the appropriate cloud environment instance.
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpClient">The HttpClient to use.</param>
         /// <param name="logger">The ILogger instance to use.</param>
         /// <returns>A new cloud environment.</returns>
-        public static ICloudEnvironment Create(
+        public static BotFrameworkAuthentication Create(
             string channelService,
             bool validateAuthority,
             string toChannelFromBotLoginUrl,
@@ -38,22 +38,22 @@ namespace Microsoft.Bot.Connector.Authentication
             string toBotFromChannelOpenIdMetadataUrl,
             string toBotFromEmulatorOpenIdMetadataUrl,
             string callerId,
-            IServiceClientCredentialsFactory credentialFactory,
+            ServiceClientCredentialsFactory credentialFactory,
             AuthenticationConfiguration authConfiguration,
             HttpClient httpClient,
             ILogger logger)
         {
             if (string.IsNullOrEmpty(channelService))
             {
-                return new PublicCloudEnvironment(credentialFactory, authConfiguration, httpClient, logger);
+                return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
             }
             else if (channelService == GovernmentAuthenticationConstants.ChannelService)
             {
-                return new GovernmentCloudEnvironment(credentialFactory, authConfiguration, httpClient, logger);
+                return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
             }
             else
             {
-                return new ParameterizedCloudEnvironment(
+                return new ParameterizedBotFrameworkAuthentication(
                     channelService,
                     validateAuthority,
                     toChannelFromBotLoginUrl,

@@ -14,21 +14,21 @@ using Microsoft.Rest;
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
-    /// Creates a cloud environment instance from configuration.
+    /// Creates a <see cref="BotFrameworkAuthentication"/> instance from configuration.
     /// </summary>
-    public class ConfigurationCloudEnvironment : ICloudEnvironment
+    public class ConfigurationBotFrameworkAuthentication : BotFrameworkAuthentication
     {
-        private readonly ICloudEnvironment _inner;
+        private readonly BotFrameworkAuthentication _inner;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationCloudEnvironment"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationBotFrameworkAuthentication"/> class.
         /// </summary>
         /// <param name="configuration">An IConfiguration instance.</param>
         /// <param name="credentialsFactory">An IServiceClientCredentialsFactory instance.</param>
         /// <param name="authConfiguration">An AuthenticationConfiguration instance.</param>
         /// <param name="httpClient">A custom HttpClient to use.</param>
         /// <param name="logger">The ILOgger instance to use.</param>
-        public ConfigurationCloudEnvironment(IConfiguration configuration, IServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
+        public ConfigurationBotFrameworkAuthentication(IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
         {
             var channelService = configuration.GetSection("ChannelService")?.Value;
             var validateAuthority = configuration.GetSection("ValidateAuthority")?.Value;
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var toBotFromEmulatorOpenIdMetadataUrl = configuration.GetSection("ToBotFromEmulatorOpenIdMetadataUrl")?.Value;
             var callerId = configuration.GetSection("CallerId")?.Value;
 
-            _inner = CloudEnvironment.Create(
+            _inner = BotFrameworkAuthenticationFactory.Create(
                 channelService,
                 bool.Parse(validateAuthority ?? "true"),
                 toChannelFromBotLoginUrl,
@@ -57,13 +57,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc/>
-        public Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+        public override Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             return _inner.AuthenticateRequestAsync(activity, authHeader, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken);
         }

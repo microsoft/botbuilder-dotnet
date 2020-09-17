@@ -13,18 +13,18 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    internal class BuiltinCloudEnvironment : ICloudEnvironment
+    internal class BuiltinBotFrameworkAuthentication : BotFrameworkAuthentication
     {
         private readonly string _toChannelFromBotOAuthScope;
         private readonly string _loginEndpoint;
         private readonly string _callerId;
         private readonly string _channelService;
-        private readonly IServiceClientCredentialsFactory _credentialFactory;
+        private readonly ServiceClientCredentialsFactory _credentialFactory;
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
-        protected BuiltinCloudEnvironment(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        protected BuiltinBotFrameworkAuthentication(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
-        public async Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+        public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), _authConfiguration, _httpClient).ConfigureAwait(false);
 
@@ -62,10 +62,10 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
 
-            return (claimsIdentity, credentials, scope, callerId);
+            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
         }
 
-        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return _channelService != null ? new SimpleChannelProvider(_channelService) : null;
         }
 
-        private async Task<string> GenerateCallerIdAsync(IServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        private async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             // Is the bot accepting all incoming messages?
             if (await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))

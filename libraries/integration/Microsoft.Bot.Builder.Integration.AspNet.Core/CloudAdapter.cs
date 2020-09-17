@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
         /// </summary>
         public CloudAdapter()
-            : base(CloudEnvironment.Create(null, false, null, null, null, null, null, null, null, new SimpleServiceClientCredentialFactory(), new AuthenticationConfiguration(), null, null))
+            : base(BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), null, null))
         {
         }
 
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="httpClient">The HttpClient implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
-            ICloudEnvironment cloudEnvironment,
+            BotFrameworkAuthentication cloudEnvironment,
             HttpClient httpClient = null,
             ILogger logger = null)
             : base(cloudEnvironment, httpClient, logger)
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             IConfiguration configuration,
             HttpClient httpClient = null,
             ILogger logger = null)
-            : base(new ConfigurationCloudEnvironment(configuration), httpClient, logger)
+            : base(new ConfigurationBotFrameworkAuthentication(configuration), httpClient, logger)
         {
         }
 

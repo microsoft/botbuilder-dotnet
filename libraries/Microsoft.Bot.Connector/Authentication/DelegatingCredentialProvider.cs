@@ -12,9 +12,9 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     internal class DelegatingCredentialProvider : ICredentialProvider
     {
-        private IServiceClientCredentialsFactory _credentialFactory;
+        private ServiceClientCredentialsFactory _credentialFactory;
 
-        public DelegatingCredentialProvider(IServiceClientCredentialsFactory credentialFactory)
+        public DelegatingCredentialProvider(ServiceClientCredentialsFactory credentialFactory)
         {
             _credentialFactory = credentialFactory;
         }

@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    internal class PublicCloudEnvironment : BuiltinCloudEnvironment
+    internal class PublicCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public PublicCloudEnvironment(IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
+        public PublicCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
             : base(
                   AuthenticationConstants.ToChannelFromBotOAuthScope,
                   AuthenticationConstants.ToChannelFromBotLoginUrlTemplate,

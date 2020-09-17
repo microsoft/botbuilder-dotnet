@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// Represents a Cloud Environment used to authenticate Bot Framework Protocol network calls within this environment.
     /// </summary>
-    public interface ICloudEnvironment
+    public abstract class BotFrameworkAuthentication
     {
         /// <summary>
         /// Validate Bot Framework Protocol requests.
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with Authentication results.</returns>
         /// <exception cref="UnauthorizedAccessException">If the validation returns false.</exception>
-        Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken);
+        public abstract Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken);
 
         /// <summary>
         /// Get the credentials object needed to make a proactive call.
@@ -32,6 +32,6 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="audience">The http auth header.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with Authentication results.</returns>
-        Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken);
+        public abstract Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken);
     }
 }

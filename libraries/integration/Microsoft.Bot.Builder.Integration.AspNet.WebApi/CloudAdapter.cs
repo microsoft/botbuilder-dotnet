@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <param name="httpClient">The HttpClient implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
-            ICloudEnvironment cloudEnvironment,
+            BotFrameworkAuthentication cloudEnvironment,
             HttpClient httpClient = null,
             ILogger logger = null)
             : base(cloudEnvironment, httpClient, logger)

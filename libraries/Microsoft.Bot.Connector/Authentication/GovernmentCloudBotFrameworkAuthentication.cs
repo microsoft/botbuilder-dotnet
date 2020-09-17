@@ -7,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    internal class GovernmentCloudEnvironment : BuiltinCloudEnvironment
+    internal class GovernmentCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public GovernmentCloudEnvironment(IServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
+        public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
             : base(
                   GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
                   GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,

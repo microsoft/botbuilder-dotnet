@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var bot = new MessageBot();
 
             // Act
-            var cloudEnvironment = CloudEnvironment.Create(null, false, null, null, null, null, null, null, null, new SimpleServiceClientCredentialFactory(), new AuthenticationConfiguration(), null, null);
+            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), null, null);
             var adapter = new CloudAdapter(cloudEnvironment, httpClient, null);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
-            var cloudEnvironmentMock = new Mock<ICloudEnvironment>();
+            var cloudEnvironmentMock = new Mock<BotFrameworkAuthentication>();
             cloudEnvironmentMock.Setup(ce => ce.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult((new ClaimsIdentity(), (ServiceClientCredentials)MicrosoftAppCredentials.Empty, "oauthscope", (string)null)));
 
             // Act

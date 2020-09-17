@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     /// <summary>
     /// Creates a cloud environment instance from configuration.
     /// </summary>
-    public class ConfigurationCloudEnvironment : ICloudEnvironment
+    public class ConfigurationCloudEnvironment : BotFrameworkAuthentication
     {
-        private readonly ICloudEnvironment _inner;
+        private readonly BotFrameworkAuthentication _inner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationCloudEnvironment"/> class.
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <param name="authConfiguration">An AuthenticationConfiguration instance.</param>
         /// <param name="httpClient">A custom HttpClient to use.</param>
         /// <param name="logger">The ILOgger instance to use.</param>
-        public ConfigurationCloudEnvironment(IServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
+        public ConfigurationCloudEnvironment(ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
         {
             var channelService = ConfigurationManager.AppSettings["ChannelService"];
             var validateAuthority = ConfigurationManager.AppSettings["ValidateAuthority"];
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             var toBotFromEmulatorOpenIdMetadataUrl = ConfigurationManager.AppSettings["ToBotFromEmulatorOpenIdMetadataUrl"];
             var callerId = ConfigurationManager.AppSettings["CallerId"];
 
-            _inner = CloudEnvironment.Create(
+            _inner = BotFrameworkAuthenticationFactory.Create(
                 channelService,
                 bool.Parse(validateAuthority ?? "true"),
                 toChannelFromBotLoginUrl,

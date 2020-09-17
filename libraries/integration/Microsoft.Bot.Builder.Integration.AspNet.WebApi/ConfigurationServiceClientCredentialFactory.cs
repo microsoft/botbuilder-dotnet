@@ -12,12 +12,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     /// Credential provider which uses Configuration to lookup appId and password.
     /// </summary>
     /// <remarks>
-    /// This will populate the <see cref="SimpleServiceClientCredentialFactory.AppId"/> from an configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/>
-    /// and the <see cref="SimpleServiceClientCredentialFactory.Password"/> from a configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppPasswordKey"/>.
+    /// This will populate the <see cref="PasswordServiceClientCredentialFactory.AppId"/> from an configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/>
+    /// and the <see cref="PasswordServiceClientCredentialFactory.Password"/> from a configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppPasswordKey"/>.
     ///
     /// NOTE: if the keys are not present, a <c>null</c> value will be used.
     /// </remarks>
-    public class ConfigurationServiceClientCredentialFactory : SimpleServiceClientCredentialFactory
+    public class ConfigurationServiceClientCredentialFactory : PasswordServiceClientCredentialFactory
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationServiceClientCredentialFactory"/> class.

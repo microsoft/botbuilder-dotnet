@@ -11,30 +11,30 @@ using Microsoft.Rest;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// A simple implementation of the <see cref="IServiceClientCredentialsFactory"/> interface.
+    /// A simple implementation of the <see cref="ServiceClientCredentialsFactory"/> interface.
     /// </summary>
-    public class SimpleServiceClientCredentialFactory : IServiceClientCredentialsFactory
+    public class PasswordServiceClientCredentialFactory : ServiceClientCredentialsFactory
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleServiceClientCredentialFactory"/> class.
+        /// Initializes a new instance of the <see cref="PasswordServiceClientCredentialFactory"/> class.
         /// with empty credentials.
         /// </summary>
-        public SimpleServiceClientCredentialFactory()
+        public PasswordServiceClientCredentialFactory()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SimpleServiceClientCredentialFactory"/> class.
+        /// Initializes a new instance of the <see cref="PasswordServiceClientCredentialFactory"/> class.
         /// with the provided credentials.
         /// </summary>
         /// <param name="appId">The app ID.</param>
         /// <param name="password">The app password.</param>
         /// <param name="httpClient">A custom httpClient to use.</param>
         /// <param name="logger">A logger instance to use.</param>
-        public SimpleServiceClientCredentialFactory(string appId, string password, HttpClient httpClient, ILogger logger)
+        public PasswordServiceClientCredentialFactory(string appId, string password, HttpClient httpClient, ILogger logger)
         {
             AppId = appId;
             Password = password;
@@ -59,19 +59,19 @@ namespace Microsoft.Bot.Connector.Authentication
         public string Password { get; set; }
 
         /// <inheritdoc/>
-        public Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken)
+        public override Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken)
         {
             return Task.FromResult(appId == AppId);
         }
 
         /// <inheritdoc/>
-        public Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken)
+        public override Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(string.IsNullOrEmpty(AppId));
         }
 
         /// <inheritdoc/>
-        public Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
+        public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
         {
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {

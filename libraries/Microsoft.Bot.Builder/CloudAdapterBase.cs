@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
-        private readonly ICloudEnvironment _cloudEnvironment;
+        private readonly BotFrameworkAuthentication _cloudEnvironment;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="httpClient">The IHttpClientFactory implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected CloudAdapterBase(
-            ICloudEnvironment cloudEnvironment,
+            BotFrameworkAuthentication cloudEnvironment,
             HttpClient httpClient = null,
             ILogger logger = null)
         {
@@ -264,16 +264,16 @@ namespace Microsoft.Bot.Builder
         protected async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to authenticate the inbound request and create credentials for outbound requests.
-            var (claimsIdentity, credentials, scope, callerId) = await _cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
+            var athenticateRequestResult = await _cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
 
             // Set the callerId on the activity.
-            activity.CallerId = callerId;
+            activity.CallerId = athenticateRequestResult.CallerId;
 
             // Create the connector client to use for outbound requests.
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), credentials, _httpClient);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), athenticateRequestResult.Credentials, _httpClient);
 
             // Create a turn context and run the pipeline.
-            using (var context = CreateTurnContext(activity, claimsIdentity, scope, connectorClient, callback))
+            using (var context = CreateTurnContext(activity, athenticateRequestResult.ClaimsIdentity, athenticateRequestResult.Scope, connectorClient, callback))
             {
                 // Run the pipeline.
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
