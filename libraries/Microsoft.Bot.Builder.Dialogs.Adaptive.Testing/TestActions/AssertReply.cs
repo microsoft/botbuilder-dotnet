@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -49,21 +51,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public override void ValidateReply(Activity activity)
         {
             // if we have a reply
-            if (!string.IsNullOrEmpty(this.Text))
+            if (!string.IsNullOrEmpty(Text))
             {
-                var description = this.Description != null ? this.Description + "\n" : string.Empty;
-                var message = $"${description}Text '{activity.Text}' didn't match expected text: {this.Text}'";
-                if (this.Exact)
+                var description = Description != null ? Description + "\n" : string.Empty;
+                var message = $"{description}Text '{activity.Text}' didn't match expected text: '{Text}'";
+                if (Exact)
                 {
                     // Normalize line endings to work on windows and mac
-                    if (activity.AsMessageActivity()?.Text.Replace("\r", string.Empty) != this.Text.Replace("\r", string.Empty))
+                    if (activity.AsMessageActivity()?.Text.Replace("\r", string.Empty) != Text.Replace("\r", string.Empty))
                     {
                         throw new Exception(message);
                     }
                 }
                 else
                 {
-                    if (activity.AsMessageActivity()?.Text.ToLowerInvariant().Trim().Contains(this.Text.ToLowerInvariant().Trim()) == false)
+                    if (activity.AsMessageActivity()?.Text.ToLowerInvariant().Trim().Contains(Text.ToLowerInvariant().Trim()) == false)
                     {
                         throw new Exception(message);
                     }

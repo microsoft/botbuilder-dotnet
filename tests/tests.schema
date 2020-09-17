@@ -326,10 +326,13 @@
       "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
     },
     {
-      "$ref": "#/definitions/Microsoft.Test.PropertiesMock"
+      "$ref": "#/definitions/Microsoft.Test.MemoryAssertions"
     },
     {
       "$ref": "#/definitions/Microsoft.Test.Script"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.Test.SetProperties"
     },
     {
       "$ref": "#/definitions/Microsoft.Test.UserActivity"
@@ -3613,6 +3616,30 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3710,30 +3737,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -8669,17 +8672,7 @@
     "Microsoft.Test.IPropertyMock": {
       "title": "Microsoft Test IPropertyMock",
       "description": "Components which derive from PropertyMock class",
-      "$role": "interface",
-      "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.Test.IPropertyMock",
-          "description": "Reference to Microsoft.Test.IPropertyMock .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.PropertiesMock"
-        }
-      ]
+      "$role": "interface"
     },
     "Microsoft.Test.ITestAction": {
       "title": "Microsoft Test ITestAction",
@@ -8702,6 +8695,12 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.CustomEvent"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.MemoryAssertions"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.SetProperties"
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserActivity"
@@ -8735,13 +8734,13 @@
         }
       ]
     },
-    "Microsoft.Test.PropertiesMock": {
-      "$role": "implements(Microsoft.Test.IPropertyMock)",
-      "title": "Mock Properties",
-      "description": "Mock one or more property values.",
+    "Microsoft.Test.MemoryAssertions": {
+      "$role": "implements(Microsoft.Test.ITestAction)",
+      "title": "Memory assertions",
+      "description": "Run assertions against current memory.",
       "type": "object",
       "required": [
-        "assignments",
+        "assertions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -8752,59 +8751,17 @@
         }
       },
       "properties": {
-        "assignments": {
+        "assertions": {
           "type": "array",
-          "title": "Assignments",
-          "description": "Property assignments as property=value pairs. In first match first use order.",
+          "title": "Assertions against memory",
+          "description": "Sequence of expressions which must evaluate to true.",
           "items": {
-            "type": "object",
-            "title": "Property Assignment",
-            "description": "Property Assignment (used in PropertiesMock).",
-            "properties": {
-              "property": {
-                "type": "string",
-                "title": "Property",
-                "description": "A property path.",
-                "examples": [
-                  "settings.connectionName",
-                  "user.name",
-                  "conversation.destination"
-                ]
-              },
-              "value": {
-                "title": "Value",
-                "description": "The value. In settings, it could only be string.",
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "title": "String value",
-                    "description": "Use string as value.",
-                    "examples": [
-                      "Graph"
-                    ]
-                  },
-                  {
-                    "type": "number",
-                    "title": "Number value",
-                    "description": "Use number as value.",
-                    "examples": [
-                      1,
-                      2
-                    ]
-                  },
-                  {
-                    "type": "object",
-                    "title": "Object value",
-                    "description": "Use object as value.",
-                    "examples": [
-                      {
-                        "city": "Seattle"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+            "$ref": "#/definitions/condition",
+            "title": "Assertion",
+            "description": "Assertion as an expression, which must evaluate to true or it will fail the test script.",
+            "examples": [
+              "user.vip == true"
+            ]
           }
         },
         "$kind": {
@@ -8812,7 +8769,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.Test.PropertiesMock"
+          "const": "Microsoft.Test.MemoryAssertions"
         },
         "$designer": {
           "title": "Designer information",
@@ -8868,15 +8825,6 @@
             "$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
           }
         },
-        "propertyMocks": {
-          "type": "array",
-          "title": "Property Mocks",
-          "description": "A list of property mocks. In first match first use order.",
-          "items": {
-            "$kind": "Microsoft.Test.IPropertyMock",
-            "$ref": "#/definitions/Microsoft.Test.IPropertyMock"
-          }
-        },
         "script": {
           "type": "array",
           "title": "Test actions",
@@ -8904,6 +8852,67 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.Test.Script"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.Test.SetProperties": {
+      "$role": "implements(Microsoft.Test.ITestAction)",
+      "title": "Set properties",
+      "description": "Set one or more property values.",
+      "type": "object",
+      "required": [
+        "assignments",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "assignments": {
+          "type": "array",
+          "title": "Assignments",
+          "description": "Property value assignments to set.",
+          "items": {
+            "type": "object",
+            "title": "Assignment",
+            "description": "Property assignment.",
+            "properties": {
+              "property": {
+                "$ref": "#/definitions/stringExpression",
+                "title": "Property",
+                "description": "Property (named location to store information).",
+                "examples": [
+                  "user.age"
+                ]
+              },
+              "value": {
+                "$ref": "#/definitions/valueExpression",
+                "title": "Value",
+                "description": "New value or expression.",
+                "examples": [
+                  "='milk'",
+                  "=dialog.favColor",
+                  "=dialog.favColor == 'red'"
+                ]
+              }
+            }
+          }
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.SetProperties"
         },
         "$designer": {
           "title": "Designer information",

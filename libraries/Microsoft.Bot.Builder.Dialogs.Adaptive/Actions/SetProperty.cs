@@ -104,7 +104,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
-            dc.State.RemoveValue(DialogPath.Retries);
+            // Explicit state change resets retries
+            dc.State.RemoveValue(DialogPath.Retries); 
+
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
