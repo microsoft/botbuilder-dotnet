@@ -1,36 +1,37 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class ChoosePropertyTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class ChoosePropertyTests : IClassFixture<ResourceExplorerFixture>
     {
-        private readonly string choosePropertyTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\ChoosePropertyTests\");
+        private readonly string choosePropertyDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\choosePropertyTests\");
+        private readonly IConfiguration _configuration;
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        public async Task ChooseProperty()
+        public ChoosePropertyTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            var config = new ConfigurationBuilder()
-                .UseMockLuisSettings(choosePropertyTestsDirectory, "TestBot")
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ChoosePropertyTests));
+
+            _configuration = new ConfigurationBuilder()
+                .UseMockLuisSettings(choosePropertyDirectory, "TestBot")
                 .Build();
 
-            var resourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ChoosePropertyTests)), monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
+            _resourceExplorerFixture.ResourceExplorer
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(_configuration));
+        }
 
-            await TestUtils.RunTestScript(resourceExplorer, configuration: config);
+        [Fact]
+        public async Task ChooseProperty()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: _configuration);
         }
     }
 }

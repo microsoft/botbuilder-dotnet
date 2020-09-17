@@ -1,56 +1,49 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class AssignEntityTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class AssignEntityTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly string assignEntityDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\AssignEntityTests\");
+        private readonly IConfiguration _configuration;
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public AssignEntityTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            string assignEntityTestsDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\AssignEntityTests\");
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(AssignEntityTests));
 
-            var config = new ConfigurationBuilder()
-           .UseMockLuisSettings(assignEntityTestsDirectory, "TestBot")
-           .Build();
+            _configuration = new ConfigurationBuilder()
+                .UseMockLuisSettings(assignEntityDirectory, "TestBot")
+                .Build();
 
-            var path = Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(AssignEntityTests));
-
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(path, monitorChanges: false)
-                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
+            _resourceExplorerFixture.ResourceExplorer
+                .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(_configuration));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AddEntity()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: _configuration);
         }
 
-        [TestMethod]
-        public async Task ShowEntity()
-        {
-            await TestUtils.RunTestScript(ResourceExplorer);
-        }
-
-        [TestMethod]
+        [Fact]
         public async Task ClearEntity()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: _configuration);
+        }
+
+        [Fact]
+        public async Task ShowEntity()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: _configuration);
         }
     }
 }

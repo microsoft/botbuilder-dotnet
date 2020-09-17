@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [CollectionDefinition("Dialogs.Adaptive")]
     public class GeneratorTests : IClassFixture<ResourceExplorerFixture>
     {
-        private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\sandwich\");
+        private readonly string sandwichDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\GeneratorTests\generated\");
         private readonly IConfiguration _configuration;
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
