@@ -1351,6 +1351,49 @@ namespace AdaptiveExpressions.Tests
             Assert.True(error != null);
         }
 
+        [Fact]
+        public void TestStackMemory()
+        {
+            var sM = new StackedMemory();
+            var jObj1 = new JObject
+            {
+                ["a"] = "a",
+                ["b"] = "b",
+                ["c"] = null
+            };
+
+            var jObj2 = new JObject
+            {
+                ["c"] = "c"
+            };
+
+            var jObj3 = new JObject
+            {
+                ["a"] = "newa",
+                ["b"] = null,
+                ["d"] = "d"
+            };
+
+            sM.Push(new SimpleObjectMemory(jObj1));
+            sM.Push(new SimpleObjectMemory(jObj2));
+            sM.Push(new SimpleObjectMemory(jObj3));
+
+            // Achieve value from stack memory
+            var (value, error) = Expression.Parse("d").TryEvaluate(sM);
+            Assert.Equal("d", value);
+
+            // Achieve valule from the top value firstly
+            (value, error) = Expression.Parse("a").TryEvaluate(sM);
+            Assert.Equal("newa", value);
+
+            (value, error) = Expression.Parse("c").TryEvaluate(sM);
+            Assert.Equal("c", value);
+
+            // null is also the valid value
+            (value, error) = Expression.Parse("b").TryEvaluate(sM);
+            Assert.Null(value);
+        }
+
         private void AssertResult<T>(string text, T expected)
         {
             var memory = new object();
