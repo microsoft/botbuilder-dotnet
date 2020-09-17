@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
 
             if (isCycle && !allowCycle)
             {
-                throw new Exception($"Cycle detected for range: {range}");
+                throw new InvalidOperationException($"Cycle detected for range: {range}");
             }
 
             if (isCycle && CycleDetectionPass == CycleDetectionPasses.PassOne)
