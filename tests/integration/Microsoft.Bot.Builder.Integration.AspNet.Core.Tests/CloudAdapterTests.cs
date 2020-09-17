@@ -184,8 +184,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
+            var authenticateRequestResult = new AuthenticateRequestResult
+            {
+                ClaimsIdentity = new ClaimsIdentity(),
+                Credentials = MicrosoftAppCredentials.Empty,
+                Scope = "scope",
+                CallerId = "callerId"
+            };
+
             var cloudEnvironmentMock = new Mock<BotFrameworkAuthentication>();
-            cloudEnvironmentMock.Setup(ce => ce.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult((new ClaimsIdentity(), (ServiceClientCredentials)MicrosoftAppCredentials.Empty, "oauthscope", (string)null)));
+            cloudEnvironmentMock.Setup(ce => ce.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(authenticateRequestResult));
 
             // Act
             var adapter = new CloudAdapter(cloudEnvironmentMock.Object);
