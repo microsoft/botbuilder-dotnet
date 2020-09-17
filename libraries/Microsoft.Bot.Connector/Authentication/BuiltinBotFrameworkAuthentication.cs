@@ -13,7 +13,7 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    internal class BuiltinBotFrameworkAuthentication : BotFrameworkAuthentication
+    internal abstract class BuiltinBotFrameworkAuthentication : BotFrameworkAuthentication
     {
         private readonly string _toChannelFromBotOAuthScope;
         private readonly string _loginEndpoint;
