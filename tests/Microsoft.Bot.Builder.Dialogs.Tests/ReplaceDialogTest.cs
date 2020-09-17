@@ -4,15 +4,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class ReplaceDialogTest
     {
-        [TestMethod]
+        [Fact]
         public async Task ReplaceDialogNoBranchAsync()
         {
             var dialog = new FirstDialog();
@@ -40,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ReplaceDialogBranchAsync()
         {
             var dialog = new FirstDialog();
@@ -69,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ReplaceDialogTelemetryClientNotNull()
         {
             var botTelemetryClient = new Mock<IBotTelemetryClient>();
@@ -86,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                Assert.IsNotNull(dialog.TelemetryClient);
+                Assert.NotNull(dialog.TelemetryClient);
             })
             .Send("hello")
             .StartTestAsync();

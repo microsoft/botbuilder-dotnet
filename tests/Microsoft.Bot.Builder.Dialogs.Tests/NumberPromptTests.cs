@@ -6,87 +6,84 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class NumberPromptTests
     {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void NumberPromptWithEmptyIdShouldFail()
         {
-            var emptyId = string.Empty;
-            var numberPrompt = new NumberPrompt<int>(emptyId);
+            Assert.Throws<ArgumentNullException>(() => new NumberPrompt<int>(string.Empty));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void NumberPromptWithNullIdShouldFail()
         {
-            var nullId = string.Empty;
-            nullId = null;
-            var numberPrompt = new NumberPrompt<int>(nullId);
+            Assert.Throws<ArgumentNullException>(() => new NumberPrompt<int>(null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
+        [Fact]
         public void NumberPromptWithUnsupportedTypeShouldFail()
         {
-            var nullId = string.Empty;
-            nullId = null;
-            var numberPrompt = new NumberPrompt<short>("prompt");
+            Assert.Throws<NotSupportedException>(() => new NumberPrompt<short>("prompt"));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public async Task NumberPromptWithNullTurnContextShouldFail()
         {
-            var numberPromptMock = new NumberPromptMock("NumberPromptMock");
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var numberPromptMock = new NumberPromptMock("NumberPromptMock");
 
-            var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Please send a number." } };
+                var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Please send a number." } };
 
-            await numberPromptMock.OnPromptNullContext(options);
+                await numberPromptMock.OnPromptNullContext(options);
+            });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public async Task OnPromptErrorsWithNullOptions()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-
-            // Create and add custom activity prompt to DialogSet.
-            var numberPromptMock = new NumberPromptMock("NumberPromptMock");
-            dialogs.Add(numberPromptMock);
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                var convoState = new ConversationState(new MemoryStorage());
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-                await numberPromptMock.OnPromptNullOptions(dc);
-            })
-            .Send("hello")
-            .StartTestAsync();
+                var adapter = new TestAdapter()
+                    .Use(new AutoSaveStateMiddleware(convoState));
+
+                // Create new DialogSet.
+                var dialogs = new DialogSet(dialogState);
+
+                // Create and add custom activity prompt to DialogSet.
+                var numberPromptMock = new NumberPromptMock("NumberPromptMock");
+                dialogs.Add(numberPromptMock);
+
+                await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                    await numberPromptMock.OnPromptNullOptions(dc);
+                })
+                .Send("hello")
+                .StartTestAsync();
+            });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public async Task OnRecognizeWithNullTurnContextShouldFail()
         {
-            var numberPromptMock = new NumberPromptMock("NumberPromptMock");
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var numberPromptMock = new NumberPromptMock("NumberPromptMock");
 
-            await numberPromptMock.OnRecognizeNullContext();
+                await numberPromptMock.OnRecognizeNullContext();
+            });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -125,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NumberPromptRetry()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -168,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NumberPromptValidator()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -222,7 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FloatNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -262,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LongNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -302,7 +299,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DoubleNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -342,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CurrencyNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -382,7 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AgeNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -422,7 +419,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DimensionNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -462,7 +459,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TemperatureNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -502,7 +499,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CultureThruNumberPromptCtor()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -532,7 +529,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (double)results.Result;
-                    Assert.AreEqual(3.14, numberResult);
+                    Assert.Equal(3.14, numberResult);
                 }
             })
             .Send("hello")
@@ -541,7 +538,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CultureThruActivityNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -571,7 +568,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
                     var numberResult = (double)results.Result;
-                    Assert.AreEqual(3.14, numberResult);
+                    Assert.Equal(3.14, numberResult);
                 }
             })
             .Send("hello")
@@ -580,7 +577,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NumberPromptDefaultsToEnUsLocale()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -620,7 +617,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DecimalNumberPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -660,7 +657,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NoNumberButUnitPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());

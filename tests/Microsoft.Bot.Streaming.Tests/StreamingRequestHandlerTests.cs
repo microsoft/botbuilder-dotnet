@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
@@ -219,7 +218,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange
             var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
             var conversationId = Guid.NewGuid().ToString();
-            var serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
+            const string serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {

@@ -15,13 +15,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <summary>
     /// Mock one or more property values.
     /// </summary>
+    [DebuggerDisplay("SetProperties")]
     public class SetProperties : TestAction
     {
         /// <summary>
         /// Kind to serialize.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.Test.PropertiesMock";
+        public const string Kind = "Microsoft.Test.SetProperties";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetProperties"/> class.
@@ -44,15 +45,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<PropertyAssignment> Assignments { get; } = new List<PropertyAssignment>();
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
         {
             var activity = new Activity();
             activity.ApplyConversationReference(adapter.Conversation, isIncoming: true);
             activity.Type = "event";
             activity.Name = "SetProperties";
             activity.Value = Assignments;
-            await adapter.ProcessActivityAsync(activity, callback, default).ConfigureAwait(false);
-            Trace.TraceInformation($"[Turn Ended => SetProperties completed");
+            await adapter.ProcessActivityAsync(
+                  activity,
+                  async (turnContext, cancellationToken) => await inspector.InspectAsync(turnContext, (dc) =>
+                  {
+                      foreach (var assignment in Assignments)
+                      {
+                          dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
+                      }
+                  }).ConfigureAwait(false)).ConfigureAwait(false);
+            Trace.TraceInformation($"[Turn Ended => SetProperties completed]");
         }
     }
 }

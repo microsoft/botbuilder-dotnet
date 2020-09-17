@@ -2,20 +2,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class ObjectPathTests
     {
         private static JsonSerializerSettings settings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
 
-        [TestMethod]
+        [Fact]
         public void Typed_OnlyDefaultTest()
         {
             var defaultOptions = new Options()
@@ -28,15 +26,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var overlay = new Options() { };
 
             var result = ObjectPath.Merge(defaultOptions, overlay);
-            Assert.AreEqual(result.LastName, defaultOptions.LastName);
-            Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, defaultOptions.Age);
-            Assert.AreEqual(result.Bool, defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, defaultOptions.LastName);
+            Assert.Equal(result.FirstName, defaultOptions.FirstName);
+            Assert.Equal(result.Age, defaultOptions.Age);
+            Assert.Equal(result.Bool, defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Typed_OnlyOverlay()
         {
             var defaultOptions = new Options() { };
@@ -50,15 +48,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             var result = ObjectPath.Merge(defaultOptions, overlay);
-            Assert.AreEqual(result.LastName, overlay.LastName);
-            Assert.AreEqual(result.FirstName, overlay.FirstName);
-            Assert.AreEqual(result.Age, overlay.Age);
-            Assert.AreEqual(result.Bool, overlay.Bool);
-            Assert.AreEqual(result.Location.Lat, overlay.Location.Lat);
-            Assert.AreEqual(result.Location.Long, overlay.Location.Long);
+            Assert.Equal(result.LastName, overlay.LastName);
+            Assert.Equal(result.FirstName, overlay.FirstName);
+            Assert.Equal(result.Age, overlay.Age);
+            Assert.Equal(result.Bool, overlay.Bool);
+            Assert.Equal(result.Location.Lat, overlay.Location.Lat);
+            Assert.Equal(result.Location.Long, overlay.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Typed_FullOverlay()
         {
             var defaultOptions = new Options()
@@ -80,15 +78,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Merge(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, overlay.LastName);
-            Assert.AreEqual(result.FirstName, overlay.FirstName);
-            Assert.AreEqual(result.Age, overlay.Age);
-            Assert.AreEqual(result.Bool, overlay.Bool);
-            Assert.AreEqual(result.Location.Lat, overlay.Location.Lat);
-            Assert.AreEqual(result.Location.Long, overlay.Location.Long);
+            Assert.Equal(result.LastName, overlay.LastName);
+            Assert.Equal(result.FirstName, overlay.FirstName);
+            Assert.Equal(result.Age, overlay.Age);
+            Assert.Equal(result.Bool, overlay.Bool);
+            Assert.Equal(result.Location.Lat, overlay.Location.Lat);
+            Assert.Equal(result.Location.Long, overlay.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Typed_PartialOverlay()
         {
             var defaultOptions = new Options()
@@ -106,15 +104,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Merge(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, overlay.LastName);
-            Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, defaultOptions.Age);
-            Assert.AreEqual(result.Bool, defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, overlay.LastName);
+            Assert.Equal(result.FirstName, defaultOptions.FirstName);
+            Assert.Equal(result.Age, defaultOptions.Age);
+            Assert.Equal(result.Bool, defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Anonymous_OnlyDefaultTest()
         {
             dynamic defaultOptions = new
@@ -128,15 +126,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic overlay = new { };
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
-            Assert.AreEqual(result.LastName, defaultOptions.LastName);
-            Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, defaultOptions.Age);
-            Assert.AreEqual(result.Bool, defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, defaultOptions.LastName);
+            Assert.Equal(result.FirstName, defaultOptions.FirstName);
+            Assert.Equal(result.Age, defaultOptions.Age);
+            Assert.Equal(result.Bool, defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Anonymous_OnlyOverlay()
         {
             dynamic defaultOptions = new { };
@@ -152,15 +150,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, overlay.LastName);
-            Assert.AreEqual(result.FirstName, overlay.FirstName);
-            Assert.AreEqual(result.Age, overlay.Age);
-            Assert.AreEqual(result.Bool, overlay.Bool);
-            Assert.AreEqual(result.Location.Lat, overlay.Location.Lat);
-            Assert.AreEqual(result.Location.Long, overlay.Location.Long);
+            Assert.Equal(result.LastName, overlay.LastName);
+            Assert.Equal(result.FirstName, overlay.FirstName);
+            Assert.Equal(result.Age, overlay.Age);
+            Assert.Equal(result.Bool, overlay.Bool);
+            Assert.Equal(result.Location.Lat, overlay.Location.Lat);
+            Assert.Equal(result.Location.Long, overlay.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Anonymous_FullOverlay()
         {
             dynamic defaultOptions = new
@@ -183,15 +181,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, overlay.LastName);
-            Assert.AreEqual(result.FirstName, overlay.FirstName);
-            Assert.AreEqual(result.Age, overlay.Age);
-            Assert.AreEqual(result.Bool, overlay.Bool);
-            Assert.AreEqual(result.Location.Lat, overlay.Location.Lat);
-            Assert.AreEqual(result.Location.Long, overlay.Location.Long);
+            Assert.Equal(result.LastName, overlay.LastName);
+            Assert.Equal(result.FirstName, overlay.FirstName);
+            Assert.Equal(result.Age, overlay.Age);
+            Assert.Equal(result.Bool, overlay.Bool);
+            Assert.Equal(result.Location.Lat, overlay.Location.Lat);
+            Assert.Equal(result.Location.Long, overlay.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void Anonymous_PartialOverlay()
         {
             dynamic defaultOptions = new
@@ -209,15 +207,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, overlay.LastName);
-            Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, defaultOptions.Age);
-            Assert.AreEqual(result.Bool, defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, overlay.LastName);
+            Assert.Equal(result.FirstName, defaultOptions.FirstName);
+            Assert.Equal(result.Age, defaultOptions.Age);
+            Assert.Equal(result.Bool, defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void JObject_OnlyDefaultTest()
         {
             dynamic defaultOptions = JObject.FromObject(new Options()
@@ -230,15 +228,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             dynamic overlay = JObject.FromObject(new Options() { });
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
-            Assert.AreEqual(result.LastName, (string)defaultOptions.LastName);
-            Assert.AreEqual(result.FirstName, (string)defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, (int?)defaultOptions.Age);
-            Assert.AreEqual(result.Bool, (bool?)defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, (float?)defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, (float?)defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, (string)defaultOptions.LastName);
+            Assert.Equal(result.FirstName, (string)defaultOptions.FirstName);
+            Assert.Equal(result.Age, (int?)defaultOptions.Age);
+            Assert.Equal(result.Bool, (bool?)defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, (float?)defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, (float?)defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void JObject_OnlyOverlay()
         {
             dynamic defaultOptions = JObject.FromObject(new Options() { });
@@ -253,15 +251,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, (string)overlay.LastName);
-            Assert.AreEqual(result.FirstName, (string)overlay.FirstName);
-            Assert.AreEqual(result.Age, (int?)overlay.Age);
-            Assert.AreEqual(result.Bool, (bool?)overlay.Bool);
-            Assert.AreEqual(result.Location.Lat, (float?)overlay.Location.Lat);
-            Assert.AreEqual(result.Location.Long, (float?)overlay.Location.Long);
+            Assert.Equal(result.LastName, (string)overlay.LastName);
+            Assert.Equal(result.FirstName, (string)overlay.FirstName);
+            Assert.Equal(result.Age, (int?)overlay.Age);
+            Assert.Equal(result.Bool, (bool?)overlay.Bool);
+            Assert.Equal(result.Location.Lat, (float?)overlay.Location.Lat);
+            Assert.Equal(result.Location.Long, (float?)overlay.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void JObject_FullOverlay()
         {
             dynamic defaultOptions = JObject.FromObject(new Options()
@@ -283,15 +281,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, (string)overlay.LastName);
-            Assert.AreEqual(result.FirstName, (string)overlay.FirstName);
-            Assert.AreEqual(result.Age, (int?)overlay.Age);
-            Assert.AreEqual(result.Bool, (bool?)overlay.Bool);
-            Assert.AreEqual(result.Location.Lat, (float?)overlay.Location.Lat);
-            Assert.AreEqual(result.Location.Long, (float?)overlay.Location.Long);
+            Assert.Equal(result.LastName, (string)overlay.LastName);
+            Assert.Equal(result.FirstName, (string)overlay.FirstName);
+            Assert.Equal(result.Age, (int?)overlay.Age);
+            Assert.Equal(result.Bool, (bool?)overlay.Bool);
+            Assert.Equal(result.Location.Lat, (float?)overlay.Location.Lat);
+            Assert.Equal(result.Location.Long, (float?)overlay.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void JObject_PartialOverlay()
         {
             dynamic defaultOptions = JObject.FromObject(new Options()
@@ -309,15 +307,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var result = ObjectPath.Assign<Options>(defaultOptions, overlay);
 
-            Assert.AreEqual(result.LastName, (string)overlay.LastName);
-            Assert.AreEqual(result.FirstName, (string)defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, (int?)defaultOptions.Age);
-            Assert.AreEqual(result.Bool, (bool?)defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, (float?)defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, (float?)defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, (string)overlay.LastName);
+            Assert.Equal(result.FirstName, (string)defaultOptions.FirstName);
+            Assert.Equal(result.Age, (int?)defaultOptions.Age);
+            Assert.Equal(result.Bool, (bool?)defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, (float?)defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, (float?)defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void NullStartObject()
         {
             var defaultOptions = new Options()
@@ -329,15 +327,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             var result = ObjectPath.Assign<Options>(null, defaultOptions);
-            Assert.AreEqual(result.LastName, defaultOptions.LastName);
-            Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, defaultOptions.Age);
-            Assert.AreEqual(result.Bool, defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, defaultOptions.LastName);
+            Assert.Equal(result.FirstName, defaultOptions.FirstName);
+            Assert.Equal(result.Age, defaultOptions.Age);
+            Assert.Equal(result.Bool, defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void NullOverlay()
         {
             var defaultOptions = new Options()
@@ -349,15 +347,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             var result = ObjectPath.Assign<Options>(defaultOptions, null);
-            Assert.AreEqual(result.LastName, defaultOptions.LastName);
-            Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
-            Assert.AreEqual(result.Age, defaultOptions.Age);
-            Assert.AreEqual(result.Bool, defaultOptions.Bool);
-            Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
-            Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
+            Assert.Equal(result.LastName, defaultOptions.LastName);
+            Assert.Equal(result.FirstName, defaultOptions.FirstName);
+            Assert.Equal(result.Age, defaultOptions.Age);
+            Assert.Equal(result.Bool, defaultOptions.Bool);
+            Assert.Equal(result.Location.Lat, defaultOptions.Location.Lat);
+            Assert.Equal(result.Location.Long, defaultOptions.Location.Long);
         }
 
-        [TestMethod]
+        [Fact]
         public void TryGetPathValue()
         {
             var test = new
@@ -390,105 +388,97 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // set with anonymous object
             {
-                Assert.AreEqual(test, ObjectPath.GetPathValue<object>(test, string.Empty), "empty should return root");
-                Assert.AreEqual(test.test, ObjectPath.GetPathValue<string>(test, "test"));
-                Assert.AreEqual(test.bar.options.Age, ObjectPath.GetPathValue<int>(test, "bar.options.age"));
+                Assert.Equal(test, ObjectPath.GetPathValue<object>(test, string.Empty));
+                Assert.Equal(test.test, ObjectPath.GetPathValue<string>(test, "test"));
+                Assert.Equal(test.bar.options.Age, ObjectPath.GetPathValue<int>(test, "bar.options.age"));
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<Options>(test, "options", out Options options));
-                Assert.AreEqual(test.options.Age, options.Age);
-                Assert.AreEqual(test.options.FirstName, options.FirstName);
+                Assert.True(ObjectPath.TryGetPathValue<Options>(test, "options", out Options options));
+                Assert.Equal(test.options.Age, options.Age);
+                Assert.Equal(test.options.FirstName, options.FirstName);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<Options>(test, "bar.options", out Options barOptions));
-                Assert.AreEqual(test.bar.options.Age, barOptions.Age);
-                Assert.AreEqual(test.bar.options.FirstName, barOptions.FirstName);
+                Assert.True(ObjectPath.TryGetPathValue<Options>(test, "bar.options", out Options barOptions));
+                Assert.Equal(test.bar.options.Age, barOptions.Age);
+                Assert.Equal(test.bar.options.FirstName, barOptions.FirstName);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int[]>(test, "bar.numbers", out int[] numbers));
-                Assert.AreEqual(5, numbers.Length);
+                Assert.True(ObjectPath.TryGetPathValue<int[]>(test, "bar.numbers", out int[] numbers));
+                Assert.Equal(5, numbers.Length);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[1]", out int number));
-                Assert.AreEqual(2, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[1]", out int number));
+                Assert.Equal(2, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar['options'].Age", out number));
-                Assert.AreEqual(1, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(test, "bar['options'].Age", out number));
+                Assert.Equal(1, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar[\"options\"].Age", out number));
-                Assert.AreEqual(1, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(test, "bar[\"options\"].Age", out number));
+                Assert.Equal(1, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar.numIndex]", out number));
-                Assert.AreEqual(3, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar.numIndex]", out number));
+                Assert.Equal(3, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar[bar.objIndex].Age]", out number));
-                Assert.AreEqual(2, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(test, "bar.numbers[bar[bar.objIndex].Age]", out number));
+                Assert.Equal(2, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "bar.options[bar.strIndex]", out string name));
-                Assert.AreEqual("joe", name);
+                Assert.True(ObjectPath.TryGetPathValue<string>(test, "bar.options[bar.strIndex]", out string name));
+                Assert.Equal("joe", name);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(test, "bar[bar.objIndex].Age", out int age));
-                Assert.AreEqual(1, age);
+                Assert.True(ObjectPath.TryGetPathValue<int>(test, "bar[bar.objIndex].Age", out int age));
+                Assert.Equal(1, age);
             }
 
             // now try with JObject
             {
                 var json = JsonConvert.SerializeObject(test, settings);
                 dynamic jtest = JsonConvert.DeserializeObject(json);
-                Assert.AreEqual(json, JsonConvert.SerializeObject(ObjectPath.GetPathValue<object>(jtest, string.Empty), settings), "empty should return root");
-                Assert.AreEqual((string)jtest.test, ObjectPath.GetPathValue<string>(jtest, "test"));
-                Assert.AreEqual((int)jtest.bar.options.Age, ObjectPath.GetPathValue<int>(jtest, "bar.options.age"));
+                Assert.Equal(json, JsonConvert.SerializeObject(ObjectPath.GetPathValue<object>(jtest, string.Empty), settings));
+                Assert.Equal((string)jtest.test, ObjectPath.GetPathValue<string>(jtest, "test"));
+                Assert.Equal((int)jtest.bar.options.Age, ObjectPath.GetPathValue<int>(jtest, "bar.options.age"));
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<Options>(jtest, "options", out Options options));
-                Assert.AreEqual((int)jtest.options.Age, options.Age);
-                Assert.AreEqual((string)jtest.options.FirstName, options.FirstName);
+                Assert.True(ObjectPath.TryGetPathValue<Options>(jtest, "options", out Options options));
+                Assert.Equal((int)jtest.options.Age, options.Age);
+                Assert.Equal((string)jtest.options.FirstName, options.FirstName);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<Options>(jtest, "bar.options", out Options barOptions));
-                Assert.AreEqual((int)jtest.bar.options.Age, barOptions.Age);
-                Assert.AreEqual((string)jtest.bar.options.FirstName, barOptions.FirstName);
+                Assert.True(ObjectPath.TryGetPathValue<Options>(jtest, "bar.options", out Options barOptions));
+                Assert.Equal((int)jtest.bar.options.Age, barOptions.Age);
+                Assert.Equal((string)jtest.bar.options.FirstName, barOptions.FirstName);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int[]>(jtest, "bar.numbers", out int[] numbers));
-                Assert.AreEqual(5, numbers.Length);
+                Assert.True(ObjectPath.TryGetPathValue<int[]>(jtest, "bar.numbers", out int[] numbers));
+                Assert.Equal(5, numbers.Length);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[1]", out int number));
-                Assert.AreEqual(2, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[1]", out int number));
+                Assert.Equal(2, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar['options'].Age", out number));
-                Assert.AreEqual(1, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(jtest, "bar['options'].Age", out number));
+                Assert.Equal(1, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar[\"options\"].Age", out number));
-                Assert.AreEqual(1, number);
+                Assert.True(ObjectPath.TryGetPathValue<int>(jtest, "bar[\"options\"].Age", out number));
+                Assert.Equal(1, number);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[bar.numIndex]", out int number2));
-                Assert.AreEqual(3, number2);
+                Assert.True(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[bar.numIndex]", out int number2));
+                Assert.Equal(3, number2);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[bar[bar.objIndex].Age]", out int number3));
-                Assert.AreEqual(2, number3);
+                Assert.True(ObjectPath.TryGetPathValue<int>(jtest, "bar.numbers[bar[bar.objIndex].Age]", out int number3));
+                Assert.Equal(2, number3);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(jtest, "bar.options[bar.strIndex]", out string name));
-                Assert.AreEqual("joe", name);
+                Assert.True(ObjectPath.TryGetPathValue<string>(jtest, "bar.options[bar.strIndex]", out string name));
+                Assert.Equal("joe", name);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<int>(jtest, "bar[bar.objIndex].Age", out int age));
-                Assert.AreEqual(1, age);
+                Assert.True(ObjectPath.TryGetPathValue<int>(jtest, "bar[bar.objIndex].Age", out int age));
+                Assert.Equal(1, age);
 
                 jtest.bar["x.y.z"] = "test";
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(jtest, "bar['x.y.z']", out string split));
-                Assert.AreEqual("test", split);
+                Assert.True(ObjectPath.TryGetPathValue<string>(jtest, "bar['x.y.z']", out string split));
+                Assert.Equal("test", split);
 
-                Assert.IsTrue(ObjectPath.TryGetPathValue<string>(jtest, "bar[\"x.y.z\"]", out split));
-                Assert.AreEqual("test", split);
+                Assert.True(ObjectPath.TryGetPathValue<string>(jtest, "bar[\"x.y.z\"]", out split));
+                Assert.Equal("test", split);
             }
         }
 
-        public void AssertGetSetValueType<T>(object test, T val)
-        {
-            ObjectPath.SetPathValue(test, val.GetType().Name, val);
-            var result = ObjectPath.GetPathValue<T>(test, typeof(T).Name);
-            Assert.AreEqual(val, result);
-            Assert.AreEqual(val.GetType(), result.GetType());
-        }
-
-        [TestMethod]
+        [Fact]
         public void SetPathValue()
         {
-            Dictionary<string, object> test = new Dictionary<string, object>();
+            var test = new Dictionary<string, object>();
             ObjectPath.SetPathValue(test, "x.y.z", 15);
             ObjectPath.SetPathValue(test, "x.p", "hello");
             ObjectPath.SetPathValue(test, "foo", new { Bar = 15, Blat = "yo" });
@@ -497,17 +487,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ObjectPath.SetPathValue(test, "null", null);
             ObjectPath.SetPathValue(test, "enum", TypeCode.Empty);
 
-            Assert.AreEqual(15, ObjectPath.GetPathValue<int>(test, "x.y.z"));
-            Assert.AreEqual("hello", ObjectPath.GetPathValue<string>(test, "x.p"));
-            Assert.AreEqual(15, ObjectPath.GetPathValue<int>(test, "foo.bar"));
-            Assert.AreEqual("yo", ObjectPath.GetPathValue<string>(test, "foo.Blat"));
-            Assert.IsFalse(ObjectPath.TryGetPathValue<string>(test, "foo.Blatxxx", out var value));
-            Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[1]", out var value2));
-            Assert.AreEqual("yabba", value2);
-            Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
-            Assert.AreEqual("dabba", value2);
-            Assert.IsFalse(ObjectPath.TryGetPathValue<object>(test, "null", out var nullValue));
-            Assert.AreEqual(TypeCode.Empty, ObjectPath.GetPathValue<TypeCode>(test, "enum"));
+            Assert.Equal(15, ObjectPath.GetPathValue<int>(test, "x.y.z"));
+            Assert.Equal("hello", ObjectPath.GetPathValue<string>(test, "x.p"));
+            Assert.Equal(15, ObjectPath.GetPathValue<int>(test, "foo.bar"));
+            Assert.Equal("yo", ObjectPath.GetPathValue<string>(test, "foo.Blat"));
+            Assert.False(ObjectPath.TryGetPathValue<string>(test, "foo.Blatxxx", out var value));
+            Assert.True(ObjectPath.TryGetPathValue<string>(test, "x.a[1]", out var value2));
+            Assert.Equal("yabba", value2);
+            Assert.True(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
+            Assert.Equal("dabba", value2);
+            Assert.False(ObjectPath.TryGetPathValue<object>(test, "null", out var nullValue));
+            Assert.Equal(TypeCode.Empty, ObjectPath.GetPathValue<TypeCode>(test, "enum"));
 
             // value type tests
 #pragma warning disable SA1121 // Use built-in type alias
@@ -527,10 +517,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 #pragma warning restore SA1121 // Use built-in type alias
         }
 
-        [TestMethod]
+        [Fact]
         public void RemovePathValue()
         {
-            Dictionary<string, object> test = new Dictionary<string, object>();
+            var test = new Dictionary<string, object>();
             ObjectPath.SetPathValue(test, "x.y.z", 15);
             ObjectPath.SetPathValue(test, "x.p", "hello");
             ObjectPath.SetPathValue(test, "foo", new { Bar = 15, Blat = "yo" });
@@ -541,19 +531,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             try
             {
                 ObjectPath.GetPathValue<int>(test, "x.y.z");
-                Assert.Fail("should have throw exception");
+                throw new XunitException("should have throw exception");
             }
             catch
             {
             }
 
-            Assert.IsNull(ObjectPath.GetPathValue<string>(test, "x.y.z", null));
-            Assert.AreEqual(99, ObjectPath.GetPathValue<int>(test, "x.y.z", 99));
-            Assert.IsFalse(ObjectPath.TryGetPathValue<string>(test, "x.y.z", out var value));
+            Assert.Null(ObjectPath.GetPathValue<string>(test, "x.y.z", null));
+            Assert.Equal(99, ObjectPath.GetPathValue<int>(test, "x.y.z", 99));
+            Assert.False(ObjectPath.TryGetPathValue<string>(test, "x.y.z", out var value));
             ObjectPath.RemovePathValue(test, "x.a[1]");
-            Assert.IsFalse(ObjectPath.TryGetPathValue<string>(test, "x.a[1]", out string value2));
-            Assert.IsTrue(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
-            Assert.AreEqual("dabba", value2);
+            Assert.False(ObjectPath.TryGetPathValue<string>(test, "x.a[1]", out string value2));
+            Assert.True(ObjectPath.TryGetPathValue<string>(test, "x.a[0]", out value2));
+            Assert.Equal("dabba", value2);
+        }
+
+        private void AssertGetSetValueType<T>(object test, T val)
+        {
+            ObjectPath.SetPathValue(test, val.GetType().Name, val);
+            var result = ObjectPath.GetPathValue<T>(test, typeof(T).Name);
+            Assert.Equal(val, result);
+            Assert.Equal(val.GetType(), result.GetType());
         }
     }
 

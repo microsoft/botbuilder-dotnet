@@ -4,11 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
@@ -163,22 +160,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 userToken.Setup(adapter);
             }
 
+            var inspector = new DialogInspector(Dialog, resourceExplorer);
             if (callback != null)
             {
                 foreach (var testAction in Script)
                 {
-                    await testAction.ExecuteAsync(adapter, callback).ConfigureAwait(false);
+                    await testAction.ExecuteAsync(adapter, callback, inspector).ConfigureAwait(false);
                 }
             }
             else
             {
-                var dm = new DialogManager(new MockDialog(Dialog))
+                var dm = new DialogManager(Dialog)
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
                 foreach (var testAction in Script)
                 {
-                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync).ConfigureAwait(false);
+                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync, inspector).ConfigureAwait(false);
                 }
             }
         }
@@ -406,118 +404,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
         }
 #endif
-
-        // Dialog wrapper for handling SetProperties and MemoryAssertions events.
-        private class MockDialog : Dialog
-        {
-            private Dialog _innerDialog;
-
-            public MockDialog(Dialog innerDialog)
-            {
-                _innerDialog = innerDialog;
-            }
-
-            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
-            {
-                var result = new DialogTurnResult(DialogTurnStatus.Complete);
-                if (!HandleTestEvents(dc))
-                {
-                    return await _innerDialog.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
-                }
-
-                return result;
-            }
-
-            public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
-            {
-                var result = new DialogTurnResult(DialogTurnStatus.Complete);
-                if (!HandleTestEvents(dc))
-                {
-                    result = await _innerDialog.ContinueDialogAsync(dc, cancellationToken).ConfigureAwait(false);
-                }
-
-                return result;
-            }
-
-            public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
-            {
-                var dialogResult = new DialogTurnResult(DialogTurnStatus.Complete);
-                if (!HandleTestEvents(dc))
-                {
-                    dialogResult = await _innerDialog.ResumeDialogAsync(dc, reason, result, cancellationToken).ConfigureAwait(false);
-                }
-
-                return dialogResult;
-            }
-
-            public async override Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
-            {
-                await _innerDialog.RepromptDialogAsync(turnContext, instance, cancellationToken).ConfigureAwait(false);
-            }
-
-            public async override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
-            {
-                await _innerDialog.EndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
-            }
-
-            public override string GetVersion()
-            {
-                return _innerDialog.GetVersion();
-            }
-
-            public async override Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
-            {
-                var result = true;
-                if (!HandleTestEvents(dc))
-                {
-                    result = await _innerDialog.OnDialogEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
-                }
-
-                return result;
-            }
-
-            protected override string OnComputeId()
-            {
-                return _innerDialog.Id;
-            }
-
-            private bool HandleTestEvents(DialogContext dc)
-            {
-                var isTestEvent = false;
-                if (dc.Context.Activity.Type == "event")
-                {
-                    if (dc.Context.Activity.Name == "SetProperties")
-                    {
-                        if (dc.Context.Activity.Value is List<PropertyAssignment> assignments)
-                        {
-                            foreach (var assignment in assignments)
-                            {
-                                dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
-                            }
-                        }
-
-                        isTestEvent = true;
-                    }
-                    else if (dc.Context.Activity.Name == "MemoryAssertions")
-                    {
-                        if (dc.Context.Activity.Value is List<string> assertions)
-                        {
-                            foreach (var assertion in assertions)
-                            {
-                                var (val, error) = Expression.Parse(assertion).TryEvaluate<bool>(dc.State);
-                                if (error != null || !val)
-                                {
-                                    throw new Exception($"{assertion} failed");
-                                }
-                            }
-                        }
-
-                        isTestEvent = true;
-                    }
-                }
-
-                return isTestEvent;
-            }
-        }
     }
 }
