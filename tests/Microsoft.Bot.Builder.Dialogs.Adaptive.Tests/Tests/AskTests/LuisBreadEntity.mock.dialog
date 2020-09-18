@@ -1,0 +1,63 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"rye\"",
+    "responses": [
+        {
+            "content": {
+                "query": "rye",
+                "prediction": {
+                    "topIntent": "none",
+                    "intents": {
+                        "sandwich": {
+                            "score": 0.9
+                        }
+                    },
+                    "entities": {
+                        "Bread": [
+                            {
+                                "BreadEntity": [
+                                    [
+                                        "rye"
+                                    ]
+                                ],
+                                "$instance": {
+                                    "BreadEntity": [
+                                        {
+                                            "type": "BreadEntity",
+                                            "text": "rye",
+                                            "startIndex": 0,
+                                            "length": 3,
+                                            "modelTypeId": 1,
+                                            "modelType": "Entity Extractor",
+                                            "recognitionSources": [
+                                                "model"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "$instance": {
+                            "Bread": [
+                                {
+                                    "type": "Bread",
+                                    "text": "rye",
+                                    "startIndex": 0,
+                                    "length": 3,
+                                    "modelTypeId": 1,
+                                    "modelType": "Entity Extractor",
+                                    "recognitionSources": [
+                                        "model"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

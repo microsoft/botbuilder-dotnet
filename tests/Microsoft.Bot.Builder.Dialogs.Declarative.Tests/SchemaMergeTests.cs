@@ -10,10 +10,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
@@ -25,19 +26,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// npm i -g @microsoft/botframework-cli
     /// bf plugins:install @microsoft/bf-dialog
     /// </remarks>
-    [TestClass]
     public class SchemaMergeTests
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public static JSchema Schema { get; set; }
-
-        public static IEnumerable<object[]> Dialogs { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        static SchemaMergeTests()
         {
             // static field initialization
             var projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
@@ -77,60 +68,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     var error = process.StandardError.ReadToEnd();
                     process.WaitForExit();
 
-                    Assert.AreEqual(error, string.Empty);
+                    Assert.Equal(string.Empty, error);
                 }
             }
             catch (Exception err)
             {
-                Assert.Fail(err.Message);
+                throw new XunitException(err.Message);
             }
 
-            Assert.IsTrue(File.Exists(schemaPath));
+            Assert.True(File.Exists(schemaPath));
             var json = File.ReadAllText(schemaPath);
             Schema = JSchema.Parse(json);
         }
 
-        [DataTestMethod]
-        [DynamicData(nameof(Dialogs))]
+        public static ResourceExplorer ResourceExplorer { get; set; }
+
+        public static JSchema Schema { get; set; }
+
+        public static IEnumerable<object[]> Dialogs { get; set; }
+
+        [Theory]
+        [MemberData(nameof(Dialogs))]
         public async Task TestDialogResourcesAreValidForSchema(Resource resource)
         {
             if (Schema == null)
             {
-                Assert.Fail("missing schema file");
+                throw new XunitException("missing schema file");
             }
 
-            FileResource fileResource = resource as FileResource;
+            var fileResource = resource as FileResource;
 
             // load the merged app schema file (validating it's truly a jsonschema doc
             // and use it to validate all .dialog files are valid to this schema
             var json = await resource.ReadTextAsync();
-            var jtoken = (JToken)JsonConvert.DeserializeObject(json);
-            var jobj = jtoken as JObject;
-            var schema = jobj["$schema"]?.ToString();
+            var jToken = (JToken)JsonConvert.DeserializeObject(json);
+            var jObj = jToken as JObject;
+            var schema = jObj["$schema"]?.ToString();
 
             try
             {
                 // everything should have $schema
-                Assert.IsNotNull(schema, "Missing $schema");
+                Assert.NotNull(schema);
 
                 var folder = Path.GetDirectoryName(fileResource.FullName);
 
                 // NOTE: Some schemas are not local.  We don't validate against those because they often depend on the SDK itself
                 if (!schema.StartsWith("http"))
                 {
-                    Assert.IsTrue(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
+                    Assert.True(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
 
                     // NOTE: Microsoft.SendActivity in this file fails validation even though it is valid.  
                     // Bug filed with Newtonsoft: https://stackoverflow.com/questions/63493078/why-does-validation-fail-in-code-but-work-in-newtonsoft-web-validator
                     if (!fileResource.FullName.Contains("Action_SendActivity.test.dialog"))
                     {
-                        jtoken.Validate(Schema);
+                        jToken.Validate(Schema);
                     }
                 }
             }
             catch (JSchemaValidationException err)
             {
-                Assert.Fail($"{fileResource.FullName}\n{err.Message}", $"Dialog is not valid for the $schema {schema}");
+                throw new XunitException($"{fileResource.FullName}\n{err.Message}");
             }
         }
     }

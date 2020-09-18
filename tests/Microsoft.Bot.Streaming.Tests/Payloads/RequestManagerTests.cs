@@ -6,23 +6,22 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 {
-    [TestClass]
     public class RequestManagerTests
     {
-        [TestMethod]
+        [Fact]
         public void RequestManager_Ctor_EmptyDictionary()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var rm = new RequestManager(d);
 
-            Assert.AreEqual(0, d.Count);
+            Assert.Empty(d);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestManager_SignalResponse_ReturnsFalseWhenNoGuid()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -30,10 +29,10 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var r = await rm.SignalResponseAsync(Guid.NewGuid(), null);
 
-            Assert.IsFalse(r);
+            Assert.False(r);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestManager_SignalResponse_ReturnsTrueWhenGuid()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -44,10 +43,10 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var r = await rm.SignalResponseAsync(g, null);
 
-            Assert.IsTrue(r);
+            Assert.True(r);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestManager_SignalResponse_NullResponseIsOk()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -56,12 +55,12 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             d.TryAdd(g, tcs);
             var rm = new RequestManager(d);
 
-            var r = await rm.SignalResponseAsync(g, null);
+            await rm.SignalResponseAsync(g, null);
 
-            Assert.IsNull(tcs.Task.Result);
+            Assert.Null(tcs.Task.Result);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestManager_SignalResponse_Response()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -71,12 +70,12 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var rm = new RequestManager(d);
 
             var resp = new ReceiveResponse();
-            var r = await rm.SignalResponseAsync(g, resp);
+            await rm.SignalResponseAsync(g, resp);
 
-            Assert.IsTrue(resp.Equals(tcs.Task.Result));
+            Assert.True(resp.Equals(tcs.Task.Result));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestManager_GetResponse_ReturnsNullOnDuplicateCall()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -87,10 +86,10 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var r = await rm.GetResponseAsync(g, CancellationToken.None);
 
-            Assert.IsNull(r);
+            Assert.Null(r);
         }
 
-        [TestMethod]
+        [Fact]
         public void RequestManager_GetResponse_ReturnsResponse()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -103,7 +102,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 Task.Run(async () =>
                 {
                     var r = await rm.GetResponseAsync(g, CancellationToken.None);
-                    Assert.IsTrue(resp.Equals(r));
+                    Assert.True(resp.Equals(r));
                 }),
                 Task.Run(() =>
                 {
@@ -117,7 +116,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 }));
         }
 
-        [TestMethod]
+        [Fact]
         public void RequestManager_GetResponse_ReturnsNullResponse()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -128,7 +127,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 Task.Run(async () =>
                 {
                     var r = await rm.GetResponseAsync(g, CancellationToken.None);
-                    Assert.IsNull(r);
+                    Assert.Null(r);
                 }),
                 Task.Run(() =>
                 {
@@ -142,7 +141,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 }));
         }
 
-        [TestMethod]
+        [Fact]
         public void RequestManager_GetResponse_ThrowsOnCancelledTask()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -152,10 +151,9 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             Task.WaitAll(
                 Task.Run(async () =>
                 {
-                    await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+                    await Assert.ThrowsAsync<TaskCanceledException>(async () =>
                     {
                         var r = await rm.GetResponseAsync(g, CancellationToken.None);
-                        Assert.Fail();
                     });
                 }),
                 Task.Run(() =>
@@ -170,7 +168,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 }));
         }
 
-        [TestMethod]
+        [Fact]
         public void RequestManager_GetResponse_ThrowsOnErrorTask()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
@@ -180,7 +178,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             Task.WaitAll(
                 Task.Run(() =>
                 {
-                    Assert.ThrowsExceptionAsync<AggregateException>(async () =>
+                    Assert.ThrowsAsync<AggregateException>(async () =>
                     {
                         var r = await rm.GetResponseAsync(g, CancellationToken.None);
                     });
@@ -197,14 +195,14 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 }));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task RequestManager_GetResponse_ThrowsOnTimeout()
         {
             var d = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
             var g = Guid.NewGuid();
             var rm = new RequestManager(d);
 
-            await Assert.ThrowsExceptionAsync<TaskCanceledException>(async () =>
+            await Assert.ThrowsAsync<TaskCanceledException>(async () =>
             {
                 using (var cs = new CancellationTokenSource(100))
                 {

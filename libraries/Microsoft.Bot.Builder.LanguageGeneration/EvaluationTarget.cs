@@ -23,12 +23,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Gets or sets the children template that this template has evaluated currently. 
+        /// Gets or sets the children template that this template has evaluated and cached currently. 
         /// </summary>
         /// <value>
         /// The children template that this template has evaluated currently. 
         /// </value>
-        public Dictionary<string, object> EvaluatedChildren { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> CachedEvaluatedChildren { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets or sets template name.

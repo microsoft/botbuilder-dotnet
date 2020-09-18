@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EditActions : Dialog, IDialogDependencies
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.EditActions";
 
@@ -64,11 +67,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public EnumExpression<ActionChangeType> ChangeType { get; set; } = new EnumExpression<ActionChangeType>();
 
+        /// <summary>
+        /// Enumerates child dialog dependencies so they can be added to the containers dialogset.
+        /// </summary>
+        /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
@@ -101,6 +116,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);

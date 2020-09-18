@@ -510,6 +510,32 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             Assert.Equal("Invalid claims.", exception.Message);
         }
 
+        [Fact]
+        public async Task ValidateClaimsTest_ThrowsOnSkillClaim_WithNullValidator()
+        {
+            var claims = new List<Claim>();
+            claims.Add(new Claim(AuthenticationConstants.VersionClaim, "2.0"));
+            claims.Add(new Claim(AuthenticationConstants.AudienceClaim, "SkillBotId"));
+            claims.Add(new Claim(AuthenticationConstants.AuthorizedParty, "BotId")); // Skill claims aud!=azp
+
+            // AuthenticationConfiguration with no ClaimsValidator and a Skill Claim, should throw UnauthorizedAccessException
+            // Skill calls MUST be validated with a ClaimsValidator
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await JwtTokenValidation.ValidateClaimsAsync(new AuthenticationConfiguration(), claims));
+        }
+
+        [Fact]
+        public async Task ValidateClaimsTest_DoesNotThrow_WhenNotSkillClaim_WithNullValidator()
+        {
+            var claims = new List<Claim>();
+            claims.Add(new Claim(AuthenticationConstants.VersionClaim, "2.0"));
+            claims.Add(new Claim(AuthenticationConstants.AudienceClaim, "BotId"));
+            claims.Add(new Claim(AuthenticationConstants.AuthorizedParty, "BotId")); // Skill claims aud!=azp
+
+            // AuthenticationConfiguration with no ClaimsValidator and a none Skill Claim, should NOT throw UnauthorizedAccessException
+            // None Skill do not need a ClaimsValidator.
+            await JwtTokenValidation.ValidateClaimsAsync(new AuthenticationConfiguration(), claims);
+        }
+
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(string appId, string pwd, string channelService)
         {
             string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";

@@ -14,11 +14,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
 
         private static readonly char[] _delims = { '.', '[' };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AtPathResolver"/> class.
+        /// </summary>
         public AtPathResolver()
             : base("@", string.Empty)
         {
         }
 
+        /// <summary>
+        /// Transforms the path.
+        /// </summary>
+        /// <param name="path">Path to inspect.</param>
+        /// <returns>Transformed path.</returns>
         public override string TransformPath(string path)
         {
             if (path == null)

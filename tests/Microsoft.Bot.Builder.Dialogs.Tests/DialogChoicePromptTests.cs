@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class DialogChoicePromptTests
     {
         private List<string> colorChoices = new List<string> { "red", "green", "blue" };
 
-        [TestMethod]
+        [Fact]
         public async Task BasicChoicePrompt()
         {
             var dialogs = new DialogSet();

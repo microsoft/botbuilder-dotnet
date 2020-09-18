@@ -35,12 +35,12 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                 seperator = FunctionUtils.ParseStringOrNull(args[1]);
                             }
 
-                            if (string.IsNullOrWhiteSpace(seperator))
+                            if (string.IsNullOrEmpty(seperator))
                             {
                                 return inputStr.Select(c => c.ToString()).ToArray();
                             }
 
-                            return inputStr.Split(seperator.ToCharArray());
+                            return inputStr.Split(new string[] { seperator }, 0);
                         }, FunctionUtils.VerifyStringOrNull);
         }
 
