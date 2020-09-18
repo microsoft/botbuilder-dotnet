@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
+    /// <summary>
+    /// Represent the Id and Scope command for an action scope.
+    /// </summary>
     public class ActionScopeResult
     {
         /// <summary>

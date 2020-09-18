@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -58,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             foreach (var reply in Text)
             {
                 // if we have a reply
-                if (this.Exact)
+                if (Exact)
                 {
                     if (activity.AsMessageActivity()?.Text == reply)
                     {
@@ -78,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 
             if (!found)
             {
-                throw new Exception(this.Description ?? $"Text {activity.Text} didn't match one of expected text: {string.Join("\n", this.Text)}");
+                throw new Exception(Description ?? $"Text {activity.Text} didn't match one of expected text: {string.Join("\n", Text)}");
             }
 
             base.ValidateReply(activity);
@@ -87,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         /// <inheritdoc/>
         public override string GetConditionDescription()
         {
-            return string.Join("\n", this.Text);
+            return string.Join("\n", Text);
         }
     }
 }

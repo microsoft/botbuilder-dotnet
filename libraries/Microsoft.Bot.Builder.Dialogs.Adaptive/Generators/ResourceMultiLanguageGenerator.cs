@@ -14,6 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
     /// </remarks>
     public class ResourceMultiLanguageGenerator : MultiLanguageGeneratorBase
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ResourceMultiLanguageGenerator";
 
@@ -26,6 +29,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             this.ResourceId = resourceId;
         }
 
+        /// <summary>
+        /// Gets or sets the resource id.
+        /// </summary>
+        /// <value>
+        /// Resource id.
+        /// </value>
         [JsonProperty("resourceId")]
         public string ResourceId { get; set; }
 

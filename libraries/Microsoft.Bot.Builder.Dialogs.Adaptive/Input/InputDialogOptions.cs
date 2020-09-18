@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Defines input option list.
+    /// </summary>
     public class InputDialogOptions
     {
     }

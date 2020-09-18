@@ -33,6 +33,21 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Tests\AskTests\Action_AskRetriesDeleteProperties.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesDeleteProperty.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesEditArray.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesSetProperties.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesSetProperty.test.dialog">
+      <SubType>Component</SubType>
+    </None>
   </ItemGroup>
 
 </Project>
