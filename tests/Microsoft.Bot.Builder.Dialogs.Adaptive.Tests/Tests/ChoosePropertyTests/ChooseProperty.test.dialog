@@ -16,7 +16,7 @@
         "IncludeAPIResults": true
       }
     },
-    "schema": "twoProperties.json",
+    "schema": "threeProperties.json",
     "triggers": [
       {
         "$kind": "Microsoft.OnBeginDialog",
@@ -28,11 +28,25 @@
         ]
       },
       {
+        "$kind": "Microsoft.OnEndOfActions",
+        "condition": "=!$Name",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Name?",
+            "expectedProperties": [
+              "Name"
+            ]
+          }
+        ]
+      },
+      {
         "$kind": "Microsoft.OnChooseProperty",
         "actions": [
           {
             "$kind": "Microsoft.Ask",
-            "activity": "Bread or Meat ?",
+            "activity": "Meat or Cheese ?",
             "expectedProperties": [
               "PropertyToChange"
             ]
@@ -56,11 +70,15 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Bread or Meat ?"
+      "text": "Name?"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "Bread"
+      "text": "none"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Meat or Cheese ?"
     }
   ]
 }

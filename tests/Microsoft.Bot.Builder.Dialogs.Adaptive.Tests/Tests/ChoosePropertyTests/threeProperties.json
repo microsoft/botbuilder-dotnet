@@ -2,16 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "type": "object",
   "properties": {
-    "Bread": {
+    "Name": {
       "type": "string",
-      "enum": [
-        "multiGrainWheat",
-        "rye",
-        "white",
-        "wholeWheat"
-      ],
       "$entities": [
-        "BreadEntity"
+        "personName"
       ]
     },
     "Meat": {
@@ -30,17 +24,35 @@
         "MeatEntity"
       ]
     },
+    "Cheese": {
+      "type": "string",
+      "enum": [
+        "american",
+        "cheddar",
+        "feta",
+        "gouda",
+        "pepper jack",
+        "provolone",
+        "swiss",
+        "none"
+      ],
+      "$entities": [
+        "CheeseEntity"
+      ]
+    },
     "PropertyToChange": {
       "type": "string",
       "$entities": [
-        "Bread",
-        "Meat"
+        "Name",
+        "Meat",
+        "Cheese"
       ]
     }
   },
   "required": [
-    "Bread",
-    "Meat"
+    "Name",
+    "Meat",
+    "Cheese"
   ],
   "$operations": [
     "Add()",
@@ -49,6 +61,9 @@
     "Show()",
     "Help()",
     "Change()"
+  ],
+  "$expectedOnly": [
+    "personName"
   ],
   "$defaultOperation": {
     "": {
