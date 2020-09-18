@@ -195,12 +195,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             // Find the DC for the active dialog
             var activeDc = GetActiveDialogContext(dc);
 
+            inspector(activeDc);  
+            
             // save all state scopes to their respective botState locations.
             await dialogStateManager.SaveAllChangesAsync(cancellationToken).ConfigureAwait(false);
-
-            inspector(activeDc);
-
-            // save bot changes
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
         }
 
