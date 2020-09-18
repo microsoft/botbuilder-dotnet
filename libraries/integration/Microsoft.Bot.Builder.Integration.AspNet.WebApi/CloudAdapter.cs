@@ -18,6 +18,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     public class CloudAdapter : CloudAdapterBase, IBotFrameworkHttpAdapter
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
+        /// </summary>
+        public CloudAdapter()
+            : this(BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), null, null))
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
         /// <param name="botFrameworkAuthentication">The cloud environment used for validating and creating tokens.</param>
@@ -39,7 +47,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public CloudAdapter(
             HttpClient httpClient = null,
             ILogger logger = null)
-            : base(new ConfigurationBotFrameworkAuthentication(), httpClient, logger)
+            : this(new ConfigurationBotFrameworkAuthentication(), httpClient, logger)
         {
         }
 

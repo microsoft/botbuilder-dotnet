@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// An adapter that implements the Bot Framework Protocol and can be hosted in different cloud environmens both public and private.
     /// </summary>
-    public class CloudAdapterBase : BotAdapter
+    public abstract class CloudAdapterBase : BotAdapter
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder
                 {
                     turnContext.TurnState.Add(InvokeResponseKey, activity);
                 }
-                else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
+                else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != Channels.Emulator)
                 {
                     // no-op
                 }
@@ -229,7 +229,7 @@ namespace Microsoft.Bot.Builder
         // TODO: oauth prompt support
 
         /// <summary>
-        /// The implementatuion for continue conversation.
+        /// The implementation for continue conversation.
         /// </summary>
         /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
         /// <param name="reference">A <see cref="ConversationReference"/> for the conversation.</param>
@@ -264,16 +264,16 @@ namespace Microsoft.Bot.Builder
         protected async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to authenticate the inbound request and create credentials for outbound requests.
-            var athenticateRequestResult = await _botFrameworkAuthentication.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
+            var authenticateRequestResult = await _botFrameworkAuthentication.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
 
             // Set the callerId on the activity.
-            activity.CallerId = athenticateRequestResult.CallerId;
+            activity.CallerId = authenticateRequestResult.CallerId;
 
             // Create the connector client to use for outbound requests.
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), athenticateRequestResult.Credentials, _httpClient);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), authenticateRequestResult.Credentials, _httpClient);
 
             // Create a turn context and run the pipeline.
-            using (var context = CreateTurnContext(activity, athenticateRequestResult.ClaimsIdentity, athenticateRequestResult.Scope, connectorClient, callback))
+            using (var context = CreateTurnContext(activity, authenticateRequestResult.ClaimsIdentity, authenticateRequestResult.Scope, connectorClient, callback))
             {
                 // Run the pipeline.
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);

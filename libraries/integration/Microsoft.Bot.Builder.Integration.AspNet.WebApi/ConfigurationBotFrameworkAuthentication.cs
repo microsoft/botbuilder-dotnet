@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// <param name="credentialsFactory">An IServiceClientCredentialsFactory instance.</param>
         /// <param name="authConfiguration">An AuthenticationConfiguration instance.</param>
         /// <param name="httpClient">A custom HttpClient to use.</param>
-        /// <param name="logger">The ILOgger instance to use.</param>
+        /// <param name="logger">The ILogger instance to use.</param>
         public ConfigurationBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
         {
             var channelService = ConfigurationManager.AppSettings["ChannelService"];
