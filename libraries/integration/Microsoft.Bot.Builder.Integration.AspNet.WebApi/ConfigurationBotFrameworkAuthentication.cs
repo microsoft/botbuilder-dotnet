@@ -16,18 +16,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
     /// <summary>
     /// Creates a cloud environment instance from configuration.
     /// </summary>
-    public class ConfigurationCloudEnvironment : BotFrameworkAuthentication
+    public class ConfigurationBotFrameworkAuthentication : BotFrameworkAuthentication
     {
         private readonly BotFrameworkAuthentication _inner;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationCloudEnvironment"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationBotFrameworkAuthentication"/> class.
         /// </summary>
         /// <param name="credentialsFactory">An IServiceClientCredentialsFactory instance.</param>
         /// <param name="authConfiguration">An AuthenticationConfiguration instance.</param>
         /// <param name="httpClient">A custom HttpClient to use.</param>
         /// <param name="logger">The ILOgger instance to use.</param>
-        public ConfigurationCloudEnvironment(ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
+        public ConfigurationBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
         {
             var channelService = ConfigurationManager.AppSettings["ChannelService"];
             var validateAuthority = ConfigurationManager.AppSettings["ValidateAuthority"];
@@ -56,13 +56,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <inheritdoc/>
-        public Task<(ClaimsIdentity claimsIdentity, ServiceClientCredentials credentials, string scope, string callerId)> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+        public override Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             return _inner.AuthenticateRequestAsync(activity, authHeader, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken);
         }

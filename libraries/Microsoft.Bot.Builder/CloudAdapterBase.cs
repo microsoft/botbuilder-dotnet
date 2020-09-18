@@ -24,22 +24,22 @@ namespace Microsoft.Bot.Builder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
-        private readonly BotFrameworkAuthentication _cloudEnvironment;
+        private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapterBase"/> class.
         /// </summary>
-        /// <param name="cloudEnvironment">The cloud environment used for validating and creating tokens.</param>
+        /// <param name="botFrameworkAuthentication">The cloud environment used for validating and creating tokens.</param>
         /// <param name="httpClient">The IHttpClientFactory implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected CloudAdapterBase(
-            BotFrameworkAuthentication cloudEnvironment,
+            BotFrameworkAuthentication botFrameworkAuthentication,
             HttpClient httpClient = null,
             ILogger logger = null)
         {
-            _cloudEnvironment = cloudEnvironment ?? throw new ArgumentNullException(nameof(cloudEnvironment));
+            _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             _httpClient = httpClient;
             _logger = logger ?? NullLogger.Instance;
         }
@@ -240,7 +240,7 @@ namespace Microsoft.Bot.Builder
         protected async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to create the credentials for proactive requests.
-            var credentials = await _cloudEnvironment.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
+            var credentials = await _botFrameworkAuthentication.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
 
             // Create the connector client to use for outbound requests.
             var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), credentials, _httpClient);
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder
         protected async Task<InvokeResponse> ProcessActivityAsync(string authHeader, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to authenticate the inbound request and create credentials for outbound requests.
-            var athenticateRequestResult = await _cloudEnvironment.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
+            var athenticateRequestResult = await _botFrameworkAuthentication.AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);
 
             // Set the callerId on the activity.
             activity.CallerId = athenticateRequestResult.CallerId;
