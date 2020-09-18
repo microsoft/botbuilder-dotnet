@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var caseExprs = switchCaseNode.switchCaseStat().expression();
                 var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
                 var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix);
-                if (switchExprResult[0] == caseExprResult[0])
+                if (switchExprResult[0] == caseExprResult[0] || (switchExprResult[0] != null && switchExprResult[0].Equals(caseExprResult[0])))
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
                 }
@@ -296,7 +296,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override List<object> VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
         {
             var prefixErrorMsg = context.GetPrefixErrorMessage();
-            var result = new List<string>() { string.Empty };
+            var result = new List<string>() { null };
             foreach (var child in context.children)
             {
                 if (child is LGTemplateParser.ExpressionContext expression)
@@ -483,7 +483,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 foreach (var item2 in list2)
                 {
-                    result.Add(string.Concat(item1, item2));
+                    if (item1 == null && item2 == null)
+                    {
+                        result.Add(null);
+                    }
+                    else
+                    {
+                        result.Add(string.Concat(item1, item2));
+                    }
                 }
             }
 

@@ -759,7 +759,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeFalse.lg"));
             
             var evaled = templates.ExpandTemplate("StrictFalse");
-            Assert.Equal("null", evaled[0].ToString());
+            Assert.Null(evaled[0]);
 
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
