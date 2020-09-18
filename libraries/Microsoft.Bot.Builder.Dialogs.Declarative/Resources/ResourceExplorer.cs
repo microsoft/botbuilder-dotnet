@@ -191,6 +191,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     return result;
                 }
             }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
             catch (Exception err)
             {
                 if (err.InnerException is SyntaxErrorException)

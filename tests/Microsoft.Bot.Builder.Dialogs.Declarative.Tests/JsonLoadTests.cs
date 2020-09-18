@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [Fact]
         public void JsonDialogLoad_CycleDetectionWithNoCycleMode()
         {
-            Assert.Throws<Exception>(() => BuildNoCycleTestFlow(@"Root.dialog", nameof(JsonDialogLoad_CycleDetectionWithNoCycleMode)));
+            Assert.Throws<InvalidOperationException>(() => BuildNoCycleTestFlow(@"Root.dialog", nameof(JsonDialogLoad_CycleDetectionWithNoCycleMode)));
         }
 
         [Fact]
