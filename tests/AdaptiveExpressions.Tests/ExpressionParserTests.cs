@@ -323,6 +323,7 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region locale specific tests
+            
             //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
@@ -523,6 +524,9 @@ namespace AdaptiveExpressions.Tests
             Test(@"replace('hello\n', '\n', '\\\\')", @"hello\\"),
             Test("replaceIgnoreCase('hello', 'L', 'k')", "hekko"),
             Test("replaceIgnoreCase(nullObj, 'L', 'k')", string.Empty),
+            Test("split('token1 token2 token3', ' ')", new string[] { "token1", "token2", "token3" }),
+            Test("split('token1 token2 token3', '  ')", new string[] { "token1 token2 token3" }),
+            Test("split('token one', '')", new string[] { "t", "o", "k", "e", "n", " ", "o", "n", "e" }),
             Test("split('hello','e')", new string[] { "h", "llo" }),
             Test("split('hello','')", new string[] { "h", "e", "l", "l", "o" }),
             Test("split('','')", new string[] { }),
@@ -1345,6 +1349,49 @@ namespace AdaptiveExpressions.Tests
             exp = Expression.Parse("a[b]");
             (value, error) = exp.TryEvaluate(mockMemory, options);
             Assert.True(error != null);
+        }
+
+        [Fact]
+        public void TestStackMemory()
+        {
+            var sM = new StackedMemory();
+            var jObj1 = new JObject
+            {
+                ["a"] = "a",
+                ["b"] = "b",
+                ["c"] = null
+            };
+
+            var jObj2 = new JObject
+            {
+                ["c"] = "c"
+            };
+
+            var jObj3 = new JObject
+            {
+                ["a"] = "newa",
+                ["b"] = null,
+                ["d"] = "d"
+            };
+
+            sM.Push(new SimpleObjectMemory(jObj1));
+            sM.Push(new SimpleObjectMemory(jObj2));
+            sM.Push(new SimpleObjectMemory(jObj3));
+
+            // Achieve value from stack memory
+            var (value, error) = Expression.Parse("d").TryEvaluate(sM);
+            Assert.Equal("d", value);
+
+            // Achieve valule from the top value firstly
+            (value, error) = Expression.Parse("a").TryEvaluate(sM);
+            Assert.Equal("newa", value);
+
+            (value, error) = Expression.Parse("c").TryEvaluate(sM);
+            Assert.Equal("c", value);
+
+            // null is also the valid value
+            (value, error) = Expression.Parse("b").TryEvaluate(sM);
+            Assert.Null(value);
         }
 
         private void AssertResult<T>(string text, T expected)

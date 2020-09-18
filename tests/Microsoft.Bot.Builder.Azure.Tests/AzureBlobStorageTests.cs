@@ -2,31 +2,49 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
+using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    [TestClass]
-    public class AzureBlobStorageTests : BlobStorageBaseTests
+    public class AzureBlobStorageTests : BlobStorageBaseTests, IDisposable
     {
-        public TestContext TestContext { get; set; }
+        private readonly string _testName;
+
+        public AzureBlobStorageTests(ITestOutputHelper testOutputHelper)
+        {
+            var helper = (TestOutputHelper)testOutputHelper;
+
+            var test = (ITest)helper.GetType().GetField("test", BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetValue(helper);
+
+            _testName = test.TestCase.TestMethod.Method.Name;
+
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                CloudStorageAccount.Parse(ConnectionString)
+                    .CreateCloudBlobClient()
+                    .GetContainerReference(ContainerName)
+                    .DeleteIfExistsAsync().ConfigureAwait(false);
+            }
+        }
 
         protected override string ContainerName
         {
             get
             {
-                var containerName = TestContext.TestName.ToLower().Replace("_", string.Empty);
+                var containerName = _testName.ToLower().Replace("_", string.Empty);
                 NameValidator.ValidateContainerName(containerName);
                 return containerName;
             }
         }
 
-        [TestInitialize]
-        public async Task Init()
+        public async void Dispose()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
@@ -37,37 +55,25 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [TestCleanup]
-        public async Task Cleanup()
-        {
-            if (StorageEmulatorHelper.CheckEmulator())
-            {
-                await CloudStorageAccount.Parse(ConnectionString)
-                                .CreateCloudBlobClient()
-                                .GetContainerReference(ContainerName)
-                                .DeleteIfExistsAsync().ConfigureAwait(false);
-            }
-        }
-
-        [TestMethod]
+        [Fact]
         public void BlobStorageParamTest()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                Assert.ThrowsException<FormatException>(() => new AzureBlobStorage("123", ContainerName));
+                Assert.Throws<FormatException>(() => new AzureBlobStorage("123", ContainerName));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new AzureBlobStorage((CloudStorageAccount)null, ContainerName));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new AzureBlobStorage((string)null, ContainerName));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new AzureBlobStorage((CloudStorageAccount)null, null));
 
-                Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobStorage((string)null, null));
+                Assert.Throws<ArgumentNullException>(() => new AzureBlobStorage((string)null, null));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new AzureBlobStorage(CloudStorageAccount.Parse(ConnectionString), ContainerName, (JsonSerializer)null));
             }
         }
@@ -82,10 +88,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     ContainerName,
                     new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
             }
-            else
-            {
-                return new AzureBlobStorage(storageAccount, ContainerName);
-            }
+
+            return new AzureBlobStorage(storageAccount, ContainerName);
         }
     }
 }

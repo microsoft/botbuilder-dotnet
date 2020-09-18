@@ -1,44 +1,37 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class SettingsStateTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class SettingsStateTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public static IConfiguration Configuration { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public SettingsStateTests(ResourceExplorerFixture resourceExplorerFixture)
         {
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(SettingsStateTests));
             Configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                 .Build();
-
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(SettingsStateTests)), monitorChanges: false);
         }
 
-        [TestMethod]
+        public static IConfiguration Configuration { get; set; }
+
+        [Fact]
         public async Task SettingsStateTests_SettingsTest()
         {
-            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: Configuration);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SettingsStateTests_TestTurnStateAcrossBoundaries()
         {
-            await TestUtils.RunTestScript(ResourceExplorer, configuration: Configuration);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: Configuration);
         }
     }
 }

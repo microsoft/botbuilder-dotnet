@@ -4,124 +4,129 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class TestScriptTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class TestScriptTests : IClassFixture<ResourceExplorerFixture>
     {
         private readonly string luisMockDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Tests\Tests\TestScriptTests\LuisMock\");
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public static ResourceExplorer ResourceExplorer { get; set; }
-
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public TestScriptTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(TestScriptTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(TestScriptTests));
         }
 
 #if AUTO
         public static IEnumerable<object[]> AssertReplyScripts => TestUtils.GetTestScripts(@"Tests\TestAssertReply");
 
-        [DataTestMethod]
-        [DynamicData(nameof(AssertReplyScripts))]
+        [Theory]
+        [MemberData(nameof(AssertReplyScripts), DisableDiscoveryEnumeration = true)]
         public async Task TestScript_AssertReply(string resourceId)
         {
-            await TestUtils.RunTestScript(resourceId);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, resourceId: resourceId);
         }
 #endif
-        [TestMethod]
+
+        [Fact]
         public async Task TestScriptTests_AssertReplyOneOf()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReplyOneOf_Assertions()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReplyOneOf_exact()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReplyOneOf_User()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReply_Assertions()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReply_Assertions_Failed()
         {
             try
             {
-                await TestUtils.RunTestScript(ResourceExplorer);
+                await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
             }
             catch (Exception e)
             {
-                Assert.IsTrue(e.Message.Contains("\"text\": \"hi User1\""));
+                Assert.Contains("\"text\": \"hi User1\"", e.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReply_Exact()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_AssertReply_User()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_HttpRequestMock()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_HttpRequestLuisMock()
         {
             var config = new ConfigurationBuilder()
                 .UseMockLuisSettings(luisMockDirectory, "TestBot")
                 .Build();
 
-            var resourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(TestScriptTests)), monitorChanges: false)
+            var resourceExplorer = _resourceExplorerFixture.ResourceExplorer
                 .RegisterType(LuisAdaptiveRecognizer.Kind, typeof(MockLuisRecognizer), new MockLuisLoader(config));
 
             await TestUtils.RunTestScript(resourceExplorer, configuration: config);
         }
 
-        [TestMethod]
-        public async Task TestScriptTests_CustomEvent()
+        [Fact]
+        public async Task TestScriptTests_HttpRequestQnAMakerRecognizerMock()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
+        public async Task TestScriptTests_HttpRequestQnAMakerDialogMock()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestScriptTests_CustomEvent()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task TestScriptTests_PropertyMock()
         {
             var configBuilder = new ConfigurationBuilder();
@@ -131,25 +136,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new KeyValuePair<string, string>("fileoverwrite", "this is overwritten")
             });
 
-            await TestUtils.RunTestScript(ResourceExplorer, configuration: configBuilder.Build());
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, configuration: configBuilder.Build());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_UserConversationUpdate()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_UserTokenMock()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestScriptTests_UserTyping()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
     }
 }

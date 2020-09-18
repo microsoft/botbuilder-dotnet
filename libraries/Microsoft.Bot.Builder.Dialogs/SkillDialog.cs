@@ -25,14 +25,33 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string DeliverModeStateKey = "deliverymode";
         private const string SkillConversationIdStateKey = "Microsoft.Bot.Builder.Dialogs.SkillDialog.SkillConversationId";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SkillDialog"/> class to wrap remote calls to a skill.
+        /// </summary>
+        /// <param name="dialogOptions">The options to execute the skill dialog.</param>
+        /// <param name="dialogId">The id of the dialog.</param>
         public SkillDialog(SkillDialogOptions dialogOptions, string dialogId = null)
             : base(dialogId)
         {
             DialogOptions = dialogOptions ?? throw new ArgumentNullException(nameof(dialogOptions));
         }
 
+        /// <summary>
+        /// Gets the options used to execute the skill dialog.
+        /// </summary>
+        /// <value>The options to execute the skill dialog.</value>
         protected SkillDialogOptions DialogOptions { get; }
 
+        /// <summary>
+        /// Called when the skill dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog.</remarks>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var dialogArgs = ValidateBeginDialogArgs(options);
@@ -62,6 +81,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             return EndOfTurn;
         }
 
+        /// <summary>
+        /// Called when the skill dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog. The result may also contain a
+        /// return value.</remarks>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             if (!OnValidateActivity(dc.Context.Activity))
@@ -95,6 +125,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             return EndOfTurn;
         }
 
+        /// <summary>
+        /// Called when the skill dialog should re-prompt the user for input.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information for this dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             // Create and send an envent to the skill so it can resume the dialog.
@@ -110,12 +148,31 @@ namespace Microsoft.Bot.Builder.Dialogs
             await SendToSkillAsync(turnContext, (Activity)repromptEvent, skillConversationId, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when a child skill dialog completed its turn, returning control to this dialog.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             await RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
             return EndOfTurn;
         }
 
+        /// <summary>
+        /// Called when the skill dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information associated with the instance of this dialog on the dialog stack.</param>
+        /// <param name="reason">Reason why the dialog ended.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             // Send of of conversation to the skill if the dialog has been cancelled. 

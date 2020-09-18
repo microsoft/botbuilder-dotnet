@@ -11,11 +11,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class DialogMemoryScope : MemoryScope
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogMemoryScope"/> class.
+        /// </summary>
         public DialogMemoryScope()
             : base(ScopePath.Dialog)
         {
         }
 
+        /// <summary>
+        /// Gets the backing memory for this scope.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
+        /// <returns>Memory for the scope.</returns>
         public override object GetMemory(DialogContext dc)
         {
             if (dc == null)
@@ -37,6 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog?.State;
         }
 
+        /// <summary>
+        /// Changes the backing object for the memory scope.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
+        /// <param name="memory">Memory object to set for the scope.</param>
         public override void SetMemory(DialogContext dc, object memory)
         {
             if (dc == null)

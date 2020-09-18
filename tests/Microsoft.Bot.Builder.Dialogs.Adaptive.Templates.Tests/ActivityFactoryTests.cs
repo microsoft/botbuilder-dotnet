@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var semanticAction = activity.SemanticAction;
             Assert.Equal("actionId", semanticAction.Id);
             Assert.Equal(1, semanticAction.Entities.Count);
-            Assert.Equal(true, semanticAction.Entities.ContainsKey("key1"));
+            Assert.True(semanticAction.Entities.ContainsKey("key1"));
             Assert.Equal("entityType", semanticAction.Entities["key1"].Type);
 
             Assert.Equal(1, activity.Attachments.Count);

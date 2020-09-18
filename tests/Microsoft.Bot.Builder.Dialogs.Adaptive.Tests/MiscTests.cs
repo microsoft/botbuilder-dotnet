@@ -5,10 +5,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -16,40 +14,34 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class MiscTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class MiscTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public MiscTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(MiscTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(MiscTests));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task IfCondition_EndDialog()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Rule_Reprompt()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogManager_InitDialogsEnsureDependencies()
         {
             Dialog CreateDialog()
@@ -85,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("Enter age")
                 .Send("10")
                     .AssertReply("You said 10")
-                .ExecuteAsync(ResourceExplorer);
+                .ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
 
             // create new dialog manager and new dialog each turn should be the same as when it's static
             await new TestScript()
@@ -94,13 +86,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("Enter age")
                 .Send("10")
                     .AssertReply("You said 10")
-                .ExecuteAsync(ResourceExplorer, callback: (context, ct) => new DialogManager(CreateDialog())
-                    .UseResourceExplorer(ResourceExplorer)
+                .ExecuteAsync(_resourceExplorerFixture.ResourceExplorer, callback: (context, ct) => new DialogManager(CreateDialog())
+                    .UseResourceExplorer(_resourceExplorerFixture.ResourceExplorer)
                     .UseLanguageGeneration()
                     .OnTurnAsync(context, ct));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestMultipleEditActions()
         {
             var jokeDialog = new AdaptiveDialog("jokeDialog")
@@ -192,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Intent = "no",
                         Actions = new List<Dialog>()
                         {
-                            new SetProperties()
+                            new Actions.SetProperties()
                             {
                                 Assignments = new List<PropertyAssignment>()
                                 {
@@ -364,7 +356,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("52")
                     .AssertReply("I have 52")
                     .AssertReply("Here is the joke you asked for..") 
-                .ExecuteAsync(ResourceExplorer);
+                .ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
         }
     }
 
@@ -372,7 +364,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public override Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            return this.RecognizeAsync(new TurnContext(dialogContext.Context.Adapter, activity), cancellationToken);
+            return RecognizeAsync(new TurnContext(dialogContext.Context.Adapter, activity), cancellationToken);
         }
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)

@@ -3,32 +3,29 @@
 
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.QnA;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
+[assembly: TestFramework("Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests.Startup", "Microsoft.Bot.Builder.Dialogs.Adaptive.Tests")]
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
-    [TestClass]
-    internal class Startup
+    public class Startup : XunitTestFramework
     {
-        public Startup()
+        public Startup(IMessageSink messageSink) 
+            : base(messageSink)
         {
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
 
             Configuration = builder.Build();
-        }
 
-        public IConfiguration Configuration { get; }
-
-        [AssemblyInitialize]
-        public static void Initialize(TestContext testContext)
-        {
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
@@ -37,11 +34,13 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
             ComponentRegistration.Add(new QnAMakerComponentRegistration());
         }
 
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             // Adding IConfiguration in sample test server.  Otherwise this appears to be 
             // registered.
-            services.AddSingleton<IConfiguration>(this.Configuration);
+            services.AddSingleton(Configuration);
         }
     }
 }
