@@ -209,42 +209,45 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLowerInvariant();
                     var value = VisitStructureValue(body.keyValueStructureLine());
-                    if (value.Count > 1) 
+                    if (value != null && value.Count > 0)
                     {
-                        var valueList = new JArray();
-                        foreach (var item in value)
+                        if (value.Count > 1)
                         {
-                            var id = Guid.NewGuid().ToString();
-                            if (item.Count > 0)
+                            var valueList = new JArray();
+                            foreach (var item in value)
                             {
-                                valueList.Add(id);
-                                templateRefValues.Add(id, item);
+                                var id = Guid.NewGuid().ToString();
+                                if (item.Count > 0)
+                                {
+                                    valueList.Add(id);
+                                    templateRefValues.Add(id, item);
+                                }
+                                else
+                                {
+                                    valueList.Add(new JArray());
+                                }
                             }
-                            else
-                            {
-                                valueList.Add(new JArray());
-                            }
-                        }
 
-                        expandedResult.ForEach(x => x[property] = valueList);
-                    }
-                    else
-                    {
-                        var id = Guid.NewGuid().ToString();
-                        if (value[0].Count > 0)
-                        {
-                            expandedResult.ForEach(x => x[property] = id);
-                            templateRefValues.Add(id, value[0]);
+                            expandedResult.ForEach(x => x[property] = valueList);
                         }
                         else
                         {
-                            expandedResult.ForEach(x => x[property] = new JArray());
+                            var id = Guid.NewGuid().ToString();
+                            if (value[0].Count > 0)
+                            {
+                                expandedResult.ForEach(x => x[property] = id);
+                                templateRefValues.Add(id, value[0]);
+                            }
+                            else
+                            {
+                                expandedResult.ForEach(x => x[property] = new JArray());
+                            }
                         }
                     }
                 }
                 else
                 {
-                    var propertyObjects = EvalExpression(body.expressionInStructure().GetText(), body.GetText()).Select(x => JObject.Parse(x.ToString())).ToList();
+                    var propertyObjects = EvalExpression(body.expressionInStructure().GetText(), body.GetText()).Where(x => x != null).Select(x => JObject.Parse(x.ToString())).ToList();
                     var tempResult = new List<JObject>();
                     foreach (var res in expandedResult)
                     {
