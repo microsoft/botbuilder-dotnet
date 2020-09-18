@@ -19,12 +19,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class BeginSkill : SkillDialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.BeginSkill";
 
         // Used to cache DialogOptions for multi-turn calls across servers
         private readonly string _dialogOptionsStateKey = $"{typeof(BeginSkill).FullName}.DialogOptionsData";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BeginSkill"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public BeginSkill([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(new SkillDialogOptions())
@@ -128,6 +136,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("allowInterruptions")]
         public BoolExpression AllowInterruptions { get; set; }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (Disabled != null && Disabled.GetValue(dc.State))
@@ -167,6 +183,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when the dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             LoadDialogOptions(dc.Context, dc.ActiveDialog);
@@ -182,24 +206,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return base.ContinueDialogAsync(dc, cancellationToken);
         }
 
+        /// <summary>
+        /// Called when the dialog should re-prompt the user for input.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information for this dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             LoadDialogOptions(turnContext, instance);
             return base.RepromptDialogAsync(turnContext, instance, cancellationToken);
         }
 
+        /// <summary>
+        /// Called when a child dialog completed its turn, returning control to this dialog.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             LoadDialogOptions(dc.Context, dc.ActiveDialog);
             return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information associated with the instance of this dialog on the dialog stack.</param>
+        /// <param name="reason">Reason why the dialog ended.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             LoadDialogOptions(turnContext, instance);
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             var appId = SkillAppId?.ToString() ?? string.Empty;
@@ -217,6 +272,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{GetType().Name}['{appId}','{activity}']";
         }
 
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)

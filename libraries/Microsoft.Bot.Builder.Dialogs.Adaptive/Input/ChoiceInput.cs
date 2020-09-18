@@ -14,6 +14,9 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Response format definition.
+    /// </summary>
     public enum ChoiceOutputFormat
     {
         /// <summary>
@@ -32,6 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class ChoiceInput : InputDialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ChoiceInput";
 
@@ -47,6 +53,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChoiceInput"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -106,6 +117,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("recognizerOptions")]
         public ObjectExpression<FindChoicesOptions> RecognizerOptions { get; set; } = null;
 
+        /// <summary>
+        /// Replaces the result with the FoundChoice value if possible, then proceedes to <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/>.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             FoundChoice foundChoice = result as FoundChoice;
@@ -118,6 +139,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
+        /// <summary>
+        /// Method which processes options.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <returns>modified options.</returns>
         protected override object OnInitializeOptions(DialogContext dc, object options)
         {
             var op = options as ChoiceInputOptions;
@@ -140,6 +167,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return base.OnInitializeOptions(dc, op);
         }
 
+        /// <summary>
+        /// Called when input has been received, recognices choice.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
         protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
@@ -174,6 +207,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return Task.FromResult(InputState.Valid);
         }
 
+        /// <summary>
+        /// Method which renders the prompt to the user given the current input state.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="state">Dialog <see cref="InputState"/>.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>Activity to send to the user.</returns>
         protected override async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var locale = GetCulture(dc);

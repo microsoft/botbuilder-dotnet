@@ -12,9 +12,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnAssignEntity : OnDialogEvent
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public new const string Kind = "Microsoft.OnAssignEntity";
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnAssignEntity"/> class.
+        /// </summary>
+        /// <param name="property">Optional, property to be assigned for filtering events.</param>
+        /// <param name="entity">Optional, entity name being assigned for filtering events.</param>
+        /// <param name="operation">Optional, operation being used to assign the entity for filtering events.</param>
+        /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
+        /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public OnAssignEntity(string property = null, string entity = null, string operation = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
@@ -50,9 +63,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonProperty("operation")]
         public string Operation { get; set; }
 
+        /// <summary>
+        /// Gets the identity for this rule's action.
+        /// </summary>
+        /// <returns>String with the identity.</returns>
         public override string GetIdentity()
             => $"{this.GetType().Name}({this.Property}, {this.Entity})";
 
+        /// <summary>
+        /// Get the expression for this rule.
+        /// </summary>
+        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
         public override Expression GetExpression()
         {
             var expressions = new List<Expression> { base.GetExpression() };
