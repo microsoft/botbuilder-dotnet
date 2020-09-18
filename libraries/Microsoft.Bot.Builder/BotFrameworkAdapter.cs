@@ -48,10 +48,7 @@ namespace Microsoft.Bot.Builder
     {
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
-        private static readonly HttpClient DefaultHttpClient = new HttpClient();
-
-        private readonly bool _isDefaultClient;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _customHttpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
@@ -131,8 +128,7 @@ namespace Microsoft.Bot.Builder
 
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
-            _isDefaultClient = customHttpClient == null;
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+            _customHttpClient = customHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
@@ -147,8 +143,14 @@ namespace Microsoft.Bot.Builder
             // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
+            // we cannot call AddDefaultRequestHeaders if a customHttpClient was not provided.
+            if (this._customHttpClient == null)
+            {
+                return;
+            }
+
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            ConnectorClient.AddDefaultRequestHeaders(this._customHttpClient);
         }
 
         /// <summary>
@@ -187,8 +189,8 @@ namespace Microsoft.Bot.Builder
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             this.ChannelProvider = channelProvider;
-            _isDefaultClient = customHttpClient == null;
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+
+            _customHttpClient = customHttpClient; 
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
@@ -203,8 +205,14 @@ namespace Microsoft.Bot.Builder
             // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
+            // we cannot call AddDefaultRequestHeaders if a customHttpClient was not provided.
+            if (_customHttpClient == null)
+            {
+                return;
+            }
+
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            ConnectorClient.AddDefaultRequestHeaders(_customHttpClient);
         }
 
         /// <summary>
@@ -245,7 +253,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The custom <see cref="HttpClient"/> for this adapter if specified.
         /// </value>
-        protected HttpClient HttpClient { get => _httpClient; }
+        protected HttpClient HttpClient { get => _customHttpClient; }
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -438,7 +446,8 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
+            // _customHttpClient will now be sometimes null if one is not provided
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, _customHttpClient).ConfigureAwait(false);
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
@@ -1619,24 +1628,33 @@ namespace Microsoft.Bot.Builder
             {
                 ConnectorClient connectorClient;
 
-                HttpClient customHttpClient = this._isDefaultClient ? null : this._httpClient;
-
                 if (appCredentials != null)
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: customHttpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: this._customHttpClient);
                 }
                 else
                 {
                     var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: customHttpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: this._customHttpClient);
                 }
 
-                // this does not make any sense if we have provided default client. if you provide a client you cannot set retry policy
-                if (_connectorClientRetryPolicy != null && !_isDefaultClient)
+                // if customHttpClient is provided you cannot set retry policy
+                // if you look at SetRetryPolicy the policy provided to be set is set on the RetryDelegatingHandler. The RetryDelegatingHandler it finds is when ConnectorClient ctor called ServiceClient ctor (base)
+                // however later on since we provide sometimes a customHttpClient it calls InitializeHttpClient again and that sees httpClient is not null and simply sets HttpClient those breaking the link between the handlers and the HttpClient.
+                // if you look at InitializeHttpClient if you provide a client you are expected to wire up the RetryPolicy and RetryDelegatingHandler
+                if (_connectorClientRetryPolicy != null && this._customHttpClient == null)
                 {
                     connectorClient.SetRetryPolicy(_connectorClientRetryPolicy);
+                }
+
+                if (this._customHttpClient == null)
+                {
+                    // we must call AddDefaultRequestHeaders here the ctor for ConnectorClient expected such
+                    // see ConnectorClientEx
+                    // we cannot call it in ctor for BotFrameworkAdapter because now we don't always set _customHttpClient
+                    ConnectorClient.AddDefaultRequestHeaders(connectorClient.HttpClient);
                 }
 
                 return connectorClient;
