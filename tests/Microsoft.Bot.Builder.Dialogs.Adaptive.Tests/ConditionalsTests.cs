@@ -76,6 +76,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 $"((turn.activity.type == '{ActivityTypes.Typing}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
+                new OnInstallationUpdateActivity()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.activity.type == '{ActivityTypes.InstallationUpdate}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
+
+            AssertExpression(
                 new OnEndOfConversationActivity()
                 {
                     Condition = "turn.test == 1"
