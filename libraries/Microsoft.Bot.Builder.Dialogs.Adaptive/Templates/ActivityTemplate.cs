@@ -19,14 +19,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     [JsonConverter(typeof(ActivityTemplateConverter))]
     public class ActivityTemplate : ITemplate<Activity>
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ActivityTemplate";
 
-        // Fixed text constructor for inline template
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActivityTemplate"/> class.
+        /// </summary>
         public ActivityTemplate()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActivityTemplate"/> class.
+        /// </summary>
+        /// <param name="template">The template to evaluate to create the activity.</param>
         public ActivityTemplate(string template)
         {
             this.Template = template;
@@ -41,6 +50,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
+        /// <summary>
+        /// Given the turn context bind to the data to create the object of type <see cref="Activity"/>.
+        /// </summary>
+        /// <param name="dialogContext">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="data">Optional, data to bind to. If Null, then dc.State will be used.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for this task.</param>
+        /// <returns>Instance of <see cref="Activity"/>.</returns>
         public virtual async Task<Activity> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrEmpty(this.Template))
@@ -64,6 +80,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
             return null;
         }
 
+        /// <summary>
+        /// Returns a string that represents <see cref="ActivityTemplate"/>.
+        /// </summary>
+        /// <returns>A string that represents <see cref="ActivityTemplate"/>.</returns>
         public override string ToString()
         {
             return $"{nameof(ActivityTemplate)}({this.Template})";

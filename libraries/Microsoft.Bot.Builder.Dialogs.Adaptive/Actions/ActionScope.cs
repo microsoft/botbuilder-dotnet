@@ -15,8 +15,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class ActionScope : Dialog, IDialogDependencies
     {
+        /// <summary>
+        /// Defines the path for the offset key.
+        /// </summary>
         protected const string OFFSETKEY = "this.offset";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActionScope"/> class.
+        /// </summary>
+        /// <param name="actions">The actions to execute.</param>
         public ActionScope(IEnumerable<Dialog> actions = null)
         {
             if (actions != null)
@@ -33,6 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (this.Actions.Any())
@@ -45,12 +60,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Called when the dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // We're being continued after an interruption so just run next action
             return await OnNextActionAsync(dc, null, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when a child dialog completed its turn, returning control to this dialog.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is ActionScopeResult actionScopeResult)
@@ -61,6 +94,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await OnNextActionAsync(dc, result, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets a unique string which represents the version of this dialog. If the version
+        /// changes between turns the dialog system will emit a DialogChanged event.
+        /// </summary>
+        /// <returns>Unique string which should only change when dialog has changed in a
+        /// way that should restart the dialog.</returns>
         public override string GetVersion()
         {
             StringBuilder sb = new StringBuilder();
@@ -76,6 +115,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return StringUtils.Hash(sb.ToString());
         }
 
+        /// <summary>
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
+        /// </summary>
+        /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             foreach (var action in Actions)
@@ -84,6 +127,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="actionScopeResult">Contains the actions scope result.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task<DialogTurnResult> OnActionScopeResultAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
             switch (actionScopeResult.ActionScopeCommand)
@@ -102,6 +153,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>
+        /// with the property ActionCommand set to <c>GoToAction</c>.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="actionScopeResult">Contains the actions scope result.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task<DialogTurnResult> OnGotoActionAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
             // Look for action to goto in our scope
@@ -125,18 +185,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>
+        /// with the property ActionCommand set to <c>BreakLoop</c>.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="actionScopeResult">Contains the actions scope result.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task<DialogTurnResult> OnBreakLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
             // default is to simply end the dialog and propagate to parent to handle
             return await dc.EndDialogAsync(actionScopeResult, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when returning control to this dialog with an <see cref="ActionScopeResult"/>
+        /// with the property ActionCommand set to <c>ContinueLoop</c>.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="actionScopeResult">Contains the actions scope result.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>Default is to simply end the dialog and propagate to parent to handle.</remarks>
         protected virtual async Task<DialogTurnResult> OnContinueLoopAsync(DialogContext dc, ActionScopeResult actionScopeResult, CancellationToken cancellationToken = default)
         {
             // default is to simply end the dialog and propagate to parent to handle
             return await dc.EndDialogAsync(actionScopeResult, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when the dialog continues to the next action.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task<DialogTurnResult> OnNextActionAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
         {
             // Check for any plan changes
@@ -173,6 +261,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await this.OnEndOfActionsAsync(dc, result, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when the dialog's action ends.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task<DialogTurnResult> OnEndOfActionsAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is CancellationToken)
@@ -184,6 +281,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Starts a new dialog and pushes it onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="offset">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         protected virtual async Task<DialogTurnResult> BeginActionAsync(DialogContext dc, int offset, CancellationToken cancellationToken = default)
         {
             // get the action for the offset
@@ -209,6 +315,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             return $"ActionScope[{StringUtils.EllipsisHash(string.Join(",", Actions.Select(a => a.Id)), 50)}]";

@@ -15,7 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
-        // Expression for dialogId to call (allowing dynamic expression)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseInvokeDialog"/> class.
+        /// Expression for dialogId to call (allowing dynamic expression).
+        /// </summary>
+        /// <param name="dialogIdToCall">Optional, id of the dialog to call.</param>
+        /// <param name="bindingOptions">Optional, binding options for the dialog to call.</param>
         public BaseInvokeDialog(string dialogIdToCall = null, object bindingOptions = null)
             : base()
         {
@@ -56,6 +61,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("activityProcessed")]
         public BoolExpression ActivityProcessed { get; set; } = true;
 
+        /// <summary>
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
+        /// </summary>
+        /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             if (Dialog?.Value != null)
@@ -66,6 +75,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             yield break;
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{Dialog?.ToString()}]";

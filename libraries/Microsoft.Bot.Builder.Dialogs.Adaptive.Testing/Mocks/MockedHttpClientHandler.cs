@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
     /// </summary>
     public class MockedHttpClientHandler : HttpClientHandler
     {
-        private readonly HttpClient client;
-        private readonly HttpMessageHandler httpMessageHandler;
+        private readonly HttpClient _client;
+        private readonly HttpMessageHandler _httpMessageHandler;
         private readonly MethodInfo httpMessageHandlerMethod;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         /// <param name="client">client to use.</param>
         public MockedHttpClientHandler(HttpClient client)
         {
-            this.client = client;
+            _client = client;
         }
 
         /// <summary>
@@ -35,10 +35,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         /// <param name="httpMessageHandler">Handler to use.</param>
         public MockedHttpClientHandler(HttpMessageHandler httpMessageHandler)
         {
-            this.httpMessageHandler = httpMessageHandler;
+            _httpMessageHandler = httpMessageHandler;
 
             // Call directly to avoid wrapping with HttpClient.
-            this.httpMessageHandlerMethod = httpMessageHandler.GetType().GetMethod(
+            httpMessageHandlerMethod = httpMessageHandler.GetType().GetMethod(
                     nameof(SendAsync),
                     BindingFlags.Instance | BindingFlags.NonPublic,
                     Type.DefaultBinder,
@@ -91,9 +91,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         /// <inheritdoc/>
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (httpMessageHandler != null)
+            if (_httpMessageHandler != null)
             {
-                return (Task<HttpResponseMessage>)httpMessageHandlerMethod.Invoke(httpMessageHandler, new object[] { request, cancellationToken });
+                return (Task<HttpResponseMessage>)httpMessageHandlerMethod.Invoke(_httpMessageHandler, new object[] { request, cancellationToken });
             }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
                 Method = request.Method,
             };
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            return client.SendAsync(mockedRequest, cancellationToken);
+            return _client.SendAsync(mockedRequest, cancellationToken);
         }
     }
 }
