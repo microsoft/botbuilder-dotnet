@@ -24,8 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly ResourceExplorer resourceExplorer;
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
-
-        private readonly ConcurrentDictionary<string, JToken> cachedRefJsons = new ConcurrentDictionary<string, JToken>();
         private readonly ConcurrentDictionary<string, T> cachedRefDialogs = new ConcurrentDictionary<string, T>();
 
         /// <summary>
@@ -75,16 +73,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 if (this.resourceExplorer.IsRef(jToken))
                 {
                     refDialogName = jToken.Value<string>();
-                    if (cachedRefJsons.ContainsKey(refDialogName))
-                    {
-                        jToken = cachedRefJsons[refDialogName];
-                    }
-                    else
-                    {
-                        // We can't do this asynchronously as the Json.NET interface is synchronous
-                        jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
-                        cachedRefJsons[refDialogName] = jToken;
-                    }
+
+                    // We can't do this asynchronously as the Json.NET interface is synchronous
+                    jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
                 var kind = (string)jToken["$kind"];
