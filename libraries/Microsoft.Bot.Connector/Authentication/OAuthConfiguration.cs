@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// Boolean value indicating whether the Authority should be validated.
         /// </value>
-        public bool ValidateAuthority { get; set; }
+        public bool ValidateAuthority { get; set; } = true;
 
         /// <summary>
         /// Gets or sets oAuth scope for authentication.
