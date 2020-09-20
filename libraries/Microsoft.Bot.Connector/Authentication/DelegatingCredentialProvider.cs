@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public DelegatingCredentialProvider(ServiceClientCredentialsFactory credentialFactory)
         {
-            _credentialFactory = credentialFactory;
+            _credentialFactory = credentialFactory ?? throw new ArgumentNullException(nameof(credentialFactory));
         }
 
         public Task<string> GetAppPasswordAsync(string appId)
