@@ -45,22 +45,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<PropertyAssignment> Assignments { get; } = new List<PropertyAssignment>();
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector)
         {
-            var activity = new Activity();
-            activity.ApplyConversationReference(adapter.Conversation, isIncoming: true);
-            activity.Type = "event";
-            activity.Name = "SetProperties";
-            activity.Value = Assignments;
-            await adapter.ProcessActivityAsync(
-                  activity,
-                  async (turnContext, cancellationToken) => await inspector.InspectAsync(turnContext, (dc) =>
-                  {
-                      foreach (var assignment in Assignments)
-                      {
-                          dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
-                      }
-                  }).ConfigureAwait(false)).ConfigureAwait(false);
+            await inspector((dc) =>
+            {
+                foreach (var assignment in Assignments)
+                {
+                    dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
+                }
+            }).ConfigureAwait(false);
             Trace.TraceInformation($"[Turn Ended => SetProperties completed]");
         }
     }
