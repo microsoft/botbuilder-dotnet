@@ -109,21 +109,23 @@ namespace Microsoft.Bot.Builder
             await nextTurn(cancellationToken).ConfigureAwait(false);
 
             // flush transcript at end of turn
-            while (transcript.Count > 0)
-            {
-                // Process the queue and log all the activities in parallel.
-                var activity = transcript.Dequeue();
-
-                // NOTE: We are not awaiting this task by design, TryLogActivity() observes all exceptions and we don't need to or want to block execution on the completion.
-                _ = TryLogActivityAsync(_logger, activity);
-            }
+            // NOTE: We are not awaiting this task by design, TryLogTranscriptAsync() observes all exceptions and we don't need to or want to block execution on the completion.
+            _ = TryLogTranscriptAsync(_logger, transcript);
         }
 
-        private static async Task TryLogActivityAsync(ITranscriptLogger logger, IActivity activity)
+        /// <summary>
+        /// Helper to sequentially flush the transcript queue to the log.
+        /// </summary>
+        private static async Task TryLogTranscriptAsync(ITranscriptLogger logger, Queue<IActivity> transcript)
         {
             try
             {
-                await logger.LogActivityAsync(activity).ConfigureAwait(false);
+                while (transcript.Count > 0)
+                {
+                    // Process the queue and log all the activities in parallel.
+                    var activity = transcript.Dequeue();
+                    await logger.LogActivityAsync(activity).ConfigureAwait(false);
+                }
             }
 #pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
             catch (Exception ex)
