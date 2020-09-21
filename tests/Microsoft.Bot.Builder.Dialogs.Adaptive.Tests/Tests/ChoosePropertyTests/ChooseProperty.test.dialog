@@ -3,7 +3,8 @@
   "$kind": "Microsoft.Test.Script",
   "description": "Tests for Choosing Property",
   "httpRequestMocks": [
-    "LuisChooseProperty.mock"
+    "LuisChooseProperty.mock",
+    "LuisProperty.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -46,9 +47,36 @@
         "actions": [
           {
             "$kind": "Microsoft.Ask",
-            "activity": "Meat or Cheese ?",
+            "activity": "meat or cheese ?",
             "expectedProperties": [
               "PropertyToChange"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Add()",
+        "property": "Meat",
+        "entity": "MeatEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "set meat to none"
+          },
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Meat",
+            "value": "=@MeatEntity"
+          },
+          {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "$PropertyToChange == 'Meat'",
+            "actions": [
+              {
+                "$kind": "Microsoft.DeleteProperty",
+                "property": "$PropertyToChange"
+              }
             ]
           }
         ]
@@ -78,7 +106,16 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Meat or Cheese ?"
+      "text": "meat or cheese ?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "meat"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "set meat to none"
     }
+
   ]
 }
