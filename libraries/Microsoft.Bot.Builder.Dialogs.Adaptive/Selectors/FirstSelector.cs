@@ -15,18 +15,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class FirstSelector : TriggerSelector
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.FirstSelector";
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
+        /// <summary>
+        /// Initializes the selector with the set of rules.
+        /// </summary>
+        /// <param name="conditionals">Possible rules to match.</param>
+        /// <param name="evaluate">Optional, true by default if rules should be evaluated on select.</param>
         public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
+        /// <summary>
+        /// Selects the best rule to execute.
+        /// </summary>
+        /// <param name="context">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/> of the task.</param>
+        /// <returns>Best rule in original list to execute or -1 if none.</returns>
         public override Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext context, CancellationToken cancellationToken)
         {
             OnCondition selection = null;

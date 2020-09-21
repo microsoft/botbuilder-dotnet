@@ -18,6 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class DynamicBeginDialog : BeginDialog
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DynamicBeginDialog"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public DynamicBeginDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -35,6 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Evaluates expressions in options.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="options">The options to bind.</param>
+        /// <returns>The merged options with expressions bound to values.</returns>
         protected override object BindOptions(DialogContext dc, object options)
         {
             // use overflow properties of deserialized object instead of the passed in option.

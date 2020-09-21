@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected abstract string ContainerName { get; }
 
-        [TestMethod]
+        [Fact]
         public async Task TestBlobStorageWriteRead()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -42,13 +42,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var result = await storage.ReadAsync(new[] { "x", "y" });
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
-                Assert.AreEqual("hello", result["x"]);
-                Assert.AreEqual("world", result["y"]);
+                Assert.Equal(2, result.Count);
+                Assert.Equal("hello", result["x"]);
+                Assert.Equal("world", result["y"]);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestBlobStorageWriteDeleteRead()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -68,12 +68,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var result = await storage.ReadAsync(new[] { "x", "y" });
 
                 // Assert
-                Assert.AreEqual(1, result.Count);
-                Assert.AreEqual("world", result["y"]);
+                Assert.Equal(1, result.Count);
+                Assert.Equal("world", result["y"]);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestBlobStorageChanges()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -89,13 +89,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var result = await storage.ReadAsync(new[] { "a", "b", "c", "d", "e" });
 
                 // Assert
-                Assert.AreEqual(2, result.Count);
-                Assert.AreEqual("1.1", result["a"]);
-                Assert.AreEqual("3.0", result["c"]);
+                Assert.Equal(2, result.Count);
+                Assert.Equal("1.1", result["a"]);
+                Assert.Equal("3.0", result["c"]);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationStateBlobStorage()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -123,15 +123,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var propValue2 = await propAccessor.GetAsync(turnContext2);
 
                 // Assert
-                Assert.AreEqual("hello", propValue2.X);
-                Assert.AreEqual("world", propValue2.Y);
+                Assert.Equal("hello", propValue2.X);
+                Assert.Equal("world", propValue2.Y);
 
                 await propAccessor.DeleteAsync(turnContext1);
                 await conversationState.SaveChangesAsync(turnContext1);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationStateBlobStorage_TypeNameHandlingDefault()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestConversationStateBlobStorage_TypeNameHandlingNone()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -185,8 +185,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var propValue2 = await propAccessor.GetAsync(turnContext2);
 
                 // Assert
-                Assert.AreEqual("hello", propValue2.X);
-                Assert.AreEqual("world", propValue2.Y);
+                Assert.Equal("hello", propValue2.X);
+                Assert.Equal("world", propValue2.Y);
             }
         }
 

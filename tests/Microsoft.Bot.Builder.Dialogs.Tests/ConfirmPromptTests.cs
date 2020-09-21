@@ -8,39 +8,31 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class ConfirmPromptTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void ConfirmPromptWithEmptyIdShouldFail()
         {
-            var emptyId = string.Empty;
-            var confirmPrompt = new ConfirmPrompt(emptyId);
+            Assert.Throws<ArgumentNullException>(() => { new ConfirmPrompt(string.Empty); });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void ConfirmPromptWithNullIdShouldFail()
         {
-            var nullId = string.Empty;
-            nullId = null;
-            var confirmPrompt = new ConfirmPrompt(nullId);
+            Assert.Throws<ArgumentNullException>(() => { new ConfirmPrompt(null); });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfirmPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPrompt)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -76,13 +68,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfirmPromptRetry()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPromptRetry)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -132,13 +124,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfirmPromptNoOptions()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPromptNoOptions)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -176,13 +168,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfirmPromptChoiceOptionsNumbers()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPromptChoiceOptionsNumbers)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -237,13 +229,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfirmPromptChoiceOptionsMultipleAttempts()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPromptChoiceOptionsMultipleAttempts)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -300,13 +292,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConfirmPromptChoiceOptionsNoNumbers()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(ConfirmPromptChoiceOptionsNoNumbers)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
@@ -360,7 +352,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldUsePromptClassStyleProperty()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -397,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PromptOptionsStyleShouldOverridePromptClassStyleProperty()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -439,15 +431,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             return activity =>
             {
-                Assert.IsInstanceOfType(activity, typeof(IMessageActivity));
+                Assert.IsAssignableFrom<IMessageActivity>(activity);
                 var msg = (IMessageActivity)activity;
-                Assert.AreEqual(expectedText, msg.Text);
-                Assert.AreEqual(expectedSuggestedActions.Actions.Count, msg.SuggestedActions.Actions.Count);
+                Assert.Equal(expectedText, msg.Text);
+                Assert.Equal(expectedSuggestedActions.Actions.Count, msg.SuggestedActions.Actions.Count);
                 for (var i = 0; i < expectedSuggestedActions.Actions.Count; i++)
                 {
-                    Assert.AreEqual(expectedSuggestedActions.Actions[i].Type, msg.SuggestedActions.Actions[i].Type);
-                    Assert.AreEqual(expectedSuggestedActions.Actions[i].Value, msg.SuggestedActions.Actions[i].Value);
-                    Assert.AreEqual(expectedSuggestedActions.Actions[i].Title, msg.SuggestedActions.Actions[i].Title);
+                    Assert.Equal(expectedSuggestedActions.Actions[i].Type, msg.SuggestedActions.Actions[i].Type);
+                    Assert.Equal(expectedSuggestedActions.Actions[i].Value, msg.SuggestedActions.Actions[i].Value);
+                    Assert.Equal(expectedSuggestedActions.Actions[i].Title, msg.SuggestedActions.Actions[i].Title);
                 }
             };
         }

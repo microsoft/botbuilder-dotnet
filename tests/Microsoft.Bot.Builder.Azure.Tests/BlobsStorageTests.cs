@@ -2,29 +2,39 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
+using System.Reflection;
 using Azure.Storage.Blobs;
 using Microsoft.Bot.Builder.Azure.Blobs;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    [TestClass]
-    public class BlobsStorageTests : BlobStorageBaseTests
+    public class BlobsStorageTests : BlobStorageBaseTests, IDisposable
     {
-        public TestContext TestContext { get; set; }
+        private readonly string _testName;
 
-        protected override string ContainerName
+        public BlobsStorageTests(ITestOutputHelper testOutputHelper)
         {
-            get
+            var helper = (TestOutputHelper)testOutputHelper;
+
+            var test = (ITest)helper.GetType().GetField("test", BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetValue(helper);
+
+            _testName = test.TestCase.TestMethod.Method.Name;
+
+            if (StorageEmulatorHelper.CheckEmulator())
             {
-                return $"blobs{TestContext.TestName.ToLower().Replace("_", string.Empty)}";
+                new BlobContainerClient(ConnectionString, ContainerName)
+                    .DeleteIfExistsAsync().ConfigureAwait(false);
             }
         }
 
-        [TestInitialize]
-        public async Task Init()
+        protected override string ContainerName => $"blobs{_testName.ToLower().Replace("_", string.Empty)}";
+
+        public async void Dispose()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
@@ -33,31 +43,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [TestCleanup]
-        public async Task Cleanup()
-        {
-            if (StorageEmulatorHelper.CheckEmulator())
-            {
-                await new BlobContainerClient(ConnectionString, ContainerName)
-                    .DeleteIfExistsAsync().ConfigureAwait(false);
-            }
-        }
-
-        [TestMethod]
+        [Fact]
         public void BlobStorageParamTest()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new BlobsStorage(null, ContainerName));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new BlobsStorage(ConnectionString, null));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new BlobsStorage(string.Empty, ContainerName));
 
-                Assert.ThrowsException<ArgumentNullException>(() =>
+                Assert.Throws<ArgumentNullException>(() =>
                     new BlobsStorage(ConnectionString, string.Empty));
             }
         }
@@ -68,10 +68,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 return new BlobsStorage(ConnectionString, ContainerName, new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
             }
-            else
-            {
-                return new BlobsStorage(ConnectionString, ContainerName);
-            }
+
+            return new BlobsStorage(ConnectionString, ContainerName);
         }
     }
 }
