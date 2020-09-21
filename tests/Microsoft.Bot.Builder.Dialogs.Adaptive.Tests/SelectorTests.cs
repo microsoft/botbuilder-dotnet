@@ -1,71 +1,68 @@
-﻿using System.IO;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class SelectorTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class SelectorTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public SelectorTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(SelectorTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(SelectorTests));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_FirstSelector()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_RandomSelector()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_MostSpecificFirstSelector()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_MostSpecificRandomSelector()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_AdaptiveTrueSelector()
         {
             // only execute first selection
-            await TestUtils.RunTestScript(ResourceExplorer, resourceId: "SelectorTests_TrueSelector.test.dialog");
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, resourceId: "SelectorTests_TrueSelector.test.dialog");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_AdaptiveConditionalSelector()
         {
-            await TestUtils.RunTestScript(ResourceExplorer, resourceId: "SelectorTests_ConditionalSelector.test.dialog");
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, resourceId: "SelectorTests_ConditionalSelector.test.dialog");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_RunOnce()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task SelectorTests_Priority()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
     }
 }

@@ -3,41 +3,30 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Functions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Functions;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class FunctionsTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class FunctionsTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public FunctionsTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(FunctionsTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(FunctionsTests));
 
             // this will test that we are registering the custom functions
-            var component = new AdaptiveComponentRegistration();
+            new AdaptiveComponentRegistration();
         }
 
-        [TestMethod]
+        [Fact]
         public void IsDialogActive_Variations()
         {
             var config = new DialogStateManagerConfiguration()
@@ -48,31 +37,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
             var dc = new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), new Schema.Activity()), new DialogState());
-            DialogStateManager dsm = new DialogStateManager(dc, config);
+            var dsm = new DialogStateManager(dc, config);
 
-            Assert.AreEqual(true, Expression.Parse("isDialogActive('a')").TryEvaluate(dsm).value);
-            Assert.AreEqual(true, Expression.Parse("isDialogActive('b','c','d')").TryEvaluate(dsm).value);
-            Assert.AreEqual(false, Expression.Parse("isDialogActive('b','c','e')").TryEvaluate(dsm).value);
-            Assert.AreEqual(false, Expression.Parse("isDialogActive('c')").TryEvaluate(dsm).value);
-            Assert.AreEqual(false, Expression.Parse("isDialogActive('f')").TryEvaluate(dsm).value);
-            Assert.AreEqual(true, Expression.Parse("isDialogActive('F')").TryEvaluate(dsm).value);
+            Assert.True((bool)Expression.Parse("isDialogActive('a')").TryEvaluate(dsm).value);
+            Assert.True((bool)Expression.Parse("isDialogActive('b','c','d')").TryEvaluate(dsm).value);
+            Assert.False((bool)Expression.Parse("isDialogActive('b','c','e')").TryEvaluate(dsm).value);
+            Assert.False((bool)Expression.Parse("isDialogActive('c')").TryEvaluate(dsm).value);
+            Assert.False((bool)Expression.Parse("isDialogActive('f')").TryEvaluate(dsm).value);
+            Assert.True((bool)Expression.Parse("isDialogActive('F')").TryEvaluate(dsm).value);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task IsDialogActive()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task HasPendingActions()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         public class MockMemoryScope : MemoryScope
         {
-            private object memory;
+            private readonly object memory;
 
             public MockMemoryScope(string name, object memory)
                 : base(name, false)
@@ -82,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             public override object GetMemory(DialogContext dc)
             {
-                return this.memory;
+                return memory;
             }
 
             public override void SetMemory(DialogContext dc, object memory)

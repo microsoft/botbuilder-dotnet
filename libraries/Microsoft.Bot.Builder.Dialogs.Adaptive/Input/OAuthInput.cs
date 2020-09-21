@@ -25,6 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// </summary>
     public class OAuthInput : InputDialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.OAuthInput";
 
@@ -129,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 { AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(Timeout.GetValue(dc.State));
+            state[PersistedExpires] = DateTime.UtcNow.AddMilliseconds(Timeout.GetValue(dc.State));
 
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
@@ -186,7 +189,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var state = dc.ActiveDialog.State;
             var expires = (DateTime)state[PersistedExpires];
             var isMessage = dc.Context.Activity.Type == ActivityTypes.Message;
-            var hasTimedOut = isMessage && (DateTime.Compare(DateTime.Now, expires) > 0);
+            var isTimeoutActivityType = isMessage
+                                        || IsTokenResponseEvent(dc.Context)
+                                        || IsTeamsVerificationInvoke(dc.Context)
+                                        || IsTokenExchangeRequestInvoke(dc.Context);
+            var hasTimedOut = isTimeoutActivityType && (DateTime.Compare(DateTime.UtcNow, expires) > 0);
 
             if (hasTimedOut)
             {
@@ -301,6 +308,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await adapter.SignOutUserAsync(dc.Context, ConnectionName.GetValue(dc.State), dc.Context.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when input has been received.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
+        /// <remark>Method not implemented.</remark>
         protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
@@ -372,7 +386,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
-                else
+                else if (!ChannelRequiresSignInLink(turnContext.Activity.ChannelId))
                 {
                     value = null;
                 }
@@ -620,6 +634,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return true;
+        }
+
+        private bool ChannelRequiresSignInLink(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                    return true;
+            }
+
+            return false;
         }
 
         private async Task SendInvokeResponseAsync(ITurnContext turnContext, HttpStatusCode statusCode, object body, CancellationToken cancellationToken)

@@ -55,7 +55,7 @@ namespace AdaptiveExpressions.Memory
             {
                 var memory = it.Current;
 
-                if (memory.TryGetValue(path, out var result) && result != null)
+                if (memory.TryGetValue(path, out var result))
                 {
                     value = result;
                     
@@ -68,7 +68,7 @@ namespace AdaptiveExpressions.Memory
                 }
             }
 
-            return true;
+            return false;
         }
 
         /// <summary>

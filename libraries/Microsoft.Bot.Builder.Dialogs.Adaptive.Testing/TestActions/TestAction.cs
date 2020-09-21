@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
@@ -17,10 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <summary>
         /// Execute the test.
         /// </summary>
-        /// <param name="adapter">adapter to execute against.</param>
-        /// <param name="callback">logic for the bot to use.</param>
+        /// <param name="adapter">Adapter to execute against.</param>
+        /// <param name="callback">Logic for the bot to use.</param>
+        /// <param name="inspector">Inspector for dialog context.</param>
         /// <returns>async task.</returns>
-        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback);
+        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector);
 
         /// <summary>
         /// Registers the path to file and callers line.

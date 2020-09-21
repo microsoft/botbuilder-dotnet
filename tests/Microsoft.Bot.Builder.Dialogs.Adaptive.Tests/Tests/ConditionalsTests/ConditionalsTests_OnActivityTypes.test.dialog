@@ -46,6 +46,16 @@
                 ]
             },
             {
+                "$kind": "Microsoft.OnInstallationUpdateActivity",
+                "condition": "turn.activity.text == 'OnInstallationUpdateActivity'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnInstallationUpdateActivity"
+                    }
+                ]
+            },
+            {
                 "$kind": "Microsoft.OnEndOfConversationActivity",
                 "condition": "turn.activity.text == 'OnEndOfConversationActivity'",
                 "actions": [
@@ -164,6 +174,17 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "OnTypingActivity"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "installationUpdate",
+                "text": "OnInstallationUpdateActivity"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnInstallationUpdateActivity"
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
