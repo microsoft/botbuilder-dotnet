@@ -7,74 +7,75 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class OAuthPromptTests
     {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void OAuthPromptWithEmptySettingsShouldFail()
         {
-            var confirmPrompt = new OAuthPrompt("abc", null);
+            Assert.Throws<ArgumentNullException>(() => new OAuthPrompt("abc", null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void OAuthPromptWithEmptyIdShouldFail()
         {
-            var emptyId = string.Empty;
-            var confirmPrompt = new OAuthPrompt(emptyId, new OAuthPromptSettings());
+            Assert.Throws<ArgumentNullException>(() => new OAuthPrompt(string.Empty, new OAuthPromptSettings()));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptWithDefaultTypeHandlingForStorage()
         {
             await OAuthPrompt(new MemoryStorage());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public async Task OAuthPromptBeginDialogWithNoDialogContext()
         {
-            var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
-            await prompt.BeginDialogAsync(null);
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+                await prompt.BeginDialogAsync(null);
+            });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public async Task OAuthPromptBeginDialogWithWrongOptions()
         {
-            var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+                var convoState = new ConversationState(new MemoryStorage());
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+                var adapter = new TestAdapter()
+                    .Use(new AutoSaveStateMiddleware(convoState));
 
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(prompt);
+                // Create new DialogSet.
+                var dialogs = new DialogSet(dialogState);
+                dialogs.Add(prompt);
 
-            var tc = new TurnContext(adapter, new Activity() { Type = ActivityTypes.Message, Conversation = new ConversationAccount() { Id = "123" }, ChannelId = "test" });
+                var tc = new TurnContext(adapter, new Activity() { Type = ActivityTypes.Message, Conversation = new ConversationAccount() { Id = "123" }, ChannelId = "test" });
 
-            var dc = await dialogs.CreateContextAsync(tc);
+                var dc = await dialogs.CreateContextAsync(tc);
 
-            await prompt.BeginDialogAsync(dc, CancellationToken.None);
+                await prompt.BeginDialogAsync(dc, CancellationToken.None);
+            });
         }
 
-        [TestMethod]
+        [Fact]
 
         public async Task OAuthPromptWithNoneTypeHandlingForStorage()
         {
             await OAuthPrompt(new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptWithMagicCode()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -117,10 +118,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Add a magic code to the adapter
                 adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
@@ -130,13 +131,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptTimesOut_Message()
         {
             await PromptTimeoutEndsDialogTest(MessageFactory.Text("hi"));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptTimesOut_TokenResponseEvent()
         {
             var activity = new Activity() { Type = ActivityTypes.Event, Name = SignInConstants.TokenResponseEventName };
@@ -144,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await PromptTimeoutEndsDialogTest(activity);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptTimesOut_VerifyStateOperation()
         {
             var activity = new Activity() { Type = ActivityTypes.Invoke, Name = SignInConstants.VerifyStateOperationName };
@@ -152,8 +153,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await PromptTimeoutEndsDialogTest(activity);
         }
-        
-        [TestMethod]
+
+        [Fact]
         public async Task OAuthPromptTimesOut_TokenExchangeOperation()
         {
             var activity = new Activity() { Type = ActivityTypes.Invoke, Name = SignInConstants.TokenExchangeOperationName };
@@ -170,59 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await PromptTimeoutEndsDialogTest(activity);
         }
 
-        public async Task OAuthPromptEndOnInvalidMessageSetting()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var connectionName = "myConnection";
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in", EndOnInvalidMessage = true }));
-
-            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Waiting)
-                {
-                    throw new InvalidOperationException("Test OAuthPromptEndOnInvalidMessageSetting expected DialogTurnStatus.Complete");
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    if (results.Result is TokenResponse)
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Logged in."), cancellationToken);
-                    }
-                    else
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Ended."), cancellationToken);
-                    }
-                }
-            };
-
-            await new TestFlow(adapter, botCallbackHandler)
-            .Send("hello")
-            .AssertReply(activity =>
-            {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-            })
-            .Send("blah")
-            .AssertReply("Ended.")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptDoesNotDetectCodeInBeginDialog()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -254,7 +203,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var tokenResult = await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
                     if (tokenResult.Result is TokenResponse)
                     {
-                        Assert.Fail();
+                        throw new XunitException();
                     }
                 }
             };
@@ -264,15 +213,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send(magicCode)
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
             })
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptWithTokenExchangeInvoke()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -315,9 +264,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Add an exchangable token to the adapter
                 adapter.AddExchangeableToken(connectionName, activity.ChannelId, activity.Recipient.Id, exchangeToken, token);
@@ -334,19 +283,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .AssertReply(a =>
             {
-                Assert.AreEqual("invokeResponse", a.Type);
+                Assert.Equal("invokeResponse", a.Type);
                 var response = ((Activity)a).Value as InvokeResponse;
-                Assert.IsNotNull(response);
-                Assert.AreEqual(200, response.Status);
+                Assert.NotNull(response);
+                Assert.Equal(200, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.AreEqual(connectionName, body.ConnectionName);
-                Assert.IsNull(body.FailureDetail);
+                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.Null(body.FailureDetail);
             })
             .AssertReply("Logged in.")
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptWithTokenExchangeFail()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -388,9 +337,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // No exchangable token is added to the adapter
             })
@@ -406,18 +355,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .AssertReply(a =>
             {
-                Assert.AreEqual("invokeResponse", a.Type);
+                Assert.Equal("invokeResponse", a.Type);
                 var response = ((Activity)a).Value as InvokeResponse;
-                Assert.IsNotNull(response);
-                Assert.AreEqual(412, response.Status);
+                Assert.NotNull(response);
+                Assert.Equal(412, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.AreEqual(connectionName, body.ConnectionName);
-                Assert.IsNotNull(body.FailureDetail);
+                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.NotNull(body.FailureDetail);
             })
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptWithTokenExchangeNoBodyFails()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -458,9 +407,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // No exchangable token is added to the adapter
             })
@@ -473,18 +422,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .AssertReply(a =>
             {
-                Assert.AreEqual("invokeResponse", a.Type);
+                Assert.Equal("invokeResponse", a.Type);
                 var response = ((Activity)a).Value as InvokeResponse;
-                Assert.IsNotNull(response);
-                Assert.AreEqual(400, response.Status);
+                Assert.NotNull(response);
+                Assert.Equal(400, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.AreEqual(connectionName, body.ConnectionName);
-                Assert.IsNotNull(body.FailureDetail);
+                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.NotNull(body.FailureDetail);
             })
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task OAuthPromptWithTokenExchangeWrongConnectionNameFail()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -526,9 +475,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // No exchangable token is added to the adapter
             })
@@ -544,18 +493,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .AssertReply(a =>
             {
-                Assert.AreEqual("invokeResponse", a.Type);
+                Assert.Equal("invokeResponse", a.Type);
                 var response = ((Activity)a).Value as InvokeResponse;
-                Assert.IsNotNull(response);
-                Assert.AreEqual(400, response.Status);
+                Assert.NotNull(response);
+                Assert.Equal(400, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.AreEqual(connectionName, body.ConnectionName);
-                Assert.IsNotNull(body.FailureDetail);
+                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.NotNull(body.FailureDetail);
             })
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestAdapterTokenExchange()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -574,23 +523,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 // Positive case: Token
                 var result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Token = exchangeToken });
-                Assert.IsNotNull(result);
-                Assert.AreEqual(token, result.Token);
-                Assert.AreEqual(connectionName, result.ConnectionName);
+                Assert.NotNull(result);
+                Assert.Equal(token, result.Token);
+                Assert.Equal(connectionName, result.ConnectionName);
 
                 // Positive case: URI
                 result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Uri = exchangeToken });
-                Assert.IsNotNull(result);
-                Assert.AreEqual(token, result.Token);
-                Assert.AreEqual(connectionName, result.ConnectionName);
+                Assert.NotNull(result);
+                Assert.Equal(token, result.Token);
+                Assert.Equal(connectionName, result.ConnectionName);
 
                 // Negative case: Token
                 result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Token = "beeboop" });
-                Assert.IsNull(result);
+                Assert.Null(result);
 
                 // Negative case: URI
                 result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Uri = "beeboop" });
-                Assert.IsNull(result);
+                Assert.Null(result);
             };
 
             await new TestFlow(adapter, botCallbackHandler)
@@ -639,10 +588,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
-                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Prepare an EventActivity with a TokenResponse and send it to the botCallbackHandler
                 var eventActivity = CreateEventResponse(adapter, activity, connectionName, token);
@@ -668,7 +617,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            
+
             // Set timeout to zero, so the prompt will end immediately.
             dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in", Timeout = 0 }));
 
@@ -699,8 +648,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply(activity =>
             {
-                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
-                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
                 // Add a magic code to the adapter
                 adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
@@ -732,6 +681,58 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
 
             return eventActivity;
+        }
+
+        private async Task OAuthPromptEndOnInvalidMessageSetting()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var connectionName = "myConnection";
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in", EndOnInvalidMessage = true }));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Waiting)
+                {
+                    throw new InvalidOperationException("Test OAuthPromptEndOnInvalidMessageSetting expected DialogTurnStatus.Complete");
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    if (results.Result is TokenResponse)
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Logged in."), cancellationToken);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Ended."), cancellationToken);
+                    }
+                }
+            };
+
+            await new TestFlow(adapter, botCallbackHandler)
+            .Send("hello")
+            .AssertReply(activity =>
+            {
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+            })
+            .Send("blah")
+            .AssertReply("Ended.")
+            .StartTestAsync();
         }
     }
 }

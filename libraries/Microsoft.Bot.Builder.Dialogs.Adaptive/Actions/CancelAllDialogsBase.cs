@@ -18,6 +18,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         private bool cancelAll;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CancelAllDialogsBase"/> class.
+        /// </summary>
+        /// <param name="cancelAll">Set to <c>true</c> to cancel all dialogs; <c>false</c> otherwise.</param>
         [JsonConstructor]
         public CancelAllDialogsBase(bool cancelAll)
         {
@@ -62,6 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("eventValue")]
         public ValueExpression EventValue { get; set; }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)

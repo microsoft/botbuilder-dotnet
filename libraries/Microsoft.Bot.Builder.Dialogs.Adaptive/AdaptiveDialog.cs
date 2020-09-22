@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -329,7 +330,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
+            AdaptiveDialogState state = null;
+
+            if (activeDialogState.TryGetValue(AdaptiveKey, out var currentState))
+            {
+                state = currentState as AdaptiveDialogState;
+            }
 
             if (state == null)
             {

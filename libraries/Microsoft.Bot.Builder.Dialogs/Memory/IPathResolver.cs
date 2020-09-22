@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
 {
+    /// <summary>
+    /// Defines Path Resolver interface for transforming paths.
+    /// </summary>
     public interface IPathResolver
     {
         /// <summary>

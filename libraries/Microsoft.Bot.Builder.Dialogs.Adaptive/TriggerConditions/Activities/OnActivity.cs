@@ -14,9 +14,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnActivity : OnDialogEvent
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public new const string Kind = "Microsoft.OnActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnActivity"/> class.
+        /// </summary>
+        /// <param name="type">Optional, ActivityType which must be matched for this event to trigger.</param>
+        /// <param name="actions">Optional, list of <see cref="Dialog"/> actions.</param>
+        /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public OnActivity(string type = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(@event: AdaptiveEvents.ActivityReceived, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
@@ -33,6 +44,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         [JsonProperty("type")]
         public string Type { get; set; }
 
+        /// <summary>
+        /// Gets the identity for the activity.
+        /// </summary>
+        /// <returns>Identity.</returns>
         public override string GetIdentity()
         {
             if (this.GetType() == typeof(OnActivity))
@@ -43,6 +58,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}[{this.Condition}]";
         }
 
+        /// <summary>
+        /// Gets this activity's representing expresion.
+        /// </summary>
+        /// <returns>An <see cref="Expression"/> representing the activity.</returns>
         public override Expression GetExpression()
         {
             // add constraints for activity type

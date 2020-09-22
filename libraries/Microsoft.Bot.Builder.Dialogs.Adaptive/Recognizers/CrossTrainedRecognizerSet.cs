@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -31,6 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </remarks>
     public class CrossTrainedRecognizerSet : Recognizer
     {
+        /// <summary>
+        /// Class idenfifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.CrossTrainedRecognizerSet";
 
@@ -39,6 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </summary>
         public const string DeferPrefix = "DeferToRecognizer_";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CrossTrainedRecognizerSet"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public CrossTrainedRecognizerSet([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
@@ -56,6 +63,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Runs current DialogContext.TurnContext.Activity through a recognizer and returns a <see cref="RecognizerResult"/>.
+        /// </summary>
+        /// <param name="dialogContext">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="activity"><see cref="Activity"/> to recognize.</param>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/> of the task.</param>
+        /// <param name="telemetryProperties">Optional, additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Optional, additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <returns>Analysis of utterance.</returns>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (dialogContext == null)
@@ -169,11 +185,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 return recognizerResults[consensusRecognizerId];
             }
 
+            //find if there is missing entities matched
+            var mergedEntities = new JObject();
+            foreach (var rocogResult in results)
+            {            
+                if (rocogResult.Entities.Count > 0)
+                {
+                    mergedEntities.Merge(rocogResult.Entities);
+                }
+            }
+
             // return none.
             return new RecognizerResult()
             {
                 Text = recognizerResults.Values.First().Text,
-                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } }
+                Intents = new Dictionary<string, IntentScore>() { { NoneIntent, new IntentScore() { Score = 1.0 } } },
+                Entities = mergedEntities
             };
         }
 

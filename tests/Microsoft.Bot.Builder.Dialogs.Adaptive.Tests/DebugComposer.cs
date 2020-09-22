@@ -3,21 +3,18 @@
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
+    [CollectionDefinition("Dialogs.Adaptive")]
     public class DebugComposer
     {
-        public TestContext TestContext { get; set; }
-
         // This test can be used to debug a composer bot, simple point botPath => composer bot
         // and add debug.test.dialog script to that folder
         // {
@@ -26,8 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         //  "dialog": "bot.root.dialog",
         //  "script": [...] 
         // }
-        [Ignore]
-        [TestMethod]
+        [Fact(Skip = "Ignore")]
         public async Task DebugComposerBot()
         {
             // luis.settings.{environment}.{region}.json

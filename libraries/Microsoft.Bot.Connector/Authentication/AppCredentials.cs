@@ -101,6 +101,14 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual string OAuthEndpoint => string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, ChannelAuthTenant);
 
         /// <summary>
+        /// Gets a value indicating whether to validate the Authority.
+        /// </summary>
+        /// <value>
+        /// The ValidateAuthority value to use.
+        /// </value>
+        public virtual bool ValidateAuthority => true;
+
+        /// <summary>
         /// Gets the OAuth scope to use.
         /// </summary>
         /// <value>

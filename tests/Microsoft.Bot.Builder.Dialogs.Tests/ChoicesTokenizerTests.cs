@@ -2,76 +2,75 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
-    [TestCategory("Prompts")]
-    [TestCategory("Choice Tests")]
+    [Trait("TestCategory", "Prompts")]
+    [Trait("TestCategory", "Choice Tests")]
     public class ChoicesTokenizerTests
     {
-        [TestMethod]
+        [Fact]
         public void ShouldBreakOnSpaces()
         {
             var tokens = Tokenizer.DefaultTokenizer("how now brown cow");
-            Assert.AreEqual(4, tokens.Count);
+            Assert.Equal(4, tokens.Count);
             AssertToken(tokens[0], 0, 2, "how");
             AssertToken(tokens[1], 4, 6, "now");
             AssertToken(tokens[2], 8, 12, "brown");
             AssertToken(tokens[3], 14, 16, "cow");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldBreakOnPunctuation()
         {
             var tokens = Tokenizer.DefaultTokenizer("how-now.brown:cow ?");
-            Assert.AreEqual(4, tokens.Count);
+            Assert.Equal(4, tokens.Count);
             AssertToken(tokens[0], 0, 2, "how");
             AssertToken(tokens[1], 4, 6, "now");
             AssertToken(tokens[2], 8, 12, "brown");
             AssertToken(tokens[3], 14, 16, "cow");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldTokenizeSingleCharacterTokens()
         {
             var tokens = Tokenizer.DefaultTokenizer("a b c d");
-            Assert.AreEqual(4, tokens.Count);
+            Assert.Equal(4, tokens.Count);
             AssertToken(tokens[0], 0, 0, "a");
             AssertToken(tokens[1], 2, 2, "b");
             AssertToken(tokens[2], 4, 4, "c");
             AssertToken(tokens[3], 6, 6, "d");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnASingleToken()
         {
             var tokens = Tokenizer.DefaultTokenizer("food");
-            Assert.AreEqual(1, tokens.Count);
+            Assert.Single(tokens);
             AssertToken(tokens[0], 0, 3, "food");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnNoTokens()
         {
             var tokens = Tokenizer.DefaultTokenizer(".?; -()");
-            Assert.AreEqual(0, tokens.Count);
+            Assert.Empty(tokens);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTheNormalizedAndOriginalTextForAToken()
         {
             var tokens = Tokenizer.DefaultTokenizer("fOoD");
-            Assert.AreEqual(1, tokens.Count);
+            Assert.Single(tokens);
             AssertToken(tokens[0], 0, 3, "fOoD", "food");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldBreakOnEmojis()
         {
             var tokens = Tokenizer.DefaultTokenizer("food 💥👍😀");
-            Assert.AreEqual(4, tokens.Count);
+            Assert.Equal(4, tokens.Count);
             AssertToken(tokens[0], 0, 3, "food");
             AssertToken(tokens[1], 5, 6, "💥");
             AssertToken(tokens[2], 7, 8, "👍");
@@ -80,10 +79,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static void AssertToken(Token token, int start, int end, string text, string normalized = null)
         {
-            Assert.AreEqual(start, token.Start);
-            Assert.AreEqual(end, token.End);
-            Assert.AreEqual(text, token.Text);
-            Assert.AreEqual(normalized ?? text, token.Normalized);
+            Assert.Equal(start, token.Start);
+            Assert.Equal(end, token.End);
+            Assert.Equal(text, token.Text);
+            Assert.Equal(normalized ?? text, token.Normalized);
         }
     }
 }

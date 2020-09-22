@@ -7488,6 +7488,25 @@
 						}
 					]
 				},
+                "strictFiltersCompoundOperationType": {
+                    "title": "Strict Filters Compound OperationType",
+                    "description": "Join operator for Strict Filters.",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "title": "Strict Filters Compound OperationType",
+                            "description": "Value of Join Operator to be used as Conjunction with Strict Filter Values",
+                            "enum": [
+                                "AND",
+                                "OR"
+                            ],
+                            "default": "AND"
+                        },
+                        {
+                            "$ref": "#/definitions/equalsExpression"
+                        }
+                    ]
+                },
 				"includeDialogNameInMetadata": {
 					"$ref": "#/definitions/booleanExpression",
 					"title": "Include Dialog Name",
@@ -7519,6 +7538,24 @@
 							}
 						}
 					}
+				},
+				"strictFiltersCompoundOperationType": {
+					"$ref": "#/definitions/stringExpression",
+					"title": "StrictFilters Compound Operation Type",
+					"description": "Type of Operation for Strict Filters.",
+					"oneOf": [
+						"title": "StrictFiltersCompoundOperationType",
+						"description": "Metadata filter to use when calling the QnA Maker KB.",
+						"enum": [
+								"AND",
+								"OR"
+							],
+							"default": "AND"
+						},
+						{
+							"$ref": "#/definitions/equalsExpression"
+						}
+					]
 				},
 				"context": {
 					"$ref": "#/definitions/objectExpression",

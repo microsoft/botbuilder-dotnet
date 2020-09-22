@@ -12,13 +12,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class EntityRecognizerSet : List<EntityRecognizer>
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.EntityRecognizerSet";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityRecognizerSet"/> class.
+        /// </summary>
         public EntityRecognizerSet()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityRecognizerSet"/> class.
+        /// </summary>
+        /// <param name="recognizers"><see cref="EntityRecognizer"/> instances pool.</param>
         public EntityRecognizerSet(IEnumerable<EntityRecognizer> recognizers)
             : base(recognizers)
         {

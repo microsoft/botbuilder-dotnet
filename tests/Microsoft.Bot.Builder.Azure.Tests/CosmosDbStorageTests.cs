@@ -14,16 +14,15 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    [TestClass]
-    [TestCategory("Storage")]
-    [TestCategory("Storage - CosmosDB")]
-    public class CosmosDbStorageTests : StorageBaseTests
+    [Trait("TestCategory", "Storage")]
+    [Trait("TestCategory", "Storage - CosmosDB")]
+    public class CosmosDbStorageTests : StorageBaseTests, IDisposable
     {
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
@@ -32,16 +31,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosCollectionName = "bot-storage";
         private const string DocumentId = "UtteranceLog-001";
 
-        private const string NoEmulatorMessage = "This test requires CosmosDB Emulator! go to https://aka.ms/documentdb-emulator-docs to download and install.";
-        private static readonly string _emulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
-        private static readonly Lazy<bool> _hasEmulator = new Lazy<bool>(() =>
+        private static readonly string EmulatorPath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe");
+        private static readonly Lazy<bool> HasEmulator = new Lazy<bool>(() =>
         {
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
             {
                 return false;
             }
 
-            if (File.Exists(_emulatorPath))
+            if (File.Exists(EmulatorPath))
             {
                 var tries = 5;
 
@@ -49,7 +47,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 {
                     var p = new Process();
                     p.StartInfo.UseShellExecute = true;
-                    p.StartInfo.FileName = _emulatorPath;
+                    p.StartInfo.FileName = EmulatorPath;
                     p.StartInfo.Arguments = "/GetStatus";
                     p.Start();
                     p.WaitForExit();
@@ -78,16 +76,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         });
 
         // Item used to test delete cases
-        private readonly StoreItem itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
+        private readonly StoreItem _itemToTest = new StoreItem { MessageList = new string[] { "hi", "how are u" }, City = "Contoso" };
 
         private IStorage _storage;
 
-        public TestContext TestContext { get; set; }
-
-        [TestInitialize]
-        public void TestInit()
+        public CosmosDbStorageTests()
         {
-            if (CheckEmulator())
+            if (HasEmulator.Value)
             {
                 _storage = new CosmosDbStorage(new CosmosDbStorageOptions
                 {
@@ -99,8 +94,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [TestCleanup]
-        public async Task TestCleanUp()
+        public async void Dispose()
         {
             if (_storage != null)
             {
@@ -116,27 +110,27 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        [TestMethod]
-        public void Sanatize_Key_Should_Work()
+        [IgnoreOnNoEmulatorFact]
+        public void Sanitize_Key_Should_Work()
         {
-            // Note: The SanatizeKey method delegates to the CosmosDBKeyEscape class. The method is
+            // Note: The SanitizeKey method delegates to the CosmosDBKeyEscape class. The method is
             // marked as obsolete, and should no longer be used. This test is here to make sure
             // the method does actually delegate, as we can't remove it due to back-compat reasons.
 #pragma warning disable 0618
             // Ascii code of "?" is "3f".
             var sanitizedKey = CosmosDbStorage.SanitizeKey("?test?");
-            Assert.AreEqual(sanitizedKey, "*3ftest*3f");
+            Assert.Equal("*3ftest*3f", sanitizedKey);
 #pragma warning restore 0618
         }
 
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw.
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
+            Assert.Throws<ArgumentNullException>(() => new CosmosDbStorage(null));
 
             // No Endpoint. Should throw.
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
                 CollectionId = "testId",
@@ -145,7 +139,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
 
             // No Auth Key. Should throw.
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = null,
                 CollectionId = "testId",
@@ -154,7 +148,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
 
             // No Database Id. Should throw.
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
                 CollectionId = "testId",
@@ -163,7 +157,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
 
             // No Collection Id. Should throw.
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
+            Assert.Throws<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
             {
                 AuthKey = "test",
                 CollectionId = null,
@@ -172,37 +166,37 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }));
         }
 
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public void CustomConstructor_Should_Throw_On_InvalidOptions()
         {
             var customClient = GetDocumentClient().Object;
 
             // No client. Should throw.
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null, new CosmosDbCustomClientOptions
+            Assert.Throws<ArgumentNullException>(() => new CosmosDbStorage(null, new CosmosDbCustomClientOptions
             {
                 CollectionId = "testId",
                 DatabaseId = "testDb",
             }));
 
             // No Options. Should throw.
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(customClient, null));
+            Assert.Throws<ArgumentNullException>(() => new CosmosDbStorage(customClient, null));
 
             // No Database Id. Should throw.
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
+            Assert.Throws<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
             {
                 CollectionId = "testId",
                 DatabaseId = null,
             }));
 
             // No Collection Id. Should throw.
-            Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
+            Assert.Throws<ArgumentException>(() => new CosmosDbStorage(customClient, new CosmosDbCustomClientOptions
             {
                 CollectionId = null,
                 DatabaseId = "testDb",
             }));
         }
 
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public void Connection_Policy_Configurator_Should_Be_Called_If_Present()
         {
             var wasCalled = false;
@@ -219,10 +213,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             };
 
             var storage = new CosmosDbStorage(optionsWithConfigurator);
-            Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
+            Assert.True(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task Database_Creation_Request_Options_Should_Be_Used()
         {
             var documentClientMock = GetDocumentClient();
@@ -246,117 +240,87 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
-        public async Task CreateObjectTest()
+        [IgnoreOnNoEmulatorFact]
+        public async Task CreateObjectCosmosDBTest()
         {
-            if (CheckEmulator())
-            {
-                await CreateObjectTest(_storage);
-            }
+            await CreateObjectTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
-        public async Task ReadUnknownTest()
+        [IgnoreOnNoEmulatorFact]
+        public async Task ReadUnknownCosmosDBTest()
         {
-            if (CheckEmulator())
-            {
-                await ReadUnknownTest(_storage);
-            }
+            await ReadUnknownTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
-        public async Task UpdateObjectTest()
+        [IgnoreOnNoEmulatorFact]
+        public async Task UpdateObjectCosmosDBTest()
         {
-            if (CheckEmulator())
-            {
-                await UpdateObjectTest<DocumentClientException>(_storage);
-            }
+            await UpdateObjectTest<DocumentClientException>(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
-        public async Task DeleteObjectTest()
+        [IgnoreOnNoEmulatorFact]
+        public async Task DeleteObjectCosmosDBTest()
         {
-            if (CheckEmulator())
-            {
-                await DeleteObjectTest(_storage);
-            }
+            await DeleteObjectTest(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
-        public async Task HandleCrazyKeys()
+        [IgnoreOnNoEmulatorFact]
+        public async Task HandleCrazyKeysCosmosDB()
         {
-            if (CheckEmulator())
-            {
-                await HandleCrazyKeys(_storage);
-            }
+            await HandleCrazyKeys(_storage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public void ConnectionPolicyConfiguratorShouldBeCalled()
         {
-            if (CheckEmulator())
+            ConnectionPolicy policyRef = null;
+
+            _storage = new CosmosDbStorage(new CosmosDbStorageOptions
             {
-                ConnectionPolicy policyRef = null;
+                AuthKey = CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+                ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy,
+            });
 
-                _storage = new CosmosDbStorage(new CosmosDbStorageOptions
-                {
-                    AuthKey = CosmosAuthKey,
-                    CollectionId = CosmosCollectionName,
-                    CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
-                    DatabaseId = CosmosDatabaseName,
-                    ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy,
-                });
-
-                Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
-            }
+            Assert.NotNull(policyRef);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadingEmptyKeysReturnsEmptyDictionary()
         {
-            if (CheckEmulator())
-            {
-                var state = await _storage.ReadAsync(new string[] { });
-                Assert.IsInstanceOfType(state, typeof(Dictionary<string, object>));
-                Assert.AreEqual(state.Count, 0);
-            }
+            var state = await _storage.ReadAsync(new string[] { });
+            Assert.IsType<Dictionary<string, object>>(state);
+            Assert.Equal(0, state.Count);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadingNullKeysThrowException()
         {
-            if (CheckEmulator())
-            {
-                await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _storage.ReadAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.ReadAsync(null));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task WritingNullStoreItemsThrowException()
         {
-            if (CheckEmulator())
-            {
-                await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _storage.WriteAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _storage.WriteAsync(null));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task WritingNoStoreItemsDoesntThrow()
         {
-            if (CheckEmulator())
-            {
-                var changes = new Dictionary<string, object>();
-                await _storage.WriteAsync(changes);
-            }
+            var changes = new Dictionary<string, object>();
+            await _storage.WriteAsync(changes);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -369,255 +333,219 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // The problem was reintroduced when the prompt retry count feature was implemented:
         // https://github.com/microsoft/botbuilder-dotnet/issues/1859
         // The waterfall in this test has been modified to include a prompt.
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task WaterfallCosmos()
         {
-            if (CheckEmulator())
+            var convoState = new ConversationState(_storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(WaterfallCosmos)))
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+
+            dialogs.Add(new TextPrompt(nameof(TextPrompt), async (promptContext, cancellationToken) =>
             {
-                var convoState = new ConversationState(_storage);
-
-                var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                    .Use(new AutoSaveStateMiddleware(convoState));
-
-                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-                var dialogs = new DialogSet(dialogState);
-
-                dialogs.Add(new TextPrompt(nameof(TextPrompt), async (promptContext, cancellationToken) =>
+                var result = promptContext.Recognized.Value;
+                if (result.Length > 3)
                 {
-                    var result = promptContext.Recognized.Value;
-                    if (result.Length > 3)
+                    var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.AttemptCount}th try!");
+                    await promptContext.Context.SendActivityAsync(succeededMessage, cancellationToken);
+                    return true;
+                }
+
+                var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.AttemptCount}");
+                await promptContext.Context.SendActivityAsync(reply, cancellationToken);
+
+                return false;
+            }));
+
+            var steps = new WaterfallStep[]
+                {
+                    async (stepContext, ct) =>
                     {
-                        var succeededMessage = MessageFactory.Text($"You got it at the {promptContext.AttemptCount}th try!");
-                        await promptContext.Context.SendActivityAsync(succeededMessage, cancellationToken);
-                        return true;
+                        Assert.Equal(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
+                        await stepContext.Context.SendActivityAsync("step1");
+                        return Dialog.EndOfTurn;
+                    },
+                    async (stepContext, ct) =>
+                    {
+                        Assert.Equal(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
+                        return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please type your name.") }, ct);
+                    },
+                    async (stepContext, ct) =>
+                    {
+                        Assert.Equal(typeof(int), stepContext.ActiveDialog.State["stepIndex"].GetType());
+                        await stepContext.Context.SendActivityAsync("step3");
+                        return Dialog.EndOfTurn;
+                    },
+                };
+
+            dialogs.Add(new WaterfallDialog(nameof(WaterfallDialog), steps));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext);
+
+                    await dc.ContinueDialogAsync();
+                    if (!turnContext.Responded)
+                    {
+                        await dc.BeginDialogAsync(nameof(WaterfallDialog));
                     }
-
-                    var reply = MessageFactory.Text($"Please send a name that is longer than 3 characters. {promptContext.AttemptCount}");
-                    await promptContext.Context.SendActivityAsync(reply, cancellationToken);
-
-                    return false;
-                }));
-
-                var steps = new WaterfallStep[]
-                    {
-                        async (stepContext, ct) =>
-                        {
-                            Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
-                            await stepContext.Context.SendActivityAsync("step1");
-                            return Dialog.EndOfTurn;
-                        },
-                        async (stepContext, ct) =>
-                        {
-                            Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
-                            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Please type your name.") }, ct);
-                        },
-                        async (stepContext, ct) =>
-                        {
-                            Assert.AreEqual(stepContext.ActiveDialog.State["stepIndex"].GetType(), typeof(int));
-                            await stepContext.Context.SendActivityAsync("step3");
-                            return Dialog.EndOfTurn;
-                        },
-                    };
-
-                dialogs.Add(new WaterfallDialog(nameof(WaterfallDialog), steps));
-
-                await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-                    {
-                        var dc = await dialogs.CreateContextAsync(turnContext);
-
-                        await dc.ContinueDialogAsync();
-                        if (!turnContext.Responded)
-                        {
-                            await dc.BeginDialogAsync(nameof(WaterfallDialog));
-                        }
-                    })
-                    .Send("hello")
-                    .AssertReply("step1")
-                    .Send("hello")
-                    .AssertReply("Please type your name.")
-                    .Send("hi")
-                    .AssertReply("Please send a name that is longer than 3 characters. 1")
-                    .Send("hi")
-                    .AssertReply("Please send a name that is longer than 3 characters. 2")
-                    .Send("hi")
-                    .AssertReply("Please send a name that is longer than 3 characters. 3")
-                    .Send("Kyle")
-                    .AssertReply("You got it at the 4th try!")
-                    .AssertReply("step3")
-                    .StartTestAsync();
-            }
+                })
+                .Send("hello")
+                .AssertReply("step1")
+                .Send("hello")
+                .AssertReply("Please type your name.")
+                .Send("hi")
+                .AssertReply("Please send a name that is longer than 3 characters. 1")
+                .Send("hi")
+                .AssertReply("Please send a name that is longer than 3 characters. 2")
+                .Send("hi")
+                .AssertReply("Please send a name that is longer than 3 characters. 3")
+                .Send("Kyle")
+                .AssertReply("You got it at the 4th try!")
+                .AssertReply("step3")
+                .StartTestAsync();
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteAsyncFromSingleCollection()
         {
-            if (CheckEmulator())
+            var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+            var changes = new Dictionary<string, object>
             {
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
-                var changes = new Dictionary<string, object>
-                {
-                    { DocumentId, itemToTest }
-                };
+                { DocumentId, _itemToTest }
+            };
 
-                await storage.WriteAsync(changes, CancellationToken.None);
+            await storage.WriteAsync(changes, CancellationToken.None);
 
-                var result = await Task.WhenAny(storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None)).ConfigureAwait(false);
-                Assert.IsTrue(result.IsCompletedSuccessfully);
-            }
+            var result = await Task.WhenAny(storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None)).ConfigureAwait(false);
+            Assert.True(result.IsCompletedSuccessfully);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteAsyncFromPartitionedCollection()
         {
-            if (CheckEmulator())
+            // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+            // The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+            // <see also cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+            const string partitionKeyPath = "document/city";
+
+            await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+            // Connect to the cosmosDb created before with "Contoso" as partitionKey
+            var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
+            var changes = new Dictionary<string, object>
             {
-                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
-                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
-                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                var partitionKeyPath = "document/city";
+                { DocumentId, _itemToTest }
+            };
 
-                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+            await storage.WriteAsync(changes, CancellationToken.None);
 
-                // Connect to the comosDb created before with "Contoso" as partitionKey
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
-                var changes = new Dictionary<string, object>
-                {
-                    { DocumentId, itemToTest }
-                };
-
-                await storage.WriteAsync(changes, CancellationToken.None);
-
-                var result = await Task.WhenAny(storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None)).ConfigureAwait(false);
-                Assert.IsTrue(result.IsCompletedSuccessfully);
-            }
+            var result = await Task.WhenAny(storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None)).ConfigureAwait(false);
+            Assert.True(result.IsCompletedSuccessfully);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task DeleteAsyncFromPartitionedCollectionWithoutPartitionKey()
         {
-            if (CheckEmulator())
+            // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+            // The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+            // <see also cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+            const string partitionKeyPath = "document/city";
+
+            await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+            // Connect to the cosmosDb created before
+            var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+            var changes = new Dictionary<string, object>
             {
-                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
-                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
-                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                var partitionKeyPath = "document/city";
+                { DocumentId, _itemToTest }
+            };
 
-                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+            await storage.WriteAsync(changes, CancellationToken.None);
 
-                // Connect to the comosDb created before
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
-                var changes = new Dictionary<string, object>
-                {
-                    { DocumentId, itemToTest }
-                };
-
-                await storage.WriteAsync(changes, CancellationToken.None);
-
-                // Should throw InvalidOperationException: PartitionKey value must be supplied for this operation.
-                await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None));
-            }
+            // Should throw InvalidOperationException: PartitionKey value must be supplied for this operation.
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await storage.DeleteAsync(new string[] { DocumentId }, CancellationToken.None));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadAsyncWithPartitionKey()
         {
-            if (CheckEmulator())
+            // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+            // The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+            // <see also cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+            const string partitionKeyPath = "document/city";
+
+            await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+            // Connect to the cosmosDb created before with "Contoso" as partitionKey
+            var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
+            var changes = new Dictionary<string, object>
             {
-                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
-                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
-                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                var partitionKeyPath = "document/city";
+                { DocumentId, _itemToTest }
+            };
 
-                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+            await storage.WriteAsync(changes, CancellationToken.None);
 
-                // Connect to the comosDb created before with "Contoso" as partitionKey
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions("Contoso"));
-                var changes = new Dictionary<string, object>
-                {
-                    { DocumentId, itemToTest }
-                };
-
-                await storage.WriteAsync(changes, CancellationToken.None);
-
-                var result = await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
-                Assert.AreEqual(itemToTest.City, result[DocumentId].City);
-            }
+            var result = await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
+            Assert.Equal(_itemToTest.City, result[DocumentId].City);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task ReadAsyncWithoutPartitionKey()
         {
-            if (CheckEmulator())
+            // The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
+            // The partitionKeyPath must have the "document" value to properly route the values as partitionKey
+            // <see also cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
+            const string partitionKeyPath = "document/city";
+
+            await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
+
+            // Connect to the cosmosDb created before without partitionKey
+            var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
+            var changes = new Dictionary<string, object>
             {
-                /// The WriteAsync method receive a object as a parameter then encapsulate it in a object named "document"
-                /// The partitionKeyPath must have the "document" value to properly route the values as partitionKey
-                /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
-                var partitionKeyPath = "document/city";
+                { DocumentId, _itemToTest }
+            };
 
-                await CreateCosmosDbWithPartitionedCollection(partitionKeyPath);
-
-                // Connect to the comosDb created before without partitionKey
-                var storage = new CosmosDbStorage(CreateCosmosDbStorageOptions());
-                var changes = new Dictionary<string, object>
-                {
-                    { DocumentId, itemToTest }
-                };
-
-                await storage.WriteAsync(changes, CancellationToken.None);
+            await storage.WriteAsync(changes, CancellationToken.None);
 
 #if NETCOREAPP2_1
-                // Should throw DocumentClientException: Cross partition query is required but disabled
-                await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+            // Should throw DocumentClientException: Cross partition query is required but disabled
+            await Assert.ThrowsAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
 #else // required by NETCOREAPP3_0 (have only tested NETCOREAPP2_1 and NETCOREAPP3_0)
-                var badRequestExceptionThrown = false;
-                try
-                {
-                    await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
-                }
-                catch (DocumentClientException ex)
-                {
-                    badRequestExceptionThrown = ex.StatusCode == HttpStatusCode.BadRequest; 
-                }
-
-                Assert.IsTrue(badRequestExceptionThrown, "Expected: DocumentClientException with HttpStatusCode.BadRequest");
-
-                // TODO: netcoreapp3.0 throws Microsoft.Azure.Documents.BadRequestException which derives from DocumentClientException, but it is internal
-                //await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
-#endif
+            var badRequestExceptionThrown = false;
+            try
+            {
+                await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None);
             }
+            catch (DocumentClientException ex)
+            {
+                badRequestExceptionThrown = ex.StatusCode == HttpStatusCode.BadRequest; 
+            }
+
+            Assert.True(badRequestExceptionThrown, "Expected: DocumentClientException with HttpStatusCode.BadRequest");
+
+            // TODO: netcoreapp3.0 throws Microsoft.Azure.Documents.BadRequestException which derives from DocumentClientException, but it is internal
+            //await Assert.ThrowsAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+#endif
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [IgnoreOnNoEmulatorFact]
         public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
         {
-            if (CheckEmulator())
-            {
-                var storage = new CosmosDbStorage(
-                                   CreateCosmosDbStorageOptions(),
-                                   new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
-                await StatePersistsThroughMultiTurn(storage);
-            }
-        }
-
-        public bool CheckEmulator()
-        {
-            if (!_hasEmulator.Value)
-            {
-                Assert.Inconclusive(NoEmulatorMessage);
-            }
-
-            if (Debugger.IsAttached)
-            {
-                Assert.IsTrue(_hasEmulator.Value, NoEmulatorMessage);
-            }
-
-            return _hasEmulator.Value;
+            var storage = new CosmosDbStorage(
+                               CreateCosmosDbStorageOptions(),
+                               new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await StatePersistsThroughMultiTurn(storage);
         }
 
         private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)

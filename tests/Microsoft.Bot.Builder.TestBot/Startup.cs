@@ -36,6 +36,8 @@ namespace Microsoft.BotBuilderSamples
         {
             services.AddControllers().AddNewtonsoftJson();
 
+            services.AddHttpClient();
+
             // Create the debug middleware
             services.AddSingleton(sp => new MicrosoftAppCredentials(sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
             services.AddSingleton<InspectionMiddleware>();
