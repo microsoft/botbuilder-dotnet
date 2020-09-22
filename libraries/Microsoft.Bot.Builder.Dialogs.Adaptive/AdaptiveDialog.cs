@@ -28,6 +28,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer, IDialogDependencies
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.AdaptiveDialog";
 
@@ -53,6 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private SchemaHelper dialogSchema;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdaptiveDialog"/> class.
+        /// </summary>
+        /// <param name="dialogId">Optional, dialog identifier.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogId)
         {
@@ -136,6 +145,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (options is CancellationToken)
@@ -207,6 +224,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ContinueActionsAsync(dc, options, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when the dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             EnsureDependenciesInstalled();
@@ -217,6 +242,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ContinueActionsAsync(dc, options: null, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when a child dialog completed its turn, returning control to this dialog.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">Optional, A <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is CancellationToken)
@@ -236,6 +271,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return EndOfTurn;
         }
 
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information associated with the instance of this dialog on the dialog stack.</param>
+        /// <param name="reason">Reason why the dialog ended.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             var properties = new Dictionary<string, string>()
@@ -278,6 +322,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Creates a child <see cref="DialogContext"/> for the given context.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <returns>The child <see cref="DialogContext"/> or null if no <see cref="AdaptiveDialogState.Actions"/> are found for the given context.</returns>
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
@@ -304,6 +353,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return null;
         }
 
+        /// <summary>
+        /// Gets <see cref="Dialog"/> enumerated dependencies.
+        /// </summary>
+        /// <returns><see cref="Dialog"/> enumerated dependencies.</returns>
         public IEnumerable<Dialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
@@ -311,6 +364,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield break;
         }
 
+        /// <summary>
+        /// Gets the internal version string.
+        /// </summary>
+        /// <returns>Internal version string.</returns>
         protected override string GetInternalVersion()
         {
             StringBuilder sb = new StringBuilder();
@@ -333,6 +390,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return StringUtils.Hash(sb.ToString());
         }
 
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
         {
             var actionContext = ToActionContext(dc);
@@ -341,6 +405,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ProcessEventAsync(actionContext, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called after an event was bubbled to all parents and wasn't handled.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
         {
             var actionContext = ToActionContext(dc);
@@ -349,6 +420,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ProcessEventAsync(actionContext, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Event processing implementation.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
+        /// <param name="preBubble">A flag indicator for preBubble processing.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
+        /// <returns>A <see cref="Task"/> representation of a boolean indicator or the result.</returns>
         protected virtual async Task<bool> ProcessEventAsync(ActionContext actionContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
@@ -550,6 +629,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return handled;
         }
 
+        /// <summary>
+        /// Waits for pending actions to complete and moves on to <see cref="OnEndOfActions"/>.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Options used in evaluation. </param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representation of <see cref="DialogTurnResult"/>.</returns>
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
         {
             if (options is CancellationToken)
@@ -645,6 +731,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Removes the current most action from the given <see cref="ActionContext"/> if there are any.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects.</param>
+        /// <returns>A <see cref="Task"/> representing a boolean indicator for the result.</returns>
 #pragma warning disable CA1801 // Review unused parameters (we can't remove the cancellationToken parameter withoutt breaking binary compat).
         protected Task<bool> EndCurrentActionAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
@@ -657,6 +749,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return Task.FromResult(false);
         }
 
+        /// <summary>
+        /// Awaits for completed actions to finish processing entity assignments and finishes turn.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects.</param>
+        /// <returns>A <see cref="Task"/> representation of <see cref="DialogTurnResult"/>.</returns>
         protected async Task<DialogTurnResult> OnEndOfActionsAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
         {
             // Is the current dialog still on the stack?
@@ -682,6 +780,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return new DialogTurnResult(DialogTurnStatus.Cancelled);
         }
 
+        /// <summary>
+        /// Recognizes intent for current activity given the class recognizer set, if set is null no intent will be recognized.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="activity"><see cref="Activity"/> to recognize.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing a <see cref="RecognizerResult"/>.</returns>
         protected async Task<RecognizerResult> OnRecognizeAsync(ActionContext actionContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (Recognizer != null)
@@ -730,6 +835,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             };
         }
 
+        /// <summary>
+        /// Ensures all dependencies for the class are installed.
+        /// </summary>
         protected virtual void EnsureDependenciesInstalled()
         {
             if (!installedDependencies)
