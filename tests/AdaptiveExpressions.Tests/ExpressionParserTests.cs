@@ -487,6 +487,9 @@ namespace AdaptiveExpressions.Tests
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
+            Test("3??2", 2),
+            Test("null ?? two", 2),
+            Test("bag.notExist ?? bag.n ?? bag.name", "mybag"),
             #endregion
 
             #region  String functions test

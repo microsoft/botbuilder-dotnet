@@ -67,6 +67,8 @@ COLON: ':';
 
 ARROW: '=>';
 
+NULL_COALESCE: '??';
+
 NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t'|'\ufeff'|'\u00a0') {ignoreWS}? -> skip;
