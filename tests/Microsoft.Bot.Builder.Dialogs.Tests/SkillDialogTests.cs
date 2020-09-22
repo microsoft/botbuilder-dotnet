@@ -478,9 +478,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         // Simple conversation ID factory for testing.
         private class SimpleConversationIdFactory : SkillConversationIdFactoryBase
         {
-#pragma warning disable SA1401 // Fields should be private
-            internal readonly ConcurrentDictionary<string, SkillConversationReference> ConversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
-#pragma warning restore SA1401 // Fields should be private
+            public SimpleConversationIdFactory()
+            {
+                ConversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
+            }
+
+            public ConcurrentDictionary<string, SkillConversationReference> ConversationRefs { get; private set; }
 
             // Helper property to assert how many times is CreateSkillConversationIdAsync called.
             public int CreateCount { get; private set; }
