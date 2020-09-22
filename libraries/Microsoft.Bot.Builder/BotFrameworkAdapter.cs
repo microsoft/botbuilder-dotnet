@@ -14,7 +14,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.OAuth;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -49,8 +48,6 @@ namespace Microsoft.Bot.Builder
         internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
 
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
-
-        private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly AppCredentials _appCredentials;
         private readonly AuthenticationConfiguration _authConfiguration;
@@ -122,7 +119,7 @@ namespace Microsoft.Bot.Builder
         {
             CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             ChannelProvider = channelProvider;
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+            HttpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
@@ -138,7 +135,7 @@ namespace Microsoft.Bot.Builder
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            ConnectorClient.AddDefaultRequestHeaders(HttpClient);
         }
 
         /// <summary>
@@ -169,7 +166,7 @@ namespace Microsoft.Bot.Builder
             _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
             CredentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             this.ChannelProvider = channelProvider;
-            _httpClient = customHttpClient ?? DefaultHttpClient;
+            HttpClient = customHttpClient ?? DefaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
             Logger = logger ?? NullLogger.Instance;
             _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
@@ -185,7 +182,7 @@ namespace Microsoft.Bot.Builder
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
-            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            ConnectorClient.AddDefaultRequestHeaders(HttpClient);
         }
 
         /// <summary>
@@ -226,7 +223,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The custom <see cref="HttpClient"/> for this adapter if specified.
         /// </value>
-        protected HttpClient HttpClient { get => _httpClient; }
+        protected virtual HttpClient HttpClient { get; }
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -419,7 +416,7 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, HttpClient).ConfigureAwait(false);
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
@@ -1601,14 +1598,14 @@ namespace Microsoft.Bot.Builder
                 ConnectorClient connectorClient;
                 if (appCredentials != null)
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: HttpClient);
                 }
                 else
                 {
                     var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: HttpClient);
                 }
 
                 if (_connectorClientRetryPolicy != null)
