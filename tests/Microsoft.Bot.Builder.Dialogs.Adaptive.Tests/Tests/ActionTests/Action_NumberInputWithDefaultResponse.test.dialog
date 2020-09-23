@@ -1,0 +1,61 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.NumberInput",
+                    "defaultLocale": "en-us",
+                    "disabled": false,
+                    "maxTurnCount": 2,
+                    "alwaysPrompt": true,
+                    "allowInterruptions": false,
+                    "prompt": "Give me your favorite number (1-10)",
+                    "unrecognizedPrompt": "Sorry, ${turn.activity.text} did not include a valid number.",
+                    "invalidPrompt": "Sorry, ${this.value} does not work. Can you give me a different number that is between 1-10?",
+                    "defaultValueResponse": "Sorry, we have tried for ${class.MaxTurnCount} number of times and I'm still not getting it. For now, I'm setting ${class.property} to ${class.DefaultValue}",
+                    "property": "user.favoriteNumber",
+                    "outputFormat": "=string(this.value)",
+                    "validations": [
+                      "=int(this.value) >=1",
+                      "=int(this.value) <= 10"
+                    ],
+                    "defaultValue": 9
+                  }
+                ]
+              }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Give me your favorite number (1-10)"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "1000"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Sorry, 1000 does not work. Can you give me a different number that is between 1-10?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "25"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Sorry, we have tried for 2 number of times and I'm still not getting it. For now, I'm setting user.favoriteNumber to 9"
+    }
+  ]
+}
