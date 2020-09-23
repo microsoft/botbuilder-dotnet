@@ -1,24 +1,16 @@
-﻿using System;
+﻿#pragma warning disable SA1401 // Fields should be private
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable SA1402 // File may only contain a single type
 using System.Collections.Generic;
-using System.Text;
 using Antlr4.Runtime.Tree;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
     public static class Visitor
     {
-        class AuxEntity
-        {
-            public string EntityName { get; set; }
-            public string Role { get; set; }
-
-            public List<object> EntityValue = null;
-            public AuxEntity Parent = null;
-
-        }
         public static UtteranceAndEntitiesMap VisitNormalIntentStringContext(LUFileParser.NormalIntentStringContext context)
         {
-            var utterance = String.Empty;
+            var utterance = string.Empty;
             var entities = new List<EntityElement>();
             var errorMessages = new List<string>();
 
@@ -47,7 +39,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             };
         }
 
-        static string RecursivelyResolveTokenizedUtterance(List<object> tokenizedUterance, List<EntityElement> entities, List<string> errorMessages, string srcUtterance)
+        private static string RecursivelyResolveTokenizedUtterance(List<object> tokenizedUterance, List<EntityElement> entities, List<string> errorMessages, string srcUtterance)
         {
             char[] invalidCharsInIntentOrEntityName = { '<', '>', '*', '%', '&', ':', '\\', '$' };
             foreach (var item in tokenizedUterance)
@@ -56,7 +48,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     var auxEntity = (AuxEntity)item;
                     var entityName = auxEntity.EntityName.Trim();
-                    if (!String.IsNullOrEmpty(entityName) && entityName.IndexOfAny(invalidCharsInIntentOrEntityName) >= 0)
+                    if (!string.IsNullOrEmpty(entityName) && entityName.IndexOfAny(invalidCharsInIntentOrEntityName) >= 0)
                     {
                         errorMessages.Add($"Invalid utterance line, entity name {entityName} cannot contain any of the following characters: [<, >, *, %, &, :, \\, $]");
                         continue;
@@ -65,7 +57,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     if (auxEntity.EntityValue == null)
                     {
                         // we have a pattern.any entity
-                        var patternStr = !String.IsNullOrEmpty(auxEntity.Role) ? $"{{{auxEntity.EntityName}:{auxEntity.Role}}}" : $"{{{auxEntity.EntityName}}}";
+                        var patternStr = !string.IsNullOrEmpty(auxEntity.Role) ? $"{{{auxEntity.EntityName}:{auxEntity.Role}}}" : $"{{{auxEntity.EntityName}}}";
                         srcUtterance += patternStr;
                         entities.Add(
                             new EntityElement
@@ -73,8 +65,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                                 Type = TypeEnum.PatternAnyEntities,
                                 Entity = auxEntity.EntityName.Trim(),
                                 Role = auxEntity.Role.Trim()
-                            }
-                        );
+                            });
                     }
                     else
                     {
@@ -105,10 +96,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     srcUtterance += charItem;
                 }
             }
+
             return srcUtterance;
         }
 
-        static List<object> TokenizeUtterance(string expression)
+        private static List<object> TokenizeUtterance(string expression)
         {
             var splitString = new List<object>();
             var currentList = splitString;
@@ -124,8 +116,8 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     case '{':
                         var newEntity = new AuxEntity
                         {
-                            EntityName = String.Empty,
-                            Role = String.Empty,
+                            EntityName = string.Empty,
+                            Role = string.Empty,
                             EntityValue = null,
                             Parent = currentEntity
                         };
@@ -150,7 +142,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         entityRoleCapture = false;
                         break;
                     case ':':
-                        if (currentEntity != null && currentEntity.EntityName != String.Empty && entityNameCapture)
+                        if (currentEntity != null && !string.IsNullOrEmpty(currentEntity.EntityName) && entityNameCapture)
                         {
                             entityNameCapture = false;
                             entityValueCapture = false;
@@ -160,6 +152,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         {
                             currentList.Add(character);
                         }
+
                         break;
                     default:
                         if (entityNameCapture)
@@ -189,11 +182,23 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         {
                             currentList.Add(character);
                         }
+
                         break;
                 }
             }
 
             return splitString;
         }
+    }
+
+    public class AuxEntity
+    {
+        public List<object> EntityValue = null;
+
+        public AuxEntity Parent = null;
+
+        public string EntityName { get; set; }
+
+        public string Role { get; set; }
     }
 }

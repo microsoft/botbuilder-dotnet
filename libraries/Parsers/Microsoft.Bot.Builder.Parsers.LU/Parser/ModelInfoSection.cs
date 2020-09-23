@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             ModelInfo = parseTree.modelInfoDefinition().GetText();
             Errors = new List<Error>();
             string secTypeStr = $"{SectionType}";
-            Id = $"{char.ToLower(secTypeStr[0]) + secTypeStr.Substring(1)}_{ModelInfo}";
+            Id = $"{char.ToLower(secTypeStr[0], System.Globalization.CultureInfo.InvariantCulture) + secTypeStr.Substring(1)}_{ModelInfo}";
             Position startPosition = new Position { Line = parseTree.Start.Line, Character = parseTree.Start.Column };
             Position stopPosition = new Position { Line = parseTree.Stop.Line, Character = parseTree.Stop.Column + parseTree.Stop.Text.Length };
             Range = new Range();

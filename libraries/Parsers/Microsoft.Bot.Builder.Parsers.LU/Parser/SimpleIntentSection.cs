@@ -1,4 +1,7 @@
-﻿using System;
+﻿#pragma warning disable CA1801 // Review unused parameters
+#pragma warning disable CA1031 // Do not catch general exception types
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -10,13 +13,13 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         {
         }
 
-        public SimpleIntentSection(LUFileParser.SimpleIntentSectionContext parseTree, string content)
+        public SimpleIntentSection(LUFileParser.SimpleIntentSectionContext parseTree)
         {
             SectionType = SectionType.SimpleIntentSection;
             UtteranceAndEntitiesMap = new List<UtteranceAndEntitiesMap>();
             Entities = new List<SectionEntity>();
             Errors = new List<Error>();
-            Body = String.Empty;
+            Body = string.Empty;
 
             if (parseTree != null)
             {
@@ -26,7 +29,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 UtteranceAndEntitiesMap = result.utterances;
                 Errors = result.errors;
                 string secTypeStr = $"{SectionType}";
-                Id = $"{char.ToLower(secTypeStr[0]) + secTypeStr.Substring(1)}_{Name}";
+                Id = $"{char.ToLower(secTypeStr[0], System.Globalization.CultureInfo.InvariantCulture) + secTypeStr.Substring(1)}_{Name}";
                 var startPosition = new Position { Line = parseTree.Start.Line, Character = parseTree.Start.Column };
                 var stopPosition = new Position { Line = parseTree.Stop.Line, Character = parseTree.Stop.Column + parseTree.Stop.Text.Length };
                 Range = new Range { Start = startPosition, End = stopPosition };
@@ -52,13 +55,12 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 foreach (var errorIntentStr in parseTree.intentDefinition().intentBody().normalIntentBody().errorString())
                 {
-                    if (!String.IsNullOrEmpty(errorIntentStr.GetText().Trim()))
+                    if (!string.IsNullOrEmpty(errorIntentStr.GetText().Trim()))
                     {
                         errors.Add(
                             Diagnostic.BuildDiagnostic(
                                 message: "Invalid intent body line, did you miss '-' at line begin?",
-                                context: errorIntentStr)
-                        );
+                                context: errorIntentStr));
                     }
                 }
 
@@ -75,10 +77,9 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         errors.Add(
                             Diagnostic.BuildDiagnostic(
                                 message: "Invalid utterance definition found. Did you miss a '{' or '}'?",
-                                context: normalIntentStr
-                            )
-                        );
+                                context: normalIntentStr));
                     }
+
                     if (utteranceAndEntities != null)
                     {
                         utteranceAndEntities.ContextText = normalIntentStr.GetText();
@@ -99,9 +100,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                             errors.Add(
                                 Diagnostic.BuildDiagnostic(
                                     message: errorMsg,
-                                    context: normalIntentStr
-                                )
-                            );
+                                    context: normalIntentStr));
                         }
                     }
                 }
@@ -113,8 +112,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.intentDefinition().intentNameLine(),
-                    severity: DiagnosticSeverity.Warn
-                );
+                    severity: DiagnosticSeverity.Warn);
 
                 errors.Add(error);
             }

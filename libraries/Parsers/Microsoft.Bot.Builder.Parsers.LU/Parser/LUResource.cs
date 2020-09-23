@@ -1,43 +1,78 @@
-﻿using System;
+﻿#pragma warning disable CA2227
+#pragma warning disable CA1716
+#pragma warning disable SA1402
+#pragma warning disable SA1601
+#pragma warning disable SA1602
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Antlr4.Runtime;
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    public enum SectionType
+    {
+        SimpleIntentSection,
+        NestedIntentSection,
+        EntitySection,
+        NewEntitySection,
+        ImportSection,
+        ModelInfoSection,
+        QnaSection
+    }
+
+    public enum TypeEnum
+    {
+        Intent,
+        Entities,
+        PatternAnyEntities,
+        ClosedLists,
+        Prebuilt,
+        Utterance,
+        Patterns,
+        Regex,
+        Composites,
+        MachineLearned
+    }
+
     public partial class LuResource
     {
-        [JsonProperty("sections")]
-        public List<Section> Sections { get; set; }
-        [JsonProperty("content")]
-        public string Content { get; set; }
-        [JsonProperty("errors")]
-        public List<Error> Errors { get; set; }
-
         public LuResource(List<Section> sections, string content, List<Error> errors)
         {
             Sections = sections;
             Content = content;
             Errors = errors;
         }
+
+        [JsonProperty("sections")]
+        public List<Section> Sections { get; set; }
+
+        [JsonProperty("content")]
+        public string Content { get; set; }
+
+        [JsonProperty("errors")]
+        public List<Error> Errors { get; set; }
     }
+
     public partial class Error
     {
         [JsonProperty("Message")]
         public string Message { get; set; }
+
         [JsonProperty("Range")]
         public Range Range { get; set; }
+
         [JsonProperty("Severity")]
         public string Severity { get; set; }
     }
+
     public partial class Range
     {
         [JsonProperty("Start")]
         public Position Start { get; set; }
+
         [JsonProperty("End")]
         public Position End { get; set; }
 
@@ -53,10 +88,12 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return result;
         }
     }
+
     public partial class Position
     {
         [JsonProperty("Line")]
         public int Line { get; set; }
+
         [JsonProperty("Character")]
         public int Character { get; set; }
 
@@ -65,116 +102,130 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return $"line {Line}:{Character}";
         }
     }
+
     public partial class Section
     {
         [JsonProperty("Errors")]
         public List<Error> Errors { get; set; } = new List<Error>();
+
         [JsonProperty("SectionType")]
         [JsonConverter(typeof(StringEnumConverter))]
         public SectionType SectionType { get; set; }
+
         [JsonProperty("Id")]
-        public string Id { get; set; } = String.Empty;
+        public string Id { get; set; } = string.Empty;
+
         [JsonProperty("Body")]
-        public string Body { get; set; } = String.Empty;
+        public string Body { get; set; } = string.Empty;
+
         [JsonProperty("UtteranceAndEntitiesMap", NullValueHandling = NullValueHandling.Ignore)]
         public List<UtteranceAndEntitiesMap> UtteranceAndEntitiesMap { get; set; }
+
         [JsonProperty("Entities", NullValueHandling = NullValueHandling.Ignore)]
         public List<SectionEntity> Entities { get; set; }
+
         [JsonProperty("Name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
+
         [JsonProperty("IntentNameLine", NullValueHandling = NullValueHandling.Ignore)]
         public string IntentNameLine { get; set; }
+
         [JsonProperty("Range")]
         public Range Range { get; set; }
+
         [JsonProperty("ModelInfo", NullValueHandling = NullValueHandling.Ignore)]
         public string ModelInfo { get; set; }
+
         [JsonProperty("SimpleIntentSections", NullValueHandling = NullValueHandling.Ignore)]
         public List<SimpleIntentSection> SimpleIntentSections { get; set; }
+
         [JsonProperty("SimpleIntentSection", NullValueHandling = NullValueHandling.Ignore)]
         public List<SimpleIntentSection> SimpleIntentSection { get; set; }
+
         [JsonProperty("Description", NullValueHandling = NullValueHandling.Ignore)]
         public string Description { get; set; }
+
         [JsonProperty("Path", NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }
     }
+
     public partial class SectionEntity : Section
     {
+        public SectionEntity()
+        {
+        }
+
         [JsonProperty("Type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
+
         [JsonProperty("Roles", NullValueHandling = NullValueHandling.Ignore)]
         public string Roles { get; set; }
+
         [JsonProperty("ListBody", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> ListBody { get; set; }
+
         [JsonProperty("CompositeDefinition", NullValueHandling = NullValueHandling.Ignore)]
         public string CompositeDefinition { get; set; }
+
         [JsonProperty("RegexDefinition", NullValueHandling = NullValueHandling.Ignore)]
         public string RegexDefinition { get; set; }
+
         [JsonProperty("SynonymsOrPhraseList", NullValueHandling = NullValueHandling.Ignore)]
         public List<string> SynonymsOrPhraseList { get; set; }
+
         [JsonProperty("Features", NullValueHandling = NullValueHandling.Ignore)]
         public string Features { get; set; }
+
         [JsonProperty("SynonymsList", NullValueHandling = NullValueHandling.Ignore)]
         public List<NewEntitySection.SynonymElement> SynonymsList { get; set; } = null;
-
-        public SectionEntity() { }
     }
+
     public partial class UtteranceAndEntitiesMap
     {
         [JsonProperty("utterance")]
         public string Utterance { get; set; }
+
         [JsonProperty("entities")]
         public List<EntityElement> Entities { get; set; }
+
         [JsonProperty("errorMsgs")]
         public List<string> ErrorMsgs { get; set; }
+
         [JsonProperty("contextText")]
         public string ContextText { get; set; }
+
         [JsonProperty("range")]
         public Range Range { get; set; }
+
         [JsonProperty("references", NullValueHandling = NullValueHandling.Ignore)]
         public Reference References { get; set; }
     }
+
     public partial class Reference
     {
         [JsonProperty("source")]
         public string Source { get; set; }
     }
+
     public partial class EntityElement
     {
         [JsonProperty("type")]
         [JsonConverter(typeof(StringEnumConverter))]
         public TypeEnum Type { get; set; }
+
         [JsonProperty("entity")]
         public string Entity { get; set; }
+
         [JsonProperty("role")]
         public string Role { get; set; }
+
         [JsonProperty("startPos", NullValueHandling = NullValueHandling.Ignore)]
         public int? StartPos { get; set; }
+
         [JsonProperty("endPos", NullValueHandling = NullValueHandling.Ignore)]
         public int? EndPos { get; set; }
     }
-    public enum SectionType
-    {
-        SimpleIntentSection,
-        NestedIntentSection,
-        EntitySection,
-        NewEntitySection,
-        ImportSection,
-        ModelInfoSection,
-        QnaSection
-    };
-    public enum TypeEnum
-    {
-        Intent,
-        Entities,
-        PatternAnyEntities,
-        ClosedLists,
-        Prebuilt,
-        Utterance,
-        Patterns,
-        Regex,
-        Composites,
-        MachineLearned
-    };
+
     internal static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
@@ -189,12 +240,20 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             },
         };
     }
+
     internal class SectionTypeConverter : JsonConverter
     {
+        public static readonly SectionTypeConverter Singleton = new SectionTypeConverter();
+
         public override bool CanConvert(Type t) => t == typeof(SectionType) || t == typeof(SectionType?);
+
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }
+
             var value = serializer.Deserialize<string>(reader);
             switch (value)
             {
@@ -213,8 +272,10 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 case "qnaSection":
                     return SectionType.QnaSection;
             }
+
             throw new Exception("Cannot unmarshal type SectionType");
         }
+
         public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
         {
             if (untypedValue == null)
@@ -222,6 +283,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 serializer.Serialize(writer, null);
                 return;
             }
+
             var value = (SectionType)untypedValue;
             switch (value)
             {
@@ -247,16 +309,24 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     serializer.Serialize(writer, "qnaSection");
                     return;
             }
+
             throw new Exception("Cannot marshal type EntitySectionType");
         }
-        public static readonly SectionTypeConverter Singleton = new SectionTypeConverter();
     }
+
     internal class TypeEnumConverter : JsonConverter
     {
+        public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
+
         public override bool CanConvert(Type t) => t == typeof(TypeEnum) || t == typeof(TypeEnum?);
+
         public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null) return null;
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }
+
             var value = serializer.Deserialize<string>(reader);
             switch (value)
             {
@@ -281,8 +351,10 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 case "ml":
                     return TypeEnum.MachineLearned;
             }
+
             throw new Exception("Cannot unmarshal type TypeEnum");
         }
+
         public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
         {
             if (untypedValue == null)
@@ -290,6 +362,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 serializer.Serialize(writer, null);
                 return;
             }
+
             var value = (TypeEnum)untypedValue;
             switch (value)
             {
@@ -324,8 +397,8 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     serializer.Serialize(writer, "ml");
                     return;
             }
+
             throw new Exception("Cannot marshal type TypeEnum");
         }
-        public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
     }
 }

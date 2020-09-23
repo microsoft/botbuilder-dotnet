@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable CA1031 // Do not catch general exception types
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
-    public class LuParser
+    public static class LuParser
     {
+        /*
         private static Object ParseWithRef(string text, LuResource luResource)
         {
             if (String.IsNullOrEmpty(text))
@@ -21,10 +23,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 
             return null;
         }
+        */
 
-        public static LuResource parse(string text)
+        public static LuResource Parse(string text)
         {
-            if (String.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text))
             {
                 // return new LuResource(new Section[] { }, String.Empty, new Error[] { });
             }
@@ -45,26 +48,26 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 sections.AddRange(modelInfoSections);
             }
             catch (Exception err)
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing model info section: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing model info section: {err.Message}"));
             }
 
             try
             {
                 var isSectionEnabled = IsSectionEnabled(sections);
 
-                var nestedIntentSections = ExtractNestedIntentSections(fileContent, content);
+                var nestedIntentSections = ExtractNestedIntentSections(fileContent);
                 foreach (var section in nestedIntentSections)
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 if (isSectionEnabled)
                 {
                     sections.AddRange(nestedIntentSections);
@@ -88,8 +91,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         var error = Diagnostic.BuildDiagnostic(
                             message: errorMsg,
                             range: emptyIntentSection.Range,
-                            severity: DiagnosticSeverity.Warn
-                        );
+                            severity: DiagnosticSeverity.Warn);
 
                         errors.Add(error);
                         sections.Add(emptyIntentSection);
@@ -106,27 +108,24 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing nested intent section: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing nested intent section: {err.Message}"));
             }
 
             try
             {
-                var simpleIntentSections = ExtractSimpleIntentSections(fileContent, content);
+                var simpleIntentSections = ExtractSimpleIntentSections(fileContent);
                 foreach (var section in simpleIntentSections)
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 sections.AddRange(simpleIntentSections);
             }
             catch (Exception err)
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing simple intent section: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing simple intent section: {err.Message}"));
             }
 
             try
@@ -136,15 +135,14 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 sections.AddRange(entitySections);
             }
             catch (Exception err)
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing entities: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing entities: {err.Message}"));
             }
 
             try
@@ -154,15 +152,14 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 sections.AddRange(newEntitySections);
             }
             catch (Exception err)
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing new entities: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing new entities: {err.Message}"));
             }
 
             try
@@ -172,15 +169,14 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 sections.AddRange(importSections);
             }
             catch (Exception err)
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing import section: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing import section: {err.Message}"));
             }
 
             try
@@ -190,15 +186,14 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     errors.AddRange(section.Errors);
                 }
+
                 sections.AddRange(qnaSections);
             }
             catch (Exception err)
             {
                 errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: $"Error happened when parsing qna section: {err.Message}"
-                    )
-                );
+                        message: $"Error happened when parsing qna section: {err.Message}"));
             }
 
             sections = ReconstructIntentSections(sections);
@@ -209,7 +204,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 
             return result;
         }
-
 
         private static List<Section> ReconstructIntentSections(List<Section> sections)
         {
@@ -236,7 +230,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 
                         while (index + 1 < sections.Count
                             && (sections[index + 1] is SectionEntity
-                            || (sections[index + 1].SectionType == SectionType.SimpleIntentSection && sections[index + 1].IntentNameLine.Contains("##"))))
+                            || (sections[index + 1].SectionType == SectionType.SimpleIntentSection && sections[index + 1].IntentNameLine.Contains("##", StringComparison.InvariantCulture))))
                         {
                             if (sections[index + 1] is SectionEntity entitySection)
                             {
@@ -264,6 +258,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         index++;
                     }
                 }
+
                 newSections.Add(section);
             }
 
@@ -276,6 +271,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 return new List<ModelInfoSection>();
             }
+
             var context = fileContext;
             var modelInfoSections = context.paragraph().Select(x => x.modelInfoSection()).Where(x => x != null);
 
@@ -284,7 +280,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return modelInfoSectionList;
         }
 
-        private static List<NestedIntentSection> ExtractNestedIntentSections(LUFileParser.FileContext fileContext, string content)
+        private static List<NestedIntentSection> ExtractNestedIntentSections(LUFileParser.FileContext fileContext)
         {
             if (fileContext == null)
             {
@@ -292,12 +288,12 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             }
 
             var nestedIntentSections = fileContext.paragraph().Select(x => x.nestedIntentSection()).Where(x => x != null);
-            var nestedIntentSectionsList = nestedIntentSections.Select(x => new NestedIntentSection(x, content)).ToList();
+            var nestedIntentSectionsList = nestedIntentSections.Select(x => new NestedIntentSection(x)).ToList();
 
             return nestedIntentSectionsList;
         }
 
-        private static List<SimpleIntentSection> ExtractSimpleIntentSections(LUFileParser.FileContext fileContext, string content)
+        private static List<SimpleIntentSection> ExtractSimpleIntentSections(LUFileParser.FileContext fileContext)
         {
             if (fileContext == null)
             {
@@ -305,7 +301,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             }
 
             var simpleIntentSections = fileContext.paragraph().Select(x => x.simpleIntentSection()).Where(x => x != null && x.intentDefinition() != null);
-            var simpleIntentSectionsList = simpleIntentSections.Select(x => new SimpleIntentSection(x, content)).ToList();
+            var simpleIntentSectionsList = simpleIntentSections.Select(x => new SimpleIntentSection(x)).ToList();
 
             return simpleIntentSectionsList;
         }
@@ -371,7 +367,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             var parser = new LUFileParser(tokens);
             parser.BuildParseTree = true;
             return parser.file();
-
         }
 
         private static void ExtractSectionBody(List<Section> sections, string content)
@@ -397,6 +392,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     {
                         stopLine = originList.Length;
                     }
+
                     section.Range.End.Line = stopLine;
                     section.Range.End.Character = originList[stopLine - 1].Length;
 
@@ -404,8 +400,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     if (section is QnaSection)
                     {
                         destList = originList.Skip(startLine).Take(stopLine - startLine).ToList();
+
                         // TODO: maybe change the model so Id is int
+#pragma warning disable CA1305 // Specify IFormatProvider
                         section.Id = qnaSectionIndex.ToString();
+#pragma warning restore CA1305 // Specify IFormatProvider
                         qnaSectionIndex++;
                     }
                     else
@@ -413,13 +412,13 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         destList = originList.Skip(startLine + 1).Take(stopLine - (startLine + 1)).ToList();
                     }
 
-                    section.Body = String.Join(Environment.NewLine, destList);
+                    section.Body = string.Join(Environment.NewLine, destList);
 
                     if (section is NestedIntentSection nestedIntentSection)
                     {
                         // TODO: check if this downcast can re-cast
                         var sectionList = nestedIntentSection.SimpleIntentSections.ToList<Section>();
-                        ExtractSectionBody(sectionList, String.Join(Environment.NewLine, originList.Skip(0).Take(stopLine)));
+                        ExtractSectionBody(sectionList, string.Join(Environment.NewLine, originList.Skip(0).Take(stopLine)));
                     }
                 }
             }
@@ -438,7 +437,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     var kvPair = Regex.Split(line, @"@\b(enableSections).(.*)=").Select(item => item.Trim()).ToArray();
                     if (kvPair.Length == 4)
                     {
-                        if (String.Equals(kvPair[1], "enableSections", StringComparison.InvariantCultureIgnoreCase) && String.Equals(kvPair[3], "true", StringComparison.InvariantCultureIgnoreCase))
+                        if (string.Equals(kvPair[1], "enableSections", StringComparison.OrdinalIgnoreCase) && string.Equals(kvPair[3], "true", StringComparison.OrdinalIgnoreCase))
                         {
                             enableSections = true;
                             break;

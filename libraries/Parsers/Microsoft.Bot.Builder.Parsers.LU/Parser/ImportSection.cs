@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             Description = result.description;
             Path = result.path;
             string secTypeStr = $"{SectionType}";
-            Id = $"{char.ToLower(secTypeStr[0]) + secTypeStr.Substring(1)}_{Path}";
+            Id = $"{char.ToLowerInvariant(secTypeStr[0]) + secTypeStr.Substring(1)}_{Path}";
             var startPosition = new Position { Line = parseTree.Start.Line, Character = parseTree.Start.Column };
             var stopPosition = new Position { Line = parseTree.Stop.Line, Character = parseTree.Stop.Column + parseTree.Stop.Text.Length };
             Range = new Range { Start = startPosition, End = stopPosition };
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 description = regMatch.Groups[1].ToString().Trim();
                 path = regMatch.Groups[2].ToString().Trim();
 
-                if (String.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path))
                 {
-                    var errorMsg = $"LU file reference path is empty: \"{ parseTree.GetText() }\"";
+                    var errorMsg = $"LU file reference path is empty: \"{parseTree.GetText()}\"";
                     var error = Diagnostic.BuildDiagnostic(message: errorMsg, context: parseTree);
 
                     Errors.Add(error);

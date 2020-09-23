@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         public string StringMessage()
         {
             var secondMessage = Range == null ? Message : Range.StringMessage() + ":" + Message;
-            return $"[{Severity}] { secondMessage }";
+            return $"[{Severity}] {secondMessage}";
         }
     }
 }

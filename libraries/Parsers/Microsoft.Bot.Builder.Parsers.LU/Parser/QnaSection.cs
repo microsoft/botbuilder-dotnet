@@ -1,6 +1,8 @@
-﻿using System;
+﻿#pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable CA2227 // Collection properties should be read only
+#pragma warning disable SA1201 // Elements should appear in the correct order
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -8,7 +10,28 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
     public class QnaSection : Section
     {
-        const string QNA_GENERIC_SOURCE = "custom editorial";
+        private const string QNAGENERICSOURCE = "custom editorial";
+
+        [JsonProperty("Questions")]
+        public List<string> Questions { get; set; }
+
+        [JsonProperty("FilterPairs")]
+        public List<QnaTuple> FilterPairs { get; set; }
+
+        [JsonProperty("Answer")]
+        public string Answer { get; set; }
+
+        [JsonProperty("QAPairId")]
+        public string QAPairId { get; set; }
+
+        [JsonProperty("prompts")]
+        public List<PromptDefinition> prompts { get; set; }
+
+        [JsonProperty("promptsText")]
+        public List<string> promptsText { get; set; }
+
+        [JsonProperty("source")]
+        public string source { get; set; }
 
         // TODO: not sure if serialization is needed for pairs
         public class QnaTuple
@@ -31,27 +54,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             [JsonProperty("contextOnly")]
             public string contextOnly { get; set; }
         }
-
-        [JsonProperty("Questions")]
-        public List<string> Questions { get; set; }
-
-        [JsonProperty("FilterPairs")]
-        public List<QnaTuple> FilterPairs { get; set; }
-
-        [JsonProperty("Answer")]
-        public string Answer { get; set; }
-
-        [JsonProperty("QAPairId")]
-        public string QAPairId { get; set; }
-
-        [JsonProperty("prompts")]
-        public List<PromptDefinition> prompts { get; set; }
-
-        [JsonProperty("promptsText")]
-        public List<string> promptsText { get; set; }
-
-        [JsonProperty("source")]
-        public string source { get; set; }
 
         public QnaSection(LUFileParser.QnaSectionContext parseTree)
         {
@@ -87,14 +89,12 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             var questionsBody = parseTree.qnaDefinition().moreQuestionsBody();
             foreach (var errorQuestionStr in questionsBody.errorQuestionString())
             {
-                if (!String.IsNullOrEmpty(errorQuestionStr.GetText().Trim()))
+                if (!string.IsNullOrEmpty(errorQuestionStr.GetText().Trim()))
                 {
                     errors.Add(
                         Diagnostic.BuildDiagnostic(
                             message: $"Invalid QnA question line, did you miss '-' at line begin",
-                            context: errorQuestionStr
-                        )
-                    );
+                            context: errorQuestionStr));
                 }
             }
 
@@ -118,14 +118,12 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 {
                     foreach (var errorFilterLineStr in filterSection.errorFilterLine())
                     {
-                        if (!String.IsNullOrEmpty(errorFilterLineStr.GetText().Trim()))
+                        if (!string.IsNullOrEmpty(errorFilterLineStr.GetText().Trim()))
                         {
                             errors.Add(
                                 Diagnostic.BuildDiagnostic(
                                     message: $"Invalid QnA filter line, did you miss '-' at line begin",
-                                    context: errorFilterLineStr
-                                )
-                            );
+                                    context: errorFilterLineStr));
                         }
                     }
                 }
@@ -147,12 +145,13 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         public string ExtractAnswer(LUFileParser.QnaSectionContext parseTree)
         {
             var multiLineAnswer = parseTree.qnaDefinition().qnaAnswerBody().multiLineAnswer().GetText().Trim();
+
             // trim first and last line
             // TODO: validate this regex
             var answerRegexp = new Regex(@"^```(markdown)?\r*\n(?<answer>(.|\n|\r\n|\t| )*)\r?\n.*?```$", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             var answer_match = answerRegexp.Match(multiLineAnswer);
             var answer_group = answer_match.Groups["answer"];
-            return answer_group.Success ? answer_group.Value : String.Empty;
+            return answer_group.Success ? answer_group.Value : string.Empty;
         }
 
         public (List<PromptDefinition> promptDefinitions, List<string> promptTextList, List<Error> errors) ExtractPrompts(LUFileParser.QnaSectionContext parseTree)
@@ -166,18 +165,17 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 return (promptDefinitions, promptTextList: null, errors);
             }
+
             if (promptSection.errorFilterLine() != null)
             {
                 foreach (var errorFilterLineStr in promptSection.errorFilterLine())
                 {
-                    if (!String.IsNullOrEmpty(errorFilterLineStr.GetText().Trim()))
+                    if (!string.IsNullOrEmpty(errorFilterLineStr.GetText().Trim()))
                     {
                         errors.Add(
                             Diagnostic.BuildDiagnostic(
                                 message: $"Invalid QnA prompt line, expecting '-' prefix for each line.",
-                                context: errorFilterLineStr
-                            )
-                        );
+                                context: errorFilterLineStr));
                     }
                 }
             }
@@ -194,18 +192,16 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     errors.Add(
                         Diagnostic.BuildDiagnostic(
                             message: $"Invalid QnA prompt definition. Unable to parse prompt. Please verify syntax as well as question link.",
-                            context: promptLine
-                        )
-                    );
+                            context: promptLine));
                 }
+
                 promptDefinitions.Add(
                     new PromptDefinition()
                     {
                         displayText = splitLineMatch.Groups["displayText"].Value,
                         linkedQuestion = splitLineMatch.Groups["linkedQuestion"].Value,
                         contextOnly = splitLineMatch.Groups["linkedQuestion"].Value
-                    }
-                );
+                    });
             }
 
             return (promptDefinitions, promptTextList, errors);
@@ -217,11 +213,10 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             if (idAssignment != null)
             {
                 var idTextRegExp = new Regex(@"^\<a[ ]*id[ ]*=[ ]*[""\'](?<idCaptured>.*?)[""\'][ ]*>[ ]*\<\/a\>$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-
                 var idTextMatch = idTextRegExp.Match(idAssignment.GetText().Trim());
                 return idTextMatch.Groups["idCaptured"].Success ? idTextMatch.Groups["idCaptured"].Value : null;
             }
+
             return null;
         }
 
@@ -231,12 +226,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             if (srcAssignment != null)
             {
                 var srcRegExp = new Regex(@"^[ ]*\>[ ]*!#[ ]*@qna.pair.source[ ]*=[ ]*(?<sourceInfo>.*?)$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-
                 var srcMatch = srcRegExp.Match(srcAssignment.GetText().Trim());
-                return srcMatch.Groups["sourceInfo"].Success ? srcMatch.Groups["sourceInfo"].Value : QNA_GENERIC_SOURCE;
+                return srcMatch.Groups["sourceInfo"].Success ? srcMatch.Groups["sourceInfo"].Value : QNAGENERICSOURCE;
             }
-            return QNA_GENERIC_SOURCE;
+
+            return QNAGENERICSOURCE;
         }
     }
 }

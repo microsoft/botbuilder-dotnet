@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="parser\" />
+    <Folder Include="Parser\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Fixtures\ImportAllLu.json">
@@ -37,6 +37,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Botframework.LUParser\Microsoft.Botframework.LUParser.csproj" />
+    <ProjectReference Include="..\..\..\libraries\Parsers\Microsoft.Bot.Builder.Parsers.LU\Microsoft.Bot.Builder.Parsers.LU.csproj" />
   </ItemGroup>
 </Project>

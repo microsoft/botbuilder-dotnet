@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="generated\" />
+    <Folder Include="Generated\" />
   </ItemGroup>
 
   <ItemGroup>

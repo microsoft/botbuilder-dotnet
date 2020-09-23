@@ -18,11 +18,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
 
             var luContent = File.ReadAllText(path);
             luContent = luContent.Substring(0, luContent.Length - 1);
-            var result = LuParser.parse(luContent);
+            var result = LuParser.Parse(luContent);
             LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", "ImportAllLu.json")));
 
-            var serializedResult = JsonConvert.SerializeObject(result).Replace("\\r", "");
-            var serializedExpected = JsonConvert.SerializeObject(expected).Replace("\\r", "");
+            var serializedResult = JsonConvert.SerializeObject(result).Replace("\\r", string.Empty);
+            var serializedExpected = JsonConvert.SerializeObject(expected).Replace("\\r", string.Empty);
 
             Assert.Equal(serializedResult, serializedExpected);
         }

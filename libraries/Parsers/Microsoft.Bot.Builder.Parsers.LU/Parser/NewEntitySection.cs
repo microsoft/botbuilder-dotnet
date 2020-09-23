@@ -1,21 +1,28 @@
-﻿using System;
+﻿#pragma warning disable CA2227 // Collection properties should be read only
+#pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable SA1201 // Elements should appear in the correct order
+
+using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
     public class NewEntitySection : SectionEntity
     {
+        // TODO: pass this constant to a helper class.
+        private char[] _invalidCharsInIntentOrEntityName = { '<', '>', '*', '%', '&', ':', '\\', '$' };
+
         public class SynonymElement
         {
             [JsonProperty("NormalizedValue", NullValueHandling = NullValueHandling.Ignore)]
             public string NormalizedValue { get; set; } = null;
+
             [JsonProperty("Synonyms", NullValueHandling = NullValueHandling.Ignore)]
             public List<string> Synonyms { get; set; } = new List<string>();
         }
-        // TODO: pass this constant to a helper class.
-        private char[] invalidCharsInIntentOrEntityName = { '<', '>', '*', '%', '&', ':', '\\', '$' };
+
         public NewEntitySection(LUFileParser.NewEntitySectionContext parseTree)
         {
             SectionType = SectionType.NewEntitySection;
@@ -26,7 +33,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             Features = ExtractFeatures(parseTree);
             CompositeDefinition = ExtractCompositeDefinition(parseTree);
             RegexDefinition = ExtractRegexDefinition(parseTree);
-            if (String.Equals(Type, "list"))
+            if (string.Equals(Type, "list", StringComparison.Ordinal))
             {
                 SynonymsList = ExtractSynonyms(parseTree);
             }
@@ -34,8 +41,9 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 ListBody = ExtractPhraseList(parseTree);
             }
+
             string secTypeStr = $"{SectionType}";
-            Id = $"{char.ToLower(secTypeStr[0]) + secTypeStr.Substring(1)}_{Name}";
+            Id = $"{char.ToLower(secTypeStr[0], System.Globalization.CultureInfo.InvariantCulture) + secTypeStr.Substring(1)}_{Name}";
             var startPosition = new Position { Line = parseTree.Start.Line, Character = parseTree.Start.Column };
             var stopPosition = new Position { Line = parseTree.Stop.Line, Character = parseTree.Stop.Column + parseTree.Stop.Text.Length };
             Range = new Range { Start = startPosition, End = stopPosition };
@@ -43,7 +51,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 
         public string ExtractName(LUFileParser.NewEntitySectionContext parseTree)
         {
-            var entityName = String.Empty;
+            var entityName = string.Empty;
             if (parseTree.newEntityDefinition().newEntityLine().newEntityName() != null)
             {
                 entityName = parseTree.newEntityDefinition().newEntityLine().newEntityName().GetText().Trim();
@@ -57,19 +65,15 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 Errors.Add(
                     Diagnostic.BuildDiagnostic(
                         message: "Invalid entity line, did you miss entity name after $?",
-                        context: parseTree.newEntityDefinition().newEntityLine()
-                    )
-                );
+                        context: parseTree.newEntityDefinition().newEntityLine()));
             }
 
-            if (!String.IsNullOrEmpty(entityName) && entityName.IndexOfAny(invalidCharsInIntentOrEntityName) >= 0)
+            if (!string.IsNullOrEmpty(entityName) && entityName.IndexOfAny(_invalidCharsInIntentOrEntityName) >= 0)
             {
                 Errors.Add(
                     Diagnostic.BuildDiagnostic(
                         message: $"Invalid entity line, entity name {entityName} cannot contain any of the following characters: [<, >, *, %, &, :, \\, $]",
-                        context: parseTree.newEntityDefinition().newEntityLine()
-                    )
-                );
+                        context: parseTree.newEntityDefinition().newEntityLine()));
                 return null;
             }
             else
@@ -135,16 +139,15 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 foreach (var errorItemStr in parseTree.newEntityDefinition().newEntityListbody().errorString())
                 {
-                    if (!String.IsNullOrEmpty(errorItemStr.GetText().Trim()))
+                    if (!string.IsNullOrEmpty(errorItemStr.GetText().Trim()))
                     {
                         Errors.Add(
                             Diagnostic.BuildDiagnostic(
                                 message: "Invalid list entity line, did you miss '-' at line begin?",
-                                context: errorItemStr
-                            )
-                        );
+                                context: errorItemStr));
                     }
                 }
+
                 var bodyElement = new SynonymElement();
                 foreach (var normalItemStr in parseTree.newEntityDefinition().newEntityListbody().normalItemString())
                 {
@@ -158,6 +161,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                             synonymsOrPhraseList.Add(bodyElement);
                             bodyElement = new SynonymElement();
                         }
+
                         bodyElement.NormalizedValue = normalizedValueMatch.Groups[1].Value.Trim();
                     }
                     else
@@ -166,24 +170,24 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         bodyElement.Synonyms.Add(splitedStr[1].Trim());
                     }
                 }
+
                 if (bodyElement.NormalizedValue != null)
                 {
                     // There was at least one
                     synonymsOrPhraseList.Add(bodyElement);
                 }
-
             }
 
-            if (!String.IsNullOrEmpty(Type) && Type.IndexOf('=') > -1 && synonymsOrPhraseList.Count == 0)
+            if (!string.IsNullOrEmpty(Type) && Type.IndexOf('=', StringComparison.OrdinalIgnoreCase) > -1 && synonymsOrPhraseList.Count == 0)
             {
-                var errorMsg = $"no synonyms list found for list entity definition: \"{ parseTree.newEntityDefinition().newEntityLine().GetText()}\"";
+                var errorMsg = $"no synonyms list found for list entity definition: \"{parseTree.newEntityDefinition().newEntityLine().GetText()}\"";
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.newEntityDefinition().newEntityLine(),
-                    severity: DiagnosticSeverity.Warn
-                );
+                    severity: DiagnosticSeverity.Warn);
                 Errors.Add(error);
             }
+
             return synonymsOrPhraseList;
         }
 
@@ -194,32 +198,31 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             {
                 foreach (var errorItemStr in parseTree.newEntityDefinition().newEntityListbody().errorString())
                 {
-                    if (!String.IsNullOrEmpty(errorItemStr.GetText().Trim()))
+                    if (!string.IsNullOrEmpty(errorItemStr.GetText().Trim()))
                     {
                         Errors.Add(
                             Diagnostic.BuildDiagnostic(
                                 message: "Invalid list entity line, did you miss '-' at line begin?",
-                                context: errorItemStr
-                            )
-                        );
+                                context: errorItemStr));
                     }
                 }
+
                 foreach (var normalItemStr in parseTree.newEntityDefinition().newEntityListbody().normalItemString())
                 {
                     synonymsOrPhraseList.Add(normalItemStr.GetText());
                 }
             }
 
-            if (!String.IsNullOrEmpty(Type) && Type.IndexOf('=') > -1 && synonymsOrPhraseList.Count == 0)
+            if (!string.IsNullOrEmpty(Type) && Type.IndexOf('=', StringComparison.InvariantCulture) > -1 && synonymsOrPhraseList.Count == 0)
             {
-                var errorMsg = $"no synonyms list found for list entity definition: \"{ parseTree.newEntityDefinition().newEntityLine().GetText()}\"";
+                var errorMsg = $"no synonyms list found for list entity definition: \"{parseTree.newEntityDefinition().newEntityLine().GetText()}\"";
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.newEntityDefinition().newEntityLine(),
-                    severity: DiagnosticSeverity.Warn
-                );
+                    severity: DiagnosticSeverity.Warn);
                 Errors.Add(error);
             }
+
             return synonymsOrPhraseList;
         }
     }
