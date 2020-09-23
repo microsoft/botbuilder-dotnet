@@ -126,10 +126,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (!hasResult)
             {
                 _evaluationTargetStack.Push(templateTarget);
-                result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
-                var currentTemplate = CurrentTemplate();
 
+                var currentTemplate = CurrentTemplate();
                 _lgOptions.OnEvent?.Invoke(currentTemplate, new BeginTemplateEvaluationArgs { Source = currentTemplate.SourceRange.Source, TemplateName = templateName });
+
+                result = Visit(TemplateMap[templateName].TemplateBodyParseTree);
+                
+                if (_lgOptions.OnEvent != null)
+                {
+                    var text = $"Evaluate template [{templateName}] get result: {result}";
+                    _lgOptions.OnEvent(currentTemplate, new MessageArgs { Source = currentTemplate.SourceRange.Source, Text = text });
+                }
+
                 _evaluationTargetStack.Pop();
 
                 if (!reExecute)
@@ -148,14 +156,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            if (_lgOptions.OnEvent != null)
-            {
-                var currentTemplate = CurrentTemplate();
-                var text = $"Evaluate template [{templateName}] get result: {result}";
-                _lgOptions.OnEvent(currentTemplate, new MessageArgs { Source = currentTemplate.SourceRange.Source, Text = text });
-            }
-
-            _evaluationTargetStack.Pop();
             return result;
         }
 
