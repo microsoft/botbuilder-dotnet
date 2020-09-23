@@ -889,7 +889,13 @@ namespace AdaptiveExpressions.Tests
             Test("endsWith(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), ':40:20')", true),
             Test("endsWith(getPreviousViableTime('TXX:05:10'), ':05:10')", true),
             Test("endsWith(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), ':05:10')", true),
-
+            Test("resolve('T14')", "14:00:00"),
+            Test("resolve('T14:20')", "14:20:00"),
+            Test("resolve('T14:20:30')", "14:20:30"),
+            Test("resolve('2020-12-20')", "2020-12-20"),
+            Test("resolve('2020-12-20T14')", "2020-12-20 14:00:00"),
+            Test("resolve('2020-12-20T14:20')", "2020-12-20 14:20:00"),
+            Test("resolve('2020-12-20T14:20:30')", "2020-12-20 14:20:30"),
             #endregion
 
             #region uri parsing function test
