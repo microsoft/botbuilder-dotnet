@@ -8,252 +8,249 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Newtonsoft.Json.Linq;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class AdaptiveDialogTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class AdaptiveDialogTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public AdaptiveDialogTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(AdaptiveDialogTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(AdaptiveDialogTests));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ActivityEvents()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ActivityAndIntentEvents()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AdaptiveCardSubmit()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AllowInterruption()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AllowInterruptionAlwaysWithFailedValidation()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AllowInterruptionNever()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AllowInterruptionNeverWithInvalidInput()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AllowInterruptionNeverWithMaxCount()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_AllowInterruptionNeverWithUnrecognizedInput()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_BeginDialog()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
+        public async Task AdaptiveDialog_BeginDialog_With_Dup_Dialog_Ref()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task AdaptiveDialog_BindingCaptureValueWithinSameAdaptive()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_BindingOptionsAcrossAdaptiveDialogs()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_BindingReferValueInLaterAction()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_BindingReferValueInNestedAction()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ConditionallyAllowInterruptions()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_DoActions()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_EditArray()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_EndTurn()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_IfProperty()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_NestedInlineSequences()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_NestedRecognizers()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_PropertySetInInterruption()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ReplacePlan()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ReProcessInputProperty()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ReProcessInputPropertyValidOnlyOnce()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_StringLiteralInExpression()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_TextInput()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_TextInputDefaultValueResponse()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_TextInputNoMaxTurnCount()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_TopLevelFallback()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_TopLevelFallbackMultipleActivities()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogs()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestForeachWithPrompt()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_EmitEventActivityReceived()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_NestedMemoryAccess()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
-        [Ignore]
+        [Fact(Skip = "Ignore")]
         public async Task TestForeachWithLargeItems()
         {
             var testFlow = new TestScript()
@@ -267,7 +264,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 testFlow = testFlow.AssertReply(i.ToString());
             }
 
-            await testFlow.ExecuteAsync(ResourceExplorer);
+            await testFlow.ExecuteAsync(_resourceExplorerFixture.ResourceExplorer);
         }
 
         private class ForeachItemsDialog : ComponentDialog
@@ -306,19 +303,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void AdaptiveDialog_GetInternalVersion()
         {
             var ds = new TestAdaptiveDialog();
             var version1 = ds.GetInternalVersion_Test();
-            Assert.IsNotNull(version1);
+            Assert.NotNull(version1);
 
-            var ds2 = new TestAdaptiveDialog();
             var version2 = ds.GetInternalVersion_Test();
-            Assert.IsNotNull(version2);
-            Assert.AreEqual(version1, version2, "Same configuration should give same version");
+            Assert.NotNull(version2);
+            Assert.Equal(version1, version2);
 
-            ds2 = new TestAdaptiveDialog()
+            var ds2 = new TestAdaptiveDialog()
             {
                 Triggers = new List<OnCondition>()
                 {
@@ -329,8 +325,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var version3 = ds2.GetInternalVersion_Test();
-            Assert.IsNotNull(version3);
-            Assert.AreNotEqual(version2, version3, "version should change if trigger added");
+            Assert.NotNull(version3);
+            Assert.NotEqual(version2, version3);
 
             ds2 = new TestAdaptiveDialog()
             {
@@ -344,8 +340,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var version4 = ds2.GetInternalVersion_Test();
-            Assert.IsNotNull(version4);
-            Assert.AreNotEqual(version3, version4, "version should change if condition modified");
+            Assert.NotNull(version4);
+            Assert.NotEqual(version3, version4);
 
             var ds3 = new TestAdaptiveDialog()
             {
@@ -363,14 +359,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             var version5 = ds3.GetInternalVersion_Test();
-            Assert.IsNotNull(version5);
-            Assert.AreNotEqual(version4, version5, "version should change if action added ");
+            Assert.NotNull(version5);
+            Assert.NotEqual(version4, version5);
 
             var version6 = ds3.GetInternalVersion_Test();
-            Assert.AreEqual(version5, version6, "version should be same if no change");
+            Assert.Equal(version5, version6);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ChangeDetect_None()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -396,7 +392,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task AdaptiveDialog_ChangeDetect()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -459,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             public string GetInternalVersion_Test()
             {
-                this.EnsureDependenciesInstalled();
+                EnsureDependenciesInstalled();
                 return GetInternalVersion();
             }
         }

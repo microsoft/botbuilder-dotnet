@@ -1,0 +1,94 @@
+
+@ prebuilt personName
+
+
+> Define phrase list for Name property.
+@ phraselist NamePhrases(interchangeable)=
+		- name
+
+> Define property entity and optional value for Name property.
+@ ml Name usesFeature NamePhrases
+    - @ personName personName
+
+> Define operations on 'Name' property.
+@ ml Add() usesFeature AddPhrases
+	-@ ml Name usesFeature Name
+		- @ personName personName
+
+@ ml Remove() usesFeature RemovePhrases
+	-@ ml Name usesFeature Name
+		- @ personName personName
+
+@ ml Clear() usesFeature ClearPhrases
+	-@ ml Name usesFeature Name
+		- @ personName personName
+
+@ ml Change() usesFeature ChangePhrases
+	-@ ml Name usesFeature Name
+		- @ personName personName
+
+@ ml Show() usesFeature ShowPhrases
+	-@ ml Name usesFeature Name
+		- @ personName personName
+
+@ ml Help() usesFeature HelpPhrases
+	-@ ml Name usesFeature Name
+		- @ personName personName
+
+
+> Add examples for operations on the 'Name' property to the intent 'sandwich'.
+# sandwich
+>> entity: Standalone Name with personName
+- {@Name={@personName=Bart Simpson}}
+- {@Name={@personName=Thomas Matthews}}
+- {@Name={@personName=Christopher Robin}}
+- {@Name={@personName=Bart Simpson} name}
+- {@Name={@personName=Thomas Matthews} name}
+- {@Name={@personName=Christopher Robin} name}
+
+>> property: Standalone Name name
+- {@Name=name}
+
+> Add() examples for Name and personName
+- {@Add()=add {@Name={@personName=Christopher Robin} name}}
+- {@Add()=add {@Name={@personName=Bart Simpson} name}}
+- {@Add()=add {@Name={@personName=Thomas Matthews} name}}
+- {@Add()=with {@Name={@personName=Christopher Robin}}}
+- {@Add()=with {@Name={@personName=Thomas Matthews}}}
+- {@Add()={@Name=name is {@personName=Thomas Matthews}}}
+- {@Add()={@Name=name is {@personName=Christopher Robin}}}
+- {@Add()={@Name=name is {@personName=Bart Simpson}}}
+- {@Add()={@Name=name of {@personName=Bart Simpson}}}
+- {@Add()={@Name=name of {@personName=Thomas Matthews}}}
+- {@Add()={@Name=name of {@personName=Christopher Robin}}}
+
+> Remove() examples for Name and personName
+- {@Remove()=remove {@Name={@personName=Bart Simpson}}
+- {@Remove()=remove {@Name={@personName=Christopher Robin}}
+- {@Remove()=remove {@Name={@personName=Thomas Matthews}}
+- {@Remove()=with no {@personName=Bart Simpson} name}
+- {@Remove()=with no {@personName=Christopher Robin} name}
+- {@Remove()=with no {@personName=Thomas Matthews} name}
+
+> Clear() examples for Name
+- {@Clear()=clear {@Name=name}}
+- {@Clear()=reset {@Name=name}}
+
+> Show() examples for Name
+- {@Show()=show {@Name=name}}
+- {@Show()=value of {@Name=name}}
+- {@Show()={@Name=name} values}
+- {@Show()={@Name=name} selection}
+
+> Help() examples for Name
+- {@Help()=help {@Name=name}}
+- {@Help()=what can I say for {@Name=name}}
+- {@Help()={@Name=name} help}
+
+> Change() examples for Name
+- {@Change()=change {@Name=name}}
+- {@Change()=goto {@Name=name}}
+
+
+
+> Generator: 31cb37d38f20d77ad53b52631dca4f0a

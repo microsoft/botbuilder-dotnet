@@ -3,51 +3,48 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class DialogSetTests
     {
-        [TestMethod]
+        [Fact]
         public void DialogSet_ConstructorValid()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
-            var ds = new DialogSet(dialogStateProperty);
+            new DialogSet(dialogStateProperty);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void DialogSet_ConstructorNullProperty()
         {
-            var ds = new DialogSet(null);
+            Assert.Throws<ArgumentNullException>(() => new DialogSet(null));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_CreateContextAsync()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty);
             var context = TestUtilities.CreateEmptyContext();
-            var dc = await ds.CreateContextAsync(context);
+            await ds.CreateContextAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_NullCreateContextAsync()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty);
             var context = TestUtilities.CreateEmptyContext();
-            var dc = await ds.CreateContextAsync(context);
+            await ds.CreateContextAsync(context);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_AddWorks()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -55,42 +52,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var ds = new DialogSet(dialogStateProperty)
                 .Add(new WaterfallDialog("A"))
                 .Add(new WaterfallDialog("B"));
-            Assert.IsNotNull(ds.Find("A"), "A is missing");
-            Assert.IsNotNull(ds.Find("B"), "B is missing");
-            Assert.IsNull(ds.Find("C"), "C should not be found");
+            Assert.NotNull(ds.Find("A"));
+            Assert.NotNull(ds.Find("B"));
+            Assert.Null(ds.Find("C"));
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public void DialogSet_GetVersion()
         {
             var ds = new DialogSet();
             var version1 = ds.GetVersion();
-            Assert.IsNotNull(version1);
+            Assert.NotNull(version1);
 
             var ds2 = new DialogSet();
             var version2 = ds.GetVersion();
-            Assert.IsNotNull(version2);
-            Assert.AreEqual(version1, version2, "Same configuration should give same version");
+            Assert.NotNull(version2);
+            Assert.Equal(version1, version2);
 
             ds2.Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
             var version3 = ds2.GetVersion();
-            Assert.IsNotNull(version3);
-            Assert.AreNotEqual(version2, version3, "version should change if there is a change");
+            Assert.NotNull(version3);
+            Assert.NotEqual(version2, version3);
 
             var version4 = ds2.GetVersion();
-            Assert.IsNotNull(version3);
-            Assert.AreEqual(version3, version4, "version be same if there is no change");
+            Assert.NotNull(version3);
+            Assert.Equal(version3, version4);
 
             var ds3 = new DialogSet()
                 .Add(new LamdaDialog((dc, ct) => null) { Id = "A" });
 
             var version5 = ds3.GetVersion();
-            Assert.IsNotNull(version5);
-            Assert.AreEqual(version5, version4, "version be same if there is no change");
+            Assert.NotNull(version5);
+            Assert.Equal(version5, version4);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_TelemetrySet()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -98,18 +95,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var ds = new DialogSet(dialogStateProperty)
                 .Add(new WaterfallDialog("A"))
                 .Add(new WaterfallDialog("B"));
-            Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
-            Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
+            Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("A").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("B").TelemetryClient.GetType());
 
             var botTelemetryClient = new MyBotTelemetryClient();
             ds.TelemetryClient = botTelemetryClient;
 
-            Assert.IsTrue(ds.Find("A").TelemetryClient is MyBotTelemetryClient, "A not MyBotTelemetryClient");
-            Assert.IsTrue(ds.Find("B").TelemetryClient is MyBotTelemetryClient, "A not MyBotTelemetryClient");
+            Assert.Equal(typeof(MyBotTelemetryClient), ds.Find("A").TelemetryClient.GetType());
+            Assert.Equal(typeof(MyBotTelemetryClient), ds.Find("B").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_NullTelemetrySet()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -120,12 +117,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             ds.TelemetryClient = new MyBotTelemetryClient();
             ds.TelemetryClient = null;
-            Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
-            Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
+            Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("A").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("B").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_AddTelemetrySet()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -137,11 +134,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ds.TelemetryClient = new MyBotTelemetryClient();
             ds.Add(new WaterfallDialog("C"));
 
-            Assert.IsTrue(ds.Find("C").TelemetryClient is MyBotTelemetryClient, "C (added dialog) not MyBotTelemetryClient");
+            Assert.Equal(typeof(MyBotTelemetryClient), ds.Find("C").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DialogSet_HeterogeneousLoggers()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -154,9 +151,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Make sure we can override (after Adding) the TelemetryClient and "sticks"
             ds.Find("C").TelemetryClient = new MyBotTelemetryClient();
 
-            Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
-            Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "B not NullBotTelemetryClient");
-            Assert.IsTrue(ds.Find("C").TelemetryClient is MyBotTelemetryClient, "C (added dialog) not MyBotTelemetryClient");
+            Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("A").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), ds.Find("B").TelemetryClient.GetType());
+            Assert.Equal(typeof(MyBotTelemetryClient), ds.Find("C").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 

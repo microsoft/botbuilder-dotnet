@@ -111,5 +111,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <seealso cref="RankerTypes"/>
         [JsonProperty("rankerType")]
         public string RankerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets <see cref="StrictFilters"/> join operator.
+        /// </summary>
+        /// <value>
+        /// A value used for join operation of StrictFilters <see cref="StrictFilters"/>.
+        /// </value>
+        [JsonProperty("strictFiltersJoinOperator")]
+        public JoinOperator StrictFiltersJoinOperator { get; set; }
     }
 }

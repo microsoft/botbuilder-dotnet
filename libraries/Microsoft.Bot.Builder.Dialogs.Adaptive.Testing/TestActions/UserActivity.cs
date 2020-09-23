@@ -2,14 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -18,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
     /// <summary>
     /// Send an activity to the bot.
     /// </summary>
+    [DebuggerDisplay("UserActivity")]
     public class UserActivity : TestAction
     {
         /// <summary>
@@ -56,30 +53,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public string User { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
         {
-            if (this.Activity == null)
+            if (Activity == null)
             {
                 throw new Exception("You must define one of Text or Activity properties");
             }
 
-            var activity = ObjectPath.Clone(this.Activity);
+            var activity = ObjectPath.Clone(Activity);
             activity.ApplyConversationReference(adapter.Conversation, isIncoming: true);
 
-            if (!string.IsNullOrEmpty(this.User))
+            if (!string.IsNullOrEmpty(User))
             {
                 activity.From = ObjectPath.Clone(activity.From);
-                activity.From.Id = this.User;
-                activity.From.Name = this.User;
+                activity.From.Id = User;
+                activity.From.Name = User;
             }
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            await adapter.ProcessActivityAsync(activity, callback, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.ProcessActivityAsync(activity, callback, default).ConfigureAwait(false);
 
             sw.Stop();
-            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserActivity: {this.Activity.Text} ]");
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserActivity: {Activity.Text} ]");
         }
     }
 }

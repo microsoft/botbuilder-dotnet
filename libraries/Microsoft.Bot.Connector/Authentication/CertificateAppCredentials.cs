@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 new AdalAuthenticator(
                     this.clientCertificate,
                     this.sendX5c,
-                    new OAuthConfiguration() { Authority = OAuthEndpoint, Scope = OAuthScope },
+                    new OAuthConfiguration() { Authority = OAuthEndpoint, ValidateAuthority = ValidateAuthority, Scope = OAuthScope },
                     this.CustomHttpClient,
                     this.Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);

@@ -12,13 +12,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// Language policy with fallback for each language as most specific to default en-us -> en -> default.
     /// </summary>
     public class LanguagePolicy : Dictionary<string, string[]>
-    {
-        // Keep this method for JSON deserialization 
+    { 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguagePolicy"/> class.
+        /// </summary>
+        // Keep this method for JSON deserialization
         public LanguagePolicy()
             : base(DefaultPolicy(), StringComparer.OrdinalIgnoreCase) 
         { 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguagePolicy"/> class.
+        /// </summary>
+        /// <param name="defaultLanguage">Default language to use.</param>
         public LanguagePolicy(params string[] defaultLanguage)
             : base(DefaultPolicy(defaultLanguage), StringComparer.OrdinalIgnoreCase)
         {

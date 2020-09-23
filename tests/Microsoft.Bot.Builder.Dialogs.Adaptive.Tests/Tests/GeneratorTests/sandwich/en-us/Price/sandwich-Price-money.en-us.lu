@@ -1,0 +1,94 @@
+
+@ prebuilt money
+
+
+> Define phrase list for Price property.
+@ phraselist PricePhrases(interchangeable)=
+		- price
+
+> Define property entity and optional value for Price property.
+@ ml Price usesFeature PricePhrases
+    - @ money money
+
+> Define operations on 'Price' property.
+@ ml Add() usesFeature AddPhrases
+	-@ ml Price usesFeature Price
+		- @ money money
+
+@ ml Remove() usesFeature RemovePhrases
+	-@ ml Price usesFeature Price
+		- @ money money
+
+@ ml Clear() usesFeature ClearPhrases
+	-@ ml Price usesFeature Price
+		- @ money money
+
+@ ml Change() usesFeature ChangePhrases
+	-@ ml Price usesFeature Price
+		- @ money money
+
+@ ml Show() usesFeature ShowPhrases
+	-@ ml Price usesFeature Price
+		- @ money money
+
+@ ml Help() usesFeature HelpPhrases
+	-@ ml Price usesFeature Price
+		- @ money money
+
+
+> Add examples for operations on the 'Price' property to the intent 'sandwich'.
+# sandwich
+>> entity: Standalone Price with money
+- {@Price={@money=$3.50}}
+- {@Price={@money=12 dollars}}
+- {@Price={@money=8 dollars and 25 cents}}
+- {@Price={@money=$3.50} price}
+- {@Price={@money=12 dollars} price}
+- {@Price={@money=8 dollars and 25 cents} price}
+
+>> property: Standalone Price name
+- {@Price=price}
+
+> Add() examples for Price and money
+- {@Add()=add {@Price={@money=8 dollars and 25 cents} price}}
+- {@Add()=add {@Price={@money=$3.50} price}}
+- {@Add()=add {@Price={@money=12 dollars} price}}
+- {@Add()=with {@Price={@money=8 dollars and 25 cents}}}
+- {@Add()=with {@Price={@money=12 dollars}}}
+- {@Add()={@Price=price is {@money=12 dollars}}}
+- {@Add()={@Price=price is {@money=8 dollars and 25 cents}}}
+- {@Add()={@Price=price is {@money=$3.50}}}
+- {@Add()={@Price=price of {@money=$3.50}}}
+- {@Add()={@Price=price of {@money=12 dollars}}}
+- {@Add()={@Price=price of {@money=8 dollars and 25 cents}}}
+
+> Remove() examples for Price and money
+- {@Remove()=remove {@Price={@money=$3.50}}
+- {@Remove()=remove {@Price={@money=8 dollars and 25 cents}}
+- {@Remove()=remove {@Price={@money=12 dollars}}
+- {@Remove()=with no {@money=$3.50} price}
+- {@Remove()=with no {@money=8 dollars and 25 cents} price}
+- {@Remove()=with no {@money=12 dollars} price}
+
+> Clear() examples for Price
+- {@Clear()=clear {@Price=price}}
+- {@Clear()=reset {@Price=price}}
+
+> Show() examples for Price
+- {@Show()=show {@Price=price}}
+- {@Show()=value of {@Price=price}}
+- {@Show()={@Price=price} values}
+- {@Show()={@Price=price} selection}
+
+> Help() examples for Price
+- {@Help()=help {@Price=price}}
+- {@Help()=what can I say for {@Price=price}}
+- {@Help()={@Price=price} help}
+
+> Change() examples for Price
+- {@Change()=change {@Price=price}}
+- {@Change()=goto {@Price=price}}
+
+
+
+> Generator: 93ef0c1ca4a3df4fcab0a485ce0c24c6

@@ -103,6 +103,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <returns>A list of found values.</returns>
         public static List<ModelResult<FoundValue>> FindValues(string utterance, List<SortedValue> values, FindValuesOptions options = null)
         {
+            if (FindExactMatch(utterance, values) is ModelResult<FoundValue> exactMatch)
+            {
+                return new List<ModelResult<FoundValue>> { exactMatch };
+            }
+
             // Sort values in descending order by length so that the longest value is searched over first.
             var list = values;
             list.Sort((a, b) => b.Value.Length - a.Value.Length);
@@ -114,10 +119,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var tokens = tokenizer(utterance, opt.Locale);
             var maxDistance = opt.MaxTokenDistance ?? 2;
 
-            for (var index = 0; index < list.Count; index++)
+            foreach (var entry in list)
             {
-                var entry = list[index];
-
                 // Find all matches for a value
                 // - To match "last one" in "the last time I chose the last one" we need
                 //   to re-search the string starting from the end of the previous match.
@@ -277,6 +280,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
 
             return result;
+        }
+
+        private static ModelResult<FoundValue> FindExactMatch(string utterance, List<SortedValue> values)
+        {
+            foreach (var entry in values)
+            {
+                if (entry.Value.Equals(utterance, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new ModelResult<FoundValue>
+                    {
+                        Text = utterance,
+                        Start = 0,
+                        End = utterance.Length - 1,
+                        TypeName = "value",
+                        Resolution = new FoundValue
+                        {
+                            Value = entry.Value,
+                            Index = entry.Index,
+                            Score = 1,
+                        },
+                    };
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -44,7 +44,7 @@ variables:
 #  WebexTestBotBotGroup: define this in Azure
 #  WebexTestBotBotName: define this in Azure
 #  WebexTestBotRefreshToken: define this in Azure
-#  WebexTestBotWebexBotAccessToken: define this in Azure
+#  WebexTestBotWebexBotAccessToken: define this in Azure. Expires in 90 days, i.e. Sunday, November 15, 2020
 #  WebexTestBotWebexBotUserName: define this in Azure
 #  WebexTestBotWebexIntegrationClientId: define this in Azure
 #  WebexTestBotWebexIntegrationClientSecret: define this in Azure
@@ -53,7 +53,30 @@ variables:
 #  WebexTestBotWebexWebhookSecret: define this in Azure
 
 steps:
-- template: ci-build-steps.yml
+- powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
+  displayName: 'Display env vars'
+
+- powershell: |
+    $InvalidVariables = $FALSE
+    $Message = "Required variable 'REPLACE_VARIABLE' either null, empty or whitespaced. Please set up this variable in the pipeline configuration."
+
+    if(!"$(WebexTestBotAppSecret)".Trim())                     {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotAppSecret")}
+    if(!"$(WebexTestBotBotGroup)".Trim())                      {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotBotGroup")}
+    if(!"$(WebexTestBotBotName)".Trim())                       {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotBotName")}
+    if(!"$(WebexTestBotRefreshToken)".Trim())                  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotRefreshToken")}
+    if(!"$(WebexTestBotWebexBotAccessToken)".Trim())           {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexBotAccessToken")}
+    if(!"$(WebexTestBotWebexBotUserName)".Trim())              {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexBotUserName")}
+    if(!"$(WebexTestBotWebexIntegrationClientId)".Trim())      {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexIntegrationClientId")}
+    if(!"$(WebexTestBotWebexIntegrationClientSecret)".Trim())  {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexIntegrationClientSecret")}
+    if(!"$(WebexTestBotWebexRoomId)".Trim())                   {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexRoomId")}
+    if(!"$(WebexTestBotWebexWebhookName)".Trim())              {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexWebhookName")}
+    if(!"$(WebexTestBotWebexWebhookSecret)".Trim())            {$InvalidVariables = $TRUE; Write-Host $Message.replace("REPLACE_VARIABLE", "WebexTestBotWebexWebhookSecret")}
+
+    if($InvalidVariables){
+      Write-Host "##vso[task.setvariable variable=InvalidVariables;]true"
+      Write-Host "##vso[task.complete result=Failed;]DONE"
+    }
+  displayName: Validate variables
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
@@ -61,7 +84,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
 - task: AzureCLI@1
@@ -87,21 +110,14 @@ steps:
     inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"
 
-- task: AzureCLI@1
-  displayName: 'Zip Deploy Bot'
-  inputs:
-    azureSubscription: '$(AzureSubscription)'
-    scriptLocation: inlineScript
-    inlineScript: 'call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot\PublishedBot.zip"'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: test
     projects: 'FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter WebexClientTest'
+    arguments: '-v n --configuration $(BuildConfiguration) --filter WebexClientTest'
   env:
-    XXXWebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
+    WebexTestBotWebexRoomId: $(WebexTestBotWebexRoomId)
     WebexTestBotRefreshToken: $(WebexTestBotRefreshToken)
     WebexTestBotWebexIntegrationClientId: $(WebexTestBotWebexIntegrationClientId)
     WebexTestBotWebexIntegrationClientSecret: $(WebexTestBotWebexIntegrationClientSecret)
@@ -113,4 +129,11 @@ steps:
     azureSubscription: '$(AzureSubscription)'
     scriptLocation: inlineScript
     inlineScript: 'call az group delete -n "$(BotGroup)" --yes'
-  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'))
+  condition: and(always(), ne(variables['DeleteResourceGroup'], 'false'), ne(variables.InvalidVariables, 'true'))
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

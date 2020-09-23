@@ -6,26 +6,22 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 {
-    [TestClass]
     public class TelemetryWaterfallTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Fact]
         public async Task Waterfall()
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(Waterfall)))
                 .Use(new AutoSaveStateMiddleware(convoState));
-
+            
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
             var dialogs = new DialogSet(dialogState);
@@ -53,12 +49,12 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             Console.WriteLine("Complete");
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WaterfallWithCallback()
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(WaterfallWithCallback)))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -88,21 +84,23 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             telemetryClient.Verify(m => m.TrackEvent(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), It.IsAny<IDictionary<string, double>>()), Times.Exactly(4));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void WaterfallWithActionsNull()
         {
-            var telemetryClient = new Mock<IBotTelemetryClient>();
-            var waterfall = new WaterfallDialog("test") { TelemetryClient = telemetryClient.Object };
-            waterfall.AddStep(null);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var telemetryClient = new Mock<IBotTelemetryClient>();
+                var waterfall = new WaterfallDialog("test") { TelemetryClient = telemetryClient.Object };
+                waterfall.AddStep(null);
+            });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EnsureEndDialogCalled()
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(EnsureEndDialogCalled)))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -145,24 +143,24 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             // Event occurs on the 4th event logged
             // Event contains DialogId
             // Event DialogId is set correctly.
-            Assert.IsTrue(saved_properties["WaterfallComplete_4"].ContainsKey("DialogId"));
-            Assert.IsTrue(saved_properties["WaterfallComplete_4"]["DialogId"] == "test");
-            Assert.IsTrue(saved_properties["WaterfallComplete_4"].ContainsKey("InstanceId"));
-            Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
+            Assert.True(saved_properties["WaterfallComplete_4"].ContainsKey("DialogId"));
+            Assert.True(saved_properties["WaterfallComplete_4"]["DialogId"] == "test");
+            Assert.True(saved_properties["WaterfallComplete_4"].ContainsKey("InstanceId"));
+            Assert.True(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
 
             // Verify naming on lambda's is "StepXofY"
-            Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("StepName"));
-            Assert.IsTrue(saved_properties["WaterfallStep_1"]["StepName"] == "Step1of3");
-            Assert.IsTrue(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
-            Assert.IsTrue(waterfallDialog.EndDialogCalled);
+            Assert.True(saved_properties["WaterfallStep_1"].ContainsKey("StepName"));
+            Assert.True(saved_properties["WaterfallStep_1"]["StepName"] == "Step1of3");
+            Assert.True(saved_properties["WaterfallStep_1"].ContainsKey("InstanceId"));
+            Assert.True(waterfallDialog.EndDialogCalled);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task EnsureCancelDialogCalled()
         {
             var convoState = new ConversationState(new MemoryStorage());
 
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(EnsureCancelDialogCalled)))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -222,18 +220,18 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
             // Event occurs on the 4th event logged
             // Event contains DialogId
             // Event DialogId is set correctly.
-            Assert.IsTrue(saved_properties["WaterfallStart_0"].ContainsKey("DialogId"));
-            Assert.IsTrue(saved_properties["WaterfallStart_0"].ContainsKey("InstanceId"));
-            Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("DialogId"));
-            Assert.IsTrue(saved_properties["WaterfallCancel_4"]["DialogId"] == "test");
-            Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("StepName"));
-            Assert.IsTrue(saved_properties["WaterfallCancel_4"].ContainsKey("InstanceId"));
+            Assert.True(saved_properties["WaterfallStart_0"].ContainsKey("DialogId"));
+            Assert.True(saved_properties["WaterfallStart_0"].ContainsKey("InstanceId"));
+            Assert.True(saved_properties["WaterfallCancel_4"].ContainsKey("DialogId"));
+            Assert.True(saved_properties["WaterfallCancel_4"]["DialogId"] == "test");
+            Assert.True(saved_properties["WaterfallCancel_4"].ContainsKey("StepName"));
+            Assert.True(saved_properties["WaterfallCancel_4"].ContainsKey("InstanceId"));
 
             // Event contains "StepName"
             // Event naming on lambda's is "StepXofY"
-            Assert.IsTrue(saved_properties["WaterfallCancel_4"]["StepName"] == "Step3of3");
-            Assert.IsTrue(waterfallDialog.CancelDialogCalled);
-            Assert.IsFalse(waterfallDialog.EndDialogCalled);
+            Assert.True(saved_properties["WaterfallCancel_4"]["StepName"] == "Step3of3");
+            Assert.True(waterfallDialog.CancelDialogCalled);
+            Assert.False(waterfallDialog.EndDialogCalled);
         }
 
         private static WaterfallStep[] NewWaterfall()

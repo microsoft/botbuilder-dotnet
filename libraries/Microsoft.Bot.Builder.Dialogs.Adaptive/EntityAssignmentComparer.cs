@@ -10,9 +10,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     /// <remarks>
     /// Compare by event: AssignEntity, ChooseProperty, ChooseEntity
-    /// Then unexpected before expected
-    /// Then by oldest first
-    /// Then by order of operations passed in.
+    /// Then by operations in order from schema (usually within AssignEntity).
+    /// Then by unexpected before expected.
+    /// Then by oldest turn first.
+    /// Then by minimum position in utterance.
     /// </remarks>
     public class EntityAssignmentComparer : Comparer<EntityAssignment>
     {
@@ -30,22 +31,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             operationPreference = operations;
         }
 
+        /// <summary>
+        /// Compares <see cref="EntityAssignment"/> x against y to determine its relative priority.
+        /// </summary>
+        /// <param name="x">Reference Entity.</param>
+        /// <param name="y">Comparisson Entity.</param>
+        /// <returns>Numerical value representing x's relative priority.</returns>
         public override int Compare(EntityAssignment x, EntityAssignment y)
         {
             // Order by event
             int comparison = Array.IndexOf(eventPreference, x.Event).CompareTo(Array.IndexOf(eventPreference, y.Event));
             if (comparison == 0)
             {
-                // Unexpected before expected
-                comparison = x.IsExpected.CompareTo(y.IsExpected);
+                // Order by operations
+                comparison = Array.IndexOf(operationPreference, x.Operation).CompareTo(Array.IndexOf(operationPreference, y.Operation));
                 if (comparison == 0)
                 {
-                    // Order by history
-                    comparison = x.Entity.WhenRecognized.CompareTo(y.Entity.WhenRecognized);
+                    // Unexpected before expected
+                    comparison = x.IsExpected.CompareTo(y.IsExpected);
                     if (comparison == 0)
                     {
-                        // Order by operations
-                        comparison = Array.IndexOf(operationPreference, x.Operation).CompareTo(Array.IndexOf(operationPreference, y.Operation));
+                        // Order by history
+                        comparison = x.Entity.WhenRecognized.CompareTo(y.Entity.WhenRecognized);
+                        if (comparison == 0)
+                        {
+                            // Order by position in utterance
+                            comparison = x.Entity.Start.CompareTo(y.Entity.Start);
+                        }
                     }
                 }
             }

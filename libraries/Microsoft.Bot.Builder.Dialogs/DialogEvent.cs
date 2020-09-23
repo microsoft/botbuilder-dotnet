@@ -2,6 +2,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Represents an event related to the "lifecycle" of the dialog.
+    /// </summary>
     [DebuggerDisplay("{Name}")]
     public class DialogEvent
     {

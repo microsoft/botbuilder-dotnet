@@ -17,8 +17,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Functions
     /// </remarks>
     public class HasPendingActionsFunction : ExpressionEvaluator
     {
+        /// <summary>
+        /// Function identifier name.
+        /// </summary>
         public const string Name = "hasPendingActions";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HasPendingActionsFunction"/> class.
+        /// </summary>
         public HasPendingActionsFunction()
             : base(Name, Function, ReturnType.Boolean)
         {

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using System.IO;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -15,15 +15,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
     /// </summary>
     public class MockLuisLoader : ICustomDeserializer
     {
-        private IConfiguration configuration;
+        private IConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MockLuisLoader"/> class.
         /// </summary>
-        /// <param name="configuration">configuration to use.</param>
-        public MockLuisLoader(IConfiguration configuration)
+        /// <param name="configuration">Configuration to use or null for no settings and caching.</param>
+        public MockLuisLoader(IConfiguration configuration = null)
         {
-            this.configuration = configuration;
+            _configuration = configuration;
         }
 
         /// <inheritdoc/>
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
                 name = name.Substring(start);
             }
 
-            return new MockLuisRecognizer(recognizer, configuration.GetValue<string>("luis:resources"), name);
+            return new MockLuisRecognizer(recognizer, _configuration == null ? Directory.GetCurrentDirectory() : _configuration.GetValue<string>("luis:resources"), name);
         }
     }
 }

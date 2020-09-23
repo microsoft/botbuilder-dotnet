@@ -7,14 +7,15 @@ if "%region%" EQU "" set region=westus
 
 set key=%2
 if "%key%" NEQ "" set key=--authoringKey %key%
-
-echo Building LUIS models
-call bf luis:build --luConfig luconfig.json --region=%region% %key%
-if %errorlevel% EQU 0 goto done
-
+ 
+echo Building Models
+ 
+call bf luis:build --luConfig luconfig.json --region=%region% %key% --out generated --log
+ 
+goto done
+ 
 :help
-echo build.cmd [region] [authoringKey]
+echo build.cmd [region] [LUISAuthoringKey]
 echo Region defaults to westus.
-echo Must have an explicit key or set it using "bf config:set:luis --authoringKey <LUISKEY>"
-
+echo Set LUISAuthoringKey default with bf config:set:luis --authoringKey=<yourKey>
 :done

@@ -17,6 +17,14 @@ namespace Microsoft.Bot.Connector.Authentication
         public string Authority { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the Authority should be validated.
+        /// </summary>
+        /// <value>
+        /// Boolean value indicating whether the Authority should be validated.
+        /// </value>
+        public bool ValidateAuthority { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets oAuth scope for authentication.
         /// </summary>
         /// <value>
