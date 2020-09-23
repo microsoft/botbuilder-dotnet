@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public ResourceExplorerFixture()
         {
             ResourceExplorer = new ResourceExplorer();
-            NoCycleResourceExplorer = new ResourceExplorer(false);
+            NoCycleResourceExplorer = new ResourceExplorer(new ResourceExplorerOptions { AllowCycles = false });
             Initialize();
         }
 
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             ResourceExplorer = new ResourceExplorer()
                 .LoadProject(projPath, monitorChanges: false);
 
-            NoCycleResourceExplorer = new ResourceExplorer(false)
+            NoCycleResourceExplorer = new ResourceExplorer(options: new ResourceExplorerOptions() { AllowCycles = false })
                 .LoadProject(projPath, monitorChanges: false);
 
             return this;

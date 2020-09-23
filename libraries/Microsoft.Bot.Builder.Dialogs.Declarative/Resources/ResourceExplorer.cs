@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<string, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<string, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
-        private readonly bool allowCycle;
+        private readonly ResourceExplorerOptions options;
+
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private List<IComponentDeclarativeTypes> declarativeTypes;
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
@@ -42,10 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
-        /// <param name="allowCycle">If allowCycle is set to true, throw an exception when detecting cycle.</param>
-        public ResourceExplorer(bool allowCycle = true)
+        public ResourceExplorer()
+            : this(new ResourceExplorerOptions())
         {
-            this.allowCycle = allowCycle;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         public ResourceExplorer(IEnumerable<ResourceProvider> providers)
-            : this(providers, null)
+            : this(new ResourceExplorerOptions() { Providers = providers })
         {
         }
 
@@ -63,9 +63,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         /// <param name="declarativeTypes">A list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.</param>
         public ResourceExplorer(IEnumerable<ResourceProvider> providers, IEnumerable<IComponentDeclarativeTypes> declarativeTypes)
+            : this(new ResourceExplorerOptions() { Providers = providers, DeclarativeTypes = declarativeTypes })
         {
-            this.resourceProviders = providers.ToList();
-            this.declarativeTypes = declarativeTypes?.ToList();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
+        /// <param name="options">Configuration optiosn for <see cref="ResourceExplorer"/>.</param>
+        public ResourceExplorer(ResourceExplorerOptions options)
+        {
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+
+            if (options.Providers != null)
+            {
+                this.resourceProviders = options.Providers.ToList();
+            }
+
+            if (options.DeclarativeTypes != null)
+            {
+                this.declarativeTypes = options.DeclarativeTypes.ToList();
+            }
         }
 
         /// <summary>
@@ -596,7 +614,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             // Create a cycle detection observer
-            var cycleDetector = new CycleDetectionObserver(allowCycle);
+            var cycleDetector = new CycleDetectionObserver(options.AllowCycles);
 
             // Register our cycle detector on the converters that support observer registration
             foreach (var observableConverter in converters.Where(c => c is IObservableJsonConverter))
