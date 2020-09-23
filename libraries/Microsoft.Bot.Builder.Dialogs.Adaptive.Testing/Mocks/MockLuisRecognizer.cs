@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.Luis.Testing
@@ -48,21 +48,36 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
+            HttpClientHandler newHandler = null, oldHandler = _recognizer.HttpClient;
+
+            // Used for ResponsePath
             var recognizer = _recognizer.RecognizerOptions(dialogContext);
             recognizer.IncludeAPIResults = true;
-            using (var client = GetMockedClient(activity.Text, recognizer))
-            {
-                var wrapper = new LuisRecognizer(recognizer, client);
-                var result = await wrapper.RecognizeAsync(dialogContext.Context, cancellationToken).ConfigureAwait(false);
-                if (client == null)
-                {
-                    // Save response
-                    var outPath = ResponsePath(activity.Text, recognizer);
-                    File.WriteAllText(outPath, JsonConvert.SerializeObject(result.Properties["luisResult"]));
-                }
 
-                return result;
+            var middleware = dialogContext.Context.TurnState.Get<MockHttpRequestMiddleware>();
+            if (middleware == null)
+            {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+                var mockHandler = new MockHttpMessageHandler();
+#pragma warning restore CA2000 // Dispose objects before losing scope
+                mockHandler.Fallback.Respond((request) => FallbackAsync(request, activity.Text, recognizer, cancellationToken).GetAwaiter().GetResult());
+                newHandler = new MockedHttpClientHandler(mockHandler);
             }
+            else
+            {
+                middleware.SetFallback((request) => FallbackAsync(request, activity.Text, recognizer, cancellationToken).GetAwaiter().GetResult());
+                newHandler = new MockedHttpClientHandler(dialogContext.Context.TurnState.Get<HttpMessageHandler>());
+            }
+
+            _recognizer.HttpClient = newHandler;
+            var result = await _recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+            _recognizer.HttpClient = oldHandler;
+            if (middleware != null)
+            {
+                middleware.SetFallback(null);
+            }
+
+            return result;
         }
 
         private string ResponsePath(string utterance, LuisRecognizerOptionsV3 recognizer)
@@ -143,28 +158,30 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
             return Path.Combine(_responseDir, $"{hash}.json");
         }
 
-        private HttpClientHandler GetMockedClient(string utterance, LuisRecognizerOptionsV3 recognizer)
+        private async Task<HttpResponseMessage> FallbackAsync(HttpRequestMessage request, string utterance, LuisRecognizerOptionsV3 recognizer, CancellationToken cancellationToken)
         {
-            HttpClientHandler client = null;
-            if (utterance != null)
+            var response = ResponsePath(utterance, recognizer);
+            if (File.Exists(response))
             {
-                var response = ResponsePath(utterance, recognizer);
-                if (File.Exists(response))
+                var luisResult = File.ReadAllText(response);
+                return new HttpResponseMessage
                 {
-#pragma warning disable CA2000 // Dispose objects before losing scope (ownership of handler is passed to MockedHttpClientHandler, that object should dispose it)
-                    var handler = new MockHttpMessageHandler();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-                    handler
-                        .When(recognizer.Application.Endpoint + "*")
-                        .WithPartialContent(utterance)
-#pragma warning disable CA2000 // Dispose objects before losing scope (ownership of the File.OpenRead() stream is passed to MockedHttpClientHandler, that object should dispose it)
-                        .Respond("application/json", File.OpenRead(response));
-#pragma warning restore CA2000 // Dispose objects before losing scope
-                    client = new MockedHttpClientHandler(handler.ToHttpClient());
-                }
+                    Content = new StringContent(luisResult, Encoding.UTF8, "application/json"),
+                };
             }
+            else
+            {
+                HttpResponseMessage result = null;
+                using (var client = new HttpClient())
+                    using (var clonedRequest = await MockedHttpClientHandler.CloneHttpRequestMessageAsync(request).ConfigureAwait(false))
+                    {
+                        result = await client.SendAsync(clonedRequest, cancellationToken).ConfigureAwait(false);
+                    }
 
-            return client;
+                var luisResult = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+                File.WriteAllText(response, luisResult);
+                return result;
+            }
         }
     }
 }

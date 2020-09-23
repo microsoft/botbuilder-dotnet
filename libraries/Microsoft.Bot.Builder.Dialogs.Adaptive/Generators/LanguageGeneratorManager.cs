@@ -53,6 +53,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Returns the resolver to resolve LG import id to template text based on language and a template resource loader delegate.
+        /// </summary>
+        /// <param name="locale">Locale to identify language.</param>
+        /// <param name="resourceMapping">Template resource loader delegate.</param>
+        /// <returns>The delegate to resolve the resource.</returns>
         public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<Resource>> resourceMapping)
         {
             return (LGResource lgResource, string id) =>

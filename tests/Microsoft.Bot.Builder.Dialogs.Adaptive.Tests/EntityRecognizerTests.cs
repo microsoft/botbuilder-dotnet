@@ -1,15 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
-    [TestClass]
+    [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class EntityRecognizerTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
@@ -40,201 +37,199 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             };
         });
 
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Fact]
         public void TestAge()
         {
-            var turnContext = GetTurnContext("This is a test of one, 2, three years old");
+            var turnContext = GetTurnContext(nameof(TestAge), "This is a test of one, 2, three years old");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(6, results.Count, "Should be 5 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "age").Count(), "Should have 1 age entity");
+            Assert.Equal(6, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "age").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestConfirmation()
         {
-            var turnContext = GetTurnContext("yes, please");
+            var turnContext = GetTurnContext(nameof(TestConfirmation), "yes, please");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(2, results.Count, "Should be 1 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "boolean").Count(), "Should have 1 boolean results");
+            Assert.Equal(2, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "boolean").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestCurrency()
         {
-            var turnContext = GetTurnContext("I would pay four dollars for that.");
+            var turnContext = GetTurnContext(nameof(TestCurrency), "I would pay four dollars for that.");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "currency").Count(), "Should have 1 currency result");
+            Assert.Equal(3, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "currency").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDateTime()
         {
-            var turnContext = GetTurnContext("Next thursday at 4pm.");
+            var turnContext = GetTurnContext(nameof(TestDateTime), "Next thursday at 4pm.");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(4, results.Count, "Should be 3 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "datetimeV2.datetime").Count(), "Should have 1 datetime result");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "ordinal.relative").Count(), "Should have 1 ordinal.relative result");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "dimension").Count(), "Should have 1 dimension result");
+            Assert.Equal(4, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "datetimeV2.datetime").ToList());
+            Assert.Single(results.Where(entity => entity.Type == "ordinal.relative").ToList());
+            Assert.Single(results.Where(entity => entity.Type == "dimension").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDimension()
         {
-            var turnContext = GetTurnContext("I think he's 5 foot ten");
+            var turnContext = GetTurnContext(nameof(TestDimension), "I think he's 5 foot ten");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(4, results.Count, "Should be 3 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "dimension").Count(), "Should have 1 dimension result");
+            Assert.Equal(4, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "dimension").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestEmail()
         {
-            var turnContext = GetTurnContext("my email address is foo@att.uk.co");
+            var turnContext = GetTurnContext(nameof(TestEmail), "my email address is foo@att.uk.co");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(2, results.Count, "Should be 1 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "email").Count(), "Should have 1 email result");
+            Assert.Equal(2, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "email").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestGuid()
         {
             var guid = Guid.Empty;
-            var turnContext = GetTurnContext($"my account number is {guid}...");
+            var turnContext = GetTurnContext(nameof(TestGuid), $"my account number is {guid}...");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(7, results.Count, "Should be 6 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "guid").Count(), "Should have 1 guid result");
+            Assert.Equal(7, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "guid").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestHashtag()
         {
-            var turnContext = GetTurnContext($"I'm so cool #cool #groovy...");
+            var turnContext = GetTurnContext(nameof(TestHashtag), $"I'm so cool #cool #groovy...");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
-            Assert.AreEqual(2, results.Where(entity => entity.Type == "hashtag").Count(), "Should have 2 hashtag result");
+            Assert.Equal(3, results.Count);
+            Assert.Equal(2, results.Where(entity => entity.Type == "hashtag").Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestIp()
         {
-            var turnContext = GetTurnContext($"My address is 1.2.3.4");
+            var turnContext = GetTurnContext(nameof(TestIp), $"My address is 1.2.3.4");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(6, results.Count, "Should be 5 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "ip").Count(), "Should have 1 ip result");
+            Assert.Equal(6, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "ip").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMention()
         {
-            var turnContext = GetTurnContext($"Tell @joesmith I'm coming...");
+            var turnContext = GetTurnContext(nameof(TestMention), $"Tell @joesmith I'm coming...");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(2, results.Count, "Should be 1 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "mention").Count(), "Should have 1 mention result");
+            Assert.Equal(2, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "mention").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNumber()
         {
-            var turnContext = GetTurnContext("This is a test of one, 2, three");
+            var turnContext = GetTurnContext(nameof(TestNumber), "This is a test of one, 2, three");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(4, results.Count, "Should be 3 numbers found");
-            Assert.AreEqual(3, results.Where(entity => entity.Type == "number").Count(), "Should have 3 numbers");
+            Assert.Equal(4, results.Count);
+            Assert.Equal(3, results.Where(entity => entity.Type == "number").Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNumberRange()
         {
-            var turnContext = GetTurnContext("there are 3 to 5 of them");
+            var turnContext = GetTurnContext(nameof(TestNumberRange), "there are 3 to 5 of them");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(4, results.Count, "Should be 3 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "numberrange").Count(), "Should have 1 number range");
+            Assert.Equal(4, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "numberrange").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestOrdinal()
         {
-            var turnContext = GetTurnContext("First, second or third");
+            var turnContext = GetTurnContext(nameof(TestOrdinal), "First, second or third");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(4, results.Count, "Should be 3 entities found");
-            Assert.AreEqual(3, results.Where(entity => entity.Type == "ordinal").Count(), "Should have 3 ordinals");
+            Assert.Equal(4, results.Count);
+            Assert.Equal(3, results.Where(entity => entity.Type == "ordinal").Count());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPercentage()
         {
-            var turnContext = GetTurnContext("The population hit 33.3%");
+            var turnContext = GetTurnContext(nameof(TestPercentage), "The population hit 33.3%");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "percentage").Count(), "Should have 1 percentage");
+            Assert.Equal(3, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "percentage").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPhoneNumber()
         {
-            var turnContext = GetTurnContext("Call 425-882-8080");
+            var turnContext = GetTurnContext(nameof(TestPhoneNumber), "Call 425-882-8080");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(5, results.Count, "Should be 4 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "phonenumber").Count(), "Should have 1 phonenumber");
+            Assert.Equal(5, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "phonenumber").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTemperature()
         {
-            var turnContext = GetTurnContext("set the oven to 350 degrees");
+            var turnContext = GetTurnContext(nameof(TestTemperature), "set the oven to 350 degrees");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "temperature").Count(), "Should have 1 temperature");
+            Assert.Equal(3, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "temperature").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestUrl()
         {
-            var turnContext = GetTurnContext("go to http://about.me for more info");
+            var turnContext = GetTurnContext(nameof(TestUrl), "go to http://about.me for more info");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(2, results.Count, "Should be 1 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "url").Count(), "Should have 1 url");
+            Assert.Equal(2, results.Count);
+            Assert.Single(results.Where(entity => entity.Type == "url").ToList());
         }
 
-        [TestMethod]
+        [Fact]
         public void TestRegEx()
         {
             // I would like {order} 
-            var turnContext = GetTurnContext("I would like a red or Blue cat");
+            var turnContext = GetTurnContext(nameof(TestRegEx), "I would like a red or Blue cat");
             var results = recognizers.Value.RecognizeEntitiesAsync(turnContext).Result;
 
-            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
-            Assert.AreEqual(2, results.Where(entity => entity.Type == "color").Count(), "Should have 2 color results");
-            Assert.AreEqual(results[1].Properties["text"], "red", "should be red");
-            Assert.AreEqual(results[2].Properties["text"], "Blue", "should be Blue");
+            Assert.Equal(3, results.Count);
+            Assert.Equal(2, results.Where(entity => entity.Type == "color").Count());
+            Assert.Equal("red", results[1].Properties["text"]);
+            Assert.Equal("Blue", results[2].Properties["text"]);
         }
 
-        private DialogContext GetTurnContext(string text, string locale = "en-us")
+        private DialogContext GetTurnContext(string testName, string text, string locale = "en-us")
         {
             return new DialogContext(
-                new DialogSet(), 
+                new DialogSet(),
                 new TurnContext(
-                    new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), 
-                    new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale)), 
+                    new TestAdapter(TestAdapter.CreateConversation(testName)),
+                    new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale)),
                 new DialogState());
         }
     }

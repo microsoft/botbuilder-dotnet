@@ -10,17 +10,14 @@ using Microsoft.Bot.Builder.Azure.Queues;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    [TestClass]
     public class AzureQueueTests : StorageBaseTests
     {
         private const string ConnectionString = @"UseDevelopmentStorage=true";
-
-        public TestContext TestContext { get; set; }
 
         // These tests require Azure Storage Emulator v5.7
         public async Task<QueueClient> ContainerInit(string name)
@@ -31,7 +28,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return queue;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ContinueConversationLaterTests()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -58,14 +55,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var message = messages.Value[0];
                 var messageJson = Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText));
                 var activity = JsonConvert.DeserializeObject<Activity>(messageJson);
-                Assert.AreEqual(ActivityTypes.Event, activity.Type);
-                Assert.AreEqual("ContinueConversation", activity.Name);
-                Assert.AreEqual("foo", activity.Value);
-                Assert.IsNotNull(activity.RelatesTo);
+                Assert.Equal(ActivityTypes.Event, activity.Type);
+                Assert.Equal("ContinueConversation", activity.Name);
+                Assert.Equal("foo", activity.Value);
+                Assert.NotNull(activity.RelatesTo);
                 var cr2 = activity.GetConversationReference();
                 cr.ActivityId = null;
                 cr2.ActivityId = null;
-                Assert.AreEqual(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
+                Assert.Equal(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
             }
         }
     }

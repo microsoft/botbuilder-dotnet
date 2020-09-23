@@ -2,62 +2,49 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using dbg = System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    [TestClass]
-    public class ConditionalsTests
+    [CollectionDefinition("Dialogs.Adaptive")]
+    public class ConditionalsTests : IClassFixture<ResourceExplorerFixture>
     {
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
-        public TestContext TestContext { get; set; }
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public ConditionalsTests(ResourceExplorerFixture resourceExplorerFixture)
         {
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolder(Path.Combine(TestUtils.GetProjectPath(), "Tests", nameof(ConditionalsTests)), monitorChanges: false);
+            _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ConditionalsTests));
         }
         
-        [TestMethod]
+        [Fact]
         public async Task ConditionalsTests_OnIntent()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConditionalsTests_OnIntentWithEntities()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConditionalsTests_OnActivityTypes()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ConditionalsTests_OnChooseIntent()
         {
-            await TestUtils.RunTestScript(ResourceExplorer);
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        public void AssertExpression(OnCondition condition, string expectedExpression)
-        {
-            var exp = condition.GetExpression();
-            dbg.Trace.TraceInformation(exp.ToString());
-            Assert.AreEqual(expectedExpression, exp.ToString());
-        }
-
-        [TestMethod]
+        [Fact]
         public void OnConditionWithCondition()
         {
             AssertExpression(
@@ -87,6 +74,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Condition = "turn.test == 1"
                 },
                 $"((turn.activity.type == '{ActivityTypes.Typing}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
+
+            AssertExpression(
+                new OnInstallationUpdateActivity()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.activity.type == '{ActivityTypes.InstallationUpdate}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnEndOfConversationActivity()
@@ -188,6 +182,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Condition = "turn.test == 1"
                 },
                 "(turn.test == 1)");
+        }
+
+        private void AssertExpression(OnCondition condition, string expectedExpression)
+        {
+            var exp = condition.GetExpression();
+            dbg.Trace.TraceInformation(exp.ToString());
+            Assert.Equal(expectedExpression, exp.ToString());
         }
     }
 }

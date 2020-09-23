@@ -3,119 +3,119 @@
 
 using System;
 using Microsoft.Bot.Streaming.Payloads;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 {
-    [TestClass]
     public class StreamManagerTests
     {
-        [TestMethod]
+        [Fact]
         public void StreamManager_ctor_nullCancelOk()
         {
             var m = new StreamManager(null);
-            Assert.IsNotNull(m);
+            Assert.NotNull(m);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_GetPayloadAssembler_NotExists_Ok()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
             var a = m.GetPayloadAssembler(id);
 
-            Assert.IsNotNull(a);
-            Assert.AreEqual(id, a.Id);
+            Assert.NotNull(a);
+            Assert.Equal(id, a.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_GetPayloadAssembler_Exists_Ok()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
             var a = m.GetPayloadAssembler(id);
             var a2 = m.GetPayloadAssembler(id);
 
-            Assert.AreEqual(a, a2);
+            Assert.Equal(a, a2);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_GetPayloadStream_NotExists_Ok()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
-            var a = m.GetPayloadStream(new Header() { Id = id });
+            var a = m.GetPayloadStream(new Header { Id = id });
 
-            Assert.IsNotNull(a);
+            Assert.NotNull(a);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_GetPayloadAStream_Exists_Ok()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
-            var a = m.GetPayloadStream(new Header() { Id = id });
-            var a2 = m.GetPayloadStream(new Header() { Id = id });
+            var a = m.GetPayloadStream(new Header { Id = id });
+            var a2 = m.GetPayloadStream(new Header { Id = id });
 
-            Assert.AreEqual(a, a2);
+            Assert.Equal(a, a2);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_GetPayloadAStream__StreamsMatch()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
             var a = m.GetPayloadAssembler(id);
-            var s = m.GetPayloadStream(new Header() { Id = id });
+            var s = m.GetPayloadStream(new Header { Id = id });
 
-            Assert.AreEqual(a.GetPayloadAsStream(), s);
+            Assert.Equal(a.GetPayloadAsStream(), s);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_OnReceive_NotExists_NoOp()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
-            m.OnReceive(new Header() { Id = id }, null, 100);
+            m.OnReceive(new Header { Id = id }, null, 100);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_OnReceive_Exists()
         {
-            var m = new StreamManager((c) => { });
+            var m = new StreamManager(c => { });
             var id = Guid.NewGuid();
 
             var a = m.GetPayloadAssembler(id);
             var s = a.GetPayloadAsStream();
 
-            m.OnReceive(new Header() { Id = id, End = true }, s, 100);
+            m.OnReceive(new Header { Id = id, End = true }, s, 100);
 
-            Assert.IsTrue(a.End);
+            Assert.True(a.End);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_CloseStream_NotExists_NoOp()
         {
-            var m = new StreamManager((c) =>
+            var m = new StreamManager(c =>
             {
-                Assert.Fail();
+                throw new XunitException("Should have failed");
             });
             var id = Guid.NewGuid();
 
             m.CloseStream(id);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_CloseStream_NotEnd_Closed()
         {
-            bool closed = false;
-            var m = new StreamManager((c) =>
+            var closed = false;
+            var m = new StreamManager(c =>
             {
                 closed = true;
             });
@@ -125,14 +125,14 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             m.CloseStream(id);
 
-            Assert.IsTrue(closed);
+            Assert.True(closed);
         }
 
-        [TestMethod]
+        [Fact]
         public void StreamManager_CloseStream_End_NoOp()
         {
-            bool closed = false;
-            var m = new StreamManager((c) =>
+            var closed = false;
+            var m = new StreamManager(c =>
             {
                 closed = true;
             });
@@ -142,11 +142,11 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var s = a.GetPayloadAsStream();
 
             // set it as ended
-            a.OnReceive(new Header() { End = true }, s, 1);
+            a.OnReceive(new Header { End = true }, s, 1);
 
             m.CloseStream(id);
 
-            Assert.IsFalse(closed);
+            Assert.False(closed);
         }
     }
 }

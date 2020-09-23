@@ -17,6 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Samples\sandwich\**" />
+    <Content Remove="Samples\sandwich\**" />
+    <EmbeddedResource Remove="Samples\sandwich\**" />
+    <None Remove="Samples\sandwich\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Samples\CycleDetection\Child1.dialog" />
     <Content Remove="Samples\CycleDetection\Root.dialog" />
   </ItemGroup>
@@ -40,10 +47,6 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Samples\sandwich\sandwich.json" />
   </ItemGroup>
 
   <ItemGroup>

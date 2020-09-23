@@ -10,13 +10,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class ConfirmationEntityRecognizer : TextEntityRecognizer
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ConfirmationEntityRecognizer";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfirmationEntityRecognizer"/> class.
+        /// </summary>
         public ConfirmationEntityRecognizer()
         {
         }
 
+        /// <summary>
+        /// Yes/no confirmation style input recognizing implementation.
+        /// </summary>
+        /// <param name="text">Text to recognize.</param>
+        /// <param name="culture"><see cref="Culture"/> to use.</param>
+        /// <returns>The recognized <see cref="ModelResult"/> list.</returns>
         protected override List<ModelResult> Recognize(string text, string culture)
         {
             return ChoiceRecognizer.RecognizeBoolean(text, culture);

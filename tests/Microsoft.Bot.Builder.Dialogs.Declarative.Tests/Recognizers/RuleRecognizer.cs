@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            string intent = DefaultIntent;
+            var intent = DefaultIntent;
 
-            if (Rules.TryGetValue(turnContext.Activity.Text, out string value))
+            if (Rules.TryGetValue(turnContext.Activity.Text, out var value))
             {
                 intent = value;
             }

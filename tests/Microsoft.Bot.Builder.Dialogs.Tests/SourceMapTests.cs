@@ -3,16 +3,13 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class SourceMapTests
     {
-        public TestContext TestContext { get; set; }
-
-        [TestMethod]
+        [Fact]
         public void TestSourceMap()
         {
             ISourceMap sourceMap = new SourceMap();
@@ -32,18 +29,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             SourceRange range;
             foreach (var item in items)
             {
-                Assert.IsTrue(sourceMap.TryGetValue(item, out range), "couldn't find item");
-                Assert.AreEqual($"{item.Index}.txt", range.Path);
-                Assert.AreEqual(10 + item.Index, range.StartPoint.LineIndex);
-                Assert.AreEqual(20 + item.Index, range.StartPoint.CharIndex);
-                Assert.AreEqual(30 + item.Index, range.EndPoint.LineIndex);
-                Assert.AreEqual(40 + item.Index, range.EndPoint.CharIndex);
+                Assert.True(sourceMap.TryGetValue(item, out range), "couldn't find item");
+                Assert.Equal($"{item.Index}.txt", range.Path);
+                Assert.Equal(10 + item.Index, range.StartPoint.LineIndex);
+                Assert.Equal(20 + item.Index, range.StartPoint.CharIndex);
+                Assert.Equal(30 + item.Index, range.EndPoint.LineIndex);
+                Assert.Equal(40 + item.Index, range.EndPoint.CharIndex);
             }
 
-            Assert.IsFalse(sourceMap.TryGetValue(new object(), out range), "shouldn't find item");
+            Assert.False(sourceMap.TryGetValue(new object(), out range), "shouldn't find item");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNullSourceMap()
         {
             ISourceMap sourceMap = new NullSourceMap();
@@ -63,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             SourceRange range;
             foreach (var item in items)
             {
-                Assert.IsFalse(sourceMap.TryGetValue(item, out range), "shouldn't find item");
+                Assert.False(sourceMap.TryGetValue(item, out range), "shouldn't find item");
             }
         }
 

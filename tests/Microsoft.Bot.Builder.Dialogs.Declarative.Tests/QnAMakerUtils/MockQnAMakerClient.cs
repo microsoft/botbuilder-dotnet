@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 Answers = answers
             };
 
-            if (query.Equals("Q11"))
+            if (query.Equals("Q11", StringComparison.Ordinal))
             {
                 answers = new QueryResult[]
                 {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Output for question only ranker.
-            if (query.Equals("What ranker do you want to use?") && options.RankerType.Equals(RankerTypes.QuestionOnly))
+            if (query.Equals("What ranker do you want to use?", StringComparison.Ordinal) && options.RankerType.Equals(RankerTypes.QuestionOnly, StringComparison.Ordinal))
             {
                 answers = new QueryResult[]
                 {
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Output for question only ranker.
-            if (query.Equals("Surface book 2 price") && options.IsTest)
+            if (query.Equals("Surface book 2 price", StringComparison.Ordinal) && options.IsTest)
             {
                 answers = new QueryResult[]
                 {

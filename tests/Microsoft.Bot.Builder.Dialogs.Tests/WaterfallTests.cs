@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class WaterfallTests
     {
         public static WaterfallDialog Create_Waterfall3()
@@ -51,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 steps);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Waterfall()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -101,7 +100,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
+        public async Task WaterfallStepParentIsWaterfallParent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogs = new DialogSet(dialogState);
+            const string WATERFALL_PARENT_ID = "waterfall-parent-test-dialog";
+            var waterfallParent = new ComponentDialog(WATERFALL_PARENT_ID);
+
+            var steps = new WaterfallStep[]
+            {
+                async (step, cancellationToken) =>
+                {
+                    Assert.Equal(step.Parent.ActiveDialog.Id, waterfallParent.Id);
+                    await step.Context.SendActivityAsync("verified");
+                    return Dialog.EndOfTurn;
+                }
+            };
+            
+            waterfallParent.AddDialog(new WaterfallDialog(
+                "test",
+                steps));
+            waterfallParent.InitialDialogId = "test";
+            dialogs.Add(waterfallParent);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+                await dc.ContinueDialogAsync(cancellationToken);
+                if (!turnContext.Responded)
+                {
+                    await dc.BeginDialogAsync(WATERFALL_PARENT_ID, null, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("verified")
+            .StartTestAsync();
+        }
+
+        [Fact]
         public async Task WaterfallWithCallback()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -153,15 +195,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void WaterfallWithStepsNull()
         {
-            var waterfall = new WaterfallDialog("test");
-            waterfall.AddStep(null);
+            Assert.Throws<ArgumentNullException>(() => { new WaterfallDialog("test").AddStep(null); });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WaterfallWithClass()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -191,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WaterfallPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -236,7 +276,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WaterfallNested()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -274,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WaterfallDateTimePromptFirstInvalidThenValidInput()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -290,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    Assert.IsNotNull(stepContext);
+                    Assert.NotNull(stepContext);
                     return await stepContext.EndDialogAsync();
                 },
             };
@@ -322,7 +362,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WaterfallCancel()
         {
             const string id = "waterfall";
@@ -333,7 +373,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             dialog.TelemetryClient = new MyBotTelemetryClient(stepName =>
             {
-                Assert.AreEqual(stepName, "Waterfall2_Step2");
+                Assert.Equal("Waterfall2_Step2", stepName);
                 trackEventCalled = true;
             });
 
@@ -350,7 +390,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 DialogReason.CancelCalled);
 
-            Assert.IsTrue(trackEventCalled, "TrackEvent was never called.");
+            Assert.True(trackEventCalled, "TrackEvent was never called.");
         }
 
         private static WaterfallDialog Create_Waterfall2()

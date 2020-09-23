@@ -5,14 +5,13 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.PayloadTransport;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 {
-    [TestClass]
     public class PayloadReceiverTests
     {
-        [TestMethod]
+        [Fact]
         public async Task PayloadReceiver_ReceivePacketsAsync_ReceiveShortHeader_Throws()
         {
             var disconnectEvent = new TaskCompletionSource<string>();
@@ -26,7 +25,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var receiver = new PayloadReceiver();
             receiver.Disconnected += (sender, e) =>
             {
-                Assert.AreEqual("Stream closed while reading header bytes", e.Reason);
+                Assert.Equal("Stream closed while reading header bytes", e.Reason);
                 disconnectEvent.SetResult("done");
             };
 
@@ -34,7 +33,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var result = await disconnectEvent.Task;
 
-            Assert.AreEqual("done", result);
+            Assert.Equal("done", result);
         }
     }
 }

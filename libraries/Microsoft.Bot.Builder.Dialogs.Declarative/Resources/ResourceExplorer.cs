@@ -30,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
+        private List<IComponentDeclarativeTypes> declarativeTypes;
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<Resource> changedResources = new ConcurrentBag<Resource>();
         private bool typesLoaded = false;
@@ -49,9 +50,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         public ResourceExplorer(IEnumerable<ResourceProvider> providers)
-            : this()
+            : this(providers, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
+        /// <param name="providers">The list of resource providers to initialize the current instance.</param>
+        /// <param name="declarativeTypes">A list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.</param>
+        public ResourceExplorer(IEnumerable<ResourceProvider> providers, IEnumerable<IComponentDeclarativeTypes> declarativeTypes)
         {
             this.resourceProviders = providers.ToList();
+            this.declarativeTypes = declarativeTypes?.ToList();
         }
 
         /// <summary>
@@ -449,12 +460,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
 
                 AutoAssignId(resource, token, sourceContext);
-
-                if (resource is FileResource fileResource)
-                {
-                    range.Path = fileResource.FullName;
-                }
-
+                range.Path = resource.FullName ?? resource.Id;
                 return (token, range);
             }
         }
@@ -498,6 +504,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         protected virtual void OnChanged(Resource[] resources)
         {
             Changed?.Invoke(this, resources);
+        }
+
+        private IEnumerable<IComponentDeclarativeTypes> GetComponentRegistrations()
+        {
+            return this.declarativeTypes ?? ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>();
         }
 
         private void RegisterTypeInternal(string kind, Type type, ICustomDeserializer loader = null)
@@ -548,7 +559,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     // this can be reentrant, and we only want to do once.
                     this.typesLoaded = true;
 
-                    foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
+                    foreach (var component in GetComponentRegistrations())
                     {
                         if (component != null)
                         {

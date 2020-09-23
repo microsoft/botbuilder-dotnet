@@ -2,11 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
@@ -56,9 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public object Value { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
         {
-            if (this.Name == null)
+            if (Name == null)
             {
                 throw new Exception("You must define the event name.");
             }
@@ -70,9 +67,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            await adapter.ProcessActivityAsync(eventActivity, callback, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.ProcessActivityAsync(eventActivity, callback, default).ConfigureAwait(false);
             sw.Stop();
-            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing CustomEvent: {this.Name} ]");
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing CustomEvent: {Name} ]");
         }
     }
 }
