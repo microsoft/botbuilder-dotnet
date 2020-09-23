@@ -1500,7 +1500,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                         "Evaluate template [template1] get result: hi friend",
                         "Evaluate expression 'if(name==null, 'friend', name)' get result: friend"
                     };
-                    Assert.True(options.Contains(msg.Text));
+                    Assert.Contains(msg.Text, options);
                 }
             };
 
