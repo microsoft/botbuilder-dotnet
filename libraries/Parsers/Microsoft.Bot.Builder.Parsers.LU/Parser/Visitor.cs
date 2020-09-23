@@ -1,6 +1,9 @@
-﻿#pragma warning disable SA1401 // Fields should be private
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable SA1401 // Fields should be private
 #pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System.Collections.Generic;
 using Antlr4.Runtime.Tree;
 

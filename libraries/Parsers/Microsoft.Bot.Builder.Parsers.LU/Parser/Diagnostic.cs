@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using Antlr4.Runtime;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser

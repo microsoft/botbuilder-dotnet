@@ -1,8 +1,11 @@
-﻿#pragma warning disable CA2227
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable CA2227
 #pragma warning disable CA1716
 #pragma warning disable SA1402
 #pragma warning disable SA1601
 #pragma warning disable SA1602
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
 using System.Collections.Generic;

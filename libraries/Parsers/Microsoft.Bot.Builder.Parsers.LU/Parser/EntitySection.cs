@@ -1,6 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
@@ -93,7 +94,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 }
             }
 
-            if (!string.IsNullOrEmpty(Type) && Type.IndexOf('=', StringComparison.InvariantCulture) > -1 && synonymsOrPhraseList.Count == 0)
+            if (!string.IsNullOrEmpty(Type) && Type.IndexOf('=') > -1 && synonymsOrPhraseList.Count == 0)
             {
                 var errorMsg = $"no synonyms list found for list entity definition: \"{parseTree.entityDefinition().entityLine().GetText()}\"";
                 var error = Diagnostic.BuildDiagnostic(

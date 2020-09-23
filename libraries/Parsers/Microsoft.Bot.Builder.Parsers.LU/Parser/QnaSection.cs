@@ -1,7 +1,10 @@
-﻿#pragma warning disable CA1034 // Nested types should not be visible
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable CA1034 // Nested types should not be visible
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable CA2227 // Collection properties should be read only
 #pragma warning disable SA1201 // Elements should appear in the correct order
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;

@@ -1,8 +1,10 @@
-﻿#pragma warning disable CA1031 // Do not catch general exception types
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable CA1031 // Do not catch general exception types
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Newtonsoft.Json;
@@ -230,7 +232,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 
                         while (index + 1 < sections.Count
                             && (sections[index + 1] is SectionEntity
-                            || (sections[index + 1].SectionType == SectionType.SimpleIntentSection && sections[index + 1].IntentNameLine.Contains("##", StringComparison.InvariantCulture))))
+                            || (sections[index + 1].SectionType == SectionType.SimpleIntentSection && sections[index + 1].IntentNameLine.Contains("##"))))
                         {
                             if (sections[index + 1] is SectionEntity entitySection)
                             {

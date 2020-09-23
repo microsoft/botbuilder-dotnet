@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using System.Collections.Generic;
 using static LUFileParser;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
