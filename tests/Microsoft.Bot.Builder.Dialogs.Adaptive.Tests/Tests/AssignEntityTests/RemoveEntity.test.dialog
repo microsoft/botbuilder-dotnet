@@ -1,10 +1,10 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Tests for Clearing Entity",
+  "description": "Tests for Removing Entity",
   "httpRequestMocks": [
-    "LuisAddEntity.mock",
-    "LuisClearEntity.mock"
+    "LuisAddToppingsEntity.mock",
+    "LuisRemoveEntity.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -21,14 +21,14 @@
     "triggers": [
       {
         "$kind": "Microsoft.OnEndOfActions",
-        "condition": "=!$Bread",
+        "condition": "=!$Toppings",
         "priority": 0,
         "actions": [
           {
             "$kind": "Microsoft.Ask",
-            "activity": "Bread?",
+            "activity": "Toppings?",
             "expectedProperties": [
-              "Bread"
+              "Toppings"
             ]
           }
         ]
@@ -36,32 +36,36 @@
       {
         "$kind": "Microsoft.OnAssignEntity",
         "operation": "Add()",
-        "property": "Bread",
-        "entity": "BreadEntity",
+        "property": "Toppings",
+        "entity": "ToppingsEntity",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",
-            "activity": "Set bread to rye"
+            "activity": "Set toppings to tomato and lettuce"
           },
           {
-            "$kind": "Microsoft.SetProperty",
-            "property": "$Bread",
-            "value": "=@BreadEntity"
+            "$kind": "Microsoft.EditArray",
+            "changeType": "push",
+            "itemsProperty": "$Toppings",
+            "value": "=@ToppingsEntity"
           }
         ]
       },
       {
         "$kind": "Microsoft.OnAssignEntity",
-        "operation": "Clear()",
-        "property": "Bread",
+        "operation": "Remove()",
+        "property": "Toppings",
+        "entity": "ToppingsEntity",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",
-            "activity": "bread has been cleared."
+            "activity": "tomato has been removed"
           },
           {
-            "$kind": "Microsoft.DeleteProperty",
-            "property": "$Bread"
+            "$kind": "Microsoft.EditArray",
+            "changeType": "remove",
+            "itemsProperty": "$Toppings",
+            "value": "=@ToppingsEntity"
           }
         ]
       }
@@ -78,30 +82,23 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Bread?"
+      "text": "Toppings?"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "rye"
+      "text": "add tomato and lettuce"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Set bread to rye"
+      "text": "Set toppings to tomato and lettuce"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "clear bread"
+      "text": "remove tomato"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "bread has been cleared."
-    },
-    {
-      "$kind": "Microsoft.Test.MemoryAssertions",
-      "assertions": [
-        "!$Bread"
-      ]
+      "text": "tomato has been removed"
     }
-
   ]
 }

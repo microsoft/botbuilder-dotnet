@@ -1,9 +1,9 @@
 ﻿{
   "$schema": "../../../tests.schema",
   "$kind": "Microsoft.Test.Script",
-  "description": "Tests for Showing Entity",
+  "description": "Tests for Helping Entity",
   "httpRequestMocks": [
-    "LuisShowEntity.mock"
+    "LuisHelpEntity.mock"
   ],
   "dialog": {
     "$kind": "Microsoft.AdaptiveDialog",
@@ -20,12 +20,12 @@
     "triggers": [
       {
         "$kind": "Microsoft.OnAssignEntity",
-        "operation": "Show()",
+        "operation": "Help()",
         "property": "Bread",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",
-            "activity": "bread : rye"
+            "activity": "possible values"
           }
         ]
       }
@@ -42,11 +42,11 @@
     },
     {
       "$kind": "Microsoft.Test.UserSays",
-      "text": "show bread"
+      "text": "help bread"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "bread : rye"
+      "text": "possible values"
     }
   ]
 }
