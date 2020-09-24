@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         emptyIntentSection.Name = section.Name;
                         emptyIntentSection.Id = $"{emptyIntentSection.SectionType}_{emptyIntentSection.Name}";
 
-                        // Get the end character index
+                        // get the end character index
                         // this is default value
                         // it will be reset in function extractSectionBody()
                         var endCharacter = section.Name.Length + 2;
