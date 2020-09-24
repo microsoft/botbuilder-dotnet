@@ -3,6 +3,18 @@
     "form": {
         "label": "Edit an array property",
         "subtitle": "Edit Array",
-        "helpLink": "https://aka.ms/bfc-using-memory"
+        "helpLink": "https://aka.ms/bfc-using-memory",
+        "properties": {
+            "itemsProperty": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
+            },
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
     }
 }
