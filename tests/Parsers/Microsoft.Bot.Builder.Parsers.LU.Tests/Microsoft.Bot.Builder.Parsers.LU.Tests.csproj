@@ -41,6 +41,12 @@
     <None Update="Fixtures\SectionsLU.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Fixtures\SectionsLU_Unix.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Fixtures\SectionsLU_Windows.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\Parsers\Microsoft.Bot.Builder.Parsers.LU\Microsoft.Bot.Builder.Parsers.LU.csproj" />

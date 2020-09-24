@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var luContent = File.ReadAllText(path);
             luContent = luContent.Substring(0, luContent.Length - 1);
             var result = LuParser.Parse(luContent);
-            if (string.Equals(fileName, "LU_Sections"))
+            if (string.Equals(fileName, "LU_Sections") || string.Equals(fileName, "SectionsLU"))
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
