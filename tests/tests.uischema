@@ -302,7 +302,7 @@
   },
   "Microsoft.ThrowException": {
     "form": {
-      "label": "Throw an exception event",
+      "label": "Throw an exception",
       "subtitle": "Throw an exception"
     }
   },

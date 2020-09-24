@@ -9479,8 +9479,8 @@
     },
     "Microsoft.ThrowException": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Throw an exception event",
-      "description": "Throw an exception event. Capture this event with OnError trigger.",
+      "title": "Throw an exception",
+      "description": "Throw an exception. Capture this exception with OnError trigger.",
       "type": "object",
       "required": [
         "errorValue",
@@ -9511,11 +9511,6 @@
           "$ref": "#/definitions/valueExpression",
           "title": "Error value",
           "description": "Error value to throw."
-        },
-        "bubbleEvent": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Bubble event",
-          "description": "If true this event is passed on to parent dialogs."
         },
         "$kind": {
           "title": "Kind of dialog object",
