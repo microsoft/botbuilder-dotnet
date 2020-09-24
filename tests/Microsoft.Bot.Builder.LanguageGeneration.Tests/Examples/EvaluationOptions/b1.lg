@@ -1,6 +1,0 @@
-﻿> !# @strict = true
-> !# @replaceNull = the ${path} is undefined  
-> !# @lineBreakStyle = markdown
-
-#echo
-- test

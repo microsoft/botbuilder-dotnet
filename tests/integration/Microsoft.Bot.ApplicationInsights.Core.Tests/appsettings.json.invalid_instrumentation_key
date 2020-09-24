@@ -1,7 +1,0 @@
-{
-  "botFilePath": "fake.bot",
-  "botFileSecret": "",
-  "ApplicationInsights": {
-    "InstrumentationKey": "0000000000"
-  }
-}

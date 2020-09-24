@@ -1,9 +1,0 @@
-
-> Template for generating display text for the value of the 'NameEntity' entity.
-# NameEntity_getValueText(val)
- - IF: ${val}
- - ${val}
- - ELSE:
- - no value
-
-> Generator: 367f46dbdead466317a2a55576cf2e97

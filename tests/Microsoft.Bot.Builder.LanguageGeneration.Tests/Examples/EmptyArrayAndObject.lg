@@ -1,9 +1,0 @@
-﻿# template(list, obj)
-- IF: ${list == [ ] && obj == { }}
-- list and obj are both empty
-- ELSEIF: ${list == [ ] && obj != { }}
-- list is empty
-- ELSEIF: ${list != [] && obj == {}}
-- obj is empty
-- ELSE:
-- list and obj are both not empty.

@@ -1,9 +1,0 @@
-
-> Template for generating display text for the value of the 'QuantityEntity' entity.
-# QuantityEntity_getValueText(val)
- - IF: ${val}
- - ${val}
- - ELSE:
- - no value
-
-> Generator: 9a1e0c0fe3c9a2a9c993078d1087cdf4

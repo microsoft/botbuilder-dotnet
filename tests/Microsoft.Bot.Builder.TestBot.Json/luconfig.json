@@ -1,8 +1,0 @@
-{
-  "botName": "Testbot.Json",
-  "defaultCulture": "en-us",
-  "models": [
-    "Samples/ToDoLuisBot/ToDoLuis.lu",
-    "Samples/sandwich/luis/sandwich.en-us.lu"
-  ]
-}

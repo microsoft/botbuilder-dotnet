@@ -1,6 +1,0 @@
-﻿{
-    "$schema": "../../../../tests.schema",
-    "$kind": "Microsoft.Test.UserTokenBasicMock",
-    "connectionName": "nomagiccode connection",
-    "token": "nomagiccode token"
-}
