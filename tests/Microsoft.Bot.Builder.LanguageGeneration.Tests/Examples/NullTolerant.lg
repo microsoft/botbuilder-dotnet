@@ -3,8 +3,8 @@
 
 # template2
 - switch: ${a.b}
-- CASE: ${'null'}
-- result is 'null'
+- CASE: ${null}
+- result is null
 
 # template3
 [MyStruct
@@ -15,3 +15,7 @@
 # template4
 - IF:${false}
 - hello
+
+> return null
+# template5
+- hello${a.b}
