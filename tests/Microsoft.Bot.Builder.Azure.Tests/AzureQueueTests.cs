@@ -8,6 +8,7 @@ using Azure.Storage.Queues;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Azure.Queues;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -40,10 +41,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                        .UseStorage(new MemoryStorage())
                        .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
 
-                var dm = new DialogManager(new ContinueConversationLater()
+                var queueStorage = new AzureQueueStorage(ConnectionString, queueName);
+                var dm = new DialogManager(new ContinueConversationLater(queueStorage)
                 {
-                    ConnectionString = ConnectionString,
-                    QueueName = queueName,
                     Date = "=addSeconds(utcNow(), 2)",
                     Value = "foo"
                 });

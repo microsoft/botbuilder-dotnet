@@ -9,7 +9,7 @@ using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Azure.Queues
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Action which schedules a conversation to be continued later by writing a EventActivity(Name=ContinueConversation) to a Azure Storage queue.
@@ -32,17 +32,21 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         /// The Kind name for this dialog.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "AzureQueues.ContinueConversationLater";
+        public const string Kind = "Microsoft.ContinueConversationLater";
+
+        private readonly QueueStorage _queueStorage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContinueConversationLater"/> class.
         /// </summary>
+        /// <param name="queueStorage">The queue to store the Activity to continue the conversation.</param>
         /// <param name="callerPath">The full path of the source file that contains this called.</param>
         /// <param name="callerLine">The line within the source file that contains this caller.</param>
         [JsonConstructor]
-        public ContinueConversationLater([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ContinueConversationLater(QueueStorage queueStorage, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+            this._queueStorage = queueStorage;
         }
 
         /// <summary>
@@ -74,23 +78,6 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         [JsonProperty("value")]
         public ValueExpression Value { get; set; }
 
-        /// <summary>
-        /// Gets or sets the connectionString for the azure storage queue to use.
-        /// </summary>
-        /// <value>
-        /// The connectionString for the azure storage queue to use.
-        /// </value>
-        /// <example>'=settings.ConnectionString'.</example>
-        [JsonProperty("connectionString")]
-        public StringExpression ConnectionString { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the queue to use. 
-        /// </summary>
-        /// <value>default is 'activities'.</value>
-        [JsonProperty("queueName")]
-        public StringExpression QueueName { get; set; } = "activities";
-
         /// <inheritdoc/>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -105,12 +92,11 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             }
 
             var dateString = Date.GetValue(dc.State);
-            DateTime date;
-            if (!DateTime.TryParse(dateString, out date))
+            if (!DateTime.TryParse(dateString, out var date))
             {
                 throw new ArgumentException($"{nameof(Date)} is invalid");
             }
-            
+
             date = date.ToUniversalTime();
             if (date <= DateTime.UtcNow)
             {
@@ -124,11 +110,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             var visibility = date - DateTime.UtcNow;
             var ttl = visibility + TimeSpan.FromMinutes(2);
 
-            var queueName = QueueName.GetValue(dc.State);
-            var connectionString = ConnectionString.GetValue(dc.State);
-
-            var queueStorage = new QueuesStorage(connectionString, queueName);
-            var receipt = await queueStorage.QueueActivityAsync(activity, visibility, ttl, cancellationToken).ConfigureAwait(false);
+            var receipt = await _queueStorage.QueueActivityAsync(activity, ttl, cancellationToken).ConfigureAwait(false);
 
             // return the receipt as the result.
             return await dc.EndDialogAsync(result: receipt, cancellationToken: cancellationToken).ConfigureAwait(false);
