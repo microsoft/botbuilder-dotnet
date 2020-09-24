@@ -31,14 +31,6 @@
                 "$kind": "Microsoft.Test.IUserTokenMock"
             }
         },
-        "propertyMocks": {
-            "type": "array",
-            "title": "Property Mocks",
-            "description": "A list of property mocks. In first match first use order.",
-            "items": {
-                "$kind": "Microsoft.Test.IPropertyMock"
-            }
-        },
         "script": {
             "type": "array",
             "title": "Test actions",

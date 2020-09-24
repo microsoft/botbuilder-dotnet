@@ -7,3 +7,6 @@
 - Hello
 - Hiya
 - Hi
+
+#TestTimexResolve
+- ${formatDateTime(concat(resolve("2009-01-23"), "T", resolve("T14")))}

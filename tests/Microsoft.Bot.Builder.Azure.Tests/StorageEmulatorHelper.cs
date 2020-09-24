@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
@@ -45,7 +44,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
             {
-                Assert.Inconclusive("This test requires Azure Storage Emulator to run and is disabled on the build server.");
                 return false;
             }
 
@@ -61,7 +59,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 return output.IndexOf("started") > 0;
             }
 
-            Assert.Inconclusive("This test requires Azure Storage Emulator to run");
             return false;
         }
 
@@ -101,7 +98,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 "Storage Emulator",
                 "AzureStorageEmulator.exe");
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             var startIInfo = new ProcessStartInfo
             {
                 Arguments = command.ToString(),

@@ -91,6 +91,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
             => (IsExpected ? "+" : string.Empty) + $"{Event}: {Property} = {Operation}({Entity})";
     }

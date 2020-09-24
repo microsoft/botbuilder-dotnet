@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Xunit;
 
@@ -34,6 +35,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             new SortedValue { Value = "option A", Index = 0 },
             new SortedValue { Value = "option B", Index = 1 },
             new SortedValue { Value = "option C", Index = 2 },
+        };
+
+        private static List<SortedValue> valuesWithSpecialCharacters = new List<SortedValue>
+        {
+            new SortedValue { Value = "A < B", Index = 0 },
+            new SortedValue { Value = "A >= B", Index = 1 },
+            new SortedValue { Value = "A ??? B", Index = 2 },
         };
 
         // FindValues
@@ -81,6 +89,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var found = Find.FindValues("option B", similarValues, new FindValuesOptions { AllowPartialMatches = true });
             Assert.Single(found);
             AssertValue(found[0], "option B", 1, 1.0f);
+        }
+
+        [Fact]
+        public void ShouldPreferExactMatch()
+        {
+            var index = 1;
+            var utterance = valuesWithSpecialCharacters[index].Value;
+            var found = Find.FindValues(utterance, valuesWithSpecialCharacters);
+
+            AssertValue(found.Single(), utterance, index, 1);
         }
 
         [Fact]

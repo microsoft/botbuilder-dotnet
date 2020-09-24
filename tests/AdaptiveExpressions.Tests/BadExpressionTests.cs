@@ -332,6 +332,10 @@ namespace AdaptiveExpressions.Tests
             Test("getPreviousViableTime(hello)"), // should have a "XX:mm:ss" format string
             Test("getPreviousViableTime(one)"), // should have a string parameter
             Test("getPreviousViableTime('XX:12:12', 20)"), // should only have 1 parameter
+            Test("resolve(one)"), // should have string or TimexProperty arguments
+            Test("resolve('T14', 'Asia/Tokyo')"), // should only have one parameter
+            Test("resolve('12-20')"), // should have a valid TimexPropterty after parsing
+            Test("resolve('XXXX-WXX-6')"), // not a valid argument
             #endregion
 
             #region uri parsing function test

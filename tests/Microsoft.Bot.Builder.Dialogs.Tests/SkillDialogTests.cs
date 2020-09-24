@@ -13,39 +13,38 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class SkillDialogTests
     {
-        [TestMethod]
+        [Fact]
         public void ConstructorValidationTests()
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new SkillDialog(null));
+            Assert.Throws<ArgumentNullException>(() => { new SkillDialog(null); });
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BeginDialogOptionsValidation()
         {
             var dialogOptions = new SkillDialogOptions();
             var sut = new SkillDialog(dialogOptions);
             var client = new DialogTestClient(Channels.Test, sut);
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "null options should fail");
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
 
             client = new DialogTestClient(Channels.Test, sut, new Dictionary<string, string>());
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "options should be of type DialogArgs");
+            await Assert.ThrowsAsync<ArgumentException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
 
             client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions());
-            await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"), "Activity in DialogArgs should be set");
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
         }
 
-        [TestMethod]
-        [DataRow(null)]
-        [DataRow(DeliveryModes.ExpectReplies)]
+        [Theory]
+        [InlineData(null)]
+        [InlineData(DeliveryModes.ExpectReplies)]
         public async Task BeginDialogCallsSkill(string deliveryMode)
         {
             Activity activitySent = null;
@@ -77,35 +76,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activityToSend.Text = Guid.NewGuid().ToString();
             var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
-            Assert.AreEqual(0, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
+            Assert.Equal(0, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
             
             // Send something to the dialog to start it
             await client.SendActivityAsync<Activity>("irrelevant");
 
             // Assert results and data sent to the SkillClient for fist turn
-            Assert.AreEqual(1, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
-            Assert.AreEqual(dialogOptions.BotId, fromBotIdSent);
-            Assert.AreEqual(dialogOptions.Skill.AppId, toBotIdSent);
-            Assert.AreEqual(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
-            Assert.AreEqual(activityToSend.Text, activitySent.Text);
-            Assert.AreEqual(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
+            Assert.Equal(1, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
+            Assert.Equal(dialogOptions.BotId, fromBotIdSent);
+            Assert.Equal(dialogOptions.Skill.AppId, toBotIdSent);
+            Assert.Equal(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
+            Assert.Equal(activityToSend.Text, activitySent.Text);
+            Assert.Equal(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
 
             // Send a second message to continue the dialog
             await client.SendActivityAsync<Activity>("Second message");
-            Assert.AreEqual(1, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
+            Assert.Equal(1, ((SimpleConversationIdFactory)dialogOptions.ConversationIdFactory).CreateCount);
 
             // Assert results for second turn
-            Assert.AreEqual("Second message", activitySent.Text);
-            Assert.AreEqual(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
+            Assert.Equal("Second message", activitySent.Text);
+            Assert.Equal(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
 
             // Send EndOfConversation to the dialog
             await client.SendActivityAsync<IEndOfConversationActivity>((Activity)Activity.CreateEndOfConversationActivity());
 
             // Assert we are done.
-            Assert.AreEqual(DialogTurnStatus.Complete, client.DialogTurnResult.Status);
+            Assert.Equal(DialogTurnStatus.Complete, client.DialogTurnResult.Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldHandleInvokeActivities()
         {
             Activity activitySent = null;
@@ -140,28 +139,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await client.SendActivityAsync<Activity>("irrelevant");
 
             // Assert results and data sent to the SkillClient for fist turn
-            Assert.AreEqual(dialogOptions.BotId, fromBotIdSent);
-            Assert.AreEqual(dialogOptions.Skill.AppId, toBotIdSent);
-            Assert.AreEqual(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
-            Assert.AreEqual(activityToSend.Name, activitySent.Name);
-            Assert.AreEqual(DeliveryModes.ExpectReplies, activitySent.DeliveryMode);
-            Assert.AreEqual(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
+            Assert.Equal(dialogOptions.BotId, fromBotIdSent);
+            Assert.Equal(dialogOptions.Skill.AppId, toBotIdSent);
+            Assert.Equal(dialogOptions.Skill.SkillEndpoint.ToString(), toUriSent.ToString());
+            Assert.Equal(activityToSend.Name, activitySent.Name);
+            Assert.Equal(DeliveryModes.ExpectReplies, activitySent.DeliveryMode);
+            Assert.Equal(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
 
             // Send a second message to continue the dialog
             await client.SendActivityAsync<Activity>("Second message");
 
             // Assert results for second turn
-            Assert.AreEqual("Second message", activitySent.Text);
-            Assert.AreEqual(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
+            Assert.Equal("Second message", activitySent.Text);
+            Assert.Equal(DialogTurnStatus.Waiting, client.DialogTurnResult.Status);
 
             // Send EndOfConversation to the dialog
             await client.SendActivityAsync<IEndOfConversationActivity>((Activity)Activity.CreateEndOfConversationActivity());
 
             // Assert we are done.
-            Assert.AreEqual(DialogTurnStatus.Complete, client.DialogTurnResult.Status);
+            Assert.Equal(DialogTurnStatus.Complete, client.DialogTurnResult.Status);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CancelDialogSendsEoC()
         {
             Activity activitySent = null;
@@ -192,10 +191,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Cancel the dialog so it sends an EoC to the skill
             await client.DialogContext.CancelAllDialogsAsync(CancellationToken.None);
 
-            Assert.AreEqual(ActivityTypes.EndOfConversation, activitySent.Type);
+            Assert.Equal(ActivityTypes.EndOfConversation, activitySent.Type);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowHttpExceptionOnPostFailure()
         {
             // Create a mock skill client to intercept calls and capture what is sent.
@@ -212,10 +211,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
             // Send something to the dialog 
-            await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
+            await Assert.ThrowsAsync<HttpRequestException>(async () => await client.SendActivityAsync<IMessageActivity>("irrelevant"));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldInterceptOAuthCardsForSso()
         {
             var connectionName = "connectionName";
@@ -240,10 +239,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
-            Assert.IsNull(finalActivity);
+            Assert.Null(finalActivity);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldNotInterceptOAuthCardsForEmptyConnectionName()
         {
             var connectionName = "connectionName";
@@ -267,11 +266,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
-            Assert.IsNotNull(finalActivity);
-            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+            Assert.NotNull(finalActivity);
+            Assert.Single(finalActivity.Attachments);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldNotInterceptOAuthCardsForEmptyToken()
         {
             var firstResponse = new ExpectedReplies(new List<Activity> { CreateOAuthCardAttachmentActivity("https://test") });
@@ -295,11 +294,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Don't add exchangeable token to test adapter
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
-            Assert.IsNotNull(finalActivity);
-            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+            Assert.NotNull(finalActivity);
+            Assert.Single(finalActivity.Attachments);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldNotInterceptOAuthCardsForTokenException()
         {
             var connectionName = "connectionName";
@@ -324,11 +323,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var client = new DialogTestClient(testAdapter, sut, initialDialogOptions, conversationState: conversationState);
             testAdapter.ThrowOnExchangeRequest(connectionName, Channels.Test, "user1", "https://test");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
-            Assert.IsNotNull(finalActivity);
-            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+            Assert.NotNull(finalActivity);
+            Assert.Single(finalActivity.Attachments);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldNotInterceptOAuthCardsForBadRequest()
         {
             var connectionName = "connectionName";
@@ -353,8 +352,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var client = new DialogTestClient(testAdapter, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
             testAdapter.AddExchangeableToken(connectionName, Channels.Test, "user1", "https://test", "https://test1");
             var finalActivity = await client.SendActivityAsync<IMessageActivity>("irrelevant");
-            Assert.IsNotNull(finalActivity);
-            Assert.IsTrue(finalActivity.Attachments.Count == 1);
+            Assert.NotNull(finalActivity);
+            Assert.Single(finalActivity.Attachments);
         }
 
         private static Activity CreateOAuthCardAttachmentActivity(string uri)

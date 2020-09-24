@@ -125,6 +125,7 @@ namespace AdaptiveExpressions
         public const string GetPreviousViableDate = "getPreviousViableDate";
         public const string GetNextViableTime = "getNextViableTime";
         public const string GetPreviousViableTime = "getPreviousViableTime";
+        public const string TimexResolve = "resolve";
 
         // Conversions
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)

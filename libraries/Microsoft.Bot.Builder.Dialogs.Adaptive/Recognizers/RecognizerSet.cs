@@ -25,9 +25,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </remarks>
     public class RecognizerSet : Recognizer
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.RecognizerSet";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RecognizerSet"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public RecognizerSet([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
@@ -45,6 +53,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public List<Recognizer> Recognizers { get; set; } = new List<Recognizer>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Runs current DialogContext.TurnContext.Activity through a recognizer and returns a <see cref="RecognizerResult"/>.
+        /// </summary>
+        /// <param name="dialogContext">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="activity"><see cref="Activity"/> to recognize.</param>
+        /// <param name="cancellationToken">Optional, <see cref="CancellationToken"/> of the task.</param>
+        /// <param name="telemetryProperties">Optional, additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Optional, additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <returns>Analysis of utterance.</returns>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             if (dialogContext == null)
