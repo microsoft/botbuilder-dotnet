@@ -16,7 +16,7 @@
         "IncludeAPIResults": true
       }
     },
-    "schema": "twoProperty.json",
+    "schema": "twoProperties.json",
     "triggers": [
       {
         "$kind": "Microsoft.OnBeginDialog",

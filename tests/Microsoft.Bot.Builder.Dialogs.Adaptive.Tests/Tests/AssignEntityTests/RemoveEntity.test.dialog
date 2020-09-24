@@ -17,7 +17,7 @@
         "IncludeAPIResults": true
       }
     },
-    "schema": "twoProperty.json",
+    "schema": "twoProperties.json",
     "triggers": [
       {
         "$kind": "Microsoft.OnEndOfActions",
@@ -103,7 +103,7 @@
     {
       "$kind": "Microsoft.Test.MemoryAssertions",
       "assertions": [
-        "!$Toppings"
+        "$Toppings"
       ]
     }
 
