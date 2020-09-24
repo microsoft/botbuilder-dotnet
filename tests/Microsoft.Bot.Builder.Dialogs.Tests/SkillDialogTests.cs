@@ -392,7 +392,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Send something to the dialog to start it
             await client.SendActivityAsync<IMessageActivity>("hello");
 
-            Assert.Equal(0, (dialogOptions.ConversationIdFactory as SimpleConversationIdFactory).ConversationRefs.Count);
+            Assert.Empty((dialogOptions.ConversationIdFactory as SimpleConversationIdFactory).ConversationRefs);
             Assert.Equal(1, (dialogOptions.ConversationIdFactory as SimpleConversationIdFactory).CreateCount);
         }
 
