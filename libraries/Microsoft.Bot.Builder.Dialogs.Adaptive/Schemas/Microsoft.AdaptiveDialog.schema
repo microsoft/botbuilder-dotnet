@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Adaptive Dialog",
+    "description": "Flexible, data driven dialog that can adapt to the conversation.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional dialog ID."
+        },
+        "autoEndDialog": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Auto end dialog",
+            "description": "If set to true the dialog will automatically end when there are no further actions.  If set to false, remember to manually end the dialog using EndDialog action.",
+            "default": true
+        },
+        "defaultResultProperty": {
+            "type": "string",
+            "title": "Default result property",
+            "description": "Value that will be passed back to the parent dialog.",
+            "default": "dialog.result"
+        },
+        "recognizer": {
+            "$kind": "Microsoft.IRecognizer",
+            "title": "Recognizer",
+            "description": "Input recognizer that interprets user input into intent and entities."
+        },
+        "generator": {
+            "$kind": "Microsoft.ILanguageGenerator",
+            "title": "Language Generator",
+            "description": "Language generator that generates bot responses."
+        },
+        "selector": {
+            "$kind": "Microsoft.ITriggerSelector",
+            "title": "Selector",
+            "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional)."
+        },
+        "triggers": {
+            "type": "array",
+            "description": "List of triggers defined for this dialog.",
+            "title": "Triggers",
+            "items": {
+                "$kind": "Microsoft.ITrigger",
+                "title": "Event triggers",
+                "description": "Event triggers for handling events."
+            }
+        },
+        "schema": {
+            "title": "Schema",
+            "description": "Schema to fill in.",
+            "anyOf": [
+                {
+                    "$ref": "http://json-schema.org/draft-07/schema#"
+                },
+                {
+                    "type": "string",
+                    "title": "Reference to JSON schema",
+                    "description": "Reference to JSON schema .dialog file."
+                }
+            ]
+        }
+    }
+}

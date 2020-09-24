@@ -1,0 +1,22 @@
+{
+  "id": "test_person_id",
+  "emails": [
+    "test_email@webex.bot"
+  ],
+  "displayName": "Webex-sample-bot",
+  "nickName": "Webex-sample-bot",
+  "firstName": null,
+  "lastName": null,
+  "avatar": "https://96a8d4c06f1dfda3e397-e36743463a44a1771820e742dbf644a5.ssl.cf1.rackcdn.com/V1~e7da6cd4-50f1-451f-af58-b9a0d36a97c7~2db0834143cf4b64a1e3d4da1b374785~80",
+  "orgId": "test_org_id",
+  "roles": null,
+  "licenses": null,
+  "created": "2019-07-03T18:38:02.2Z",
+  "timezone": null,
+  "LastActivity": null,
+  "status": "unknown",
+  "invitePending": null,
+  "loginEnabled": null,
+  "type": "bot",
+  "phoneNumbers": []
+}

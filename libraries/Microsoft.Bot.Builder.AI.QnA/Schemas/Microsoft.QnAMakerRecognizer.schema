@@ -1,0 +1,166 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "QnAMaker Recognizer",
+    "description": "Recognizer for generating QnAMatch intents from a KB.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional unique id using with RecognizerSet."
+        },
+        "knowledgeBaseId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "KnowledgeBase Id",
+            "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+            "default": "=settings.qna.knowledgebaseid"
+        },
+        "endpointKey": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Endpoint Key",
+            "description": "Endpoint key for the QnA Maker KB.",
+            "default": "=settings.qna.endpointkey"
+        },
+        "hostname": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Hostname",
+            "description": "Hostname for your QnA Maker service.",
+            "default": "=settings.qna.hostname",
+            "examples": [
+                "https://yourserver.azurewebsites.net/qnamaker"
+            ]
+        },
+        "threshold": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Threshold",
+            "description": "Threshold score to filter results.",
+            "default": 0.3
+        },
+        "strictFilters": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Strict Filters",
+            "description": "Metadata filters to use when calling the QnA Maker KB.",
+            "items": {
+                "type": "object",
+                "title": "Metadata filters",
+                "description": "Metadata filters to use when querying QnA Maker KB.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "description": "Name to filter on.",
+                        "maximum": 100
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value",
+                        "description": "Value to restrict filter.",
+                        "maximum": 100
+                    }
+                }
+            }
+        },
+        "top": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Top",
+            "description": "The number of answers you want to retrieve.",
+            "default": 3
+        },
+        "isTest": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "IsTest",
+            "description": "True, if pointing to Test environment, else false.",
+            "examples": [
+                true,
+                "=f(x)"
+            ]
+        },
+        "rankerType": {
+            "title": "Ranker Type",
+            "description": "Type of Ranker.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Ranker type",
+                    "description": "Type of Ranker.",
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ],
+                    "default": "default"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "strictFiltersJoinOperator": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "StrictFiltersJoinOperator",
+            "description": "Join operator for Strict Filters.",
+            "oneOf": [
+                {
+                    "title": "Join Operator",
+                    "description": "Value of Join Operator to be used as onjuction with Strict Filter values.",
+                    "enum": [
+                        "AND",
+                        "OR"
+                    ],
+                    "default": "AND"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "includeDialogNameInMetadata": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Include Dialog Name",
+            "description": "When set to false, the dialog name will not be passed to QnAMaker. (default) is true",
+            "default": true,
+            "examples": [
+                true,
+                "=f(x)"
+            ]
+        },
+        "metadata": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Metadata filters",
+            "description": "Metadata filters to use when calling the QnA Maker KB.",
+            "items": {
+                "type": "object",
+                "title": "Metadata filter",
+                "description": "Metadata filter to use when calling the QnA Maker KB.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "description": "Name of value to test."
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value",
+                        "description": "Value to filter against."
+                    }
+                }
+            }
+        },
+        "context": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "QnARequestContext",
+            "description": "Context to use for ranking."
+        },
+        "qnaId": {
+            "$ref": "schema:#/definitions/integerExpression",
+            "title": "QnAId",
+            "description": "A number or expression which is the QnAId to paass to QnAMaker API."
+        }
+    },
+    "required": [
+        "knowledgeBaseId",
+        "endpointKey",
+        "hostname"
+    ]
+}

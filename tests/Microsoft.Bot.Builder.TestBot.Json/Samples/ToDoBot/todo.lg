@@ -1,0 +1,25 @@
+# ShowTodo
+- IF: ${count(user.todos) > 0}
+    - ```
+Your most recent ${count(user.todos)} tasks are
+${join(foreach(user.todos, x, showSingleTodo(x)), '\n')}
+```
+- ELSE:
+    - You don't have any todos.
+
+# showSingleTodo(x)
+- * ${x}
+
+# ShowGrocery
+- IF: ${count(user.groceryList) > 0}
+    - ```
+Your most recent ${count(user.groceryList)} tasks are
+${join(foreach(user.groceryList, x, showSingleTodo(x)), '\n')}
+```
+- ELSE:
+    - You don't have any todos in grocery.
+
+# help
+- I can add a todo, show todos, remove a todo, and clear all todos
+- I can hep you yes I can
+- Help, we don't need no stinkin' help!

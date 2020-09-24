@@ -1,0 +1,23 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "ExternalLanguage.main.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Why did the chicken cross the road?"
+                },
+                {
+                    "$kind": "Microsoft.EndTurn"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "To get to the other side"
+                }
+            ]
+        }
+    ]
+}

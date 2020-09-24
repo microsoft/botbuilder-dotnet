@@ -1,0 +1,15 @@
+﻿﻿# template
+- ${templateRef()}
+
+# template1
+- ${templateRef(a)}
+
+
+# multiLineTemplate
+- ```
+${templateRefInMultiLine()}
+```
+
+# otherTemplate
+- hi 
+

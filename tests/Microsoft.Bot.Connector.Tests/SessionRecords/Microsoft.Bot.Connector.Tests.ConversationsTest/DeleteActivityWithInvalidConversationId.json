@@ -1,0 +1,102 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    }\r\n  ],\r\n  \"activity\": {\r\n    \"type\": \"message\",\r\n    \"from\": {\r\n      \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n    },\r\n    \"recipient\": {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    },\r\n    \"text\": \"TEST Activity to be deleted with invalid conversation Id\"\r\n  }\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "365"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"activityId\": \"1562094706.004400\",\r\n  \"id\": \"BKGSYSTFG:TKGSUQHQE:DKE8NUG92\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "83"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|ac02aac81ac45148844f44b9aa2cf6ae.e7f4329c_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:46 GMT"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/B21S8SG7K%3AT03CWQ0QB/activities/1562094706.004400",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxUzhTRzdLJTNBVDAzQ1dRMFFCL2FjdGl2aXRpZXMvMTU2MjA5NDcwNi4wMDQ0MDA=",
+      "RequestMethod": "DELETE",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"ServiceError\",\r\n    \"message\": \"Invalid ConversationId: B21S8SG7K:T03CWQ0QB\"\r\n  }\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "114"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|5eca28ee0855ec47a25bb33838ee69c5.f05be4c5_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:46 GMT"
+        ]
+      },
+      "StatusCode": 400
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}

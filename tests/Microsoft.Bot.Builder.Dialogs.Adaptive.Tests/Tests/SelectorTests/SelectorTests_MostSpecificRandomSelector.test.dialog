@@ -1,0 +1,177 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "a",
+                    "pattern": "a"
+                },
+                {
+                    "intent": "b",
+                    "pattern": "b"
+                },
+                {
+                    "intent": "trigger",
+                    "pattern": "trigger"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "a",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.a",
+                        "value": "=1"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "b",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.b",
+                        "value": "=1"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "condition": "user.a == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleA1"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "condition": "user.a == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleA2"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "condition": "user.b == 1 || user.c == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleBorC"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "condition": "user.a == 1 && user.b == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleAandB"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "condition": "user.a == 1 && user.c == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleAandC"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "default"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false,
+        "selector": {
+            "$kind": "Microsoft.MostSpecificSelector",
+            "selector": {
+                "$kind": "Microsoft.RandomSelector",
+                "seed": -1
+            }
+        },
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "a"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyOneOf",
+            "text": [
+                "ruleA1",
+                "ruleA2"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "b"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyOneOf",
+            "text": [
+                "ruleAandB"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyOneOf",
+            "text": [
+                "ruleAandB",
+                "ruleAandC"
+            ]
+        }
+    ]
+}

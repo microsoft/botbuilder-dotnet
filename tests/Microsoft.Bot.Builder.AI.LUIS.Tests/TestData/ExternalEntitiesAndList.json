@@ -1,0 +1,178 @@
+{
+  "entities": {
+    "$instance": {
+      "Airline": [
+        {
+          "endIndex": 23,
+          "modelType": "List Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
+          "startIndex": 7,
+          "text": "humberg airlines",
+          "type": "Airline"
+        },
+        {
+          "endIndex": 32,
+          "modelType": "List Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 27,
+          "text": "Delta",
+          "type": "Airline"
+        }
+      ]
+    },
+    "Airline": [
+      [
+        "HumAir"
+      ],
+      [
+        "Delta"
+      ]
+    ]
+  },
+  "intents": {
+    "Cancel": {
+      "score": 0.00330878259
+    },
+    "Delivery": {
+      "score": 0.00452178251
+    },
+    "EntityTests": {
+      "score": 0.052175343
+    },
+    "Greeting": {
+      "score": 0.002769983
+    },
+    "Help": {
+      "score": 0.002995687
+    },
+    "None": {
+      "score": 0.0302589461
+    },
+    "Roles": {
+      "score": 0.132316783
+    },
+    "search": {
+      "score": 0.007362695
+    },
+    "SpecifyName": {
+      "score": 0.00500302855
+    },
+    "Travel": {
+      "score": 0.0146034053
+    },
+    "Weather_GetForecast": {
+      "score": 0.005048246
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "fly on humberg airlines or Delta",
+  "v3": {
+    "options": {
+      "ExternalEntities": [
+        {
+          "entityLength": 16,
+          "entityName": "Airline",
+          "resolution": [
+            "HumAir"
+          ],
+          "startIndex": 7
+        }
+      ],
+      "IncludeAllIntents": true,
+      "IncludeAPIResults": true,
+      "IncludeInstanceData": true,
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Slot": "production"
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "$instance": {
+            "Airline": [
+              {
+                "length": 16,
+                "modelType": "List Entity Extractor",
+                "modelTypeId": 5,
+                "recognitionSources": [
+                  "externalEntities"
+                ],
+                "startIndex": 7,
+                "text": "humberg airlines",
+                "type": "Airline"
+              },
+              {
+                "length": 5,
+                "modelType": "List Entity Extractor",
+                "modelTypeId": 5,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 27,
+                "text": "Delta",
+                "type": "Airline"
+              }
+            ]
+          },
+          "Airline": [
+            [
+              "HumAir"
+            ],
+            [
+              "Delta"
+            ]
+          ]
+        },
+        "intents": {
+          "Cancel": {
+            "score": 0.00330878259
+          },
+          "Delivery": {
+            "score": 0.00452178251
+          },
+          "EntityTests": {
+            "score": 0.052175343
+          },
+          "Greeting": {
+            "score": 0.002769983
+          },
+          "Help": {
+            "score": 0.002995687
+          },
+          "None": {
+            "score": 0.0302589461
+          },
+          "Roles": {
+            "score": 0.132316783
+          },
+          "search": {
+            "score": 0.007362695
+          },
+          "SpecifyName": {
+            "score": 0.00500302855
+          },
+          "Travel": {
+            "score": 0.0146034053
+          },
+          "Weather.GetForecast": {
+            "score": 0.005048246
+          }
+        },
+        "normalizedQuery": "fly on humberg airlines or delta",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "Roles"
+      },
+      "query": "fly on humberg airlines or Delta"
+    }
+  }
+}

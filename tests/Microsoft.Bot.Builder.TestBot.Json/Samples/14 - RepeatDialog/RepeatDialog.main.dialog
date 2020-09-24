@@ -1,0 +1,49 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "cancel",
+                "pattern": "cancel"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "RepeatDialog.main.dialog starting"
+                },
+                {
+                    "$kind": "Microsoft.TextInput",
+                    "prompt": "Hello, what is your name?",
+                    "property": "user.name",
+                    "value": "=user.name"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hello ${user.name}, nice to meet you! (type cancel to end this)"
+                },
+                {
+                    "$kind": "Microsoft.EndTurn"
+                },
+                {
+                    "$kind": "Microsoft.RepeatDialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "cancel",
+            "actions": [
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        }
+    ]
+}

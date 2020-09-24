@@ -1,0 +1,126 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "test1",
+                    "pattern": "(?i)test1"
+                },
+                {
+                    "intent": "test2",
+                    "pattern": "(?i)test2"
+                },
+                {
+                    "intent": "Santa",
+                    "pattern": "(?i)santa"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "test1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "allowInterruptions": true,
+                        "property": "user.name1",
+                        "prompt": "What is your name?"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I have ${user.name1} as your name"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "test2",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "allowInterruptions": false,
+                        "property": "user.name2",
+                        "prompt": "What is your name?"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I have ${user.name2} as your name"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Santa",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I love you santa."
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "In None..."
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "santa"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I love you santa."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "John"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have John as your name"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "santa"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have santa as your name"
+        }
+    ]
+}

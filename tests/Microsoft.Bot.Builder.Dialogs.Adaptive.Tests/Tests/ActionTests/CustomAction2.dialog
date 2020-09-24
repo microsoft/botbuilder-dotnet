@@ -1,0 +1,19 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hi2 ${dialog.name}, you are ${dialog.age}."
+                },
+                {
+                    "$kind": "Microsoft.EndDialog",
+                    "value": 99
+                }
+            ]
+        }
+    ]
+}

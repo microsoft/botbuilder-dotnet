@@ -1,0 +1,17 @@
+{
+  "string": "test",
+  "int": 3,
+  "array": [
+    "zero",
+    "one",
+    "two",
+    "three"
+  ],
+  "fakeArray": {
+    "0": "zero",
+    "1": "one",
+    "zzz": "cat",
+    "2": "two",
+    "3": "three"
+  }
+}

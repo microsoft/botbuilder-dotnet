@@ -1,0 +1,69 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "testDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperties",
+                        "assignments": [
+                            {
+                                "property": "dialog.greeting",
+                                "value": "=coalesce($greeting, 'Hi')"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${$greeting}"
+                    },
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "length($greeting) < 6",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.RepeatDialog",
+                                "allowLoop": true,
+                                "options": {
+                                    "greeting": "${$greeting + 'Hi'}"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Welcome!"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "HiHi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "HiHiHi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Welcome!"
+        }
+    ]
+}

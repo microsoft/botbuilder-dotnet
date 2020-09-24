@@ -1,0 +1,23 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "defaultResultProperty": "$name",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.TextInput",
+                    "property": "$name",
+                    "prompt": "what is your name?",
+                    "unrecognizedPrompt": "prompt again",
+                    "invalidPrompt": "that's wrong"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "ASKFORNAME Hello ${$name}, nice to meet you!"
+                }
+            ]
+        }
+    ]
+}

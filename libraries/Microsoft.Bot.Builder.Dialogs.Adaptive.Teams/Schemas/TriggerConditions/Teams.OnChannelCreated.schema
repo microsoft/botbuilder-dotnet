@@ -1,0 +1,10 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "OnTeamsChannelCreated",
+    "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
+    "type": "object",
+    "required": [
+        "actions"
+    ]
+}

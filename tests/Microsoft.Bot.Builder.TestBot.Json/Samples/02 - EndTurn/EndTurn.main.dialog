@@ -1,0 +1,22 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "What's up?"
+                },
+                {
+                    "$kind": "Microsoft.EndTurn"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Oh I see!"
+                }
+            ]
+        }
+    ]
+}

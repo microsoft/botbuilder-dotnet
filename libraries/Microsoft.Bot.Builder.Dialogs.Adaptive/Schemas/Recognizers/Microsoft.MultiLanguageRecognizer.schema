@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "Multi-language recognizer",
+    "description": "Configure one recognizer per language and the specify the language fallback policy.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+        },
+        "languagePolicy": {
+            "$kind": "Microsoft.LanguagePolicy",
+            "type": "object",
+            "title": "Language policy",
+            "description": "Defines fall back languages to try per user input language."
+        },
+        "recognizers": {
+            "type": "object",
+            "title": "Recognizers",
+            "description": "Map of language -> Recognizer",
+            "additionalProperties": {
+                "$kind": "Microsoft.IRecognizer"
+            }
+        }
+    },
+    "required": [
+        "recognizers"
+    ]
+}

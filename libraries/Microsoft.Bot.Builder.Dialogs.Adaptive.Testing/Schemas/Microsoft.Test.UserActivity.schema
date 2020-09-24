@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.Test.ITestAction)",
+    "title": "Send Activity",
+    "description": "Sends activity to the bot.",
+    "type": "object",
+    "required": [
+        "activity"
+    ],
+    "properties": {
+        "activity": {
+            "type": "object",
+            "title": "Activity",
+            "description": "Activity to send to bot.",
+            "additionalProperties": true
+        },
+        "user": {
+            "type": "string",
+            "title": "User Name",
+            "description": "The activity.from.id and activity.from.name will be this if specified."
+        }
+    }
+}

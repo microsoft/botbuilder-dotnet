@@ -1,0 +1,159 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    }\r\n  ]\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "125"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"BKGSYSTFG:TKGSUQHQE:DKE8NUG92\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "45"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|ffb414511926ac41af08a7f7caee42a1.447a0607_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:47 GMT"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/BKGSYSTFG%3ATKGSUQHQE%3ADKE8NUG92/activities",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQktHU1lTVEZHJTNBVEtHU1VRSFFFJTNBREtFOE5VRzkyL2FjdGl2aXRpZXM=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n  },\r\n  \"text\": \"TEST Activity gets a reply\"\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "175"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"1562094708.004900\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "33"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|970da0326589d54baa8400101e692f05.3642c819_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:48 GMT"
+        ]
+      },
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/v3/conversations/BKGSYSTFG%3ATKGSUQHQE%3ADKE8NUG92/activities/1562094708.004900",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQktHU1lTVEZHJTNBVEtHU1VRSFFFJTNBREtFOE5VRzkyL2FjdGl2aXRpZXMvMTU2MjA5NDcwOC4wMDQ5MDA=",
+      "RequestMethod": "POST",
+      "RequestBody": "{\r\n  \"type\": \"message\",\r\n  \"from\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n  },\r\n  \"text\": \"TEST Reply to Activity\"\r\n}",
+      "RequestHeaders": {
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "171"
+        ],
+        "User-Agent": [
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"1562094708.005000\"\r\n}",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "33"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "x-ms-request-id": [
+          "|2bb3614f44f879448a72b0fcfb1270b4.e7f4329f_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:48 GMT"
+        ]
+      },
+      "StatusCode": 200
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}

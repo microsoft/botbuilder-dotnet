@@ -1,0 +1,53 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.Test.IUserTokenMock)",
+    "title": "Microsoft Test UserTokenBasicMock",
+    "description": "Mock Basic UserToken",
+    "type": "object",
+    "required": [
+        "connectionName",
+        "token"
+    ],
+    "properties": {
+        "connectionName": {
+            "type": "string",
+            "title": "Connection Name",
+            "description": "The connection name.",
+            "examples": [
+                "graph"
+            ]
+        },
+        "channelId": {
+            "type": "string",
+            "title": "Channel ID",
+            "description": "The channel ID. If empty, same as adapter.Conversation.ChannelId.",
+            "examples": [
+                "test"
+            ]
+        },
+        "userId": {
+            "type": "string",
+            "title": "User ID",
+            "description": "The user ID. If empty, same as adapter.Conversation.User.Id.",
+            "examples": [
+                "user1"
+            ]
+        },
+        "token": {
+            "type": "string",
+            "title": "Token",
+            "description": "The token to store.",
+            "examples": [
+                "token"
+            ]
+        },
+        "magicCode": {
+            "type": "string",
+            "title": "Magic Code",
+            "description": "The optional magic code to associate with this token.",
+            "examples": [
+                "000000"
+            ]
+        }
+    }
+}

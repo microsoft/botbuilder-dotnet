@@ -1,0 +1,20 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "ExternalLanguage.main.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "I see great things in your future..."
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Potentially a successful demo"
+                }
+            ]
+        }
+    ]
+}

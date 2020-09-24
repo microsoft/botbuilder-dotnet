@@ -1,0 +1,239 @@
+[
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "1",
+    "timestamp": "2018-07-18T00:52:36.000Z",
+    "type": "conversationUpdate",
+    "channelId": "chatdown",
+    "membersAdded": [
+      {
+        "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+        "name": "bot",
+        "role": "bot"
+      }
+    ],
+    "membersRemoved": []
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "2",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "before message",
+    "timestamp": "2018-07-18T00:52:38.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "3",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "conversationUpdate",
+    "timestamp": "2018-07-18T00:52:40.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "4",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "after message",
+    "timestamp": "2018-07-18T00:52:42.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "5",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "use middleware",
+    "timestamp": "2018-07-18T00:52:44.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "6",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "before message",
+    "timestamp": "2018-07-18T00:52:46.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "7",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "using middleware",
+    "timestamp": "2018-07-18T00:52:48.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "8",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "after message",
+    "timestamp": "2018-07-18T00:52:50.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "9",
+    "recipient": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "from": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "text": "catch exception",
+    "timestamp": "2018-07-18T00:52:52.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "10",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "before message",
+    "timestamp": "2018-07-18T00:52:54.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "11",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "generating exception",
+    "timestamp": "2018-07-18T00:52:56.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  },
+  {
+    "conversation": {
+      "id": "3A/F2iL0+X350VssCzAc+QLd/yQ="
+    },
+    "id": "12",
+    "recipient": {
+      "id": "Et6pb+wgWTVmq3VpLJlJWWgzrck=",
+      "name": "user",
+      "role": "user"
+    },
+    "from": {
+      "id": "xx5yYdN6T2rkz7DL15CBMQojfmc=",
+      "name": "bot",
+      "role": "bot"
+    },
+    "text": "Caught: exception to catch",
+    "timestamp": "2018-07-18T00:52:58.000Z",
+    "type": "message",
+    "channelId": "chatdown"
+  }
+]

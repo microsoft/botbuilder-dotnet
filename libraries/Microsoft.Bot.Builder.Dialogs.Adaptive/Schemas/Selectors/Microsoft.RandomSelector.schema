@@ -1,0 +1,14 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.ITriggerSelector)",
+    "title": "Random rule selector",
+    "description": "Select most specific true rule.",
+    "type": "object",
+    "properties": {
+        "seed": {
+            "type": "integer",
+            "title": "Random seed",
+            "description": "Random seed to start random number generation."
+        }
+    }
+}

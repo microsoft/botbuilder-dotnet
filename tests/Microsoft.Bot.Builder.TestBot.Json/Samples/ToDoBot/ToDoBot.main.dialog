@@ -1,0 +1,106 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "generator": "todo.lg",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "AddIntent",
+                "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?"
+            },
+            {
+                "intent": "ClearIntent",
+                "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)"
+            },
+            {
+                "intent": "DeleteIntent",
+                "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?"
+            },
+            {
+                "intent": "ShowIntent",
+                "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)"
+            },
+            {
+                "intent": "HelpIntent",
+                "pattern": "(?i)help"
+            },
+            {
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel|never mind"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "AddIntent",
+            "actions": [
+                "AddToDo"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "DeleteIntent",
+            "actions": [
+                "DeleteToDo"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ClearIntent",
+            "actions": [
+                "ClearToDos"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "ShowIntent",
+            "actions": [
+                "ShowToDos"
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "HelpIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${help()}"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "CancelIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "ok."
+                },
+                {
+                    "$kind": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
+                }
+            ]
+        }
+    ]
+}

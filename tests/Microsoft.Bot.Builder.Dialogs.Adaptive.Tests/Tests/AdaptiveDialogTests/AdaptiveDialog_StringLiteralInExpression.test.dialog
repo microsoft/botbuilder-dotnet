@@ -1,0 +1,79 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "(user.name == null)",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "user.name",
+                                "prompt": "Hello, what is your name?"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "(user.name == 'Carlos')",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Hello carlin"
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello ${user.name}, nice to meet you!"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "membersAdded": [
+                    {
+                        "id": "bot",
+                        "name": "Bot"
+                    },
+                    {
+                        "id": "user",
+                        "name": "User"
+                    }
+                ]
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello carlin"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Carlos, nice to meet you!"
+        }
+    ]
+}

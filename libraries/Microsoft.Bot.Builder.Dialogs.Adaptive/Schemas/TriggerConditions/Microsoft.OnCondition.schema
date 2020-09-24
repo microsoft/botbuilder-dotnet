@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.ITrigger)",
+    "title": "On condition",
+    "description": "Actions to perform when specified condition is true.",
+    "type": "object",
+    "properties": {
+        "condition": {
+            "$ref": "schema:#/definitions/condition",
+            "title": "Condition",
+            "description": "Condition (expression).",
+            "examples": [
+                "user.vip == true"
+            ]
+        },
+        "actions": {
+            "type": "array",
+            "title": "Actions",
+            "description": "Sequence of actions to execute.",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            }
+        },
+        "priority": {
+            "$ref": "schema:#/definitions/integerExpression",
+            "title": "Priority",
+            "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Run Once",
+            "description": "True if rule should run once per unique conditions",
+            "examples": [
+                true,
+                "=f(x)"
+            ]
+        }
+    },
+    "required": [
+        "actions"
+    ]
+}

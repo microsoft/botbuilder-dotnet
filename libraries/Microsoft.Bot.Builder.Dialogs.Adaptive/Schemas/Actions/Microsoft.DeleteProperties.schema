@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Delete Properties",
+    "description": "Delete multiple properties and any value it holds.",
+    "type": "object",
+    "required": [
+        "properties"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "properties": {
+            "type": "array",
+            "title": "Properties",
+            "description": "Properties to delete.",
+            "items": {
+                "$ref": "schema:#/definitions/stringExpression",
+                "title": "Property",
+                "description": "Property to delete."
+            }
+        }
+    }
+}

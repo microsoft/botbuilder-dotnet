@@ -1,0 +1,46 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "NestedMemoryAccess",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.name.firstname",
+                        "value": "dialog.jack"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "turn.nameproperty",
+                        "value": "name"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "=user[turn.nameproperty].firstname",
+                        "value": "daniel"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "new firstname is ${dialog.jack}"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "new firstname is daniel"
+        }
+    ]
+}

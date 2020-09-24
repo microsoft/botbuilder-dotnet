@@ -1,0 +1,570 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnInvokeActivity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${json(turn.activity)}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnConversationUpdateActivity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${json(turn.activity)}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnAppBasedLinkQuery",
+                "condition": "turn.activity.text == 'OnAppBasedLinkQuery'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnAppBasedLinkQuery"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnCardAction",
+                "condition": "turn.activity.text == 'OnCardAction'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnCardAction"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnChannelCreated",
+                "condition": "turn.activity.text == 'OnChannelCreated'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnChannelCreated"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnChannelDeleted",
+                "condition": "turn.activity.text == 'OnChannelDeleted'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnChannelDeleted"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnChannelRenamed",
+                "condition": "turn.activity.text == 'OnChannelRenamed'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnChannelRenamed"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnChannelRestored",
+                "condition": "turn.activity.text == 'OnChannelRestored'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnChannelRestored"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnFileConsent",
+                "condition": "turn.activity.text == 'OnFileConsent'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnFileConsent"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionCardButtonClicked",
+                "condition": "turn.activity.text == 'OnCardButtonClicked'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnCardButtonClicked"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionConfigurationQuerySettingUrl",
+                "condition": "turn.activity.text == 'OnConfigurationQuerySettingUrl'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnConfigurationQuerySettingUrl"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionConfigurationSetting",
+                "condition": "turn.activity.text == 'OnConfigurationSetting'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnConfigurationSetting"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionFetchTask",
+                "condition": "turn.activity.text == 'OnFetchTask'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnFetchTask"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionQuery",
+                "condition": "turn.activity.text == 'OnQuery'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnQuery"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionSelectItem",
+                "condition": "turn.activity.text == 'OnSelectItem'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnSelectItem"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnMessagingExtensionSubmitAction",
+                "condition": "turn.activity.text == 'OnSubmitAction'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnSubmitAction"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnO365ConnectorCardAction",
+                "condition": "turn.activity.text == 'OnO365ConnectorCardAction'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnO365ConnectorCardAction"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTaskModuleFetch",
+                "condition": "turn.activity.text == 'OnTaskModuleFetch'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTaskModuleFetch"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTaskModuleSubmit",
+                "condition": "turn.activity.text == 'OnTaskModuleSubmit'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTaskModuleSubmit"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamArchived",
+                "condition": "turn.activity.text == 'OnTeamArchived'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamArchived"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamDeleted",
+                "condition": "turn.activity.text == 'OnTeamDeleted'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamDeleted"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamHardDeleted",
+                "condition": "turn.activity.text == 'OnTeamHardDeleted'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamHardDeleted"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamRenamed",
+                "condition": "turn.activity.text == 'OnTeamRenamed'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamRenamed"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamRestored",
+                "condition": "turn.activity.text == 'OnTeamRestored'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamRestored"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTeamUnarchived",
+                "condition": "turn.activity.text == 'OnTeamUnarchived'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTeamUnarchived"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnAppBasedLinkQuery",
+                "value": {},
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnAppBasedLinkQuery"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnCardAction",
+                "value": {}
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnCardAction"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnChannelCreated",
+                "channelData": {
+                    "eventType": "channelCreated"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnChannelCreated"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnChannelDeleted",
+                "channelData": {
+                    "eventType": "channelDeleted"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnChannelDeleted"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnChannelRenamed",
+                "channelData": {
+                    "eventType": "channelRenamed"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnChannelRenamed"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnChannelRestored",
+                "channelData": {
+                    "eventType": "channelRestored"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnChannelRestored"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnFileConsent",
+                "value": {},
+                "name": "fileConsent/invoke"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnFileConsent"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnCardButtonClicked",
+                "value": {},
+                "name": "composeExtension/onCardButtonClicked"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnCardButtonClicked"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnConfigurationQuerySettingUrl",
+                "value": {},
+                "name": "composeExtension/querySettingUrl"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnConfigurationQuerySettingUrl"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnConfigurationSetting",
+                "value": {},
+                "name": "composeExtension/setting"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnConfigurationSetting"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnFetchTask",
+                "value": {},
+                "name": "composeExtension/fetchTask"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnFetchTask"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnQuery",
+                "value": {},
+                "name": "composeExtension/query"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnQuery"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnSelectItem",
+                "value": {},
+                "name": "composeExtension/selectItem"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnSelectItem"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnSubmitAction",
+                "value": {},
+                "name": "composeExtension/submitAction"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnSubmitAction"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnO365ConnectorCardAction",
+                "value": {},
+                "name": "actionableMessage/executeAction"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnO365ConnectorCardAction"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnTaskModuleFetch",
+                "value": {},
+                "name": "task/fetch"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTaskModuleFetch"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnTaskModuleSubmit",
+                "value": {},
+                "name": "task/submit"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTaskModuleSubmit"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamArchived",
+                "channelData": {
+                    "eventType": "teamArchived"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamArchived"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamDeleted",
+                "channelData": {
+                    "eventType": "teamDeleted"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamDeleted"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamHardDeleted",
+                "channelData": {
+                    "eventType": "teamHardDeleted"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamHardDeleted"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamRenamed",
+                "channelData": {
+                    "eventType": "teamRenamed"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamRenamed"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamRestored",
+                "channelData": {
+                    "eventType": "teamRestored"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamRestored"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "conversationUpdate",
+                "text": "OnTeamUnarchived",
+                "channelData": {
+                    "eventType": "teamUnarchived"
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTeamUnarchived"
+        }
+    ]
+}

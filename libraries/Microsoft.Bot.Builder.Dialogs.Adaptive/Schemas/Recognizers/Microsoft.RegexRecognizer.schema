@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "Regex recognizer",
+    "description": "Use regular expressions to recognize intents and entities from user input.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+        },
+        "intents": {
+            "type": "array",
+            "title": "RegEx patterns to intents",
+            "description": "Collection of patterns to match for an intent.",
+            "items": {
+                "type": "object",
+                "title": "Pattern",
+                "description": "Intent and regex pattern.",
+                "properties": {
+                    "intent": {
+                        "type": "string",
+                        "title": "Intent",
+                        "description": "The intent name."
+                    },
+                    "pattern": {
+                        "type": "string",
+                        "title": "Pattern",
+                        "description": "The regular expression pattern."
+                    }
+                }
+            }
+        },
+        "entities": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IEntityRecognizer"
+            },
+            "title": "Entity recognizers",
+            "description": "Collection of entity recognizers to use."
+        }
+    }
+}

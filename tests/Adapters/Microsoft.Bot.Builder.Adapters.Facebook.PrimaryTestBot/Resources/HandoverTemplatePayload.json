@@ -1,0 +1,11 @@
+{
+  "template_type": "button",
+  "text": "You can contact with a live agent.",
+  "buttons": [
+    {
+      "type": "postback",
+      "title": "Contact",
+      "payload": "Handover"
+    }
+  ]
+}

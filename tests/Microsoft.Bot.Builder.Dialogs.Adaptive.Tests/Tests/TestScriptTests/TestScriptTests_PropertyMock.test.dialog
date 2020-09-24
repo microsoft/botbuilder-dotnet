@@ -1,0 +1,56 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test setting memory",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.SetProperties",
+            "assignments": [
+                {
+                    "property": "settings.value",
+                    "value": "settings value"
+                },
+                {
+                    "property": "settings.value",
+                    "value": "settings overwrite"
+                },
+                {
+                    "property": "settings.object.value",
+                    "value": "within object value"
+                },
+                {
+                    "property": "user.number",
+                    "value": 123
+                },
+                {
+                    "property": "user.object",
+                    "value": {
+                        "value": "object value"
+                    }
+                },
+                {
+                    "property": "conversation.value",
+                    "value": "conversation value"
+                },
+                {
+                    "property": "dialog.value",
+                    "value": "dialog value"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "settings.value == 'settings overwrite'",
+                "settings.object.value == 'within object value",
+                "user.number == 123",
+                "user.object.value == 'object value'",
+                "conversation.value == 'conversation.value'",
+                "dialog.value == 'dialog value'"
+            ]
+        }
+   ]
+}

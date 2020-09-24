@@ -1,0 +1,28 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "todo.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.todos == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "You have no todos."
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "${ShowTodo()}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

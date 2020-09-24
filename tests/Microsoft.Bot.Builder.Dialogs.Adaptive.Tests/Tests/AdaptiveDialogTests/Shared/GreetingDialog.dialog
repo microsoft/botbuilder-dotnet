@@ -1,0 +1,34 @@
+{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "(user.name == null)",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "property": "user.name",
+                            "prompt": "Hello, what is your name?"
+                        },
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "Hello ${user.name}, nice to meet you!"
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "Hello ${user.name}, nice to see you again!"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+}

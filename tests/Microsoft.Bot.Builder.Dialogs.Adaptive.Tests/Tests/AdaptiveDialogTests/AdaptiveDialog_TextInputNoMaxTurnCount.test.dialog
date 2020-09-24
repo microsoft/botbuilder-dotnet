@@ -1,0 +1,61 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "property": "user.age",
+                        "prompt": "Hello, what is your age?",
+                        "defaultValueResponse": "I am going to say you are 10.",
+                        "defaultValue": 10
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Your age is ${user.age}."
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Why do you want to know"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Why do you want to know"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Why do you want to know"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your age?"
+        }
+    ]
+}

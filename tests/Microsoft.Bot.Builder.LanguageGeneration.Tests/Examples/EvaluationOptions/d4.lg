@@ -1,0 +1,9 @@
+﻿#SayHello
+- hi ${user.name}
+
+#testInlineString
+-```m
+s
+f
+t
+```

@@ -1,0 +1,222 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "StartOuterIntent",
+                    "pattern": "start"
+                },
+                {
+                    "intent": "RootIntent",
+                    "pattern": "root"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "StartOuterIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.AdaptiveDialog",
+                        "id": "outer",
+                        "recognizer": {
+                            "$kind": "Microsoft.RegexRecognizer",
+                            "intents": [
+                                {
+                                    "intent": "SideIntent",
+                                    "pattern": "side"
+                                },
+                                {
+                                    "intent": "CancelIntent",
+                                    "pattern": "cancel"
+                                }
+                            ]
+                        },
+                        "triggers": [
+                            {
+                                "$kind": "Microsoft.OnBeginDialog",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.TextInput",
+                                        "property": "user.name",
+                                        "prompt": "name?"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "${user.name}"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.NumberInput",
+                                        "allowInterruptions": false,
+                                        "property": "user.age",
+                                        "prompt": "age?",
+                                        "maxTurnCount": 2
+                                    },
+                                    {
+                                        "$kind": "Microsoft.NumberInput",
+                                        "allowInterruptions": true,
+                                        "property": "user.age",
+                                        "prompt": "age?"
+                                    },
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "${user.age}"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "SideIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "sideintent"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "CancelIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.EndDialog"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnUnknownIntent",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "outerWhat"
+                                    }
+                                ]
+                            }
+                        ],
+                        "defaultResultProperty": "dialog.result"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "RootIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "rootintent"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "rootunknown"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "start"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "side"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "sideintent"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "root"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "rootintent"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "root"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "side"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "root"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "rootintent"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "side"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "sideintent"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "10"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "10"
+        }
+    ]
+}

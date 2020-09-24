@@ -1,0 +1,52 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/api/usertoken/GetToken?userId=default-user&connectionName=mygithubconnection1",
+      "EncodedRequestUri": "L2FwaS91c2VydG9rZW4vR2V0VG9rZW4/dXNlcklkPWRlZmF1bHQtdXNlciZjb25uZWN0aW9uTmFtZT1teWdpdGh1YmNvbm5lY3Rpb24x",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "User-Agent": [
+          "FxVersion/4.6.26212.01",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
+        ]
+      },
+      "ResponseBody": "",
+      "ResponseHeaders": {
+        "Content-Length": [
+          "0"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Date": [
+          "Tue, 22 May 2018 00:08:23 GMT"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-IIS/10.0"
+        ],
+        "Set-Cookie": [
+          "ARRAffinity=0f071bbc0c38ac0ae2ef389355a8918dd4593423458c60b7aadff1f36ebca65c;Path=/;HttpOnly;Domain=api.botframework.com"
+        ],
+        "Request-Context": [
+          "appId=cid-v1:234f01b1-3f0f-49c0-b49c-c528b5cef7a8"
+        ],
+        "X-Powered-By": [
+          "ASP.NET"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ]
+      },
+      "StatusCode": 404
+    }
+  ],
+  "Names": {},
+  "Variables": {}
+}

@@ -1,0 +1,5 @@
+﻿# template1
+- ${call(scope)}
+
+# call(scope)
+- hi

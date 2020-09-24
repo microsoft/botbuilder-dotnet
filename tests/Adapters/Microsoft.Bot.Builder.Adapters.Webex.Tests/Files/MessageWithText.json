@@ -1,0 +1,21 @@
+{
+  "id": "test_id",
+  "roomId": "test_room",
+  "roomType": null,
+  "toPersonId": null,
+  "toPersonEmail": null,
+  "text": "message with inputs",
+  "markdown": null,
+  "files": null,
+  "personId": "test_person_id",
+  "personEmail": null,
+  "created": "2019-09-05T13:28:20.346Z",
+  "mentionedPeople": null,
+  "mentionedGroups": null,
+  "html": null,
+  "type": "submit",
+  "messageId": "test_message_id",
+  "inputs": {
+    "Name": "test_input"
+  }
+}

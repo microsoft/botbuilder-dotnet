@@ -1,0 +1,59 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "generator": {
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "property": "$age",
+                        "prompt": "Hello, how old are you?"
+                    },
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "($age > 80)",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Thanks, you are quite young!"
+                            }
+                        ],
+                        "elseActions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Thanks, you are awesome!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, how old are you?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "94"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Thanks, you are quite young!"
+        }
+    ]
+}

@@ -1,0 +1,94 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "test1",
+                    "pattern": "(?i)test1"
+                },
+                {
+                    "intent": "Santa",
+                    "pattern": "(?i)santa"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "test1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "test1"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "turn.activity.text",
+                        "value": "santa"
+                    },
+                    {
+                        "$kind": "Microsoft.EmitEvent",
+                        "eventName": "activityReceived",
+                        "eventValue": "=turn.activity"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Santa",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I love you santa."
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnUnknownIntent"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "test1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I love you santa."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "santa"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I love you santa."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "foobar"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnUnknownIntent"
+        }
+    ]
+}

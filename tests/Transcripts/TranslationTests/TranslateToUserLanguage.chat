@@ -1,0 +1,12 @@
+user=User
+bot=Bot
+
+user:set language es-es
+user:Hola
+bot:mensaje: Hola
+user:set language fr-fr
+user:Salut
+bot:message: Bonjour
+user:set language en-us
+user:Hello
+bot:message: Hello

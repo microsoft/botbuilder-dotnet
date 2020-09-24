@@ -1,0 +1,59 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "test",
+        "autoEndDialog": false,
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "JokeIntent",
+                    "pattern": "joke"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "JokeIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "chicken joke"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnMessageActivity",
+                "condition": "turn.activity.text == 'magic'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "abracadabra"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "tell me a joke"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "chicken joke"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "magic"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "abracadabra"
+        }
+    ]
+}

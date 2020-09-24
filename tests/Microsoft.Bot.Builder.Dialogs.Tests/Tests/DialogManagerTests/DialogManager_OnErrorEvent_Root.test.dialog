@@ -1,0 +1,85 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "autoEndDialog": false,
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.AdaptiveDialog",
+                        "autoEndDialog": false,
+                        "recognizer": {
+                            "$kind": "Microsoft.RegexRecognizer",
+                            "intents": [
+                                {
+                                    "intent": "throw",
+                                    "pattern": "throw"
+                                },
+                                {
+                                    "intent": "greeting",
+                                    "pattern": "hi"
+                                }
+                            ]
+                        },
+                        "triggers": [
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "greeting",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "hi"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.OnIntent",
+                                "intent": "throw",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SetProperty",
+                                        "property": "foo",
+                                        "value": "xxx"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Salutations"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "throw"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "assertions": [
+                "contains(text, 'does not match memory scopes')"
+            ]
+        }
+    ]
+}
