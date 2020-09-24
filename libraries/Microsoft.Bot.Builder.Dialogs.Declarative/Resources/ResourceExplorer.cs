@@ -59,16 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
-        /// <param name="providers">The list of resource providers to initialize the current instance.</param>
-        /// <param name="declarativeTypes">A list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.</param>
-        public ResourceExplorer(IEnumerable<ResourceProvider> providers, IEnumerable<IComponentDeclarativeTypes> declarativeTypes)
-            : this(new ResourceExplorerOptions() { Providers = providers, DeclarativeTypes = declarativeTypes })
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
-        /// </summary>
         /// <param name="options">Configuration optiosn for <see cref="ResourceExplorer"/>.</param>
         public ResourceExplorer(ResourceExplorerOptions options)
         {
@@ -77,11 +67,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             if (options.Providers != null)
             {
                 this.resourceProviders = options.Providers.ToList();
-            }
-
-            if (options.DeclarativeTypes != null)
-            {
-                this.declarativeTypes = options.DeclarativeTypes.ToList();
             }
         }
 
