@@ -13,13 +13,11 @@ trigger: # ci trigger
   branches:
     include:
      - main
-     - lu-parser
 
 pr: # pr trigger
   branches:
     include:
      - main
-     - lu-parser
 
 variables:
   BuildConfiguration: debug
