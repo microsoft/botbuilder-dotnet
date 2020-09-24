@@ -1,33 +1,29 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable CA2227 // Collection properties should be read only
-#pragma warning disable CA1034 // Nested types should not be visible
-#pragma warning disable SA1201 // Elements should appear in the correct order
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    /// <summary>NewEntitySection class.</summary>
     public class NewEntitySection : SectionEntity
     {
         // TODO: pass this constant to a helper class.
         private char[] _invalidCharsInIntentOrEntityName = { '<', '>', '*', '%', '&', ':', '\\', '$' };
 
-        public class SynonymElement
-        {
-            [JsonProperty("NormalizedValue", NullValueHandling = NullValueHandling.Ignore)]
-            public string NormalizedValue { get; set; } = null;
-
-            [JsonProperty("Synonyms", NullValueHandling = NullValueHandling.Ignore)]
-            public List<string> Synonyms { get; set; } = new List<string>();
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewEntitySection"/> class.
+        /// </summary>
+        /// <param name="parseTree">The new entity context from the parse tree.</param>
         public NewEntitySection(LUFileParser.NewEntitySectionContext parseTree)
         {
+            if (parseTree == null)
+            {
+                throw new ArgumentNullException(nameof(parseTree));
+            }
+
             SectionType = SectionType.NewEntitySection;
             Errors = new List<Error>();
             Name = ExtractName(parseTree);
@@ -187,7 +183,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.newEntityDefinition().newEntityLine(),
-                    severity: DiagnosticSeverity.Warn);
+                    severity: Diagnostic.WARN);
                 Errors.Add(error);
             }
 
@@ -222,7 +218,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.newEntityDefinition().newEntityLine(),
-                    severity: DiagnosticSeverity.Warn);
+                    severity: Diagnostic.WARN);
                 Errors.Add(error);
             }
 

@@ -1,15 +1,28 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+using System;
 using System.Collections.Generic;
 using static LUFileParser;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    /// <summary>
+    /// Class for ModelInfo sections.
+    /// </summary>
     public class ModelInfoSection : Section
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModelInfoSection"/> class.
+        /// </summary>
+        /// <param name="parseTree">The model info section context from the parse tree.</param>
         public ModelInfoSection(ModelInfoSectionContext parseTree)
         {
+            if (parseTree == null)
+            {
+                throw new ArgumentNullException(nameof(parseTree));
+            }
+
             SectionType = SectionType.ModelInfoSection;
             ModelInfo = parseTree.modelInfoDefinition().GetText();
             Errors = new List<Error>();

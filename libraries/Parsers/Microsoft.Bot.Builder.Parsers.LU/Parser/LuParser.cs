@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+
 #pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    /// <summary>NewEntitySection class.</summary>
+    /// <remarks>This class is static.</remarks>
     public static class LuParser
     {
         /*
@@ -27,11 +30,16 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         }
         */
 
+        /// <summary>
+        /// Entry point for parsing the LU file into a <see cref="LuResource"/> object.
+        /// </summary>
+        /// <param name="text">The LU file text.</param>
+        /// <returns>The parsed <see cref="LuResource"/> object.</returns>
         public static LuResource Parse(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
-                // return new LuResource(new Section[] { }, String.Empty, new Error[] { });
+                return new LuResource(new List<Section>(), string.Empty, new List<Error>());
             }
 
             var fileContent = GetFileContent(text);
@@ -93,7 +101,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         var error = Diagnostic.BuildDiagnostic(
                             message: errorMsg,
                             range: emptyIntentSection.Range,
-                            severity: DiagnosticSeverity.Warn);
+                            severity: Diagnostic.WARN);
 
                         errors.Add(error);
                         sections.Add(emptyIntentSection);
@@ -448,7 +456,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 }
             }
 
-            // TODO: this is a mock behavior
             return enableSections;
         }
     }

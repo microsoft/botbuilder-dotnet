@@ -1,65 +1,31 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable CA1034 // Nested types should not be visible
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-#pragma warning disable CA2227 // Collection properties should be read only
-#pragma warning disable SA1201 // Elements should appear in the correct order
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    /// <summary>
+    /// Class for QnA sections.
+    /// </summary>
     public class QnaSection : Section
     {
         private const string QNAGENERICSOURCE = "custom editorial";
 
-        [JsonProperty("Questions")]
-        public List<string> Questions { get; set; }
-
-        [JsonProperty("FilterPairs")]
-        public List<QnaTuple> FilterPairs { get; set; }
-
-        [JsonProperty("Answer")]
-        public string Answer { get; set; }
-
-        [JsonProperty("QAPairId")]
-        public string QAPairId { get; set; }
-
-        [JsonProperty("prompts")]
-        public List<PromptDefinition> prompts { get; set; }
-
-        [JsonProperty("promptsText")]
-        public List<string> promptsText { get; set; }
-
-        [JsonProperty("source")]
-        public string source { get; set; }
-
-        // TODO: not sure if serialization is needed for pairs
-        public class QnaTuple
-        {
-            [JsonProperty("key")]
-            public string key { get; set; }
-
-            [JsonProperty("value")]
-            public string value { get; set; }
-        }
-
-        public class PromptDefinition
-        {
-            [JsonProperty("displayText")]
-            public string displayText { get; set; }
-
-            [JsonProperty("linkedQuestion")]
-            public string linkedQuestion { get; set; }
-
-            [JsonProperty("contextOnly")]
-            public string contextOnly { get; set; }
-        }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QnaSection"/> class.
+        /// </summary>
+        /// <param name="parseTree">The qna context from the parse tree.</param>
         public QnaSection(LUFileParser.QnaSectionContext parseTree)
         {
+            if (parseTree == null)
+            {
+                throw new ArgumentNullException(nameof(parseTree));
+            }
+
             SectionType = SectionType.QnaSection;
             Questions = new List<string>() { ExtractQuestion(parseTree) };
             var result = ExtractMoreQuestions(parseTree);
@@ -70,22 +36,85 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             Errors.AddRange(result2.errors);
             Answer = ExtractAnswer(parseTree);
             var result3 = ExtractPrompts(parseTree);
-            prompts = result3.promptDefinitions;
-            promptsText = result3.promptTextList;
+            Prompts = result3.promptDefinitions;
+            PromptsText = result3.promptTextList;
             Errors.AddRange(result3.errors);
             QAPairId = ExtractAssignedId(parseTree);
-            source = ExtractSourceInfo(parseTree);
+            Source = ExtractSourceInfo(parseTree);
             var startPosition = new Position { Line = parseTree.Start.Line, Character = parseTree.Start.Column };
             var stopPosition = new Position { Line = parseTree.Stop.Line, Character = parseTree.Stop.Column + parseTree.Stop.Text.Length };
             Range = new Range { Start = startPosition, End = stopPosition };
         }
 
-        public string ExtractQuestion(LUFileParser.QnaSectionContext parseTree)
+        /// <summary>
+        /// Gets the list of questions.
+        /// </summary>
+        /// <value>
+        /// The list of questions. 
+        /// </value>
+        [JsonProperty("Questions")]
+        public List<string> Questions { get; }
+
+        /// <summary>
+        /// Gets the list of Filter Pairs.
+        /// </summary>
+        /// <value>
+        /// The list of filter pairs. 
+        /// </value>
+        [JsonProperty("FilterPairs")]
+        public List<QnaTuple> FilterPairs { get; }
+
+        /// <summary>
+        /// Gets or sets the answer.
+        /// </summary>
+        /// <value>
+        /// The answer to the qna questions. 
+        /// </value>
+        [JsonProperty("Answer")]
+        public string Answer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the pair of question-answer.
+        /// </summary>
+        /// <value>
+        /// The pair of question-answer. 
+        /// </value>
+        [JsonProperty("QAPairId")]
+        public string QAPairId { get; set; }
+
+        /// <summary>
+        /// Gets the list of prompts.
+        /// </summary>
+        /// <value>
+        /// The list of prompts. 
+        /// </value>
+        [JsonProperty("prompts")]
+        public List<PromptDefinition> Prompts { get; }
+
+        /// <summary>
+        /// Gets the list of prompt's text.
+        /// </summary>
+        /// <value>
+        /// The list of prompt's text. 
+        /// </value>
+        [JsonProperty("promptsText")]
+        public List<string> PromptsText { get; }
+
+        /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
+        /// <value>
+        /// The source. 
+        /// </value>
+        [JsonProperty("source")]
+        public string Source { get; set; }
+
+        private string ExtractQuestion(LUFileParser.QnaSectionContext parseTree)
         {
             return parseTree.qnaDefinition().qnaQuestion().questionText().GetText().Trim();
         }
 
-        public (List<string> questions, List<Error> errors) ExtractMoreQuestions(LUFileParser.QnaSectionContext parseTree)
+        private (List<string> questions, List<Error> errors) ExtractMoreQuestions(LUFileParser.QnaSectionContext parseTree)
         {
             var questions = new List<string>();
             var errors = new List<Error>();
@@ -110,7 +139,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return (questions, errors);
         }
 
-        public (List<QnaTuple> filterPairs, List<Error> errors) ExtractFilterPairs(LUFileParser.QnaSectionContext parseTree)
+        private (List<QnaTuple> filterPairs, List<Error> errors) ExtractFilterPairs(LUFileParser.QnaSectionContext parseTree)
         {
             var filterPairs = new List<QnaTuple>();
             var errors = new List<Error>();
@@ -138,14 +167,14 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                     var filterPair = filterLineText.Split('=');
                     var key = filterPair[0].Trim();
                     var value = filterPair[1].Trim();
-                    filterPairs.Add(new QnaTuple { key = key, value = value });
+                    filterPairs.Add(new QnaTuple { Key = key, Value = value });
                 }
             }
 
             return (filterPairs, errors);
         }
 
-        public string ExtractAnswer(LUFileParser.QnaSectionContext parseTree)
+        private string ExtractAnswer(LUFileParser.QnaSectionContext parseTree)
         {
             var multiLineAnswer = parseTree.qnaDefinition().qnaAnswerBody().multiLineAnswer().GetText().Trim();
 
@@ -157,7 +186,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return answer_group.Success ? answer_group.Value : string.Empty;
         }
 
-        public (List<PromptDefinition> promptDefinitions, List<string> promptTextList, List<Error> errors) ExtractPrompts(LUFileParser.QnaSectionContext parseTree)
+        private (List<PromptDefinition> promptDefinitions, List<string> promptTextList, List<Error> errors) ExtractPrompts(LUFileParser.QnaSectionContext parseTree)
         {
             var promptDefinitions = new List<PromptDefinition>();
             var promptTextList = new List<string>();
@@ -201,16 +230,16 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 promptDefinitions.Add(
                     new PromptDefinition()
                     {
-                        displayText = splitLineMatch.Groups["displayText"].Value,
-                        linkedQuestion = splitLineMatch.Groups["linkedQuestion"].Value,
-                        contextOnly = splitLineMatch.Groups["linkedQuestion"].Value
+                        DisplayText = splitLineMatch.Groups["displayText"].Value,
+                        LinkedQuestion = splitLineMatch.Groups["linkedQuestion"].Value,
+                        ContextOnly = splitLineMatch.Groups["linkedQuestion"].Value
                     });
             }
 
             return (promptDefinitions, promptTextList, errors);
         }
 
-        public string ExtractAssignedId(LUFileParser.QnaSectionContext parseTree)
+        private string ExtractAssignedId(LUFileParser.QnaSectionContext parseTree)
         {
             var idAssignment = parseTree.qnaDefinition().qnaIdMark();
             if (idAssignment != null)
@@ -223,7 +252,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return null;
         }
 
-        public string ExtractSourceInfo(LUFileParser.QnaSectionContext parseTree)
+        private string ExtractSourceInfo(LUFileParser.QnaSectionContext parseTree)
         {
             var srcAssignment = parseTree.qnaDefinition().qnaSourceInfo();
             if (srcAssignment != null)

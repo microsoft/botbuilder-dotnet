@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable CA1801 // Review unused parameters
 #pragma warning disable CA1031 // Do not catch general exception types
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 using System;
 using System.Collections.Generic;
@@ -10,14 +8,29 @@ using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    /// <summary>
+    /// Class for simple intent sections.
+    /// </summary>
     public class SimpleIntentSection : Section
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleIntentSection"/> class.
+        /// </summary>
         public SimpleIntentSection()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SimpleIntentSection"/> class.
+        /// </summary>
+        /// <param name="parseTree">The simple section context from the parse tree.</param>
         public SimpleIntentSection(LUFileParser.SimpleIntentSectionContext parseTree)
         {
+            if (parseTree == null)
+            {
+                throw new ArgumentNullException(nameof(parseTree));
+            }
+
             SectionType = SectionType.SimpleIntentSection;
             UtteranceAndEntitiesMap = new List<UtteranceAndEntitiesMap>();
             Entities = new List<SectionEntity>();
@@ -39,17 +52,17 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             }
         }
 
-        public string ExtractName(LUFileParser.SimpleIntentSectionContext parseTree)
+        private string ExtractName(LUFileParser.SimpleIntentSectionContext parseTree)
         {
             return parseTree.intentDefinition().intentNameLine().intentName().GetText().Trim();
         }
 
-        public string ExtractIntentNameLine(LUFileParser.SimpleIntentSectionContext parseTree)
+        private string ExtractIntentNameLine(LUFileParser.SimpleIntentSectionContext parseTree)
         {
             return parseTree.intentDefinition().intentNameLine().GetText().Trim();
         }
 
-        public (List<UtteranceAndEntitiesMap> utterances, List<Error> errors) ExtractUtterancesAndEntitiesMap(LUFileParser.SimpleIntentSectionContext parseTree)
+        private (List<UtteranceAndEntitiesMap> utterances, List<Error> errors) ExtractUtterancesAndEntitiesMap(LUFileParser.SimpleIntentSectionContext parseTree)
         {
             var utterancesAndEntitiesMap = new List<UtteranceAndEntitiesMap>();
             var errors = new List<Error>();
@@ -115,7 +128,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.intentDefinition().intentNameLine(),
-                    severity: DiagnosticSeverity.Warn);
+                    severity: Diagnostic.WARN);
 
                 errors.Add(error);
             }

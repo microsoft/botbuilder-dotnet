@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
@@ -11,8 +12,17 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         // TODO: pass this constant to a helper class.
         private readonly char[] _invalidCharsInIntentOrEntityName = { '<', '>', '*', '%', '&', ':', '\\', '$' };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SectionEntity"/> class.
+        /// </summary>
+        /// <param name="parseTree">The entity context from the parse tree.</param>
         public SectionEntity(LUFileParser.EntitySectionContext parseTree)
         {
+            if (parseTree == null)
+            {
+                throw new ArgumentNullException(nameof(parseTree));
+            }
+
             SectionType = SectionType.EntitySection;
             Errors = new List<Error>();
             Name = ExtractName(parseTree);
@@ -25,7 +35,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             Range = new Range { Start = startPosition, End = stopPosition };
         }
 
-        public string ExtractName(LUFileParser.EntitySectionContext parseTree)
+        private string ExtractName(LUFileParser.EntitySectionContext parseTree)
         {
             var entityName = string.Empty;
             if (parseTree.entityDefinition().entityLine().entityName() != null)
@@ -54,7 +64,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             }
         }
 
-        public string ExtractType(LUFileParser.EntitySectionContext parseTree)
+        private string ExtractType(LUFileParser.EntitySectionContext parseTree)
         {
             if (parseTree.entityDefinition().entityLine().entityType() != null)
             {
@@ -71,7 +81,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
             return null;
         }
 
-        public List<string> ExtractSynonymsOrPhraseList(LUFileParser.EntitySectionContext parseTree)
+        private List<string> ExtractSynonymsOrPhraseList(LUFileParser.EntitySectionContext parseTree)
         {
             var synonymsOrPhraseList = new List<string>();
             if (parseTree.entityDefinition().entityListBody() != null)
@@ -100,7 +110,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 var error = Diagnostic.BuildDiagnostic(
                     message: errorMsg,
                     context: parseTree.entityDefinition().entityLine(),
-                    severity: DiagnosticSeverity.Warn);
+                    severity: Diagnostic.WARN);
                 Errors.Add(error);
             }
 

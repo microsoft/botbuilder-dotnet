@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+
+// This is an auto generated class
+
 #pragma warning disable CA2227
 #pragma warning disable CA1716
 #pragma warning disable SA1402
 #pragma warning disable SA1601
 #pragma warning disable SA1602
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS1591
 
 using System;
 using System.Collections.Generic;
@@ -180,7 +183,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         public string Features { get; set; }
 
         [JsonProperty("SynonymsList", NullValueHandling = NullValueHandling.Ignore)]
-        public List<NewEntitySection.SynonymElement> SynonymsList { get; set; } = null;
+        public List<SynonymElement> SynonymsList { get; set; } = null;
     }
 
     public partial class UtteranceAndEntitiesMap

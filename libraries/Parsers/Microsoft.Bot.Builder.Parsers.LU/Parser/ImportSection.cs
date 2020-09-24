@@ -1,15 +1,26 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Parsers.LU.Parser
 {
+    /// <summary>NewEntitySection class.</summary>
     public class ImportSection : Section
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ImportSection"/> class.
+        /// </summary>
+        /// <param name="parseTree">The new import section context from the parse tree.</param>
         public ImportSection(LUFileParser.ImportSectionContext parseTree)
         {
+            if (parseTree == null)
+            {
+                throw new ArgumentNullException(nameof(parseTree));
+            }
+
             Errors = new List<Error>();
             SectionType = SectionType.ImportSection;
             var result = ExtractDescriptionAndPath(parseTree);
