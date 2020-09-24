@@ -104,6 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<SetProperties>(SetProperties.Kind);
             yield return new DeclarativeType<SwitchCondition>(SwitchCondition.Kind);
             yield return new DeclarativeType<TraceActivity>(TraceActivity.Kind);
+            yield return new DeclarativeType<ThrowException>(ThrowException.Kind);
             yield return new DeclarativeType<GotoAction>(GotoAction.Kind);
             yield return new DeclarativeType<BreakLoop>(BreakLoop.Kind);
             yield return new DeclarativeType<ContinueLoop>(ContinueLoop.Kind);

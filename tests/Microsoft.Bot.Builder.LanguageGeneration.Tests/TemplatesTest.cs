@@ -26,6 +26,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello", "Hiya" };
 
             Assert.True(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
+
+            evaled = templates.Evaluate("TestTimexResolve");
+            Assert.Equal("2009-01-23T14:00:00.000Z", evaled);
         }
 
         [Fact]
@@ -127,7 +130,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(evaledArray, actualArr);
 
             var evaledMultilineResult = templates.Evaluate("evalMultiLineObj");
-            Assert.Equal(evaledMultilineResult, "{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}");
+            Assert.Equal("{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}", evaledMultilineResult);
         }
 
         [Fact]
@@ -759,7 +762,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeFalse.lg"));
             
             var evaled = templates.ExpandTemplate("StrictFalse");
-            Assert.Equal("null", evaled[0].ToString());
+            Assert.Null(evaled[0]);
 
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
@@ -1363,15 +1366,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled = templates.Evaluate("template1");
 
-            Assert.Equal("null", evaled);
+            Assert.Null(evaled);
 
             evaled = templates.Evaluate("template2");
 
-            Assert.Equal("result is 'null'", evaled);
+            Assert.Equal("result is null", evaled);
 
             var jObjEvaled = templates.Evaluate("template3") as JObject;
 
-            Assert.Equal("null", jObjEvaled["key1"]);
+            Assert.Null(jObjEvaled["key1"].ToObject<object>());
+
+            evaled = templates.Evaluate("template5");
+
+            Assert.Equal("hello", evaled);
         }
 
         [Fact]
