@@ -45,8 +45,7 @@
                                     "actions": [
                                         {
                                             "$kind": "Microsoft.ThrowException",
-                                            "errorValue": "This is exception message.",
-                                            "bubbleEvent": true
+                                            "errorValue": "This is an exception message."
                                         }
                                     ]
                                 }
@@ -59,10 +58,10 @@
             {
                 "$kind": "Microsoft.OnError",
                 "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.Value.ClassName}"
-                    }
+                  {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${turn.dialogEvent.Value.ClassName}: ${turn.dialogEvent.Value.Message}"
+                  }
                 ]
             }
         ],
@@ -84,7 +83,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "System.Exception"
+            "text": "System.Exception: This is an exception message."
         },
         {
             "$kind": "Microsoft.Test.UserSays",

@@ -7,20 +7,28 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action which throws exception declaratively.
+    /// Action which throws an exception declaratively.
     /// </summary>
     public class ThrowException : Dialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ThrowException";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ThrowException"/> class.
+        /// </summary>
+        /// <param name="errorValue">Memory property path to use to get the error value to throw.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public ThrowException(object errorValue = null, bool bubble = false, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ThrowException(object errorValue = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -29,8 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 this.ErrorValue = new ValueExpression(errorValue);
             }
-
-            this.BubbleEvent = new BoolExpression(bubble);
         }
 
         /// <summary>
@@ -46,23 +52,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression Disabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the memory property path to use to get the error value to send as part of the event.
+        /// Gets or sets the memory property path to use to get the error value to throw.
         /// </summary>
         /// <value>
-        /// The memory property path to use to get the error value to send as part of the event.
+        /// The memory property path to use to get the error value to throw.
         /// </value>
         [JsonProperty("errorValue")]
         public ValueExpression ErrorValue { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the event should bubble to parents or not.
+        /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
-        /// <value>
-        /// A value indicating whether gets or sets whether the event should bubble to parents or not.
-        /// </value>
-        [JsonProperty("bubbleEvent")]
-        public BoolExpression BubbleEvent { get; set; }
-
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -75,9 +80,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            bool handled;
-            var eventName = DialogEvents.Error;
-            var bubbleEvent = BubbleEvent.GetValue(dc.State);
             object value = null;
             
             if (ErrorValue != null)
@@ -85,20 +87,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 value = this.ErrorValue.GetValue(dc.State);
             }
 
-            value = new Exception(value?.ToString());
-
-            if (dc.Parent != null)
-            {
-                handled = await dc.Parent.EmitEventAsync(eventName, value, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                handled = await dc.EmitEventAsync(eventName, value, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
-            }
-
-            return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
+            throw new Exception(value?.ToString());
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{DialogEvents.Error}]";
