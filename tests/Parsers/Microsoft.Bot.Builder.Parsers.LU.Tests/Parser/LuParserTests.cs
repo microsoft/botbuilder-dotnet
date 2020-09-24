@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
         [InlineData("ImportAllLu")]
         public void ParseLuContent(string fileName)
         {
-            // var luContent = "# Help"+ Environment.NewLine + "- help" + Environment.NewLine + "- I need help" + Environment.NewLine + "- please help";
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".txt");
             Console.WriteLine(path);
             var luContent = File.ReadAllText(path);
