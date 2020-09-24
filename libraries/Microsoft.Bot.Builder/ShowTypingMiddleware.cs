@@ -63,8 +63,8 @@ namespace Microsoft.Bot.Builder
                 Task typingTask = null;
                 try
                 {
-                    // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity.
-                    if (IsNotRunningAsSkill(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
+                    // Start a timer to periodically send the typing activity (bots running as skills should not send typing activity)
+                    if (!IsSkillBot(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
                     {
                         // do not await task - we want this to run in the background and we will cancel it when its done
                         typingTask = SendTypingAsync(turnContext, _delay, _period, cts.Token);
@@ -83,10 +83,10 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private static bool IsNotRunningAsSkill(ITurnContext turnContext)
+        private static bool IsSkillBot(ITurnContext turnContext)
         {
             return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity
-                && SkillValidation.IsSkillClaim(claimIdentity.Claims) == false;
+                && SkillValidation.IsSkillClaim(claimIdentity.Claims);
         }
 
         private static async Task SendTypingAsync(ITurnContext turnContext, TimeSpan delay, TimeSpan period, CancellationToken cancellationToken)
