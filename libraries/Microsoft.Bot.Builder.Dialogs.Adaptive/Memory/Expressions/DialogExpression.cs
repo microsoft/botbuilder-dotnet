@@ -47,12 +47,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
         }
 
+        /// <summary>
+        /// Converts a <see cref="Dialog"/> into a <see cref="DialogExpression"/>.
+        /// </summary>
+        /// <param name="value"><see cref="Dialog"/> to convert to a <see cref="DialogExpression"/>.</param>
         public static implicit operator DialogExpression(Dialog value) => new DialogExpression(value);
 
+        /// <summary>
+        /// Converts a string into a <see cref="DialogExpression"/>.
+        /// </summary>
+        /// <param name="dialogIdOrExpression">String to convert to a <see cref="DialogExpression"/>.</param>
         public static implicit operator DialogExpression(string dialogIdOrExpression) => new DialogExpression(dialogIdOrExpression);
 
+        /// <summary>
+        /// Converts a <see cref="JToken"/> into a <see cref="DialogExpression"/>.
+        /// </summary>
+        /// <param name="value"><see cref="JToken"/> to convert to a <see cref="DialogExpression"/>.</param>
         public static implicit operator DialogExpression(JToken value) => new DialogExpression(value);
 
+        /// <summary>
+        /// Sets the raw value of the expression property.
+        /// </summary>
+        /// <param name="value">Value to set.</param>
         public override void SetValue(object value)
         {
             if (value is string str)
@@ -69,6 +85,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             base.SetValue(value);
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string value.</returns>
         public override string ToString()
         {
             if (this.Value != null)

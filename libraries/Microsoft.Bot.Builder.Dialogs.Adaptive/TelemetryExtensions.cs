@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// Implements extension methods for telemetry.
+    /// </summary>
     public static class TelemetryExtensions
     {
         /// <summary>

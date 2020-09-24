@@ -1,0 +1,58 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$schema": "../../../tests.schema",
+            "$kind": "Microsoft.CrossTrainedRecognizerSet",
+            "recognizers": [
+                {
+                    "$kind": "Microsoft.RegexRecognizer",
+                    "id": "x",
+                    "intents": [
+                        {
+                            "intent": "None",
+                            "pattern": "(?i)(color|colour)"
+                        }
+                    ],
+                    "entities": [
+                        {
+                            "$kind": "Microsoft.RegexEntityRecognizer",
+                            "name": "color",
+                            "pattern": "(?i)(red|green|blue|purple|orange|violet|white|black)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "None",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Test.AssertCondition",
+                        "condition": "count(turn.recognized.intents) == 1"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${join(turn.recognized.entities.color, ',')}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "color red"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "red"
+        }
+    ]
+}

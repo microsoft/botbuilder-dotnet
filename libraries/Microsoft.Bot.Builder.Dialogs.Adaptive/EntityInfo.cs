@@ -126,6 +126,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public bool Covers(EntityInfo entity)
             => (entity == this || entity.RootEntity != RootEntity) && Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
             => $"{Operation}({Name}:{Value}) P{Priority} {Score} {Coverage}";
 

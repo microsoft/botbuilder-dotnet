@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SwitchCondition : Dialog, IDialogDependencies
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.SwitchCondition";
 
@@ -24,6 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private ActionScope defaultScope;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SwitchCondition"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -74,6 +82,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public List<Case> Cases { get; set; } = new List<Case>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Gets the default scope.
+        /// </summary>
+        /// <value>An <see cref="ActionScope"/> with the scope.</value>
         protected ActionScope DefaultScope
         {
             get
@@ -87,6 +99,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Enumerates child dialog dependencies so they can be added to the containers dialog set.
+        /// </summary>
+        /// <returns>Dialog enumeration.</returns>
         public virtual IEnumerable<Dialog> GetDependencies()
         {
             yield return this.DefaultScope;
@@ -100,6 +116,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -169,6 +193,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.ReplaceDialogAsync(actionScope.Id, null, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}({this.Condition?.ToString()})";

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -23,6 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly ResourceExplorer resourceExplorer;
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
+        private readonly ConcurrentDictionary<string, T> cachedRefDialogs = new ConcurrentDictionary<string, T>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.
@@ -67,8 +69,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             using (new SourceScope(sourceContext, range))
             {
+                string refDialogName = null;
                 if (this.resourceExplorer.IsRef(jToken))
                 {
+                    refDialogName = jToken.Value<string>();
+
                     // We can't do this asynchronously as the Json.NET interface is synchronous
                     jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
@@ -91,8 +96,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
                 using (var newScope = found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
+                    var passTwo = false;
                     foreach (var observer in this.observers)
                     {
+                        if (observer is CycleDetectionObserver cycDetectObserver && cycDetectObserver.CycleDetectionPass == CycleDetectionPasses.PassTwo)
+                        {
+                            passTwo = true;
+                        }
+
                         if (observer.OnBeforeLoadToken(sourceContext, rangeResolved ?? range, jToken, out T interceptResult))
                         {
                             return interceptResult;
@@ -101,13 +112,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
                     var tokenToBuild = TryAssignId(jToken, sourceContext);
 
-                    T result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+                    T result;
+                    if (passTwo && refDialogName != null && cachedRefDialogs.ContainsKey(refDialogName))
+                    {
+                        result = cachedRefDialogs[refDialogName];
+                    }
+                    else
+                    {
+                        result = this.resourceExplorer.BuildType<T>(kind, tokenToBuild, serializer);
+                        if (passTwo && refDialogName != null)
+                        {
+                            cachedRefDialogs[refDialogName] = result;
+                        }
+                    }
 
                     // Associate the most specific source context information with this item
                     if (sourceContext.CallStack.Count > 0)
                     {
                         range = sourceContext.CallStack.Peek().DeepClone();
-                        DebugSupport.SourceMap.Add(result, range);
+                        if (!DebugSupport.SourceMap.TryGetValue(result, out var _))
+                        {
+                            DebugSupport.SourceMap.Add(result, range);
+                        }
                     }
 
                     foreach (var observer in this.observers)

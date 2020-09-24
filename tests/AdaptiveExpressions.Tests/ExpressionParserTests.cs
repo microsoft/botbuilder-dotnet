@@ -487,6 +487,16 @@ namespace AdaptiveExpressions.Tests
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
+            Test("3??2", 3),
+            Test("null ?? two", 2),
+            Test("bag.notExist ?? bag.n ?? bag.name", "mybag"),
+            Test("!exists(one)?'r1':'r2'", "r2"), // false
+            Test("!!exists(one) ? 'r1' : 'r2'", "r1"), // true
+            Test("0?'r1':'r2'", "r1"), // true
+            Test("bool('true')? 'r1': 'r2'", "r1"), // true
+            Test("bag.name == null ? \"hello\": bag.name", "mybag"),
+            Test("one > 0? one : two", 1),
+            Test("hello * 5?'r1':'r2'", "r2"),
             #endregion
 
             #region  String functions test
@@ -889,7 +899,13 @@ namespace AdaptiveExpressions.Tests
             Test("endsWith(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), ':40:20')", true),
             Test("endsWith(getPreviousViableTime('TXX:05:10'), ':05:10')", true),
             Test("endsWith(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), ':05:10')", true),
-
+            Test("resolve('T14')", "14:00:00"),
+            Test("resolve('T14:20')", "14:20:00"),
+            Test("resolve('T14:20:30')", "14:20:30"),
+            Test("resolve('2020-12-20')", "2020-12-20"),
+            Test("resolve('2020-12-20T14')", "2020-12-20 14:00:00"),
+            Test("resolve('2020-12-20T14:20')", "2020-12-20 14:20:00"),
+            Test("resolve('2020-12-20T14:20:30')", "2020-12-20 14:20:30"),
             #endregion
 
             #region uri parsing function test
@@ -1349,6 +1365,49 @@ namespace AdaptiveExpressions.Tests
             exp = Expression.Parse("a[b]");
             (value, error) = exp.TryEvaluate(mockMemory, options);
             Assert.True(error != null);
+        }
+
+        [Fact]
+        public void TestStackMemory()
+        {
+            var sM = new StackedMemory();
+            var jObj1 = new JObject
+            {
+                ["a"] = "a",
+                ["b"] = "b",
+                ["c"] = null
+            };
+
+            var jObj2 = new JObject
+            {
+                ["c"] = "c"
+            };
+
+            var jObj3 = new JObject
+            {
+                ["a"] = "newa",
+                ["b"] = null,
+                ["d"] = "d"
+            };
+
+            sM.Push(new SimpleObjectMemory(jObj1));
+            sM.Push(new SimpleObjectMemory(jObj2));
+            sM.Push(new SimpleObjectMemory(jObj3));
+
+            // Achieve value from stack memory
+            var (value, error) = Expression.Parse("d").TryEvaluate(sM);
+            Assert.Equal("d", value);
+
+            // Achieve valule from the top value firstly
+            (value, error) = Expression.Parse("a").TryEvaluate(sM);
+            Assert.Equal("newa", value);
+
+            (value, error) = Expression.Parse("c").TryEvaluate(sM);
+            Assert.Equal("c", value);
+
+            // null is also the valid value
+            (value, error) = Expression.Parse("b").TryEvaluate(sM);
+            Assert.Null(value);
         }
 
         private void AssertResult<T>(string text, T expected)
