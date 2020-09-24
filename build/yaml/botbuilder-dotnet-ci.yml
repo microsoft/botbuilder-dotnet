@@ -21,6 +21,7 @@ pr: # pr trigger
   branches:
     include:
      - main
+     - lu-parser
 
 variables:
   ApiCompatVersion: 4.6.3
