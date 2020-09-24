@@ -23,10 +23,10 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
         /// <summary>
         /// Initializes a new instance of the <see cref="Diagnostic"/> class.
         /// </summary>
-        /// <param name="range">The string range where the error was raised.</param>\
         /// <param name="message">The exception message.</param>
         /// <param name="severity">The exception severity.</param>
-        public Diagnostic(Range range, string message, string severity = "ERROR")
+        /// <param name="range">The string range where the error was raised.</param>
+        public Diagnostic(string message = null, string severity = "ERROR", Range range = null)
         {
             Range = range;
             Message = message;
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 actualRange = new Range { Start = startPosition, End = stopPosition };
             }
 
-            return new Diagnostic(actualRange, message, severity.ToString().ToUpperInvariant());
+            return new Diagnostic(message, severity.ToString().ToUpperInvariant(), actualRange);
         }
 
         /// <summary>

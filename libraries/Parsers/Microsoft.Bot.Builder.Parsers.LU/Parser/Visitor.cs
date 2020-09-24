@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                             new EntityElement
                             {
                                 Type = TypeEnum.PatternAnyEntities,
-                                Entity = auxEntity.EntityName.Trim(),
+                                Entity = entityName,
                                 Role = auxEntity.Role.Trim()
                             });
                     }
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                         var newEntity = new EntityElement
                         {
                             Type = TypeEnum.Entities,
-                            Entity = auxEntity.EntityName.Trim(),
+                            Entity = entityName,
                             Role = auxEntity.Role.Trim(),
                             StartPos = srcUtterance.Length,
                             EndPos = null
@@ -110,8 +110,8 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
                 }
                 else
                 {
-                    char charItem = (char)item;
-                    srcUtterance.Append(charItem);
+                    string unicodeCharItem = (string)item;
+                    srcUtterance.Append(unicodeCharItem);
                 }
             }
 

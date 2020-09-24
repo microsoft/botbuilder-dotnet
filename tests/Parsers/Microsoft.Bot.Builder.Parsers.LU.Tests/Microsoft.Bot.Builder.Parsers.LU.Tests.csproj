@@ -29,7 +29,10 @@
     <None Update="Fixtures\LU_Sections.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Fixtures\LU_Sections.json">
+    <None Update="Fixtures\LU_Sections_Unix.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Fixtures\LU_Sections_Windows.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Fixtures\SectionsLU.json">

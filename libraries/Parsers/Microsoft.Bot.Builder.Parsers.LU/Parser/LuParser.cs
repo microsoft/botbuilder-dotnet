@@ -16,20 +16,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Parser
     /// <remarks>This class is static.</remarks>
     public static class LuParser
     {
-        /*
-        private static Object ParseWithRef(string text, LuResource luResource)
-        {
-            if (String.IsNullOrEmpty(text))
-            {
-                return new LuResource(new List<Section>(), String.Empty, new List<Error>());
-            }
-
-            // TODO: bool? sectionEnabled = luResource != null ? IsSectionEnabled(luResource.Sections) : null;
-
-            return null;
-        }
-        */
-
         /// <summary>
         /// Entry point for parsing the LU file into a <see cref="LuResource"/> object.
         /// </summary>
