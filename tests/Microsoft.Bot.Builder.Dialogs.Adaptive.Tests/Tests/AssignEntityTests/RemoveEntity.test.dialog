@@ -99,6 +99,13 @@
     {
       "$kind": "Microsoft.Test.AssertReply",
       "text": "tomato has been removed"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "!$Toppings"
+      ]
     }
+
   ]
 }
