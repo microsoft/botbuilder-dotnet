@@ -67,6 +67,8 @@ COLON: ':';
 
 ARROW: '=>';
 
+NULL_COALESCE: '??';
+
 QUESTION_MARK: '?';
 
 NUMBER : DIGIT + ( '.' DIGIT +)? ;
