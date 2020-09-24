@@ -31,6 +31,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             operationPreference = operations;
         }
 
+        /// <summary>
+        /// Compares <see cref="EntityAssignment"/> x against y to determine its relative priority.
+        /// </summary>
+        /// <param name="x">Reference Entity.</param>
+        /// <param name="y">Comparisson Entity.</param>
+        /// <returns>Numerical value representing x's relative priority.</returns>
         public override int Compare(EntityAssignment x, EntityAssignment y)
         {
             // Order by event

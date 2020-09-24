@@ -139,6 +139,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            if (string.IsNullOrEmpty(Condition.ExpressionText))
+            {
+                throw new InvalidOperationException("Adaptive Dialogs error: Missing predicate condition. Please add a valid predicate to the Condition property of IfCondition().");
+            }
+
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

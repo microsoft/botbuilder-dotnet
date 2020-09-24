@@ -26,6 +26,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello", "Hiya" };
 
             Assert.True(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
+
+            evaled = templates.Evaluate("TestTimexResolve");
+            Assert.Equal("2009-01-23T14:00:00.000Z", evaled);
         }
 
         [Fact]
@@ -127,7 +130,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(evaledArray, actualArr);
 
             var evaledMultilineResult = templates.Evaluate("evalMultiLineObj");
-            Assert.Equal(evaledMultilineResult, "{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}");
+            Assert.Equal("{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}", evaledMultilineResult);
         }
 
         [Fact]
