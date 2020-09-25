@@ -74,13 +74,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             {
                 // load configuration into settings dictionary
                 var root = ConvertFlattenSettingToNode(configuration.AsEnumerable().ToList());
-                var result = new Dictionary<string, object>();
                 foreach (var child in root.Children)
                 {
-                    result.Add(child.Value, ConvertNodeToObject(child));
+                    settings.Add(child.Value, ConvertNodeToObject(child));
                 }
-
-                return result;
             }
 
             return settings;
