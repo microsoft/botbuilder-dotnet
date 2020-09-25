@@ -29,6 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<string, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<string, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
+        private readonly ResourceExplorerOptions options;
+
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<Resource> changedResources = new ConcurrentBag<Resource>();
@@ -41,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
         public ResourceExplorer()
+            : this(new ResourceExplorerOptions())
         {
         }
 
@@ -49,9 +52,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         public ResourceExplorer(IEnumerable<ResourceProvider> providers)
-            : this()
+            : this(new ResourceExplorerOptions() { Providers = providers })
         {
-            this.resourceProviders = providers.ToList();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
+        /// </summary>
+        /// <param name="options">Configuration optiosn for <see cref="ResourceExplorer"/>.</param>
+        public ResourceExplorer(ResourceExplorerOptions options)
+        {
+            this.options = options ?? throw new ArgumentNullException(nameof(options));
+
+            if (options.Providers != null)
+            {
+                this.resourceProviders = options.Providers.ToList();
+            }
         }
 
         /// <summary>
@@ -176,6 +192,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     var result = Load<T>(jToken, sourceContext);
                     return result;
                 }
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
             }
             catch (Exception err)
             {
@@ -573,7 +593,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             // Create a cycle detection observer
-            var cycleDetector = new CycleDetectionObserver();
+            var cycleDetector = new CycleDetectionObserver(options.AllowCycles);
 
             // Register our cycle detector on the converters that support observer registration
             foreach (var observableConverter in converters.Where(c => c is IObservableJsonConverter))
