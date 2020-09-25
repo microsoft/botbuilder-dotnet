@@ -213,6 +213,7 @@ namespace AdaptiveExpressions
             lookup.Add("or", lookup[ExpressionType.Or]);
 
             lookup.Add("&", lookup[ExpressionType.Concat]);
+            lookup.Add("??", lookup[ExpressionType.Coalesce]);
 
             return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }

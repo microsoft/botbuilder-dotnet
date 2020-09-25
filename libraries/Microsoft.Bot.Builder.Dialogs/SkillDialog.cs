@@ -265,6 +265,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         // Capture the EndOfConversation activity if it was sent from skill
                         eocActivity = activityFromSkill;
+
+                        // The conversation has ended, so cleanup the conversation id.
+                        await DialogOptions.ConversationIdFactory.DeleteConversationReferenceAsync(skillConversationId, cancellationToken).ConfigureAwait(false);
                     }
                     else if (await InterceptOAuthCardsAsync(context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
                     {

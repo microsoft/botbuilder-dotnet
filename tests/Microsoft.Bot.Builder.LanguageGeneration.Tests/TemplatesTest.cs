@@ -762,7 +762,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeFalse.lg"));
             
             var evaled = templates.ExpandTemplate("StrictFalse");
-            Assert.Equal("null", evaled[0].ToString());
+            Assert.Null(evaled[0]);
 
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
@@ -1366,15 +1366,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled = templates.Evaluate("template1");
 
-            Assert.Equal("null", evaled);
+            Assert.Null(evaled);
 
             evaled = templates.Evaluate("template2");
 
-            Assert.Equal("result is 'null'", evaled);
+            Assert.Equal("result is null", evaled);
 
             var jObjEvaled = templates.Evaluate("template3") as JObject;
 
-            Assert.Equal("null", jObjEvaled["key1"]);
+            Assert.Null(jObjEvaled["key1"].ToObject<object>());
+
+            evaled = templates.Evaluate("template5");
+
+            Assert.Equal("hello", evaled);
         }
 
         [Fact]

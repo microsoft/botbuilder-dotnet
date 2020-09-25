@@ -487,6 +487,16 @@ namespace AdaptiveExpressions.Tests
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
+            Test("3??2", 3),
+            Test("null ?? two", 2),
+            Test("bag.notExist ?? bag.n ?? bag.name", "mybag"),
+            Test("!exists(one)?'r1':'r2'", "r2"), // false
+            Test("!!exists(one) ? 'r1' : 'r2'", "r1"), // true
+            Test("0?'r1':'r2'", "r1"), // true
+            Test("bool('true')? 'r1': 'r2'", "r1"), // true
+            Test("bag.name == null ? \"hello\": bag.name", "mybag"),
+            Test("one > 0? one : two", 1),
+            Test("hello * 5?'r1':'r2'", "r2"),
             #endregion
 
             #region  String functions test

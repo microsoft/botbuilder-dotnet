@@ -362,6 +362,9 @@
       "$ref": "#/definitions/Microsoft.TextTemplate"
     },
     {
+      "$ref": "#/definitions/Microsoft.ThrowException"
+    },
+    {
       "$ref": "#/definitions/Microsoft.TraceActivity"
     },
     {
@@ -3734,6 +3737,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ThrowException"
         },
         {
           "$ref": "#/definitions/Microsoft.TraceActivity"
@@ -9463,6 +9469,55 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.TextTemplate"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.ThrowException": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Throw an exception",
+      "description": "Throw an exception. Capture this exception with OnError trigger.",
+      "type": "object",
+      "required": [
+        "errorValue",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "errorValue": {
+          "$ref": "#/definitions/valueExpression",
+          "title": "Error value",
+          "description": "Error value to throw."
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ThrowException"
         },
         "$designer": {
           "title": "Designer information",
