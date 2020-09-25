@@ -74,10 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             {
                 // load configuration into settings dictionary
                 var root = ConvertFlattenSettingToNode(configuration.AsEnumerable().ToList());
-                foreach (var child in root.Children)
-                {
-                    settings.Add(child.Value, ConvertNodeToObject(child));
-                }
+                root.Children.ForEach(u => settings.Add(u.Value, ConvertNodeToObject(u)));
             }
 
             return settings;
@@ -88,14 +85,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             var root = new Node(null);
             foreach (var child in kvs)
             {
-                var key = child.Key;
-                var value = child.Value;
-                var keyChain = key.Split(':');
+                var keyChain = child.Key.Split(':');
                 var currentNode = root;
                 foreach (var item in keyChain)
                 {
-                    var matchIten = currentNode.Children.FirstOrDefault(u => u?.Value == item);
-                    if (matchIten == null)
+                    var matchItem = currentNode.Children.FirstOrDefault(u => u?.Value == item);
+                    if (matchItem == null)
                     {
                         // Remove all the leaf children
                         currentNode.Children.RemoveAll(u => u.Children.Count == 0);
@@ -107,11 +102,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                     }
                     else
                     {
-                        currentNode = matchIten;
+                        currentNode = matchItem;
                     }
                 }
 
-                currentNode.Children.Add(new Node(value));
+                currentNode.Children.Add(new Node(child.Value));
             }
 
             return root;
@@ -119,14 +114,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         private static object ConvertNodeToObject(Node node)
         {
+            // If the children is leaf node, return its value directly.
             if (node.Children.Count == 1 && node.Children[0].Children.Count == 0)
             {
                 return node.Children[0].Value;
             }
 
-            if (node.Children.All(u => int.TryParse(u.Value, out _)))
+            if (node.Children.All(u => int.TryParse(u.Value, out var number) && number >= 0))
             {
-                // all children are int number
+                // all children are int number, treat it as Array
                 var pairs = new List<Tuple<int, object>>();
                 node.Children.ForEach(u => pairs.Add(new Tuple<int, object>(int.Parse(u.Value, CultureInfo.InvariantCulture), ConvertNodeToObject(u))));
                 var maxIndex = pairs.Select(u => u.Item1).Max();
@@ -139,12 +135,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 return list;
             }
 
-            // convert all children into dictionary
+            // Convert all children into dictionary
             var result = new Dictionary<string, object>();
-            foreach (var child in node.Children)
-            {
-                result.Add(child.Value, ConvertNodeToObject(child));
-            }
+            node.Children.ForEach(u => result.Add(u.Value, ConvertNodeToObject(u)));
 
             return result;
         }
