@@ -455,6 +455,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("three")
             .Send("settings.fakeArray.zzz")
                 .AssertReply("cat")
+            .Send("settings.myArray[0]")
+                .AssertReply("e1")
+            .Send("settings.myArray[1].obj")
+                .AssertReply("e2")
             .StartTestAsync();
         }
 
