@@ -164,21 +164,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     // make it insensitive
                     var property = body.keyValueStructureLine().STRUCTURE_IDENTIFIER().GetText().ToLowerInvariant();
                     var value = VisitStructureValue(body.keyValueStructureLine());
-                    result[property] = JToken.FromObject(value);
+                    result[property] = value == null ? JValue.CreateNull() : JToken.FromObject(value);
                 }
                 else
                 {
                     // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in 
-                    var propertyObject = JObject.FromObject(EvalExpression(body.expressionInStructure().GetText(), body.GetText()));
-
-                    // Full reference to another structured template is limited to the structured template with same type 
-                    if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
+                    var value = EvalExpression(body.expressionInStructure().GetText(), body.GetText());
+                    if (value != null)
                     {
-                        foreach (var item in propertyObject)
+                        var propertyObject = JObject.FromObject(value);
+
+                        // Full reference to another structured template is limited to the structured template with same type 
+                        if (propertyObject[LGType] != null && propertyObject[LGType].ToString() == typeName)
                         {
-                            if (result.Property(item.Key, StringComparison.Ordinal) == null)
+                            foreach (var item in propertyObject)
                             {
-                                result[item.Key] = item.Value;
+                                if (result.Property(item.Key, StringComparison.Ordinal) == null)
+                                {
+                                    result[item.Key] = item.Value;
+                                }
                             }
                         }
                     }
@@ -221,7 +225,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().expression();
             var switchErrorPrefix = "Switch '" + switchExprs[0].GetText() + "': ";
-            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat().GetText(), switchErrorPrefix).ToString();
+            var switchExprResult = EvalExpression(switchExprs[0].GetText(), switchCaseNodes[0].switchCaseStat().GetText(), switchErrorPrefix);
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -247,8 +251,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var caseExprs = switchCaseNode.switchCaseStat().expression();
 
                 var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
-                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix).ToString();
-                if (switchExprResult == caseExprResult)
+                var caseExprResult = EvalExpression(caseExprs[0].GetText(), switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix);
+                if (switchExprResult == caseExprResult || (switchExprResult != null && switchExprResult.Equals(caseExprResult)))
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
                 }
@@ -475,10 +479,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
-            }
-            else if (result == null && _lgOptions.StrictMode != true)
-            {
-                result = "null";
             }
 
             return result;

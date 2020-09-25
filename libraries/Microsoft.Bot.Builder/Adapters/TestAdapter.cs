@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 activity.LocalTimestamp = DateTimeOffset.Now;
             }
 
-            using (var context = new TurnContext(this, activity))
+            using (var context = CreateTurnContext(activity))
             {
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
@@ -373,7 +373,7 @@ namespace Microsoft.Bot.Builder.Adapters
             var update = Activity.CreateConversationUpdateActivity();
             update.ChannelId = channelId;
             update.Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("n") };
-            using (var context = new TurnContext(this, (Activity)update))
+            using (var context = CreateTurnContext((Activity)update))
             {
                 return callback(context, cancellationToken);
             }
@@ -589,11 +589,9 @@ namespace Microsoft.Bot.Builder.Adapters
                     Token = token,
                 });
             }
-            else
-            {
-                // not found
-                return Task.FromResult<TokenResponse>(null);
-            }
+
+            // not found
+            return Task.FromResult<TokenResponse>(null);
         }
 
         /// <summary>Attempts to retrieve the token for a user that's in a login flow, using the bot's AppCredentials.
@@ -882,6 +880,16 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 return Task.FromResult<TokenResponse>(null);
             }
+        }
+        
+        /// <summary>
+        /// Creates the turn context for the adapter.
+        /// </summary>
+        /// <param name="activity">An <see cref="Activity"/> instance for the turn.</param>
+        /// <returns>A <see cref="TurnContext"/> instance to be used by the adapter.</returns>
+        protected virtual TurnContext CreateTurnContext(Activity activity)
+        {
+            return new TurnContext(this, activity);
         }
 
         private void Enqueue(Activity activity)

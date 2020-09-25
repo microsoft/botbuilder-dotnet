@@ -116,6 +116,14 @@ namespace AdaptiveExpressions
                 return MakeExpression(binaryOperationName, left, right);
             }
 
+            public override Expression VisitTripleOpExp([NotNull] ExpressionAntlrParser.TripleOpExpContext context)
+            {
+                var conditionalExpression = Visit(context.expression(0));
+                var left = Visit(context.expression(1));
+                var right = Visit(context.expression(2));
+                return MakeExpression(ExpressionType.If, conditionalExpression, left, right);
+            }
+
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionAntlrParser.FuncInvokeExpContext context)
             {
                 var parameters = ProcessArgsList(context.argsList());
