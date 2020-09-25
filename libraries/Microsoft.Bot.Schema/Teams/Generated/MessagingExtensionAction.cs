@@ -44,7 +44,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="botActivityPreview">A collection of bot activities.</param>
         /// <param name="messagePayload">Message content sent as part of the
         /// command request.</param>
-        public MessagingExtensionAction(object data = default(object), TaskModuleRequestContext context = default(TaskModuleRequestContext), string commandId = default(string), string commandContext = default(string), string botMessagePreviewAction = default(string), IList<Activity> botActivityPreview = default(IList<Activity>), MessageActionsPayload messagePayload = default(MessageActionsPayload))
+        /// <param name="state">State parameter passed back to the bot after authentication flow.</param>
+        public MessagingExtensionAction(object data = default(object), TaskModuleRequestContext context = default(TaskModuleRequestContext), string commandId = default(string), string commandContext = default(string), string botMessagePreviewAction = default(string), IList<Activity> botActivityPreview = default(IList<Activity>), MessageActionsPayload messagePayload = default(MessageActionsPayload), string state = default(string))
             : base(data, context)
         {
             CommandId = commandId;
@@ -52,6 +53,7 @@ namespace Microsoft.Bot.Schema.Teams
             BotMessagePreviewAction = botMessagePreviewAction;
             BotActivityPreview = botActivityPreview;
             MessagePayload = messagePayload;
+            State = state;
             CustomInit();
         }
 
@@ -91,5 +93,10 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "messagePayload")]
         public MessageActionsPayload MessagePayload { get; set; }
 
+        /// <summary>
+        /// Gets or sets state parameter passed back to the bot after authentication flow.
+        /// </summary>
+        [JsonProperty(PropertyName = "state")]
+        public string State { get; set; }
     }
 }
