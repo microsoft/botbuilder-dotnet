@@ -9,6 +9,13 @@
             "options",
             "resultProperty",
             "*"
-        ]
+        ],
+        "properties": {
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
     }
 }

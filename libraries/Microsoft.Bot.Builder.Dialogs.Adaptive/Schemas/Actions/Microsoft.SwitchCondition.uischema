@@ -12,6 +12,11 @@
                 "hidden": [
                     "actions"
                 ]
+            },
+            "condition": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
             }
         }
     }
