@@ -316,6 +316,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_ThrowException()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_TraceActivity()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

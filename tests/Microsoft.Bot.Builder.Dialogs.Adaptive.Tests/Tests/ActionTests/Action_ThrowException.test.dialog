@@ -1,0 +1,97 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "activityProcessed": false,
+                        "options": {},
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "id": "outer",
+                            "recognizer": {
+                                "$kind": "Microsoft.RegexRecognizer",
+                                "intents": [
+                                    {
+                                        "intent": "ThrowExceptionIntent",
+                                        "pattern": "throw"
+                                    },
+                                    {
+                                        "intent": "CowboyIntent",
+                                        "pattern": "moo"
+                                    }
+                                ]
+                            },
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "CowboyIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "Yippee ki-yay!"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "ThrowExceptionIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.ThrowException",
+                                            "errorValue": "This is an exception message."
+                                        }
+                                    ]
+                                }
+                            ],
+                            "defaultResultProperty": "dialog.result"
+                        }
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnError",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${turn.dialogEvent.Value.ClassName}: ${turn.dialogEvent.Value.Message}"
+                  }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "moo"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Yippee ki-yay!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "throw"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "System.Exception: This is an exception message."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "moo"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Yippee ki-yay!"
+        }
+    ]
+}

@@ -3,6 +3,13 @@
     "form": {
         "label": "Prompt with multi-choice",
         "subtitle": "Choice Input",
-        "helpLink": "https://aka.ms/bfc-ask-for-user-input"
+        "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+        "properties": {
+            "property": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
     }
 }

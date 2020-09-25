@@ -356,6 +356,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Single(finalActivity.Attachments);
         }
 
+        [Fact]
+        public async Task EndOfConversationFromExpectRepliesCallsDeleteConversationReferenceAsync()
+        {
+            Activity activitySent = null;
+
+            // Callback to capture the parameters sent to the skill
+            void CaptureAction(string fromBotId, string toBotId, Uri toUri, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken)
+            {
+                // Capture values sent to the skill so we can assert the right parameters were used.
+                activitySent = activity;
+            }
+
+            // Create a mock skill client to intercept calls and capture what is sent.
+            var mockSkillClientx = CreateMockSkillClient(CaptureAction);
+
+            var eoc = Activity.CreateEndOfConversationActivity() as Activity;
+            var expectedReplies = new List<Activity>();
+            expectedReplies.Add(eoc);
+
+            // Create a mock skill client to intercept calls and capture what is sent.
+            var mockSkillClient = CreateMockSkillClient(CaptureAction, expectedReplies: expectedReplies);
+
+            // Use Memory for conversation state
+            var conversationState = new ConversationState(new MemoryStorage());
+            var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient);
+
+            // Create the SkillDialogInstance and the activity to send.
+            var sut = new SkillDialog(dialogOptions);
+            var activityToSend = (Activity)Activity.CreateMessageActivity();
+            activityToSend.DeliveryMode = DeliveryModes.ExpectReplies;
+            activityToSend.Text = Guid.NewGuid().ToString();
+            var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
+
+            // Send something to the dialog to start it
+            await client.SendActivityAsync<IMessageActivity>("hello");
+
+            Assert.Empty((dialogOptions.ConversationIdFactory as SimpleConversationIdFactory).ConversationRefs);
+            Assert.Equal(1, (dialogOptions.ConversationIdFactory as SimpleConversationIdFactory).CreateCount);
+        }
+
         private static Activity CreateOAuthCardAttachmentActivity(string uri)
         {
             var oauthCard = new OAuthCard { TokenExchangeResource = new TokenExchangeResource { Uri = uri } };
@@ -397,10 +437,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return dialogOptions;
         }
 
-        private static Mock<BotFrameworkClient> CreateMockSkillClient(Action<string, string, Uri, Uri, string, Activity, CancellationToken> captureAction, int returnStatus = 200)
+        private static Mock<BotFrameworkClient> CreateMockSkillClient(Action<string, string, Uri, Uri, string, Activity, CancellationToken> captureAction, int returnStatus = 200, IList<Activity> expectedReplies = null)
         {
             var mockSkillClient = new Mock<BotFrameworkClient>();
-            var activityList = new ExpectedReplies(new List<Activity> { MessageFactory.Text("dummy activity") });
+            var activityList = new ExpectedReplies(expectedReplies ?? new List<Activity> { MessageFactory.Text("dummy activity") });
 
             if (captureAction != null)
             {
@@ -438,7 +478,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         // Simple conversation ID factory for testing.
         private class SimpleConversationIdFactory : SkillConversationIdFactoryBase
         {
-            private readonly ConcurrentDictionary<string, SkillConversationReference> _conversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
+            public SimpleConversationIdFactory()
+            {
+                ConversationRefs = new ConcurrentDictionary<string, SkillConversationReference>();
+            }
+
+            public ConcurrentDictionary<string, SkillConversationReference> ConversationRefs { get; private set; }
 
             // Helper property to assert how many times is CreateSkillConversationIdAsync called.
             public int CreateCount { get; private set; }
@@ -448,7 +493,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 CreateCount++;
 
                 var key = (options.Activity.Conversation.Id + options.Activity.ServiceUrl).GetHashCode().ToString(CultureInfo.InvariantCulture);
-                _conversationRefs.GetOrAdd(key, new SkillConversationReference
+                ConversationRefs.GetOrAdd(key, new SkillConversationReference
                 {
                     ConversationReference = options.Activity.GetConversationReference(),
                     OAuthScope = options.FromBotOAuthScope
@@ -458,12 +503,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             public override Task<SkillConversationReference> GetSkillConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                return Task.FromResult(_conversationRefs[skillConversationId]);
+                return Task.FromResult(ConversationRefs[skillConversationId]);
             }
 
             public override Task DeleteConversationReferenceAsync(string skillConversationId, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                ConversationRefs.TryRemove(skillConversationId, out _);
+                return Task.CompletedTask;
             }
         }
     }

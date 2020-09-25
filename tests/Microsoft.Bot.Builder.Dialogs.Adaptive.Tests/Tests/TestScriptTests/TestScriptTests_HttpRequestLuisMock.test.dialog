@@ -81,7 +81,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "0.8 null"
+            "text": "0.8"
         }
     ]
 }

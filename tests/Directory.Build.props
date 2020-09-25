@@ -7,8 +7,7 @@
   <PropertyGroup>
     <!-- SA0001;CS1573,CS1591,CS1712: For tests, we don't generate documentation. Supress related rules. -->
     <!-- SX1309: FieldNamesShouldBeginWithUnderscores should be fixed as part of https://github.com/microsoft/botframework-sdk/issues/5933 -->
-    <!-- Supressing xunit warnings and should be fixed as part https://github.com/microsoft/botbuilder-dotnet/issues/4349 -->
-    <NoWarn>$(NoWarn);SA0001;CS1573;CS1591;CS1712;SX1309;xUnit1013;xUnit2000;xUnit2003;xUnit2004;xUnit2009;xUnit2013;xUnit2017</NoWarn>
+    <NoWarn>$(NoWarn);SA0001;CS1573;CS1591;CS1712;SX1309</NoWarn>
   </PropertyGroup>
 
   <!-- This ensures that Directory.Build.props in parent folders are merged with this one -->

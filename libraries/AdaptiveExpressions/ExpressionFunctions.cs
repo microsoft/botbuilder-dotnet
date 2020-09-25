@@ -161,6 +161,7 @@ namespace AdaptiveExpressions
                 new BuiltinFunctions.TicksToDays(),
                 new BuiltinFunctions.TicksToHours(),
                 new BuiltinFunctions.TicksToMinutes(),
+                new BuiltinFunctions.TimexResolve(),
                 new BuiltinFunctions.TitleCase(),
                 new BuiltinFunctions.ToLower(),
                 new BuiltinFunctions.ToUpper(),
@@ -212,6 +213,7 @@ namespace AdaptiveExpressions
             lookup.Add("or", lookup[ExpressionType.Or]);
 
             lookup.Add("&", lookup[ExpressionType.Concat]);
+            lookup.Add("??", lookup[ExpressionType.Coalesce]);
 
             return new ReadOnlyDictionary<string, ExpressionEvaluator>(lookup);
         }

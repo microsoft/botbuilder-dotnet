@@ -3,6 +3,13 @@
     "form": {
         "label": "Delete properties",
         "subtitle": "Delete Properties",
-        "helpLink": "https://aka.ms/bfc-using-memory"
+        "helpLink": "https://aka.ms/bfc-using-memory",
+        "properties": {
+            "properties": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
+            }
+        }
     }
 }

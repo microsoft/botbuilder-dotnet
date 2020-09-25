@@ -487,6 +487,16 @@ namespace AdaptiveExpressions.Tests
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
+            Test("3??2", 3),
+            Test("null ?? two", 2),
+            Test("bag.notExist ?? bag.n ?? bag.name", "mybag"),
+            Test("!exists(one)?'r1':'r2'", "r2"), // false
+            Test("!!exists(one) ? 'r1' : 'r2'", "r1"), // true
+            Test("0?'r1':'r2'", "r1"), // true
+            Test("bool('true')? 'r1': 'r2'", "r1"), // true
+            Test("bag.name == null ? \"hello\": bag.name", "mybag"),
+            Test("one > 0? one : two", 1),
+            Test("hello * 5?'r1':'r2'", "r2"),
             #endregion
 
             #region  String functions test
@@ -889,7 +899,13 @@ namespace AdaptiveExpressions.Tests
             Test("endsWith(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), ':40:20')", true),
             Test("endsWith(getPreviousViableTime('TXX:05:10'), ':05:10')", true),
             Test("endsWith(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), ':05:10')", true),
-
+            Test("resolve('T14')", "14:00:00"),
+            Test("resolve('T14:20')", "14:20:00"),
+            Test("resolve('T14:20:30')", "14:20:30"),
+            Test("resolve('2020-12-20')", "2020-12-20"),
+            Test("resolve('2020-12-20T14')", "2020-12-20 14:00:00"),
+            Test("resolve('2020-12-20T14:20')", "2020-12-20 14:20:00"),
+            Test("resolve('2020-12-20T14:20:30')", "2020-12-20 14:20:30"),
             #endregion
 
             #region uri parsing function test
