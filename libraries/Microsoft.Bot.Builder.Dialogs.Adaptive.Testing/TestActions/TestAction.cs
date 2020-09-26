@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="callback">Logic for the bot to use.</param>
         /// <param name="inspector">Inspector for dialog context.</param>
         /// <returns>async task.</returns>
-        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector);
+        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null);
 
         /// <summary>
         /// Registers the path to file and callers line.

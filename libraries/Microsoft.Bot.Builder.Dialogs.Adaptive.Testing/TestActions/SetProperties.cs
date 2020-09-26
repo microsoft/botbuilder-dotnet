@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -45,16 +46,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<PropertyAssignment> Assignments { get; } = new List<PropertyAssignment>();
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
-            await inspector((dc) =>
+            if (inspector != null)
             {
-                foreach (var assignment in Assignments)
+                await inspector((dc) =>
                 {
-                    dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
-                }
-            }).ConfigureAwait(false);
-            Trace.TraceInformation($"[Turn Ended => SetProperties completed]");
+                    foreach (var assignment in Assignments)
+                    {
+                        dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
+                    }
+                }).ConfigureAwait(false);
+                Trace.TraceInformation($"[Turn Ended => SetProperties completed]");
+            }
+            else
+            {
+                throw new Exception("No inspector to use for setting properties");
+            }
         }
     }
 }
