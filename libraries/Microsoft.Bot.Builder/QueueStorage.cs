@@ -11,12 +11,14 @@ namespace Microsoft.Bot.Builder
     public abstract class QueueStorage
     {
         /// <summary>
-        /// Enqueues an Activity for later processing.
+        /// Enqueues an Activity for later processing. The visibility timeout specifies how long the message should be invisible
+        /// to Dequeue and Peek operations. The message content must be a UTF-8 encoded string that is up to 64KB in size.
         /// </summary>
         /// <param name="activity">The <see cref="Activity"/> to be queued for later processing.</param>
+        /// <param name="visibilityTimeout"> Visibility timeout.  Optional with a default value of 0.  Cannot be larger than 7 days. </param>
         /// <param name="timeToLive">Specifies the time-to-live interval for the message.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns>A result string.</returns>
-        public abstract Task<string> QueueActivityAsync(Activity activity, TimeSpan? timeToLive = null, CancellationToken cancellationToken = default);
+        public abstract Task<string> QueueActivityAsync(Activity activity, TimeSpan? visibilityTimeout = null, TimeSpan? timeToLive = null, CancellationToken cancellationToken = default);
     }
 }

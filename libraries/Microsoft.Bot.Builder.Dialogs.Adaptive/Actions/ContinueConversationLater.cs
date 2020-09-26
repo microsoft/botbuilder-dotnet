@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var ttl = visibility + TimeSpan.FromMinutes(2);
 
             var queueStorage = dc.Context.TurnState.Get<QueueStorage>() ?? throw new NullReferenceException("Unable to locate QueueStorage in HostContext");
-            var receipt = await queueStorage.QueueActivityAsync(activity, ttl, cancellationToken).ConfigureAwait(false);
+            var receipt = await queueStorage.QueueActivityAsync(activity, visibility, ttl, cancellationToken).ConfigureAwait(false);
 
             // return the receipt as the result.
             return await dc.EndDialogAsync(result: receipt, cancellationToken: cancellationToken).ConfigureAwait(false);

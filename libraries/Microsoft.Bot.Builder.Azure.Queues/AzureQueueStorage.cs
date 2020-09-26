@@ -53,15 +53,17 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         }
 
         /// <summary>
-        /// Queue an Activity, with option in the Activity.Value to Azure.Storage.Queues.
+        /// Queue an Activity to an Azure.Storage.Queues.QueueClient. The visibility timeout specifies how long the message should be invisible
+        /// to Dequeue and Peek operations. The message content must be a UTF-8 encoded string that is up to 64KB in size.
         /// </summary>
         /// <param name="activity">This is expected to be an <see cref="Activity"/> retrieved from a call to 
         /// activity.GetConversationReference().GetContinuationActivity().  This enables restarting the conversation
         /// using BotAdapter.ContinueConversationAsync.</param>
+        /// <param name="visibilityTimeout">Default value of 0. Cannot be larger than 7 days.</param>
         /// <param name="timeToLive">Specifies the time-to-live interval for the message.</param>
         /// <param name="cancellationToken">Cancellation token for the async operation.</param>
         /// <returns><see cref="SendReceipt"/> as a Json string, from the QueueClient SendMessageAsync operation.</returns>
-        public override async Task<string> QueueActivityAsync(Activity activity, TimeSpan? timeToLive = null, CancellationToken cancellationToken = default)
+        public override async Task<string> QueueActivityAsync(Activity activity, TimeSpan? visibilityTimeout = null, TimeSpan? timeToLive = null, CancellationToken cancellationToken = default)
         {
             if (_createQueueIfNotExists)
             {
@@ -72,7 +74,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             }
 
             var message = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, _jsonSettings)));
-            var receipt = await _queueClient.SendMessageAsync(message, null, timeToLive, cancellationToken).ConfigureAwait(false);
+            var receipt = await _queueClient.SendMessageAsync(message, visibilityTimeout, timeToLive, cancellationToken).ConfigureAwait(false);
 
             return JsonConvert.SerializeObject(receipt.Value);
         }
