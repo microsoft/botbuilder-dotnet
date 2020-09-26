@@ -13,6 +13,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]
+#if !AUTOMATEDBUILD
+    [Ignore]
+#endif
     public class FacebookChatTests
     {
         private const string FacebookUrlBase = "https://graph.facebook.com/v5.0";

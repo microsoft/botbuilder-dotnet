@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]
+#if !AUTOMATEDBUILD
+    [Ignore]
+#endif
     public class SlackClientTest
     {
         private const string SlackUrlBase = "https://slack.com/api";
@@ -136,31 +139,31 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 _slackChannel = Environment.GetEnvironmentVariable("SlackChannel");
                 if (string.IsNullOrWhiteSpace(_slackChannel))
                 {
-                    Assert.Inconclusive("Environment variable 'SlackChannel' not found.");
+                    Assert.Fail("Environment variable 'SlackChannel' not found.");
                 }
 
                 _slackBotToken = Environment.GetEnvironmentVariable("SlackBotToken");
                 if (string.IsNullOrWhiteSpace(_slackBotToken))
                 {
-                    Assert.Inconclusive("Environment variable 'SlackBotToken' not found.");
+                    Assert.Fail("Environment variable 'SlackBotToken' not found.");
                 }
 
                 _slackClientSigningSecret = Environment.GetEnvironmentVariable("SlackClientSigningSecret");
                 if (string.IsNullOrWhiteSpace(_slackClientSigningSecret))
                 {
-                    Assert.Inconclusive("Environment variable 'SlackClientSigningSecret' not found.");
+                    Assert.Fail("Environment variable 'SlackClientSigningSecret' not found.");
                 }
 
                 _slackVerificationToken = Environment.GetEnvironmentVariable("SlackVerificationToken");
                 if (string.IsNullOrWhiteSpace(_slackVerificationToken))
                 {
-                    Assert.Inconclusive("Environment variable 'SlackVerificationToken' not found.");
+                    Assert.Fail("Environment variable 'SlackVerificationToken' not found.");
                 }
 
                 _botName = Environment.GetEnvironmentVariable("BotName");
                 if (string.IsNullOrWhiteSpace(_botName))
                 {
-                    Assert.Inconclusive("Environment variable 'BotName' not found.");
+                    Assert.Fail("Environment variable 'BotName' not found.");
                 }
             }
         }
