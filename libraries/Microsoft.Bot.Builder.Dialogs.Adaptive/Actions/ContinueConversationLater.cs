@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -34,19 +33,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ContinueConversationLater";
 
-        private readonly QueueStorage _queueStorage;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ContinueConversationLater"/> class.
         /// </summary>
-        /// <param name="queueStorage">The queue to store the Activity to continue the conversation.</param>
         /// <param name="callerPath">The full path of the source file that contains this called.</param>
         /// <param name="callerLine">The line within the source file that contains this caller.</param>
         [JsonConstructor]
-        public ContinueConversationLater(QueueStorage queueStorage, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ContinueConversationLater([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this._queueStorage = queueStorage;
         }
 
         /// <summary>
@@ -110,7 +105,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var visibility = date - DateTime.UtcNow;
             var ttl = visibility + TimeSpan.FromMinutes(2);
 
-            var receipt = await _queueStorage.QueueActivityAsync(activity, ttl, cancellationToken).ConfigureAwait(false);
+            var queueStorage = dc.Context.TurnState.Get<QueueStorage>() ?? throw new NullReferenceException("Unable to locate QueueStorage in HostContext");
+            var receipt = await queueStorage.QueueActivityAsync(activity, ttl, cancellationToken).ConfigureAwait(false);
 
             // return the receipt as the result.
             return await dc.EndDialogAsync(result: receipt, cancellationToken: cancellationToken).ConfigureAwait(false);

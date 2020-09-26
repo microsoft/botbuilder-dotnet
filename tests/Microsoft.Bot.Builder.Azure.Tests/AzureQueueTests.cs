@@ -42,11 +42,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                        .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
 
                 var queueStorage = new AzureQueueStorage(ConnectionString, queueName);
-                var dm = new DialogManager(new ContinueConversationLater(queueStorage)
+                var dm = new DialogManager(new ContinueConversationLater()
                 {
                     Date = "=addSeconds(utcNow(), 2)",
                     Value = "foo"
                 });
+
+                dm.InitialTurnState.Set<QueueStorage>(queueStorage);
+
                 await new TestFlow((TestAdapter)adapter, dm.OnTurnAsync)
                     .Send("hi")
                     .StartTestAsync();
