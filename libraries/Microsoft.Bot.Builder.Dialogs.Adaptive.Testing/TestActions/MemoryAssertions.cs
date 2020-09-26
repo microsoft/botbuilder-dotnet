@@ -37,6 +37,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         }
 
         /// <summary>
+        /// Gets or sets the description of this assertion.
+        /// </summary>
+        /// <value>Description of what this assertion is.</value>
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        /// <summary>
         /// Gets the assertions.
         /// </summary>
         /// <value>The assertion expressions.</value>
@@ -44,27 +51,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public List<string> Assertions { get; } = new List<string>();
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
-            var activity = new Activity();
-            activity.ApplyConversationReference(adapter.Conversation, isIncoming: true);
-            activity.Type = "event";
-            activity.Name = "MemoryAssertions";
-            activity.Value = Assertions;
-            await adapter.ProcessActivityAsync(
-                activity,
-                async (turnContext, cancellationToken) => await inspector.InspectAsync(turnContext, (dc) =>
-                {
-                    foreach (var assertion in Assertions)
+            if (inspector != null)
+            {
+                await inspector((dc) =>
                     {
-                        var (val, error) = Expression.Parse(assertion).TryEvaluate<bool>(dc.State);
-                        if (error != null || !val)
+                        foreach (var assertion in Assertions)
                         {
-                            throw new Exception($"{assertion} failed");
+                            var (val, error) = Expression.Parse(assertion).TryEvaluate<bool>(dc.State);
+                            if (error != null || !val)
+                            {
+                                throw new Exception($"{assertion} failed");
+                            }
                         }
-                    }
-                }).ConfigureAwait(false)).ConfigureAwait(false);
-            Trace.TraceInformation($"[Turn Ended => MemoryAssertions passed]");
+                    }).ConfigureAwait(false);
+                Trace.TraceInformation($"[Turn Ended => {Description} MemoryAssertions passed]");
+            }
+            else
+            {
+                Trace.TraceInformation($"[Turn Ended => No inspector for {Description} MemoryAssertions]");
+            }
         }
     }
 }

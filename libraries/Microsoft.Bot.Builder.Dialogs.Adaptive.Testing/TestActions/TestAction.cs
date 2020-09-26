@@ -8,6 +8,13 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
     /// <summary>
+    /// Allow inspecting/modifying the current dialog context.
+    /// </summary>
+    /// <param name="inspector">Inspector for looking at current dialog context.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public delegate Task Inspector(DialogContextInspector inspector);
+
+    /// <summary>
     /// Abstract base class for scripted actions.
     /// </summary>
     public abstract class TestAction
@@ -19,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="callback">Logic for the bot to use.</param>
         /// <param name="inspector">Inspector for dialog context.</param>
         /// <returns>async task.</returns>
-        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector);
+        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null);
 
         /// <summary>
         /// Registers the path to file and callers line.
