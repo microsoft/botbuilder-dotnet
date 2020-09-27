@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            return await dc.EndDialogAsync().ConfigureAwait(false);
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
