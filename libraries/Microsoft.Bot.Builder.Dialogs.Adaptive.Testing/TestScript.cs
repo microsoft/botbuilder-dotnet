@@ -130,7 +130,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
                 .Use(new SetTestOptionsMiddleware());
 
-            adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
+            adapter.OnTurnError += (context, err) =>
+            {
+                return context.SendActivityAsync(err.Message);
+            };
+
             return adapter;
         }
 
@@ -154,6 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = EnableTrace;
             adapter.Locale = Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
+            adapter.Use(new SetProperties.MockSettingsMiddleware());
 
             foreach (var userToken in UserTokenMocks)
             {

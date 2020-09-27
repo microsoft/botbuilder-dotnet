@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
@@ -52,9 +55,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             {
                 await inspector((dc) =>
                 {
+                    var mockSettingsMiddleware = dc.Context.TurnState.Get<MockSettingsMiddleware>();
                     foreach (var assignment in Assignments)
                     {
-                        dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
+                        JToken value = null;
+                        var (val, valueError) = assignment.Value.TryGetValue(dc.State);
+                        if (valueError != null)
+                        {
+                            throw new Exception($"Expression evaluation resulted in an error. Expression: {assignment.Value.ToString()}. Error: {valueError}");
+                        }
+
+                        if (val != null)
+                        {
+                            value = JToken.FromObject(val).DeepClone();
+                        }
+
+                        value = value?.ReplaceJTokenRecursively(dc.State);
+                        var property = assignment.Property.GetValue(dc.State);
+                        if (!mockSettingsMiddleware.TryAddSetting(property, value))
+                        {
+                            dc.State.SetValue(property, value);
+                        }
                     }
                 }).ConfigureAwait(false);
                 Trace.TraceInformation($"[Turn Ended => SetProperties completed]");
@@ -62,6 +83,64 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             else
             {
                 throw new Exception("No inspector to use for setting properties");
+            }
+        }
+
+        /// <summary>
+        /// Middleware which injests mocked settings properties.
+        /// </summary>
+        internal class MockSettingsMiddleware : IMiddleware
+        {
+            private readonly string prefix = $"{ScopePath.Settings}.";
+            private readonly Dictionary<string, string> mockData = new Dictionary<string, string>();
+
+            /// <summary>
+            /// Try to add key value if key is settings.
+            /// </summary>
+            /// <param name="key">The key.</param>
+            /// <param name="value">The value.</param>
+            /// <returns>If it is settings, return true.</returns>
+            public bool TryAddSetting(string key, JToken value)
+            {
+                if (key.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    if (value.Type == JTokenType.String)
+                    {
+                        var path = key.Substring(prefix.Length);
+
+                        // Note that settings use : as separator in ConfigurationBuilder.
+                        mockData[path.Replace('.', ':')] = value.ToString();
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"Only string is supported as value for mocking settings. {value} is not supported.");
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
+
+            /// <inheritdoc/>
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
+            {
+                turnContext.TurnState.Add(this);
+
+                if (mockData.Count != 0)
+                {
+                    IConfigurationBuilder configBuilder = new ConfigurationBuilder();
+                    var previousConfig = turnContext.TurnState.Get<IConfiguration>();
+                    if (previousConfig != null)
+                    {
+                        configBuilder = configBuilder.AddConfiguration(previousConfig);
+                    }
+
+                    configBuilder.AddInMemoryCollection(mockData);
+                    turnContext.TurnState.Set<IConfiguration>(configBuilder.Build());
+                }
+
+                await next(cancellationToken).ConfigureAwait(false);
             }
         }
     }
