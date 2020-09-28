@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -902,6 +901,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (nextAssignment.Alternative != null)
                 {
                     val = nextAssignment.Alternatives.ToList();
+                }
+
+                if (nextAssignment.RaisedCount++ == 0)
+                {
+                    // Reset retries when new form event is first issued
+                    actionContext.State.RemoveValue(DialogPath.Retries);
                 }
 
                 evt = new DialogEvent() { Name = nextAssignment.Event, Value = val, Bubble = false };

@@ -267,6 +267,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
+            // if there no usr-agent in the header, set the user-agent to Mozzila/5.0
+            if (!client.DefaultRequestHeaders.Contains("user-agent"))
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
+            }
+
             dynamic traceInfo = new JObject();
 
             traceInfo.request = new JObject();

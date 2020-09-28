@@ -1,10 +1,12 @@
 ﻿{
     "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
-    "description": "Test retries from Ask with SetProperties",
+    "description": "Test retries from Ask with DeleteProperty",
     "httpRequestMocks": [
         "LuisNoEntities.mock",
-        "LuisBreadEntity.mock"
+        "LuisBreadEntity.mock",
+        "LuisBreadEntities.mock",
+
     ],
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -43,6 +45,18 @@
                 ]
             },
             {
+                "$kind": "Microsoft.OnChooseEntity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Ask",
+                        "activity": "Choose",
+                        "expectedProperties": [
+                            "Bread"
+                        ]
+                    }
+                ]
+            },
+            {
                 "$kind": "Microsoft.OnAssignEntity",
                 "operation": "Add()",
                 "property": "Bread",
@@ -53,13 +67,9 @@
                         "activity": "Set bread to rye"
                     },
                     {
-                        "$kind": "Microsoft.SetProperties",
-                        "assignments": [
-                            {
-                                "property": "$Bread",
-                                "value": "=@BreadEntity"
-                            }
-                        ]
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$Bread",
+                        "value": "rye"
                     }
                 ]
             }
@@ -86,6 +96,34 @@
             "$kind": "Microsoft.Test.MemoryAssertions",
             "assertions": [
                 "$retries == 0"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "wheat"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Choose"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "$retries == 0"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "no entities"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Choose"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "$retries == 1"
             ]
         },
         {
