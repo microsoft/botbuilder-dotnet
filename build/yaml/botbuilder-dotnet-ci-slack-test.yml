@@ -35,9 +35,8 @@ variables:
   BuildPlatform: 'any cpu'
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
-  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
+  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by Microsoft.Bot.Builder.sln projects.
   SlackBotToken: $(SlackTestBotSlackBotToken)
-  SlackChannel: $(SlackTestBotSlackChannel)
   SlackClientSigningSecret: $(SlackTestBotSlackClientSigningSecret)
   SlackVerificationToken: $(SlackTestBotSlackVerificationToken)
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
@@ -49,7 +48,7 @@ variables:
 #  SlackTestBotSlackBotToken: define this in Azure
 #  SlackTestBotSlackChannel: define this in Azure
 #  SlackTestBotSlackClientSigningSecret: define this in Azure
-#  SlackTestBotSlackVerificationToken: define this in Azure
+    #  SlackTestBotSlackVerificationToken: define this in Azure
 
 steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
@@ -63,17 +62,6 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj'
     arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
-
-#- powershell: |
-#   echo '##vso[task.setvariable variable=AppId]$(SlackTestBotAppId)'
-#   echo '##vso[task.setvariable variable=AppSecret]$(SlackTestBotAppSecret)'
-#   echo '##vso[task.setvariable variable=BotGroup]$(SlackTestBotBotGroup)'
-#   echo '##vso[task.setvariable variable=BotName]$(SlackTestBotBotName)'
-#   echo '##vso[task.setvariable variable=SlackBotToken]$(SlackTestBotSlackBotToken)'
-#   echo '##vso[task.setvariable variable=SlackChannel]$(SlackTestBotSlackChannel)'
-#   echo '##vso[task.setvariable variable=SlackClientSigningSecret]$(SlackTestBotSlackClientSigningSecret)'
-#   echo '##vso[task.setvariable variable=SlackVerificationToken]$(SlackTestBotSlackVerificationToken)'
-#  displayName: 'Set Environment Variables'
 
 - task: AzureCLI@1
   displayName: 'Create resources'
@@ -106,6 +94,12 @@ steps:
      FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj
     arguments: '-v n --configuration $(BuildConfiguration) --filter SlackClientTest'
     workingDirectory: tests
+  env:
+    BotName: $(SlackTestBotBotName)
+    SlackBotToken: $(SlackTestBotSlackBotToken)
+    SlackChannel: $(SlackTestBotSlackChannel)
+    SlackClientSigningSecret: $(SlackTestBotSlackClientSigningSecret)
+    SlackVerificationToken: $(SlackTestBotSlackVerificationToken)
 
 - task: AzureCLI@1
   displayName: 'Delete Resources'
