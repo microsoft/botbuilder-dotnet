@@ -80,6 +80,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             return settings;
         }
 
+        /// <summary>
+        /// Generate a node tree with the flatten settings.
+        /// For example:
+        /// {
+        ///   "array":["item1", "item2"],
+        ///   "object":{"array":["item1"], "2":"numberkey"}
+        /// }
+        /// 
+        /// Would generate a flatten settings like:
+        /// array:0 item1
+        /// array:1 item2
+        /// object:array:0 item1
+        /// object:2 numberkey
+        /// 
+        /// After Converting it from flatten settings into node tree, would get:
+        /// 
+        ///                         null
+        ///                |                     |
+        ///              array                object
+        ///            |        |            |        |
+        ///           0          1        array        2
+        ///           |          |         |           |
+        ///         item1       item2      0        numberkey
+        ///                                |
+        ///                              item1
+        /// The result is a Tree.
+        /// </summary>
+        /// <param name="kvs">Configurations with key value pairs.</param>
+        /// <returns>The root node of the tree.</returns>
         private static Node ConvertFlattenSettingToNode(List<KeyValuePair<string, string>> kvs)
         {
             var root = new Node(null);
