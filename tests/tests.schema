@@ -212,6 +212,9 @@
       "$ref": "#/definitions/Microsoft.OnHandoffActivity"
     },
     {
+      "$ref": "#/definitions/Microsoft.OnInstallationUpdateActivity"
+    },
+    {
       "$ref": "#/definitions/Microsoft.OnIntent"
     },
     {
@@ -357,6 +360,9 @@
     },
     {
       "$ref": "#/definitions/Microsoft.TextTemplate"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.ThrowException"
     },
     {
       "$ref": "#/definitions/Microsoft.TraceActivity"
@@ -3616,30 +3622,6 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3733,10 +3715,37 @@
           "$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
         },
         {
+          "$ref": "#/definitions/Microsoft.ThrowException"
+        },
+        {
           "$ref": "#/definitions/Microsoft.TraceActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -3844,10 +3853,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -3936,6 +3945,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.OnHandoffActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnInstallationUpdateActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.OnIntent"
@@ -6126,6 +6138,71 @@
         }
       }
     },
+    "Microsoft.OnInstallationUpdateActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On InstallationUpdate activity",
+      "description": "Actions to perform on receipt of an activity with type 'InstallationUpdate'.",
+      "type": "object",
+      "required": [
+        "actions",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnInstallationUpdateActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.OnIntent": {
       "$role": [
         "implements(Microsoft.ITrigger)",
@@ -7089,24 +7166,24 @@
             }
           ]
         },
-        "strictFiltersCompoundOperationType": {
-            "$ref": "#/definitions/stringExpression",
-            "title": "StrictFiltersCompoundOperationType",
-            "description": "Join operator for Strict Filters.",
-            "oneOf": [
-                {
-                    "title": "StrictFilters CompoundOperation Type",
-                    "description": "Value of Join Operator to be used as Conjunction with Strict Filter Value.",
-                    "enum": [
-                        "AND",
-                        "OR"
-                    ],
-                    "default": "AND"
-                },
-                {
-                    "$ref": "#/definitions/equalsExpression"
-                }
-            ]
+        "strictFiltersJoinOperator": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "StrictFiltersJoinOperator",
+          "description": "Join operator for Strict Filters.",
+          "oneOf": [
+            {
+              "title": "Join Operator",
+              "description": "Value of Join Operator to be used as conjunction with Strict Filter values.",
+              "enum": [
+                "AND",
+                "OR"
+              ],
+              "default": "AND"
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
         },
         "$kind": {
           "title": "Kind of dialog object",
@@ -7226,6 +7303,25 @@
                 "autoSuggestQuestion"
               ],
               "default": "default"
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
+        },
+        "strictFiltersJoinOperator": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "StrictFiltersJoinOperator",
+          "description": "Join operator for Strict Filters.",
+          "oneOf": [
+            {
+              "title": "Join Operator",
+              "description": "Value of Join Operator to be used as onjuction with Strict Filter values.",
+              "enum": [
+                "AND",
+                "OR"
+              ],
+              "default": "AND"
             },
             {
               "$ref": "#/definitions/equalsExpression"
@@ -8764,6 +8860,11 @@
             ]
           }
         },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "The description of what the assertion is testing"
+        },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
@@ -9392,6 +9493,55 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.TextTemplate"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.ThrowException": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Throw an exception",
+      "description": "Throw an exception. Capture this exception with OnError trigger.",
+      "type": "object",
+      "required": [
+        "errorValue",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "errorValue": {
+          "$ref": "#/definitions/valueExpression",
+          "title": "Error value",
+          "description": "Error value to throw."
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ThrowException"
         },
         "$designer": {
           "title": "Designer information",

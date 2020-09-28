@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// Delegate for inspecting or modifying dialog state.
     /// </summary>
     /// <param name="dc">Dialog context.</param>
-    public delegate void Inspector(DialogContext dc);
+    public delegate void DialogContextInspector(DialogContext dc);
 
     /// <summary>
     /// Class for inspecting current dialog context.
     /// </summary>
-    public class DialogInspector
+    internal class DialogInspector
     {
         private string _rootDialogId;
         private readonly string _dialogStateProperty;
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="inspector">Inspector for analyzing/modifying dialog context.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>result of the running the logic against the activity.</returns>
-        public async Task InspectAsync(ITurnContext context, Inspector inspector, CancellationToken cancellationToken = default)
+        public async Task InspectAsync(ITurnContext context, DialogContextInspector inspector, CancellationToken cancellationToken = default)
         {
             // This class just lets you load & save memory in parallel
             var botStateSet = new BotStateSet();

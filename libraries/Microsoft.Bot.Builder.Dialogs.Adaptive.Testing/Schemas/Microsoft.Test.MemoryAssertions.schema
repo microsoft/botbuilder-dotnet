@@ -20,6 +20,11 @@
                     "user.vip == true"
                 ]
             }
+        },
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The description of what the assertion is testing"
         }
     }
 }

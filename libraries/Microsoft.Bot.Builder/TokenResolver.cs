@@ -20,6 +20,19 @@ namespace Microsoft.Bot.Builder
     {
         private static readonly TimeSpan PollingInterval = TimeSpan.FromSeconds(1);   // Poll for token every 1 second.
 
+        /// <summary>
+        /// Inspects outgoing Activities for <see cref="OAuthCard">OAuthCards</see>.
+        /// </summary>
+        /// <param name="adapter">The BotFrameworkAdapter used for polling the token service.</param>
+        /// <param name="logger">The ILogger implementation this TokenResolver should use.</param>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">The activity to send.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>If an <see cref="OAuthCard"/> is found in an outgoing activity, the <see cref="TokenResolver"/> polls the Bot Framework Token Service in the background.
+        /// When the user completes the login flow, the TokenResolver will retrieve the user's token from the service and create a <see cref="SignInConstants.TokenResponseEventName">TokenResponse</see> activity to "send" to the bot, mimicking non-streaming OAuth flows.
+        /// <para />
+        /// All bots using OAuth should query the service to ensure the user is successfully logged in before utilizing a user's token. The bot should never store the user's token.
+        /// </remarks>
         public static void CheckForOAuthCards(BotFrameworkAdapter adapter, ILogger logger, ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             if (activity?.Attachments == null)
@@ -37,15 +50,16 @@ namespace Microsoft.Bot.Builder
                         throw new InvalidOperationException("The OAuthPrompt's ConnectionName property is missing a value.");
                     }
 
-                    // Poll as a background task and add to the list (we don't call await here, we await all the calls together later).
                     pollTokenTasks.Add(PollForTokenAsync(adapter, logger, turnContext, oauthCard.ConnectionName, cancellationToken));
                 }
             }
 
             if (pollTokenTasks.Any())
             {
-                // Wait for all the poll operations to complete.
-                Task.WaitAll(pollTokenTasks.ToArray());
+                // Run the poll operations in the background.
+                // On retrieving a token from the token service the TokenResolver creates an Activity to route the token to the bot to continue the conversation.
+                // If these Tasks are awaited and the user doesn't complete the login flow, the bot may timeout in sending its response to the channel which can cause the streaming connection to disconnect.
+                Task.WhenAll(pollTokenTasks.ToArray());
             }
         }
 
@@ -114,7 +128,7 @@ namespace Microsoft.Bot.Builder
 
                 stopwatch.Stop();
             }
-#pragma warning disable CA1031 // Do not catch general exception types (for new we just log the exception and continue)
+#pragma warning disable CA1031 // Do not catch general exception types (for now we just log the exception and continue)
             catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
             {

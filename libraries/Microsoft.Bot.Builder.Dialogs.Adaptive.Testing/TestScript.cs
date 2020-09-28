@@ -160,12 +160,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 userToken.Setup(adapter);
             }
 
-            var inspector = new DialogInspector(Dialog, resourceExplorer);
+            async Task Inspect(DialogContextInspector inspector)
+            {
+                var di = new DialogInspector(Dialog, resourceExplorer);
+                var activity = new Activity();
+                activity.ApplyConversationReference(adapter.Conversation, isIncoming: true);
+                activity.Type = "event";
+                activity.Name = "inspector";
+                await adapter.ProcessActivityAsync(
+                           activity,
+                           async (turnContext, cancellationToken) => await di.InspectAsync(turnContext, inspector).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+
             if (callback != null)
             {
                 foreach (var testAction in Script)
                 {
-                    await testAction.ExecuteAsync(adapter, callback, inspector).ConfigureAwait(false);
+                    await testAction.ExecuteAsync(adapter, callback, Inspect).ConfigureAwait(false);
                 }
             }
             else
@@ -176,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
                 foreach (var testAction in Script)
                 {
-                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync, inspector).ConfigureAwait(false);
+                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync, Inspect).ConfigureAwait(false);
                 }
             }
         }

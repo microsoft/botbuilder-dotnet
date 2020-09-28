@@ -48,6 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
+        public async Task CrossTrainedRecognizerSetTests_NoneIntentWithEntities()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+        
+        [Fact]
         public async Task CrossTrainedRecognizerSetTests_Empty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

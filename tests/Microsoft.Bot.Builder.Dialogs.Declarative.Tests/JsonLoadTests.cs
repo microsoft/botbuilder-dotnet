@@ -1,6 +1,7 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -16,10 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     public class JsonLoadTests : IClassFixture<ResourceExplorerFixture>
     {
         private static ResourceExplorer _resourceExplorer;
+        private static ResourceExplorer _noCycleResourceExplorer;
 
         public JsonLoadTests(ResourceExplorerFixture resourceExplorerFixture)
         {
             _resourceExplorer = resourceExplorerFixture.ResourceExplorer;
+            _noCycleResourceExplorer = resourceExplorerFixture.NoCycleResourceExplorer;
         }
 
         [Fact]
@@ -44,6 +47,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Send("World what?")
                 .AssertReply("Hello")
             .StartTestAsync();
+        }
+
+        [Fact]
+        public void JsonDialogLoad_CycleDetectionWithNoCycleMode()
+        {
+            Assert.Throws<InvalidOperationException>(() => BuildNoCycleTestFlow(@"Root.dialog", nameof(JsonDialogLoad_CycleDetectionWithNoCycleMode)));
         }
 
         [Fact]
@@ -425,11 +434,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             return adapter;
         }
 
-        private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter)
+        private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter, bool allowCycle = true)
         {
             var dm = new DialogManager(dialog)
-                .UseResourceExplorer(_resourceExplorer)
+                .UseResourceExplorer(allowCycle ? _resourceExplorer : _noCycleResourceExplorer)
                 .UseLanguageGeneration();
+
             dm.InitialTurnState.Add<IQnAMakerClient>(new MockQnAMakerClient());
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -443,6 +453,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var adapter = InitializeAdapter(testName, sendTrace);
             var dialog = _resourceExplorer.LoadType<Dialog>(resourceName);
             return GetTestFlow(dialog, adapter);
+        }
+
+        private TestFlow BuildNoCycleTestFlow(string resourceName, string testName, bool sendTrace = false)
+        {
+            var adapter = InitializeAdapter(testName, sendTrace);
+            var dialog = _noCycleResourceExplorer.LoadType<Dialog>(resourceName);
+            return GetTestFlow(dialog, adapter, false);
         }
     }
 }

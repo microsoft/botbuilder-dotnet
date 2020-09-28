@@ -245,11 +245,11 @@ namespace Microsoft.Bot.Connector.Authentication
             if (customHttpClient != null)
             {
                 var httpClientFactory = new ConstantHttpClientFactory(customHttpClient);
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), httpClientFactory);
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority, configurationOAuth.ValidateAuthority, new TokenCache(), httpClientFactory);
             }
             else
             {
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority);
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority, configurationOAuth.ValidateAuthority);
             }
         }
 

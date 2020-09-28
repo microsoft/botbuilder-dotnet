@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// Adaptive event identifier definition list.
+    /// </summary>
     public class AdaptiveEvents : DialogEvents
     {
         /// <summary>
