@@ -17,6 +17,7 @@
                 "IncludeAPIResults": true
             }
         },
+        
         "schema": "oneProperty.json",
         "triggers": [
             {
