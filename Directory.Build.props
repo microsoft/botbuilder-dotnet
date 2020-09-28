@@ -48,7 +48,7 @@
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TF_BUILD)'=='True' ">
+  <PropertyGroup Condition="'$(TF_BUILD)' != '' ">
     <DefineConstants>$(DefineConstants);AUTOMATEDBUILD</DefineConstants>
   </PropertyGroup>
 
