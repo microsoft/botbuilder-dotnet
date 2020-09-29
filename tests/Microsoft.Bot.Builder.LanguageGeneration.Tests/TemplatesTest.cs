@@ -1582,7 +1582,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var resource = new LGResource("myId", lgPath, File.ReadAllText(lgPath));
             Templates.ParseResource(resource);
 
-            var (evaled, error) = Expression.Parse("myId.greeting()").TryEvaluate(new { name = "Alice" });
+            var (evaled, error) = Expression.Parse("myId.myGreeting()").TryEvaluate(new { name = "Alice" });
             Assert.Null(error);
             Assert.Equal("hi Alice", evaled.ToString());
 
@@ -1590,7 +1590,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             resource = new LGResource("./path/myNewId.lg", lgPath, File.ReadAllText(lgPath));
             Templates.ParseResource(resource);
 
-            (evaled, error) = Expression.Parse("myNewId.greeting()").TryEvaluate(new { name = "Alice" });
+            (evaled, error) = Expression.Parse("myNewId.myGreeting()").TryEvaluate(new { name = "Alice" });
             Assert.Null(error);
             Assert.Equal("hi Alice", evaled.ToString());
 
@@ -1598,7 +1598,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             resource = new LGResource(string.Empty, lgPath, File.ReadAllText(lgPath));
             Templates.ParseResource(resource);
 
-            (evaled, error) = Expression.Parse("greeting()").TryEvaluate(new { name = "Alice" });
+            (evaled, error) = Expression.Parse("myGreeting()").TryEvaluate(new { name = "Alice" });
             Assert.Null(error);
             Assert.Equal("hi Alice", evaled.ToString());
         }

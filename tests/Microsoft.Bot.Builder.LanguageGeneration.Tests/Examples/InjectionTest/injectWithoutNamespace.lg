@@ -1,4 +1,4 @@
-﻿> !# @Exports = greeting
+﻿> !# @Exports = myGreeting
 
-#greeting
+# myGreeting
 - hi ${name}

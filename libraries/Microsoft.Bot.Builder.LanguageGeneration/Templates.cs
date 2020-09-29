@@ -452,7 +452,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
-                        var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
+                        var prefix = string.IsNullOrWhiteSpace(curTemplates.Namespace) ? string.Empty : curTemplates.Namespace + ".";
+                        var newGlobalName = prefix + templateName;
                         Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(
                             newGlobalName, 
                             (expression, state, options) =>
