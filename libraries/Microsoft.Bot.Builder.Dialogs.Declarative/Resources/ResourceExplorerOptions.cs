@@ -26,5 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// The list of resource providers to initialize the current the <see cref="ResourceExplorer"/>.
         /// </value>
         public IEnumerable<ResourceProvider> Providers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.
+        /// </summary>
+        /// <value>
+        /// The list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.
+        /// </value>
+        public IEnumerable<IComponentDeclarativeTypes> DeclarativeTypes { get; set; }
     }   
 }
