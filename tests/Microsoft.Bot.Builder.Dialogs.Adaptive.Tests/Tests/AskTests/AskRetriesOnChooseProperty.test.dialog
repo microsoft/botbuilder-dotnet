@@ -1,10 +1,12 @@
 ﻿{
     "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
-    "description": "Test retries from Ask with DeleteProperty",
+    "description": "Test retries from Ask with EditArray",
     "httpRequestMocks": [
         "LuisNoEntities.mock",
-        "LuisBreadEntity.mock"
+        "LuisBreadEntity.mock",
+        "LuisProperties.mock",
+        "LuisMeat.mock"
     ],
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -17,7 +19,7 @@
                 "IncludeAPIResults": true
             }
         },
-        "schema": "oneProperty.json",
+        "schema": "threeProperties.json",
         "triggers": [
             {
                 "$kind": "Microsoft.OnBeginDialog",
@@ -43,18 +45,36 @@
                 ]
             },
             {
+                "$kind": "Microsoft.OnChooseProperty",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Ask",
+                        "activity": "Choose",
+                        "expectedProperties": [
+                            "PropertyToChange"
+                        ]
+                    }
+                ]
+            },
+            {
                 "$kind": "Microsoft.OnAssignEntity",
                 "operation": "Add()",
-                "property": "Bread",
-                "entity": "BreadEntity",
+                "property": "Meat",
+                "entity": "MeatEntity",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "Set bread to rye"
+                        "activity": "Set meat to none"
                     },
                     {
-                        "$kind": "Microsoft.DeleteProperty",
-                        "property": "$Bread"
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$Meat",
+                        "value": "@MeatEntity"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$Bread",
+                        "value": "rye"
                     }
                 ]
             }
@@ -85,11 +105,40 @@
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "rye"
+            "text": "none"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Set bread to rye"
+            "text": "Choose"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "$retries == 0"
+            ],
+            "description": "Reset after OnChooseProperty"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "no entities"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Choose"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "$retries == 1"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "meat"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Set meat to none"
         },
         {
             "$kind": "Microsoft.Test.MemoryAssertions",
