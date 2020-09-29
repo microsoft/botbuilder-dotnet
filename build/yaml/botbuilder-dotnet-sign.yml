@@ -11,22 +11,8 @@ pool:
   - msbuild
   - visualstudio
 
-trigger: # ci trigger
-  branches:
-    include:
-     - main
-  paths:
-    include:
-      - '*'
-    exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
-
-pr: none # no pr trigger
+trigger: none # ci trigger is set in ADO
+pr: none # pr trigger is set in ADO
 
 variables:
   BuildConfiguration: Release-Windows

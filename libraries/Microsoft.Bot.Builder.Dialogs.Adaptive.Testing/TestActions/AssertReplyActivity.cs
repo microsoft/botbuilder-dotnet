@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         }
 
         /// <inheritdoc/>
-        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
+        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
             var timeout = (int)Timeout;
 

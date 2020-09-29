@@ -1,0 +1,100 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"none\"",
+    "responses": [
+        {
+            "content": {
+                "query": "none",
+                "prediction": {
+                    "topIntent": "none",
+                    "intents": {
+                        "sandwich": {
+                            "score": 0.9
+                        }
+                    },
+                    "entities": {
+                        "Meat": [
+                            {
+                                "MeatEntity": [
+                                    [
+                                        "none"
+                                    ]
+                                ],
+                                "$instance": {
+                                    "MeatEntity": [
+                                        {
+                                            "type": "MeatEntity",
+                                            "text": "none",
+                                            "startIndex": 0,
+                                            "length": 4,
+                                            "modelTypeId": 1,
+                                            "modelType": "Entity Extractor",
+                                            "recognitionSources": [
+                                                "model"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "Cheese": [
+                            {
+                                "CheeseEntity": [
+                                    [
+                                        "none"
+                                    ]
+                                ],
+                                "$instance": {
+                                    "CheeseEntity": [
+                                        {
+                                            "type": "CheeseEntity",
+                                            "text": "none",
+                                            "startIndex": 0,
+                                            "length": 4,
+                                            "modelTypeId": 1,
+                                            "modelType": "Entity Extractor",
+                                            "recognitionSources": [
+                                                "model"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "$instance": {
+                            "Meat": [
+                                {
+                                    "type": "Meat",
+                                    "text": "none",
+                                    "startIndex": 0,
+                                    "length": 4,
+                                    "modelTypeId": 1,
+                                    "modelType": "Entity Extractor",
+                                    "recognitionSources": [
+                                        "model"
+                                    ]
+                                }
+                            ],
+                            "Cheese": [
+                                {
+                                    "type": "Cheese",
+                                    "text": "none",
+                                    "startIndex": 0,
+                                    "length": 4,
+                                    "modelTypeId": 1,
+                                    "modelType": "Entity Extractor",
+                                    "recognitionSources": [
+                                        "model"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

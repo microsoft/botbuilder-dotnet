@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         var (value, _) = this.DefaultValue.TryGetValue(dc.State);
                         if (this.DefaultValueResponse != null)
                         {
-                            var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken).ConfigureAwait(false);
+                            var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                             var properties = new Dictionary<string, string>()
                             {
                                 { "template", JsonConvert.SerializeObject(this.DefaultValueResponse) },

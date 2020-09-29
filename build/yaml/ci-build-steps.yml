@@ -12,7 +12,10 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
+    command: 'restore'
     restoreSolution: '$(Parameters.solution)'
+    feedsToUse: 'config'
+    nugetConfigPath: 'nuget.config'
 
 - task: VSBuild@1
   displayName: 'Build solution Microsoft.Bot.Builder.sln'

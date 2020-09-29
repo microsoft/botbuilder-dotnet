@@ -33,6 +33,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Tests\ActionTests\Action_NumberInputWithDefaultResponse.test.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Tests\AskTests\Action_AskRetriesDeleteProperties.test.dialog">
       <SubType>Component</SubType>
     </None>
