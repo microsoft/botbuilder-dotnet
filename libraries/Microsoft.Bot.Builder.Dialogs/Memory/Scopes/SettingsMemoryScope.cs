@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         private static object ConvertNodeToObject(Node node)
         {
-            // If the children is leaf node, return its value directly.
+            // If the child is leaf node, return its value directly.
             if (node.Children.Count == 1 && node.Children[0].Children.Count == 0)
             {
                 return node.Children[0].Value;
@@ -156,10 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 node.Children.ForEach(u => pairs.Add(new Tuple<int, object>(int.Parse(u.Value, CultureInfo.InvariantCulture), ConvertNodeToObject(u))));
                 var maxIndex = pairs.Select(u => u.Item1).Max();
                 var list = new object[maxIndex + 1];
-                foreach (var pair in pairs)
-                {
-                    list[pair.Item1] = pair.Item2;
-                }
+                pairs.ForEach(p => list[p.Item1] = p.Item2);
 
                 return list;
             }
@@ -176,6 +173,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// </summary>
         private class Node
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Node"/> class.
+            /// </summary>
             public Node(string value)
             {
                 Value = value;
