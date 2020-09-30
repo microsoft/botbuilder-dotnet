@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="antlr">
+      <UniqueIdentifier>{908ea5d1-f4bf-4981-8c85-ed4f4aac3898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parser">
+      <UniqueIdentifier>{6b452ea6-7dda-448d-ad9a-45c2b52d790c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{7bbe480c-a166-4c90-b20e-99ee4511aeee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BuiltinFunctions">
+      <UniqueIdentifier>{c217f0ba-d648-41f5-9183-4a17076be8df}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\antlr4-runtime\antlr4-common.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\antlr4-runtime.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ANTLRErrorListener.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ANTLRErrorStrategy.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ANTLRFileStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ANTLRInputStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\BailErrorStrategy.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\BaseErrorListener.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\BufferedTokenStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\CharStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\CommonToken.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\CommonTokenFactory.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\CommonTokenStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ConsoleErrorListener.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\DefaultErrorStrategy.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\DiagnosticErrorListener.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\Exceptions.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\FailedPredicateException.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\InputMismatchException.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\InterpreterRuleContext.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\IntStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\Lexer.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\LexerInterpreter.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\LexerNoViableAltException.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ListTokenSource.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\NoViableAltException.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\Parser.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ParserInterpreter.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ParserRuleContext.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\ProxyErrorListener.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\RecognitionException.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\Recognizer.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\RuleContext.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\RuleContextWithAltNum.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\RuntimeMetaData.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\Token.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\TokenFactory.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\TokenSource.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\TokenStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\TokenStreamRewriter.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\UnbufferedCharStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\UnbufferedTokenStream.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\Vocabulary.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\antlr4-runtime\WritableToken.h">
+      <Filter>antlr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionAntlrParser.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionAntlrParserVisitor.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionAntlrParserBaseVisitor.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionAntlrLexer.h">
+      <Filter>Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\Expression.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\Constant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionAntlrParser.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionAntlrParserVisitor.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionAntlrParserBaseVisitor.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionAntlrLexer.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\Expression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\Constant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Parser\ExpressionAntlrLexer.g4">
+      <Filter>Parser</Filter>
+    </None>
+    <None Include="..\Parser\ExpressionAntlrParser.g4">
+      <Filter>Parser</Filter>
+    </None>
+  </ItemGroup>
+</Project>
