@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>
     /// Class for QnA sections.

@@ -16,7 +16,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     public enum SectionType
     {

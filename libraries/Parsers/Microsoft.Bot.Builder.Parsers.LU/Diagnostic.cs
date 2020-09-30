@@ -3,7 +3,7 @@
 
 using Antlr4.Runtime;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>
     /// Class for diagnose and report errors.
