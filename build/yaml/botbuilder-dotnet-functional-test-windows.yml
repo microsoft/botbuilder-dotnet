@@ -87,7 +87,7 @@ steps:
    echo "##vso[task.setvariable variable=BOTID;]$(BotName)"
    Write-Host "DIRECTLINE=$key";
    Write-Host "BOTID=$(BotName)";
-  displayName: 'Set up directline keys'
+  displayName: 'Set directline key for test'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'

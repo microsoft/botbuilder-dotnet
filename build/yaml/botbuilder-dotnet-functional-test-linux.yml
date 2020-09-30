@@ -84,16 +84,16 @@ steps:
   displayName: 'Git bot deployment'
 
 - powershell: |
-   $content = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String
-   Write-Host $content
-   $json = $content | ConvertFrom-Json
+   $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(LinuxTestBotBotName)"
-  displayName: 'Get bot keys'
+   Write-Host "DIRECTLINE=$key";
+   Write-Host "BOTID=$(LinuxTestBotBotName)";
+  displayName: 'Set directline key for test'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run Functional tests'
+  displayName: 'dotnet test'
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
