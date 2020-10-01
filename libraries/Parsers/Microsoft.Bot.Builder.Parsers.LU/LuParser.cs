@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>NewEntitySection class.</summary>
     /// <remarks>This class is static.</remarks>

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>NewEntitySection class.</summary>
     public class NewEntitySection : SectionEntity

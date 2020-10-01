@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Text;
 using Antlr4.Runtime.Tree;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>
     /// Special visitor to extract composite entities.

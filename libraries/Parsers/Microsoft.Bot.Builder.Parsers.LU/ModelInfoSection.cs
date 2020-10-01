@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using static LUFileParser;
+using static Microsoft.Bot.Builder.Parsers.LU.LUFileParser;
 
-namespace Microsoft.Bot.Builder.Parsers.LU.Parser
+namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>
     /// Class for ModelInfo sections.

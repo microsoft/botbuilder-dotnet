@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Bot.Builder.Parsers.LU.Parser;
+using Microsoft.Bot.Builder.Parsers.LU;
 using Newtonsoft.Json;
 using Xunit;
 
