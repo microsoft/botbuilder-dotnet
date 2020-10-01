@@ -196,7 +196,6 @@ namespace Microsoft.Bot.Builder.Parsers.LU
 
             ExtractSectionBody(sections, content);
             var result = new LuResource(sections, content, errors);
-            Console.WriteLine(JsonConvert.SerializeObject(result));
 
             return result;
         }
