@@ -318,27 +318,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateDialogContext(async (dc, ct) =>
             {
                 dc.State.SetValue("user.name.first", "joe");
-                Assert.Equal(false, dc.State.TryGetValue<int>("user.name.first", out var val));
-                Assert.Equal(true, dc.State.TryGetValue<string>("user.name.first", out var val2));
+                Assert.False(dc.State.TryGetValue<int>("user.name.first", out var val));
+                Assert.True(dc.State.TryGetValue<string>("user.name.first", out var val2));
                 Assert.Equal("joe", val2);
 
                 dc.State.SetValue("user.age", 19);
-                Assert.Equal(true, dc.State.TryGetValue<string>("user.age", out var val3));
+                Assert.True(dc.State.TryGetValue<string>("user.age", out var val3));
                 Assert.Equal("19", val3);
-                Assert.Equal(true, dc.State.TryGetValue<int>("user.age", out var val4));
+                Assert.True(dc.State.TryGetValue<int>("user.age", out var val4));
                 Assert.Equal(19, val4);
 
                 dc.State.SetValue("user.salary", "10000");
-                Assert.Equal(true, dc.State.TryGetValue<string>("user.salary", out var val5));
+                Assert.True(dc.State.TryGetValue<string>("user.salary", out var val5));
                 Assert.Equal("10000", val5);
-                Assert.Equal(true, dc.State.TryGetValue<int>("user.salary", out var val6));
+                Assert.True(dc.State.TryGetValue<int>("user.salary", out var val6));
                 Assert.Equal(10000, val6);
                 dc.State.SetValue("user.foo", foo);
 
-                Assert.Equal(false, dc.State.TryGetValue<string>("user.foo", out var val7));
-                Assert.Equal(true, dc.State.TryGetValue<Foo>("user.foo", out var val8));
-                Assert.Equal(false, dc.State.TryGetValue<IDictionary<string, string>>("user.foo", out var val9));
-                Assert.Equal(true, dc.State.TryGetValue<Bar>("user.foo", out var val10));
+                Assert.False(dc.State.TryGetValue<string>("user.foo", out var val7));
+                Assert.True(dc.State.TryGetValue<Foo>("user.foo", out var val8));
+                Assert.False(dc.State.TryGetValue<IDictionary<string, string>>("user.foo", out var val9));
+                Assert.True(dc.State.TryGetValue<Bar>("user.foo", out var val10));
             }).StartTestAsync();
         }
 
