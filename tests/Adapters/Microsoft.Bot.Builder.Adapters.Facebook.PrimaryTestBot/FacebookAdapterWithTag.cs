@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot
             // https://developers.facebook.com/docs/messenger-platform/send-messages/message-tags#sending
             // This bypasses the 24 hrs check for responses to a bot that don't go through the messenger client.
             var message = base.CreateFacebookMessageFromActivity(activity);
+            message.MessagingType = "MESSAGE_TAG";
             message.Tag = "ACCOUNT_UPDATE";
             return message;
         }
