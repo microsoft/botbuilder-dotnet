@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 }
                 else
                 {
-                    var message = FacebookHelper.ActivityToFacebook(activity);
+                    var message = CreateFacebookMessageFromActivity(activity);
 
                     if (message.Message?.Attachment != null)
                     {
@@ -265,6 +265,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Factory method to create the <see cref="FacebookMessage"/> instance of the <see cref="Activity"/> to be sent to Facebook.
+        /// </summary>
+        /// <param name="activity">An <see cref="Activity"/> instance to build the message.</param>
+        /// <returns>A <see cref="FacebookMessage"/> built from the activity instance.</returns>
+        protected virtual FacebookMessage CreateFacebookMessageFromActivity(Activity activity)
+        {
+            return FacebookHelper.ActivityToFacebook(activity);
         }
     }
 }
