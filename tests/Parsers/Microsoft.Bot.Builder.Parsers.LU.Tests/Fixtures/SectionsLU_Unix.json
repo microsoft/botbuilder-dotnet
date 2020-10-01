@@ -134,7 +134,7 @@
                         },
                         "End": {
                             "Line": 8,
-                            "Character": 7
+                            "Character": 12
                         }
                     }
                 }
@@ -146,7 +146,7 @@
                 },
                 "End": {
                     "Line": 8,
-                    "Character": 7
+                    "Character": 12
                 }
             },
             "SimpleIntentSection": [
@@ -260,7 +260,7 @@
                         },
                         "End": {
                             "Line": 8,
-                            "Character": 7
+                            "Character": 12
                         }
                     }
                 }
