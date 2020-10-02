@@ -415,13 +415,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (_lgOptions.StrictMode == true && (error != null || result == null))
             {
-                var templateName = CurrentTarget().TemplateName;
-                if (_evaluationTargetStack.Count > 0)
+                var currentTemplate = CurrentTemplate();
+                if (currentTemplate != null)
                 {
                     _evaluationTargetStack.Pop();
+                    Evaluator.CheckExpressionResult(exp, error, result, currentTemplate.Name, contentLine, errorPrefix);
                 }
-
-                Evaluator.CheckExpressionResult(exp, error, result, templateName, contentLine, errorPrefix);
             }
             else if (error != null
                 || result == null
@@ -441,13 +440,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (error != null || (result == null && _lgOptions.StrictMode == true))
             {
-                var templateName = CurrentTarget().TemplateName;
-                if (_evaluationTargetStack.Count > 0)
+                var currentTemplate = CurrentTemplate();
+                if (currentTemplate != null)
                 {
                     _evaluationTargetStack.Pop();
+                    Evaluator.CheckExpressionResult(exp, error, result, currentTemplate.Name, lineContent, errorPrefix);
                 }
-
-                Evaluator.CheckExpressionResult(exp, error, result, templateName, lineContent, errorPrefix);
             }
 
             if (result is IList &&
@@ -716,8 +714,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             else
             {
-                var template = TemplateMap[CurrentTarget().TemplateName];
-                var sourcePath = template.SourceRange.Source.NormalizePath();
+                var sourcePath = CurrentTemplate().SourceRange.Source.NormalizePath();
                 var baseFolder = Environment.CurrentDirectory;
                 if (Path.IsPathRooted(sourcePath))
                 {
@@ -736,5 +733,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
           var templateName = args[0].ToString();
           return TemplateMap.ContainsKey(templateName);
       };
+
+        private Template CurrentTemplate()
+        {
+            return _evaluationTargetStack.Count > 0 ?
+                    TemplateMap[CurrentTarget().TemplateName]
+                    : null;
+        }
     }
 }

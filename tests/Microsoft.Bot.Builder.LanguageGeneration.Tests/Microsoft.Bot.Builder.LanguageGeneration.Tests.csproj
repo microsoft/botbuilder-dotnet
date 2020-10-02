@@ -28,6 +28,7 @@
     <None Remove="Examples\EvaluationOptions\f4.lg" />
     <None Remove="Examples\EvaluationOptions\StrictModeTrue.lg" />
     <None Remove="Examples\import\import3.lg" />
+    <None Remove="Examples\Event.lg" />
     <None Remove="Examples\1.lg" />
     <None Remove="Examples\2.lg" />
     <None Remove="Examples\3.lg" />
@@ -95,6 +96,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Examples\Event.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\1.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

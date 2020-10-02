@@ -1480,6 +1480,41 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestTemplateAndExpressionEvaluationEvents()
+        {
+            var expressionEvalTime = 0;
+            var templateEvalTime = 0;
+
+            EventHandler onEvent = (object sender, EventArgs e) =>
+            {
+                if (e is BeginTemplateEvaluationArgs bt)
+                {
+                    templateEvalTime++;
+                    Assert.Equal("template1", bt.TemplateName);
+                }
+                else if (e is BeginExpressionEvaluationArgs be)
+                {
+                    expressionEvalTime++;
+                    Assert.Equal("if(name==null, 'friend', name)", be.Expression);
+                }
+                else if (e is MessageArgs msg)
+                {
+                    var options = new List<string>()
+                    {
+                        "Evaluate template [template1] get result: hi friend",
+                        "Evaluate expression 'if(name==null, 'friend', name)' get result: friend"
+                    };
+                    Assert.Contains(msg.Text, options);
+                }
+            };
+
+            var templates = Templates.ParseFile(GetExampleFilePath("Event.lg"));
+            var result = templates.Evaluate("template1", null, new EvaluationOptions { OnEvent = onEvent });
+            Assert.Equal(1, expressionEvalTime);
+            Assert.Equal(1, templateEvalTime);
+        }
+
+        [Fact]
         public void TestCustomFunction()
         {
             var parser = new ExpressionParser((string func) =>

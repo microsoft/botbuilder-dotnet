@@ -39,5 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Event fired when there was an exception thrown in the system.
         /// </summary>
         public const string Error = "error";
+
+        /// <summary>
+        /// Custom event.
+        /// </summary>
+        public const string Custom = "custom";
     }
 }
