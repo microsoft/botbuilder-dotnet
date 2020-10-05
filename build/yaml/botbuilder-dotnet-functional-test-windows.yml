@@ -99,7 +99,6 @@ steps:
   env:
     TestAppId: $(WinTestBotAppId)
     TestPassword: $(WinTestBotAppSecret)
-    
 
 - task: AzureCLI@1
   displayName: 'Delete Resources'

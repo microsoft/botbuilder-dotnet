@@ -99,6 +99,9 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --filter "TestCategory=FunctionalTests&TestCategory!=Adapters" --collect:"Code Coverage" --settings $(System.DefaultWorkingDirectory)\CodeCoverage.runsettings '
     workingDirectory: '$(System.DefaultWorkingDirectory)\'
+  env:
+    TestAppId: $(LinuxTestBotAppId)
+    TestPassword: $(LinuxTestBotAppSecret)
 
 - task: AzureCLI@1
   displayName: 'Delete test resource group'
