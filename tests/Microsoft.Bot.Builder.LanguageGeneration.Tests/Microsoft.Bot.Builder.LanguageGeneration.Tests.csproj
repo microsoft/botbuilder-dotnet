@@ -46,6 +46,7 @@
     <None Remove="Examples\import2.lg" />
     <None Remove="Examples\InjectionTest\common.lg" />
     <None Remove="Examples\InjectionTest\inject.lg" />
+    <None Remove="Examples\InjectionTest\injectWithoutNamespace.lg" />
     <None Remove="Examples\IsTemplate.lg" />
     <None Remove="Examples\LGOptionTest.lg" />
     <None Remove="Examples\MultilineTextForAdaptiveCard.lg" />
@@ -190,6 +191,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\InjectionTest\inject.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\InjectionTest\injectWithoutNamespace.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\StringInterpolation.lg">

@@ -734,7 +734,7 @@ namespace AdaptiveExpressions
 #pragma warning restore CA1710 // Identifiers should have correct suffix
 #pragma warning restore CA1034 // Nested types should not be visible
         {
-            private readonly ConcurrentDictionary<string, ExpressionEvaluator> _customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>(StringComparer.InvariantCultureIgnoreCase);
+            private readonly ConcurrentDictionary<string, ExpressionEvaluator> _customFunctions = new ConcurrentDictionary<string, ExpressionEvaluator>();
 
             /// <summary>
             /// Gets a collection of string values that represent the keys of the StandardFunctions. 

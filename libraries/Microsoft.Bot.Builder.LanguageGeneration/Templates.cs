@@ -452,7 +452,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
-                        var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
+                        var prefix = string.IsNullOrWhiteSpace(curTemplates.Namespace) ? string.Empty : curTemplates.Namespace + ".";
+                        var newGlobalName = prefix + templateName;
                         Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(
                             newGlobalName, 
                             (expression, state, options) =>
@@ -648,19 +649,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = ExtractOptionsByKey(_namespaceKey, options);
 
-            if (result == null)
-            {
-                if (Path.IsPathRooted(Source))
-                {
-                    result = Path.GetFileNameWithoutExtension(Source);
-                }
-                else
-                {
-                    throw new Exception("namespace is required or the id should be an absoulte path!");
-                }
-            }
-
-            return result;
+            // If there is no namespace, use the file name parsed from Id.
+            return result ?? Path.GetFileNameWithoutExtension(Id ?? string.Empty);
         }
 
         private IList<string> GetGlobalFunctionTable(IList<string> options)
