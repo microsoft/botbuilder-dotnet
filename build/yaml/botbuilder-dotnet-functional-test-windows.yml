@@ -28,7 +28,9 @@ pr: none # no pr trigger
 
 variables:
   AppId: $(WinTestBotAppId)
+  TESTAPPID: $(WinTestBotAppId)
   AppSecret: $(WinTestBotAppSecret)
+  TESTAPPSECRET: $(WinTestBotAppSecret)
   BotGroup: $(WinTestBotBotGroup)
   BotName: $(WinTestBotBotName)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
