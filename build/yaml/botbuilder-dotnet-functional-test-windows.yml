@@ -28,9 +28,7 @@ pr: none # no pr trigger
 
 variables:
   AppId: $(WinTestBotAppId)
-  TESTAPPID: $(WinTestBotAppId)
   AppSecret: $(WinTestBotAppSecret)
-  TESTAPPSECRET: $(WinTestBotAppSecret)
   BotGroup: $(WinTestBotBotGroup)
   BotName: $(WinTestBotBotName)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
@@ -98,6 +96,10 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --filter "TestCategory=FunctionalTests&TestCategory!=Adapters"'
     workingDirectory: tests
+  env:
+    TestAppId: $(WinTestBotAppId)
+    TestAppSecret: $(WinTestBotAppSecret)
+    
 
 - task: AzureCLI@1
   displayName: 'Delete Resources'
