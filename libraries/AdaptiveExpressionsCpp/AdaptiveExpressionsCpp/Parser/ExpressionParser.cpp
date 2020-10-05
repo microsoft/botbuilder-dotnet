@@ -74,7 +74,6 @@ antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
         return expressionParseTree;
     }
     */
-    /*
 
     auto inputStream = new antlr4::ANTLRInputStream("a string");
     auto lexer = new ExpressionAntlrLexer(inputStream);
@@ -95,7 +94,4 @@ antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
     // expressionDict.TryAdd(expression, expressionContext);
     
     return expressionContext;
-    */
-
-    return nullptr;
 }
