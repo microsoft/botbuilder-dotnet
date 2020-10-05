@@ -98,7 +98,7 @@ steps:
     workingDirectory: tests
   env:
     TestAppId: $(WinTestBotAppId)
-    TestAppSecret: $(WinTestBotAppSecret)
+    TestPassword: $(WinTestBotAppSecret)
     
 
 - task: AzureCLI@1
