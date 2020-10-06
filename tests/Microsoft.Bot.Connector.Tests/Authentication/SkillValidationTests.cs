@@ -48,6 +48,11 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             claims.Add(new Claim(AuthenticationConstants.AppIdClaim, audience));
             Assert.False(SkillValidation.IsSkillClaim(claims));
 
+            // Anonymous skill app id
+            claims.RemoveAt(claims.Count - 1);
+            claims.Add(new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId));
+            Assert.True(SkillValidation.IsSkillClaim(claims));
+
             // All checks pass, should be good now
             claims.RemoveAt(claims.Count - 1);
             claims.Add(new Claim(AuthenticationConstants.AppIdClaim, appId));

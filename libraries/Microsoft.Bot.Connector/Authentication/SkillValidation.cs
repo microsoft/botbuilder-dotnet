@@ -86,6 +86,11 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var claimsList = claims.ToList();
 
+            if (claimsList.Any(c => c.Value == AuthenticationConstants.AnonymousSkillAppId && c.Type == AuthenticationConstants.AppIdClaim))
+            {
+                return true;
+            }
+
             var version = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.VersionClaim);
             if (string.IsNullOrWhiteSpace(version?.Value))
             {

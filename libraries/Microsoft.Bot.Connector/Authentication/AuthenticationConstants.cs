@@ -128,6 +128,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ServiceUrlClaim = "serviceurl";
 
         /// <summary>
+        /// AppId used for creating skill claims when there is no appId and password configured.
+        /// </summary>
+        public const string AnonymousSkillAppId = "AnonymousSkill";
+
+        /// <summary>
         /// Allowed token signing algorithms. Tokens come from channels to the bot. The code
         /// that uses this also supports tokens coming from the emulator.
         /// </summary>
