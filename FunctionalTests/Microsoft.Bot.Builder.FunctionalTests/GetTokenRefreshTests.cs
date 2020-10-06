@@ -12,6 +12,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
     [TestCategory("FunctionalTests")]
+#if !AUTOMATEDBUILD
+    [Ignore]
+#endif
     public class GetTokenRefreshTests
     {
         private string testAppId = null;
