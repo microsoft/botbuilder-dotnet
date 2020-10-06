@@ -54,20 +54,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
             if (!string.IsNullOrEmpty(Text))
             {
                 var description = Description != null ? Description + "\n" : string.Empty;
-                var message = $"{description}Text '{activity.Text}' didn't match expected text: '{Text}'";
-                if (Exact)
+                var text = activity.AsMessageActivity()?.Text;
+                var error = $"{description}Text '{text}' didn't match expected text: '{Text}'";
+                if (text == null)
+                {
+                    throw new Exception(error);
+                }
+                else if (Exact)
                 {
                     // Normalize line endings to work on windows and mac
-                    if (activity.AsMessageActivity()?.Text.Replace("\r", string.Empty) != Text.Replace("\r", string.Empty))
+                    if (text.Replace("\r", string.Empty) != Text.Replace("\r", string.Empty))
                     {
-                        throw new Exception(message);
+                        throw new Exception(error);
                     }
                 }
                 else
                 {
-                    if (activity.AsMessageActivity()?.Text.ToLowerInvariant().Trim().Contains(Text.ToLowerInvariant().Trim()) == false)
+                    if (text.ToLowerInvariant().Trim().Contains(Text.ToLowerInvariant().Trim()) == false)
                     {
-                        throw new Exception(message);
+                        throw new Exception(error);
                     }
                 }
             }
