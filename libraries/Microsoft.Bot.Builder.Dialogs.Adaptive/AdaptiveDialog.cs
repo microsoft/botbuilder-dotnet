@@ -1426,7 +1426,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (candidate != null)
                         {
                             // Remove any overlapping entities without a common root
-                            choices.RemoveAll(choice => choice.Entity.Overlaps(candidate.Entity));
+                            choices.RemoveAll(choice => choice.Operation == candidate.Operation && choice.Entity.Overlaps(candidate.Entity));
                             yield return candidate;
                         }
                     }
