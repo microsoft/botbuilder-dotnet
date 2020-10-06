@@ -21,6 +21,7 @@ variables:
   BuildPlatform: any cpu
 #  DotNetCoverallsToken: define this in Azure
 #  GitHubCommentApiKey: define this in Azure
+#  DisableApiCompatibityValidation: (optional) define this in Azure
   IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
@@ -68,6 +69,7 @@ stages:
     - template: ci-test-steps.yml
 
 - stage: API_Compatibility_Validation
+  condition: ne(variables['DisableApiCompatibityValidation'], 'true')
   dependsOn: Build
   jobs:
   - job: generate_multiconfig_var
