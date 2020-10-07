@@ -7,8 +7,10 @@
 #include "ExpressionParser.h"
 
 int main()
-{
-    ExpressionParser::AntlrParse("a string");
+{   
+    // ExpressionParser::AntlrParse("a string");
+
+    Expression::Parse("a string");
 
     std::cout << "Hello World!\n";
 

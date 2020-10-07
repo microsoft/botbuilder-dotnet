@@ -104,7 +104,7 @@
     </PostBuildEvent>
     <Lib>
       <TargetMachine />
-      <AdditionalLibraryDirectories>C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\lib\vs-2019\x86\DebugDLL</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\vs-2019\$(PlatformShortName)\DebugDLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>

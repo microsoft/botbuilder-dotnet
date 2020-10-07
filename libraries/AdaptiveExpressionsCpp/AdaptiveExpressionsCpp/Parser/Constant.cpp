@@ -3,6 +3,17 @@
 
 #include "Constant.h"
 
-Constant::Constant(int value) : Expression()
+Constant::Constant(antlrcpp::Any value) : Expression()
 {
+}
+
+antlrcpp::Any Constant::getValue()
+{
+    return m_value;
+}
+
+void Constant::setValue(antlrcpp::Any value)
+{
+    // m_evaluator->returnType = value.is<std::string>() ? 
+    m_value = value;
 }

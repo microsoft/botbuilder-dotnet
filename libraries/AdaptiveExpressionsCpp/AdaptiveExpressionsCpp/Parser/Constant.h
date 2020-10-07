@@ -2,11 +2,18 @@
 // Licensed under the MIT License.
 #pragma once
 
-#include "Expression.h"
+#include "../Code/pch.h"
 
 class Constant : public Expression
 {
 
 public:
-    Constant(int value);
+    Constant(antlrcpp::Any value);
+   // ExpressionEvaluator* getEvaluator() override { return Expression::getEvaluator(); }
+
+    antlrcpp::Any getValue();
+    void setValue(antlrcpp::Any value);
+
+private:
+    antlrcpp::Any m_value;
 };

@@ -5,19 +5,16 @@
 #include "../Code/pch.h"
 
 #include "ExpressionAntlrParserBaseVisitor.h"
-#include "Expression.h"
 #include <string>
 
 class ExpressionParser // : antlr4::Parser // ?? IExpressionParser
 {
-
-// public:
-    // Expression* Parse(std::string expression);
-    //EvaluatorLookup getEvaluatorLookup();
-        
 public:
-    static antlr4::tree::ParseTree* AntlrParse(std::string expression);
+    ExpressionParser(EvaluatorLookup lookup);
 
+    static antlr4::tree::ParseTree* AntlrParse(std::string expression);
+    Expression* Parse(std::string expression);
+    EvaluatorLookup getEvaluatorLookup();
 
 private:
 
@@ -25,17 +22,18 @@ private:
     {
 
     public:
-        // ExpressionTransformer(EvaluatorLookup lookup);
-        void Transform(antlr4::tree::ParseTree* context);
+        ExpressionTransformer(EvaluatorLookup lookup);
+        Expression* Transform(antlr4::tree::ParseTree* context);
         antlrcpp::Any visitFile(ExpressionAntlrParser::FileContext* ctx) override;
+        antlrcpp::Any visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx) override;
 
     private:
         Expression* MakeExpression(std::string functionType, Expression* children, ...);
 
         const std::string escapeRegex = "\\[^\r\n]?";
-        // EvaluatorLookup m_lookupFunction;
+        EvaluatorLookup m_lookupFunction;
     };
 
     // this is a function, we could use a function pointer or a static class for this
-    //EvaluatorLookup m_evaluatorLookup;
+    EvaluatorLookup m_evaluatorLookup;
 };

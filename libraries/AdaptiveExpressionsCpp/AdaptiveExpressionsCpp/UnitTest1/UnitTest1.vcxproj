@@ -92,14 +92,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\Code;C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\Parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)\Code;$(SolutionDir)\Parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\Debug;C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\lib\vs-2019\x86\DebugDLL</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)\AdaptiveExpressionsCpp\$(Configuration);C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\lib\vs-2019\x86\DebugDLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>antlr4-runtime.lib;AdaptiveExpressionsCpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

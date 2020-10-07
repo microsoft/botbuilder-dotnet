@@ -88,14 +88,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\antlr4-runtime;C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\Parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\antlr4-runtime;$(SolutionDir)\Parser;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\AdaptiveExpressionsCppTest\Debug;C:\Repos\TemplatingLib\botbuilder-dotnet\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\lib\vs-2019\x86\DebugDLL</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\AdaptiveExpressionsCpp\$(Configuration);$(SolutionDir)\lib\vs-2019\$(PlatformShortName)\DebugDLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>antlr4-runtime.lib;AdaptiveExpressionsCpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

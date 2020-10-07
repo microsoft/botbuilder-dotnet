@@ -16,9 +16,14 @@ ExpressionTransformer::ExpressionTransformer(EvaluatorLookup lookup)
 }
 */
 
-void ExpressionParser::ExpressionTransformer::Transform(antlr4::tree::ParseTree* context)
+ExpressionParser::ExpressionTransformer::ExpressionTransformer(EvaluatorLookup lookup)
 {
-    visit(context);
+    m_lookupFunction = lookup;
+}
+
+Expression* ExpressionParser::ExpressionTransformer::Transform(antlr4::tree::ParseTree* context)
+{
+    return visit(context);
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFile(ExpressionAntlrParser::FileContext* ctx)
@@ -28,13 +33,56 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFile(ExpressionAntlr
     if (unaryOperationName == ExpressionType::Subtract
         || unaryOperationName == ExpressionType::Add)
     {
-        return MakeExpression(unaryOperationName, new Constant(0), operand);
+        return MakeExpression(unaryOperationName, (Expression*)(new Constant(0)), operand);
     }
 
     return MakeExpression(unaryOperationName, operand);
 }
 
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx)
+{
+    std::string text = ctx->getText();
+    /*
+    if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal))
+    {
+        text = text.Substring(1, text.Length - 2).Replace("\\'", "'");
+    }
+    else if (text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
+    {
+        text = text.Substring(1, text.Length - 2).Replace("\\\"", "\"");
+    }
+    else
+    {
+        throw new Exception($"Invalid string {text}");
+    }
+    */
 
+    return Expression::ConstantExpression(text);
+}
+
+/*
+public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.StringAtomContext context)
+{
+    
+    var text = context.GetText();
+    if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal))
+    {
+        text = text.Substring(1, text.Length - 2).Replace("\\'", "'");
+    }
+    else if (text.StartsWith("\"", StringComparison.Ordinal) && text.EndsWith("\"", StringComparison.Ordinal))
+    {
+        text = text.Substring(1, text.Length - 2).Replace("\\\"", "\"");
+    }
+    else
+    {
+        throw new Exception($"Invalid string {text}");
+    }
+
+    return Expression.ConstantExpression(EvalEscape(text));
+    
+    return nullptr;
+}
+*/
 
 Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string functionType, Expression* children, ...)
 {
@@ -42,13 +90,10 @@ Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string 
     // Expression::MakeExpression(_lookupFunction(functionType) ? ? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
 }
 
-
-/*
-void ExpressionParser::getEvaluatorLookup()
+EvaluatorLookup ExpressionParser::getEvaluatorLookup()
 {
     return m_evaluatorLookup;
 }
-*/
 
 /*
 Expression* ExpressionParser::Parse(std::string expression)
@@ -65,6 +110,10 @@ Expression* ExpressionParser::Parse(std::string expression)
     
 }
 */
+
+ExpressionParser::ExpressionParser(EvaluatorLookup lookup)
+{
+}
 
 antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
 {
@@ -94,4 +143,18 @@ antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
     // expressionDict.TryAdd(expression, expressionContext);
     
     return expressionContext;
+}
+
+Expression* ExpressionParser::Parse(std::string expression)
+{
+    if (expression.empty())
+    {
+        return Expression::ConstantExpression(std::string());
+    }
+    else
+    {
+        ExpressionTransformer* transformer = new ExpressionTransformer(m_evaluatorLookup);
+        return transformer->Transform(AntlrParse(expression));
+    }
+
 }
