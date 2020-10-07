@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action which schedules a conversation to be continued later by writing a EventActivity(Name=ContinueConversation) to a Azure Storage queue.
+    /// Action which schedules a conversation to be continued later by writing an EventActivity(Name=ContinueConversation) to a queue.
     /// </summary>
     /// <remarks>
     /// This class works by writing an EventActivity(Name=ConversationUpdate) to an azure storage queue with visibility policy to 
