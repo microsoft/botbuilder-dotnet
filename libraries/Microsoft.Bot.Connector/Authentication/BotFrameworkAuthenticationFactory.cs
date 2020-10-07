@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 }
                 else
                 {
-                    throw new Exception("A ChannelService was given but the value was not recognized.");
+                    throw new ArgumentException("A ChannelService was given but the value was not recognized.");
                 }
             }
         }
