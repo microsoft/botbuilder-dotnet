@@ -49,6 +49,34 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public void TeamsNotifyUserAlertInMeeting()
+        {
+            // Arrange
+            var activity = new Activity { };
+
+            // Act
+            activity.TeamsNotifyUser(alertInMeeting: true);
+
+            // Assert
+            Assert.Equal(true, ((TeamsChannelData)activity.ChannelData).Notification.AlertInMeeting);
+        }
+
+        [Fact]
+        public void TeamsNotifyUserExternalResourceUrl()
+        {
+            string resourceUrl = "https://microsoft.com";
+
+            // Arrange
+            var activity = new Activity { };
+
+            // Act
+            activity.TeamsNotifyUser(externalResourceUrl: resourceUrl);
+
+            // Assert
+            Assert.Equal(resourceUrl, ((TeamsChannelData)activity.ChannelData).Notification.ExternalResourceUrl);
+        }
+
+        [Fact]
         public void TeamsNotifyUserExistingNotification()
         {
             // Arrange
