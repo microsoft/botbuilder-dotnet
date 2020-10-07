@@ -83,7 +83,9 @@ namespace Microsoft.Bot.Connector.Authentication
                 }
                 else
                 {
-                    throw new ArgumentException("A ChannelService was given but the value was not recognized.");
+                    // The ChannelService value is used an indicator of which built in set of constants to use. If it is not recognized, a full configuration is expected.
+
+                    throw new ArgumentException("The provided ChannelService value is not supported.");
                 }
             }
         }
