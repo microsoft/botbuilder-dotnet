@@ -5,9 +5,9 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    public sealed class IgnoreOnNoEmulatorFact : FactAttribute
+    public sealed class IgnoreOnNoEmulatorTheory : TheoryAttribute
     {
-        public IgnoreOnNoEmulatorFact()
+        public IgnoreOnNoEmulatorTheory()
         {
             if (!CosmosDbEmulatorStatus.HasEmulator)
             {

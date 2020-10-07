@@ -4,17 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
-<<<<<<< HEAD
 using Xunit;
-=======
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
->>>>>>> Enhanced tests
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -27,18 +24,21 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         private const string CosmosDatabaseName = "test-CosmosDbPartitionStorageTests";
         private const string CosmosCollectionName = "bot-storage";
+
+        private CosmosDbPartitionedStorageOptions _storageOptions;
         private IStorage _storage;
 
         public CosmosDbPartitionStorageTests()
         {
-            _storage = new CosmosDbPartitionedStorage(
-                new CosmosDbPartitionedStorageOptions
-                {
-                    AuthKey = CosmosAuthKey,
-                    ContainerId = CosmosCollectionName,
-                    CosmosDbEndpoint = CosmosServiceEndpoint,
-                    DatabaseId = CosmosDatabaseName,
-                });
+            _storageOptions = new CosmosDbPartitionedStorageOptions
+            {
+                AuthKey = CosmosAuthKey,
+                ContainerId = CosmosCollectionName,
+                CosmosDbEndpoint = CosmosServiceEndpoint,
+                DatabaseId = CosmosDatabaseName,
+            };
+
+            _storage = new CosmosDbPartitionedStorage(_storageOptions);
         }
 
         public async void Dispose()
@@ -179,80 +179,66 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [IgnoreOnNoEmulatorFact]
         public async Task WritingNoStoreItemsDoesntThrow()
         {
-<<<<<<< HEAD
             var changes = new Dictionary<string, object>();
             await _storage.WriteAsync(changes);
-=======
-            if (CheckEmulator())
-            {
-                var changes = new Dictionary<string, object>();
-                await _storage.WriteAsync(changes);
-            }
-        }
-
+        }     
+        
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [Fact]
         public async Task WritingWithEtagThrowsExceptionWithPreconditionFailure()
         {
             const string concurrencyKey = "concurrent-value";
 
-            if (CheckEmulator())
+            _storageOptions.OptimisticConcurrencyEnabled = true;
+            var dict = new Dictionary<string, object>
             {
-                _storageOptions.OptimisticConcurrencyEnabled = true;
-                var dict = new Dictionary<string, object>
+                [concurrencyKey] = new
                 {
-                    [concurrencyKey] = new
-                    {
-                        etag = (string)null,
-                        value = "xyz",
-                    }
-                };
+                    etag = (string)null,
+                    value = "xyz",
+                }
+            };
 
-                await _storage.WriteAsync(dict, CancellationToken.None);
-                var dictFromStorage = await _storage.ReadAsync(new[] { concurrencyKey }, CancellationToken.None);
+            await _storage.WriteAsync(dict, CancellationToken.None);
+            var dictFromStorage = await _storage.ReadAsync(new[] { concurrencyKey }, CancellationToken.None);
 
-                await _storage.WriteAsync(dictFromStorage, CancellationToken.None);
+            await _storage.WriteAsync(dictFromStorage, CancellationToken.None);
 
-                var result = await Assert.ThrowsExceptionAsync<CosmosException>(() => _storage.WriteAsync(dictFromStorage, CancellationToken.None));
-                Assert.AreEqual(HttpStatusCode.PreconditionFailed, result.StatusCode, "expected conflict writing concurrently");
+            var result = await Assert.ThrowsAsync<CosmosException>(() => _storage.WriteAsync(dictFromStorage, CancellationToken.None));
+            Assert.Equal(HttpStatusCode.PreconditionFailed, result.StatusCode);
 
-                // should be able to write with null ETag.
-                await _storage.WriteAsync(dict, CancellationToken.None);
+            // should be able to write with null ETag.
+            await _storage.WriteAsync(dict, CancellationToken.None);
 
-                // should be able to write with "*" ETag.
-                var dict2 = new Dictionary<string, object>
+            // should be able to write with "*" ETag.
+            var dict2 = new Dictionary<string, object>
+            {
+                [concurrencyKey] = new
                 {
-                    [concurrencyKey] = new
-                    {
-                        etag = "*",
-                        value = "xyz",
-                    }
-                };
+                    etag = "*",
+                    value = "xyz",
+                }
+            };
 
-                await _storage.WriteAsync(dict2, CancellationToken.None);
+            await _storage.WriteAsync(dict2, CancellationToken.None);
 
-                dictFromStorage = await _storage.ReadAsync(new[] { concurrencyKey }, CancellationToken.None);
-                await _storage.WriteAsync(dictFromStorage);
-            }
+            dictFromStorage = await _storage.ReadAsync(new[] { concurrencyKey }, CancellationToken.None);
+            await _storage.WriteAsync(dictFromStorage);
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
-        [TestMethod]
+        [Fact]
         public async Task WritingWithEtagThrowsExceptionWhenWritingInvalidEtagType()
         {
-            if (CheckEmulator())
+            _storageOptions.OptimisticConcurrencyEnabled = true;
+
+            var dict = new Dictionary<string, object>
             {
-                _storageOptions.OptimisticConcurrencyEnabled = true;
+                ["key"] = new { etag = 5 }
+            };
 
-                var dict = new Dictionary<string, object>
-                {
-                    ["key"] = new { etag = 5 }
-                };
-
-                var result = await Assert.ThrowsExceptionAsync<ArgumentException>(() => _storage.WriteAsync(dict, CancellationToken.None));
-                Assert.IsTrue(result.Message.Contains("Expected a string or no value."), $"{result.Message} did not contain 'Expected a string or no value.'");
-            }
->>>>>>> Enhanced tests
+            var result = await Assert.ThrowsAsync<ArgumentException>(() => _storage.WriteAsync(dict, CancellationToken.None));
+            Assert.True(result.Message.Contains("Expected a string or no value."), $"{result.Message} did not contain 'Expected a string or no value.'");
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
@@ -265,9 +251,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         // The problem was reintroduced when the prompt retry count feature was implemented:
         // https://github.com/microsoft/botbuilder-dotnet/issues/1859
         // The waterfall in this test has been modified to include a prompt.
-        [IgnoreOnNoEmulatorFact]
-        public async Task WaterfallCosmos()
+        [IgnoreOnNoEmulatorTheory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task WaterfallCosmos(bool optimisticConcurrencyEnabled)
         {
+            _storageOptions.OptimisticConcurrencyEnabled = optimisticConcurrencyEnabled;
+
             var convoState = new ConversationState(_storage);
 
             var adapter = new TestAdapter()
