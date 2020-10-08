@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
+    /// <summary>
+    /// Represents the possible action scope commands.
+    /// </summary>
 #pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ActionScopeCommands
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable

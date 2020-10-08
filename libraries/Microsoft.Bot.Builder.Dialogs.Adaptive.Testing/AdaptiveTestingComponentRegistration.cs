@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.PropertyMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -18,15 +17,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <summary>
     /// Component registration for AdaptiveTesting resources.
     /// </summary>
+    /// <remarks>This should be the last registration since it may add testing overrides for other components.</remarks>
     public class AdaptiveTestingComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         /// <inheritdoc/>
         public virtual IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
-            // Action
+            // Actions for within normal bot flow
             yield return new DeclarativeType<AssertCondition>(AssertCondition.Kind);
 
-            // test actions
+            // Test script actions
             yield return new DeclarativeType<TestScript>(TestScript.Kind);
             yield return new DeclarativeType<UserSays>(UserSays.Kind);
             yield return new DeclarativeType<UserTyping>(UserTyping.Kind);
@@ -36,9 +36,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<AssertReply>(AssertReply.Kind);
             yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.Kind);
             yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.Kind);
+            yield return new DeclarativeType<MemoryAssertions>(MemoryAssertions.Kind);
             yield return new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind);
             yield return new DeclarativeType<UserTokenBasicMock>(UserTokenBasicMock.Kind);
-            yield return new DeclarativeType<PropertiesMock>(PropertiesMock.Kind);
+            yield return new DeclarativeType<SetProperties>(SetProperties.Kind);
+            yield return new DeclarativeType<CustomEvent>(CustomEvent.Kind);
         }
 
         /// <inheritdoc/>
@@ -47,7 +49,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new InterfaceConverter<TestAction>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<HttpRequestMock>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<UserTokenMock>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<PropertyMock>(resourceExplorer, sourceContext);
         }
     }
 }

@@ -9,8 +9,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// Implements JSON extensions.
+    /// </summary>
     public static class JsonExtensions
     {
+        /// <summary>
+        /// Removes first element of a queue.
+        /// </summary>
+        /// <typeparam name="T">Element type.</typeparam>
+        /// <param name="queue">List from where to remove first element.</param>
+        /// <returns>Element removed.</returns>
         public static T Dequeue<T>(this List<T> queue)
         {
             var result = default(T);

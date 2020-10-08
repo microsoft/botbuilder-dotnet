@@ -31,7 +31,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.Parameters = parameters ?? new List<string>();
             this.Body = templateBody ?? string.Empty;
             this.SourceRange = sourceRange;
+            Expressions = new List<ExpressionRef>();
         }
+
+        /// <summary>
+        /// Gets expression reference list.
+        /// </summary>
+        /// <value>
+        /// Expression reference list.
+        /// </value>
+        public IList<ExpressionRef> Expressions { get; }
 
         /// <summary>
         /// Gets or sets source range.

@@ -2,14 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
@@ -56,26 +52,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public string User { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
-            if (this.Text == null)
+            if (Text == null)
             {
                 throw new Exception("You must define the Text property");
             }
 
-            var activity = adapter.MakeActivity(this.Text);
-            if (!string.IsNullOrEmpty(this.User))
+            var activity = adapter.MakeActivity(Text);
+            if (!string.IsNullOrEmpty(User))
             {
                 activity.From = ObjectPath.Clone(activity.From);
-                activity.From.Id = this.User;
-                activity.From.Name = this.User;
+                activity.From.Id = User;
+                activity.From.Name = User;
             }
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            await adapter.ProcessActivityAsync(activity, callback, default(CancellationToken)).ConfigureAwait(false);
+            await adapter.ProcessActivityAsync(activity, callback, default).ConfigureAwait(false);
             sw.Stop();
-            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserSays: {this.Text} ]");
+            Trace.TraceInformation($"[Turn Ended => {sw.ElapsedMilliseconds} ms processing UserSays: {Text} ]");
         }
     }
 }

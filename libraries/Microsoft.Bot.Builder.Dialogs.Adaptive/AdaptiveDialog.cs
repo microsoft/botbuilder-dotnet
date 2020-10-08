@@ -27,6 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer, IDialogDependencies
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.AdaptiveDialog";
 
@@ -35,11 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string AdaptiveKey = "_adaptive";
         private const string DefaultOperationKey = "$defaultOperation";
         private const string ExpectedOnlyKey = "$expectedOnly";
-        private const string EntitiesKey = "$entities";
         private const string InstanceKey = "$instance";
         private const string NoneIntentKey = "None";
         private const string OperationsKey = "$operations";
-        private const string PropertyNameKey = "PROPERTYName";
         private const string UtteranceKey = "utterance";
 
         // unique key for change tracking of the turn state (TURN STATE ONLY)
@@ -54,6 +55,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private SchemaHelper dialogSchema;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdaptiveDialog"/> class.
+        /// </summary>
+        /// <param name="dialogId">Optional, dialog identifier.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogId)
         {
@@ -137,6 +144,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (options is CancellationToken)
@@ -208,6 +223,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ContinueActionsAsync(dc, options, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when the dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             EnsureDependenciesInstalled();
@@ -218,6 +241,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ContinueActionsAsync(dc, options: null, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called when a child dialog completed its turn, returning control to this dialog.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">Optional, A <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
             if (result is CancellationToken)
@@ -237,6 +270,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return EndOfTurn;
         }
 
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information associated with the instance of this dialog on the dialog stack.</param>
+        /// <param name="reason">Reason why the dialog ended.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             var properties = new Dictionary<string, string>()
@@ -279,10 +321,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Creates a child <see cref="DialogContext"/> for the given context.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <returns>The child <see cref="DialogContext"/> or null if no <see cref="AdaptiveDialogState.Actions"/> are found for the given context.</returns>
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
+            AdaptiveDialogState state = null;
+
+            if (activeDialogState.TryGetValue(AdaptiveKey, out var currentState))
+            {
+                state = currentState as AdaptiveDialogState;
+            }
 
             if (state == null)
             {
@@ -300,6 +352,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return null;
         }
 
+        /// <summary>
+        /// Gets <see cref="Dialog"/> enumerated dependencies.
+        /// </summary>
+        /// <returns><see cref="Dialog"/> enumerated dependencies.</returns>
         public IEnumerable<Dialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
@@ -307,6 +363,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield break;
         }
 
+        /// <summary>
+        /// Gets the internal version string.
+        /// </summary>
+        /// <returns>Internal version string.</returns>
         protected override string GetInternalVersion()
         {
             StringBuilder sb = new StringBuilder();
@@ -329,6 +389,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return StringUtils.Hash(sb.ToString());
         }
 
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
         {
             var actionContext = ToActionContext(dc);
@@ -337,6 +404,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ProcessEventAsync(actionContext, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Called after an event was bubbled to all parents and wasn't handled.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected override async Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default)
         {
             var actionContext = ToActionContext(dc);
@@ -345,6 +419,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await ProcessEventAsync(actionContext, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Event processing implementation.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="dialogEvent">The <see cref="DialogEvent"/> being raised.</param>
+        /// <param name="preBubble">A flag indicator for preBubble processing.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
+        /// <returns>A <see cref="Task"/> representation of a boolean indicator or the result.</returns>
         protected virtual async Task<bool> ProcessEventAsync(ActionContext actionContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
@@ -546,6 +628,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return handled;
         }
 
+        /// <summary>
+        /// Waits for pending actions to complete and moves on to <see cref="OnEndOfActions"/>.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Options used in evaluation. </param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representation of <see cref="DialogTurnResult"/>.</returns>
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
         {
             if (options is CancellationToken)
@@ -641,6 +730,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Removes the current most action from the given <see cref="ActionContext"/> if there are any.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects.</param>
+        /// <returns>A <see cref="Task"/> representing a boolean indicator for the result.</returns>
 #pragma warning disable CA1801 // Review unused parameters (we can't remove the cancellationToken parameter withoutt breaking binary compat).
         protected Task<bool> EndCurrentActionAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
@@ -653,6 +748,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return Task.FromResult(false);
         }
 
+        /// <summary>
+        /// Awaits for completed actions to finish processing entity assignments and finishes turn.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects.</param>
+        /// <returns>A <see cref="Task"/> representation of <see cref="DialogTurnResult"/>.</returns>
         protected async Task<DialogTurnResult> OnEndOfActionsAsync(ActionContext actionContext, CancellationToken cancellationToken = default)
         {
             // Is the current dialog still on the stack?
@@ -678,6 +779,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return new DialogTurnResult(DialogTurnStatus.Cancelled);
         }
 
+        /// <summary>
+        /// Recognizes intent for current activity given the class recognizer set, if set is null no intent will be recognized.
+        /// </summary>
+        /// <param name="actionContext">The <see cref="ActionContext"/> for the current turn of conversation.</param>
+        /// <param name="activity"><see cref="Activity"/> to recognize.</param>
+        /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing a <see cref="RecognizerResult"/>.</returns>
         protected async Task<RecognizerResult> OnRecognizeAsync(ActionContext actionContext, Activity activity, CancellationToken cancellationToken = default)
         {
             if (Recognizer != null)
@@ -726,6 +834,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             };
         }
 
+        /// <summary>
+        /// Ensures all dependencies for the class are installed.
+        /// </summary>
         protected virtual void EnsureDependenciesInstalled()
         {
             if (!installedDependencies)
@@ -781,7 +892,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private async Task<bool> ProcessQueuesAsync(ActionContext actionContext, CancellationToken cancellationToken)
         {
             DialogEvent evt;
-            bool handled = false;
+            bool handled;
             var assignments = EntityAssignments.Read(actionContext);
             var nextAssignment = assignments.NextAssignment();
             if (nextAssignment != null)
@@ -790,6 +901,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (nextAssignment.Alternative != null)
                 {
                     val = nextAssignment.Alternatives.ToList();
+                }
+
+                if (nextAssignment.RaisedCount++ == 0)
+                {
+                    // Reset retries when new form event is first issued
+                    actionContext.State.RemoveValue(DialogPath.Retries);
                 }
 
                 evt = new DialogEvent() { Name = nextAssignment.Event, Value = val, Bubble = false };
@@ -908,7 +1025,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var utterance = activity?.AsMessageActivity()?.Text;
 
                 // Utterance is a special entity that corresponds to the full utterance
-                entities[UtteranceKey] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = UtteranceKey, Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
+                entities[UtteranceKey] = new List<EntityInfo>
+                {
+                    new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = UtteranceKey, Score = 0.0, Type = "string", Value = utterance, Text = utterance }
+                };
                 var recognized = AssignEntities(actionContext, entities, assignments, lastEvent);
                 var unrecognized = SplitUtterance(utterance, recognized);
 
@@ -941,7 +1061,149 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return unrecognized;
         }
 
-        // Combine entity values and $instance meta-data
+        // Expand object that contains entities which can be op, property or leaf entity
+        private void ExpandEntityObject(
+            JObject entities, string op, string property, JObject rootInstance, List<string> operations, List<string> properties, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            foreach (var token in entities)
+            {
+                var entityName = token.Key;
+                var instances = entities[InstanceKey][entityName] as JArray;
+                ExpandEntities(entityName, token.Value as JArray, instances, rootInstance, op, property, operations, properties, turn, text, entityToInfo);
+            }
+        }
+
+        // Expand the array of entities for a particular entity
+        private void ExpandEntities(
+            string name, JArray entities, JArray instances, JObject rootInstance, string op, string property, List<string> operations, List<string> properties, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            if (!name.StartsWith("$", StringComparison.InvariantCulture))
+            {
+                string entityName = null;
+                var isOp = false;
+                var isProperty = false;
+                if (operations.Contains(name))
+                {
+                    op = name;
+                    isOp = true;
+                }
+                else if (properties.Contains(name))
+                {
+                    property = name;
+                    isProperty = true;
+                }
+                else
+                {
+                    entityName = name;
+                }
+
+                for (var entityIndex = 0; entityIndex < entities.Count; ++entityIndex)
+                {
+                    var entity = entities[entityIndex];
+                    var instance = instances[entityIndex] as JObject;
+                    var root = rootInstance;
+                    if (root == null)
+                    {
+                        // Keep the root entity name and position to help with overlap
+                        root = instance.DeepClone() as JObject;
+                        root["type"] = $"{name}{entityIndex}";
+                    }
+
+                    if (entityName != null)
+                    {
+                        ExpandEntity(entityName, entity, instance, root, op, property, turn, text, entityToInfo);
+                    }
+                    else if (entity is JObject entityObject)
+                    {
+                        if (entityObject.Count == 0)
+                        {
+                            if (isOp)
+                            {
+                                // Handle operator with no children
+                                ExpandEntity(op, null, instance, root, op, property, turn, text, entityToInfo);
+                            }
+                            else if (isProperty)
+                            {
+                                // Handle property with no children
+                                ExpandEntity(property, null, instance, root, op, property, turn, text, entityToInfo);
+                            }
+                        }
+                        else
+                        {
+                            ExpandEntityObject(entityObject, op, property, root, operations, properties, turn, text, entityToInfo);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Expand a leaf entity into EntityInfo.
+        private void ExpandEntity(string name, object value, dynamic instance, dynamic rootInstance, string op, string property, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
+        {
+            if (instance != null && rootInstance != null)
+            {
+                if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
+                {
+                    infos = new List<EntityInfo>();
+                    entityToInfo[name] = infos;
+                }
+
+                var info = new EntityInfo
+                {
+                    WhenRecognized = turn,
+                    Name = name,
+                    Value = value,
+                    Operation = op,
+                    Property = property,
+                    Start = (int)rootInstance.startIndex,
+                    End = (int)rootInstance.endIndex,
+                    RootEntity = rootInstance.type,
+                    Text = (string)(rootInstance.text ?? string.Empty),
+                    Type = (string)(instance.type ?? null),
+                    Score = (double)(instance.score ?? 0.0d),
+                    Priority = 0,
+                };
+
+                info.Coverage = (info.End - info.Start) / (double)text.Length;
+                infos.Add(info);
+            }
+        }
+
+        // Combine entity values and $instance meta-data and expand out op/property
+        // Structure of entities.  
+        //{
+        //  "<op>": [
+        //    // Op property
+        //    {
+        //      "<property>": [
+        //        // Property without entities
+        //        {},
+        //        // Property with entities
+        //        {
+        //          "<entity>": [],
+        //          "$instance": []
+        //        }
+        //      ],
+        //      "$instance": []
+        //    },
+        //    // Op entity
+        //    {
+        //    "<entity> ": [],
+        //      "$instance": []
+        //    }
+        //  ],
+        //  // Direct property
+        //  "<property>": [
+        //    {},
+        //    {
+        //    "<entity>": [],
+        //      "$instance": []
+        //    }
+        //  ],
+        //  // Direct entity
+        //  "<entity>": [],
+        //  "$instance": []
+        //}
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(ActionContext actionContext)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
@@ -950,49 +1212,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var turn = actionContext.State.GetValue<uint>(DialogPath.EventCounter);
                 var operations = dialogSchema.Schema[OperationsKey]?.ToObject<List<string>>() ?? new List<string>();
-                var metaData = entities[InstanceKey];
-                foreach (var entry in entities)
-                {
-                    var name = entry.Name;
-                    if (operations.Contains(name))
-                    {
-                        for (var i = 0; i < entry.Value.Count; ++i)
-                        {
-                            var composite = entry.Value[i];
-                            var childInstance = composite[InstanceKey];
-                            EntityInfo pname = null;
-                            if (composite.Count > 1)
-                            {
-                                // Find PROPERTYName so we can apply it to other entities
-                                foreach (var child in composite)
-                                {
-                                    if (child.Name == PropertyNameKey)
-                                    {
-                                        // Expand PROPERTYName and fold single match into siblings span
-                                        // TODO: Would we ever need to handle multiple?
-                                        var infos = new Dictionary<string, List<EntityInfo>>();
-                                        ExpandEntity(child, childInstance, name, null, turn, text, infos);
-                                        pname = infos[PropertyNameKey].First();
-                                        break;
-                                    }
-                                }
-                            }
-
-                            foreach (var child in composite)
-                            {
-                                // Drop PROPERTYName if we are applying it to other entities
-                                if (pname == null || child.Name != PropertyNameKey)
-                                {
-                                    ExpandEntity(child, childInstance, name, pname, turn, text, entityToInfo);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        ExpandEntity(entry, metaData, null, null, turn, text, entityToInfo);
-                    }
-                }
+                var properties = dialogSchema.Property.Children.Select((prop) => prop.Name).ToList<string>();
+                ExpandEntityObject(entities, null, null, null, operations, properties, turn, text, entityToInfo);
             }
 
             // When there are multiple possible resolutions for the same entity that overlap, pick the one that covers the
@@ -1045,84 +1266,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
-        private void ExpandEntity(dynamic entry, dynamic metaData, string op, EntityInfo propertyName, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
-        {
-            var name = entry.Name;
-            if (!name.StartsWith("$"))
-            {
-                var values = entry.Value;
-                var instances = metaData?[name];
-                for (var i = 0; i < values.Count; ++i)
-                {
-                    var val = values[i];
-                    var instance = instances?[i];
-                    if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
-                    {
-                        infos = new List<EntityInfo>();
-                        entityToInfo[name] = infos;
-                    }
-
-                    var info = new EntityInfo
-                    {
-                        WhenRecognized = turn,
-                        Name = name,
-                        Value = val,
-                        Operation = op
-                    };
-                    if (instance != null)
-                    {
-                        info.Start = (int)instance.startIndex;
-                        info.End = (int)instance.endIndex;
-                        info.Text = (string)(instance.text ?? string.Empty);
-                        info.Type = (string)(instance.type ?? null);
-                        info.Role = (string)(instance.role ?? null);
-                        info.Score = (double)(instance.score ?? 0.0d);
-                    }
-
-                    // Eventually this could be passed in
-                    info.Priority = info.Role == null ? 1 : 0;
-                    info.Coverage = (info.End - info.Start) / (double)text.Length;
-                    if (propertyName != null)
-                    {
-                        // Add property information to entities
-                        if (propertyName.Start < info.Start)
-                        {
-                            info.Start = propertyName.Start;
-                        }
-
-                        if (propertyName.End > info.End)
-                        {
-                            info.End = propertyName.End;
-                        }
-
-                        // Expand entity to include possible property names
-                        foreach (var property in propertyName.Value as JArray)
-                        {
-                            var newInfo = info.Clone() as EntityInfo;
-                            newInfo.Property = property.Value<string>();
-                            infos.Add(newInfo);
-                        }
-                    }
-                    else
-                    {
-                        if (op != null && name == PropertyNameKey)
-                        {
-                            foreach (var property in val as JArray)
-                            {
-                                var newInfo = info.Clone() as EntityInfo;
-                                newInfo.Property = property.Value<string>();
-                                infos.Add(newInfo);
-                            }
-                        }
-                        else
-                        {
-                            infos.Add(info);
-                        }
-                    }
-                }
-            }
-        }
-
+        // TODO: Probably should be assign operation in here as well, in we eventually wanted to expand to possible operations.
+        // Cases:
+        // ~op, ~prop, entity -> Assign default op and all possible properties
+        // ~op, prop, ~entity -> Assign default op?
+        // ~op, prop, entity -> Assign default op
+        // op, ~prop, ~entity -> Emit 
+        // op, prop, ~entity -> Emit
+        // op, prop, entity --> Emit
         // Generate possible entity to property mappings
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
@@ -1130,7 +1281,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var usedEntityType = new HashSet<string> { UtteranceKey };
             var usedEntity = new HashSet<EntityInfo>();
 
+            // Build map from entity to possible expected properties
+            var entityToExpected = new Dictionary<string, List<string>>();
+            foreach (var property in expected)
+            {
+                foreach (var entity in dialogSchema.PathToSchema(property).Entities)
+                {
+                    if (!entityToExpected.TryGetValue(entity, out var expectedProperties))
+                    {
+                        expectedProperties = new List<string>();
+                        entityToExpected[entity] = expectedProperties;
+                    }
+
+                    expectedProperties.Add(property);
+                }
+            }
+
             // Emit entities that already have a property
+            // If property is in entityToExpected, then convert property to entity with expected properties as properties
             foreach (var alternatives in entities.Values)
             {
                 foreach (var alternative in alternatives)
@@ -1138,13 +1306,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (alternative.Property != null)
                     {
                         usedEntity.Add(alternative);
-                        yield return new EntityAssignment
+                        if (entityToExpected.TryGetValue(alternative.Property, out var properties) && alternative.Operation == null)
                         {
-                            Entity = alternative,
-                            Property = alternative.Property,
-                            Operation = alternative.Operation,
-                            IsExpected = expected.Contains(alternative.Property)
-                        };
+                            // Property name is expected so rename and emit
+                            foreach (var property in properties)
+                            {
+                                var entity = alternative.Clone() as EntityInfo;
+                                entity.Property = property;
+                                yield return new EntityAssignment
+                                {
+                                    Entity = entity,
+                                    Property = entity.Property,
+                                    Operation = entity.Operation,
+                                    IsExpected = true
+                                };
+                            }
+                        }
+                        else
+                        {
+                            // Property corresponds directly to expected
+                            yield return new EntityAssignment
+                            {
+                                Entity = alternative,
+                                Property = alternative.Property,
+                                Operation = alternative.Operation,
+                                IsExpected = expected.Contains(alternative.Property)
+                            };
+                        }
                     }
                 }
             }
@@ -1176,15 +1364,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
 
-            // Unassigned entities
-            var entityPreferences = EntityPreferences(null);
+            // Entities with an operation, but no property
             foreach (var entry in entities)
             {
-                if (!usedEntityType.Contains(entry.Key) && entityPreferences.Contains(entry.Key))
+                if (!usedEntityType.Contains(entry.Key))
                 {
                     foreach (var entity in entry.Value)
                     {
-                        if (!usedEntity.Contains(entity))
+                        if (!usedEntity.Contains(entity) && entity.Operation != null)
                         {
                             yield return new EntityAssignment
                             {
@@ -1228,37 +1415,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        // Remove any entities that overlap a selected entity
-        private void RemoveOverlappingEntities(EntityInfo entity, Dictionary<string, List<EntityInfo>> entities)
-        {
-            foreach (var infos in entities.Values)
-            {
-                infos.RemoveAll(e => e.Overlaps(entity));
-            }
-        }
-
-        private IReadOnlyList<string> EntityPreferences(string property)
-        {
-            IReadOnlyList<string> result;
-            if (property == null)
-            {
-                if (dialogSchema.Schema.ContainsKey(EntitiesKey))
-                {
-                    result = dialogSchema.Schema[EntitiesKey].ToObject<List<string>>();
-                }
-                else
-                {
-                    result = new List<string> { PropertyNameKey };
-                }
-            }
-            else
-            {
-                result = dialogSchema.PathToSchema(property).Entities;
-            }
-
-            return result;
-        }
-
         // Have each property pick which overlapping entity is the best one
         private IEnumerable<EntityAssignment> RemoveOverlappingPerProperty(IEnumerable<EntityAssignment> candidates)
         {
@@ -1266,7 +1422,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                               group candidate by candidate.Property;
             foreach (var propChoices in perProperty)
             {
-                var entityPreferences = EntityPreferences(propChoices.Key);
+                var entityPreferences = dialogSchema.PathToSchema(propChoices.Key).Entities;
                 var choices = propChoices.ToList();
 
                 // Assume preference by order listed in mappings
@@ -1288,7 +1444,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                         if (candidate != null)
                         {
-                            // Remove any overlapping entities
+                            // Remove any overlapping entities without a common root
                             choices.RemoveAll(choice => choice.Entity.Overlaps(candidate.Entity));
                             yield return candidate;
                         }
@@ -1373,12 +1529,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     existing.Dequeue(actionContext);
                     lastEvent = null;
                 }
-                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Entity.Name == PropertyNameKey)
+                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Property != null)
                 {
-                    // NOTE: This assumes the existence of an entity named PROPERTYName for resolving this ambiguity
                     choices = existing.NextAssignment().Alternatives.ToList();
-                    var property = (candidate.Entity.Value as JArray)?[0]?.ToObject<string>();
-                    var choice = choices.Find(p => p.Property == property);
+                    var choice = choices.Find(p => p.Property == candidate.Entity.Name);
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments
@@ -1430,7 +1584,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return usedEntities.ToList();
         }
 
-        // a replaces b when it refers to the same singleton property and is newer or later in same utterance and it is not over PROPERTYName
+        // a replaces b when it refers to the same singleton property and is newer or later in same utterance and it is not a bare property
         // -1 a replaces b
         //  0 no replacement
         // +1 b replaces a
@@ -1441,7 +1595,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var bAlt in b.Alternatives)
                 {
-                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Name != PropertyNameKey && bAlt.Entity.Name != PropertyNameKey)
+                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Value != null && bAlt.Entity.Value != null)
                     {
                         var prop = dialogSchema.PathToSchema(aAlt.Property);
                         if (!prop.IsArray)

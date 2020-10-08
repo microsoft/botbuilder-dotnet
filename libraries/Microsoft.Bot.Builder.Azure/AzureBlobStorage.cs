@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// property value to the blob's ETag upon read. Afterward, an <see cref="AccessCondition"/> with the ETag value
     /// will be generated during Write. New entities start with a null ETag.
     /// </remarks>
+    [Obsolete("This class is deprecated. Please use BlobsStorage from Microsoft.Bot.Builder.Azure.Blobs instead.")]
     public class AzureBlobStorage : IStorage
     {
         private static readonly JsonSerializer JsonSerializer = JsonSerializer.Create(new JsonSerializerSettings

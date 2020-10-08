@@ -27,9 +27,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class HttpRequest : Dialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.HttpRequest";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpRequest"/> class.
+        /// </summary>
+        /// <param name="method">The HTTP method, for example POST, GET, DELETE or PUT.</param>
+        /// <param name="url">URL for the request.</param>
+        /// <param name="headers">Optional, the headers of the request.</param>
+        /// <param name="body">Optional, the raw body of the request.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public HttpRequest(HttpMethod method, string url, Dictionary<string, StringExpression> headers = null, object body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -39,6 +51,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.Body = JToken.FromObject(body);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HttpRequest"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -46,6 +63,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// List of possible response types.
+        /// </summary>
 #pragma warning disable CA1717 // Only FlagsAttribute enums should have plural names (we can't change this without breaking binary compat).
         public enum ResponseTypes
 #pragma warning restore CA1717 // Only FlagsAttribute enums should have plural names
@@ -188,6 +208,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("resultProperty")]
         public StringExpression ResultProperty { get; set; }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -237,6 +265,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
                 }
+            }
+
+            // if there no usr-agent in the header, set the user-agent to Mozzila/5.0
+            if (!client.DefaultRequestHeaders.Contains("user-agent"))
+            {
+                client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
             }
 
             dynamic traceInfo = new JObject();
@@ -377,6 +411,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{Method} {Url?.ToString()}]";
@@ -389,10 +427,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public class Result
 #pragma warning restore CA1034 // Nested types should not be visible
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Result"/> class.
+            /// </summary>
             public Result()
             {
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Result"/> class.
+            /// </summary>
+            /// <param name="headers">HTTP headers from the response to the http operation.</param>
             public Result(HttpHeaders headers)
             {
                 this.Headers = headers.ToDictionary(t => t.Key, t => t.Value.First());

@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -34,6 +36,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
         }
 
         /// <summary>
+        /// Type for how <see cref="Body"/> matches against request's body.
+        /// </summary>
+        public enum BodyMatchType
+        {
+            /// <summary>
+            /// Exact match.
+            /// </summary>
+            Exact,
+
+            /// <summary>
+            /// Match as a part.
+            /// </summary>
+            Partial
+        }
+
+        /// <summary>
         /// Gets or sets the HttpMethod to match. If null, match to any method.
         /// </summary>
         /// <value>
@@ -53,6 +71,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 #pragma warning disable CA1056 // Uri properties should not be strings (by design, excluding)
         public string Url { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
+
+        /// <summary>
+        /// Gets or sets the match type for body.
+        /// </summary>
+        /// <value>
+        /// One of Exact, Partial.
+        /// </value>
+        [DefaultValue(BodyMatchType.Partial)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty("matchType")]
+        public BodyMatchType MatchType { get; set; } = BodyMatchType.Partial;
+
+        /// <summary>
+        /// Gets or sets the body to match against request's body.
+        /// </summary>
+        /// <value>
+        /// Content.
+        /// </value>
+        [JsonProperty("body")]
+        public string Body { get; set; }
 
         /// <summary>
         /// Gets the sequence of responses to reply. The last one will be repeated.
@@ -81,7 +119,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                 mocked = handler.When(new HttpMethod(Method.Value.ToString()), Url);
             }
 
-            mocked.Respond(re => response.GetContent());
+            if (!string.IsNullOrEmpty(Body))
+            {
+                if (Method == HttpRequest.HttpMethod.DELETE || Method == HttpRequest.HttpMethod.GET)
+                {
+                    throw new ArgumentException("GET and DELETE don't support matching body!");
+                }
+
+                if (MatchType == BodyMatchType.Exact)
+                {
+                    mocked = mocked.WithContent(Body);
+                }
+                else if (MatchType == BodyMatchType.Partial)
+                {
+                    mocked = mocked.WithPartialContent(Body);
+                }
+                else
+                {
+                    throw new InvalidEnumArgumentException($"{nameof(MatchType)} does not support {MatchType} yet!");
+                }
+            }
+
+            mocked.Respond(re => response.GetMessage());
         }
     }
 }

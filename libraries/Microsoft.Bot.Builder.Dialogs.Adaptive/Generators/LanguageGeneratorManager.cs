@@ -53,9 +53,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public ConcurrentDictionary<string, LanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, LanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 #pragma warning restore CA2227 // Collection properties should be read only
 
+        /// <summary>
+        /// Returns the resolver to resolve LG import id to template text based on language and a template resource loader delegate.
+        /// </summary>
+        /// <param name="locale">Locale to identify language.</param>
+        /// <param name="resourceMapping">Template resource loader delegate.</param>
+        /// <returns>The delegate to resolve the resource.</returns>
         public static ImportResolverDelegate ResourceExplorerResolver(string locale, Dictionary<string, IList<Resource>> resourceMapping)
         {
-            return (string source, string id) =>
+            return (LGResource lgResource, string id) =>
             {
                 var fallbackLocale = LGResourceLoader.FallbackLocale(locale, resourceMapping.Keys.ToList());
                 var resources = resourceMapping[fallbackLocale];
@@ -70,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 else
                 {
                     var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-                    return (content, resource.Id);
+                    return new LGResource(resource.Id, resource.FullName, content);
                 }
             };
         }
@@ -86,15 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
         {
-            var fileResource = resource as FileResource;
-            if (fileResource == null)
-            {
-                return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, multilanguageResources);
-            }
-            else
-            {
-                return new TemplateEngineLanguageGenerator(fileResource.FullName, multilanguageResources);
-            }
+            return new TemplateEngineLanguageGenerator(resource, multilanguageResources);
         }
     }
 }

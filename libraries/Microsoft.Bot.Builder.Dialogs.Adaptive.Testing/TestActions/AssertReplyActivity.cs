@@ -1,8 +1,9 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,15 +79,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 var (result, error) = Expression.Parse(assertion).TryEvaluate<bool>(activity);
                 if (result != true)
                 {
-                    throw new Exception($"{Description} {assertion} {activity}");
+                    throw new Exception($"{Description} {assertion}\n{JsonConvert.SerializeObject(activity, Formatting.Indented)}");
                 }
             }
         }
 
         /// <inheritdoc/>
-        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public override async Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
-            var timeout = (int)this.Timeout;
+            var timeout = (int)Timeout;
 
             if (Debugger.IsAttached)
             {

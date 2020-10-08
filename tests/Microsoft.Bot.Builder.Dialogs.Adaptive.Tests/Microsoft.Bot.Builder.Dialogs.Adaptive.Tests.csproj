@@ -14,8 +14,11 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />
   </ItemGroup>
 
@@ -30,10 +33,24 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Tests\LuisRecognizerTests\cachedResponses\ExternalEntities_test_en_us_lu\" />
+    <None Update="Tests\ActionTests\Action_NumberInputWithDefaultResponse.test.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesDeleteProperties.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesDeleteProperty.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesEditArray.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesSetProperties.test.dialog">
+      <SubType>Component</SubType>
+    </None>
+    <None Update="Tests\AskTests\Action_AskRetriesSetProperty.test.dialog">
+      <SubType>Component</SubType>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,13 @@
             "headers",
             "*"
         ],
-        "helpLink": "https://aka.ms/bfc-using-http"
+        "helpLink": "https://aka.ms/bfc-using-http",
+        "properties": {
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
     }
 }

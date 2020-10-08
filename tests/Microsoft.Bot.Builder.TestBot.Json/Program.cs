@@ -2,12 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection.Emit;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.QnA;
@@ -29,7 +23,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             Console.WriteLine("--root <PATH>: Absolute path to the root directory for declarative resources all *.main.dialog be options.  Default current directory");
             Console.WriteLine("--region <REGION>: LUIS endpoint region.  Default westus");
             Console.WriteLine("--environment <ENVIRONMENT>: LUIS environment settings to use.  Default is user alias.");
-            Console.WriteLine("To use LUIS you should do 'dotnet user-secrets --id TestBot set luis:endpointKey=<yourKey>'");
+            Console.WriteLine("--dialog <DIALOG>: Name of root dialog to run.  By default all *.main.dialog will be choices.");
+            Console.WriteLine("To use LUIS you should do 'dotnet user-secrets set --id TestBot luis:endpointKey <yourKey>'");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -40,6 +35,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 var botRoot = configuration.GetValue<string>("root") ?? ".";
                 var region = configuration.GetValue<string>("region") ?? "westus";
                 var environment = configuration.GetValue<string>("environment") ?? Environment.UserName;
+                var dialog = configuration.GetValue<string>("dialog");
 
                 builder.UseLuisSettings();
                 builder.UseQnAMakerSettings(botRoot, region, environment);

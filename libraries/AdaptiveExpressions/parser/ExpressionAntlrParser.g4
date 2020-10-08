@@ -17,6 +17,8 @@ expression
     | expression (LESS_THAN|LESS_OR_EQUAl|MORE_THAN|MORE_OR_EQUAL) expression #binaryOpExp
     | expression DOUBLE_AND expression                                        #binaryOpExp
     | expression DOUBLE_VERTICAL_CYLINDER expression                          #binaryOpExp
+    | expression NULL_COALESCE expression                                     #binaryOpExp
+    | expression QUESTION_MARK expression COLON expression                    #tripleOpExp
     | primaryExpression                                                       #primaryExp
     ;
  
@@ -34,7 +36,7 @@ primaryExpression
     ;
 
 stringInterpolation
-    : STRING_INTERPOLATION_START (ESCAPE_CHARACTER | TEMPLATE | textContent)+ STRING_INTERPOLATION_START
+    : STRING_INTERPOLATION_START (ESCAPE_CHARACTER | TEMPLATE | textContent)* STRING_INTERPOLATION_START
     ;
 
 textContent

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Newtonsoft.Json;
 
@@ -16,15 +18,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class RandomSelector : TriggerSelector
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.RandomSelector";
 
         private List<OnCondition> _conditionals;
         private bool _evaluate;
-        private Random _rand;
-        private int _seed = -1;
-        private readonly object _objectLock = new object();
-        
+
         /// <summary>
         /// Gets or sets optional seed for random number generator.
         /// </summary>
@@ -33,26 +35,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Optional seed for random number generator.
         /// </value>
         [JsonProperty("seed")]
-        public int Seed
-        {
-            get => _seed;
-            set
-            {
-                _seed = value;
-                _rand = new Random(_seed);
-            }
-        }
+        public int Seed { get; set; } = -1;
 
+        /// <summary>
+        /// Initializes the selector with the set of rules.
+        /// </summary>
+        /// <param name="conditionals">Possible rules to match.</param>
+        /// <param name="evaluate">Optional, true by default if rules should be evaluated on select.</param>
         public override void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             _conditionals = conditionals.ToList();
             _evaluate = evaluate;
-            if (_rand == null)
-            {
-                _rand = _seed == -1 ? new Random() : new Random(_seed);
-            }
         }
 
+        /// <summary>
+        /// Selects the best rule to execute.
+        /// </summary>
+        /// <param name="context">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/> of the task.</param>
+        /// <returns>Best rule in original list to execute or -1 if none.</returns>
         public override Task<IReadOnlyList<OnCondition>> SelectAsync(ActionContext context, CancellationToken cancellationToken = default)
         {
             var candidates = _conditionals;
@@ -74,11 +75,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             var result = new List<OnCondition>();
             if (candidates.Count > 0)
             {
-                int selection;
-                lock (_objectLock)
+                var memory = MemoryFactory.Create(context.State);
+                int? customizedSeed = null;
+                if (Seed != -1)
                 {
-                    selection = _rand.Next(candidates.Count);
+                    customizedSeed = Seed;
                 }
+
+                var selection = memory.RandomNext(0, candidates.Count, customizedSeed);
 
                 result.Add(candidates[selection]);
             }

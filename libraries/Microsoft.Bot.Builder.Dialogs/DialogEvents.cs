@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Represents the events related to the "lifecycle" of the dialog.
+    /// </summary>
 #pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class DialogEvents
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
@@ -36,5 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Event fired when there was an exception thrown in the system.
         /// </summary>
         public const string Error = "error";
+
+        /// <summary>
+        /// Custom event.
+        /// </summary>
+        public const string Custom = "custom";
     }
 }

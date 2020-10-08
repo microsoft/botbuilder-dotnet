@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Defines path for available dialog contexts.
+    /// </summary>
 #pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class DialogContextPath
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable

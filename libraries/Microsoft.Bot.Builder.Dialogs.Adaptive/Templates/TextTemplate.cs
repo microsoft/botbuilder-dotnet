@@ -16,10 +16,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
     [DebuggerDisplay("{Template}")]
     public class TextTemplate : ITemplate<string>
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.TextTemplate";
 
-        // Fixed text constructor for inline template
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextTemplate"/> class.
+        /// </summary>
+        /// <param name="template">The template to evaluate to create the string.</param>
         public TextTemplate(string template)
         {
             this.Template = template ?? throw new ArgumentNullException(nameof(template));
@@ -34,8 +40,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         [JsonProperty("template")]
         public string Template { get; set; }
 
+        /// <summary>
+        /// Given the turn context bind to the data to create the object of type string.
+        /// </summary>
+        /// <param name="dialogContext">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="data">Optional, data to bind to. If Null, then dc.State will be used.</param>
+        /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> for this task.</param>
+        /// <returns>Instance of string.</returns>
         public virtual async Task<string> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
         {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            if (data is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(data)} cannot be a cancellation token");
+            }
+
             if (string.IsNullOrEmpty(this.Template))
             {
                 throw new InvalidOperationException($"The {nameof(this.Template)} property can't be empty.");
@@ -55,6 +78,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
             return null;
         }
 
+        /// <summary>
+        /// Returns a string that represents <see cref="TextTemplate"/>.
+        /// </summary>
+        /// <returns>A string that represents <see cref="TextTemplate"/>.</returns>
         public override string ToString()
         {
             return $"{nameof(TextTemplate)}({this.Template})";

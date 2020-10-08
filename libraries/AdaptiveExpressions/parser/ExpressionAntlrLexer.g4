@@ -67,6 +67,10 @@ COLON: ':';
 
 ARROW: '=>';
 
+NULL_COALESCE: '??';
+
+QUESTION_MARK: '?';
+
 NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t'|'\ufeff'|'\u00a0') {ignoreWS}? -> skip;
@@ -87,6 +91,6 @@ TEMPLATE : '$' '{' (STRING | OBJECT_DEFINITION | ~[\r\n{}'"`])+ '}';
 
 ESCAPE_CHARACTER : '\\' ~[\r\n]?;
 
-TEXT_CONTENT :  ~[\r\n];
+TEXT_CONTENT : . ;
 
 

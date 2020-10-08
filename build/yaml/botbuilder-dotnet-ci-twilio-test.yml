@@ -12,7 +12,7 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - master
+     - main
   paths:
     include:
       - '*'
@@ -43,7 +43,8 @@ variables:
 #  TwilioNumber: define this in Azure
 
 steps:
-- template: ci-build-steps.yml
+- powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
+  displayName: 'Display env vars'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish Twilio.TestBot'
@@ -51,7 +52,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\Microsoft.Bot.Builder.Adapters.Twilio.TestBot.csproj'
-    arguments: '--output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot'
     modifyOutputPath: false
 
 - task: AzureCLI@1
@@ -63,20 +64,18 @@ steps:
      call az deployment create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" twilioNumber="$(TwilioNumber)" twilioAccountSid="$(TwilioAccountSid)"  twilioAuthToken="$(TwilioAuthToken)"
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.TestBot\PublishedBot\PublishedBot.zip"
 
-- powershell: |
-   echo '##vso[task.setvariable variable=SENDER_NUMBER]$(SenderNumber)'
-   echo '##vso[task.setvariable variable=TWILIO_ACCOUNT_SID]$(TwilioAccountSid)'
-   echo '##vso[task.setvariable variable=TWILIO_NUMBER]$(TwilioNumber)'
-   echo '##vso[task.setvariable variable=TWILIO_AUTH_TOKEN]$(TwilioAuthToken)'
-   echo '##vso[task.setvariable variable=TwilioValidationUrl]https://$(BotName).azurewebsites.net/api/messages'
-  displayName: 'Set environment variables'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj'
-    arguments: '-v n --configuration $(BuildConfiguration) --no-build --no-restore --filter TwilioNumberTests'
+    arguments: '-v n --configuration $(BuildConfiguration) --filter TwilioNumberTests'
+  env:
+    SENDER_NUMBER: $(SenderNumber)
+    TWILIO_ACCOUNT_SID: $(TwilioAccountSid)
+    TWILIO_AUTH_TOKEN: $(TwilioAuthToken)
+    TWILIO_NUMBER: $(TwilioNumber)
+    TwilioValidationUrl: https://$(BotName).azurewebsites.net/api/messages
 
 - task: AzureCLI@1
   displayName: 'Delete resources'

@@ -13,9 +13,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     /// </summary>
     public class OnEventActivity : OnActivity
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public new const string Kind = "Microsoft.OnEventActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnEventActivity"/> class.
+        /// </summary>
+        /// <param name="actions">Optional, list of <see cref="Dialog"/> actions.</param>
+        /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public OnEventActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.Event, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)

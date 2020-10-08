@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var lgResourceGroup = LGResourceLoader.GroupByLocale(resourceExplorer);
 
             var resource = resourceExplorer.GetResource("a.en-US.lg") as FileResource;
-            var generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
+            var generator = new TemplateEngineLanguageGenerator(resource, lgResourceGroup);
             var result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
             Assert.Equal("from a.en-us.lg", result);
 
@@ -87,10 +87,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // there is no 'greeting' template in b.en-us.lg, no more fallback to b.lg
             var ex = await Assert.ThrowsAsync<Exception>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
-            Assert.True(ex.Message.Contains("greeting does not have an evaluator"));
+            Assert.Contains("greeting does not have an evaluator", ex.Message);
 
             resource = resourceExplorer.GetResource("a.lg") as FileResource;
-            generator = new TemplateEngineLanguageGenerator(resource.FullName, lgResourceGroup);
+            generator = new TemplateEngineLanguageGenerator(resource, lgResourceGroup);
 
             result = await generator.GenerateAsync(GetDialogContext(), "${templatea()}", null);
             Assert.Equal("from a.lg", result);
@@ -197,12 +197,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var lg = new MultiLanguageGenerator();
             var multilanguageresources = LGResourceLoader.GroupByLocale(resourceExplorer);
-            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadTextAsync().Result, "test.lg", multilanguageresources);
-            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg").ReadTextAsync().Result, "test.de.lg", multilanguageresources);
-            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg").ReadTextAsync().Result, "test.en.lg", multilanguageresources);
-            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg").ReadTextAsync().Result, "test.en-US.lg", multilanguageresources);
-            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg").ReadTextAsync().Result, "test.en-GB.lg", multilanguageresources);
-            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg").ReadTextAsync().Result, "test.fr.lg", multilanguageresources);
+            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg"), multilanguageresources);
+            lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg"), multilanguageresources);
+            lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg"), multilanguageresources);
+            lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg"), multilanguageresources);
+            lg.LanguageGenerators["en-GB"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-GB.lg"), multilanguageresources);
+            lg.LanguageGenerators["fr"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.fr.lg"),  multilanguageresources);
 
             // test targeted in each language
             Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext(locale: "en-us"), "${test()}", null));
@@ -420,6 +420,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("hello")
                 .AssertReply("[{\"Id\":0,\"Topic\":\"car\"},{\"Id\":1,\"Topic\":\"washing\"},{\"Id\":2,\"Topic\":\"food\"},{\"Id\":3,\"Topic\":\"laundry\"}]")
                 .AssertReply("This is an injected message")
+                .AssertReply("Hi Jonathan")
+                .AssertReply("Jonathan : 2003-03-20")
+                .AssertReply("Jonathan, your tasks: car, washing, food and laundry")
+                .AssertReply("2")
             .StartTestAsync();
         }
 

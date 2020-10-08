@@ -11,6 +11,23 @@
         "hidden": [
             "actions"
         ],
-        "helpLink": "https://aka.ms/bfc-controlling-conversation-flow"
+        "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
+        "properties": {
+            "itemsProperty": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
+            },
+            "pageIndex": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            },
+            "page": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
     }
 }

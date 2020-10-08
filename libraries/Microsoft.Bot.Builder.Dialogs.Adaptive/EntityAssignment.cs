@@ -53,6 +53,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public bool IsExpected { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of times event has been raised.
+        /// </summary>
+        /// <value>
+        /// The number of times event has been raised.
+        /// </value>
+        [JsonProperty("raisedCount")]
+        public uint RaisedCount { get; set; } = 0;
+
+        /// <summary>
         /// Gets the alternative entity assignments.
         /// </summary>
         /// <value>
@@ -91,6 +100,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
             => (IsExpected ? "+" : string.Empty) + $"{Event}: {Property} = {Operation}({Entity})";
     }

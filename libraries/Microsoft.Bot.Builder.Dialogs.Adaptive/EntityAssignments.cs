@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// Tracks entity related events to surface.
     /// </summary>
     /// <remarks>
-    /// When processing entities possible ambiguity are identified and when resolved they turn into assign events.
+    /// When processing entities possible ambiguities are identified and when resolved they turn into assign events.
     /// This tracking persists across multiple input utterances.
     /// </remarks>
     public class EntityAssignments
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             => actionContext.State.SetValue(Events, this);
 
         /// <summary>
-        /// Return the next enetity event to surface.
+        /// Return the next entity event to surface.
         /// </summary>
         /// <returns>Next event to surface.</returns>
         public EntityAssignment NextAssignment() => Assignments.Any() ? Assignments[0] : null;

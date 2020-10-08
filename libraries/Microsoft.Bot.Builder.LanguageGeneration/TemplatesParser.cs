@@ -18,10 +18,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Delegate for resolving resource id of imported lg file.
     /// </summary>
-    /// <param name="sourceId">Id or path of source file.</param>
+    /// <param name="resource">Original resource.</param>
     /// <param name="resourceId">Resource id to resolve.</param>
-    /// <returns>Resolved resource content and unique id.</returns>
-    public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
+    /// <returns>Resolved resource.</returns>
+    public delegate LGResource ImportResolverDelegate(LGResource resource, string resourceId);
 
     /// <summary>
     /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -58,7 +58,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var fullPath = Path.GetFullPath(filePath.NormalizePath());
             var content = File.ReadAllText(fullPath);
 
-            return InnerParseText(content, fullPath, importResolver, expressionParser);
+            var resource = new LGResource(fullPath, fullPath, content);
+            return ParseResource(resource, importResolver, expressionParser);
         }
 
         /// <summary>
@@ -69,13 +70,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <returns>New <see cref="Templates"/> entity.</returns>
+        [Obsolete("This method will soon be deprecated. Use ParseResource instead.")]
         public static Templates ParseText(
             string content,
             string id = "",
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null)
         {
-            return InnerParseText(content, id, importResolver, expressionParser);
+            var resource = new LGResource(id, id, content);
+            return ParseResource(resource, importResolver, expressionParser);
         }
 
         /// <summary>
@@ -91,10 +94,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentNullException(nameof(lg));
             }
 
-            var newLG = new Templates(content: content, id: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options);
+            var newLG = new Templates(content: content, id: InlineContentId, source: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options);
             try
             {
-                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(content, InlineContentId));
+                var resource = new LGResource(InlineContentId, InlineContentId, content);
+                newLG = new TemplatesTransformer(newLG).Transform(AntlrParseTemplates(resource));
                 newLG.References = GetReferences(newLG)
                         .Union(lg.References)
                         .Union(new List<Templates> { lg })
@@ -113,24 +117,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Parse LG content and achieve the AST.
         /// </summary>
-        /// <param name="text">LG content.</param>
-        /// <param name="id">Source id.</param>
+        /// <param name="resource">LG resource.</param>
         /// <returns>The abstract syntax tree of lg file.</returns>
-        public static IParseTree AntlrParseTemplates(string text, string id)
+        public static IParseTree AntlrParseTemplates(LGResource resource)
         {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(resource.Content))
             {
                 return null;
             }
 
-            var input = new AntlrInputStream(text);
+            var input = new AntlrInputStream(resource.Content);
             var lexer = new LGFileLexer(input);
             lexer.RemoveErrorListeners();
 
             var tokens = new CommonTokenStream(lexer);
             var parser = new LGFileParser(tokens);
             parser.RemoveErrorListeners();
-            var listener = new ErrorListener(id);
+            var listener = new ErrorListener(resource.FullName);
 
             parser.AddErrorListener(listener);
             parser.BuildParseTree = true;
@@ -141,31 +144,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
         /// </summary>
-        /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">Id is the identifier of content. If importResolver is null, id must be a full path string. </param>
+        /// <param name="resource">LG resource.</param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <param name="cachedTemplates">Give the file path and templates to avoid parsing and to improve performance.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
-        private static Templates InnerParseText(
-            string content,
-            string id = "",
+        public static Templates ParseResource(
+            LGResource resource,
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null,
             Dictionary<string, Templates> cachedTemplates = null)
         {
-            cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
-            if (cachedTemplates.ContainsKey(id))
+            if (resource == null)
             {
-                return cachedTemplates[id];
+                throw new ArgumentNullException(nameof(resource));
+            }
+
+            cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
+            if (cachedTemplates.ContainsKey(resource.Id))
+            {
+                return cachedTemplates[resource.Id];
             }
 
             importResolver = importResolver ?? DefaultFileResolver;
-            var lg = new Templates(content: content, id: id, importResolver: importResolver, expressionParser: expressionParser);
+            var lg = new Templates(content: resource.Content, id: resource.Id, source: resource.FullName, importResolver: importResolver, expressionParser: expressionParser);
 
             try
             {
-                lg = new TemplatesTransformer(lg).Transform(AntlrParseTemplates(content, id));
+                lg = new TemplatesTransformer(lg).Transform(AntlrParseTemplates(resource));
                 lg.References = GetReferences(lg, cachedTemplates);
                 new StaticChecker(lg).Check().ForEach(u => lg.Diagnostics.Add(u));
             }
@@ -180,10 +186,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Default import resolver, using relative/absolute file path to access the file content.
         /// </summary>
-        /// <param name="sourceId">Default is file path.</param>
+        /// <param name="resource">Original Resource.</param>
         /// <param name="resourceId">Import path.</param>
         /// <returns>Target content id.</returns>
-        private static (string content, string id) DefaultFileResolver(string sourceId, string resourceId)
+        private static LGResource DefaultFileResolver(LGResource resource, string resourceId)
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath
@@ -192,10 +198,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (!Path.IsPathRooted(importPath))
             {
                 // get full path for importPath relative to path which is doing the import.
-                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(sourceId), resourceId));
+                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(resource.FullName), resourceId));
             }
 
-            return (File.ReadAllText(importPath), importPath);
+            return new LGResource(importPath, importPath, File.ReadAllText(importPath));
         }
 
         private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
@@ -213,29 +219,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             foreach (var import in start.Imports)
             {
-                string content;
-                string path;
+                LGResource resource;
                 try
                 {
-                    (content, path) = start.ImportResolver(start.Id, import.Id);
+                    var originalResource = new LGResource(start.Id, start.Source, start.Content);
+                    resource = start.ImportResolver(originalResource, import.Id);
                 }
                 catch (Exception e)
                 {
-                    var diagnostic = new Diagnostic(import.SourceRange.Range, e.Message, DiagnosticSeverity.Error, start.Id);
+                    var diagnostic = new Diagnostic(import.SourceRange.Range, e.Message, DiagnosticSeverity.Error, start.Source);
                     throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
                 }
 
-                if (resourcesFound.All(u => u.Id != path))
+                if (resourcesFound.All(u => u.Id != resource.Id))
                 {
                     Templates childResource;
-                    if (cachedTemplates.ContainsKey(path))
+                    if (cachedTemplates.ContainsKey(resource.Id))
                     {
-                        childResource = cachedTemplates[path];
+                        childResource = cachedTemplates[resource.Id];
                     }
                     else
                     {
-                        childResource = InnerParseText(content, path, start.ImportResolver, start.ExpressionParser, cachedTemplates);
-                        cachedTemplates.Add(path, childResource);
+                        childResource = ParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates);
+                        cachedTemplates.Add(resource.Id, childResource);
                     }
 
                     ResolveImportResources(childResource, resourcesFound, cachedTemplates);
@@ -306,7 +312,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var description = matchResult.Groups[1].Value?.Trim();
                     var id = matchResult.Groups[2].Value?.Trim();
 
-                    var sourceRange = new SourceRange(context, _templates.Id);
+                    var sourceRange = new SourceRange(context, _templates.Source);
                     var import = new TemplateImport(description, id, sourceRange);
                     _templates.Imports.Add(import);
                 }
@@ -354,12 +360,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     var templateBody = context.templateBody().GetText();
 
-                    var sourceRange = new SourceRange(context, _templates.Id);
+                    var sourceRange = new SourceRange(context, _templates.Source);
                     var template = new Template(templateName, parameters, templateBody, sourceRange);
 
                     CheckTemplateName(templateName, context.templateNameLine());
                     CheckTemplateParameters(parameters, context.templateNameLine());
-                    template.TemplateBodyParseTree = CheckTemplateBody(templateName, templateBody, context.templateBody(), startLine);
+                    CheckTemplateBody(template, context.templateBody(), startLine);
 
                     _templates.Add(template);
                 }
@@ -367,18 +373,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            private LGTemplateParser.BodyContext CheckTemplateBody(string templateName, string templateBody, LGFileParser.TemplateBodyContext context, int startLine)
+            private LGTemplateParser.BodyContext CheckTemplateBody(Template template, LGFileParser.TemplateBodyContext context, int startLine)
             {
-                if (string.IsNullOrWhiteSpace(templateBody))
+                if (string.IsNullOrWhiteSpace(template.Body))
                 {
-                    var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.NoTemplateBody(templateName), context, DiagnosticSeverity.Warning);
+                    var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.NoTemplateBody(template.Name), context, DiagnosticSeverity.Warning);
                     _templates.Diagnostics.Add(diagnostic);
                 }
                 else
                 {
                     try
                     {
-                        return AntlrParseTemplate(templateBody, startLine);
+                        var templateBodyContext = AntlrParseTemplate(template.Body, startLine);
+                        if (templateBodyContext != null)
+                        {
+                            template.TemplateBodyParseTree = templateBodyContext;
+                            new TemplateBodyTransformer(template).Transform();
+                        }
                     }
                     catch (TemplateException e)
                     {
@@ -463,7 +474,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var tokens = new CommonTokenStream(lexer);
                 var parser = new LGTemplateParser(tokens);
                 parser.RemoveErrorListeners();
-                var listener = new ErrorListener(_templates.Id, lineOffset);
+                var listener = new ErrorListener(_templates.Source, lineOffset);
 
                 parser.AddErrorListener(listener);
                 parser.BuildParseTree = true;
@@ -473,7 +484,164 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
             {
-                return new Diagnostic(context.ConvertToRange(), errorMessage, severity, _templates.Id);
+                return new Diagnostic(context.ConvertToRange(), errorMessage, severity, _templates.Source);
+            }
+        }
+
+        private class TemplateBodyTransformer : LGTemplateParserBaseVisitor<object>
+        {
+            private readonly Template _template;
+
+            public TemplateBodyTransformer(Template template)
+            {
+                this._template = template;
+            }
+
+            public void Transform()
+            {
+                Visit(_template.TemplateBodyParseTree);
+            }
+
+            public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
+            {
+                foreach (var templateStr in context.templateString())
+                {
+                    var errorTemplateStr = templateStr.errorTemplateString();
+                    if (errorTemplateStr == null)
+                    {
+                        return Visit(templateStr.normalTemplateString());
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
+            {
+                if (context.structuredBodyNameLine().errorStructuredName() == null
+                    && context.structuredBodyEndLine() != null
+                    && (context.errorStructureLine() == null || context.errorStructureLine().Length == 0)
+                    && (context.structuredBodyContentLine() != null && context.structuredBodyContentLine().Length > 0))
+                {
+                    var bodys = context.structuredBodyContentLine();
+                    foreach (var body in bodys)
+                    {
+                        if (body.expressionInStructure() != null)
+                        {
+                            FillInExpression(body.expressionInStructure());
+                        }
+                        else
+                        {
+                            // KeyValueStructuredLine
+                            var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                            foreach (var structureValue in structureValues)
+                            {
+                                foreach (var expression in structureValue.expressionInStructure())
+                                {
+                                    FillInExpression(expression);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
+            {
+                var ifRules = context.ifElseTemplateBody().ifConditionRule();
+                for (var idx = 0; idx < ifRules.Length; idx++)
+                {
+                    var conditionNode = ifRules[idx].ifCondition();
+                    var ifExpr = conditionNode.IF() != null;
+                    var elseIfExpr = conditionNode.ELSEIF() != null;
+                    var elseExpr = conditionNode.ELSE() != null;
+
+                    var node = ifExpr ? conditionNode.IF() :
+                               elseIfExpr ? conditionNode.ELSEIF() :
+                               conditionNode.ELSE();
+
+                    if (node.GetText().Count(u => u == ' ') > 1
+                        || (idx > 0 && ifExpr)
+                        || (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr))
+                    {
+                        return null;
+                    }
+
+                    if (!elseExpr && (ifRules[idx].ifCondition().expression().Length == 1))
+                    {
+                        FillInExpression(conditionNode.expression(0));
+                    }
+
+                    if (ifRules[idx].normalTemplateBody() != null)
+                    {
+                        Visit(ifRules[idx].normalTemplateBody());
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
+            {
+                var switchCaseRules = context.switchCaseTemplateBody().switchCaseRule();
+                var length = switchCaseRules.Length;
+                for (var idx = 0; idx < length; idx++)
+                {
+                    var switchCaseNode = switchCaseRules[idx].switchCaseStat();
+                    var switchExpr = switchCaseNode.SWITCH() != null;
+                    var caseExpr = switchCaseNode.CASE() != null;
+                    var defaultExpr = switchCaseNode.DEFAULT() != null;
+                    var node = switchExpr ? switchCaseNode.SWITCH() :
+                               caseExpr ? switchCaseNode.CASE() :
+                               switchCaseNode.DEFAULT();
+
+                    if (node.GetText().Count(u => u == ' ') > 1
+                        || (idx == 0 && !switchExpr)
+                        || (idx > 0 && switchExpr)
+                        || (idx > 0 && idx < length - 1 && !caseExpr))
+                    {
+                        return null;
+                    }
+
+                    if ((switchExpr || caseExpr) && switchCaseNode.expression().Length == 1)
+                    {
+                        FillInExpression(switchCaseNode.expression(0));
+                    }
+
+                    if ((caseExpr || defaultExpr) && switchCaseRules[idx].normalTemplateBody() != null)
+                    {
+                        Visit(switchCaseRules[idx].normalTemplateBody());
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
+            {
+                foreach (var expression in context.expression())
+                {
+                    FillInExpression(expression);
+                }
+
+                return null;
+            }
+
+            private void FillInExpression(ParserRuleContext expressionContext)
+            {
+                if (expressionContext == null)
+                {
+                    return;
+                }
+
+                var exp = expressionContext.GetText().TrimExpression();
+
+                var lineOffset = this._template.SourceRange.Range.Start.Line;
+                var sourceRange = new SourceRange(expressionContext, _template.SourceRange.Source, lineOffset);
+                var expressionRef = new ExpressionRef(exp, sourceRange);
+                _template.Expressions.Add(expressionRef);
             }
         }
     }

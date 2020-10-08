@@ -15,9 +15,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class DeleteProperty : Dialog
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.DeleteProperty";
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeleteProperty"/> class.
+        /// </summary>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -25,6 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeleteProperty"/> class.
+        /// </summary>
+        /// <param name="property">Property to delete from memory.</param>
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
         public DeleteProperty(string property, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
@@ -59,6 +73,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("property")]
         public StringExpression Property { get; set; }
 
+        /// <summary>
+        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -72,6 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             dc.State.RemoveValue(Property.GetValue(dc.State));
+
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }

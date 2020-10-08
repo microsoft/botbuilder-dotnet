@@ -11,6 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// </remarks>
     public class DollarPathResolver : AliasPathResolver
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DollarPathResolver"/> class.
+        /// </summary>
         public DollarPathResolver()
             : base(alias: "$", prefix: "dialog.")
         {

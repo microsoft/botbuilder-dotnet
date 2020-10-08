@@ -1,14 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
+    /// <summary>
+    /// Allow inspecting/modifying the current dialog context.
+    /// </summary>
+    /// <param name="inspector">Inspector for looking at current dialog context.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public delegate Task Inspector(DialogContextInspector inspector);
+
     /// <summary>
     /// Abstract base class for scripted actions.
     /// </summary>
@@ -17,10 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <summary>
         /// Execute the test.
         /// </summary>
-        /// <param name="adapter">adapter to execute against.</param>
-        /// <param name="callback">logic for the bot to use.</param>
+        /// <param name="adapter">Adapter to execute against.</param>
+        /// <param name="callback">Logic for the bot to use.</param>
+        /// <param name="inspector">Inspector for dialog context.</param>
         /// <returns>async task.</returns>
-        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback);
+        public abstract Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null);
 
         /// <summary>
         /// Registers the path to file and callers line.

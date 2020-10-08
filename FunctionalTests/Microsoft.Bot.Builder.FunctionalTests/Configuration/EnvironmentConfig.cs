@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests.Configuration
             var testAppId = Environment.GetEnvironmentVariable("TESTAPPID");
             if (string.IsNullOrWhiteSpace(testAppId))
             {
-                Assert.Inconclusive("Environment variable 'TestAppId' not found.");
+                Assert.Fail("Environment variable 'TestAppId' not found.");
             }
 
             return testAppId;
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests.Configuration
 
             if (string.IsNullOrWhiteSpace(testPassword))
             {
-                Assert.Inconclusive("Environment variable 'TestPassword' not found.");
+                Assert.Fail("Environment variable 'TestPassword' not found.");
             }
 
             return testPassword;

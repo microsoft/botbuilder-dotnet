@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
@@ -43,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public uint Timespan { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
             await Task.Delay((int)Timespan).ConfigureAwait(false);
             Trace.TraceInformation($"[Turn Ended => {Timespan} ms processing UserDelay[{Timespan}]");

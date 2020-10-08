@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="expressionParser">ExpressionParser to parse the expressions in the conent.</param>
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="options">List of strings representing the options during evaluating the templates.</param>
+        /// <param name="source">Templates source.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,
@@ -53,7 +54,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             string id = null,
             ExpressionParser expressionParser = null,
             ImportResolverDelegate importResolver = null,
-            IList<string> options = null)
+            IList<string> options = null,
+            string source = null)
         {
             if (templates != null)
             {
@@ -66,6 +68,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = content ?? string.Empty;
             ImportResolver = importResolver;
             Id = id ?? string.Empty;
+            Source = source;
             ExpressionParser = expressionParser ?? new ExpressionParser();
             Options = options ?? new List<string>();
             InjectToExpressionFunction();
@@ -148,9 +151,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Gets or sets id of this LG file.
         /// </summary>
         /// <value>
-        /// Id of this lg source. For file, is full path.
+        /// Id of the lg resource.
         /// </value>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets source of this LG file.
+        /// </summary>
+        /// <value>
+        /// Source of the lg resource. Full path for lg file.
+        /// </value>
+        public string Source { get; set; }
 
         /// <summary>
         /// Gets or sets lG file options.
@@ -201,6 +212,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser engine for parsing expressions.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
+        [Obsolete("This method will soon be deprecated. Use ParseResource instead.")]
         public static Templates ParseText(
             string content,
             string id = "",
@@ -208,7 +220,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null) => TemplatesParser.ParseText(content, id, importResolver, expressionParser).InjectToExpressionFunction();
 
         /// <summary>
-        /// Evaluates a template with given name and scope.
+        /// Parser to turn lg content into a <see cref="LanguageGeneration.Templates"/>.
+        /// </summary>
+        /// <param name="resource">LG resource.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser engine for parsing expressions.</param>
+        /// <returns>new <see cref="Templates"/> entity.</returns>
+        public static Templates ParseResource(
+            LGResource resource,
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null) => TemplatesParser.ParseResource(resource, importResolver, expressionParser).InjectToExpressionFunction();
+
+        /// <summary>
+        /// Evaluate a template with given name and scope.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">State visible in the evaluation.</param>
@@ -317,7 +341,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     content);
 
                 var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-                updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(content, Id));
+                var resource = new LGResource(Id, Id, content);
+                updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(resource));
 
                 var originStartLine = template.SourceRange.Range.Start.Line - 1;
                 AppendDiagnosticsWithOffset(updatedTemplates.Diagnostics, originStartLine);
@@ -360,7 +385,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Content = $"{Content}{_newLine}{templateNameLine}{_newLine}{newTemplateBody}";
 
             var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
-            newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(content, Id));
+            var resource = new LGResource(Id, Id, content);
+            newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(resource));
 
             AppendDiagnosticsWithOffset(newTemplates.Diagnostics, originStartLine);
 
@@ -426,8 +452,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     if (curTemplates.Any(u => u.Name == templateName))
                     {
-                        var newGlobalName = $"{curTemplates.Namespace}.{templateName}";
-                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(newGlobalName, FunctionUtils.Apply(GlobalTemplateFunction(templateName)), ReturnType.Object));
+                        var prefix = string.IsNullOrWhiteSpace(curTemplates.Namespace) ? string.Empty : curTemplates.Namespace + ".";
+                        var newGlobalName = prefix + templateName;
+                        Expression.Functions.Add(newGlobalName, new ExpressionEvaluator(
+                            newGlobalName, 
+                            (expression, state, options) =>
+                            {
+                                object result = null;
+                                var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+                                var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                                if (error == null)
+                                {
+                                    var parameters = evaluator.TemplateMap[templateName].Parameters;
+                                    var newScope = parameters.Zip(args, (k, v) => new { k, v })
+                                        .ToDictionary(x => x.k, x => x.v);
+                                    var scope = new CustomizedMemory(state, new SimpleObjectMemory(newScope));
+                                    try
+                                    {
+                                        result = evaluator.EvaluateTemplate(templateName, scope);
+                                    }
+#pragma warning disable CA1031 // Do not catch general exception types
+                                    catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
+                                    {
+                                        error = err.Message;
+                                    }
+                                }
+
+                                return (result, error);
+                            }, 
+                            ReturnType.Object));
                     }
                 }
             }
@@ -595,19 +649,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = ExtractOptionsByKey(_namespaceKey, options);
 
-            if (result == null)
-            {
-                if (Path.IsPathRooted(Id))
-                {
-                    result = Path.GetFileNameWithoutExtension(Id);
-                }
-                else
-                {
-                    throw new Exception("namespace is required or the id should be an absoulte path!");
-                }
-            }
-
-            return result;
+            // If there is no namespace, use the file name parsed from Id.
+            return result ?? Path.GetFileNameWithoutExtension(Id ?? string.Empty);
         }
 
         private IList<string> GetGlobalFunctionTable(IList<string> options)
@@ -622,13 +665,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return result;
         }
-
-        private Func<IReadOnlyList<object>, object> GlobalTemplateFunction(string templateName)
-        => (IReadOnlyList<object> args) =>
-        {
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
-            var newScope = evaluator.ConstructScope(templateName, args.ToList());
-            return evaluator.EvaluateTemplate(templateName, newScope);
-        };
     }
 }

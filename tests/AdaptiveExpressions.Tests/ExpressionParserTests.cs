@@ -323,6 +323,7 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region locale specific tests
+            
             //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
@@ -366,6 +367,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region string interpolation test
+            Test("``", string.Empty),
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
             Test("`${world}`", "world"),
@@ -382,6 +384,12 @@ namespace AdaptiveExpressions.Tests
             Test("json(`{\"foo\":${{text:\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("json(`{\"foo\":${{\"text\":\"hello\"}},\"item\": \"${world}\"}`).foo.text", "hello"),
             Test("`{expr: hello all}`", "{expr: hello all}"),
+            Test("`${hello}\n\n${world}`", "hello\n\nworld"),
+            Test("`${hello}\r\n${world}`", "hello\r\nworld"),
+            Test("`\n\n${world}`", "\n\nworld"),
+            Test("`\r\n${world}`", "\r\nworld"),
+            Test("`${hello}\n\n`", "hello\n\n"),
+            Test("`${hello}\r\n`", "hello\r\n"),
             #endregion
 
             #region SetPathToProperty test
@@ -479,6 +487,16 @@ namespace AdaptiveExpressions.Tests
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
+            Test("3??2", 3),
+            Test("null ?? two", 2),
+            Test("bag.notExist ?? bag.n ?? bag.name", "mybag"),
+            Test("!exists(one)?'r1':'r2'", "r2"), // false
+            Test("!!exists(one) ? 'r1' : 'r2'", "r1"), // true
+            Test("0?'r1':'r2'", "r1"), // true
+            Test("bool('true')? 'r1': 'r2'", "r1"), // true
+            Test("bag.name == null ? \"hello\": bag.name", "mybag"),
+            Test("one > 0? one : two", 1),
+            Test("hello * 5?'r1':'r2'", "r2"),
             #endregion
 
             #region  String functions test
@@ -516,6 +534,9 @@ namespace AdaptiveExpressions.Tests
             Test(@"replace('hello\n', '\n', '\\\\')", @"hello\\"),
             Test("replaceIgnoreCase('hello', 'L', 'k')", "hekko"),
             Test("replaceIgnoreCase(nullObj, 'L', 'k')", string.Empty),
+            Test("split('token1 token2 token3', ' ')", new string[] { "token1", "token2", "token3" }),
+            Test("split('token1 token2 token3', '  ')", new string[] { "token1 token2 token3" }),
+            Test("split('token one', '')", new string[] { "t", "o", "k", "e", "n", " ", "o", "n", "e" }),
             Test("split('hello','e')", new string[] { "h", "llo" }),
             Test("split('hello','')", new string[] { "h", "e", "l", "l", "o" }),
             Test("split('','')", new string[] { }),
@@ -672,6 +693,7 @@ namespace AdaptiveExpressions.Tests
             Test("int('10')", 10),
             Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
+            Test("string('str\"')", "str\""),
             Test("string(one)", "1"),
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
@@ -709,6 +731,10 @@ namespace AdaptiveExpressions.Tests
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
             Test("json(jsonContainsDatetime).date", "/Date(634250351766060665)/"),
             Test("json(jsonContainsDatetime).invalidDate", "/Date(whatever)/"),
+            Test("jsonStringify(json('{\"a\":\"b\"}'))", "{\"a\":\"b\"}"),
+            Test("jsonStringify('a')", "\"a\""),
+            Test("jsonStringify(null)", "null"),
+            Test("jsonStringify({a:'b'})", "{\"a\":\"b\"}"),
             Test("formatNumber(20.0000, 2, 'en-US')", "20.00"),
             Test("formatNumber(12.123, 2, 'en-US')", "12.12"),
             Test("formatNumber(1.551, 2, 'en-US')", "1.55"),
@@ -857,23 +883,29 @@ namespace AdaptiveExpressions.Tests
             Test("ticksToDays(2193385800000000)", 2538.64097222),
             Test("ticksToHours(2193385800000000)", 60927.383333333331),
             Test("ticksToMinutes(2193385811100000)", 3655643.0185),
-            Test("isMatch(getPreviousViableDate('XXXX-07-10'), '20[0-9]{2}-07-10')", true),
-            Test("isMatch(getPreviousViableDate('XXXX-07-10', 'Asia/Shanghai'), '20[0-9]{2}-07-10')", true),
-            Test("getPreviousViableDate('XXXX-02-29')", "2020-02-29"),
-            Test("getPreviousViableDate('XXXX-02-29', 'Pacific Standard Time')", "2020-02-29"),
-            Test("isMatch(getNextViableDate('XXXX-07-10'), '202[0-9]-07-10')", true),
-            Test("isMatch(getNextViableDate('XXXX-07-10', 'Europe/London'), '202[0-9]-07-10')", true),
-            Test("getNextViableDate('XXXX-02-29')", "2024-02-29"),
-            Test("getNextViableDate('XXXX-02-29', 'America/Los_Angeles')", "2024-02-29"),
-            Test("isMatch(getNextViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
-            Test("isMatch(getNextViableTime('TXX:40:20', 'Asia/Tokyo'), 'T[0-2][0-9]:40:20')", true),
-            Test("isMatch(getNextViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
-            Test("isMatch(getNextViableTime('TXX:05:10', 'Europe/Paris'), 'T[0-2][0-9]:05:10')", true),
-            Test("isMatch(getPreviousViableTime('TXX:40:20'), 'T[0-2][0-9]:40:20')", true),
-            Test("isMatch(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), 'T[0-2][0-9]:40:20')", true),
-            Test("isMatch(getPreviousViableTime('TXX:05:10'), 'T[0-2][0-9]:05:10')", true),
-            Test("isMatch(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), 'T[0-2][0-9]:05:10')", true),
-
+            Test("endsWith(getPreviousViableDate('XXXX-07-10'), '-07-10')", true),
+            Test("endsWith(getPreviousViableDate('XXXX-07-10', 'Asia/Shanghai'), '-07-10')", true),
+            Test("endsWith(getPreviousViableDate('XXXX-02-29'), '-02-29')", true),
+            Test("endsWith(getPreviousViableDate('XXXX-02-29', 'Pacific Standard Time'), '-02-29')", true),
+            Test("endsWith(getNextViableDate('XXXX-07-10'), '-07-10')", true),
+            Test("endsWith(getNextViableDate('XXXX-07-10', 'Europe/London'), '-07-10')", true),
+            Test("endsWith(getNextViableDate('XXXX-02-29'), '-02-29')", true),
+            Test("endsWith(getNextViableDate('XXXX-02-29', 'America/Los_Angeles'), '-02-29')", true),
+            Test("endsWith(getNextViableTime('TXX:40:20'), ':40:20')", true),
+            Test("endsWith(getNextViableTime('TXX:40:20', 'Asia/Tokyo'), ':40:20')", true),
+            Test("endsWith(getNextViableTime('TXX:05:10'), ':05:10')", true),
+            Test("endsWith(getNextViableTime('TXX:05:10', 'Europe/Paris'), ':05:10')", true),
+            Test("endsWith(getPreviousViableTime('TXX:40:20'), ':40:20')", true),
+            Test("endsWith(getPreviousViableTime('TXX:40:20', 'Eastern Standard Time'), ':40:20')", true),
+            Test("endsWith(getPreviousViableTime('TXX:05:10'), ':05:10')", true),
+            Test("endsWith(getPreviousViableTime('TXX:05:10', 'Central Standard Time'), ':05:10')", true),
+            Test("resolve('T14')", "14:00:00"),
+            Test("resolve('T14:20')", "14:20:00"),
+            Test("resolve('T14:20:30')", "14:20:30"),
+            Test("resolve('2020-12-20')", "2020-12-20"),
+            Test("resolve('2020-12-20T14')", "2020-12-20 14:00:00"),
+            Test("resolve('2020-12-20T14:20')", "2020-12-20 14:20:00"),
+            Test("resolve('2020-12-20T14:20:30')", "2020-12-20 14:20:30"),
             #endregion
 
             #region uri parsing function test
@@ -1006,6 +1038,7 @@ namespace AdaptiveExpressions.Tests
             Test("addProperty({}, 'name', user.name).name", null),
             Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
             Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
+            Test("merge(callstack[1], callstack[2]).z", 1),
             #endregion
 
             #region  Memory access
@@ -1332,6 +1365,49 @@ namespace AdaptiveExpressions.Tests
             exp = Expression.Parse("a[b]");
             (value, error) = exp.TryEvaluate(mockMemory, options);
             Assert.True(error != null);
+        }
+
+        [Fact]
+        public void TestStackMemory()
+        {
+            var sM = new StackedMemory();
+            var jObj1 = new JObject
+            {
+                ["a"] = "a",
+                ["b"] = "b",
+                ["c"] = null
+            };
+
+            var jObj2 = new JObject
+            {
+                ["c"] = "c"
+            };
+
+            var jObj3 = new JObject
+            {
+                ["a"] = "newa",
+                ["b"] = null,
+                ["d"] = "d"
+            };
+
+            sM.Push(new SimpleObjectMemory(jObj1));
+            sM.Push(new SimpleObjectMemory(jObj2));
+            sM.Push(new SimpleObjectMemory(jObj3));
+
+            // Achieve value from stack memory
+            var (value, error) = Expression.Parse("d").TryEvaluate(sM);
+            Assert.Equal("d", value);
+
+            // Achieve valule from the top value firstly
+            (value, error) = Expression.Parse("a").TryEvaluate(sM);
+            Assert.Equal("newa", value);
+
+            (value, error) = Expression.Parse("c").TryEvaluate(sM);
+            Assert.Equal("c", value);
+
+            // null is also the valid value
+            (value, error) = Expression.Parse("b").TryEvaluate(sM);
+            Assert.Null(value);
         }
 
         private void AssertResult<T>(string text, T expected)

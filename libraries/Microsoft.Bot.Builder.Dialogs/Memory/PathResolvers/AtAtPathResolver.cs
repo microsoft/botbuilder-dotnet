@@ -8,6 +8,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// </summary>
     public class AtAtPathResolver : AliasPathResolver
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AtAtPathResolver"/> class.
+        /// </summary>
         public AtAtPathResolver()
             : base(alias: "@@", prefix: "turn.recognized.entities.")
         {

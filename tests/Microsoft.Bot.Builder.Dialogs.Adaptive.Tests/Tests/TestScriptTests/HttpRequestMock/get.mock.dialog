@@ -17,6 +17,14 @@
             "content": "Ynl0ZSBhcnJheSByZXNwb25zZQ=="
         },
         {
+            "statusCode": 404,
+            "reasonPhrase": "not found temporarily"
+        },
+        {
+            "statusCode": "InternalServerError",
+            "reasonPhrase": "internal server error temporarily"
+        },
+        {
             "content": "repeated response"
         }
     ]
