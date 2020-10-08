@@ -11,9 +11,6 @@ pool:
   - msbuild
   - visualstudio
 
-trigger: none # ci trigger is set in ADO
-pr: none # pr trigger is set in ADO
-
 variables:
   BuildConfiguration: Release-Windows
   TestConfiguration: Release

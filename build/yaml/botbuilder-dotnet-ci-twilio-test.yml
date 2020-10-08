@@ -24,8 +24,6 @@ trigger: # ci trigger
       - README.md
       - UsingMyGet.md
 
-pr: none # no pr trigger
-
 variables:
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber)
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false

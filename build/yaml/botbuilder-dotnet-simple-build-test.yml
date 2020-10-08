@@ -8,10 +8,6 @@ name: $(Build.BuildId)
 pool:
   vmImage: 'windows-2019'
 
-trigger: none
-
-pr: none
-
 variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Debug'

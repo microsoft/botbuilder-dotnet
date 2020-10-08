@@ -8,8 +8,8 @@ name: $(Build.BuildId)
 pool:
     vmImage: 'macOS-10.14'
 
-trigger: none # ci trigger is set in ADO
-pr: none # pr trigger is set in ADO
+# trigger: # ci trigger is set in ADO
+# pr: # pr trigger is set in ADO
 
 variables:
   BuildConfiguration: debug

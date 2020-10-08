@@ -24,8 +24,6 @@ trigger: # ci trigger
       - README.md
       - UsingMyGet.md
 
-pr: none # no pr trigger
-
 variables:
   AppId: $(SlackTestBotAppId)
   AppSecret: $(SlackTestBotAppSecret)
