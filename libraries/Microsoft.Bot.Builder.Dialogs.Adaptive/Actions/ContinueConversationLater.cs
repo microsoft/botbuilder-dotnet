@@ -6,13 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Azure.Queues
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action which schedules a conversation to be continued later by writing a EventActivity(Name=ContinueConversation) to a Azure Storage queue.
+    /// Action which schedules a conversation to be continued later by writing an EventActivity(Name=ContinueConversation) to a queue.
     /// </summary>
     /// <remarks>
     /// This class works by writing an EventActivity(Name=ConversationUpdate) to an azure storage queue with visibility policy to 
@@ -32,7 +31,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         /// The Kind name for this dialog.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "AzureQueues.ContinueConversationLater";
+        public const string Kind = "Microsoft.ContinueConversationLater";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContinueConversationLater"/> class.
@@ -74,23 +73,6 @@ namespace Microsoft.Bot.Builder.Azure.Queues
         [JsonProperty("value")]
         public ValueExpression Value { get; set; }
 
-        /// <summary>
-        /// Gets or sets the connectionString for the azure storage queue to use.
-        /// </summary>
-        /// <value>
-        /// The connectionString for the azure storage queue to use.
-        /// </value>
-        /// <example>'=settings.ConnectionString'.</example>
-        [JsonProperty("connectionString")]
-        public StringExpression ConnectionString { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name of the queue to use. 
-        /// </summary>
-        /// <value>default is 'activities'.</value>
-        [JsonProperty("queueName")]
-        public StringExpression QueueName { get; set; } = "activities";
-
         /// <inheritdoc/>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -105,12 +87,11 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             }
 
             var dateString = Date.GetValue(dc.State);
-            DateTime date;
-            if (!DateTime.TryParse(dateString, out date))
+            if (!DateTime.TryParse(dateString, out var date))
             {
                 throw new ArgumentException($"{nameof(Date)} is invalid");
             }
-            
+
             date = date.ToUniversalTime();
             if (date <= DateTime.UtcNow)
             {
@@ -124,10 +105,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             var visibility = date - DateTime.UtcNow;
             var ttl = visibility + TimeSpan.FromMinutes(2);
 
-            var queueName = QueueName.GetValue(dc.State);
-            var connectionString = ConnectionString.GetValue(dc.State);
-
-            var queueStorage = new QueuesStorage(connectionString, queueName);
+            var queueStorage = dc.Context.TurnState.Get<QueueStorage>() ?? throw new NullReferenceException("Unable to locate QueueStorage in HostContext");
             var receipt = await queueStorage.QueueActivityAsync(activity, visibility, ttl, cancellationToken).ConfigureAwait(false);
 
             // return the receipt as the result.

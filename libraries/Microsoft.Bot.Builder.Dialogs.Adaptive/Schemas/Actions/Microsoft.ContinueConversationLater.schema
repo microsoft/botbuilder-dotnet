@@ -30,23 +30,6 @@
                 "=addHours(utcNow(), 1)"
             ]
         },
-        "connectionString": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "Connection String",
-            "description": "Connection string for connecting to an Azure Storage account.",
-            "examples": [
-                "=settings.connectionString"
-            ]
-        },
-        "queueName": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "Queue Name",
-            "description": "Name of the queue that your azure function is bound to.",
-            "examples": [
-                "activities"
-            ],
-            "default": "activities"
-        },
         "value": {
             "$ref": "schema:#/definitions/valueExpression",
             "title": "Value",
