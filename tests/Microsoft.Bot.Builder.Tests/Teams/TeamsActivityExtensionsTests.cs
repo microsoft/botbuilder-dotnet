@@ -10,6 +10,19 @@ namespace Microsoft.Bot.Builder.Teams.Tests
     public class TeamsActivityExtensionsTests
     {
         [Fact]
+        public void TeamsGetMeetingInfo()
+        {
+            // Arrange
+            var activity = new Activity { ChannelData = new TeamsChannelData { Meeting = new TeamsMeetingInfo { Id = "meeting123" } } };
+
+            // Act
+            var meetingId = activity.TeamsGetMeetingInfo().Id;
+
+            // Assert
+            Assert.Equal("meeting123", meetingId);
+        }
+
+        [Fact]
         public void TeamsGetTeamId()
         {
             // Arrange
