@@ -128,7 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
-                .Use(new SetTestOptionsMiddleware());
+                .Use(new SetTestOptionsMiddleware())
+                .Use(new SetSkillConversationIdFactoryBaseMiddleware())
+                .Use(new SetBotFrameworkClientMiddleware());
 
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;

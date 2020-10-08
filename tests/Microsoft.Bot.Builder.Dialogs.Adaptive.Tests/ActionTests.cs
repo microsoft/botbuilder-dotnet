@@ -58,6 +58,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_BeginSkill()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_CancelDialog()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
