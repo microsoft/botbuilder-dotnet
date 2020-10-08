@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Type = "message",
                 Text = "Test-GetParticipantAsync",
                 ChannelId = Channels.Msteams,
-                From = new ChannelAccount { AadObjectId = "participantId-1"},
+                From = new ChannelAccount { AadObjectId = "participantId-1" },
                 ChannelData = new TeamsChannelData
                 {
                     Meeting = new TeamsMeetingInfo
@@ -203,7 +203,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }
-
 
         [Fact]
         public async Task TestGetMemberAsync()
@@ -524,7 +523,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             new JProperty("meetingRole", "Organizer"),
                             new JProperty("userPrincipalName", "userPrincipalName-1"),
                             new JProperty("conversation", new JObject(new JProperty("Id", "meetigConversationId-1"))),
-
                         };
                     response.Content = new StringContent(content.ToString());
                 }
