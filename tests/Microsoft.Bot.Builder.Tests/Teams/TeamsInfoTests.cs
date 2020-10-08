@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             private async Task CallTeamsInfoGetParticipantAsync(ITurnContext turnContext)
             {
-                var participant = await TeamsInfo.GetParticipantAsync(turnContext);
+                var participant = await TeamsInfo.GetMeetingParticipantAsync(turnContext);
 
                 Assert.Equal("Organizer", participant.MeetingRole);
                 Assert.Equal("meetigConversationId-1", participant.Conversation.Id);

@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Get Meeting Participant",
+    "description": "Get teams meeting partipant information.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "property": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Property",
+            "description": "Property (named location to store information).",
+            "examples": [
+                "user.participantInfo"
+            ]
+        },
+        "meetingId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "MeetingId",
+            "description": "Meeting Id or expression to a meetingId to use to get the participant information. If none is defined then the current turn Activity.TeamsChannelData.Meeting.Id will be used.",
+            "examples": [
+                "$lastActivity.teamsChannelData.meeting.id"
+            ]
+        },
+        "participantId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "ParticipantId",
+            "description": "Participant Id or expression to a participantId to use to get the participant information. If none is defined then the current turn Activity.From.AadObjectId will be used.",
+            "examples": [
+                "$lastActivity.from.aadObjectId"
+            ]
+        },
+        "tenantId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "TenantId",
+            "description": "Tenant Id or expression to a tenantId to use to get the participant information. If none is defined then the current turn Activity.TeamsChannelData.Tenant.Id will be used.",
+            "examples": [
+                "$lastActivity.teamsChannelData.tenant.id"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        }
+    }
+}
