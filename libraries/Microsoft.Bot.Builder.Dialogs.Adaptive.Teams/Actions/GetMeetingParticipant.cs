@@ -61,28 +61,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets the expression to get the value to use for meeting id.
         /// </summary>
         /// <value>
-        /// The expression to get the value to use for meeting id. If this is missing, then the current turn Activity.TeamsChannelData.Meeting.Id will be used.
+        /// The expression to get the value to use for meeting id. Default value is turn.activity.channelData.meeting.id.
         /// </value>
         [JsonProperty("meetingId")]
-        public StringExpression MeetingId { get; set; }
+        public StringExpression MeetingId { get; set; } = "=turn.activity.channelData.meeting.id";
 
         /// <summary>
         /// Gets or sets the expression to get the value to use for participant id.
         /// </summary>
         /// <value>
-        /// The expression to get the value to use for participant id. If this is missing, then the current turn Activity.From.AadObjectId will be used.
+        /// The expression to get the value to use for participant id. Default value is turn.activity.from.aadObjectId.
         /// </value>
         [JsonProperty("participantId")]
-        public StringExpression ParticipantId { get; set; }
+        public StringExpression ParticipantId { get; set; } = "=turn.activity.from.aadObjectId";
 
         /// <summary>
         /// Gets or sets the expression to get the value to use for tenant id.
         /// </summary>
         /// <value>
-        /// The expression to get the value to use for tenant id. If this is missing, then the current turn Activity.TeamsChannelData.Tenant.Id will be used.
+        /// The expression to get the value to use for tenant id. Default value is turn.activity.channelData.meetingInfo.Id.
         /// </value>
         [JsonProperty("tenantId")]
-        public StringExpression TenantId { get; set; }
+        public StringExpression TenantId { get; set; } = "=turn.activity.channelData.tenant.id";
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -109,9 +109,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception("TeamsInfo.GetMeetingParticipantAsync() works only on the Teams channel.");
             }
 
-            string meetingId = GetValueOrNull(dc, this.MeetingId) ?? dc.Context.Activity.TeamsGetMeetingInfo()?.Id;
-            string participantId = GetValueOrNull(dc, this.ParticipantId) ?? dc.Context.Activity.From.AadObjectId;
-            string tenantId = GetValueOrNull(dc, this.TenantId) ?? dc.Context.Activity.GetChannelData<TeamsChannelData>()?.Tenant?.Id;
+            string meetingId = GetValueOrNull(dc, this.MeetingId);
+            string participantId = GetValueOrNull(dc, this.ParticipantId);
+            string tenantId = GetValueOrNull(dc, this.TenantId);
 
             var result = await TeamsInfo.GetMeetingParticipantAsync(dc.Context, meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
