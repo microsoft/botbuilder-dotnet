@@ -37,9 +37,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// message</param>
         /// <param name="tenant">Information about the tenant in which the
         /// message was sent</param>
-        /// <param name="meeting">Information about the teams meeting in
-        /// which the message was sent.</param>
-        public TeamsChannelData(ChannelInfo channel = default(ChannelInfo), string eventType = default(string), TeamInfo team = default(TeamInfo), NotificationInfo notification = default(NotificationInfo), TenantInfo tenant = default(TenantInfo), TeamsMeetingInfo meeting = default(TeamsMeetingInfo))
+        public TeamsChannelData(ChannelInfo channel = default(ChannelInfo), string eventType = default(string), TeamInfo team = default(TeamInfo), NotificationInfo notification = default(NotificationInfo), TenantInfo tenant = default(TenantInfo))
         {
             Channel = channel;
             EventType = eventType;
