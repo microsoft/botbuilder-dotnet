@@ -424,6 +424,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .AssertReply("Jonathan : 2003-03-20")
                 .AssertReply("Jonathan, your tasks: car, washing, food and laundry")
                 .AssertReply("2")
+                .AssertReply("3")
             .StartTestAsync();
         }
 

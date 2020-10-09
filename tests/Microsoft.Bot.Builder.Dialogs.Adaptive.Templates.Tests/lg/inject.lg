@@ -25,3 +25,6 @@
 
 # ShowTasks(tasks)
 - ${sentenceCase(user.name)}, your tasks: ${join(foreach(tasks, task, task.value), ', ', ' and ')}
+
+# Sum(a, b)
+- ${a + b}

@@ -60,6 +60,25 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${user.obj.SR.Q2}"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.number1",
+          "value": "=1"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.number2",
+          "value": "=2"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.sum",
+          "value": "=template('Sum', user.number1, user.number2)"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.sum}"
         }
       ]
     }
