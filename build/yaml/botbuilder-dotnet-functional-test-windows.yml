@@ -96,6 +96,9 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --filter "TestCategory=FunctionalTests&TestCategory!=Adapters"'
     workingDirectory: tests
+  env:
+    TestAppId: $(WinTestBotAppId)
+    TestPassword: $(WinTestBotAppSecret)
 
 - task: AzureCLI@1
   displayName: 'Delete Resources'

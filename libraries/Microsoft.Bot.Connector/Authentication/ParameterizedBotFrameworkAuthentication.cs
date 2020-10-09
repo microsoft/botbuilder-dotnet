@@ -19,7 +19,6 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private static HttpClient _defaultHttpClient = new HttpClient();
 
-        private readonly string _channelService;
         private readonly bool _validateAuthority;
         private readonly string _toChannelFromBotLoginUrl;
         private readonly string _toChannelFromBotOAuthScope;
@@ -34,7 +33,6 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ILogger _logger;
 
         public ParameterizedBotFrameworkAuthentication(
-            string channelService,
             bool validateAuthority,
             string toChannelFromBotLoginUrl,
             string toChannelFromBotOAuthScope,
@@ -48,7 +46,6 @@ namespace Microsoft.Bot.Connector.Authentication
             HttpClient httpClient = null,
             ILogger logger = null)
         {
-            _channelService = channelService;
             _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;

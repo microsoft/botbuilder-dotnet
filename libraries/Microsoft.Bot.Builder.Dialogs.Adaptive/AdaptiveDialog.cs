@@ -1266,78 +1266,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
-        // TODO: Probably should be assign operation in here as well, in we eventually wanted to expand to possible operations.
-        // Cases:
-        // ~op, ~prop, entity -> Assign default op and all possible properties
-        // ~op, prop, ~entity -> Assign default op?
-        // ~op, prop, entity -> Assign default op
-        // op, ~prop, ~entity -> Emit 
-        // op, prop, ~entity -> Emit
-        // op, prop, entity --> Emit
-        // Generate possible entity to property mappings
-        private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
+        // Generate candidate assignments including property and operation
+        private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected, string lastEvent, EntityAssignment nextAssignment, JObject askDefault, JObject dialogDefault)
         {
             var globalExpectedOnly = dialogSchema.Schema[ExpectedOnlyKey]?.ToObject<List<string>>() ?? new List<string>();
-            var usedEntityType = new HashSet<string> { UtteranceKey };
-            var usedEntity = new HashSet<EntityInfo>();
+            var assignments = new List<EntityAssignment>();
 
-            // Build map from entity to possible expected properties
-            var entityToExpected = new Dictionary<string, List<string>>();
-            foreach (var property in expected)
-            {
-                foreach (var entity in dialogSchema.PathToSchema(property).Entities)
-                {
-                    if (!entityToExpected.TryGetValue(entity, out var expectedProperties))
-                    {
-                        expectedProperties = new List<string>();
-                        entityToExpected[entity] = expectedProperties;
-                    }
-
-                    expectedProperties.Add(property);
-                }
-            }
-
-            // Emit entities that already have a property
-            // If property is in entityToExpected, then convert property to entity with expected properties as properties
+            // Add entities with a recognized property
             foreach (var alternatives in entities.Values)
             {
                 foreach (var alternative in alternatives)
                 {
                     if (alternative.Property != null)
                     {
-                        usedEntity.Add(alternative);
-                        if (entityToExpected.TryGetValue(alternative.Property, out var properties) && alternative.Operation == null)
+                        assignments.Add(new EntityAssignment
                         {
-                            // Property name is expected so rename and emit
-                            foreach (var property in properties)
-                            {
-                                var entity = alternative.Clone() as EntityInfo;
-                                entity.Property = property;
-                                yield return new EntityAssignment
-                                {
-                                    Entity = entity,
-                                    Property = entity.Property,
-                                    Operation = entity.Operation,
-                                    IsExpected = true
-                                };
-                            }
-                        }
-                        else
-                        {
-                            // Property corresponds directly to expected
-                            yield return new EntityAssignment
-                            {
-                                Entity = alternative,
-                                Property = alternative.Property,
-                                Operation = alternative.Operation,
-                                IsExpected = expected.Contains(alternative.Property)
-                            };
-                        }
+                            Entity = alternative,
+                            Property = alternative.Property,
+                            Operation = alternative.Operation,
+                            IsExpected = expected.Contains(alternative.Property)
+                        });
                     }
                 }
             }
 
-            // Find possible mappings to properties
+            // Find possible mappings for entities without a property or where property entities are expected
             foreach (var propSchema in dialogSchema.Property.Children)
             {
                 var isExpected = expected.Contains(propSchema.Name);
@@ -1346,43 +1299,70 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (entities.TryGetValue(entityName, out var matches) && (isExpected || !expectedOnly.Contains(entityName)))
                     {
-                        usedEntityType.Add(entityName);
                         foreach (var entity in matches)
                         {
-                            if (!usedEntity.Contains(entity))
+                            if (entity.Property == null)
                             {
-                                yield return new EntityAssignment
+                                var assignment = new EntityAssignment
                                 {
                                     Entity = entity,
                                     Property = propSchema.Name,
                                     Operation = entity.Operation,
                                     IsExpected = isExpected
                                 };
+                                assignments.Add(assignment);
+                            }
+                            else if (entity.Property == entityName && entity.Value == null && entity.Operation == null)
+                            {
+                                // Recast property with no value as match for property entities
+                                var propEntity = (EntityInfo)entity.Clone();
+                                propEntity.Value = entity.Property;
+                                var assignment = new EntityAssignment
+                                {
+                                    Entity = propEntity,
+                                    Property = propSchema.Name,
+                                    Operation = propEntity.Operation,
+                                    IsExpected = expected.Contains(propSchema.Name)
+                                };
+                                assignments.Add(assignment);
                             }
                         }
                     }
                 }
             }
 
-            // Entities with an operation, but no property
-            foreach (var entry in entities)
+            // Add default operations
+            foreach (var assignment in assignments)
             {
-                if (!usedEntityType.Contains(entry.Key))
+                if (assignment.Operation == null)
                 {
-                    foreach (var entity in entry.Value)
+                    // Assign missing operation
+                    if (lastEvent == AdaptiveEvents.ChooseEntity
+                        && assignment.Entity.Property == nextAssignment.Property
+                        && (assignment.Operation == null || assignment.Operation == DefaultOperation(assignment, askDefault, dialogDefault)))
                     {
-                        if (!usedEntity.Contains(entity) && entity.Operation != null)
-                        {
-                            yield return new EntityAssignment
-                            {
-                                Entity = entity,
-                                Operation = entity.Operation,
-                                Property = entity.Property
-                            };
-                        }
+                        // Property and value match ambiguous entity
+                        assignment.Operation = AdaptiveEvents.ChooseEntity;
+                        assignment.IsExpected = true;
+                    }
+                    else if (lastEvent == AdaptiveEvents.ChooseProperty
+                        && assignment.Entity.Property != null
+                        && assignment.Operation == null
+                        && nextAssignment.Alternatives.Any(a => a.Property == assignment.Property))
+                    {
+                        // Plain property is a choice
+                        assignment.Operation = AdaptiveEvents.ChooseProperty;
+                        assignment.IsExpected = true;
+                    }
+                    else
+                    {
+                        // Assign default operator
+                        assignment.Operation = DefaultOperation(assignment, askDefault, dialogDefault);
                     }
                 }
             }
+
+            return assignments;
         }
 
         private void AddMapping(EntityAssignment mapping, EntityAssignments assignments)
@@ -1416,6 +1396,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         // Have each property pick which overlapping entity is the best one
+        // This can happen because LUIS will return both 'wheat' and 'whole wheat' as the same list entity.
         private IEnumerable<EntityAssignment> RemoveOverlappingPerProperty(IEnumerable<EntityAssignment> candidates)
         {
             var perProperty = from candidate in candidates
@@ -1445,7 +1426,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (candidate != null)
                         {
                             // Remove any overlapping entities without a common root
-                            choices.RemoveAll(choice => choice.Entity.Overlaps(candidate.Entity));
+                            choices.RemoveAll(choice => choice.Operation == candidate.Operation && choice.Entity.Overlaps(candidate.Entity));
                             yield return candidate;
                         }
                     }
@@ -1460,25 +1441,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        // Return the default operation for an assignment by looking at the per-ask and dialog defaults
         private string DefaultOperation(EntityAssignment assignment, JObject askDefault, JObject dialogDefault)
         {
             string operation = null;
-            if (askDefault != null && (askDefault.TryGetValue(assignment.Entity.Name, out var askOp) || askDefault.TryGetValue(string.Empty, out askOp)))
+            if (assignment.Property != null)
             {
-                operation = askOp.Value<string>();
-            }
-            else if (dialogDefault != null
-                    && (dialogDefault.TryGetValue(assignment.Property, out var entities)
-                        || dialogDefault.TryGetValue(string.Empty, out entities))
-                    && ((entities as JObject).TryGetValue(assignment.Entity.Name, out var dialogOp)
-                        || (entities as JObject).TryGetValue(string.Empty, out dialogOp)))
-            {
-                operation = dialogOp.Value<string>();
+                if (askDefault != null && (askDefault.TryGetValue(assignment.Entity.Name, out var askOp) || askDefault.TryGetValue(string.Empty, out askOp)))
+                {
+                    operation = askOp.Value<string>();
+                }
+                else if (dialogDefault != null
+                        && (dialogDefault.TryGetValue(assignment.Property, out var entities)
+                            || dialogDefault.TryGetValue(string.Empty, out entities))
+                        && ((entities as JObject).TryGetValue(assignment.Entity.Name, out var dialogOp)
+                            || (entities as JObject).TryGetValue(string.Empty, out dialogOp)))
+                {
+                    operation = dialogOp.Value<string>();
+                }
             }
 
             return operation;
         }
 
+        // If there is a default op, remove any overlapping non default op
+        private IEnumerable<EntityAssignment> RemoveNonDefaultOp(IEnumerable<EntityAssignment> assignments, JObject askDefaultOp, JObject dialogDefaultOp)
+        {
+            var hasDefault = assignments.Any(a => a.Operation == DefaultOperation(a, askDefaultOp, dialogDefaultOp));
+            foreach (var assignment in assignments)
+            {
+                if (!hasDefault || assignment.Operation == DefaultOperation(assignment, askDefaultOp, dialogDefaultOp))
+                {
+                    yield return assignment;
+                }
+            }
+        }
+
+        // Choose between competing interpretations
+        // This works by:
+        // * Generate candidate assignments including inferred property and operator if missing
+        // * Order by expected, then default operation to prefer expected things
+        // * Pick a candidate, identify alternatives and remove from pool of candidates
+        // * Alternatives overlap and are filtered by non-default op and biggest interpretation containing alternative 
+        // * The new assignments are then ordered by recency and phrase order and merged with existing assignments
         private List<EntityInfo> AssignEntities(ActionContext actionContext, Dictionary<string, List<EntityInfo>> entities, EntityAssignments existing, string lastEvent)
         {
             var assignments = new EntityAssignments();
@@ -1494,8 +1499,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var defaultOp = dialogSchema.Schema[DefaultOperationKey]?.ToObject<JObject>();
 
             var nextAssignment = existing.NextAssignment();
-            var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
-                              orderby candidate.IsExpected descending
+            var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected, lastEvent, nextAssignment, askDefaultOp, defaultOp))
+                              orderby
+                                candidate.IsExpected descending,
+                                candidate.Operation == DefaultOperation(candidate, askDefaultOp, defaultOp) descending
                               select candidate).ToList();
             var usedEntities = new HashSet<EntityInfo>(from candidate in candidates select candidate.Entity);
             var expectedChoices = new List<string>();
@@ -1510,6 +1517,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     usedEntities.Add(alternative.Entity);
                 }
 
+                alternatives = RemoveNonDefaultOp(alternatives, askDefaultOp, defaultOp).ToList();
+
                 if (candidate.IsExpected && candidate.Entity.Name != UtteranceKey)
                 {
                     // If expected binds entity, drop unexpected alternatives
@@ -1523,16 +1532,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 alternatives.RemoveAll(a => candidate.Entity.Covers(a.Entity));
 
                 var mapped = false;
-                if (lastEvent == AdaptiveEvents.ChooseEntity && candidate.Property == nextAssignment.Property)
+                if (candidate.Operation == AdaptiveEvents.ChooseEntity)
                 {
-                    // Property has possible resolution so remove entity ambiguity
+                    // Property has resolution so remove entity ambiguity
                     existing.Dequeue(actionContext);
-                    lastEvent = null;
+                    candidate.Operation = DefaultOperation(candidate, askDefaultOp, defaultOp);
                 }
-                else if (lastEvent == AdaptiveEvents.ChooseProperty && candidate.Operation == null && candidate.Property != null)
+                else if (candidate.Operation == AdaptiveEvents.ChooseProperty)
                 {
-                    choices = existing.NextAssignment().Alternatives.ToList();
-                    var choice = choices.Find(p => p.Property == candidate.Entity.Name);
+                    choices = nextAssignment.Alternatives.ToList();
+                    var choice = choices.Find(p => p.Property == candidate.Property);
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments
@@ -1566,7 +1575,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // When choosing between property assignments, make the assignments be expected.
                 actionContext.State.SetValue(DialogPath.ExpectedProperties, expectedChoices);
 
-                // Add back in any non-overlapping choices
+                // Add back in any non-overlapping choices that have not been resolved
                 while (choices.Any())
                 {
                     var choice = choices.First();

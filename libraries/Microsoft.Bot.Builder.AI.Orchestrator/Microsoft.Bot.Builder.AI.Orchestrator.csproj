@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.11.0-daily.20200923.168830" />
+    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.11.0-daily*" />
   </ItemGroup>
 
   <ItemGroup>
