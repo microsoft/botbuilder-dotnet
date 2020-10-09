@@ -91,5 +91,10 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "messagePayload")]
         public MessageActionsPayload MessagePayload { get; set; }
 
+        /// <summary>
+        /// Gets or sets state parameter passed back to the bot after authentication flow.
+        /// </summary>
+        [JsonProperty(PropertyName = "state")]
+        public string State { get; set; }
     }
 }
