@@ -44,8 +44,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="botActivityPreview">A collection of bot activities.</param>
         /// <param name="messagePayload">Message content sent as part of the
         /// command request.</param>
-        /// <param name="state">State parameter passed back to the bot after authentication flow.</param>
-        public MessagingExtensionAction(object data = default(object), TaskModuleRequestContext context = default(TaskModuleRequestContext), string commandId = default(string), string commandContext = default(string), string botMessagePreviewAction = default(string), IList<Activity> botActivityPreview = default(IList<Activity>), MessageActionsPayload messagePayload = default(MessageActionsPayload), string state = default(string))
+        public MessagingExtensionAction(object data = default(object), TaskModuleRequestContext context = default(TaskModuleRequestContext), string commandId = default(string), string commandContext = default(string), string botMessagePreviewAction = default(string), IList<Activity> botActivityPreview = default(IList<Activity>), MessageActionsPayload messagePayload = default(MessageActionsPayload))
             : base(data, context)
         {
             CommandId = commandId;
@@ -53,7 +52,6 @@ namespace Microsoft.Bot.Schema.Teams
             BotMessagePreviewAction = botMessagePreviewAction;
             BotActivityPreview = botActivityPreview;
             MessagePayload = messagePayload;
-            State = state;
             CustomInit();
         }
 
