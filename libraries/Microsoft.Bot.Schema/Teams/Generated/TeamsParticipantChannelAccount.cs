@@ -32,14 +32,25 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="tenantId">TenantId of the user.</param>
         /// <param name="userRole">UserRole of the user.</param>
         /// <param name="meetingRole">Role of the participant in the current meeting.</param>
+        /// <param name="inMeeting">True, if the participant is in the meeting.</param>
         /// <param name="conversation">Conversation Account for the meeting.</param>
-        public TeamsParticipantChannelAccount(string id = default(string), string name = default(string), string givenName = default(string), string surname = default(string), string email = default(string), string userPrincipalName = default(string), string tenantId = default(string), string userRole = default(string), string meetingRole = default(string), ConversationAccount conversation = null)
+        public TeamsParticipantChannelAccount(string id = default(string), string name = default(string), string givenName = default(string), string surname = default(string), string email = default(string), string userPrincipalName = default(string), string tenantId = default(string), string userRole = default(string), string meetingRole = default(string), bool inMeeting = default(bool), ConversationAccount conversation = null)
             : base(id, name, givenName, surname, email, userPrincipalName, tenantId, userRole)
         {
             MeetingRole = meetingRole;
+            InMeeting = inMeeting;
             Conversation = conversation;
             CustomInit();
         }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether the participant is in the meeting or not.
+        /// </summary>
+        /// <value>
+        /// The value indicating if the participant is in the meeting.
+        /// </value>
+        [JsonProperty(PropertyName = "inMeeting")]
+        public bool InMeeting { get; set; }
 
         /// <summary>
         /// Gets or sets the participant's role in the meeting.
