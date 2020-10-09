@@ -444,6 +444,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private Templates InjectToExpressionFunction()
         {
+            InjectTemplateFunction();
             var totalTempaltes = new List<Templates> { this }.Union(References);
             foreach (var curTemplates in totalTempaltes)
             {
@@ -487,6 +488,50 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return this;
+        }
+
+        private void InjectTemplateFunction()
+        {
+            Expression.Functions.Add("template", new ExpressionEvaluator(
+                "template",
+                (expression, state, options) =>
+                {
+                    object result = null;
+                    var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+                    var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                    if (error == null)
+                    {
+                        if (args == null || args.Count == 0)
+                        {
+                            error = $"Expression 'template' should have at least 1 children.";
+                            return (result, error);
+                        }
+
+                        if (!(args[0] is string templateName))
+                        {
+                            error = $"template name should be string.";
+                            return (result, error);
+                        }
+
+                        var parameters = evaluator.TemplateMap[templateName].Parameters;
+                        var newScope = parameters.Zip(args.Skip(1), (k, v) => new { k, v })
+                            .ToDictionary(x => x.k, x => x.v);
+                        var scope = new CustomizedMemory(state, new SimpleObjectMemory(newScope));
+                        try
+                        {
+                            result = evaluator.EvaluateTemplate(templateName, scope);
+                        }
+#pragma warning disable CA1031 // Do not catch general exception types
+                                    catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
+                                    {
+                            error = err.Message;
+                        }
+                    }
+
+                    return (result, error);
+                },
+                ReturnType.Object));
         }
 
         private void AppendDiagnosticsWithOffset(IList<Diagnostic> diagnostics, int offset)

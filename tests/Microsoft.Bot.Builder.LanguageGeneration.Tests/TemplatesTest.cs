@@ -1607,6 +1607,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var scope2 = new { i = 1, j = 2, k = 3, l = 4 };
             (evaled, error) = Expression.Parse("common.sumFourNumbers(i, j, k, l)").TryEvaluate(scope2);
             Assert.Equal("10", evaled.ToString());
+
+            // inject template test
+            (evaled, error) = Expression.Parse("template('sumAll')").TryEvaluate(null);
+            Assert.Null(error);
+            Assert.Equal(3L, evaled);
+
+            // inject template test with scope
+            (evaled, error) = Expression.Parse("template('addTwoNum', first, second)").TryEvaluate(new { first = 1, second = 2 });
+            Assert.Null(error);
+            Assert.Equal(3L, evaled);
+
+            // inject template test with a non-exist template name
+            (evaled, error) = Expression.Parse("template('addTwoNum', first, second)").TryEvaluate(new { first = 1, second = 2 });
+            Assert.Null(error);
+            Assert.Equal(3L, evaled);
+
+            // inject template test without template name
+            (evaled, error) = Expression.Parse("template()").TryEvaluate(null);
+            Assert.Null(evaled);
+            Assert.Equal("Expression 'template' should have at least 1 children.", error);
+
+            // inject template test with a wrong template name type
+            (evaled, error) = Expression.Parse("template(123)").TryEvaluate(null);
+            Assert.Null(evaled);
+            Assert.Equal("template name should be string.", error);
         }
 
         [Fact]
