@@ -567,13 +567,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(templateName, FunctionUtils.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
-            const string template = "template";
-
-            if (name.Equals(template, StringComparison.Ordinal))
-            {
-                return new ExpressionEvaluator(template, FunctionUtils.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
-            }
-
             const string fromFile = "fromFile";
 
             if (name.Equals(fromFile, StringComparison.Ordinal))
@@ -682,26 +675,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
             return this.EvaluateTemplate(templateName, newScope);
         };
-
-        // Validator for template(...)
-        private void ValidateTemplateFunction(Expression expression)
-        {
-            FunctionUtils.ValidateAtLeastOne(expression);
-
-            var children0 = expression.Children[0];
-
-            if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
-            {
-                throw new Exception(TemplateErrors.InvalidTemplateNameType);
-            }
-
-            // Validate more if the name is string constant
-            if (children0.Type == ExpressionType.Constant)
-            {
-                var templateName = (children0 as Constant).Value.ToString();
-                CheckTemplateReference(templateName, expression.Children.Skip(1));
-            }
-        }
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
         => (IReadOnlyList<object> args) =>

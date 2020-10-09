@@ -654,17 +654,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public void TestExpandTemplateWithTemplateFunction()
-        {
-            var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
-
-            var evaled = templates.ExpandTemplate("template3", new { templateName = "Greeting" });
-            Assert.Equal(2, evaled.Count);
-            Assert.Equal("Hi", evaled[0]);
-            Assert.Equal("Hello", evaled[1]);
-        }
-
-        [Fact]
         public void TestExpandTemplateWithDoubleQuotation()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("Expand.lg"));
