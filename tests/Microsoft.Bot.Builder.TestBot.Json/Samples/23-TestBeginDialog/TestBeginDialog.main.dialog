@@ -1,0 +1,45 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "test",
+                "pattern": "(?i)test begin"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Hello let's test begin dialog"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "test",
+            "actions": [
+                {
+                    "$kind": "Microsoft.BeginDialog",
+                    "activityProcessed": true,
+                    "dialog": "=concat('Test', 'Name')"
+                  }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Out of domain!"
+                }
+            ]
+        }
+    ]
+}
