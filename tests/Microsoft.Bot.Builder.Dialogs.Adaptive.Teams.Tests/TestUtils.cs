@@ -40,8 +40,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             if (testHttpClientMessageHandler != null)
             {
                 var testHttpClient = new HttpClient(testHttpClientMessageHandler); 
-
-                // Set a special base address so then we can make sure the connector client is honoring this http client
                 testHttpClient.BaseAddress = new Uri("https://localhost.coffee");
                 var testConnectorClient = new ConnectorClient(new Uri("http://localhost.coffee/"), new MicrosoftAppCredentials(string.Empty, string.Empty), testHttpClient);
                 adapter.Use(new TestConnectorClientMiddleware(testConnectorClient));
@@ -87,7 +85,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 
             public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
             {
-                // turnContext.TurnState.Get<IConnectorClient>();
                 turnContext.TurnState.Add<IConnectorClient>(_connectorClient);
                 return next(cancellationToken);
             }

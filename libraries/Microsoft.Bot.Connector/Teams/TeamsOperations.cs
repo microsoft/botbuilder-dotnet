@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Connector.Teams
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/teams/{teamId}/conversations").ToString();
             _url = _url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
 
-            return await GetResponseAsync<ConversationList>(_url, _shouldTrace, _invocationId);
+            return await GetResponseAsync<ConversationList>(_url, _shouldTrace, _invocationId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Connector.Teams
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/teams/{teamId}").ToString();
             _url = _url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
 
-            return await GetResponseAsync<TeamDetails>(_url, _shouldTrace, _invocationId);
+            return await GetResponseAsync<TeamDetails>(_url, _shouldTrace, _invocationId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Connector.Teams
             _url = _url.Replace("{participantId}", System.Uri.EscapeDataString(participantId));
             _url = _url.Replace("{tenantId}", System.Uri.EscapeDataString(tenantId));
 
-            return await GetResponseAsync<TeamsParticipantChannelAccount>(_url, _shouldTrace, _invocationId);
+            return await GetResponseAsync<TeamsParticipantChannelAccount>(_url, _shouldTrace, _invocationId).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string url, bool shouldTrace, string invocationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
