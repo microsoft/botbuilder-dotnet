@@ -1,0 +1,4 @@
+﻿> Import CycleRef2.lg
+[import](./CycleRef2.lg)
+# a
+- a

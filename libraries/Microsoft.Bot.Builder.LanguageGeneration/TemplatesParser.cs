@@ -148,12 +148,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <param name="cachedTemplates">Give the file path and templates to avoid parsing and to improve performance.</param>
+        /// <param name="history">Traceability chain of the visited templates.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
         public static Templates ParseResource(
             LGResource resource,
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null,
-            Dictionary<string, Templates> cachedTemplates = null)
+            Dictionary<string, Templates> cachedTemplates = null,
+            Stack<Templates> history = null)
         {
             if (resource == null)
             {
@@ -161,6 +163,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
+            history = history ?? new Stack<Templates>();
             if (cachedTemplates.ContainsKey(resource.Id))
             {
                 return cachedTemplates[resource.Id];
@@ -172,7 +175,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             try
             {
                 lg = new TemplatesTransformer(lg).Transform(AntlrParseTemplates(resource));
-                lg.References = GetReferences(lg, cachedTemplates);
+                lg.References = GetReferences(lg, cachedTemplates, history);
                 new StaticChecker(lg).Check().ForEach(u => lg.Diagnostics.Add(u));
             }
             catch (TemplateException ex)
@@ -204,19 +207,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return new LGResource(importPath, importPath, File.ReadAllText(importPath));
         }
 
-        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
+        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null, Stack<Templates> history = null)
         {
             var resourcesFound = new HashSet<Templates>();
-            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>());
+            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>(), history ?? new Stack<Templates>());
 
             resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
-        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates)
+        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates, Stack<Templates> history)
         {
             resourcesFound.Add(start);
-
+            history.Push(start);
             foreach (var import in start.Imports)
             {
                 LGResource resource;
@@ -231,6 +234,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
                 }
 
+                // Cycle reference would throw exception to avoid infinite Loop.
+                // Import self is allowed, and would ignore it.
+                if (history.Peek().Id != resource.Id && history.Any(u => u.Id == resource.Id))
+                {
+                    var errorMsg = TemplateErrors.LoopDetected + resource.Id;
+                    var diagnostic = new Diagnostic(import.SourceRange.Range, errorMsg, DiagnosticSeverity.Error, start.Source);
+                    throw new TemplateException(errorMsg, new List<Diagnostic>() { diagnostic });
+                }
+
                 if (resourcesFound.All(u => u.Id != resource.Id))
                 {
                     Templates childResource;
@@ -240,13 +252,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        childResource = ParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates);
+                        childResource = ParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, history);
                         cachedTemplates.Add(resource.Id, childResource);
                     }
 
-                    ResolveImportResources(childResource, resourcesFound, cachedTemplates);
+                    ResolveImportResources(childResource, resourcesFound, cachedTemplates, history);
                 }
             }
+
+            history.Pop();
         }
 
         /// <summary>
