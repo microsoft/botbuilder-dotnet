@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 // Import self is allowed, and would ignore it.
                 if (history.Peek().Id != resource.Id && history.Any(u => u.Id == resource.Id))
                 {
-                    var errorMsg = TemplateErrors.LoopDetected + resource.Id;
+                    var errorMsg = $"{TemplateErrors.LoopDetected} {resource.Id} => {start.Id}";
                     var diagnostic = new Diagnostic(import.SourceRange.Range, errorMsg, DiagnosticSeverity.Error, start.Source);
                     throw new TemplateException(errorMsg, new List<Diagnostic>() { diagnostic });
                 }
