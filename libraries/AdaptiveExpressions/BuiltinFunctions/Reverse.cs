@@ -24,17 +24,23 @@ namespace AdaptiveExpressions.BuiltinFunctions
             return FunctionUtils.ApplyWithError(
                         args =>
                         {
-                            var result = args[0];
+                            object result = null;
+                            string error = null;
+
                             if (args[0] is string string0)
                             {
-                                return (new string(string0.Reverse().ToArray()), null);
+                                result = new string(string0.Reverse().ToArray());
                             }
                             else if (args[0] is IList list)
                             {
-                                return (list.OfType<object>().Reverse().ToList(), null);
+                                result = list.OfType<object>().Reverse().ToList();
+                            }
+                            else
+                            {
+                                error = $"{args[0]} is not a string or list.";
                             }
 
-                            return (null, $"{args[0]} is not a string or list.");
+                            return (result, error);
                         }, FunctionUtils.VerifyContainer);
         }
 
