@@ -5,9 +5,6 @@
   "description": "These are all of the kinds that can be created by the loader.",
   "oneOf": [
     {
-      "$ref": "#/definitions/AzureQueues.ContinueConversationLater"
-    },
-    {
       "$ref": "#/definitions/CustomAction.dialog"
     },
     {
@@ -54,6 +51,9 @@
     },
     {
       "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.ContinueConversationLater"
     },
     {
       "$ref": "#/definitions/Microsoft.ContinueLoop"
@@ -453,81 +453,6 @@
     }
   ],
   "definitions": {
-    "AzureQueues.ContinueConversationLater": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Continue Conversation Later (Queue)",
-      "description": "Continue conversation at later time (via Azure Storage Queue).",
-      "type": "object",
-      "required": [
-        "date",
-        "connectionString",
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "user.age > 3"
-          ]
-        },
-        "date": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Date",
-          "description": "Date in the future as a ISO string when the conversation should continue.",
-          "examples": [
-            "=addHours(utcNow(), 1)"
-          ]
-        },
-        "connectionString": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Connection String",
-          "description": "Connection string for connecting to an Azure Storage account.",
-          "examples": [
-            "=settings.connectionString"
-          ]
-        },
-        "queueName": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Queue Name",
-          "description": "Name of the queue that your azure function is bound to.",
-          "examples": [
-            "activities"
-          ],
-          "default": "activities"
-        },
-        "value": {
-          "$ref": "#/definitions/valueExpression",
-          "title": "Value",
-          "description": "Value to send in the activity.value."
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "AzureQueues.ContinueConversationLater"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
     "CustomAction.dialog": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Custom Action",
@@ -2133,6 +2058,64 @@
         }
       }
     },
+    "Microsoft.ContinueConversationLater": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Continue Conversation Later (Queue)",
+      "description": "Continue conversation at later time (via Azure Storage Queue).",
+      "type": "object",
+      "required": [
+        "date",
+        "connectionString",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "date": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Date",
+          "description": "Date in the future as a ISO string when the conversation should continue.",
+          "examples": [
+            "=addHours(utcNow(), 1)"
+          ]
+        },
+        "value": {
+          "$ref": "#/definitions/valueExpression",
+          "title": "Value",
+          "description": "Value to send in the activity.value."
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ContinueConversationLater"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.ContinueLoop": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Continue Loop",
@@ -3613,9 +3596,6 @@
           "$ref": "#/definitions/Microsoft.QnAMakerDialog"
         },
         {
-          "$ref": "#/definitions/AzureQueues.ContinueConversationLater"
-        },
-        {
           "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
@@ -3635,6 +3615,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.CancelDialog"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ContinueConversationLater"
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueLoop"
