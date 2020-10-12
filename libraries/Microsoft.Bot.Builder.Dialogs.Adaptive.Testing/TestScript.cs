@@ -143,8 +143,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="testName">Name of the test.</param>
         /// <param name="callback">The bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
+        /// <param name="languagePolicy">The default language policy.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
-        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null)
+        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null, LanguagePolicy languagePolicy = null)
         {
             if (adapter == null)
             {
@@ -184,6 +185,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 var dm = new DialogManager(Dialog)
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
+
+                if (languagePolicy != null)
+                {
+                    dm.UseLanguagePolicy(languagePolicy);
+                }
 
                 foreach (var testAction in Script)
                 {
