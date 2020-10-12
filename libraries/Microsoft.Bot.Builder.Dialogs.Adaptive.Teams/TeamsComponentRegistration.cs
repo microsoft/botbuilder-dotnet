@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
 
             // Actions
             yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);
+            yield return new DeclarativeType<SendTaskModuleMessageResponse>(SendTaskModuleMessageResponse.Kind);
+            yield return new DeclarativeType<SendTaskModuleContinueResponse>(SendTaskModuleContinueResponse.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
