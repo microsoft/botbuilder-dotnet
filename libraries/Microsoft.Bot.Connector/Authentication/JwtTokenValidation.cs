@@ -72,13 +72,13 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (activity.ChannelId == Channels.Emulator && activity is Activity act && act.RelatesTo != null)
                 {
                     // Return an anonymous claim with an anonymous skill AppId
-                    return new ClaimsIdentity(new List<Claim>() { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, "anonymous");
+                    return new ClaimsIdentity(new List<Claim>() { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, AuthenticationConstants.AnonymousAuthType);
                 }
 
                 // In the scenario where Auth is disabled, we still want to have the
                 // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
                 // adding in an empty claim.
-                return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                return new ClaimsIdentity(new List<Claim>(), AuthenticationConstants.AnonymousAuthType);
             }
 
             // Validate the header and extract claims.

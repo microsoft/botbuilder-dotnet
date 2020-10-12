@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Tests
             var sut = new TestChannelServiceHandler();
             await sut.HandleReplyToActivityAsync(null, "123", "456", new Activity(), CancellationToken.None);
 
-            Assert.Equal("anonymous", sut.ClaimsIdentity.AuthenticationType);
+            Assert.Equal(AuthenticationConstants.AnonymousAuthType, sut.ClaimsIdentity.AuthenticationType);
             Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, JwtTokenValidation.GetAppIdFromClaims(sut.ClaimsIdentity.Claims));
         }
 

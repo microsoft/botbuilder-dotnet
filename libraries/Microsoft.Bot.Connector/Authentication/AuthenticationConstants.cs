@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -131,6 +132,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// AppId used for creating skill claims when there is no appId and password configured.
         /// </summary>
         public const string AnonymousSkillAppId = "AnonymousSkill";
+
+        /// <summary>
+        /// Indicates that <see cref="ClaimsIdentity.AuthenticationType"/> is anonymous (no app Id and password were provided).
+        /// </summary>
+        public const string AnonymousAuthType = "anonymous";
 
         /// <summary>
         /// Allowed token signing algorithms. Tokens come from channels to the bot. The code

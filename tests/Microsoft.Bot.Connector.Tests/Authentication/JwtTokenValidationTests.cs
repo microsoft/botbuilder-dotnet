@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 new SimpleChannelProvider(),
                 emptyClient);
 
-            Assert.Equal("anonymous", claimsPrincipal.AuthenticationType);
+            Assert.Equal(AuthenticationConstants.AnonymousAuthType, claimsPrincipal.AuthenticationType);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 new SimpleChannelProvider(),
                 emptyClient);
 
-            Assert.Equal("anonymous", claimsPrincipal.AuthenticationType);
+            Assert.Equal(AuthenticationConstants.AnonymousAuthType, claimsPrincipal.AuthenticationType);
             Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, JwtTokenValidation.GetAppIdFromClaims(claimsPrincipal.Claims));
         }
 

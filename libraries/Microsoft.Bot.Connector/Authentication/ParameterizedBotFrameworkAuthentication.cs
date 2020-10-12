@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     // In the scenario where Auth is disabled, we still want to have the
                     // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
                     // adding in an empty claim.
-                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    return new ClaimsIdentity(new List<Claim>(), AuthenticationConstants.AnonymousAuthType);
                 }
 
                 // No Auth Header. Auth is required. Request is not authorized.
