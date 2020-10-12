@@ -94,22 +94,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
 
-            //var properties = new Dictionary<string, string>()
-            //{
-            //    { "template", JsonConvert.SerializeObject(Activity) },
-            //    { "result", activity == null ? string.Empty : JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
-            //};
-            //TelemetryClient.TrackEvent("GeneratorResult", properties);
+            //TODO: Add support for parameterized task module info settings
+            /*
+                    Title
+                    Height
+                    Width 
+                    Url 
+                    Card 
+                    FallbackUrl 
+                    CompletionBotId 
+            */
 
-            //ResourceResponse response = null;
-            //if (activity.Type != "message" 
-            //    || !string.IsNullOrEmpty(activity.Text)
-            //    || activity.Attachments?.Any() == true
-            //    || !string.IsNullOrEmpty(activity.Speak)
-            //    || activity.SuggestedActions != null
-            //    || activity.ChannelData != null)
+            if (activity.Attachments == null || !activity.Attachments.Any())
+            {
+                throw new ArgumentException($"A valid attachment is required for Task Module Continue Response.");
+            }
+
+            var attachment = activity.Attachments[0];
+
+            // TODO: LG?
+            //if (attachment != null)
             //{
-            //    response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            //    var languageGenerator = dc.Services.Get<LanguageGenerator>();
+            //    if (languageGenerator != null)
+            //    {
+            //        var lgStringResult = await languageGenerator.GenerateAsync(dc, attachment.Content.ToString(), dc.State, cancellationToken).ConfigureAwait(false);
+            //        attachment.Content = lgStringResult.ToString();
+            //    }
             //}
 
             var responseActivity = new Activity
@@ -123,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         {
                             Value = new Schema.Teams.TaskModuleTaskInfo
                             {
-                                Card = activity.Attachments[0]
+                                Card = attachment
                             }
                         }
                     }
