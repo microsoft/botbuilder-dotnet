@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (string.IsNullOrEmpty(MicrosoftAppId) || MicrosoftAppId == AuthenticationConstants.AnonymousSkillAppId)
             {
-                // We don't set the token if the AppId is not set.
+                // We don't set the token if the AppId is not set, since it means that we are in an un-authenticated scenario
                 return false;
             }
 
