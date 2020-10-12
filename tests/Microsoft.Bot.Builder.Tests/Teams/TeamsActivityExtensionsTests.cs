@@ -13,13 +13,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         public void TeamsGetTeamId()
         {
             // Arrange
-            var activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { Id = "team123" } } };
+            var activity = new Activity { ChannelData = new TeamsChannelData { Team = new TeamInfo { Id = "team1234" } } };
 
             // Act
             var teamId = activity.TeamsGetTeamInfo().Id;
 
             // Assert
-            Assert.Equal("team123", teamId);
+            Assert.Equal("team1234", teamId);
         }
 
         [Fact]
