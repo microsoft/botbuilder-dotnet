@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send Task Module Continue Response",
+    "description": "Send a continue response to a Task Module request.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "activity": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Activity to send, must contain an Attachment."
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "=user.age > 3"
+            ]
+        }
+    }
+}

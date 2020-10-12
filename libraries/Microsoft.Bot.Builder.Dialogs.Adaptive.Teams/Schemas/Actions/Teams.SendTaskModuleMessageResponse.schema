@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send Task Module Message Response",
+    "description": "Send a message response to a Task Module request.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "message": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Message",
+            "description": "The response message to send.",
+            "examples": [
+                "Thanks, have a nice day! :)"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "=user.age > 3"
+            ]
+        }
+    }
+}
