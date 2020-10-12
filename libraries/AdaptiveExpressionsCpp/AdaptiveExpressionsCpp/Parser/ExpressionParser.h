@@ -26,6 +26,7 @@ private:
         Expression* Transform(antlr4::tree::ParseTree* context);
         antlrcpp::Any visitFile(ExpressionAntlrParser::FileContext* ctx) override;
         antlrcpp::Any visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx) override;
+        antlrcpp::Any visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx) override;
 
     private:
         Expression* MakeExpression(std::string functionType, Expression* children, ...);

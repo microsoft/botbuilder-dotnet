@@ -4,12 +4,14 @@
 
 #include <string>
 #include "ExpressionParser.h"
+#include "FunctionTable.h"
 
-class Expression : antlrcpp::Any
+class Expression
 {
 
 public:
     Expression();
+    Expression(antlrcpp::Any value);
     Expression(std::string type, Expression* children);
     Expression(ExpressionEvaluator* evaluator, Expression* children);
     
@@ -21,7 +23,17 @@ public:
     void Validate();
     ExpressionEvaluator* getEvaluator();
 
+    std::pair<void*, std::string> TryEvaluate(void* state, void* options = nullptr);
+
+    static const FunctionTable* Functions;
+
+    Expression* getChildren();
+
 private:
+    antlrcpp::Any m_expressionValue;
     ExpressionEvaluator* m_evaluator;
     EvaluatorLookup m_evaluatorLookup;
+    Expression* m_children = nullptr;
 };
+
+

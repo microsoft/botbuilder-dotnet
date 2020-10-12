@@ -189,6 +189,21 @@
     <ClInclude Include="..\Parser\Constant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Parser\ReturnType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BuiltinFunctions\Add.h">
+      <Filter>BuiltinFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\ExpressionFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\FunctionUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\FunctionTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\pch.cpp">
@@ -219,6 +234,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Parser\ExpressionEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BuiltinFunctions\Add.cpp">
+      <Filter>BuiltinFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\FunctionUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\FunctionTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

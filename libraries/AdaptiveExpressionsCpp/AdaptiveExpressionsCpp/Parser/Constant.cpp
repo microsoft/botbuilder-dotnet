@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "Constant.h"
+#include "FunctionUtils.h"
 
 Constant::Constant(antlrcpp::Any value) : Expression()
 {
@@ -14,6 +15,12 @@ antlrcpp::Any Constant::getValue()
 
 void Constant::setValue(antlrcpp::Any value)
 {
-    // m_evaluator->returnType = value.is<std::string>() ? 
+    // Have to figure out how to check if it's an array
+    getEvaluator()->m_returnType =
+        value.is<std::string>() ? ReturnType::String :
+        FunctionUtils::isNumber(value) ? ReturnType::Number :
+        value.is<bool>() ? ReturnType::String :
+        ReturnType::Object;
+
     m_value = value;
 }

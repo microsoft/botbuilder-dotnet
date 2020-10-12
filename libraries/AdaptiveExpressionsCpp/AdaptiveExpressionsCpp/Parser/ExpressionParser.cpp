@@ -9,13 +9,6 @@
 #include "ExpressionAntlrLexer.h"
 #include "ExpressionAntlrParser.h"
 
-/*
-ExpressionTransformer::ExpressionTransformer(EvaluatorLookup lookup)
-{
-    m_lookupFunction = lookup;
-}
-*/
-
 ExpressionParser::ExpressionTransformer::ExpressionTransformer(EvaluatorLookup lookup)
 {
     m_lookupFunction = lookup;
@@ -36,7 +29,7 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFile(ExpressionAntlr
         return MakeExpression(unaryOperationName, (Expression*)(new Constant(0)), operand);
     }
 
-    return MakeExpression(unaryOperationName, operand);
+    return MakeExpression(unaryOperationName, new Expression(operand));
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx)
@@ -58,6 +51,14 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(Expressio
     */
 
     return Expression::ConstantExpression(text);
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx)
+{
+    auto binaryOperationName = ctx->children.at(1)->getText();
+    auto left = visit(ctx->expression(0));
+    auto right = visit(ctx->expression(1));
+    return MakeExpression(binaryOperationName, new Expression(left), new Expression(right));
 }
 
 /*
@@ -86,8 +87,8 @@ public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.Strin
 
 Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string functionType, Expression* children, ...)
 {
-    return nullptr;
-    // Expression::MakeExpression(_lookupFunction(functionType) ? ? throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function."), children);
+    return Expression::MakeExpression(m_lookupFunction(functionType), children);
+    // If lookup function fails, throw this: throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function.")
 }
 
 EvaluatorLookup ExpressionParser::getEvaluatorLookup()
@@ -113,6 +114,7 @@ Expression* ExpressionParser::Parse(std::string expression)
 
 ExpressionParser::ExpressionParser(EvaluatorLookup lookup)
 {
+    m_evaluatorLookup = lookup;
 }
 
 antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
@@ -124,7 +126,7 @@ antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
     }
     */
 
-    auto inputStream = new antlr4::ANTLRInputStream("a string");
+    auto inputStream = new antlr4::ANTLRInputStream(expression);
     auto lexer = new ExpressionAntlrLexer(inputStream);
     lexer->removeErrorListeners();
     auto tokenStream = new antlr4::CommonTokenStream(lexer);

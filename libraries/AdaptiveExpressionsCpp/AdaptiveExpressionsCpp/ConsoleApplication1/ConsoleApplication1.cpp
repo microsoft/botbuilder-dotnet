@@ -10,7 +10,7 @@ int main()
 {   
     // ExpressionParser::AntlrParse("a string");
 
-    Expression::Parse("a string");
+    Expression::Parse("1 + 2");
 
     std::cout << "Hello World!\n";
 

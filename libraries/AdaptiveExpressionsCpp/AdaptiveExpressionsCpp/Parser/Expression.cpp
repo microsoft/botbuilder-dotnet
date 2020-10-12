@@ -1,9 +1,16 @@
 #include "Expression.h"
 #include "Constant.h"
 
+const FunctionTable* Expression::Functions = new FunctionTable();
+
 Expression::Expression()
 {
 
+}
+
+Expression::Expression(antlrcpp::Any value)
+{
+    m_expressionValue = value;
 }
 
 Expression::Expression(std::string type, Expression* children)
@@ -13,7 +20,13 @@ Expression::Expression(std::string type, Expression* children)
 
 Expression::Expression(ExpressionEvaluator* evaluator, Expression* children)
 {
+    if (evaluator == nullptr)
+    {
+        // throw error throw new ArgumentNullException(nameof(evaluator));
+    }
 
+    m_evaluator = evaluator;
+    m_children = children;
 }
 
 std::string trimStart(const std::string& s, std::string chars)
@@ -70,7 +83,12 @@ Expression* Expression::MakeExpression(ExpressionEvaluator* evaluator, Expressio
 
 ExpressionEvaluator* Expression::Lookup(std::string functionName)
 {
-    return nullptr;
+    if (Expression::Functions->find(functionName) == Expression::Functions->end())
+    {
+        return nullptr;
+    }
+
+    return Expression::Functions->at(functionName);
 }
 
 void Expression::Validate()
@@ -81,4 +99,14 @@ void Expression::Validate()
 ExpressionEvaluator* Expression::getEvaluator()
 {
     return m_evaluator;
+}
+
+Expression* Expression::getChildren()
+{
+    return m_children;
+}
+
+std::pair<void*, std::string> Expression::TryEvaluate(void* state, void* options)
+{
+    return m_evaluator->TryEvaluate(this, state, options);
 }
