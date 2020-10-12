@@ -7,7 +7,7 @@ using System.Linq;
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
-    /// Reverses the order of the elements in the String/Array.
+    /// Reverses the order of the elements in a String or Array.
     /// </summary>
     internal class Reverse : ExpressionEvaluator
     {
