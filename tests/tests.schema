@@ -3839,10 +3839,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -8323,11 +8323,6 @@
           "type": "string",
           "title": "Description",
           "description": "The description of the assertion"
-        },
-        "timeout": {
-          "type": "number",
-          "title": "Timeout",
-          "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
         },
         "$kind": {
           "title": "Kind of dialog object",

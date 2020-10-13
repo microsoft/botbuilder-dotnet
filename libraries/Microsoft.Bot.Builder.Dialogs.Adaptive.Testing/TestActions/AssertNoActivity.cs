@@ -45,21 +45,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the milliseconds to wait for a reply.
-        /// </summary>
-        /// <value>the milliseceods to wait.</value>
-        [DefaultValue(3000)]
-        [JsonProperty("timeout")]
-        public uint Timeout { get; set; } = 3000;
-
-        /// <summary>
-        /// Gets the assertions.
-        /// </summary>
-        /// <value>The expressions for assertions.</value>
-        [JsonProperty("assertions")]
-        public List<string> Assertions { get; } = new List<string>();
-
-        /// <summary>
         /// Gets the text to assert for an activity.
         /// </summary>
         /// <returns>String.</returns>

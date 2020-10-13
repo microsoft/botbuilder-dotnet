@@ -9,11 +9,6 @@
             "type": "string",
             "title": "Description",
             "description": "The description of the assertion"
-        },
-        "timeout": {
-            "type": "number",
-            "title": "Timeout",
-            "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
         }
     }
 }
