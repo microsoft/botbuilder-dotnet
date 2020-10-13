@@ -1,0 +1,19 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.Test.ITestAction)",
+    "title": "Assert Reply Activity",
+    "description": "Asserts that there is no activity.",
+    "type": "object",
+    "properties": {
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "The description of the assertion"
+        },
+        "timeout": {
+            "type": "number",
+            "title": "Timeout",
+            "description": "The amount of time in milliseconds to wait for a reply (default is 3000)"
+        }
+    }
+}

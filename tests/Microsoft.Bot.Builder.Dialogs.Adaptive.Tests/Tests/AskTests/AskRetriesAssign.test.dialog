@@ -55,7 +55,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "$Bread",
-                        "value":  "@BreadEntity"
+                        "value": "@BreadEntity"
                     }
                 ]
             }
@@ -112,6 +112,9 @@
             "assertions": [
                 "!$retries"
             ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertNoActivity",
         }
     ]
 }
