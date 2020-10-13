@@ -1,0 +1,61 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"show bread\"",
+    "responses": [
+        {
+            "content": {
+                "query": "show bread",
+                "prediction": {
+                    "entities": {
+                      "$instance": {
+                        "Show()": [
+                          {
+                            "length": 10,
+                            "modelType": "Entity Extractor",
+                            "modelTypeId": 1,
+                            "recognitionSources": [
+                              "model"
+                            ],
+                            "startIndex": 0,
+                            "text": "show bread",
+                            "type": "Show()"
+                          }
+                        ]
+                      },
+                      "Show()": [
+                        {
+                          "$instance": {
+                            "Bread": [
+                              {
+                                "length": 5,
+                                "modelType": "Entity Extractor",
+                                "modelTypeId": 1,
+                                "recognitionSources": [
+                                  "model"
+                                ],
+                                "startIndex": 5,
+                                "text": "bread",
+                                "type": "Bread"
+                              }
+                            ]
+                          },
+                          "Bread": [
+                            {}
+                          ]
+                        }
+                      ]
+                    },
+                    "intents": {
+                      "sandwich": {
+                        "score": 0.9984165
+                      }
+                    },
+                    "topIntent": "sandwich"
+                  }
+            }
+        }
+    ]
+}
