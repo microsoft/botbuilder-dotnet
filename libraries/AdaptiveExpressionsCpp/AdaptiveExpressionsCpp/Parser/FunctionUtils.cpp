@@ -45,44 +45,68 @@ ValueErrorTuple FunctionUtils::EvaluateChildren(Expression* expression, void* st
     return ValueErrorTuple(args, error);
 }
 
-void FunctionUtils::ApplyWithErrorInternal()
+std::any FunctionUtils::ResolveValue(std::any value)
 {
-    /*
-    void* value = nullptr;
-    std::string error();
-    std::vector<void*> args;
-    ValueErrorTuple argsAndError = EvaluateChildren(expression, state, options, verify);
-    if (error == null)
-    {
-        try
+    // This should perform some conversion from JValue to regular values, if we use json we may skip this step or do other type of conversions
+    return value;
+}
+
+EvaluateExpressionLambda FunctionUtils::ApplyWithError(std::function<ValueErrorTuple(std::vector<std::any>)> f, void* verify)
+{
+    EvaluateExpressionLambda otherFunction = [&](Expression* expression, void* state, void* options)
+    { 
+        std::any value;
+        std::string error;
+        std::vector<std::any> args;
+        ValueErrorTuple argsAndError = EvaluateChildren(expression, state, options, verify);
+        if (!argsAndError.second.empty())
         {
-            (value, error) = function(args);
-        }
+            try
+            {
+                ValueErrorTuple valueAndError = f(args);
+            }
 #pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return it in the error)
-        catch (Exception e)
+            catch (std::exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-        {
-            error = e.Message;
+            {
+                error = std::string(e.what());
+            }
         }
-    }
 
-    value = ResolveValue(value);
+        value = ResolveValue(value);
 
-    return (value, error);
-    */
+        return ValueErrorTuple(value, error);
+    };
 
-    return;
+    return otherFunction;
 }
 
-inline EvaluateExpressionFunction FunctionUtils::ApplySequenceWithError(ValueErrorTuple (*function)(std::vector<void*>), void* verify)
+EvaluateExpressionLambda FunctionUtils::ApplySequenceWithError(std::function<ValueErrorTuple(std::vector<std::any>)> f, void* verify)
 {
-    // return ApplyWithError(anotherFunction, verify);
-    return nullptr;
-}
+    std::function<ValueErrorTuple(std::vector<std::any>)> otherFunction = [&](std::vector<std::any> args) {
+        std::vector<std::any> binaryArgs(2);
+        std::any sofar = args[0];
+        for (auto i = 1; i < args.size(); ++i)
+        {
+            binaryArgs[0] = sofar;
+            binaryArgs[1] = args[i];
 
-EvaluateExpressionFunction FunctionUtils::ApplyWithError(ValueErrorTuple (*function)(std::vector<void*>), void* verify)
-{
-    return EvaluateExpressionFunction();
+            ValueErrorTuple resultAndError = f(binaryArgs);
+            if (!resultAndError.second.empty())
+            {
+                return resultAndError;
+            }
+            else
+            {
+                sofar = resultAndError.first;
+            }
+        }
+
+        return ValueErrorTuple(sofar, std::string());
+    };
+
+
+    return ApplyWithError(otherFunction, verify);
 }
 
 void FunctionUtils::ValidateArityAndAnyType(Expression* expression, int minArity, int maxArity, ReturnType returnType)

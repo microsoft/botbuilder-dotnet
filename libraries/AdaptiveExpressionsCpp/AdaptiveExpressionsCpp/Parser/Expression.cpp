@@ -106,7 +106,7 @@ Expression* Expression::getChildren()
     return m_children;
 }
 
-std::pair<void*, std::string> Expression::TryEvaluate(void* state, void* options)
+ValueErrorTuple Expression::TryEvaluate(void* state, void* options)
 {
     return m_evaluator->TryEvaluate(this, state, options);
 }

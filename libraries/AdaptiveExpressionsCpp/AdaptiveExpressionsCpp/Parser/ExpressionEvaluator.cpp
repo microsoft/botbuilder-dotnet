@@ -11,7 +11,7 @@ ExpressionEvaluator::ExpressionEvaluator(std::string type, EvaluateExpressionFun
     m_validator = validator;
 }
 
-std::pair<void*, std::string> ExpressionEvaluator::TryEvaluate(Expression* expression, void* state, void* options)
+ValueErrorTuple ExpressionEvaluator::TryEvaluate(Expression* expression, void* state, void* options)
 {
     m_evaluator(expression, state, options);
     return std::make_pair(nullptr, std::string());

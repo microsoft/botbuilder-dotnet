@@ -23,7 +23,7 @@ public:
     void Validate();
     ExpressionEvaluator* getEvaluator();
 
-    std::pair<void*, std::string> TryEvaluate(void* state, void* options = nullptr);
+    ValueErrorTuple TryEvaluate(void* state, void* options = nullptr);
 
     static const FunctionTable* Functions;
 

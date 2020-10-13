@@ -5,6 +5,9 @@
 
 #include "ExpressionAntlrLexer.h"
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING 
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 
 using namespace antlr4;
 

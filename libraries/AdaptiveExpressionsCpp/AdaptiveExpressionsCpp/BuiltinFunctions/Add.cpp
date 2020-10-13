@@ -45,6 +45,7 @@ void AdaptiveExpressions_BuiltinFunctions::Add::Validator(Expression* expression
 
 ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::Sequence(std::vector<void*> args)
 {
+    /*
     void* result = nullptr;
     std::string error = nullptr;
     auto firstItem = args[0];
@@ -69,6 +70,7 @@ ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::Sequence(std::vector<
     }
 
     return (result, error);
+    */
 
     return ValueErrorTuple();
 }
