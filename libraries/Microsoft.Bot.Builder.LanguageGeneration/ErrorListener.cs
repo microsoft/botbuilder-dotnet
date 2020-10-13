@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
+using System.IO;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -28,7 +27,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <inheritdoc/>
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException exception)
+        public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             var startPosition = new Position(_lineOffset + line, charPositionInLine);
             var stopPosition = new Position(_lineOffset + line, charPositionInLine + offendingSymbol.StopIndex - offendingSymbol.StartIndex + 1);
