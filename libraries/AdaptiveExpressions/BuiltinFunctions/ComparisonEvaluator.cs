@@ -50,7 +50,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             if (obj != null && validType == DataType.Other && DetermineCurArgType(arg) != validType.Value)
                             {
-                                error = $"Arguments must either all be numbers or strings in {expression}";
+                                error = $"Arguments must either all be numbers or strings or DateTime objects in {expression}";
                                 break;
                             }
                         }
