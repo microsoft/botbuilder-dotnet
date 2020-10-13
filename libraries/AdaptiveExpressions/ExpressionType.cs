@@ -80,6 +80,7 @@ namespace AdaptiveExpressions
         public const string IndicesAndValues = "indicesAndValues";
         public const string Flatten = "flatten";
         public const string Unique = "unique";
+        public const string Reverse = "reverse";
 
         // DateTime
         public const string AddDays = "addDays";
