@@ -177,8 +177,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.NetCore21", "tests\Microsoft.Bot.Builder.TestBot.NetCore21\Microsoft.Bot.Builder.TestBot.NetCore21.csproj", "{99C466C3-1931-4C0E-AA0A-A8D9D140F56E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.NetCore21.Tests", "tests\Microsoft.Bot.Builder.TestBot.NetCore21.Tests\Microsoft.Bot.Builder.TestBot.NetCore21.Tests.csproj", "{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{D921D320-0450-455F-8DF2-70EDAC5CCE68}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skills", "Skills", "{54DA838C-8BB8-4038-8BDB-D887C02B2D9A}"
@@ -211,6 +209,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Blobs", "libraries\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj", "{8EDAA935-DAA1-4E00-9596-7E40D8C0F58C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Queues", "libraries\Microsoft.Bot.Builder.Azure.Queues\Microsoft.Bot.Builder.Azure.Queues.csproj", "{36641924-DE75-4EA9-B139-87F5330D4A09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.Shared", "tests\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj", "{92F88315-B33B-4D8C-AD8E-9E94CADC867F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -740,14 +740,6 @@ Global
 		{99C466C3-1931-4C0E-AA0A-A8D9D140F56E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99C466C3-1931-4C0E-AA0A-A8D9D140F56E}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{99C466C3-1931-4C0E-AA0A-A8D9D140F56E}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D921D320-0450-455F-8DF2-70EDAC5CCE68}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -844,6 +836,14 @@ Global
 		{36641924-DE75-4EA9-B139-87F5330D4A09}.Release|Any CPU.Build.0 = Release|Any CPU
 		{36641924-DE75-4EA9-B139-87F5330D4A09}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{36641924-DE75-4EA9-B139-87F5330D4A09}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -920,7 +920,6 @@ Global
 		{D9242899-AB3F-46BB-BAB4-386CB8EC535C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{F98A9787-B175-450F-99FC-EC241EB9D581} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{99C466C3-1931-4C0E-AA0A-A8D9D140F56E} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{2FBA2BB7-73C8-45CD-99B7-D65F817C9051} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D921D320-0450-455F-8DF2-70EDAC5CCE68} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{54DA838C-8BB8-4038-8BDB-D887C02B2D9A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{7F8ED2E7-A4BE-4855-BAF2-95657220E419} = {AA545986-D3E6-406D-8BD5-305B809FB399}
@@ -936,6 +935,7 @@ Global
 		{F0033458-4C9D-4D66-B58D-F49ABABE8030} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{8EDAA935-DAA1-4E00-9596-7E40D8C0F58C} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{36641924-DE75-4EA9-B139-87F5330D4A09} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
