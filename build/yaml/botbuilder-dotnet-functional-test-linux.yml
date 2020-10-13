@@ -6,7 +6,7 @@
 name: $(Build.BuildId)
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
 
 trigger: # ci trigger
   batch: true
@@ -84,21 +84,24 @@ steps:
   displayName: 'Git bot deployment'
 
 - powershell: |
-   $content = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String
-   Write-Host $content
-   $json = $content | ConvertFrom-Json
+   $json = Get-Content '$(System.DefaultWorkingDirectory)\DirectLineCreate.json' | Out-String | ConvertFrom-Json
    $key = $json.properties.properties.sites.key
    echo "##vso[task.setvariable variable=DIRECTLINE;]$key"
    echo "##vso[task.setvariable variable=BOTID;]$(LinuxTestBotBotName)"
-  displayName: 'Get bot keys'
+   Write-Host "DIRECTLINE=$key";
+   Write-Host "BOTID=$(LinuxTestBotBotName)";
+  displayName: 'Set directline key for test'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run Functional tests'
+  displayName: 'dotnet test'
   inputs:
     command: test
     projects: '$(System.DefaultWorkingDirectory)\FunctionalTests\**\*FunctionalTests.csproj'
     arguments: '-v n --configuration $(BuildConfiguration) --filter "TestCategory=FunctionalTests&TestCategory!=Adapters" --collect:"Code Coverage" --settings $(System.DefaultWorkingDirectory)\CodeCoverage.runsettings '
     workingDirectory: '$(System.DefaultWorkingDirectory)\'
+  env:
+    TestAppId: $(LinuxTestBotAppId)
+    TestPassword: $(LinuxTestBotAppSecret)
 
 - task: AzureCLI@1
   displayName: 'Delete test resource group'

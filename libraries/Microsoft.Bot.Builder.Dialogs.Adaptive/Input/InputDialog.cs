@@ -516,7 +516,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             bool activityProcessed = dc.State.GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
             {
-                if (this.GetType().Name == nameof(AttachmentInput))
+                if (typeof(AttachmentInput).IsAssignableFrom(this.GetType()))
                 {
                     input = dc.Context.Activity.Attachments ?? new List<Attachment>();
                 }

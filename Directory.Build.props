@@ -48,6 +48,10 @@
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TF_BUILD)' != '' ">
+    <DefineConstants>$(DefineConstants);AUTOMATEDBUILD</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!-- Rules found at: https://aka.ms/Microsoft-NuGet-Compliance -->
     <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>

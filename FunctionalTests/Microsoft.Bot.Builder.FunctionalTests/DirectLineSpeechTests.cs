@@ -19,7 +19,6 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.FunctionalTests
 {
     [TestClass]
-
     [TestCategory("FunctionalTests")]
     [Ignore("DirectLine Speech tests require updates to the REST API and CLI to be able to properly provision a bot.")]
     public class DirectLineSpeechTests
@@ -91,14 +90,14 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
             if (string.IsNullOrWhiteSpace(speechBotSecret))
             {
-                Assert.Inconclusive("Environment variable 'SPEECHBOTSECRET' not found.");
+                Assert.Fail("Environment variable 'SPEECHBOTSECRET' not found.");
             }
 
             // The cog services key for use with DLS.
             speechSubscription = Environment.GetEnvironmentVariable("SPEECHSUBSCRIPTION");
             if (string.IsNullOrWhiteSpace(speechSubscription))
             {
-                Assert.Inconclusive("Environment variable 'SPEECHSUBSCRIPTION' not found.");
+                Assert.Fail("Environment variable 'SPEECHSUBSCRIPTION' not found.");
             }
         }
 
