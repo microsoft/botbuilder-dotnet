@@ -22,12 +22,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
         }
 
-        public static async Task RunTestScript(ResourceExplorer resourceExplorer, string resourceId = null, IConfiguration configuration = null, [CallerMemberName] string testName = null)
+        public static async Task RunTestScript(ResourceExplorer resourceExplorer, string resourceId = null, IConfiguration configuration = null, [CallerMemberName] string testName = null, LanguagePolicy languagePolicy = null)
         {
             var script = resourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
             script.Configuration = configuration ?? new ConfigurationBuilder().AddInMemoryCollection().Build();
             script.Description = script.Description ?? resourceId;
-            await script.ExecuteAsync(testName: testName, resourceExplorer: resourceExplorer).ConfigureAwait(false);
+            await script.ExecuteAsync(testName: testName, resourceExplorer: resourceExplorer, languagePolicy: languagePolicy).ConfigureAwait(false);
         }
 
         public static string GetProjectPath()
