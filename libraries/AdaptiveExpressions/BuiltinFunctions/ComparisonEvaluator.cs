@@ -24,6 +24,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
         {
         }
 
+        private enum DataType
+        {
+            Number,
+            DateTime,
+            Other
+        }
+
         private static EvaluateExpressionDelegate Evaluator(Func<IReadOnlyList<object>, bool> function, FunctionUtils.VerifyExpression verify)
         {
             return (expression, state, options) =>
@@ -35,13 +42,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 if (error == null)
                 {
                     // Ensure args are all of same type
-                    bool? isNumber = null;
+                    DataType? validType = null;
                     foreach (var arg in args)
                     {
                         var obj = arg;
-                        if (isNumber.HasValue)
+                        if (validType.HasValue)
                         {
-                            if (obj != null && obj.IsNumber() != isNumber.Value)
+                            if (obj != null && validType == DataType.Other && DetermineCurArgType(arg) != validType.Value)
                             {
                                 error = $"Arguments must either all be numbers or strings in {expression}";
                                 break;
@@ -49,7 +56,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         }
                         else
                         {
-                            isNumber = obj.IsNumber();
+                            validType = DetermineCurArgType(arg);
                         }
                     }
 
@@ -76,6 +83,21 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                 return (result, error);
             };
+        }
+
+        private static DataType DetermineCurArgType(object obj)
+        {
+            if (obj.IsNumber())
+            {
+                return DataType.Number;
+            }
+            
+            if (obj is DateTime)
+            {
+                return DataType.DateTime;
+            }
+
+            return DataType.Other;
         }
     }
 }

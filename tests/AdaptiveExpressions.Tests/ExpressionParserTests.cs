@@ -497,6 +497,11 @@ namespace AdaptiveExpressions.Tests
             Test("bag.name == null ? \"hello\": bag.name", "mybag"),
             Test("one > 0? one : two", 1),
             Test("hello * 5?'r1':'r2'", "r2"),
+            Test("timestampObj < timestampObj2", false),
+            Test("timestampObj > timestampObj2", true),
+            Test("timestampObj >= timestampObj2", true),
+            Test("timestampObj <= timestampObj2", false),
+            Test("timestampObj == timestampObj2", false),
             #endregion
 
             #region  String functions test

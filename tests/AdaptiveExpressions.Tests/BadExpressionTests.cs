@@ -109,7 +109,6 @@ namespace AdaptiveExpressions.Tests
             Test("greater(one)"), // greater need two parameters
             Test("greaterOrEquals(one, hello)"), // string and integer are not comparable
             Test("greaterOrEquals(one)"), // function need two parameters
-            Test("less(false, true)"), // string or number parameters are needed
             Test("less(one, hello)"), // string and integer are not comparable
             Test("less(one)"), // function need two parameters
             Test("lessOrEquals(one, hello)"), // string and integer are not comparable
@@ -559,6 +558,10 @@ namespace AdaptiveExpressions.Tests
                 if (error != null)
                 {
                     passed = true;
+                }
+                else
+                {
+                    System.Console.WriteLine(exp);
                 }
             }
             catch
