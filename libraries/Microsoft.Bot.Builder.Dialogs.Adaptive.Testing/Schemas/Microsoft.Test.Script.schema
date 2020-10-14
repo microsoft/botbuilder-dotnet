@@ -11,7 +11,6 @@
             "description": "The root dialog to execute the test script against."
         },
         "languagePolicy": {
-            "$kind": "Microsoft.LanguagePolicy",
             "type": "object",
             "title": "Language policy",
             "description": "Defines fall back languages to try per user input language."

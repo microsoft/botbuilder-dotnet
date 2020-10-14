@@ -9622,11 +9622,9 @@
           "$ref": "#/definitions/Microsoft.IDialog"
         },
         "languagePolicy": {
-          "$kind": "Microsoft.LanguagePolicy",
           "type": "object",
           "title": "Language policy",
-          "description": "Defines fall back languages to try per user input language.",
-          "$ref": "#/definitions/Microsoft.LanguagePolicy"
+          "description": "Defines fall back languages to try per user input language."
         },
         "description": {
           "type": "string",
