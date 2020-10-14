@@ -153,6 +153,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             activityClone.Conversation.Id = conversationId;
             activityClone.ServiceUrl = serviceUrl.ToString();
             activityClone.Recipient ??= new ChannelAccount();
+            activityClone.Recipient.Role = RoleTypes.Skill;
 
             return await SecurePostActivityAsync<T>(toUrl, activityClone, token, cancellationToken).ConfigureAwait(false);
         }

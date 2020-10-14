@@ -162,7 +162,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 {
                     ChannelId = Channels.Emulator,
                     ServiceUrl = "https://webchat.botframework.com/",
-                    RelatesTo = new ConversationReference()
+                    RelatesTo = new ConversationReference(),
+                    Recipient = new ChannelAccount { Role = RoleTypes.Skill }
                 },
                 header,
                 credentials,
