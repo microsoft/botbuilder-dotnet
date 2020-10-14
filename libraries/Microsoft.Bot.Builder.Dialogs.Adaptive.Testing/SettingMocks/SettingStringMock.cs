@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.SettingMocks
 {
     /// <summary>
-    /// Mock setting with string value.
+    /// Mock one or more settings with string value.
     /// </summary>
     public class SettingStringMock : SettingMock
     {
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.SettingMocks
         /// Gets the setting assignments.
         /// </summary>
         /// <value>
-        /// Property assignments as settings.property=value pairs. Assign the settings in sequence.
+        /// Setting assignments as settings.property=value pairs. Assign the settings in sequence.
         /// </value>
         [JsonProperty("assignments")]
         public List<SettingStringAssignment> Assignments { get; } = new List<SettingStringAssignment>();

@@ -29,9 +29,7 @@
                 "settings.base == 'base'",
                 "settings.baseoverwrite == 'overwrite settings.base'",
                 "settings.selfoverwrite == 'overwrite settings.selfoverwrite'",
-                "settings.object.value == 'within object value'",
-                "settings.array[0] == 'set array 0'",
-                "settings.array[1] == 'set array 1'"
+                "settings.object.value == 'within object value'"
             ]
         },
         {
@@ -50,9 +48,7 @@
                 "settings.base == 'base'",
                 "settings.baseoverwrite == 'overwrite settings.base'",
                 "settings.selfoverwrite == 'overwrite settings.selfoverwrite'",
-                "settings.object.value == 'within object value'",
-                "settings.array[0] == 'set array 0'",
-                "settings.array[1] == 'set array 1'"
+                "settings.object.value == 'within object value'"
             ]
         },
         {

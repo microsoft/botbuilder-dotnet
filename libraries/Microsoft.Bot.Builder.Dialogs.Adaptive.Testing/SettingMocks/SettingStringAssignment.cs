@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.SettingMocks
 {
     /// <summary>
-    /// Setting Assignment (used in SettingStringMock).
+    /// Setting String Assignment (used in SettingStringMock).
     /// </summary>
     public class SettingStringAssignment
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.SettingMocks
         /// <summary>
         /// Gets or sets the value to set.
         /// </summary>
-        /// <value>Only string is supported.</value>
+        /// <value>Value string.</value>
         [JsonProperty("value")]
         public string Value { get; set; }
     }
