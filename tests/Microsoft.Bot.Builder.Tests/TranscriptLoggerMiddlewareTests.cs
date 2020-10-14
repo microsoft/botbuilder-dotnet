@@ -32,12 +32,12 @@ namespace Microsoft.Bot.Builder.Tests
                     var activities = await transcriptStore.GetTranscriptActivitiesAsync(activity.ChannelId, conversationId);
                     Assert.Equal(2, activities.Items.Length);
                 })
-                .Send(new Activity(ActivityTypes.Event) { Name = EventActivityNames.ContinueConversation })
+                .Send(new Activity(ActivityTypes.Event) { Name = ActivityEventNames.ContinueConversation })
                 .AssertReply(async activity =>
                 {
                     // Ensure the event hasn't been added to the transcript.
                     var activities = await transcriptStore.GetTranscriptActivitiesAsync(activity.ChannelId, conversationId);
-                    Assert.DoesNotContain(activities.Items, a => ((Activity)a).Type == ActivityTypes.Event && ((Activity)a).Name == EventActivityNames.ContinueConversation);
+                    Assert.DoesNotContain(activities.Items, a => ((Activity)a).Type == ActivityTypes.Event && ((Activity)a).Name == ActivityEventNames.ContinueConversation);
                     Assert.Equal(3, activities.Items.Length);
                 })
                 .StartTestAsync();

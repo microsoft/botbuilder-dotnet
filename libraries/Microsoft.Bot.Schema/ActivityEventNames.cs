@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Define values for common event names used by activities of type <see cref="ActivityTypes.Event"/>.
     /// </summary>
-    public static class EventActivityNames
+    public static class ActivityEventNames
     {
         /// <summary>
         /// The event name for continuing a conversation.

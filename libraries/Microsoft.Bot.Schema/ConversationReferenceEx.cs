@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Schema
         {
             return new Activity(ActivityTypes.Event)
             {
-                Name = EventActivityNames.ContinueConversation,
+                Name = ActivityEventNames.ContinueConversation,
                 Id = Guid.NewGuid().ToString(),
                 ChannelId = ChannelId,
                 Locale = Locale,

@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder
                 }
 
                 // We should not log ContinueConversation events used by skills to initialize the middleware.
-                if (!(turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == EventActivityNames.ContinueConversation))
+                if (!(turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == ActivityEventNames.ContinueConversation))
                 {
                     LogActivity(transcript, CloneActivity(turnContext.Activity));
                 }
