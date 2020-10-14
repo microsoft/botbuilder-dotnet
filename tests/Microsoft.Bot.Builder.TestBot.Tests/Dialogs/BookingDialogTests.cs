@@ -3,11 +3,13 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.TestBot.Shared;
+using Microsoft.Bot.Builder.TestBot.Shared.Dialogs;
+using Microsoft.Bot.Builder.TestBot.Shared.Services;
 using Microsoft.Bot.Builder.Testing;
 using Microsoft.Bot.Builder.Testing.XUnit;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.BotBuilderSamples.Services;
 using Microsoft.BotBuilderSamples.Tests.Dialogs.TestData;
 using Microsoft.BotBuilderSamples.Tests.Framework;
 using Moq;

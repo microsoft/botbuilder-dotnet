@@ -1,0 +1,73 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "Name": {
+      "type": "string",
+      "$entities": [
+        "personName"
+      ]
+    },
+    "Meat": {
+      "type": "string",
+      "enum": [
+        "bacon",
+        "chicken",
+        "ham",
+        "pulled pork",
+        "roast beef",
+        "salami",
+        "turkey",
+        "none"
+      ],
+      "$entities": [
+        "MeatEntity"
+      ]
+    },
+    "Cheese": {
+      "type": "string",
+      "enum": [
+        "american",
+        "cheddar",
+        "feta",
+        "gouda",
+        "pepper jack",
+        "provolone",
+        "swiss",
+        "none"
+      ],
+      "$entities": [
+        "CheeseEntity"
+      ]
+    },
+    "PropertyToChange": {
+      "type": "string",
+      "$entities": [
+        "Name",
+        "Meat",
+        "Cheese"
+      ]
+    }
+  },
+  "required": [
+    "Name",
+    "Meat",
+    "Cheese"
+  ],
+  "$operations": [
+    "Add()",
+    "Remove()",
+    "Clear()",
+    "Show()",
+    "Help()",
+    "Change()"
+  ],
+  "$expectedOnly": [
+    "personName"
+  ],
+  "$defaultOperation": {
+    "": {
+      "": "Add()"
+    }
+  }
+}
