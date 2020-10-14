@@ -194,15 +194,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 callback = dm.OnTurnAsync;
             }
 
-                if (languagePolicy != null)
-                {
-                    dm.UseLanguagePolicy(languagePolicy);
-                }
-
-                foreach (var testAction in Script)
-                {
-                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync, Inspect).ConfigureAwait(false);
-                }
+            foreach (var testAction in Script)
+            {
+                await testAction.ExecuteAsync(adapter, callback, Inspect).ConfigureAwait(false);
             }
         }
 
