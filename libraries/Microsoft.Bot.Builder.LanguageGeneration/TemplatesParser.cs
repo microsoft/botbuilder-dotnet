@@ -82,6 +82,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// Parser to turn lg content into a <see cref="Templates"/>.
+        /// </summary>
+        /// <param name="resource">LG resource.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <returns>new <see cref="Templates"/> entity.</returns>
+        public static Templates ParseResource(
+            LGResource resource,
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null)
+        {
+            return InnerParseResource(resource, importResolver, expressionParser);
+        }
+
+        /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/> based on the original LGFile.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
@@ -150,7 +165,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="cachedTemplates">Give the file path and templates to avoid parsing and to improve performance.</param>
         /// <param name="parentTemplates">Parent visited Templates.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
-        public static Templates ParseResource(
+        private static Templates InnerParseResource(
             LGResource resource,
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null,
@@ -252,7 +267,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        childResource = ParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, parentTemplates);
+                        childResource = InnerParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, parentTemplates);
                         cachedTemplates.Add(resource.Id, childResource);
                     }
 
