@@ -21,22 +21,6 @@
             "$kind": "Microsoft.Test.SetProperties",
             "assignments": [
                 {
-                    "property": "settings.fileoverwrite",
-                    "value": "overwrite settings.fileoverwrite"
-                },
-                {
-                    "property": "settings.value",
-                    "value": "settings value"
-                },
-                {
-                    "property": "settings.value",
-                    "value": "settings overwrite"
-                },
-                {
-                    "property": "settings.object.value",
-                    "value": "within object value"
-                },
-                {
                     "property": "user.number",
                     "value": 123
                 },
@@ -55,10 +39,6 @@
         {
             "$kind": "Microsoft.Test.MemoryAssertions",
             "assertions": [
-                "settings.file == 'set settings.file'",
-                "settings.fileoverwrite == 'overwrite settings.fileoverwrite'",
-                "settings.value == 'settings overwrite'",
-                "settings.object.value == 'within object value'",
                 "user.number == 123",
                 "user.object.value == 'object value'",
                 "conversation.value == 'conversation value'"
@@ -76,10 +56,6 @@
             "$kind": "Microsoft.Test.SetProperties",
             "assignments": [
                 {
-                    "property": "settings.value",
-                    "value": "settings overwrite again"
-                },
-                {
                     "property": "user.object",
                     "value": {
                         "value": "object value again"
@@ -94,10 +70,6 @@
         {
             "$kind": "Microsoft.Test.MemoryAssertions",
             "assertions": [
-                "settings.file == 'set settings.file'",
-                "settings.fileoverwrite == 'overwrite settings.fileoverwrite'",
-                "settings.value == 'settings overwrite again'",
-                "settings.object.value == 'within object value'",
                 "user.number == 123",
                 "user.object.value == 'object value again'",
                 "conversation.value == 'conversation value again'"

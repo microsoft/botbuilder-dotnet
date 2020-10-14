@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.SettingMocks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -94,6 +95,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public List<UserTokenMock> UserTokenMocks { get; } = new List<UserTokenMock>();
 
         /// <summary>
+        /// Gets the mock data for setting.
+        /// </summary>
+        /// <value>
+        /// A list of mocks. Assign the settings in sequence.
+        /// </value>
+        [JsonProperty("settingMocks")]
+        public List<SettingMock> SettingMocks { get; } = new List<SettingMock>();
+
+        /// <summary>
         /// Gets the test script actions.
         /// </summary>
         /// <value>
@@ -159,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableTrace = EnableTrace;
             adapter.Locale = Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
-            adapter.Use(new SetProperties.MockSettingsMiddleware());
+            adapter.Use(new MockSettingsMiddleware(SettingMocks));
 
             foreach (var userToken in UserTokenMocks)
             {
