@@ -1,7 +1,7 @@
 ﻿{
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.IUserTokenMock)",
-    "title": "Microsoft test user token mock",
+    "title": "User token mock",
     "description": "Mock Basic UserToken",
     "type": "object",
     "required": [

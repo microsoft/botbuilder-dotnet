@@ -13,7 +13,7 @@
         "knowledgeBaseId": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "KnowledgeBase Id",
-            "description": "Knowledge base Id of your QnA Maker KnowledgeBase.",
+            "description": "Knowledge base Id of your QnA Maker knowledge base.",
             "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
@@ -69,7 +69,7 @@
         },
         "isTest": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Programmer speak",
+            "title": "Use test environment",
             "description": "True, if pointing to Test environment, else false.",
             "examples": [
                 true,
