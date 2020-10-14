@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +26,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
                 {
                     Type = "message",
                     Text = "This is the skill talking: hello"
+                };
+            }
+
+            if (activity.Text.Contains("end"))
+            {
+                responseActivity = new Activity()
+                {
+                    Type = "endOfConversation"
                 };
             }
 
