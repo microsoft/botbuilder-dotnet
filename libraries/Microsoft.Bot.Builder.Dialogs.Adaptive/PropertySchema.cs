@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             var list = new List<string>();
-            var entities = schema["$entities"]?.Value<JArray>();
+            var entities = schema["$entities"]?.Value<JArray>() ?? schema["items"]?["$entities"].Value<JArray>();
             if (entities != null)
             {
                 foreach (var entity in entities)
