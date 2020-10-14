@@ -1,0 +1,81 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"none\"",
+    "responses": [
+        {
+          "content": {
+            "query": "none",
+            "prediction": {
+              "entities": {
+                "$instance": {
+                  "CheeseEntity": [
+                    {
+                      "length": 4,
+                      "modelType": "List Entity Extractor",
+                      "modelTypeId": 5,
+                      "recognitionSources": [
+                        "model"
+                      ],
+                      "startIndex": 0,
+                      "text": "none",
+                      "type": "CheeseEntity"
+                    }
+                  ],
+                  "Meat": [
+                    {
+                      "length": 4,
+                      "modelType": "Entity Extractor",
+                      "modelTypeId": 1,
+                      "recognitionSources": [
+                        "model"
+                      ],
+                      "startIndex": 0,
+                      "text": "none",
+                      "type": "Meat"
+                    }
+                  ]
+                },
+                "CheeseEntity": [
+                  [
+                    "none"
+                  ]
+                ],
+                "Meat": [
+                  {
+                    "$instance": {
+                      "MeatEntity": [
+                        {
+                          "length": 4,
+                          "modelType": "Entity Extractor",
+                          "modelTypeId": 1,
+                          "recognitionSources": [
+                            "model"
+                          ],
+                          "startIndex": 0,
+                          "text": "none",
+                          "type": "MeatEntity"
+                        }
+                      ]
+                    },
+                    "MeatEntity": [
+                      [
+                        "none"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              "intents": {
+                "sandwich": {
+                  "score": 0.9335949
+                }
+              },
+              "topIntent": "sandwich"
+            }
+          }
+        }
+    ]
+}

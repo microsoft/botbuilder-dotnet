@@ -1,0 +1,121 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Tests for Choosing Property",
+  "httpRequestMocks": [
+    "LuisChooseProperty.mock",
+    "LuisProperty.mock"
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "schema": "threeProperties.json",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "welcome"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnEndOfActions",
+        "condition": "=!$Name",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Name?",
+            "expectedProperties": [
+              "Name"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnChooseProperty",
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "meat or cheese ?",
+            "expectedProperties": [
+              "PropertyToChange"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Add()",
+        "property": "Meat",
+        "entity": "MeatEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "set meat to none"
+          },
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Meat",
+            "value": "=@MeatEntity"
+          },
+          {
+            "$kind": "Microsoft.IfCondition",
+            "condition": "$PropertyToChange == 'Meat'",
+            "actions": [
+              {
+                "$kind": "Microsoft.DeleteProperty",
+                "property": "$PropertyToChange"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "welcome"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "none"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "meat or cheese ?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "meat"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "set meat to none"
+    }
+
+  ]
+}
