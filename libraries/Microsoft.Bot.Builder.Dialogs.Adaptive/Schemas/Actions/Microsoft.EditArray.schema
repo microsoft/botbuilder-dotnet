@@ -19,7 +19,7 @@
             "oneOf": [
                 {
                     "type": "string",
-                    "title": "Enum",
+                    "title": "Change type",
                     "description": "Standard change type.",
                     "enum": [
                         "push",

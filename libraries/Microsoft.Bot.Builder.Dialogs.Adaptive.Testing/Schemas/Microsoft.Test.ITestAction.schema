@@ -1,6 +1,6 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
-    "title": "Microsoft test ITestAction",
+    "title": "Microsoft test action",
     "description": "Components which derive from TestAction class",
     "$role": "interface"
 }

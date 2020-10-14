@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.ITestAction)",
-    "title": "Assert reply OneOf",
+    "title": "Assert activity text matches at least one",
     "description": "Asserts that a reply text is one of multiple optional responses.",
     "type": "object",
     "properties": {
@@ -32,7 +32,7 @@
         },
         "assertions": {
             "type": "array",
-            "title": "Assertions to perform to validate activity that is sent by the dialog",
+            "title": "Assertions to validate activity that is sent by the dialog",
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
                 "$ref": "schema:#/definitions/condition",

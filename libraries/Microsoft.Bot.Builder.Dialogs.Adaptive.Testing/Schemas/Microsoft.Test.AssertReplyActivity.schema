@@ -20,7 +20,7 @@
         },
         "assertions": {
             "type": "array",
-            "title": "Assertions to perform to validate Activity that is sent by the dialog",
+            "title": "Assertions to validate Activity that is sent by the dialog",
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
                 "$ref": "schema:#/definitions/condition",

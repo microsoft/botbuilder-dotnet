@@ -13,7 +13,7 @@
         "knowledgeBaseId": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "KnowledgeBase Id",
-            "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+            "description": "Knowledge base Id of your QnA Maker KnowledgeBase.",
             "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
@@ -69,7 +69,7 @@
         },
         "isTest": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "IsTest",
+            "title": "Programmer speak",
             "description": "True, if pointing to Test environment, else false.",
             "examples": [
                 true,
@@ -77,7 +77,7 @@
             ]
         },
         "rankerType": {
-            "title": "Ranker Type",
+            "title": "Ranker type",
             "description": "Type of Ranker.",
             "oneOf": [
                 {
@@ -149,12 +149,12 @@
         },
         "context": {
             "$ref": "schema:#/definitions/objectExpression",
-            "title": "QnARequestContext",
+            "title": "QnA request context",
             "description": "Context to use for ranking."
         },
         "qnaId": {
             "$ref": "schema:#/definitions/integerExpression",
-            "title": "QnAId",
+            "title": "QnA Id",
             "description": "A number or expression which is the QnAId to paass to QnAMaker API."
         }
     },

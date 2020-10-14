@@ -20,7 +20,7 @@
         },
         "activityId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "ActivityId",
+            "title": "Activity Id",
             "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
             "examples": [
                 "$lastActivity"

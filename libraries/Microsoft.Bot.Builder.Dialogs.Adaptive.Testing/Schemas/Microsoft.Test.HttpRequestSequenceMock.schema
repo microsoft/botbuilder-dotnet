@@ -1,7 +1,7 @@
 ﻿{
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.IHttpRequestMock)",
-    "title": "Httprequest sequence mock",
+    "title": "HTTP request sequence mock",
     "description": "Mock HttpRequest in sequence order.",
     "type": "object",
     "required": [
