@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IEntityRecognizer)",
-    "title": "Percentage Entity Recognizer",
+    "title": "Percentage entity recognizer",
     "description": "Recognizer which recognizes percentages.",
     "type": "object",
     "properties": {}
