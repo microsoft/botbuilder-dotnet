@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 { "MicrosoftAppId", "appId" },
                 { "MicrosoftAppPassword", "appPassword" },
-                { "ChannelService", "channelService" }
+                { "ChannelService", GovernmentAuthenticationConstants.ChannelService }
             };
 
             var configuration = new ConfigurationBuilder()

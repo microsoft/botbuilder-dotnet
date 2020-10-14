@@ -46,5 +46,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
+
+        [Fact]
+        public async Task MultiLanguageRecognizerTest_LanguagePolicy()
+        {
+            var languagePolicy = new LanguagePolicy("en-gb");
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, languagePolicy: languagePolicy);
+        }
     }
 }

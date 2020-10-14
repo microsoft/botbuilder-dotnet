@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]
+#if !AUTOMATEDBUILD
+    [Ignore]
+#endif
     public class WebexClientTest
     {        
         private const string WebexUrlBase = "https://api.ciscospark.com/v1";

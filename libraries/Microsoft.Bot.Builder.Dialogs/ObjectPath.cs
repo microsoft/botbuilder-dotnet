@@ -120,7 +120,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            value = MapValueTo<T>(result);
+            try
+            {
+                value = MapValueTo<T>(result);
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                return false;
+            }
+
             return true;
         }
 

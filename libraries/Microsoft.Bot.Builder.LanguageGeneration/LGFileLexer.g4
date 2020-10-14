@@ -17,11 +17,11 @@ COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !startTemplate }?;
 
 IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { !startTemplate }?;
 
-TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { _tokenStartCharPositionInLine == 0}? { startTemplate = true; };
+TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { TokenStartColumn == 0}? { startTemplate = true; };
 
-INLINE_MULTILINE: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* '```' WHITESPACE* { startTemplate && _tokenStartCharPositionInLine == 0 }?;
+INLINE_MULTILINE: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* '```' WHITESPACE* { startTemplate && TokenStartColumn == 0 }?;
 
-MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* { startTemplate && _tokenStartCharPositionInLine == 0 }? -> pushMode(MULTILINE_MODE);
+MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* { startTemplate && TokenStartColumn == 0 }? -> pushMode(MULTILINE_MODE);
 
 TEMPLATE_BODY : ~('\r'|'\n')+ { startTemplate }?;
 

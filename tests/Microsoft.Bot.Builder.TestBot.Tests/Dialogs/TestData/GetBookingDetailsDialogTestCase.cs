@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.TestBot.Shared;
+
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
 {
     public class GetBookingDetailsDialogTestCase
