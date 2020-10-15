@@ -1603,14 +1603,14 @@ namespace Microsoft.Bot.Builder
                 ConnectorClient connectorClient;
                 if (appCredentials != null)
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
                 }
                 else
                 {
                     var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
                 }
 
                 if (_connectorClientRetryPolicy != null)

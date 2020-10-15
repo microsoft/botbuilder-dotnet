@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Builder
             var credentials = await _botFrameworkAuthentication.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
 
             // Create the connector client to use for outbound requests.
-            using (var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), credentials, _httpClient))
+            using (var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), credentials, _httpClient, disposeHttpClient: _httpClient == null))
             {
                 // Create a turn context and run the pipeline.
                 using (var context = CreateTurnContext(reference.GetContinuationActivity(), claimsIdentity, audience, connectorClient, callback))
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder
             activity.CallerId = authenticateRequestResult.CallerId;
 
             // Create the connector client to use for outbound requests.
-            using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), authenticateRequestResult.Credentials, _httpClient))
+            using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), authenticateRequestResult.Credentials, _httpClient, disposeHttpClient: _httpClient == null))
             {
                 // Create a turn context and run the pipeline.
                 using (var context = CreateTurnContext(activity, authenticateRequestResult.ClaimsIdentity, authenticateRequestResult.Scope, connectorClient, callback))
