@@ -106,7 +106,7 @@ steps:
      # set up bot channels registration, app service, app service plan
      az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(BotName)";
      Set-PSDebug -Trace 0;
-condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 0), endsWith(variables['Build.BuildId'], 2), endsWith(variables['Build.BuildId'], 4), endsWith(variables['Build.BuildId'], 6), endsWith(variables['Build.BuildId'], 8)))
+  condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 0), endsWith(variables['Build.BuildId'], 2), endsWith(variables['Build.BuildId'], 4), endsWith(variables['Build.BuildId'], 6), endsWith(variables['Build.BuildId'], 8)))
 
 - task: AzureCLI@2
   displayName: 'New RG: create Azure resources. Runs in odd builds.'
