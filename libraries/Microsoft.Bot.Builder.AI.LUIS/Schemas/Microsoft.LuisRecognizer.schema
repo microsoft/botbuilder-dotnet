@@ -13,7 +13,7 @@
         },
         "applicationId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "LUIS application id,
+            "title": "LUIS application id",
             "description": "Application ID for your model from the LUIS service."
         },
         "version": {
