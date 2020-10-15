@@ -46,13 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
                     }
                 }
 
-                // Keep original behaviour
-                return new HttpResponseMessage(HttpStatusCode.NotFound)
-                {
-                    ReasonPhrase = $"No matching mock handler for \"{request.Method} {request.RequestUri}\"",
-                    Content = new StringContent(string.Empty),
-                    RequestMessage = request,
-                };
+                throw new NotImplementedException($"No matching mock handler for \"{request.Method} {request.RequestUri}\"");
             });
 
             _httpMessageHandler = handler;
