@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
                 {
                     // Return an anonymous claim with an anonymous skill AppId
-                    return new ClaimsIdentity(new List<Claim> { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, AuthenticationConstants.AnonymousAuthType);
+                    return SkillValidation.CreateAnonymousSkillClaim();
                 }
 
                 // In the scenario where Auth is disabled, we still want to have the

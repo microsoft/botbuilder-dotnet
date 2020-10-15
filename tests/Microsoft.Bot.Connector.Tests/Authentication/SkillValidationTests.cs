@@ -126,5 +126,13 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             claims.Add(new Claim(AuthenticationConstants.AppIdClaim, appId));
             await SkillValidation.ValidateIdentityAsync(mockIdentity.Object, mockCredentials.Object);
         }
+
+        [Fact]
+        public void CreateAnonymousSkillClaimTest()
+        {
+            var sut = SkillValidation.CreateAnonymousSkillClaim();
+            Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, JwtTokenValidation.GetAppIdFromClaims(sut.Claims));
+            Assert.Equal(AuthenticationConstants.AnonymousAuthType, sut.AuthenticationType);
+        }
     }
 }

@@ -533,7 +533,7 @@ namespace Microsoft.Bot.Builder
                 // IsAuthenticated flag set in the ClaimsIdentity.
                 // To do this requires adding in an empty claim.
                 // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
-                return new ClaimsIdentity(new List<Claim> { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, AuthenticationConstants.AnonymousAuthType);
+                return SkillValidation.CreateAnonymousSkillClaim();
             }
 
             // Validate the header and extract claims.
