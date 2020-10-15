@@ -93,9 +93,9 @@ namespace Microsoft.Bot.Connector
                 throw new ArgumentNullException(nameof(baseUri));
             }
 
-            BaseUri = baseUri;
-
             Initialize();
+
+            BaseUri = baseUri;
         }
 
         /// <summary>
