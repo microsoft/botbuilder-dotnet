@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// 
         /// If the expression is a value then it will be used as the input.
         /// 
-        /// This property allows you to define a how data such as Recognizer results is bound to the input dialog.
+        /// This property allows you to define how data such as Recognizer results is bound to the input dialog.
         /// Examples:
         /// * "=@age" => bind to the input to any age entity recognized in the input. 
         /// * "=coalesce(@age, @number)" => which means use @age or @number as the input.
