@@ -31,8 +31,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="task">The JSON for the Adaptive card to appear in the
         /// task module.</param>
-        /// <param name="cacheInfo">Cache Information for this Task Module Response.</param>
-        public TaskModuleResponse(TaskModuleResponseBase task = default(TaskModuleResponseBase), CacheInfo cacheInfo = default(CacheInfo))
+        public TaskModuleResponse(TaskModuleResponseBase task = default(TaskModuleResponseBase))
         {
             Task = task;
             CustomInit();
