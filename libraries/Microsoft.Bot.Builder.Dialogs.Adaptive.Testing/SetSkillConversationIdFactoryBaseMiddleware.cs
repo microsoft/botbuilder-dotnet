@@ -10,7 +10,7 @@ using Moq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
     /// <summary>
-    /// Middleware to add a mocked <see cref="SkillConversationIdFactoryBase"/> to the  <see cref="ITurnContext.TurnState"/>.
+    /// Middleware to add a mocked <see cref="SkillConversationIdFactoryBase"/> to the <see cref="ITurnContext.TurnState"/>.
     /// </summary>
     public class SetSkillConversationIdFactoryBaseMiddleware : IMiddleware
     {

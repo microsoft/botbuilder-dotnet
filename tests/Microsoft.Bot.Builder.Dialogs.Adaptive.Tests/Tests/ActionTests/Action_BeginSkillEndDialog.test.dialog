@@ -27,6 +27,7 @@
                         "SkillEndpoint": "http://localhost:39782/api/messages",
                         "SkillAppId": "test-app-id",
                         "ConnectionName": "test-skill-connection-name",
+                        "AllowInterruptions": false,
                         "activity": {
                             "$kind": "Microsoft.StaticActivityTemplate",
                             "activity": {

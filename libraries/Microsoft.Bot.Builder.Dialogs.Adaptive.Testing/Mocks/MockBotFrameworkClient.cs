@@ -11,7 +11,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
 {
     /// <summary>
-    /// MockBotFrameworkClient mock.
+    /// BotFrameworkClient mock.
     /// </summary>
     public class MockBotFrameworkClient : BotFrameworkClient
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
         {
             var responseActivity = activity;
 
-            if (activity.Text == "skill")
+            if (activity.Text.Contains("skill"))
             {
                 responseActivity = new Activity()
                 {
