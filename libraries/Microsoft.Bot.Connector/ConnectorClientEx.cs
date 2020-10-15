@@ -220,11 +220,6 @@ namespace Microsoft.Bot.Connector
             }
         }
 
-        //protected override void Dispose(bool disposing)
-        //{
-        //    base.Dispose(disposing);
-        //}
-
         /// <summary>
         /// Gets the assembly version for this Bot Connector client.
         /// </summary>
