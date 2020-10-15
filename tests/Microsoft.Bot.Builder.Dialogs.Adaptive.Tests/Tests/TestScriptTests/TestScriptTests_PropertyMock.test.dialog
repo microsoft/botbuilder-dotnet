@@ -58,12 +58,12 @@
                 {
                     "property": "user.object",
                     "value": {
-                        "value": "object value again"
+                        "value": "${user.object.value} again"
                     }
                 },
                 {
                     "property": "conversation.value",
-                    "value": "conversation value again"
+                    "value": "${conversation.value} again"
                 }
             ]
         },
