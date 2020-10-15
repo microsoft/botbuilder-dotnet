@@ -237,7 +237,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     }
 
                     httpRequestMessage.Content = jsonContent;
-
                     using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                     {
                         var content = response.Content != null ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
