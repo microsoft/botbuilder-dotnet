@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity { };
 
             // Act
-            activity.TeamsNotifyUser(externalResourceUrl: resourceUrl);
+            activity.TeamsNotifyUser(false, externalResourceUrl: resourceUrl);
 
             // Assert
             Assert.Equal(resourceUrl, ((TeamsChannelData)activity.ChannelData).Notification.ExternalResourceUrl);

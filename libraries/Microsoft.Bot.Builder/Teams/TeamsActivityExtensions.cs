@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="alertInMeeting">Sent to a meeting chat, this will cause the Teams client to 
         /// render it in a notification popup as well as in the chat thread.</param>
         /// <param name="externalResourceUrl">Url to external resource. Must be included in manifest's valid domains.</param>
-        public static void TeamsNotifyUser(this IActivity activity, bool? alertInMeeting = null, string externalResourceUrl = null)
+        public static void TeamsNotifyUser(this IActivity activity, bool alertInMeeting, string externalResourceUrl = null)
         {
             var teamsChannelData = activity.ChannelData as TeamsChannelData;
             if (teamsChannelData == null)
@@ -56,6 +56,15 @@ namespace Microsoft.Bot.Builder.Teams
                 AlertInMeeting = alertInMeeting,
                 ExternalResourceUrl = externalResourceUrl,
             };
+        }
+
+        /// <summary>
+        /// Configures the current activity to generate a notification within Teams.
+        /// </summary>
+        /// <param name="activity">The current activity.</param>
+        public static void TeamsNotifyUser(this IActivity activity)
+        {
+            activity.TeamsNotifyUser(false);
         }
     }
 }
