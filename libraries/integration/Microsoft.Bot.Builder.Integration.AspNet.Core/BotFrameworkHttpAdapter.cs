@@ -229,8 +229,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                
-                var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
+
+                // Set ClaimsIdentity on Adapter to enable Skills and User OAuth in WebSocket-based streaming scenarios.
+                var authHeader = httpRequest.Headers.First(x => string.Equals(x.Key, AuthHeaderName, StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
+                var channelId = httpRequest.Headers.First(x => string.Equals(x.Key, ChannelIdHeaderName, StringComparison.OrdinalIgnoreCase)).Value.FirstOrDefault();
+                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, CredentialProvider, ChannelProvider, channelId).ConfigureAwait(false);
+                ClaimsIdentity = claimsIdentity;
+
+                // Get the audience for the WebSocket connection.
+                // Setting the Audience on the StreamingRequestHandler enables the bot to call skills and correctly forward responses from the skill to the next recipient.
+                // i.e. the participant at the other end of the WebSocket connection.
+                var audience = ChannelProvider != null && ChannelProvider.IsGovernment() ?
+                    GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope :
+                    AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+                if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+                {
+                    audience = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                }
+
+                var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger, audience);
 
                 if (RequestHandlers == null)
                 {
