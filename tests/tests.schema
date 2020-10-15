@@ -314,6 +314,9 @@
       "$ref": "#/definitions/Microsoft.Test.AssertCondition"
     },
     {
+      "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
+    },
+    {
       "$ref": "#/definitions/Microsoft.Test.AssertReply"
     },
     {
@@ -8300,6 +8303,41 @@
         }
       }
     },
+    "Microsoft.Test.AssertNoActivity": {
+      "$role": "implements(Microsoft.Test.ITestAction)",
+      "title": "Assert Reply Activity",
+      "description": "Asserts that there is no activity.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "The description of the assertion"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.AssertNoActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.Test.AssertReply": {
       "$role": "implements(Microsoft.Test.ITestAction)",
       "title": "Assert Reply",
@@ -8762,6 +8800,9 @@
           "type": "string",
           "title": "Reference to Microsoft.Test.ITestAction",
           "description": "Reference to Microsoft.Test.ITestAction .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertReply"
