@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +20,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 
         public string Ts { get; set; }
 
-        public string Item { get; set; }
+#pragma warning disable CA2227 // Collection properties should be read only
+        public JObject Item { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         [JsonProperty(PropertyName = "event_ts")]
         public string EventTs { get; set; }

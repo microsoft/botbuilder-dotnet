@@ -561,26 +561,29 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Fact]
         public async Task ProcessAsyncShouldSucceedWithUnknownEventType()
         {
-            var slackApi = new Mock<SlackClientWrapper>(_testOptions);
-            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
-            slackApi.Setup(x => x.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
+            var slackApi = GetSlackApiMock();
 
             var slackAdapter = new SlackAdapter(slackApi.Object, _adapterOptions);
 
-            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/UnknownEvent.json");
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+            var httpRequest = GetHttpRequestMock(@"/Files/UnknownEvent.json", "application/json");
 
-            var httpRequest = new Mock<HttpRequest>();
-            httpRequest.SetupGet(req => req.Body).Returns(stream);
+            var httpResponse = GetHttpResponseMock();
 
-            var httpRequestHeader = new Mock<IHeaderDictionary>();
-            httpRequestHeader.SetupGet(x => x["Content-Type"]).Returns("application/json");
-            httpRequest.SetupGet(req => req.Headers).Returns(httpRequestHeader.Object);
+            await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, new Mock<IBot>().Object, default);
 
-            var httpResponse = new Mock<HttpResponse>();
-            httpResponse.SetupAllProperties();
-            var mockStream = new Mock<Stream>();
-            httpResponse.SetupGet(req => req.Body).Returns(mockStream.Object);
+            Assert.Equal(httpResponse.Object.StatusCode, (int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task ProcessAsyncShouldSucceedWithReactionAddedEventType()
+        {
+            var slackApi = GetSlackApiMock();
+
+            var slackAdapter = new SlackAdapter(slackApi.Object, _adapterOptions);
+
+            var httpRequest = GetHttpRequestMock(@"/Files/ReactionAddedEvent.json", "application/json");
+
+            var httpResponse = GetHttpResponseMock();
 
             await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, new Mock<IBot>().Object, default);
 
@@ -726,6 +729,39 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
 
             Assert.True(callback);
+        }
+
+        private static Mock<HttpResponse> GetHttpResponseMock()
+        {
+            var httpResponse = new Mock<HttpResponse>();
+            httpResponse.SetupAllProperties();
+
+            var mockStream = new Mock<Stream>();
+            httpResponse.SetupGet(req => req.Body).Returns(mockStream.Object);
+
+            return httpResponse;
+        }
+
+        private static Mock<HttpRequest> GetHttpRequestMock(string payloadFile, string headerContentType)
+        {
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + payloadFile);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            var httpRequestHeader = new Mock<IHeaderDictionary>();
+            httpRequestHeader.SetupGet(x => x["Content-Type"]).Returns(headerContentType);
+            httpRequest.SetupGet(req => req.Headers).Returns(httpRequestHeader.Object);
+            return httpRequest;
+        }
+
+        private Mock<SlackClientWrapper> GetSlackApiMock()
+        {
+            var slackApi = new Mock<SlackClientWrapper>(_testOptions);
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+            slackApi.Setup(x => x.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
+            return slackApi;
         }
     }
 }
