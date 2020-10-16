@@ -35,6 +35,7 @@ variables:
   BuildConfiguration: 'debug'
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step  
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  FacebookTestBotAppId: define this in Azure
 #  FacebookTestBotAppSecret: define this in Azure

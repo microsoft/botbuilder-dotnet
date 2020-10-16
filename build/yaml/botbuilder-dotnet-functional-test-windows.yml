@@ -31,10 +31,11 @@ variables:
   AppSecret: $(WinTestBotAppSecret)
   BotGroup: $(WinTestBotBotGroup)
   BotName: $(WinTestBotBotName)
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step  
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureSubscription: define this in Azure
 #  DeleteResourceGroup: (optional) define this in Azure. Default = true.

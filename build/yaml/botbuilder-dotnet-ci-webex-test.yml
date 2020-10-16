@@ -31,12 +31,13 @@ variables:
   AppSecret: $(WebexTestBotAppSecret)
   BotGroup: $(WebexTestBotBotGroup)
   BotName: $(WebexTestBotBotName)
-  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'debug'
+  MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
-  WebexPublicAddress: 'https://$(BotName).azurewebsites.net/api/messages'
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step  
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
+  WebexPublicAddress: 'https://$(BotName).azurewebsites.net/api/messages'
 #  AzureSubscription: define this in Azure
 #  DeleteResourceGroup: (optional) define this in Azure. Default = true.
 #  WebexTestBotAppId: define this in Azure

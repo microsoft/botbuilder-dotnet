@@ -36,6 +36,7 @@ variables:
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by Microsoft.Bot.Builder.sln projects.
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step  
   SlackBotToken: $(SlackTestBotSlackBotToken)
   SlackClientSigningSecret: $(SlackTestBotSlackClientSigningSecret)
   SlackVerificationToken: $(SlackTestBotSlackVerificationToken)
