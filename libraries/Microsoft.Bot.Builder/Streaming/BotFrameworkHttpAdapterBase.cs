@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 RequestHandlers = new List<StreamingRequestHandler>();
             }
 
-            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, Logger, audience);
+            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, audience, Logger);
             RequestHandlers.Add(requestHandler);
 
             await requestHandler.ListenAsync().ConfigureAwait(false);

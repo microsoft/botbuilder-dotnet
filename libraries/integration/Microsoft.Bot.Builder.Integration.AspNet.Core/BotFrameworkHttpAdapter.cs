@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // Set ClaimsIdentity on Adapter to enable Skills and User OAuth in WebSocket-based streaming scenarios.
                 var audience = GetAudience(claimsIdentity);
 
-                var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger, audience);
+                var requestHandler = new StreamingRequestHandler(bot, this, socket, audience, Logger);
 
                 if (RequestHandlers == null)
                 {

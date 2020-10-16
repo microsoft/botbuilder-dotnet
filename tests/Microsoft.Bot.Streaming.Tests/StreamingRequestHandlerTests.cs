@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new BotFrameworkHttpAdapter(), socket: null);
+                var handler = new StreamingRequestHandler(new MockBot(), activityProcessor: new BotFrameworkHttpAdapter(), socket: null, logger: null);
             }
             catch (Exception ex)
             {
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Arrange 
 
             // Act
-            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new FauxSock());
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), new FauxSock(), logger: null);
 
             // Assert
             Assert.NotNull(handler);

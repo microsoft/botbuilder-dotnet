@@ -44,6 +44,19 @@ namespace Microsoft.Bot.Builder.Streaming
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
         /// establishes a connection over a WebSocket to a streaming channel.
         /// </summary>
+        /// <param name="bot">The bot for which we handle requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
+        /// <param name="socket">The base socket to use when connecting to the channel.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
+            : this(bot, activityProcessor, socket, null, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
+        /// establishes a connection over a WebSocket to a streaming channel.
+        /// </summary>
         /// <remarks>
         /// The audience represents the recipient at the other end of the StreamingRequestHandler's
         /// streaming connection. Some acceptable audience values are as follows:
@@ -57,11 +70,11 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <param name="audience">The specified recipient of all outgoing activities.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null, string audience = null)
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience = null, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-            
+
             if (socket == null)
             {
                 throw new ArgumentNullException(nameof(socket));
@@ -74,6 +87,19 @@ namespace Microsoft.Bot.Builder.Streaming
             _server = new WebSocketServer(socket, this);
             _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
+        /// establishes a connection over a Named Pipe to a streaming channel.
+        /// </summary>
+        /// <param name="bot">The bot for which we handle requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
+        /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
+            : this(bot, activityProcessor, pipeName, null, logger)
+        {
         }
 
         /// <summary>
@@ -93,7 +119,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <param name="audience">The specified recipient of all outgoing activities.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null, string audience = null)
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, string audience, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
