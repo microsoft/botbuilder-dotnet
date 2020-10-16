@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     };
                 }
 
-                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}");
+                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}", err);
             }
         }
 
