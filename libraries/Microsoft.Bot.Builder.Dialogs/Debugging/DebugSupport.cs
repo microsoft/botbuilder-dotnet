@@ -11,11 +11,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// </summary>
     public static class DebugSupport
     {
+        private static ISourceMap staticSourceMap = Debugging.SourceMap.Instance;
+        private static AsyncLocal<ISourceMap> asyncLocalSourceMap = new AsyncLocal<ISourceMap>();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use async local values for 
+        /// <see cref="SourceMap"/>. This enables multiple concurrent operations 
+        /// to each use their own <see cref="ISourceMap"/>.
+        /// </summary>
+        /// <value>True if the <see cref="SourceMap"/> is local to the async 
+        /// context, otherwise false.</value>
+        public static bool UseAsyncLocal { get; set; }
+
         /// <summary>
         /// Gets or sets the source map instance.
         /// </summary>
         /// <value>The <see cref="SourceMap"/> instance.</value>
-        public static ISourceMap SourceMap { get; set; } = Debugging.SourceMap.Instance;
+        public static ISourceMap SourceMap
+        {
+            get
+            {
+                if (UseAsyncLocal)
+                {
+                    if (asyncLocalSourceMap.Value == null)
+                    {
+                        asyncLocalSourceMap.Value = new SourceMap();
+                    }
+
+                    return asyncLocalSourceMap.Value;
+                }
+                else
+                {
+                    return staticSourceMap;
+                }
+            }
+
+            set
+            {
+                if (UseAsyncLocal)
+                {
+                    asyncLocalSourceMap.Value = staticSourceMap;
+                }
+                else
+                {
+                    staticSourceMap = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Extension method to get IDialogDebugger from TurnContext.
