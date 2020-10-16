@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Teams
         public TeamsConnectorClient Client { get; private set; }
 
         /// <summary>
-        /// Fetches channel list for a given team
+        /// Fetches channel list for a given team.
         /// </summary>
         /// <remarks>
         /// Fetch the channel list.
@@ -103,11 +103,8 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Fetches details related to a team
+        /// Fetches details related to a team.
         /// </summary>
-        /// <remarks>
-        /// Fetch details for a team
-        /// </remarks>
         /// <param name='teamId'>
         /// Team Id
         /// </param>

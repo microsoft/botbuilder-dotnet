@@ -23,20 +23,6 @@
       }
     }
   },
-  "Microsoft.AttachmentInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for a file or an attachment",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Attachment Input"
-    }
-  },
   "Microsoft.BeginDialog": {
     "form": {
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
@@ -84,52 +70,10 @@
       "subtitle": "Cancel All Dialogs"
     }
   },
-  "Microsoft.ChoiceInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt with multi-choice",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Choice Input"
-    }
-  },
-  "Microsoft.ConfirmInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for confirmation",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Confirm Input"
-    }
-  },
   "Microsoft.ContinueLoop": {
     "form": {
       "label": "Continue loop",
       "subtitle": "Continue loop"
-    }
-  },
-  "Microsoft.DateTimeInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for a date or a time",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Date Time Input"
     }
   },
   "Microsoft.DebugBreak": {
@@ -313,6 +257,169 @@
       "subtitle": "Log Action"
     }
   },
+  "Microsoft.RepeatDialog": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Repeat this dialog",
+      "order": [
+        "options",
+        "*"
+      ],
+      "subtitle": "Repeat Dialog"
+    }
+  },
+  "Microsoft.ReplaceDialog": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Replace this dialog",
+      "order": [
+        "dialog",
+        "options",
+        "*"
+      ],
+      "subtitle": "Replace Dialog"
+    }
+  },
+  "Microsoft.SendActivity": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Send Activity"
+    }
+  },
+  "Microsoft.SetProperties": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-using-memory",
+      "label": "Set properties",
+      "properties": {
+        "assignments": {
+          "properties": {
+            "property": {
+              "intellisenseScopes": [
+                "variable-scopes"
+              ]
+            }
+          }
+        }
+      },
+      "subtitle": "Set Properties"
+    }
+  },
+  "Microsoft.SetProperty": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-using-memory",
+      "label": "Set a property",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Set Property"
+    }
+  },
+  "Microsoft.SignOutUser": {
+    "form": {
+      "label": "Sign out user",
+      "subtitle": "Signout User"
+    }
+  },
+  "Microsoft.SwitchCondition": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
+      "hidden": [
+        "default"
+      ],
+      "label": "Branch: Switch (multiple options)",
+      "properties": {
+        "cases": {
+          "hidden": [
+            "actions"
+          ]
+        },
+        "condition": {
+          "intellisenseScopes": [
+            "user-variables"
+          ]
+        }
+      },
+      "subtitle": "Switch Condition"
+    }
+  },
+  "Microsoft.ThrowException": {
+    "form": {
+      "label": "Throw an exception",
+      "subtitle": "Throw an exception"
+    }
+  },
+  "Microsoft.TraceActivity": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-debugging-bots",
+      "label": "Emit a trace event",
+      "subtitle": "Trace Activity"
+    }
+  },
+  "Microsoft.AttachmentInput": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for a file or an attachment",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Attachment Input"
+    }
+  },
+  "Microsoft.ChoiceInput": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt with multi-choice",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Choice Input"
+    }
+  },
+  "Microsoft.ConfirmInput": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for confirmation",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Confirm Input"
+    }
+  },
+  "Microsoft.DateTimeInput": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for a date or a time",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Date Time Input"
+    }
+  },
   "Microsoft.NumberInput": {
     "form": {
       "helpLink": "https://aka.ms/bfc-ask-for-user-input",
@@ -336,6 +443,27 @@
         "*"
       ],
       "subtitle": "OAuth Input"
+    }
+  },
+  "Microsoft.TextInput": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for text",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Text Input"
+    }
+  },
+  "Microsoft.RegexRecognizer": {
+    "form": {
+      "hidden": [
+        "entities"
+      ]
     }
   },
   "Microsoft.OnActivity": {
@@ -600,134 +728,6 @@
         "*"
       ],
       "subtitle": "Unknown intent recognized"
-    }
-  },
-  "Microsoft.RegexRecognizer": {
-    "form": {
-      "hidden": [
-        "entities"
-      ]
-    }
-  },
-  "Microsoft.RepeatDialog": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Repeat this dialog",
-      "order": [
-        "options",
-        "*"
-      ],
-      "subtitle": "Repeat Dialog"
-    }
-  },
-  "Microsoft.ReplaceDialog": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Replace this dialog",
-      "order": [
-        "dialog",
-        "options",
-        "*"
-      ],
-      "subtitle": "Replace Dialog"
-    }
-  },
-  "Microsoft.SendActivity": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-send-activity",
-      "label": "Send a response",
-      "order": [
-        "activity",
-        "*"
-      ],
-      "subtitle": "Send Activity"
-    }
-  },
-  "Microsoft.SetProperties": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-using-memory",
-      "label": "Set properties",
-      "properties": {
-        "assignments": {
-          "properties": {
-            "property": {
-              "intellisenseScopes": [
-                "variable-scopes"
-              ]
-            }
-          }
-        }
-      },
-      "subtitle": "Set Properties"
-    }
-  },
-  "Microsoft.SetProperty": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-using-memory",
-      "label": "Set a property",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Set Property"
-    }
-  },
-  "Microsoft.SignOutUser": {
-    "form": {
-      "label": "Sign out user",
-      "subtitle": "Signout User"
-    }
-  },
-  "Microsoft.SwitchCondition": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
-      "hidden": [
-        "default"
-      ],
-      "label": "Branch: Switch (multiple options)",
-      "properties": {
-        "cases": {
-          "hidden": [
-            "actions"
-          ]
-        },
-        "condition": {
-          "intellisenseScopes": [
-            "user-variables"
-          ]
-        }
-      },
-      "subtitle": "Switch Condition"
-    }
-  },
-  "Microsoft.TextInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for text",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Text Input"
-    }
-  },
-  "Microsoft.ThrowException": {
-    "form": {
-      "label": "Throw an exception",
-      "subtitle": "Throw an exception"
-    }
-  },
-  "Microsoft.TraceActivity": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-debugging-bots",
-      "label": "Emit a trace event",
-      "subtitle": "Trace Activity"
     }
   }
 }

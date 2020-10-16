@@ -113,6 +113,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             string participantId = GetValueOrNull(dc, this.ParticipantId);
             string tenantId = GetValueOrNull(dc, this.TenantId);
 
+            if (participantId == null)
+            {
+                // TeamsInfo.GetMeetingParticipantAsync will default to retrieving the current meeting's participant
+                // if none is provided.  This could lead to unexpected results.  Therefore, GetMeetingParticipant action
+                // throws an exception if the expression provided somehow maps to an invalid result.
+                throw new InvalidOperationException($"GetMeetingParticipant could determine the participant id by expression value provided. {nameof(participantId)} is required.");
+            }
+
             var result = await TeamsInfo.GetMeetingParticipantAsync(dc.Context, meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             dc.State.SetValue(this.Property.GetValue(dc.State), result);

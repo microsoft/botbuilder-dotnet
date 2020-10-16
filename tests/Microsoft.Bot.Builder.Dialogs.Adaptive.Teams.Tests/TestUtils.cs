@@ -30,19 +30,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
         }
 
-        public static async Task RunTestScript(ResourceExplorer resourceExplorer, string resourceId = null, IConfiguration configuration = null, [CallerMemberName] string testName = null, HttpMessageHandler testHttpClientMessageHandler = null)
+        public static async Task RunTestScript(ResourceExplorer resourceExplorer, string resourceId = null, IConfiguration configuration = null, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middleware = null)
         {
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
 
             var adapter = (TestAdapter)new TestAdapter(Channels.Msteams);
-            if (testHttpClientMessageHandler != null)
+
+            if (middleware != null)
             {
-                var testHttpClient = new HttpClient(testHttpClientMessageHandler); 
-                testHttpClient.BaseAddress = new Uri("https://localhost.coffee");
-                var testConnectorClient = new ConnectorClient(new Uri("http://localhost.coffee/"), new MicrosoftAppCredentials(string.Empty, string.Empty), testHttpClient);
-                adapter.Use(new TestConnectorClientMiddleware(testConnectorClient));
+                foreach (var m in middleware)
+                {
+                    adapter.Use(m);
+                }
             }
 
             adapter.Use(new RegisterClassMiddleware<IConfiguration>(DefaultConfiguration))
@@ -72,22 +73,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             }
 
             return parent;
-        }
-
-        private class TestConnectorClientMiddleware : IMiddleware
-        {
-            private IConnectorClient _connectorClient;
-
-            public TestConnectorClientMiddleware(IConnectorClient connectorClient)
-            {
-                _connectorClient = connectorClient;
-            }
-
-            public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
-            {
-                turnContext.TurnState.Add<IConnectorClient>(_connectorClient);
-                return next(cancellationToken);
-            }
         }
     }
 }

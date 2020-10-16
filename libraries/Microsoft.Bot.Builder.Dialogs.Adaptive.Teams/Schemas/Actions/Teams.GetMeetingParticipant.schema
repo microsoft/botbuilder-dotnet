@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Get Meeting Participant",
+    "title": "Get meeting participant",
     "description": "Get teams meeting partipant information.",
     "type": "object",
     "properties": {
@@ -20,7 +20,7 @@
         },
         "meetingId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "MeetingId",
+            "title": "Meeting Id",
             "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
             "examples": [
                 "=turn.activity.channelData.meeting.id"
@@ -28,7 +28,7 @@
         },
         "participantId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "ParticipantId",
+            "title": "Participant Id",
             "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
             "examples": [
                 "=turn.activity.from.aadObjectId"
@@ -36,7 +36,7 @@
         },
         "tenantId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "TenantId",
+            "title": "Tenant Id",
             "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
             "examples": [
                 "=turn.activity.channelData.tenant.id"

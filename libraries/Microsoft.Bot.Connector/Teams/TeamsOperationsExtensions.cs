@@ -21,11 +21,8 @@ namespace Microsoft.Bot.Connector.Teams
     public static partial class TeamsOperationsExtensions
     {
         /// <summary>
-        /// Fetches channel list for a given team
+        /// Fetches channel list for a given team.
         /// </summary>
-        /// <remarks>
-        /// Fetch the channel list.
-        /// </remarks>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
@@ -46,9 +43,6 @@ namespace Microsoft.Bot.Connector.Teams
         /// <summary>
         /// Fetches details related to a team
         /// </summary>
-        /// <remarks>
-        /// Fetch details for a team
-        /// </remarks>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
@@ -69,9 +63,6 @@ namespace Microsoft.Bot.Connector.Teams
         /// <summary>
         /// Fetches participant details related to a Teams meeting.
         /// </summary>
-        /// <remarks>
-        /// Fetch details for a participant in a Teams meeting.
-        /// </remarks>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
