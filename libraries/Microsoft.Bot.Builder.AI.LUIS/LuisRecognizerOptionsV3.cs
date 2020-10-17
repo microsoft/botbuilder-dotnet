@@ -55,7 +55,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext dialogContext, Activity activity, HttpClient httpClient, CancellationToken cancellationToken)
         {
-            var utterance = activity.Text;
             var options = PredictionOptions;
             if (ExternalEntityRecognizer != null)
             {
@@ -99,7 +98,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             // call luis recognizer with options.ExternalEntities populated from externalEntityRecognizer.
-            return await RecognizeAsync(dialogContext.Context, utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
+            return await RecognizeAsync(dialogContext.Context, activity?.Text, options, httpClient, cancellationToken).ConfigureAwait(false);
         }
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)
