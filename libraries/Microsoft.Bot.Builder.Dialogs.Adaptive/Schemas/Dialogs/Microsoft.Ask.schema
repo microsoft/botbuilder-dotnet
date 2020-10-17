@@ -1,13 +1,13 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.SendActivity)" ],
-    "title": "Send Activity to Ask a question",
+    "title": "Send activity to ask a question",
     "description": "This is an action which sends an activity to the user when a response is expected",
     "type": "object",
     "properties": {
         "expectedProperties": {
             "$ref": "schema:#/definitions/arrayExpression",
-            "title": "Expected Properties",
+            "title": "Expected properties",
             "description": "Properties expected from the user.",
             "items": {
                 "type": "string",
@@ -23,7 +23,7 @@
         },
         "defaultOperation": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Default Operation",
+            "title": "Default operation",
             "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
             "examples": [
                 "Add()",

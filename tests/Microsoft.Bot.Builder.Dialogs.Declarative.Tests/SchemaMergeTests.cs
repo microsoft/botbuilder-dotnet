@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     var error = process.StandardError.ReadToEnd();
                     process.WaitForExit();
 
-                    Assert.Equal(string.Empty, error);
+                    Assert.True(error.Length == 0, error);
                 }
             }
             catch (Exception err)
