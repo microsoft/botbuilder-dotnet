@@ -380,6 +380,9 @@
       "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
     },
     {
+      "$ref": "#/definitions/Teams.GetMeetingParticipant"
+    },
+    {
       "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
     },
     {
@@ -3732,6 +3735,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetMeetingParticipant"
         },
         {
           "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -9748,6 +9754,81 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.UrlEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetMeetingParticipant": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get meeting participant",
+      "description": "Get teams meeting partipant information.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "user.participantInfo"
+          ]
+        },
+        "meetingId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Meeting Id",
+          "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
+          "examples": [
+            "=turn.activity.channelData.meeting.id"
+          ]
+        },
+        "participantId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Participant Id",
+          "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
+          "examples": [
+            "=turn.activity.from.aadObjectId"
+          ]
+        },
+        "tenantId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Tenant Id",
+          "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
+          "examples": [
+            "=turn.activity.channelData.tenant.id"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetMeetingParticipant"
         },
         "$designer": {
           "title": "Designer information",

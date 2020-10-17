@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Schemas\Actions\Teams.GetMeetingParticipant.schema" />
     <None Remove="Schemas\TriggerConditions\Microsoft.OnInvokeActivity.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnChannelRestored.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamArchived.schema" />
