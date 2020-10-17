@@ -38,7 +38,6 @@ variables:
   BuildConfiguration: Debug-Windows
   TestConfiguration: Debug
   BuildPlatform: any cpu
-  IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
