@@ -9,6 +9,9 @@
 #include "ExpressionAntlrLexer.h"
 #include "ExpressionAntlrParser.h"
 
+#include <iostream>
+#include <string>
+
 ExpressionParser::ExpressionTransformer::ExpressionTransformer(EvaluatorLookup lookup)
 {
     m_lookupFunction = lookup;
@@ -21,15 +24,21 @@ Expression* ExpressionParser::ExpressionTransformer::Transform(antlr4::tree::Par
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFile(ExpressionAntlrParser::FileContext* ctx)
 {
+    std::vector<Expression*> expressions;
+
     auto unaryOperationName = ctx->children[0]->getText();
     auto operand = visit(ctx->expression());
     if (unaryOperationName == ExpressionType::Subtract
         || unaryOperationName == ExpressionType::Add)
     {
-        return MakeExpression(unaryOperationName, (Expression*)(new Constant(0)), operand);
+        expressions.push_back((new Constant(0)));
+        expressions.push_back(operand);
+
+        return MakeExpression(unaryOperationName, 2, expressions);
     }
 
-    return MakeExpression(unaryOperationName, new Expression(operand));
+    // expressions.push_back(new Expression(operand));
+    return MakeExpression(unaryOperationName, 1, expressions);
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx)
@@ -56,9 +65,45 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(Expressio
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx)
 {
     auto binaryOperationName = ctx->children.at(1)->getText();
-    auto left = visit(ctx->expression(0));
-    auto right = visit(ctx->expression(1));
-    return MakeExpression(binaryOperationName, new Expression(left), new Expression(right));
+    antlrcpp::Any left = visit(ctx->expression(0));
+    antlrcpp::Any right = visit(ctx->expression(1));
+
+    Expression* leftExpression1 = left.as<Expression*>();
+
+    std::vector<Expression*> children;
+    children.push_back(leftExpression1);
+    children.push_back(right.as<Expression*>());
+
+    return MakeExpression(binaryOperationName, 2, children);
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitNumericAtom(ExpressionAntlrParser::NumericAtomContext* ctx)
+{
+    std::string numericString = ctx->getText();
+
+    try
+    {
+        int integer = std::stoi(numericString);
+        return Expression::ConstantExpression(integer);
+    }
+    catch (const std::bad_any_cast&) {}
+
+    try
+    {
+        long long int longInteger = std::stol(numericString);
+        return Expression::ConstantExpression(longInteger);
+    }
+    catch (const std::bad_any_cast&) {}
+
+    try
+    {
+        double decimalValue = std::stod(numericString);
+        return Expression::ConstantExpression(decimalValue);
+    }
+    catch (const std::bad_any_cast&) {}
+
+    // throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
+    return Expression::ConstantExpression(0);
 }
 
 /*
@@ -85,9 +130,9 @@ public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.Strin
 }
 */
 
-Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string functionType, Expression* children, ...)
+Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string functionType, size_t childrenCount, std::vector<Expression*> children)
 {
-    return Expression::MakeExpression(m_lookupFunction(functionType), children);
+    return Expression::MakeExpression(m_lookupFunction(functionType), childrenCount, children);
     // If lookup function fails, throw this: throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function.")
 }
 

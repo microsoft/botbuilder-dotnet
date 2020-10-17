@@ -164,7 +164,7 @@ public:
     const std::string CreateArray = "createArray";
 
     // Misc
-    const std::string Constant = "Constant";
+    static const std::string Constant;
     const std::string Lambda = "Lambda";
     const std::string If = "if";
     const std::string Rand = "rand";

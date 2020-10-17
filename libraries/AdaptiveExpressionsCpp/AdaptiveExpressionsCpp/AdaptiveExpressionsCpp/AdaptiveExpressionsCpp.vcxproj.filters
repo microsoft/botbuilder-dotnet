@@ -256,5 +256,6 @@
     <None Include="..\Parser\ExpressionAntlrParser.g4">
       <Filter>Parser</Filter>
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,7 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define ANTLR4CPP_PUBLIC __declspec(dllexport)
+#define ANTLR4CPP_PUBLIC
+#define ANTLR4CPP_PUBLIC __declspec(dllimport)
+#define ANTLR4CPP_PUBLIC __attribute__ ((visibility ("default")))

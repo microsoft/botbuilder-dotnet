@@ -3,57 +3,78 @@
 #include "../Parser/FunctionUtils.h"
 
 #include <limits>
+#include <any>
+#include <cstdlib>
 
 AdaptiveExpressions_BuiltinFunctions::Add::Add() : 
-    ExpressionEvaluator(ExpressionType::Add, Evaluator(), (ReturnType)((int)ReturnType::String | (int)ReturnType::Number), Add::Validator)
+    ExpressionEvaluator(ExpressionType::Add, ReverseEvaluator(), (ReturnType)((int)ReturnType::String | (int)ReturnType::Number), Add::Validator)
 {
 }
 
-EvaluateExpressionFunction AdaptiveExpressions_BuiltinFunctions::Add::Evaluator()
+EvaluateExpressionLambda AdaptiveExpressions_BuiltinFunctions::Add::Evaluator()
 {
-    return nullptr;
+    return FunctionUtils::ApplySequenceWithError(
+        [&](std::vector<std::any> args)
+        {
+            std::any result;
+            std::string error;
+            auto firstItem = args[0];
+            auto secondItem = args[1];
+            bool stringConcat = !FunctionUtils::isNumber(firstItem) || !FunctionUtils::isNumber(secondItem);
+
+            if ((!firstItem.has_value() && FunctionUtils::isNumber(secondItem))
+                || (!secondItem.has_value() && FunctionUtils::isNumber(firstItem)))
+            {
+                error = "Operator '+' or add cannot be applied to operands of type 'number' and null object.";
+            }
+            else
+            {
+                if (stringConcat)
+                {
+                    result = "{firstItem?.ToString()}{secondItem?.ToString()}";
+                }
+                else
+                {
+                    result = EvalAdd(args[0], args[1]);
+                }
+            }
+
+            return ValueErrorTuple(result, error);
+        }, FunctionUtils::VerifyNumberOrStringOrNull);
 }
 
-antlrcpp::Any AdaptiveExpressions_BuiltinFunctions::Add::EvalAdd(antlrcpp::Any a, antlrcpp::Any b)
+EvaluateExpressionLambda AdaptiveExpressions_BuiltinFunctions::Add::ReverseEvaluator()
 {
-    if (a.isNull())
-    {
-        // throw new ArgumentNullException(nameof(a));
-    }
-
-    if (b.isNull())
-    {
-        // throw new ArgumentNullException(nameof(b));
-    }
-
-    if (FunctionUtils::isInteger(a) && FunctionUtils::isInteger(b))
-    {
-        long long int valueA = a.as<long long int>();
-        long long int valueB = b.as<long long int>();
-        return antlrcpp::Any(valueA + valueB);
-    }
-
-    double valueA = a.as<double>();
-    double valueB = b.as<double>();
-    return antlrcpp::Any(valueA + valueB);
+    return FunctionUtils::ReverseApplyWithError;
 }
 
-void AdaptiveExpressions_BuiltinFunctions::Add::Validator(Expression* expression)
+ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::ReverseEvaluatorInternal(std::vector<std::any> args)
 {
-    FunctionUtils::ValidateArityAndAnyType(expression, 2, INT_MAX, (ReturnType)((int)ReturnType::String | (int)ReturnType::Number));
-}
-
-ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::Sequence(std::vector<void*> args)
-{
-    /*
-    void* result = nullptr;
-    std::string error = nullptr;
+    std::any result;
+    std::string error;
     auto firstItem = args[0];
     auto secondItem = args[1];
-    bool stringConcat = !firstItem.IsNumber() || !secondItem.IsNumber();
 
-    if ((firstItem == null && secondItem.IsNumber())
-        || (secondItem == null && firstItem.IsNumber()))
+    /*
+    try
+    {
+        antlrcpp::Any anyValue = std::any_cast<antlrcpp::Any>(firstItem);
+        if (anyValue.is<int>())
+        {
+            int val = anyValue.as<int>();
+            val++;
+        }
+    }
+    catch (const std::bad_any_cast&) 
+    {
+        return ValueErrorTuple();
+    }
+    */
+
+    bool stringConcat = !FunctionUtils::isNumber(firstItem) || !FunctionUtils::isNumber(secondItem);
+
+    if ((!firstItem.has_value() && FunctionUtils::isNumber(secondItem))
+        || (!secondItem.has_value() && FunctionUtils::isNumber(firstItem)))
     {
         error = "Operator '+' or add cannot be applied to operands of type 'number' and null object.";
     }
@@ -61,7 +82,7 @@ ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::Sequence(std::vector<
     {
         if (stringConcat)
         {
-            result = $"{firstItem?.ToString()}{secondItem?.ToString()}";
+            result = "{firstItem?.ToString()}{secondItem?.ToString()}";
         }
         else
         {
@@ -69,8 +90,35 @@ ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::Sequence(std::vector<
         }
     }
 
-    return (result, error);
-    */
+    return ValueErrorTuple(result, error);
+}
 
-    return ValueErrorTuple();
+std::any AdaptiveExpressions_BuiltinFunctions::Add::EvalAdd(std::any a, std::any b)
+{
+    if (a.has_value())
+    {
+        // throw new ArgumentNullException(nameof(a));
+    }
+
+    if (b.has_value())
+    {
+        // throw new ArgumentNullException(nameof(b));
+    }
+
+    bool valueASuccess{}, valueBSuccess{};
+    if (FunctionUtils::isInteger(a) && FunctionUtils::isInteger(b))
+    {
+        int valueA = FunctionUtils::castToType<int>(a, valueASuccess);
+        int valueB = FunctionUtils::castToType<int>(b, valueBSuccess);
+        return valueA + valueB;
+    }
+
+    double valueA = FunctionUtils::castToType<double>(a, valueASuccess);
+    double valueB = FunctionUtils::castToType<double>(b, valueBSuccess);
+    return (valueA + valueB);
+}
+
+void AdaptiveExpressions_BuiltinFunctions::Add::Validator(Expression* expression)
+{
+    FunctionUtils::ValidateArityAndAnyType(expression, 2, INT_MAX, (ReturnType)((int)ReturnType::String | (int)ReturnType::Number));
 }

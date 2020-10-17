@@ -5,14 +5,22 @@
 
 #include "../Code/pch.h"
 #include "ExpressionParser.h"
+#include <any>
+#include "../Parser/FunctionUtils.h"
 
 int main()
 {   
     // ExpressionParser::AntlrParse("a string");
 
-    Expression::Parse("1 + 2");
+    auto parsed = Expression::Parse("1 + 2");
 
-    std::cout << "Hello World!\n";
+    ValueErrorTuple valueAndError = parsed->TryEvaluate(nullptr);
+
+    // std::cout << "Value " << valueAndError.first << std::endl;
+    bool cast{};
+    std::cout << "Value " << FunctionUtils::castToType<int>(valueAndError.first, cast) << std::endl;
+
+    std::cout << "Error " << valueAndError.second << std::endl;
 
     return 0;
 }

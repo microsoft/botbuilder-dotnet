@@ -11,6 +11,8 @@ public:
     Constant(antlrcpp::Any value);
    // ExpressionEvaluator* getEvaluator() override { return Expression::getEvaluator(); }
 
+    static EvaluateExpressionLambda Evaluator();
+
     antlrcpp::Any getValue();
     void setValue(antlrcpp::Any value);
 

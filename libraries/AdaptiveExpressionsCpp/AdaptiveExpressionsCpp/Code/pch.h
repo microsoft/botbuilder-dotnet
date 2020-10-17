@@ -5,6 +5,7 @@
 
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+#pragma warning (disable: 4996) // codecvt in C++17
 
 #include "../antlr4-runtime/antlr4-runtime.h"
 #include <string>

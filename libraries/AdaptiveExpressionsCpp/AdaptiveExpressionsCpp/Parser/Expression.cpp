@@ -5,20 +5,20 @@ const FunctionTable* Expression::Functions = new FunctionTable();
 
 Expression::Expression()
 {
-
 }
 
-Expression::Expression(antlrcpp::Any value)
+Expression::Expression(std::string type, size_t childrenCount, std::vector<Expression*> children)
 {
-    m_expressionValue = value;
+    // m_evaluator = Functions[type]; // ? ? throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a custom function.");
+    m_children = children;
+    m_childrenCount = childrenCount;
 }
 
-Expression::Expression(std::string type, Expression* children)
+Expression::Expression(ExpressionEvaluator* evaluator) : Expression(evaluator, 0, std::vector<Expression*>())
 {
-
 }
 
-Expression::Expression(ExpressionEvaluator* evaluator, Expression* children)
+Expression::Expression(ExpressionEvaluator* evaluator, size_t childrenCount, std::vector<Expression*> children)
 {
     if (evaluator == nullptr)
     {
@@ -27,6 +27,7 @@ Expression::Expression(ExpressionEvaluator* evaluator, Expression* children)
 
     m_evaluator = evaluator;
     m_children = children;
+    m_childrenCount = childrenCount;
 }
 
 std::string trimStart(const std::string& s, std::string chars)
@@ -74,9 +75,9 @@ Expression* Expression::Parse(std::string expression, EvaluatorLookup lookup)
     return parser->Parse(!(expression.empty()) ? trimStart(expression, "=") : std::string());
 }
 
-Expression* Expression::MakeExpression(ExpressionEvaluator* evaluator, Expression* children)
+Expression* Expression::MakeExpression(ExpressionEvaluator* evaluator, size_t childrenCount, std::vector<Expression*> children)
 {
-    auto expr = new Expression(evaluator, children);
+    auto expr = new Expression(evaluator, childrenCount, children);
     expr->Validate();
     return expr;
 }
@@ -101,10 +102,28 @@ ExpressionEvaluator* Expression::getEvaluator()
     return m_evaluator;
 }
 
+size_t Expression::getChildrenCount()
+{
+    return m_childrenCount;
+}
+
+Expression* Expression::getChildAt(size_t pos)
+{
+    return m_children[pos];
+}
+/*
+antlrcpp::Any Expression::getValue()
+{
+    return m_expressionValue;
+}
+*/
+
+/*
 Expression* Expression::getChildren()
 {
     return m_children;
 }
+*/
 
 ValueErrorTuple Expression::TryEvaluate(void* state, void* options)
 {

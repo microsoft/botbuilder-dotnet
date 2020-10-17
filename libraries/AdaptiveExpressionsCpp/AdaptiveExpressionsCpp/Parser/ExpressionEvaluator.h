@@ -12,7 +12,7 @@ class ExpressionEvaluator
 public:
     ExpressionEvaluator(
         std::string type,
-        EvaluateExpressionFunction evaluator,
+        EvaluateExpressionLambda evaluator,
         ReturnType returnType = ReturnType::Object,
         EvaluateExpressionValidatorFunction validator = nullptr);
 
@@ -21,6 +21,6 @@ public:
     
     std::string m_type;
     ReturnType m_returnType{};
-    EvaluateExpressionFunction m_evaluator;
+    EvaluateExpressionLambda m_evaluator;
     EvaluateExpressionValidatorFunction m_validator;
 };

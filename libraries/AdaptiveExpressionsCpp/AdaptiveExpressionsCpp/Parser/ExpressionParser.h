@@ -27,9 +27,10 @@ private:
         antlrcpp::Any visitFile(ExpressionAntlrParser::FileContext* ctx) override;
         antlrcpp::Any visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx) override;
         antlrcpp::Any visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx) override;
+        antlrcpp::Any visitNumericAtom(ExpressionAntlrParser::NumericAtomContext* ctx) override;
 
     private:
-        Expression* MakeExpression(std::string functionType, Expression* children, ...);
+        Expression* MakeExpression(std::string functionType, size_t childrenCount, std::vector<Expression*> children);
 
         const std::string escapeRegex = "\\[^\r\n]?";
         EvaluatorLookup m_lookupFunction;

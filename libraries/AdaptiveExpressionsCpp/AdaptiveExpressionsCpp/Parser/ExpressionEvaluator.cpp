@@ -3,7 +3,7 @@
 
 #include "ExpressionEvaluator.h"
 
-ExpressionEvaluator::ExpressionEvaluator(std::string type, EvaluateExpressionFunction evaluator, ReturnType returnType, EvaluateExpressionValidatorFunction validator)
+ExpressionEvaluator::ExpressionEvaluator(std::string type, EvaluateExpressionLambda evaluator, ReturnType returnType, EvaluateExpressionValidatorFunction validator)
 {
     m_type = type;
     m_evaluator = evaluator;
@@ -12,12 +12,12 @@ ExpressionEvaluator::ExpressionEvaluator(std::string type, EvaluateExpressionFun
 }
 
 ValueErrorTuple ExpressionEvaluator::TryEvaluate(Expression* expression, void* state, void* options)
-{
-    m_evaluator(expression, state, options);
-    return std::make_pair(nullptr, std::string());
+{ 
+    ValueErrorTuple valueAndError = m_evaluator(expression, state, options);
+    return valueAndError;
 }
 
 void ExpressionEvaluator::ValidateExpression(Expression* expression)
 {
-    m_validator(expression);
+    // m_validator(expression);
 }

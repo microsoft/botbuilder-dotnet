@@ -6,3 +6,5 @@
 
 const std::string ExpressionType::Add = "+";
 const std::string ExpressionType::Subtract = "-";
+
+const std::string ExpressionType::Constant = "Constant";

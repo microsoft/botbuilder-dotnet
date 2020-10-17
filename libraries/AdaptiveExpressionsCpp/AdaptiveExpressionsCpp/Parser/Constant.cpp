@@ -3,14 +3,26 @@
 
 #include "Constant.h"
 #include "FunctionUtils.h"
+#include "ExpressionType.h"
 
-Constant::Constant(antlrcpp::Any value) : Expression()
+Constant::Constant(antlrcpp::Any value) : 
+    Expression(new ExpressionEvaluator(ExpressionType::Constant, Evaluator()))
 {
+    m_value = value;
 }
 
 antlrcpp::Any Constant::getValue()
 {
     return m_value;
+}
+
+EvaluateExpressionLambda Constant::Evaluator()
+{
+    return [](Expression* expression, void* state, void* options)
+    {
+        Constant* constant = (Constant*)expression;
+        return ValueErrorTuple(constant->getValue(), std::string());
+    };;
 }
 
 void Constant::setValue(antlrcpp::Any value)

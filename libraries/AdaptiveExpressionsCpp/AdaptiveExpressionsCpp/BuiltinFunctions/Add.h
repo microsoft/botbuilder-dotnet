@@ -7,12 +7,12 @@ namespace AdaptiveExpressions_BuiltinFunctions
     {
     public:
         Add();
+        static std::any EvalAdd(std::any a, std::any b);
+        static ValueErrorTuple ReverseEvaluatorInternal(std::vector<std::any> args);
 
     private:
-        static EvaluateExpressionFunction Evaluator();
-        static antlrcpp::Any EvalAdd(antlrcpp::Any a, antlrcpp::Any b);
+        static EvaluateExpressionLambda Evaluator();
+        static EvaluateExpressionLambda ReverseEvaluator();
         static void Validator(Expression* expression);
-
-        static ValueErrorTuple Sequence(std::vector<void*> args);
     };
 }
