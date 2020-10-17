@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -52,14 +53,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value> This settings will be used to call Luis.</value>
         public LuisV3.LuisPredictionOptions PredictionOptions { get; set; } = new LuisV3.LuisPredictionOptions();
 
-        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext dialogContext, HttpClient httpClient, CancellationToken cancellationToken)
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext dialogContext, Activity activity, HttpClient httpClient, CancellationToken cancellationToken)
         {
-            var utterance = dialogContext.Context.Activity?.AsMessageActivity()?.Text;
+            var utterance = activity.Text;
             var options = PredictionOptions;
             if (ExternalEntityRecognizer != null)
             {
-                var matches = await ExternalEntityRecognizer.RecognizeAsync(dialogContext, dialogContext.Context.Activity, cancellationToken).ConfigureAwait(false);
-                if (matches.Entities != null && matches.Entities.Count > 2)
+                // call external entity recognizer
+                var matches = await ExternalEntityRecognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
+                if (matches.Entities != null && matches.Entities.Count > 0)
                 {
                     options = new LuisV3.LuisPredictionOptions(options);
                     options.ExternalEntities = new List<LuisV3.ExternalEntity>();
@@ -96,6 +98,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 }
             }
 
+            // call luis recognizer with options.ExternalEntities populated from externalEntityRecognizer.
             return await RecognizeAsync(dialogContext.Context, utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
         }
 
@@ -103,7 +106,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             return await RecognizeAsync(turnContext, turnContext?.Activity?.AsMessageActivity()?.Text, PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
         }
-        
+
         private static JObject BuildRequestBody(string utterance, LuisV3.LuisPredictionOptions options)
         {
             var content = new JObject

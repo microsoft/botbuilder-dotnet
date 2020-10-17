@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -63,6 +64,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         internal abstract Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken);
 
         // Support DialogContext
-        internal abstract Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, HttpClient httpClient, CancellationToken cancellationToken);
+        internal abstract Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, Activity activity, HttpClient httpClient, CancellationToken cancellationToken);
     }
 }
