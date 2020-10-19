@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send query link response",
+    "description": "Send a response to a query link request.  Query link requests have activity.name='composeExtension/queryLink'.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "activity": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Expession for an Attachment template of Hero Card or Thumbnail Card to send. Attachment is required."
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "=user.age > 3"
+            ]
+        }
+    }
+}
