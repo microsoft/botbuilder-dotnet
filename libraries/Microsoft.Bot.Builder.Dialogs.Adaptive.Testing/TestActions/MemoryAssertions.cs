@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                             var (val, error) = Expression.Parse(assertion).TryEvaluate<bool>(dc.State);
                             if (error != null || !val)
                             {
-                                throw new Exception($"{assertion} failed");
+                                throw new Exception($"{Description} {assertion} failed");
                             }
                         }
                     }).ConfigureAwait(false);

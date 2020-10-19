@@ -2,7 +2,7 @@
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "type": "object",
-    "title": "Telemetry - Track Event",
+    "title": "Telemetry - track event",
     "description": "Track a custom event using the registered Telemetry Client.",
     "required": [
         "url",
@@ -24,7 +24,7 @@
         },
         "eventName": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Event Name",
+            "title": "Event name",
             "description": "The name of the event to track.",
             "examples": [
                 "MyEventStarted",

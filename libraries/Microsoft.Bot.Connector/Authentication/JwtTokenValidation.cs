@@ -62,22 +62,28 @@ namespace Microsoft.Bot.Connector.Authentication
             if (string.IsNullOrWhiteSpace(authHeader))
             {
                 var isAuthDisabled = await credentials.IsAuthenticationDisabledAsync().ConfigureAwait(false);
-                if (isAuthDisabled)
+                if (!isAuthDisabled)
                 {
-                    // In the scenario where Auth is disabled, we still want to have the
-                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
-                    // adding in an empty claim.
-                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    // No Auth Header and Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
                 }
 
-                // No Auth Header. Auth is required. Request is not authorized.
-                throw new UnauthorizedAccessException();
+                // Check if the activity is for a skill call and is coming from the Emulator.
+                if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
+                {
+                    // Return an anonymous claim with an anonymous skill AppId
+                    return SkillValidation.CreateAnonymousSkillClaim();
+                }
+
+                // In the scenario where Auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
+                // adding in an empty claim.
+                return new ClaimsIdentity(new List<Claim>(), AuthenticationConstants.AnonymousAuthType);
             }
 
+            // Validate the header and extract claims.
             var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, authConfig, activity.ServiceUrl, httpClient ?? _httpClient).ConfigureAwait(false);
-
             AppCredentials.TrustServiceUrl(activity.ServiceUrl);
-
             return claimsIdentity;
         }
 

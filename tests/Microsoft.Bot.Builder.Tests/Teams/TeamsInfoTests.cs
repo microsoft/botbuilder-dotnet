@@ -169,6 +169,42 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public async Task TestGetParticipantAsync()
+        {
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-GetParticipantAsync",
+                ChannelId = Channels.Msteams,
+                From = new ChannelAccount { AadObjectId = "participantId-1" },
+                ChannelData = new TeamsChannelData
+                {
+                    Meeting = new TeamsMeetingInfo
+                    {
+                        Id = "meetingId-1"
+                    },
+                    Tenant = new TenantInfo
+                    {
+                        Id = "tenantId-1"
+                    },
+                },
+                ServiceUrl = "https://test.coffee",
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [Fact]
         public async Task TestGetMemberAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -252,6 +288,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     case "Test-GetGetMemberAsync":
                         await CallTeamGetMemberAsync(turnContext);
                         break;
+                    case "Test-GetParticipantAsync":
+                        await CallTeamsInfoGetParticipantAsync(turnContext);
+                        break;
                     default:
                         Assert.True(false);
                         break;
@@ -307,6 +346,15 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.Equal("givenName-1", member.GivenName);
                 Assert.Equal("surname-1", member.Surname);
                 Assert.Equal("userPrincipalName-1", member.UserPrincipalName);
+            }
+
+            private async Task CallTeamsInfoGetParticipantAsync(ITurnContext turnContext)
+            {
+                var participant = await TeamsInfo.GetMeetingParticipantAsync(turnContext);
+
+                Assert.Equal("Organizer", participant.MeetingRole);
+                Assert.Equal("meetigConversationId-1", participant.Conversation.Id);
+                Assert.Equal("userPrincipalName-1", participant.UserPrincipalName);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
@@ -463,6 +511,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             new JProperty("email", "email-1"),
                             new JProperty("userPrincipalName", "userPrincipalName-1"),
                             new JProperty("tenantId", "tenantId-1"),
+                        };
+                    response.Content = new StringContent(content.ToString());
+                }
+
+                // Get participant
+                else if (request.RequestUri.PathAndQuery.EndsWith("v1/meetings/meetingId-1/participants/participantId-1?tenantId=tenantId-1"))
+                {
+                    var content = new JObject
+                        {
+                            new JProperty("meetingRole", "Organizer"),
+                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("conversation", new JObject(new JProperty("Id", "meetigConversationId-1"))),
                         };
                     response.Content = new StringContent(content.ToString());
                 }

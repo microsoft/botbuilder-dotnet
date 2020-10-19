@@ -111,14 +111,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            var wrapper = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
+            var recognizer = new LuisRecognizer(RecognizerOptions(dialogContext), HttpClient);
 
-            // temp clone of turn context because luisrecognizer always pulls activity from turn context.
-            RecognizerResult result;
-            using (var tempContext = new TurnContext(dialogContext.Context, activity))
-            {
-                result = await wrapper.RecognizeAsync(tempContext, cancellationToken).ConfigureAwait(false);
-            }
+            RecognizerResult result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken).ConfigureAwait(false);
 
             TrackRecognizerResult(dialogContext, "LuisResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 

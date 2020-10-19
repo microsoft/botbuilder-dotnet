@@ -22,6 +22,28 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsInfo
     {
         /// <summary>
+        /// Gets the details for the given meeting participant. This only works in teams meeting scoped conversations. 
+        /// </summary>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="meetingId">The id of the Teams meeting. TeamsChannelData.Meeting.Id will be used if none provided.</param>
+        /// <param name="participantId">The id of the Teams meeting participant. From.AadObjectId will be used if none provided.</param>
+        /// <param name="tenantId">The id of the Teams meeting Tenant. TeamsChannelData.Tenant.Id will be used if none provided.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>InvalidOperationException will be thrown if meetingId, participantId or tenantId have not been
+        /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
+        /// <returns>Team participant channel account.</returns>
+        public static async Task<TeamsParticipantChannelAccount> GetMeetingParticipantAsync(ITurnContext turnContext, string meetingId = null, string participantId = null, string tenantId = null, CancellationToken cancellationToken = default)
+        {
+            meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
+            participantId ??= turnContext.Activity.From.AadObjectId ?? throw new InvalidOperationException($"{nameof(participantId)} is required.");
+            tenantId ??= turnContext.Activity.GetChannelData<TeamsChannelData>()?.Tenant?.Id ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+#pragma warning disable CA2000 // Dispose objects before losing scope (we need to review this, disposing the connectorClient may have unintended consequences)
+            return await GetTeamsConnectorClient(turnContext).Teams.FetchParticipantAsync(meetingId, participantId, tenantId, cancellationToken).ConfigureAwait(false);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+        }
+
+        /// <summary>
         /// Gets the details for the given team id. This only works in teams scoped conversations. 
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
