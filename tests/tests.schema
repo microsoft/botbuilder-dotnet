@@ -380,6 +380,9 @@
       "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
     },
     {
+      "$ref": "#/definitions/Teams.GetMeetingParticipant"
+    },
+    {
       "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
     },
     {
@@ -562,7 +565,7 @@
     },
     "Microsoft.ActivityTemplate": {
       "$role": "implements(Microsoft.IActivityTemplate)",
-      "title": "Microsoft ActivityTemplate",
+      "title": "Microsoft activity template",
       "type": "object",
       "required": [
         "template",
@@ -597,7 +600,7 @@
     },
     "Microsoft.AdaptiveDialog": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Adaptive Dialog",
+      "title": "Adaptive dialog",
       "description": "Flexible, data driven dialog that can adapt to the conversation.",
       "type": "object",
       "required": [
@@ -636,7 +639,7 @@
         },
         "generator": {
           "$kind": "Microsoft.ILanguageGenerator",
-          "title": "Language Generator",
+          "title": "Language generator",
           "description": "Language generator that generates bot responses.",
           "$ref": "#/definitions/Microsoft.ILanguageGenerator"
         },
@@ -687,7 +690,7 @@
     },
     "Microsoft.AgeEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Age Entity Recognizer",
+      "title": "Age entity recognizer",
       "description": "Recognizer which recognizes age.",
       "type": "object",
       "required": [
@@ -720,7 +723,7 @@
         "implements(Microsoft.IDialog)",
         "extends(Microsoft.SendActivity)"
       ],
-      "title": "Send Activity to Ask a question",
+      "title": "Send activity to ask a question",
       "description": "This is an action which sends an activity to the user when a response is expected",
       "type": "object",
       "required": [
@@ -736,7 +739,7 @@
       "properties": {
         "expectedProperties": {
           "$ref": "#/definitions/arrayExpression",
-          "title": "Expected Properties",
+          "title": "Expected properties",
           "description": "Properties expected from the user.",
           "examples": [
             [
@@ -752,7 +755,7 @@
         },
         "defaultOperation": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Default Operation",
+          "title": "Default operation",
           "description": "Sets the default operation that will be used when no operation is recognized in the response to this Ask.",
           "examples": [
             "Add()",
@@ -1044,7 +1047,7 @@
         },
         "activityProcessed": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Activity Processed",
+          "title": "Activity processed",
           "description": "When set to false, the dialog that is called can process the current activity.",
           "default": true
         },
@@ -1102,7 +1105,7 @@
         },
         "activityProcessed": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Activity Processed",
+          "title": "Activity processed",
           "description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
           "default": true,
           "examples": [
@@ -1135,13 +1138,13 @@
         },
         "connectionName": {
           "$ref": "#/definitions/stringExpression",
-          "title": "OAuth Connection Name (SSO)",
+          "title": "OAuth connection name (SSO)",
           "description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
           "default": "=settings.connectionName"
         },
         "skillAppId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Skill App ID",
+          "title": "Skill App Id",
           "description": "The Microsoft App ID for the skill."
         },
         "skillEndpoint": {
@@ -1160,7 +1163,7 @@
         },
         "allowInterruptions": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Allow Interruptions",
+          "title": "Allow interruptions",
           "description": "A boolean expression that determines whether the parent should be allowed to interrupt the skill.",
           "default": true,
           "examples": [
@@ -1184,7 +1187,7 @@
     },
     "Microsoft.BreakLoop": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Break Loop",
+      "title": "Break loop",
       "description": "Stop executing this loop",
       "type": "object",
       "required": [
@@ -1256,7 +1259,7 @@
         },
         "activityProcessed": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Activity Processed",
+          "title": "Activity processed",
           "description": "When set to false, the caller dialog is told it should process the current activity.",
           "default": true
         },
@@ -1316,7 +1319,7 @@
         },
         "activityProcessed": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Activity Processed",
+          "title": "Activity processed",
           "description": "When set to false, the caller dialog is told it should process the current activity.",
           "default": true
         },
@@ -1694,7 +1697,7 @@
     },
     "Microsoft.ConditionalSelector": {
       "$role": "implements(Microsoft.ITriggerSelector)",
-      "title": "Conditional Trigger Selector",
+      "title": "Conditional trigger selector",
       "description": "Use a rule selector based on a condition",
       "type": "object",
       "required": [
@@ -1799,7 +1802,7 @@
           ]
         },
         "choiceOptions": {
-          "title": "Choice Options",
+          "title": "Choice options",
           "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
           "oneOf": [
             {
@@ -2033,7 +2036,7 @@
     },
     "Microsoft.ConfirmationEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Confirmation Entity Recognizer",
+      "title": "Confirmation entity recognizer",
       "description": "Recognizer which recognizes confirmation choices (yes/no).",
       "type": "object",
       "required": [
@@ -2063,7 +2066,7 @@
     },
     "Microsoft.ContinueConversationLater": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Continue Conversation Later (Queue)",
+      "title": "Continue conversation later (Queue)",
       "description": "Continue conversation at later time (via Azure Storage Queue).",
       "type": "object",
       "required": [
@@ -2121,7 +2124,7 @@
     },
     "Microsoft.ContinueLoop": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Continue Loop",
+      "title": "Continue loop",
       "description": "Stop executing this template and continue with the next iteration of the loop.",
       "type": "object",
       "required": [
@@ -2164,7 +2167,7 @@
     },
     "Microsoft.CrossTrainedRecognizerSet": {
       "$role": "implements(Microsoft.IRecognizer)",
-      "title": "Cross-trained Recognizer Set",
+      "title": "Cross-trained recognizer set",
       "description": "Recognizer for selecting between cross trained recognizers.",
       "type": "object",
       "required": [
@@ -2209,7 +2212,7 @@
     },
     "Microsoft.CurrencyEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Currency Entity Recognizer",
+      "title": "Currency entity recognizer",
       "description": "Recognizer which recognizes currency.",
       "type": "object",
       "required": [
@@ -2239,7 +2242,7 @@
     },
     "Microsoft.DateTimeEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "DateTime Entity Recognizer",
+      "title": "Date and time entity recognizer",
       "description": "Recognizer which recognizes dates and time fragments.",
       "type": "object",
       "required": [
@@ -2295,7 +2298,7 @@
         "defaultValue": {
           "$ref": "#/definitions/stringExpression",
           "format": "date-time",
-          "title": "Default Date",
+          "title": "Default date",
           "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
           "examples": [
             "=user.birthday"
@@ -2588,7 +2591,7 @@
     },
     "Microsoft.DeleteProperty": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Delete Property",
+      "title": "Delete property",
       "description": "Delete a property and any value it holds.",
       "type": "object",
       "required": [
@@ -2637,7 +2640,7 @@
     },
     "Microsoft.DimensionEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Dimension Entity Recognizer",
+      "title": "Dimension entity recognizer",
       "description": "Recognizer which recognizes dimension.",
       "type": "object",
       "required": [
@@ -2768,7 +2771,7 @@
           "oneOf": [
             {
               "type": "string",
-              "title": "Enum",
+              "title": "Change type",
               "description": "Standard change type.",
               "enum": [
                 "push",
@@ -2798,7 +2801,7 @@
         },
         "resultProperty": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Result Property",
+          "title": "Result property",
           "description": "Property to store the result of this action."
         },
         "value": {
@@ -2827,7 +2830,7 @@
     },
     "Microsoft.EmailEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Email Entity Recognizer",
+      "title": "Email entity recognizer",
       "description": "Recognizer which recognizes email.",
       "type": "object",
       "required": [
@@ -3041,7 +3044,7 @@
     },
     "Microsoft.FirstSelector": {
       "$role": "implements(Microsoft.ITriggerSelector)",
-      "title": "First Trigger Selector",
+      "title": "First trigger selector",
       "description": "Selector for first true rule",
       "type": "object",
       "required": [
@@ -3225,7 +3228,7 @@
     },
     "Microsoft.GetActivityMembers": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Get Activity Members",
+      "title": "Get activity members",
       "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
       "type": "object",
       "required": [
@@ -3254,7 +3257,7 @@
         },
         "activityId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "ActivityId",
+          "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
           "examples": [
             "$lastActivity"
@@ -3284,7 +3287,7 @@
     },
     "Microsoft.GetConversationMembers": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Get Converation Members",
+      "title": "Get conversation members",
       "description": "Get the members who are participating in an conversation. (BotFrameworkAdapter only)",
       "type": "object",
       "required": [
@@ -3335,7 +3338,7 @@
     },
     "Microsoft.GotoAction": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Go to Action",
+      "title": "Go to action",
       "description": "Go to an an action by id.",
       "type": "object",
       "required": [
@@ -3384,7 +3387,7 @@
     },
     "Microsoft.GuidEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Guid Entity Recognizer",
+      "title": "Guid entity recognizer",
       "description": "Recognizer which recognizes guids.",
       "type": "object",
       "required": [
@@ -3414,7 +3417,7 @@
     },
     "Microsoft.HashtagEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Hashtag Entity Recognizer",
+      "title": "Hashtag entity recognizer",
       "description": "Recognizer which recognizes Hashtags.",
       "type": "object",
       "required": [
@@ -3588,7 +3591,7 @@
       ]
     },
     "Microsoft.IDialog": {
-      "title": "Microsoft Dialogs",
+      "title": "Microsoft dialogs",
       "description": "Components which derive from Dialog",
       "$role": "interface",
       "oneOf": [
@@ -3734,6 +3737,9 @@
           "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
+          "$ref": "#/definitions/Teams.GetMeetingParticipant"
+        },
+        {
           "$ref": "#/definitions/Testbot.JavascriptAction"
         },
         {
@@ -3749,7 +3755,7 @@
     },
     "Microsoft.IEntityRecognizer": {
       "$role": "interface",
-      "title": "Entity Recognizers",
+      "title": "Entity recognizers",
       "description": "Components which derive from EntityRecognizer.",
       "type": "object",
       "oneOf": [
@@ -3831,7 +3837,7 @@
       ]
     },
     "Microsoft.IRecognizer": {
-      "title": "Microsoft Recognizer",
+      "title": "Microsoft recognizer",
       "description": "Components which derive from Recognizer class",
       "$role": "interface",
       "oneOf": [
@@ -3839,10 +3845,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -4269,7 +4275,7 @@
     },
     "Microsoft.IpEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Ip Entity Recognizer",
+      "title": "IP entity recognizer",
       "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
       "type": "object",
       "required": [
@@ -4298,7 +4304,7 @@
       }
     },
     "Microsoft.LanguagePolicy": {
-      "title": "Language Policy",
+      "title": "Language policy",
       "description": "This represents a policy map for locales lookups to use for language",
       "type": "object",
       "required": [
@@ -4378,7 +4384,7 @@
         },
         "traceActivity": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Send Trace Activity",
+          "title": "Send trace activity",
           "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator)."
         },
         "$kind": {
@@ -4421,17 +4427,17 @@
         },
         "applicationId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "LUIS Application ID",
+          "title": "LUIS application id",
           "description": "Application ID for your model from the LUIS service."
         },
         "version": {
           "$ref": "#/definitions/stringExpression",
-          "title": "LUIS Version",
+          "title": "LUIS version",
           "description": "Optional version to target.  If null then predictionOptions.Slot is used."
         },
         "endpoint": {
           "$ref": "#/definitions/stringExpression",
-          "title": "LUIS Endpoint",
+          "title": "LUIS endpoint",
           "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
         },
         "endpointKey": {
@@ -4441,7 +4447,7 @@
         },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
-          "title": "External Entity Recognizer",
+          "title": "External entity recognizer",
           "description": "Entities recognized by this recognizer will be passed to LUIS as external entities.",
           "$ref": "#/definitions/Microsoft.IRecognizer"
         },
@@ -4511,7 +4517,7 @@
             },
             "preferExternalEntities": {
               "$ref": "#/definitions/booleanExpression",
-              "title": "Prefer External Entities",
+              "title": "Prefer external entities",
               "description": "True to prefer external entities to those generated by LUIS models."
             },
             "slot": {
@@ -4537,7 +4543,7 @@
     },
     "Microsoft.MentionEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Mentions Entity Recognizer",
+      "title": "Mentions entity recognizer",
       "description": "Recognizer which recognizes @Mentions",
       "type": "object",
       "required": [
@@ -4567,7 +4573,7 @@
     },
     "Microsoft.MostSpecificSelector": {
       "$role": "implements(Microsoft.ITriggerSelector)",
-      "title": "Most Specific Trigger Selector",
+      "title": "Most specific trigger selector",
       "description": "Select most specific true events with optional additional selector",
       "type": "object",
       "required": [
@@ -4653,7 +4659,7 @@
     },
     "Microsoft.NumberEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Number Entity Recognizer",
+      "title": "Number entity recognizer",
       "description": "Recognizer which recognizes numbers.",
       "type": "object",
       "required": [
@@ -4854,7 +4860,7 @@
     },
     "Microsoft.NumberRangeEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "NumberRange Entity Recognizer",
+      "title": "Number range entity recognizer",
       "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
       "type": "object",
       "required": [
@@ -4984,7 +4990,7 @@
         },
         "allowInterruptions": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Allow Interruptions",
+          "title": "Allow interruptions",
           "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
           "default": true,
           "examples": [
@@ -5603,7 +5609,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "On Continue Conversation",
+      "title": "On continue conversation",
       "description": "Actions to perform when a conversation is started up again from a ContinueConversationLater action.",
       "type": "object",
       "required": [
@@ -5934,7 +5940,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "On Error",
+      "title": "On error",
       "description": "Action to perform when an 'Error' dialog event occurs.",
       "type": "object",
       "required": [
@@ -6599,7 +6605,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "On QnAMaker Match",
+      "title": "On QnAMaker match",
       "description": "Actions to perform on when an match from QnAMaker is found.",
       "type": "object",
       "required": [
@@ -6856,7 +6862,7 @@
     },
     "Microsoft.OrchestratorRecognizer": {
       "$role": "implements(Microsoft.IRecognizer)",
-      "title": "Orchestrator Recognizer",
+      "title": "Orchestrator recognizer",
       "description": "Orchestrator recognizer.",
       "type": "object",
       "required": [
@@ -6885,7 +6891,7 @@
         },
         "snapshotPath": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint Key",
+          "title": "Endpoint key",
           "description": "SnapShot file path.",
           "default": "=settings.orchestrator.shapshotpath"
         },
@@ -6936,7 +6942,7 @@
     },
     "Microsoft.OrdinalEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Ordinal Entity Recognizer",
+      "title": "Ordinal entity recognizer",
       "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
       "type": "object",
       "required": [
@@ -6966,7 +6972,7 @@
     },
     "Microsoft.PercentageEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Percentage Entity Recognizer",
+      "title": "Percentage entity recognizer",
       "description": "Recognizer which recognizes percentages.",
       "type": "object",
       "required": [
@@ -6996,7 +7002,7 @@
     },
     "Microsoft.PhoneNumberEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Phone Number Entity Recognizer",
+      "title": "Phone number entity recognizer",
       "description": "Recognizer which recognizes phone numbers.",
       "type": "object",
       "required": [
@@ -7026,7 +7032,7 @@
     },
     "Microsoft.QnAMakerDialog": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "QnAMaker Dialog",
+      "title": "QnAMaker dialog",
       "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
       "type": "object",
       "required": [
@@ -7051,7 +7057,7 @@
         },
         "endpointKey": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint Key",
+          "title": "Endpoint key",
           "description": "Endpoint key for the QnA Maker KB.",
           "default": "=settings.qna.endpointkey"
         },
@@ -7098,7 +7104,7 @@
         },
         "strictFilters": {
           "$ref": "#/definitions/arrayExpression",
-          "title": "Strict Filters",
+          "title": "Strict filters",
           "description": "Metadata filters to use when calling the QnA Maker KB.",
           "items": {
             "type": "object",
@@ -7134,7 +7140,7 @@
         },
         "rankerType": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Ranker Type",
+          "title": "Ranker type",
           "description": "Type of Ranker.",
           "oneOf": [
             {
@@ -7158,7 +7164,7 @@
           "description": "Join operator for Strict Filters.",
           "oneOf": [
             {
-              "title": "Join Operator",
+              "title": "Join operator",
               "description": "Value of Join Operator to be used as conjunction with Strict Filter values.",
               "enum": [
                 "AND",
@@ -7187,7 +7193,7 @@
     },
     "Microsoft.QnAMakerRecognizer": {
       "$role": "implements(Microsoft.IRecognizer)",
-      "title": "QnAMaker Recognizer",
+      "title": "QnAMaker recognizer",
       "description": "Recognizer for generating QnAMatch intents from a KB.",
       "type": "object",
       "required": [
@@ -7212,12 +7218,12 @@
         "knowledgeBaseId": {
           "$ref": "#/definitions/stringExpression",
           "title": "KnowledgeBase Id",
-          "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+          "description": "Knowledge base Id of your QnA Maker knowledge base.",
           "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint Key",
+          "title": "Endpoint key",
           "description": "Endpoint key for the QnA Maker KB.",
           "default": "=settings.qna.endpointkey"
         },
@@ -7238,7 +7244,7 @@
         },
         "strictFilters": {
           "$ref": "#/definitions/arrayExpression",
-          "title": "Strict Filters",
+          "title": "Strict filters",
           "description": "Metadata filters to use when calling the QnA Maker KB.",
           "items": {
             "type": "object",
@@ -7268,7 +7274,7 @@
         },
         "isTest": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "IsTest",
+          "title": "Use test environment",
           "description": "True, if pointing to Test environment, else false.",
           "examples": [
             true,
@@ -7276,7 +7282,7 @@
           ]
         },
         "rankerType": {
-          "title": "Ranker Type",
+          "title": "Ranker type",
           "description": "Type of Ranker.",
           "oneOf": [
             {
@@ -7301,7 +7307,7 @@
           "description": "Join operator for Strict Filters.",
           "oneOf": [
             {
-              "title": "Join Operator",
+              "title": "Join operator",
               "description": "Value of Join Operator to be used as onjuction with Strict Filter values.",
               "enum": [
                 "AND",
@@ -7316,7 +7322,7 @@
         },
         "includeDialogNameInMetadata": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Include Dialog Name",
+          "title": "Include dialog name",
           "description": "When set to false, the dialog name will not be passed to QnAMaker. (default) is true",
           "default": true,
           "examples": [
@@ -7348,12 +7354,12 @@
         },
         "context": {
           "$ref": "#/definitions/objectExpression",
-          "title": "QnARequestContext",
+          "title": "QnA request context",
           "description": "Context to use for ranking."
         },
         "qnaId": {
           "$ref": "#/definitions/integerExpression",
-          "title": "QnAId",
+          "title": "QnA Id",
           "description": "A number or expression which is the QnAId to paass to QnAMaker API."
         },
         "$kind": {
@@ -7407,7 +7413,7 @@
     },
     "Microsoft.RecognizerSet": {
       "$role": "implements(Microsoft.IRecognizer)",
-      "title": "Recognizer Set",
+      "title": "Recognizer set",
       "description": "Creates the union of the intents and entities of the recognizers in the set.",
       "type": "object",
       "required": [
@@ -7452,7 +7458,7 @@
     },
     "Microsoft.RegexEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Regex Entity Recognizer",
+      "title": "Regex entity recognizer",
       "description": "Recognizer which recognizes patterns of input based on regex.",
       "type": "object",
       "required": [
@@ -7607,7 +7613,7 @@
         },
         "activityProcessed": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Activity Processed",
+          "title": "Activity processed",
           "description": "When set to false, the dialog that is called can process the current activity.",
           "default": true
         },
@@ -7684,7 +7690,7 @@
         },
         "activityProcessed": {
           "$ref": "#/definitions/booleanExpression",
-          "title": "Activity Processed",
+          "title": "Activity processed",
           "description": "When set to false, the dialog that is called can process the current activity.",
           "default": true
         },
@@ -7704,7 +7710,7 @@
     },
     "Microsoft.ResourceMultiLanguageGenerator": {
       "$role": "implements(Microsoft.ILanguageGenerator)",
-      "title": "Resource Multi-Language Generator",
+      "title": "Resource multi-language generator",
       "description": "MultiLanguage Generator which is bound to resource by resource Id.",
       "type": "object",
       "required": [
@@ -7731,7 +7737,7 @@
         },
         "languagePolicy": {
           "type": "object",
-          "title": "Language Policy",
+          "title": "Language policy",
           "description": "Set alternate language policy for this generator.  If not set, the global language policy will be used."
         },
         "$kind": {
@@ -7938,7 +7944,7 @@
     },
     "Microsoft.SignOutUser": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Sign Out User",
+      "title": "Sign out user",
       "description": "Sign a user out that was logged in previously using OAuthInput.",
       "type": "object",
       "required": [
@@ -7965,7 +7971,7 @@
         },
         "connectionName": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Connection Name",
+          "title": "Connection name",
           "description": "Connection name that was used with OAuthInput to log a user in."
         },
         "disabled": {
@@ -7993,7 +7999,7 @@
     },
     "Microsoft.StaticActivityTemplate": {
       "$role": "implements(Microsoft.IActivityTemplate)",
-      "title": "Microsoft Static Activity Template",
+      "title": "Microsoft static activity template",
       "description": "This allows you to define a static Activity object",
       "type": "object",
       "required": [
@@ -8135,7 +8141,7 @@
     "Microsoft.TelemetryTrackEvent": {
       "$role": "implements(Microsoft.IDialog)",
       "type": "object",
-      "title": "Telemetry - Track Event",
+      "title": "Telemetry - track event",
       "description": "Track a custom event using the registered Telemetry Client.",
       "required": [
         "url",
@@ -8165,7 +8171,7 @@
         },
         "eventName": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Event Name",
+          "title": "Event name",
           "description": "The name of the event to track.",
           "examples": [
             "MyEventStarted",
@@ -8196,7 +8202,7 @@
     },
     "Microsoft.TemperatureEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Temperature Recognizer",
+      "title": "Temperature recognizer",
       "description": "Recognizer which recognizes temperatures.",
       "type": "object",
       "required": [
@@ -8226,7 +8232,7 @@
     },
     "Microsoft.TemplateEngineLanguageGenerator": {
       "$role": "implements(Microsoft.ILanguageGenerator)",
-      "title": "Template Multi-Language Generator",
+      "title": "Template multi-language generator",
       "description": "Template Generator which allows only inline evaluation of templates.",
       "type": "object",
       "required": [
@@ -8340,7 +8346,7 @@
     },
     "Microsoft.Test.AssertReply": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "Assert Reply",
+      "title": "Assert reply",
       "description": "Asserts that a reply text is valid.",
       "type": "object",
       "required": [
@@ -8356,12 +8362,12 @@
       "properties": {
         "text": {
           "type": "string",
-          "title": "Reply Text",
+          "title": "Reply text",
           "description": "Expected reply text"
         },
         "exact": {
           "type": "boolean",
-          "title": "Exact Match",
+          "title": "Exact match",
           "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
         },
         "description": {
@@ -8376,7 +8382,7 @@
         },
         "assertions": {
           "type": "array",
-          "title": "Assertions to perform to validate Activity that is sent by the dialog",
+          "title": "Assertions to validate activity",
           "description": "Sequence of expressions which must evaluate to true.",
           "items": {
             "$ref": "#/definitions/condition",
@@ -8403,7 +8409,7 @@
     },
     "Microsoft.Test.AssertReplyActivity": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "Assert Reply Activity",
+      "title": "Assert reply activity",
       "description": "Asserts that a reply activity is valid.",
       "type": "object",
       "required": [
@@ -8430,7 +8436,7 @@
         },
         "assertions": {
           "type": "array",
-          "title": "Assertions to perform to validate Activity that is sent by the dialog",
+          "title": "Assertions to validate Activity that is sent by the dialog",
           "description": "Sequence of expressions which must evaluate to true.",
           "items": {
             "$ref": "#/definitions/condition",
@@ -8457,7 +8463,7 @@
     },
     "Microsoft.Test.AssertReplyOneOf": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "Assert Reply OneOf",
+      "title": "Assert activity text matches at least one",
       "description": "Asserts that a reply text is one of multiple optional responses.",
       "type": "object",
       "required": [
@@ -8483,7 +8489,7 @@
         },
         "exact": {
           "type": "boolean",
-          "title": "Exact Match",
+          "title": "Exact match",
           "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
         },
         "description": {
@@ -8498,7 +8504,7 @@
         },
         "assertions": {
           "type": "array",
-          "title": "Assertions to perform to validate Activity that is sent by the dialog",
+          "title": "Assertions to validate activity",
           "description": "Sequence of expressions which must evaluate to true.",
           "items": {
             "$ref": "#/definitions/condition",
@@ -8525,7 +8531,7 @@
     },
     "Microsoft.Test.CustomEvent": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "User Event",
+      "title": "User event",
       "description": "Sends event to the bot from the user.",
       "type": "object",
       "required": [
@@ -8543,7 +8549,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "title": "Event Name",
+          "title": "Event name",
           "description": "Event name to send to the bot."
         },
         "value": {
@@ -8567,7 +8573,7 @@
     },
     "Microsoft.Test.HttpRequestSequenceMock": {
       "$role": "implements(Microsoft.Test.IHttpRequestMock)",
-      "title": "HttpRequest Sequence Mock",
+      "title": "HTTP request sequence mock",
       "description": "Mock HttpRequest in sequence order.",
       "type": "object",
       "required": [
@@ -8608,7 +8614,7 @@
         },
         "matchType": {
           "type": "string",
-          "title": "Body Match Type",
+          "title": "Body match type",
           "description": "The match type for body.",
           "enum": [
             "Exact",
@@ -8638,12 +8644,12 @@
             "description": "Mocked http response.",
             "properties": {
               "statusCode": {
-                "title": "Status Code",
+                "title": "Status code",
                 "description": "The status code. Default is OK(200).",
                 "oneOf": [
                   {
                     "type": "string",
-                    "title": "String Status Code",
+                    "title": "String status code",
                     "description": "Use string as status code.",
                     "enum": [
                       "Continue",
@@ -8700,7 +8706,7 @@
                   },
                   {
                     "type": "number",
-                    "title": "Number Status Code",
+                    "title": "Number status code",
                     "description": "Use number as status code.",
                     "examples": [
                       200
@@ -8711,7 +8717,7 @@
               },
               "reasonPhrase": {
                 "type": "string",
-                "title": "Reason Phrase",
+                "title": "Reason phrase",
                 "description": "The reason phrase.",
                 "examples": [
                   "Server is stolen."
@@ -8772,7 +8778,7 @@
       }
     },
     "Microsoft.Test.IHttpRequestMock": {
-      "title": "Microsoft Test IHttpRequestMock",
+      "title": "HTTP request mock",
       "description": "Components which derive from HttpRequestMock class",
       "$role": "interface",
       "oneOf": [
@@ -8787,12 +8793,12 @@
       ]
     },
     "Microsoft.Test.IPropertyMock": {
-      "title": "Microsoft Test IPropertyMock",
+      "title": "Property mock",
       "description": "Components which derive from PropertyMock class",
       "$role": "interface"
     },
     "Microsoft.Test.ITestAction": {
-      "title": "Microsoft Test ITestAction",
+      "title": "Test action",
       "description": "Components which derive from TestAction class",
       "$role": "interface",
       "oneOf": [
@@ -8840,7 +8846,7 @@
       ]
     },
     "Microsoft.Test.IUserTokenMock": {
-      "title": "Microsoft Test IUserTokenMock",
+      "title": "User token mock",
       "description": "Components which derive from UserTokenMock class",
       "$role": "interface",
       "oneOf": [
@@ -8905,7 +8911,7 @@
     },
     "Microsoft.Test.Script": {
       "$role": [],
-      "title": "Test Script",
+      "title": "Test script",
       "description": "Defines a sequence of test actions to perform to validate the behavior of dialogs.",
       "type": "object",
       "required": [
@@ -8934,7 +8940,7 @@
         },
         "httpRequestMocks": {
           "type": "array",
-          "title": "Http Request Mocks",
+          "title": "Http request mocks",
           "description": "Mock data for Microsoft.HttpRequest.",
           "items": {
             "$kind": "Microsoft.Test.IHttpRequestMock",
@@ -8943,7 +8949,7 @@
         },
         "userTokenMocks": {
           "type": "array",
-          "title": "User Token Mocks",
+          "title": "User token mocks",
           "description": "Mock data for Microsoft.OAuthInput.",
           "items": {
             "$kind": "Microsoft.Test.IUserTokenMock",
@@ -8967,7 +8973,7 @@
         },
         "enableTrace": {
           "type": "boolean",
-          "title": "Enable Trace Activity",
+          "title": "Enable trace activity",
           "description": "Enable trace activities in the unit test (default is false)",
           "default": false
         },
@@ -9048,7 +9054,7 @@
     },
     "Microsoft.Test.UserActivity": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "Send Activity",
+      "title": "Send activity",
       "description": "Sends activity to the bot.",
       "type": "object",
       "required": [
@@ -9071,7 +9077,7 @@
         },
         "user": {
           "type": "string",
-          "title": "User Name",
+          "title": "User name",
           "description": "The activity.from.id and activity.from.name will be this if specified."
         },
         "$kind": {
@@ -9106,7 +9112,7 @@
       "properties": {
         "membersAdded": {
           "type": "array",
-          "title": "Members Added",
+          "title": "Members added",
           "description": "Names of the members to add",
           "items": {
             "type": "string",
@@ -9116,7 +9122,7 @@
         },
         "membersRemoved": {
           "type": "array",
-          "title": "Members Removed",
+          "title": "Members removed",
           "description": "Names of the members to remove",
           "items": {
             "type": "string",
@@ -9140,7 +9146,7 @@
     },
     "Microsoft.Test.UserDelay": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "Delay Execution",
+      "title": "Delay execution",
       "description": "Delays text script for time period.",
       "type": "object",
       "required": [
@@ -9176,7 +9182,7 @@
     },
     "Microsoft.Test.UserSays": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "User Text",
+      "title": "User text",
       "description": "Sends text to the bot from the user.",
       "type": "object",
       "required": [
@@ -9198,7 +9204,7 @@
         },
         "user": {
           "type": "string",
-          "title": "User Name",
+          "title": "User name",
           "description": "The activity.from.id and activity.from.name will be this if specified."
         },
         "$kind": {
@@ -9217,7 +9223,7 @@
     },
     "Microsoft.Test.UserTokenBasicMock": {
       "$role": "implements(Microsoft.Test.IUserTokenMock)",
-      "title": "Microsoft Test UserTokenBasicMock",
+      "title": "User token mock",
       "description": "Mock Basic UserToken",
       "type": "object",
       "required": [
@@ -9235,7 +9241,7 @@
       "properties": {
         "connectionName": {
           "type": "string",
-          "title": "Connection Name",
+          "title": "Connection name",
           "description": "The connection name.",
           "examples": [
             "graph"
@@ -9243,7 +9249,7 @@
         },
         "channelId": {
           "type": "string",
-          "title": "Channel ID",
+          "title": "Channel Id",
           "description": "The channel ID. If empty, same as adapter.Conversation.ChannelId.",
           "examples": [
             "test"
@@ -9251,7 +9257,7 @@
         },
         "userId": {
           "type": "string",
-          "title": "User ID",
+          "title": "User Id",
           "description": "The user ID. If empty, same as adapter.Conversation.User.Id.",
           "examples": [
             "user1"
@@ -9267,7 +9273,7 @@
         },
         "magicCode": {
           "type": "string",
-          "title": "Magic Code",
+          "title": "Magic code",
           "description": "The optional magic code to associate with this token.",
           "examples": [
             "000000"
@@ -9289,7 +9295,7 @@
     },
     "Microsoft.Test.UserTyping": {
       "$role": "implements(Microsoft.Test.ITestAction)",
-      "title": "Send Typing",
+      "title": "Send typing",
       "description": "Sends typing activity to the bot.",
       "type": "object",
       "required": [
@@ -9305,7 +9311,7 @@
       "properties": {
         "user": {
           "type": "string",
-          "title": "User Name",
+          "title": "User name",
           "description": "The activity.from.id and activity.from.name will be this if specified."
         },
         "$kind": {
@@ -9640,7 +9646,7 @@
     },
     "Microsoft.TrueSelector": {
       "$role": "implements(Microsoft.ITriggerSelector)",
-      "title": "True Trigger Selector",
+      "title": "True trigger selector",
       "description": "Selector for all true events",
       "type": "object",
       "required": [
@@ -9728,7 +9734,7 @@
     },
     "Microsoft.UrlEntityRecognizer": {
       "$role": "implements(Microsoft.IEntityRecognizer)",
-      "title": "Confirmation Url Recognizer",
+      "title": "Url recognizer",
       "description": "Recognizer which recognizes urls.",
       "type": "object",
       "required": [
@@ -9748,6 +9754,81 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.UrlEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetMeetingParticipant": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get meeting participant",
+      "description": "Get teams meeting partipant information.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "user.participantInfo"
+          ]
+        },
+        "meetingId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Meeting Id",
+          "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
+          "examples": [
+            "=turn.activity.channelData.meeting.id"
+          ]
+        },
+        "participantId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Participant Id",
+          "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
+          "examples": [
+            "=turn.activity.from.aadObjectId"
+          ]
+        },
+        "tenantId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Tenant Id",
+          "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
+          "examples": [
+            "=turn.activity.channelData.tenant.id"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetMeetingParticipant"
         },
         "$designer": {
           "title": "Designer information",
