@@ -10,10 +10,52 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "title": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Title",
+            "description": "Title of the Task Module Response.",
+            "examples": [
+                "Bot Task Module"
+            ]
+        },
+        "height": {
+            "$ref": "schema:#/definitions/integerExpression",
+            "title": "Height",
+            "description": "Height of the Task Module Response.",
+            "examples": [
+                "450"
+            ]
+        },
+        "width": {
+            "$ref": "schema:#/definitions/integerExpression",
+            "title": "Width",
+            "description": "Width of the Task Module Response.",
+            "examples": [
+                "450"
+            ]
+        },
+        "url": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Url",
+            "description": "Url to use for the Task Module Response.",
+            "examples": [
+                "https://mysite.com",
+                "=user.surveySiteUrl"
+            ]
+        },
+        "fallbackUrl": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Fallback Url",
+            "description": "Fallback Url to use for the Task Module Response.",
+            "examples": [
+                "https://fallbacksite.com",
+                "=user.surveySiteFallbackUrl"
+            ]
+        },
         "activity": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Activity",
-            "description": "Activity to send, must contain an Attachment."
+            "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required."
         },
         "disabled": {
             "$ref": "schema:#/definitions/booleanExpression",

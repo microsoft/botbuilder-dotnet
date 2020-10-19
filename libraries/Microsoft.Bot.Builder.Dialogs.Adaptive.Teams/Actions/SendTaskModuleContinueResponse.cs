@@ -29,26 +29,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="SendTaskModuleContinueResponse"/> class.
         /// </summary>
-        /// <param name="activity"><see cref="Activity"/> to send.</param>
+        /// <param name="title">Optional, Title for the Task Module Response.</param>
+        /// <param name="activity">Optional, <see cref="Activity"/>Activity containing an Hero Card, or Adaptive Card Attachment to send.</param>
+        /// <param name="height">Optional, Height for the Task Module Response.</param>
+        /// <param name="width">Optional, Width for the Task Module Response.</param>
+        /// <param name="url">Optional, url to load within the Task Module Response.</param>
+        /// <param name="fallbackUrl">Optional, fallback url to load within the Task Module Response.</param>
+        /// <param name="completionBotId">Optionally, specifies a bot App ID to send the result of the 
+        /// user's interaction with the task module to. If specified, the bot will receive 
+        /// a task/submit invoke event with a JSON object in the event payload.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
-        public SendTaskModuleContinueResponse(Activity activity = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendTaskModuleContinueResponse(string title = null, Activity activity = null, int? height = null, int? width = null, string url = null, string fallbackUrl = null, string completionBotId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.Activity = new StaticActivityTemplate(activity);
-        }
+            if (!string.IsNullOrEmpty(title))
+            {
+                this.Title = new TextTemplate(title);
+            }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SendTaskModuleContinueResponse"/> class.
-        /// </summary>
-        /// <param name="text">Optional, template to evaluate to create the activity.</param>
-        /// <param name="callerPath">Optional, source file full path.</param>
-        /// <param name="callerLine">Optional, line number in source file.</param>
-        [JsonConstructor]
-        public SendTaskModuleContinueResponse(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.Activity = new ActivityTemplate(text ?? string.Empty);
+            this.Height = height;
+            this.Width = width;
+            this.Url = url;
+            this.FallbackUrl = fallbackUrl;
+            this.CompletionBotId = completionBotId;
+            this.Activity = new StaticActivityTemplate(activity);
         }
 
         /// <summary>
@@ -61,10 +66,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
-        /// Gets or sets template for the activity.
+        /// Gets or sets the optional template or text to use to generate the title message to send.
+        /// </summary>
+        /// <value>
+        /// Message to send.
+        /// </value>
+        [JsonProperty("title")]
+        public ITemplate<string> Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expression for the height of the Task Module response.
+        /// </summary>
+        /// <value>
+        /// An integer expression. 
+        /// </value>
+        [JsonProperty("height")]
+        public IntExpression Height { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expression for the width of the Task Module response.
+        /// </summary>
+        /// <value>
+        /// An integer expression. 
+        /// </value>
+        [JsonProperty("width")]
+        public IntExpression Width { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expression for the Url of the Task Module response.
+        /// </summary>
+        /// <value>
+        /// An string expression. 
+        /// </value>
+        [JsonProperty("url")]
+        public StringExpression Url { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expression for the Fallback Url the Task Module Task Info response.
+        /// </summary>
+        /// <value>
+        /// An string expression. 
+        /// </value>
+        [JsonProperty("url")]
+        public StringExpression FallbackUrl { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expression for the Completion Bot Id of the Task Module Task Info response.
+        /// This is a bot App ID to send the result of the user's interaction with the task module to. If
+        /// specified, the bot will receive a task/submit invoke event with a JSON object in the event payload.
+        /// </summary>
+        /// <value>
+        /// An string expression. 
+        /// </value>
+        [JsonProperty("url")]
+        public StringExpression CompletionBotId { get; set; }
+
+        /// <summary>
+        /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card with an Attachment to send.
         /// </summary>
         /// <value>
         /// Template for the activity.
@@ -92,36 +153,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
-
-            //TODO: Add support for parameterized task module info settings
-            /*
-                    Title
-                    Height
-                    Width 
-                    Url 
-                    Card 
-                    FallbackUrl 
-                    CompletionBotId 
-            */
-
-            if (activity.Attachments == null || !activity.Attachments.Any())
+            Attachment attachment = null;
+            if (Activity != null)
             {
-                throw new ArgumentException($"A valid attachment is required for Task Module Continue Response.");
+                var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+
+                if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
+                {
+                    throw new ArgumentException($"Invalid Activity. A valid url, or valid attachment is required for Task Module Continue Response.");
+                }
+
+                attachment = boundActivity.Attachments[0];
             }
 
-            var attachment = activity.Attachments[0];
-
-            // TODO: LG?
-            //if (attachment != null)
-            //{
-            //    var languageGenerator = dc.Services.Get<LanguageGenerator>();
-            //    if (languageGenerator != null)
-            //    {
-            //        var lgStringResult = await languageGenerator.GenerateAsync(dc, attachment.Content.ToString(), dc.State, cancellationToken).ConfigureAwait(false);
-            //        attachment.Content = lgStringResult.ToString();
-            //    }
-            //}
+            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var height = Height.GetValue(dc.State);
+            var width = Width.GetValue(dc.State);
+            var url = Url.GetValue(dc.State);
+            var fallbackUrl = FallbackUrl.GetValue(dc.State);
+            var completionBotId = CompletionBotId.GetValue(dc.State);
 
             var responseActivity = new Activity
             {
@@ -134,9 +184,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         {
                             Value = new Schema.Teams.TaskModuleTaskInfo
                             {
-                                Card = attachment
-                            }
-                        }
+                                Title = title,
+                                Card = attachment,
+                                Url = url,
+                                FallbackUrl = fallbackUrl,
+                                Height = height,
+                                Width = width,
+                                CompletionBotId = completionBotId,
+                            },
+                        },
                     }
                 },
                 Type = ActivityTypesEx.InvokeResponse
