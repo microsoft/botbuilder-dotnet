@@ -86,6 +86,11 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var claimsList = claims.ToList();
 
+            if (claimsList.Any(c => c.Value == AuthenticationConstants.AnonymousSkillAppId && c.Type == AuthenticationConstants.AppIdClaim))
+            {
+                return true;
+            }
+
             var version = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.VersionClaim);
             if (string.IsNullOrWhiteSpace(version?.Value))
             {
@@ -148,6 +153,15 @@ namespace Microsoft.Bot.Connector.Authentication
             await ValidateIdentityAsync(identity, credentials).ConfigureAwait(false);
 
             return identity;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ClaimsIdentity"/> for an anonymous (unauthenticated) skill. 
+        /// </summary>
+        /// <returns>A <see cref="ClaimsIdentity"/> instance with authentication type set to <see cref="AuthenticationConstants.AnonymousAuthType"/> and a reserved <see cref="AuthenticationConstants.AnonymousSkillAppId"/> claim.</returns>
+        public static ClaimsIdentity CreateAnonymousSkillClaim()
+        {
+            return new ClaimsIdentity(new List<Claim> { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, AuthenticationConstants.AnonymousAuthType);
         }
 
         internal static async Task ValidateIdentityAsync(ClaimsIdentity identity, ICredentialProvider credentials)
