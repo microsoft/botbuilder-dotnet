@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
                 .Use(new SetTestOptionsMiddleware())
                 .Use(new SetSkillConversationIdFactoryBaseMiddleware())
-                .Use(new SetBotFrameworkClientMiddleware());
+                .Use(new SetSkillBotFrameworkClientMiddleware());
 
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;

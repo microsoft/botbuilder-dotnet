@@ -10,16 +10,16 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
     /// <summary>
-    /// Middleware to add <see cref="MockBotFrameworkClient"/> to the <see cref="ITurnContext.TurnState"/>.
+    /// Middleware to add <see cref="MockSkillBotFrameworkClient"/> to the <see cref="ITurnContext.TurnState"/>.
     /// </summary>
-    public class SetBotFrameworkClientMiddleware : IMiddleware
+    public class SetSkillBotFrameworkClientMiddleware : IMiddleware
     {
         /// <inheritdoc/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                turnContext.TurnState.Add<BotFrameworkClient>(new MockBotFrameworkClient());
+                turnContext.TurnState.Add<BotFrameworkClient>(new MockSkillBotFrameworkClient());
             }
 
             await next(cancellationToken).ConfigureAwait(false);

@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Mocks
     /// <summary>
     /// BotFrameworkClient mock.
     /// </summary>
-    public class MockBotFrameworkClient : BotFrameworkClient
+    public class MockSkillBotFrameworkClient : BotFrameworkClient
     {
         /// <inheritdoc/>
         public override Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
