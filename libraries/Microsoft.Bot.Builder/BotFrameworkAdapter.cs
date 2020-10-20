@@ -1278,7 +1278,7 @@ namespace Microsoft.Bot.Builder
 
             // Create a conversation update activity to represent the result.
             var eventActivity = Activity.CreateEventActivity();
-            eventActivity.Name = "CreateConversation";
+            eventActivity.Name = ActivityEventNames.CreateConversation;
             eventActivity.ChannelId = channelId;
             eventActivity.ServiceUrl = serviceUrl;
             eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
