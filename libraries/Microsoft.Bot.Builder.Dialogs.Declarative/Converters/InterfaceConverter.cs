@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly ResourceExplorer resourceExplorer;
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
-        private readonly ConcurrentDictionary<string, T> cachedRefDialogs = new ConcurrentDictionary<string, T>();
+        private readonly Dictionary<string, T> cachedRefDialogs = new Dictionary<string, T>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.

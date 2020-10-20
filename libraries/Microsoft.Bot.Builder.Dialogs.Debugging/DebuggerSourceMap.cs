@@ -257,6 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     orderby distance
                     select sourceItem;
 
+                // We could have many options with the same distance -- add them all to the row
                 options = options.GroupBy(o => row.SourceBreakpoint.Line - o.Value.StartPoint.LineIndex).FirstOrDefault();
             }
 
