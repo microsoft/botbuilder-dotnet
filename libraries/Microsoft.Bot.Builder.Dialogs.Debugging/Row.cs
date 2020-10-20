@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -26,6 +27,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public Breakpoint Breakpoint { get; } = new Breakpoint();
 
-        public object Item { get; set; }
+        public IList<object> Items { get; set; } = new List<object>();
     }
 }

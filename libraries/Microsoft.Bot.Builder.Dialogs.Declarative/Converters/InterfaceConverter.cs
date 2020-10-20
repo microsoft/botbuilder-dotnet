@@ -203,9 +203,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         private static JToken TryAssignId(JToken jToken, SourceContext sourceContext)
         {
-            // This is the jToken we'll use to build the concrete type.
-            var tokenToBuild = jToken;
-
             // If our JToken does not have an id, try to get an id from the resource explorer
             // in a best-effort manner.
             if (jToken is JObject jObj && !jObj.ContainsKey("id"))
@@ -213,15 +210,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 // Check if we have an id registered for this token
                 if (sourceContext is ResourceSourceContext rsc && rsc.DefaultIdMap.ContainsKey(jToken))
                 {
-                    // Clone the token since we'll alter it from the file version.
-                    // If we don't clone, future ranges will be calculated based on the altered token.
-                    // which will end in a wrong source range.
-                    tokenToBuild = jToken.DeepClone();
-                    tokenToBuild["id"] = rsc.DefaultIdMap[jToken];
+                    jToken["id"] = rsc.DefaultIdMap[jToken];
                 }
             }
 
-            return tokenToBuild;
+            return jToken;
         }
     }
 }

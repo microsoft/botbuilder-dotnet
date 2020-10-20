@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             lock (_gate)
             {
-                return _rows[breakpoint.Id].Item;
+                return _rows[breakpoint.Id].Items.Last();
             }
         }
 
@@ -212,16 +212,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             var item = sourceItem.Key;
             var source = sourceItem.Value;
-            if (Equals(row.Item, item) && Equals(row.Breakpoint, source))
+            if (row.Items.Contains(item) && Equals(row.Breakpoint, source))
             {
                 return false;
             }
 
-            row.Item = item;
+            row.Items.Add(item);
             row.Breakpoint.Verified = source != null;
             Assign(row.Breakpoint, source);
 
-            var name = _codeModel.NameFor(row.Item);
+            var name = _codeModel.NameFor(item);
             Assign(row.Breakpoint, name, null);
 
             return true;
@@ -256,12 +256,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     let distance = row.SourceBreakpoint.Line - source.StartPoint.LineIndex
                     orderby distance
                     select sourceItem;
+
+                options = options.GroupBy(o => row.SourceBreakpoint.Line - o.Value.StartPoint.LineIndex).FirstOrDefault();
             }
 
             options = options.ToArray();
-            var best = options.FirstOrDefault();
+            bool status = false;
 
-            return TryUpdate(row, best);
+            foreach (var option in options)
+            {
+                status = TryUpdate(row, option);
+            }
+
+            return status;
         }
 
         private void RebuildItems()
@@ -271,8 +278,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 _items.Clear();
                 foreach (var row in _rows.Items)
                 {
-                    var item = row.Item;
-                    if (item != null)
+                    foreach (var item in row.Items)
                     {
                         _items.Add(item);
                     }
