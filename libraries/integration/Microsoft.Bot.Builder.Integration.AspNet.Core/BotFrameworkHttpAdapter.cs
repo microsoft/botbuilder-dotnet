@@ -318,7 +318,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="claimsIdentity">ClaimsIdentity for authenticated caller.</param>
         private string GetAudience(ClaimsIdentity claimsIdentity)
         {
-            if (claimsIdentity.AuthenticationType != "anonymous")
+            if (claimsIdentity.AuthenticationType != AuthenticationConstants.AnonymousAuthType)
             {
                 var audience = ChannelProvider != null && ChannelProvider.IsGovernment() ?
     GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope :
