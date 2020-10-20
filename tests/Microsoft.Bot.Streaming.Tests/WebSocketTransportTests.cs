@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
         public async Task WebSocketServer_Connects()
         {
             var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock, logger: null));
+            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             writer.StartAsync();

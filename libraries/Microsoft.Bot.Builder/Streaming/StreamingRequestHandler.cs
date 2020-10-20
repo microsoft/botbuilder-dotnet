@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <param name="audience">The specified recipient of all outgoing activities.</param>
-        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience = null, ILogger logger = null)
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
