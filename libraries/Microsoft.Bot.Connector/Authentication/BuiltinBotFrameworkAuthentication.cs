@@ -65,9 +65,15 @@ namespace Microsoft.Bot.Connector.Authentication
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
         }
 
-        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override async Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var scope = audience ?? _toChannelFromBotOAuthScope;
+
+            var appId = GetAppId(claimsIdentity);
+
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
+
+            return credentials;
         }
 
         private IChannelProvider GetChannelProvider()
