@@ -79,14 +79,6 @@ namespace Microsoft.Bot.Connector
             : base(customHttpClient, disposeHttpClient)
         {
             this.Credentials = credentials;
-            if (customHttpClient != null)
-            {
-                this.HttpClient = customHttpClient;
-
-                // Note don't call AddDefaultRequestHeaders(HttpClient) here because the BotFrameworkAdapter
-                // called it. Updating DefaultRequestHeaders is not thread safe this is OK because the
-                // adapter should be a singleton.
-            }
 
             if (baseUri == null)
             {
