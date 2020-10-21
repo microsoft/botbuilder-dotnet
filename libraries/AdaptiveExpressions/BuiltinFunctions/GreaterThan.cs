@@ -35,7 +35,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (left.GetType() == right.GetType())
                 {
-                    return left.CompareTo(right) == 1;
+                    return left.CompareTo(right) > 1;
                 }
                 else
                 {

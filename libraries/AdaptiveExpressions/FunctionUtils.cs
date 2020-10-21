@@ -459,26 +459,6 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
-        /// Verify value is a number or string or DateTime object.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <param name="expression">Expression that led to value.</param>
-        /// <param name="number">No function.</param>
-        /// <returns>Error or null if valid.</returns>
-#pragma warning disable CA1801 // Review unused parameters
-        public static string VerifyNumberOrStringOrDateTime(object value, Expression expression, int number)
-#pragma warning restore CA1801 // Review unused parameters
-        {
-            string error = null;
-            if (value == null || (!value.IsNumber() && !(value is string) && !(value is DateTime)))
-            {
-                error = $"{expression} is not string or number or DateTime object.";
-            }
-
-            return error;
-        }
-
-        /// <summary>
         /// Verify value is a number or string or null.
         /// </summary>
         /// <param name="value">Value to check.</param>

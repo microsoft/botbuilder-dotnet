@@ -109,7 +109,7 @@ namespace AdaptiveExpressions.Tests
             Test("greater(one)"), // greater need two parameters
             Test("greaterOrEquals(one, hello)"), // string and integer are not comparable
             Test("greaterOrEquals(one)"), // function need two parameters
-            Test("less(1, true)"), // should have rge same type'
+            Test("less(1, true)"), // should have rge same type
             Test("less(json('{}'), [])"), // should be comparable
             Test("less(one, hello)"), // string and integer are not comparable
             Test("less(one)"), // function need two parameters
@@ -560,10 +560,6 @@ namespace AdaptiveExpressions.Tests
                 if (error != null)
                 {
                     passed = true;
-                }
-                else
-                {
-                    System.Console.WriteLine(exp);
                 }
             }
             catch
