@@ -14,7 +14,7 @@
                     },
                   {
                     "$kind": "Microsoft.SendActivity",
-                    "activity": "${user.participant.meetingRole}"
+                    "activity": "${user.participant.meeting.role}"
                   }
                 ]
             },
