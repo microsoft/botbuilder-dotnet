@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -530,7 +531,7 @@ namespace Microsoft.Bot.Builder
                 {
                     // The Activity Schema doesn't have a delay type built in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector.
-                    var delayMs = (int)activity.Value;
+                    var delayMs = Convert.ToInt32(activity.Value, CultureInfo.InvariantCulture);
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
                     // No need to create a response. One will be created below.
@@ -1279,7 +1280,7 @@ namespace Microsoft.Bot.Builder
 
             // Create a conversation update activity to represent the result.
             var eventActivity = Activity.CreateEventActivity();
-            eventActivity.Name = "CreateConversation";
+            eventActivity.Name = ActivityEventNames.CreateConversation;
             eventActivity.ChannelId = channelId;
             eventActivity.ServiceUrl = serviceUrl;
             eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");

@@ -7,7 +7,6 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
@@ -49,9 +48,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     var activeDialogContext = GetActiveDialogContext(dialogContext);
 
-                    var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
-                    await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
-
                     // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
                     await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -84,9 +80,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (SendEoCToParent(turnContext))
                 {
-                    var endMessageText = $"Dialog {dialog.Id} has **completed**. Sending EndOfConversation.";
-                    await turnContext.TraceActivityAsync($"{typeof(Dialog).Name}.RunAsync()", label: $"{endMessageText}", value: result.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
-
                     // Send End of conversation at the end.
                     var code = result.Status == DialogTurnStatus.Complete ? EndOfConversationCodes.CompletedSuccessfully : EndOfConversationCodes.UserCancelled;
                     var activity = new Activity(ActivityTypes.EndOfConversation) { Value = result.Result, Locale = turnContext.Activity.Locale, Code = code };

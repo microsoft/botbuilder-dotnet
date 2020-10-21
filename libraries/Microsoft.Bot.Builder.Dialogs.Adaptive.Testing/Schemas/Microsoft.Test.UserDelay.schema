@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.ITestAction)",
-    "title": "Delay Execution",
+    "title": "Delay execution",
     "description": "Delays text script for time period.",
     "type": "object",
     "required": [

@@ -20,50 +20,50 @@
 /build/**                                                                           @microsoft/bb-dotnet
 
 # Specific Test Projects
-/tests/Microsoft.Bot.Builder.TestBot.Json/**                                        @chrimc62 @tomlm @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.TestBot.Json/**                                        @chrimc62 @tomlm @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
 /tests/Microsoft.Bot.Builder.TestProtocol/**                                        @gabog @microsoft/bf-skills
 
 # Adapters
-/libraries/Adapters/**                                                              @garypretty @mrivera-ms
-/tests/Adapters/**                                                                  @garypretty @mrivera-ms
+/libraries/Adapters/**                                                              @EricDahlvang @garypretty @mrivera-ms
+/tests/Adapters/**                                                                  @EricDahlvang @garypretty @mrivera-ms
 
 # Platform Integration Libaries (.NET Core and WebApi)
 /libraries/integration/**                                                           @microsoft/bb-dotnet-integration
 /tests/integration/**                                                               @microsoft/bb-dotnet-integration
 
 # Application Insights/Telemetry
-/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @garypretty @mrivera-ms
-/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @garypretty @mrivera-ms
+/libraries/Microsoft.Bot.Builder.ApplicationInsights/**                             @EricDahlvang @johnataylor @mrivera-ms
+/tests/Microsoft.Bot.Builder.ApplicationInsights.Tests/**                           @EricDahlvang @johnataylor @mrivera-ms
 
 # AI: LUIS + Orchestrator
 /libraries/Microsoft.Bot.Builder.AI*/**                                             @microsoft/bf-cog-services
 /tests/Microsoft.Bot.Builder.AI*/**                                                 @microsoft/bf-cog-services
 
 # AI: QnA Maker
-/libraries/Microsoft.Bot.Builder.AI.QnA/**					    @mrivera-ms @microsoft/bf-cog-services
-/tests/Microsoft.Bot.Builder.AI.QnA.Tests/**					    @mrivera-ms @microsoft/bf-cog-services
+/libraries/Microsoft.Bot.Builder.AI.QnA/**					                        @mrivera-ms @microsoft/bf-cog-services
+/tests/Microsoft.Bot.Builder.AI.QnA.Tests/**					                    @mrivera-ms @microsoft/bf-cog-services
 
 # Azure (Storage)
 /libraries/Microsoft.Bot.Builder.Azure/**                                           @EricDahlvang @mrivera-ms
 /tests/Microsoft.Bot.Builder.Azure.Tests/**                                         @EricDahlvang @mrivera-ms
 
 # Adaptive Dialogs
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
 #   Adaptive Dialogs' tests
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
 
 # AdaptiveExpressions & LanguageGeneration libraries
-/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                             @microsoft/bf-adaptive
-/tests/Microsoft.Bot.Builder.Dialogs.Declarative.Tests/**                           @microsoft/bf-adaptive
-/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                              @microsoft/bf-adaptive
-/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                            @microsoft/bf-adaptive
-/libraries/AdaptiveExpressions/**                                                   @microsoft/bf-adaptive
-/tests/AdaptiveExpressions.Tests/**                                                 @microsoft/bf-adaptive
+/libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                             @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.Dialogs.Declarative.Tests/**                           @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/libraries/Microsoft.Bot.Builder.LanguageGeneration/**                              @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.LanguageGeneration.Tests/**                            @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/libraries/AdaptiveExpressions/**                                                   @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/AdaptiveExpressions.Tests/**                                                 @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
 
 # BotBuilder Dialogs Debugging
 /libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                               @mrivera-ms @tomlm @gabog
@@ -74,29 +74,30 @@
 /tests/Microsoft.Bot.Builder.TemplateManager/**                                     @mrivera-ms @tomlm
 
 # BotBuilder Testing
-/libraries/Microsoft.Bot.Builder.Testing/**                                         @gabog
-/tests/Microsoft.Bot.Builder.Testing.Tests/**                                       @gabog
+/libraries/Microsoft.Bot.Builder.Testing/**                                         @gabog @EricDahlvang
+/tests/Microsoft.Bot.Builder.Testing.Tests/**                                       @gabog @EricDahlvang
 
 # Bot Framework Schema
-/libraries/Microsoft.Bot.Schema/**                                                  @mrivera-ms @johnataylor
-/tests/Microsoft.Bot.Schema.Tests/**                                                @mrivera-ms @johnataylor
+/libraries/Microsoft.Bot.Schema/**                                                  @microsoft/bb-core
+/tests/Microsoft.Bot.Schema.Tests/**                                                @microsoft/bb-core
 
 # Streaming library
 /libraries/Microsoft.Bot.Builder/Streaming/**                                       @microsoft/bf-streaming
 /libraries/Microsoft.Bot.Streaming/**                                               @microsoft/bf-streaming
 /tests/Microsoft.Bot.Builder.Streaming.Tests/**                                     @microsoft/bf-streaming
+/tests/Microsoft.Bot.Streaming.Tests/**                                             @microsoft/bf-streaming
 
 # BotBuilder library
-/libraries/Microsoft.Bot.Builder/**                                                 @gabog @johnataylor
-/tests/Microsoft.Bot.Builder.Tests/**                                               @gabog @johnataylor
+/libraries/Microsoft.Bot.Builder/**                                                 @microsoft/bb-core
+/tests/Microsoft.Bot.Builder.Tests/**                                               @microsoft/bb-core
 
 # BotBuilder Dialogs
 /libraries/Microsoft.Bot.Builder.Dialogs/**                                         @microsoft/bf-dialogs
 /tests/Microsoft.Bot.Builder.Dialogs/**                                             @microsoft/bf-dialogs
 
 # Bot Framework Connector
-/libraries/Microsoft.Bot.Connector/**                                               @mrivera-ms @carlosscastro @johnataylor
-/tests/Microsoft.Bot.Connector.Tests/**                                             @mrivera-ms @carlosscastro @johnataylor
+/libraries/Microsoft.Bot.Connector/**                                               @microsoft/bb-core
+/tests/Microsoft.Bot.Connector.Tests/**                                             @microsoft/bb-core
 
 # Bot Framework Authentication
 /libraries/Microsoft.Bot.Builder/OAuth/**                                           @microsoft/bf-auth

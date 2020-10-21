@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Data;
+using System.IO;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
 
 namespace AdaptiveExpressions
 {
@@ -21,13 +20,14 @@ namespace AdaptiveExpressions
         /// <summary>
         /// Throw a syntax error based one current context.
         /// </summary>
+        /// <param name="output">Text writer.</param>
         /// <param name="recognizer">An Antlr4 runtime recognizer.</param>
         /// <param name="offendingSymbol">The token violate the lexer rules.</param>
         /// <param name="line">The line number where the error occurred.</param>
         /// <param name="charPositionInLine">The position of character in the line where the error occurred.</param>
         /// <param name="msg">The error message.</param>
         /// <param name="e">The RecognitionException.</param>
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
+        public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
             throw new SyntaxErrorException(msg) { Source = $"({line}:{charPositionInLine})", };
         }

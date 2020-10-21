@@ -167,20 +167,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dc.ActiveDialog.State[_dialogOptionsStateKey] = DialogOptions;
 
             // Get the activity to send to the skill.
-            Activity activity;
-            if (ActivityProcessed.GetValue(dc.State))
+            Activity activity = null;
+            if (Activity != null && ActivityProcessed.GetValue(dc.State))
             {
                 // The parent consumed the activity in context, use the Activity property to start the skill.
                 activity = await Activity.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                // Send the turn context activity to the skill (pass through). 
-                activity = dc.Context.Activity;
-            }
 
             // Call the base to invoke the skill
-            return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity }, cancellationToken).ConfigureAwait(false);
+            // (If the activity has not been processed, send the turn context activity to the skill (pass through)). 
+            return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity ?? dc.Context.Activity }, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

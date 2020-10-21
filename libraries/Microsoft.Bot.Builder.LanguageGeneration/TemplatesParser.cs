@@ -82,6 +82,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
+        /// Parser to turn lg content into a <see cref="Templates"/>.
+        /// </summary>
+        /// <param name="resource">LG resource.</param>
+        /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
+        /// <param name="expressionParser">Expression parser for parsing expressions.</param>
+        /// <returns>new <see cref="Templates"/> entity.</returns>
+        public static Templates ParseResource(
+            LGResource resource,
+            ImportResolverDelegate importResolver = null,
+            ExpressionParser expressionParser = null)
+        {
+            return InnerParseResource(resource, importResolver, expressionParser);
+        }
+
+        /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/> based on the original LGFile.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
@@ -148,12 +163,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="expressionParser">Expression parser for parsing expressions.</param>
         /// <param name="cachedTemplates">Give the file path and templates to avoid parsing and to improve performance.</param>
+        /// <param name="parentTemplates">Parent visited Templates.</param>
         /// <returns>new <see cref="Templates"/> entity.</returns>
-        public static Templates ParseResource(
+        private static Templates InnerParseResource(
             LGResource resource,
             ImportResolverDelegate importResolver = null,
             ExpressionParser expressionParser = null,
-            Dictionary<string, Templates> cachedTemplates = null)
+            Dictionary<string, Templates> cachedTemplates = null,
+            Stack<Templates> parentTemplates = null)
         {
             if (resource == null)
             {
@@ -161,6 +178,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             cachedTemplates = cachedTemplates ?? new Dictionary<string, Templates>();
+            parentTemplates = parentTemplates ?? new Stack<Templates>();
             if (cachedTemplates.ContainsKey(resource.Id))
             {
                 return cachedTemplates[resource.Id];
@@ -172,7 +190,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             try
             {
                 lg = new TemplatesTransformer(lg).Transform(AntlrParseTemplates(resource));
-                lg.References = GetReferences(lg, cachedTemplates);
+                lg.References = GetReferences(lg, cachedTemplates, parentTemplates);
                 new StaticChecker(lg).Check().ForEach(u => lg.Diagnostics.Add(u));
             }
             catch (TemplateException ex)
@@ -204,19 +222,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return new LGResource(importPath, importPath, File.ReadAllText(importPath));
         }
 
-        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null)
+        private static IList<Templates> GetReferences(Templates file, Dictionary<string, Templates> cachedTemplates = null, Stack<Templates> parentTemplates = null)
         {
             var resourcesFound = new HashSet<Templates>();
-            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>());
+            ResolveImportResources(file, resourcesFound, cachedTemplates ?? new Dictionary<string, Templates>(), parentTemplates ?? new Stack<Templates>());
 
             resourcesFound.Remove(file);
             return resourcesFound.ToList();
         }
 
-        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates)
+        private static void ResolveImportResources(Templates start, HashSet<Templates> resourcesFound, Dictionary<string, Templates> cachedTemplates, Stack<Templates> parentTemplates)
         {
             resourcesFound.Add(start);
-
+            parentTemplates.Push(start);
             foreach (var import in start.Imports)
             {
                 LGResource resource;
@@ -231,6 +249,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
                 }
 
+                // Cycle reference would throw exception to avoid infinite Loop.
+                // Import self is allowed, and would ignore it.
+                if (parentTemplates.Peek().Id != resource.Id && parentTemplates.Any(u => u.Id == resource.Id))
+                {
+                    var errorMsg = $"{TemplateErrors.LoopDetected} {resource.Id} => {start.Id}";
+                    var diagnostic = new Diagnostic(import.SourceRange.Range, errorMsg, DiagnosticSeverity.Error, start.Source);
+                    throw new TemplateException(errorMsg, new List<Diagnostic>() { diagnostic });
+                }
+
                 if (resourcesFound.All(u => u.Id != resource.Id))
                 {
                     Templates childResource;
@@ -240,13 +267,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                     else
                     {
-                        childResource = ParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates);
+                        childResource = InnerParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, parentTemplates);
                         cachedTemplates.Add(resource.Id, childResource);
                     }
 
-                    ResolveImportResources(childResource, resourcesFound, cachedTemplates);
+                    ResolveImportResources(childResource, resourcesFound, cachedTemplates, parentTemplates);
                 }
             }
+
+            parentTemplates.Pop();
         }
 
         /// <summary>
@@ -365,7 +394,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                     CheckTemplateName(templateName, context.templateNameLine());
                     CheckTemplateParameters(parameters, context.templateNameLine());
-                    template.TemplateBodyParseTree = CheckTemplateBody(templateName, templateBody, context.templateBody(), startLine);
+                    CheckTemplateBody(template, context.templateBody(), startLine);
 
                     _templates.Add(template);
                 }
@@ -373,18 +402,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return null;
             }
 
-            private LGTemplateParser.BodyContext CheckTemplateBody(string templateName, string templateBody, LGFileParser.TemplateBodyContext context, int startLine)
+            private LGTemplateParser.BodyContext CheckTemplateBody(Template template, LGFileParser.TemplateBodyContext context, int startLine)
             {
-                if (string.IsNullOrWhiteSpace(templateBody))
+                if (string.IsNullOrWhiteSpace(template.Body))
                 {
-                    var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.NoTemplateBody(templateName), context, DiagnosticSeverity.Warning);
+                    var diagnostic = BuildTemplatesDiagnostic(TemplateErrors.NoTemplateBody(template.Name), context, DiagnosticSeverity.Warning);
                     _templates.Diagnostics.Add(diagnostic);
                 }
                 else
                 {
                     try
                     {
-                        return AntlrParseTemplate(templateBody, startLine);
+                        var templateBodyContext = AntlrParseTemplate(template.Body, startLine);
+                        if (templateBodyContext != null)
+                        {
+                            template.TemplateBodyParseTree = templateBodyContext;
+                            new TemplateBodyTransformer(template).Transform();
+                        }
                     }
                     catch (TemplateException e)
                     {
@@ -480,6 +514,163 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             private Diagnostic BuildTemplatesDiagnostic(string errorMessage, ParserRuleContext context, DiagnosticSeverity severity = DiagnosticSeverity.Error)
             {
                 return new Diagnostic(context.ConvertToRange(), errorMessage, severity, _templates.Source);
+            }
+        }
+
+        private class TemplateBodyTransformer : LGTemplateParserBaseVisitor<object>
+        {
+            private readonly Template _template;
+
+            public TemplateBodyTransformer(Template template)
+            {
+                this._template = template;
+            }
+
+            public void Transform()
+            {
+                Visit(_template.TemplateBodyParseTree);
+            }
+
+            public override object VisitNormalTemplateBody([NotNull] LGTemplateParser.NormalTemplateBodyContext context)
+            {
+                foreach (var templateStr in context.templateString())
+                {
+                    var errorTemplateStr = templateStr.errorTemplateString();
+                    if (errorTemplateStr == null)
+                    {
+                        return Visit(templateStr.normalTemplateString());
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitStructuredTemplateBody([NotNull] LGTemplateParser.StructuredTemplateBodyContext context)
+            {
+                if (context.structuredBodyNameLine().errorStructuredName() == null
+                    && context.structuredBodyEndLine() != null
+                    && (context.errorStructureLine() == null || context.errorStructureLine().Length == 0)
+                    && (context.structuredBodyContentLine() != null && context.structuredBodyContentLine().Length > 0))
+                {
+                    var bodys = context.structuredBodyContentLine();
+                    foreach (var body in bodys)
+                    {
+                        if (body.expressionInStructure() != null)
+                        {
+                            FillInExpression(body.expressionInStructure());
+                        }
+                        else
+                        {
+                            // KeyValueStructuredLine
+                            var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                            foreach (var structureValue in structureValues)
+                            {
+                                foreach (var expression in structureValue.expressionInStructure())
+                                {
+                                    FillInExpression(expression);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitIfElseBody([NotNull] LGTemplateParser.IfElseBodyContext context)
+            {
+                var ifRules = context.ifElseTemplateBody().ifConditionRule();
+                for (var idx = 0; idx < ifRules.Length; idx++)
+                {
+                    var conditionNode = ifRules[idx].ifCondition();
+                    var ifExpr = conditionNode.IF() != null;
+                    var elseIfExpr = conditionNode.ELSEIF() != null;
+                    var elseExpr = conditionNode.ELSE() != null;
+
+                    var node = ifExpr ? conditionNode.IF() :
+                               elseIfExpr ? conditionNode.ELSEIF() :
+                               conditionNode.ELSE();
+
+                    if (node.GetText().Count(u => u == ' ') > 1
+                        || (idx > 0 && ifExpr)
+                        || (idx > 0 && idx < ifRules.Length - 1 && !elseIfExpr))
+                    {
+                        return null;
+                    }
+
+                    if (!elseExpr && (ifRules[idx].ifCondition().expression().Length == 1))
+                    {
+                        FillInExpression(conditionNode.expression(0));
+                    }
+
+                    if (ifRules[idx].normalTemplateBody() != null)
+                    {
+                        Visit(ifRules[idx].normalTemplateBody());
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitSwitchCaseBody([NotNull] LGTemplateParser.SwitchCaseBodyContext context)
+            {
+                var switchCaseRules = context.switchCaseTemplateBody().switchCaseRule();
+                var length = switchCaseRules.Length;
+                for (var idx = 0; idx < length; idx++)
+                {
+                    var switchCaseNode = switchCaseRules[idx].switchCaseStat();
+                    var switchExpr = switchCaseNode.SWITCH() != null;
+                    var caseExpr = switchCaseNode.CASE() != null;
+                    var defaultExpr = switchCaseNode.DEFAULT() != null;
+                    var node = switchExpr ? switchCaseNode.SWITCH() :
+                               caseExpr ? switchCaseNode.CASE() :
+                               switchCaseNode.DEFAULT();
+
+                    if (node.GetText().Count(u => u == ' ') > 1
+                        || (idx == 0 && !switchExpr)
+                        || (idx > 0 && switchExpr)
+                        || (idx > 0 && idx < length - 1 && !caseExpr))
+                    {
+                        return null;
+                    }
+
+                    if ((switchExpr || caseExpr) && switchCaseNode.expression().Length == 1)
+                    {
+                        FillInExpression(switchCaseNode.expression(0));
+                    }
+
+                    if ((caseExpr || defaultExpr) && switchCaseRules[idx].normalTemplateBody() != null)
+                    {
+                        Visit(switchCaseRules[idx].normalTemplateBody());
+                    }
+                }
+
+                return null;
+            }
+
+            public override object VisitNormalTemplateString([NotNull] LGTemplateParser.NormalTemplateStringContext context)
+            {
+                foreach (var expression in context.expression())
+                {
+                    FillInExpression(expression);
+                }
+
+                return null;
+            }
+
+            private void FillInExpression(ParserRuleContext expressionContext)
+            {
+                if (expressionContext == null)
+                {
+                    return;
+                }
+
+                var exp = expressionContext.GetText().TrimExpression();
+
+                var lineOffset = this._template.SourceRange.Range.Start.Line;
+                var sourceRange = new SourceRange(expressionContext, _template.SourceRange.Source, lineOffset);
+                var expressionRef = new ExpressionRef(exp, sourceRange);
+                _template.Expressions.Add(expressionRef);
             }
         }
     }

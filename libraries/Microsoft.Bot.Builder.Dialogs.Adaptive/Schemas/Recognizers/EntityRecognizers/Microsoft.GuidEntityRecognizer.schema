@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IEntityRecognizer)",
-    "title": "Guid Entity Recognizer",
+    "title": "Guid entity recognizer",
     "description": "Recognizer which recognizes guids.",
     "type": "object",
     "properties": {}

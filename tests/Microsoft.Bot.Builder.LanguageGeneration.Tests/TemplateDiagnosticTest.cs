@@ -354,6 +354,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Contains("Close } is missing in Expression", diagnostics[0].Message);
         }
 
+        [Fact]
+        public void TestLoopReference()
+        {
+            var diagnostics = GetDiagnostics("CycleRef1.lg");
+            Assert.Equal(1, diagnostics.Count);
+            Assert.StartsWith(TemplateErrors.LoopDetected, diagnostics[0].Message);
+        }
+
         private string GetExceptionExampleFilePath(string fileName)
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;

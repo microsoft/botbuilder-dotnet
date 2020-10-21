@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class TranscriptLoggerMiddleware : IMiddleware
     {
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
         private readonly ITranscriptLogger _logger;
 
         /// <summary>
@@ -41,22 +40,23 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
-            Queue<IActivity> transcript = new Queue<IActivity>();
+            var transcript = new Queue<IActivity>();
 
             // log incoming activity at beginning of turn
             if (turnContext.Activity != null)
             {
-                if (turnContext.Activity.From == null)
-                {
-                    turnContext.Activity.From = new ChannelAccount();
-                }
+                turnContext.Activity.From ??= new ChannelAccount();
 
                 if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]))
                 {
                     turnContext.Activity.From.Properties["role"] = "user";
                 }
 
-                LogActivity(transcript, CloneActivity(turnContext.Activity));
+                // We should not log ContinueConversation events used by skills to initialize the middleware.
+                if (!(turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == ActivityEventNames.ContinueConversation))
+                {
+                    LogActivity(transcript, CloneActivity(turnContext.Activity));
+                }
             }
 
             // hook up onSend pipeline
@@ -95,12 +95,12 @@ namespace Microsoft.Bot.Builder
                 // add MessageDelete activity
                 // log as MessageDelete activity
                 var deleteActivity = new Activity
-                {
-                    Type = ActivityTypes.MessageDelete,
-                    Id = reference.ActivityId,
-                }
-                .ApplyConversationReference(reference, isIncoming: false)
-                .AsMessageDeleteActivity();
+                    {
+                        Type = ActivityTypes.MessageDelete,
+                        Id = reference.ActivityId,
+                    }
+                    .ApplyConversationReference(reference, isIncoming: false)
+                    .AsMessageDeleteActivity();
 
                 LogActivity(transcript, deleteActivity);
             });
@@ -163,11 +163,7 @@ namespace Microsoft.Bot.Builder
 
         private static void LogActivity(Queue<IActivity> transcript, IActivity activity)
         {
-            if (activity.Timestamp == null)
-            {
-                activity.Timestamp = DateTime.UtcNow;
-            }
-
+            activity.Timestamp ??= DateTime.UtcNow;
             transcript.Enqueue(activity);
         }
     }

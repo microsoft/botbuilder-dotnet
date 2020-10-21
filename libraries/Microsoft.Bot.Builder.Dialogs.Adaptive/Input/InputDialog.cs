@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// 
         /// If the expression is a value then it will be used as the input.
         /// 
-        /// This property allows you to define a how data such as Recognizer results is bound to the input dialog.
+        /// This property allows you to define how data such as Recognizer results is bound to the input dialog.
         /// Examples:
         /// * "=@age" => bind to the input to any age entity recognized in the input. 
         /// * "=coalesce(@age, @number)" => which means use @age or @number as the input.
@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var (value, error) = this.DefaultValue.TryGetValue(dc.State);
                     if (this.DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken).ConfigureAwait(false);
+                        var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                         var properties = new Dictionary<string, string>()
                         {
@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            return await dc.EndDialogAsync().ConfigureAwait(false);
+            return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -516,7 +516,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             bool activityProcessed = dc.State.GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
             {
-                if (this.GetType().Name == nameof(AttachmentInput))
+                if (typeof(AttachmentInput).IsAssignableFrom(this.GetType()))
                 {
                     input = dc.Context.Activity.Attachments ?? new List<Attachment>();
                 }

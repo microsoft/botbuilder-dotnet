@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Xunit;
-using static Microsoft.Bot.Builder.LanguageGeneration.LGTemplateParser;
+using static LGTemplateParser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration.Tests
 {

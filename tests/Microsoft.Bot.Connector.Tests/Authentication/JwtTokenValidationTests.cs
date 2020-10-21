@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 new SimpleChannelProvider(),
                 emptyClient);
 
-            Assert.True(MicrosoftAppCredentials.IsTrustedServiceUrl("https://smba.trafficmanager.net/amer-client-ss.msg/"));
+            Assert.True(AppCredentials.IsTrustedServiceUrl("https://smba.trafficmanager.net/amer-client-ss.msg/"));
         }
 
         /// <summary>
@@ -145,7 +145,33 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 new SimpleChannelProvider(),
                 emptyClient);
 
-            Assert.Equal("anonymous", claimsPrincipal.AuthenticationType);
+            Assert.Equal(AuthenticationConstants.AnonymousAuthType, claimsPrincipal.AuthenticationType);
+        }
+
+        /// <summary>
+        /// Test with emulator channel Id and and RelatesTo set so it can validate we get an anonymous skill claim back.
+        /// </summary>
+        [Fact]
+        public async void Channel_AuthenticationDisabledAndSkill_ShouldBeAnonymous()
+        {
+            var header = string.Empty;
+            var credentials = new SimpleCredentialProvider();
+
+            var claimsPrincipal = await JwtTokenValidation.AuthenticateRequest(
+                new Activity
+                {
+                    ChannelId = Channels.Emulator,
+                    ServiceUrl = "https://webchat.botframework.com/",
+                    RelatesTo = new ConversationReference(),
+                    Recipient = new ChannelAccount { Role = RoleTypes.Skill }
+                },
+                header,
+                credentials,
+                new SimpleChannelProvider(),
+                emptyClient);
+
+            Assert.Equal(AuthenticationConstants.AnonymousAuthType, claimsPrincipal.AuthenticationType);
+            Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, JwtTokenValidation.GetAppIdFromClaims(claimsPrincipal.Claims));
         }
 
         /// <summary>
