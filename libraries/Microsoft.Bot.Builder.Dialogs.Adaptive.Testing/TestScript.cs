@@ -82,6 +82,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public string Locale { get; set; } = "en-us";
 
         /// <summary>
+        /// Gets or sets the language policy.
+        /// </summary>
+        /// <value>
+        /// the language policy.
+        /// </value>
+        [JsonProperty("languagePolicy")]
+#pragma warning disable CA2227 // Collection properties should be read only
+        public LanguagePolicy LanguagePolicy { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
         /// Gets the mock data for Microsoft.HttpRequest.
         /// </summary>
         /// <value>
@@ -149,9 +160,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="testName">Name of the test.</param>
         /// <param name="callback">The bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
-        /// <param name="languagePolicy">The default language policy.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
-        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null, LanguagePolicy languagePolicy = null)
+        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null)
         {
             if (adapter == null)
             {
@@ -186,9 +196,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
-                if (languagePolicy != null)
+                if (LanguagePolicy != null)
                 {
-                    dm.UseLanguagePolicy(languagePolicy);
+                    dm.UseLanguagePolicy(LanguagePolicy);
                 }
 
                 callback = dm.OnTurnAsync;
