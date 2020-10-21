@@ -305,9 +305,6 @@ namespace Microsoft.Bot.Builder.Tests
                 var scope = turnContext.TurnState.Get<string>(BotAdapter.OAuthScopeKey);
                 Assert.Equal(AuthenticationConstants.ToChannelFromBotOAuthScope, scope);
 
-                // Ensure the serviceUrl was added to the trusted hosts
-                //Assert.True(AppCredentials.TrustedHostNames.ContainsKey(new Uri(channelServiceUrl).Host));
-
                 return Task.CompletedTask;
             });
 

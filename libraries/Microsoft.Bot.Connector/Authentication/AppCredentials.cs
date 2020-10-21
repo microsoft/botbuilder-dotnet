@@ -231,13 +231,6 @@ namespace Microsoft.Bot.Connector.Authentication
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-#pragma warning disable CA1801 // Review unused parameters
-        private static bool IsTrustedUrl(Uri uri, ILogger logger)
-#pragma warning restore CA1801 // Review unused parameters
-        {
-            return true;
-        }
-
         private bool ShouldSetToken()
         {
             if (string.IsNullOrEmpty(MicrosoftAppId) || MicrosoftAppId == AuthenticationConstants.AnonymousSkillAppId)
