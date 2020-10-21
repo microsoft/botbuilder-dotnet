@@ -19,8 +19,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             : base(
                   ExpressionType.GreaterThan,
                   Function,
-                  FunctionUtils.ValidateBinary,
-                  FunctionUtils.VerifyNumberOrStringOrDateTime)
+                  FunctionUtils.ValidateBinary)
         {
         }
 
