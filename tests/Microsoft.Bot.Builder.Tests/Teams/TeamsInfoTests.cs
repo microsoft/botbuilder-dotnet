@@ -352,9 +352,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 var participant = await TeamsInfo.GetMeetingParticipantAsync(turnContext);
 
-                Assert.Equal("Organizer", participant.MeetingRole);
+                Assert.Equal("Organizer", participant.Meeting.Role);
                 Assert.Equal("meetigConversationId-1", participant.Conversation.Id);
-                Assert.Equal("userPrincipalName-1", participant.UserPrincipalName);
+                Assert.Equal("userPrincipalName-1", participant.User.UserPrincipalName);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
@@ -520,8 +520,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 {
                     var content = new JObject
                         {
-                            new JProperty("meetingRole", "Organizer"),
-                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("user", new JObject(new JProperty("userPrincipalName", "userPrincipalName-1"))),
+                            new JProperty("meeting", new JObject(new JProperty("role", "Organizer"))),
                             new JProperty("conversation", new JObject(new JProperty("Id", "meetigConversationId-1"))),
                         };
                     response.Content = new StringContent(content.ToString());

@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        public static async Task<TeamsParticipantChannelAccount> FetchParticipantAsync(this ITeamsOperations operations, string meetingId, string participantId, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<TeamsMeetingParticipant> FetchParticipantAsync(this ITeamsOperations operations, string meetingId, string participantId, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if(operations is TeamsOperations teamsOperations)
             {

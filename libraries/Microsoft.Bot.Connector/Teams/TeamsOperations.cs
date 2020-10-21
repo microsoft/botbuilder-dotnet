@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<TeamsParticipantChannelAccount>> FetchParticipantWithHttpMessagesAsync(string meetingId, string participantId, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<TeamsMeetingParticipant>> FetchParticipantWithHttpMessagesAsync(string meetingId, string participantId, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (meetingId == null)
             {
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Connector.Teams
             _url = _url.Replace("{participantId}", System.Uri.EscapeDataString(participantId));
             _url = _url.Replace("{tenantId}", System.Uri.EscapeDataString(tenantId));
 
-            return await GetResponseAsync<TeamsParticipantChannelAccount>(_url, _shouldTrace, _invocationId).ConfigureAwait(false);
+            return await GetResponseAsync<TeamsMeetingParticipant>(_url, _shouldTrace, _invocationId).ConfigureAwait(false);
         }
 
         private async Task<HttpOperationResponse<T>> GetResponseAsync<T>(string url, bool shouldTrace, string invocationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -44,8 +44,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         {
             var participantResult = new JObject
                         {
-                            new JProperty("meetingRole", "Organizer"),
-                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("meeting", new JObject(new JProperty("role", "Organizer"))),
+                            new JProperty("user", new JObject(new JProperty("userPrincipalName", "userPrincipalName-1"))),
                             new JProperty("conversation", new JObject(new JProperty("Id", "meetigConversationId-1"))),
                         };
 
