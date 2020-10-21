@@ -116,9 +116,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 if (!schema.StartsWith("http"))
                 {
                     Assert.True(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
-
-                    // Bug filed with Newtonsoft: https://stackoverflow.com/questions/63493078/why-does-validation-fail-in-code-but-work-in-newtonsoft-web-validator
+                    
                     // NOTE: Microsoft.SendActivity in the first file fails validation even though it is valid, same as Microsoft.StaticActivityTemplate on the last two.
+                    // Bug filed with Newtonsoft: https://stackoverflow.com/questions/63493078/why-does-validation-fail-in-code-but-work-in-newtonsoft-web-validator
                     var omit = new List<string>
                     {
                         "Action_SendActivity.test.dialog",
