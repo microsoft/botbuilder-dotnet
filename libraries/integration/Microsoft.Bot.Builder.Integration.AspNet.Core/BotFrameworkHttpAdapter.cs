@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -218,7 +219,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 return;
             }
 
-            if (!await AuthenticateRequestAsync(httpRequest).ConfigureAwait(false))
+            var claimsIdentity = await AuthenticateRequestAsync(httpRequest).ConfigureAwait(false);
+            if (claimsIdentity == null)
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 await httpRequest.HttpContext.Response.WriteAsync("Request authentication failed.").ConfigureAwait(false);
@@ -229,8 +231,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                
-                var requestHandler = new StreamingRequestHandler(bot, this, socket, Logger);
+
+                // Set ClaimsIdentity on Adapter to enable Skills and User OAuth in WebSocket-based streaming scenarios.
+                var audience = GetAudience(claimsIdentity);
+
+                var requestHandler = new StreamingRequestHandler(bot, this, socket, audience, Logger);
 
                 if (RequestHandlers == null)
                 {
@@ -250,7 +255,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
-        private async Task<bool> AuthenticateRequestAsync(HttpRequest httpRequest)
+        /// <summary>
+        /// Validates the auth header for WebSocket upgrade requests.
+        /// </summary>
+        /// <remarks>
+        /// Returns a ClaimsIdentity for successful auth and when auth is disabled. Returns null for failed auth.
+        /// </remarks>
+        /// <param name="httpRequest">The connection request.</param>
+        private async Task<ClaimsIdentity> AuthenticateRequestAsync(HttpRequest httpRequest)
         {
             try
             {
@@ -262,28 +274,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
                         await WriteUnauthorizedResponseAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
-                        return false;
+                        return null;
                     }
 
                     if (string.IsNullOrWhiteSpace(channelId))
                     {
                         await WriteUnauthorizedResponseAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
-                        return false;
+                        return null;
                     }
 
                     var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, CredentialProvider, ChannelProvider, channelId).ConfigureAwait(false);
                     if (!claimsIdentity.IsAuthenticated)
                     {
                         httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        return false;
+                        return null;
                     }
                     
                     // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
                     AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     ClaimsIdentity = claimsIdentity;
+                    return claimsIdentity;
                 }
 
-                return true;
+                // Authentication is not enabled, therefore return an anonymous ClaimsIdentity.
+                return new ClaimsIdentity(new List<Claim>(), "anonymous");
             }
             catch (Exception)
             {
@@ -292,6 +306,33 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Get the audience for the WebSocket connection from the authenticated ClaimsIdentity.
+        /// </summary>
+        /// <remarks>
+        /// Setting the Audience on the StreamingRequestHandler enables the bot to call skills and correctly forward responses from the skill to the next recipient.
+        /// i.e. the participant at the other end of the WebSocket connection.
+        /// </remarks>
+        /// <param name="claimsIdentity">ClaimsIdentity for authenticated caller.</param>
+        private string GetAudience(ClaimsIdentity claimsIdentity)
+        {
+            if (claimsIdentity.AuthenticationType != AuthenticationConstants.AnonymousAuthType)
+            {
+                var audience = ChannelProvider != null && ChannelProvider.IsGovernment() ?
+    GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope :
+    AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+                if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
+                {
+                    audience = JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims);
+                }
+
+                return audience;
+            }
+
+            return null;
         }
     }
 }
