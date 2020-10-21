@@ -137,6 +137,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression AllowInterruptions { get; set; }
 
         /// <summary>
+        /// Gets or sets the Deliver Mode for the activity which will be sent
+        /// to the skill.
+        /// </summary>
+        /// <value>
+        /// String or expression which evaluates to a valid <see cref="DeliveryModes"/>.
+        /// This value will be ignored if Activity.DeliveryMode has a value 
+        /// or Activity.Type='invoke'.
+        /// </value>
+        [JsonProperty("deliveryMode")]
+        public StringExpression DeliveryMode { get; set; }
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -174,9 +186,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 activity = await Activity.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            string deliveryMode = null;
+            if (DeliveryMode != null)
+            {
+                deliveryMode = DeliveryMode.GetValue(dc.State);
+            }
+
             // Call the base to invoke the skill
             // (If the activity has not been processed, send the turn context activity to the skill (pass through)). 
-            return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity ?? dc.Context.Activity }, cancellationToken).ConfigureAwait(false);
+            return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity ?? dc.Context.Activity, DeliveryMode = deliveryMode }, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

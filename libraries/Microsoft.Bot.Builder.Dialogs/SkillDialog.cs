@@ -57,12 +57,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Create deep clone of the original activity to avoid altering it before forwarding it.
             var skillActivity = ObjectPath.Clone(dialogArgs.Activity);
+            skillActivity.DeliveryMode = skillActivity.DeliveryMode ?? dialogArgs.DeliveryMode;
 
             // Apply conversation reference and common properties from incoming activity before sending.
             skillActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
 
             // Store delivery mode and connection name in dialog state for later use.
-            dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
+            dc.ActiveDialog.State[DeliverModeStateKey] = skillActivity.DeliveryMode;
 
             // Create the conversationId and store it in the dialog context state so we can use it later
             var skillConversationId = await CreateSkillConversationIdAsync(dc.Context, dc.Context.Activity, cancellationToken).ConfigureAwait(false);

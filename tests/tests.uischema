@@ -1279,41 +1279,31 @@
       "subtitle": "Switch Condition"
     }
   },
-  "Microsoft.TextInput": {
-    "flow": {
-      "body": "=action.prompt",
-      "botAsks": {
-        "body": {
-          "defaultContent": "<prompt>",
-          "field": "prompt",
-          "widget": "LgWidget"
-        },
-        "header": {
-          "colors": {
-            "icon": "#5C2E91",
-            "theme": "#EEEAF4"
-          },
-          "icon": "MessageBot",
-          "widget": "ActionHeader"
-        },
-        "widget": "ActionCard"
-      },
-      "nowrap": true,
-      "userInput": {
-        "header": {
-          "colors": {
-            "icon": "#0078D4",
-            "theme": "#E5F0FF"
-          },
-          "disableSDKTitle": true,
-          "icon": "User",
-          "menu": "none",
-          "widget": "ActionHeader"
-        },
-        "widget": "ActionCard"
-      },
-      "widget": "PromptWidget"
-    },
+  "Microsoft.ThrowException": {
+    "form": {
+      "label": "Throw an exception",
+      "subtitle": "Throw an exception"
+    }
+  },
+  "Microsoft.TraceActivity": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-debugging-bots",
+      "label": "Emit a trace event",
+      "subtitle": "Trace Activity"
+    }
+  },
+  "Microsoft.Ask": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response to ask a question",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Ask Activity"
+    }
+  },
+  "Microsoft.AttachmentInput": {
     "form": {
       "helpLink": "https://aka.ms/bfc-ask-for-user-input",
       "label": "Prompt for text",
@@ -1421,7 +1411,20 @@
       "subtitle": "Invoke activity with no activity.name"
     }
   },
-  "Teams.OnMEBotMessagePreviewEdit": {
+  "Microsoft.OnAssignEntity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Handle a condition when an entity is assigned",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "EntityAssigned activity"
+    }
+  },
+  "Microsoft.OnBeginDialog": {
     "form": {
       "hidden": [
         "actions"
@@ -1486,7 +1489,20 @@
       "subtitle": "Invoke activity.name='composeExtension/setting'"
     }
   },
-  "Teams.OnMEFetchTask": {
+  "Microsoft.OnEndOfActions": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Handle a condition when actions have ended",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "EndOfActions activity"
+    }
+  },
+  "Microsoft.OnEndOfConversationActivity": {
     "form": {
       "hidden": [
         "actions"
