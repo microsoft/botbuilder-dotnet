@@ -19,7 +19,7 @@ using Xunit.Sdk;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
     /// <summary>
-    /// NOTE: This requires BF CLI to be installed.
+    /// NOTE: This requires the latest BF CLI to be installed.
     /// </summary>
     /// <remarks>
     /// npm config set registry https://botbuilder.myget.org/F/botframework-cli/npm/
