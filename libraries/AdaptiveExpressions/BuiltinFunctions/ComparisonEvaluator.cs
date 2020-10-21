@@ -27,7 +27,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
         private enum DataType
         {
             Number,
-            DateTime,
+            Comparable,
             Other
         }
 
@@ -41,38 +41,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 (args, error) = FunctionUtils.EvaluateChildren(expression, state, new Options(options) { NullSubstitution = null }, verify);
                 if (error == null)
                 {
-                    // Ensure args are all of same type
-                    DataType? validType = null;
-                    foreach (var arg in args)
+                    try
                     {
-                        var obj = arg;
-                        if (validType.HasValue)
-                        {
-                            if (obj != null && validType == DataType.Other && DetermineCurArgType(arg) != validType.Value)
-                            {
-                                error = $"Arguments must either all be numbers or strings or DateTime objects in {expression}";
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            validType = DetermineCurArgType(arg);
-                        }
+                        result = function(args);
                     }
-
-                    if (error == null)
-                    {
-                        try
-                        {
-                            result = function(args);
-                        }
 #pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning it)
-                        catch (Exception e)
+                    catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-                        {
-                            // NOTE: This should not happen in normal execution
-                            error = e.Message;
-                        }
+                    {
+                        // NOTE: This should not happen in normal execution
+                        error = e.Message;
                     }
                 }
                 else
@@ -91,10 +69,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 return DataType.Number;
             }
-            
-            if (obj is DateTime)
+
+            if (obj is IComparable comparer)
             {
-                return DataType.DateTime;
+                return DataType.Comparable;
             }
 
             return DataType.Other;
