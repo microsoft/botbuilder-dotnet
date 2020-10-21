@@ -370,10 +370,17 @@ namespace Microsoft.Bot.Builder
                     }
                 }
 
-                var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, audience).ConfigureAwait(false);
-                context.TurnState.Add(connectorClient);
+                using (var connectorClient = await CreateConnectorClientAsync(reference.ServiceUrl, claimsIdentity, audience).ConfigureAwait(false))
+                {
+                    // Make the connector client available in turn state
+                    context.TurnState.Add(connectorClient);
+    
+                    // Run bot pipeline
+                    await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                    // Cleanup disposable resources in case other code kept a reference to it.
+                    context.TurnState.Set<IConnectorClient>(null);
+                }
             }
         }
 
@@ -448,12 +455,16 @@ namespace Microsoft.Bot.Builder
                 // The OAuthScope is also stored on the TurnState to get the correct AppCredentials if fetching a token is required.
                 var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : GetBotFrameworkOAuthScope();
                 context.TurnState.Add(OAuthScopeKey, scope);
-                var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, scope).ConfigureAwait(false);
-                context.TurnState.Add(connectorClient);
+                using (var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, claimsIdentity, scope).ConfigureAwait(false))
+                {
+                    context.TurnState.Add(connectorClient);
+                    context.TurnState.Add(callback);
 
-                context.TurnState.Add(callback);
+                    await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                    // Cleanup disposable resources in case other code kept a reference to it.
+                    context.TurnState.Set<IConnectorClient>(null);
+                }
 
                 // Handle ExpectedReplies scenarios where the all the activities have been buffered and sent back at once 
                 // in an invoke response.
@@ -1274,30 +1285,35 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, AppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
-
-            var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
-
-            // Create a conversation update activity to represent the result.
-            var eventActivity = Activity.CreateEventActivity();
-            eventActivity.Name = ActivityEventNames.CreateConversation;
-            eventActivity.ChannelId = channelId;
-            eventActivity.ServiceUrl = serviceUrl;
-            eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            eventActivity.Conversation = new ConversationAccount(id: result.Id, tenantId: conversationParameters.TenantId);
-            eventActivity.ChannelData = conversationParameters.ChannelData;
-            eventActivity.Recipient = conversationParameters.Bot;
-
-            using (var context = new TurnContext(this, (Activity)eventActivity))
+            using (var connectorClient = CreateConnectorClient(serviceUrl, credentials))
             {
-                var claimsIdentity = new ClaimsIdentity();
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
+                var result = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
 
-                context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
-                context.TurnState.Add(connectorClient);
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                // Create a conversation update activity to represent the result.
+                var eventActivity = Activity.CreateEventActivity();
+                eventActivity.Name = ActivityEventNames.CreateConversation;
+                eventActivity.ChannelId = channelId;
+                eventActivity.ServiceUrl = serviceUrl;
+                eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
+                eventActivity.Conversation = new ConversationAccount(id: result.Id, tenantId: conversationParameters.TenantId);
+                eventActivity.ChannelData = conversationParameters.ChannelData;
+                eventActivity.Recipient = conversationParameters.Bot;
+
+                using (var context = new TurnContext(this, (Activity)eventActivity))
+                {
+                    var claimsIdentity = new ClaimsIdentity();
+                    claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, credentials.MicrosoftAppId));
+                    claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, credentials.MicrosoftAppId));
+                    claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
+
+                    context.TurnState.Add<IIdentity>(BotIdentityKey, claimsIdentity);
+                    context.TurnState.Add(connectorClient);
+
+                    await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+
+                    // Cleanup disposable resources in case other code kept a reference to it.
+                    context.TurnState.Set<IConnectorClient>(null);
+                }
             }
         }
 
