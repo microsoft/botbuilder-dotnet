@@ -24,13 +24,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
         {
         }
 
-        private enum DataType
-        {
-            Number,
-            Comparable,
-            Other
-        }
-
         private static EvaluateExpressionDelegate Evaluator(Func<IReadOnlyList<object>, bool> function, FunctionUtils.VerifyExpression verify)
         {
             return (expression, state, options) =>
@@ -61,21 +54,6 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                 return (result, error);
             };
-        }
-
-        private static DataType DetermineCurArgType(object obj)
-        {
-            if (obj.IsNumber())
-            {
-                return DataType.Number;
-            }
-
-            if (obj is IComparable comparer)
-            {
-                return DataType.Comparable;
-            }
-
-            return DataType.Other;
         }
     }
 }
