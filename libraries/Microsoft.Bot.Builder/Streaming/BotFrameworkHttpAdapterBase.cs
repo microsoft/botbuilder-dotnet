@@ -143,11 +143,17 @@ namespace Microsoft.Bot.Builder.Streaming
                 {
                     context.TurnState.Add<IIdentity>(BotIdentityKey, ClaimsIdentity);
                 }
-                
-                var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
-                context.TurnState.Add(connectorClient);
 
-                await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
+                using (var connectorClient = CreateStreamingConnectorClient(activity, requestHandler))
+                {
+                    // Add connector client to be used throughout the turn
+                    context.TurnState.Add(connectorClient);
+
+                    await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
+
+                    // Cleanup connector client 
+                    context.TurnState.Set<IConnectorClient>(null);
+                }
 
                 if (activity.Type == ActivityTypes.Invoke)
                 {
@@ -308,7 +314,7 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning disable CA2000 // Dispose objects before losing scope (We need to make ConnectorClient disposable to fix this, ignoring it for now)
             var streamingClient = new StreamingHttpClient(requestHandler, Logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient, disposeHttpClient: false);
             return connectorClient;
         }
 

@@ -751,9 +751,11 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(credentials));
             }
 
-            var connectorClient = CreateConnectorClient(serviceUrl, credentials);
-            var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
-            return results;
+            using (var connectorClient = CreateConnectorClient(serviceUrl, credentials))
+            {
+                var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
+                return results;
+            }
         }
 
         /// <summary>
@@ -1602,14 +1604,14 @@ namespace Microsoft.Bot.Builder
                 ConnectorClient connectorClient;
                 if (appCredentials != null)
                 {
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), appCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
                 }
                 else
                 {
                     var emptyCredentials = (ChannelProvider != null && ChannelProvider.IsGovernment()) ?
                         MicrosoftGovernmentAppCredentials.Empty :
                         MicrosoftAppCredentials.Empty;
-                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient);
+                    connectorClient = new ConnectorClient(new Uri(serviceUrl), emptyCredentials, customHttpClient: _httpClient, disposeHttpClient: _httpClient == null);
                 }
 
                 if (_connectorClientRetryPolicy != null)

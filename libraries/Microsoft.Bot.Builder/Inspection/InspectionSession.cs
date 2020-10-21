@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder
         {
             _conversationReference = conversationReference;
             _logger = logger;
-            _connectorClient = new ConnectorClient(new Uri(_conversationReference.ServiceUrl), credentials, httpClient);
+            _connectorClient = new ConnectorClient(new Uri(_conversationReference.ServiceUrl), credentials, httpClient, disposeHttpClient: httpClient == null);
         }
 
         public async Task<bool> SendAsync(Activity activity, CancellationToken cancellationToken)
