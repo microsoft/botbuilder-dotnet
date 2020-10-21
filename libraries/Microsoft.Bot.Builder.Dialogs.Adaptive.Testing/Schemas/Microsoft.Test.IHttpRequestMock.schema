@@ -1,6 +1,6 @@
 ﻿{
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
-    "title": "Microsoft Test IHttpRequestMock",
+    "title": "HTTP request mock",
     "description": "Components which derive from HttpRequestMock class",
     "$role": "interface"
 }

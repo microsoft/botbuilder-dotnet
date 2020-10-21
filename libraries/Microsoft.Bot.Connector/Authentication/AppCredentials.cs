@@ -255,8 +255,14 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
-        private static bool ShouldSetToken(HttpRequestMessage request, ILogger logger)
+        private bool ShouldSetToken(HttpRequestMessage request, ILogger logger)
         {
+            if (string.IsNullOrEmpty(MicrosoftAppId) || MicrosoftAppId == AuthenticationConstants.AnonymousSkillAppId)
+            {
+                // We don't set the token if the AppId is not set, since it means that we are in an un-authenticated scenario
+                return false;
+            }
+
             if (IsTrustedUrl(request.RequestUri, logger))
             {
                 return true;

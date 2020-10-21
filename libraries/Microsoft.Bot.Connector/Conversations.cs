@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Connector
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("parameters", parameters);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "CreateConversation", tracingParameters);
+                ServiceClientTracing.Enter(_invocationId, this, ActivityEventNames.CreateConversation, tracingParameters);
             }
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;

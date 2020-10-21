@@ -1,0 +1,82 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+  "method": "POST",
+  "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+  "body": "\"query\": \"remove tomato\"",
+  "responses": [
+    {
+      "content": {
+        "query": "remove tomato",
+        "prediction": {
+          "entities": {
+            "$instance": {
+              "Remove()": [
+                {
+                  "length": 13,
+                  "modelType": "Entity Extractor",
+                  "modelTypeId": 1,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 0,
+                  "text": "remove tomato",
+                  "type": "Remove()"
+                }
+              ]
+            },
+            "Remove()": [
+              {
+                "$instance": {
+                  "Toppings": [
+                    {
+                      "length": 6,
+                      "modelType": "Entity Extractor",
+                      "modelTypeId": 1,
+                      "recognitionSources": [
+                        "model"
+                      ],
+                      "startIndex": 7,
+                      "text": "tomato",
+                      "type": "Toppings"
+                    }
+                  ]
+                },
+                "Toppings": [
+                  {
+                    "$instance": {
+                      "ToppingsEntity": [
+                        {
+                          "length": 6,
+                          "modelType": "Entity Extractor",
+                          "modelTypeId": 1,
+                          "recognitionSources": [
+                            "model"
+                          ],
+                          "startIndex": 7,
+                          "text": "tomato",
+                          "type": "ToppingsEntity"
+                        }
+                      ]
+                    },
+                    "ToppingsEntity": [
+                      [
+                        "tomato"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "intents": {
+            "sandwich": {
+              "score": 0.997536838
+            }
+          },
+          "topIntent": "sandwich"
+        }
+      }
+    }
+  ]
+}

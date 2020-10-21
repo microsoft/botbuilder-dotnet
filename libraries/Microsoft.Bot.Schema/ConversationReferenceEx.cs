@@ -16,17 +16,18 @@ namespace Microsoft.Bot.Schema
         /// <returns>Continuation activity.</returns>
         public Activity GetContinuationActivity()
         {
-            var activity = Activity.CreateEventActivity();
-            activity.Name = "ContinueConversation";
-            activity.Id = Guid.NewGuid().ToString();
-            activity.ChannelId = this.ChannelId;
-            (activity as Activity).Locale = this.Locale;
-            activity.ServiceUrl = this.ServiceUrl;
-            activity.Conversation = this.Conversation;
-            activity.Recipient = this.Bot;
-            activity.From = this.User;
-            activity.RelatesTo = this;
-            return (Activity)activity;
+            return new Activity(ActivityTypes.Event)
+            {
+                Name = ActivityEventNames.ContinueConversation,
+                Id = Guid.NewGuid().ToString(),
+                ChannelId = ChannelId,
+                Locale = Locale,
+                ServiceUrl = ServiceUrl,
+                Conversation = Conversation,
+                Recipient = Bot,
+                From = User,
+                RelatesTo = this
+            };
         }
     }
 }

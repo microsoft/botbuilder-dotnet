@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -26,6 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <seealso cref="TestAdapter"/>
     public class TestScript
     {
+        /// <summary>
+        /// Test script ended event.
+        /// </summary>
+        public const string TestScriptEnded = "TestScriptEnded";
+
         /// <summary>
         /// Sets the Kind for this class. 
         /// </summary>
@@ -173,16 +179,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                            async (turnContext, cancellationToken) => await di.InspectAsync(turnContext, inspector).ConfigureAwait(false)).ConfigureAwait(false);
             }
 
-            if (callback != null)
+            DialogManager dm;
+            if (callback == null)
             {
-                foreach (var testAction in Script)
-                {
-                    await testAction.ExecuteAsync(adapter, callback, Inspect).ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                var dm = new DialogManager(Dialog)
+                dm = new DialogManager(Dialog)
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
@@ -191,10 +191,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     dm.UseLanguagePolicy(languagePolicy);
                 }
 
-                foreach (var testAction in Script)
-                {
-                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync, Inspect).ConfigureAwait(false);
-                }
+                callback = dm.OnTurnAsync;
+            }
+
+            foreach (var testAction in Script)
+            {
+                await testAction.ExecuteAsync(adapter, callback, Inspect).ConfigureAwait(false);
             }
         }
 

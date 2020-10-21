@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -56,8 +55,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var dialogArgs = ValidateBeginDialogArgs(options);
 
-            await dc.Context.TraceActivityAsync($"{GetType().Name}.BeginDialogAsync()", label: $"Using activity of type: {dialogArgs.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
-
             // Create deep clone of the original activity to avoid altering it before forwarding it.
             var skillActivity = ObjectPath.Clone(dialogArgs.Activity);
 
@@ -99,12 +96,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return EndOfTurn;
             }
 
-            await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: $"ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
-
             // Handle EndOfConversation from the skill (this will be sent to the this dialog by the SkillHandler if received from the Skill)
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
-                await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: $"Got {ActivityTypes.EndOfConversation}", cancellationToken: cancellationToken).ConfigureAwait(false);
                 return await dc.EndDialogAsync(dc.Context.Activity.Value, cancellationToken).ConfigureAwait(false);
             }
 
@@ -178,7 +172,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Send of of conversation to the skill if the dialog has been cancelled. 
             if (reason == DialogReason.CancelCalled || reason == DialogReason.ReplaceCalled)
             {
-                await turnContext.TraceActivityAsync($"{GetType().Name}.EndDialogAsync()", label: $"ActivityType: {turnContext.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
                 var activity = (Activity)Activity.CreateEndOfConversationActivity();
 
                 // Apply conversation reference and common properties from incoming activity before sending.

@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var messageJson = Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText));
                 var activity = JsonConvert.DeserializeObject<Activity>(messageJson);
                 Assert.Equal(ActivityTypes.Event, activity.Type);
-                Assert.Equal("ContinueConversation", activity.Name);
+                Assert.Equal(ActivityEventNames.ContinueConversation, activity.Name);
                 Assert.Equal("foo", activity.Value);
                 Assert.NotNull(activity.RelatesTo);
                 var cr2 = activity.GetConversationReference();

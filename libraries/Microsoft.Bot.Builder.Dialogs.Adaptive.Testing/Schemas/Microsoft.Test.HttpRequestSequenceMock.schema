@@ -1,7 +1,7 @@
 ﻿{
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.IHttpRequestMock)",
-    "title": "HttpRequest Sequence Mock",
+    "title": "HTTP request sequence mock",
     "description": "Mock HttpRequest in sequence order.",
     "type": "object",
     "required": [
@@ -34,7 +34,7 @@
         },
         "matchType": {
             "type": "string",
-            "title": "Body Match Type",
+            "title": "Body match type",
             "description": "The match type for body.",
             "enum": [
                 "Exact",
@@ -64,12 +64,12 @@
                 "description": "Mocked http response.",
                 "properties": {
                     "statusCode": {
-                        "title": "Status Code",
+                        "title": "Status code",
                         "description": "The status code. Default is OK(200).",
                         "oneOf": [
                             {
                                 "type": "string",
-                                "title": "String Status Code",
+                                "title": "String status code",
                                 "description": "Use string as status code.",
                                 "enum": [
                                     "Continue",
@@ -126,7 +126,7 @@
                             },
                             {
                                 "type": "number",
-                                "title": "Number Status Code",
+                                "title": "Number status code",
                                 "description": "Use number as status code.",
                                 "examples": [
                                     200
@@ -137,7 +137,7 @@
                     },
                     "reasonPhrase": {
                         "type": "string",
-                        "title": "Reason Phrase",
+                        "title": "Reason phrase",
                         "description": "The reason phrase.",
                         "examples": [
                             "Server is stolen."
