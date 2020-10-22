@@ -112,6 +112,9 @@
             "assertions": [
                 "!$retries"
             ]
+        },
+        {
+            "$kind": "Microsoft.Test.AssertNoActivity",
         }
     ]
 }

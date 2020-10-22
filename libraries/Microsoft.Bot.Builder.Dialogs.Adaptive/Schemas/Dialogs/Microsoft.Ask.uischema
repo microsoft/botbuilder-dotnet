@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send a response to ask a question",
+        "subtitle": "Ask Activity",
+        "helpLink": "https://aka.ms/bfc-send-activity",
+        "order": [
+            "activity",
+            "*"
+        ]
+    }
+}

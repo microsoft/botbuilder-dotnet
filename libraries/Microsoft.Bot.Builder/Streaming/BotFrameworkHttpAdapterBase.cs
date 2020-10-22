@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -116,23 +119,41 @@ namespace Microsoft.Bot.Builder.Streaming
             BotAssert.ActivityNotNull(activity);
 
             Logger.LogInformation($"Received an incoming streaming activity. ActivityId: {activity.Id}");
+            
+            // If a StreamingRequestHandler.Audience is a null value, then no callerId should have been generated
+            // and GetAudienceFromCallerId returns null.
+            // Thus we fallback to relying on the "original key", essentially $"{ServiceUrl}{Conversation.Id}",
+            // as opposed to $"{ServiceUrl}{Audience}{Conversation.Id}" and the StreamingRequestHandler implicitly does not support skills.
+            var audience = GetAudienceFromCallerId(activity);
 
             // If a conversation has moved from one connection to another for the same Channel or Skill and
             // hasn't been forgotten by the previous StreamingRequestHandler. The last requestHandler
             // the conversation has been associated with should always be the active connection.
-            var requestHandler = RequestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)).LastOrDefault();
+            var requestHandler = RequestHandlers.Where(
+                h => h.ServiceUrl == activity.ServiceUrl
+                    && h.Audience == audience
+                    && h.HasConversation(activity.Conversation.Id))
+                .LastOrDefault();
             using (var context = new TurnContext(this, activity))
             {
+                context.TurnState.Add<string>(OAuthScopeKey, audience);
+
                 // Pipes are unauthenticated. Pending to check that we are in pipes right now. Do not merge to master without that.
                 if (ClaimsIdentity != null)
                 {
                     context.TurnState.Add<IIdentity>(BotIdentityKey, ClaimsIdentity);
                 }
 
-                var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
-                context.TurnState.Add(connectorClient);
+                using (var connectorClient = CreateStreamingConnectorClient(activity, requestHandler))
+                {
+                    // Add connector client to be used throughout the turn
+                    context.TurnState.Add(connectorClient);
 
-                await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
+                    await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
+
+                    // Cleanup connector client 
+                    context.TurnState.Set<IConnectorClient>(null);
+                }
 
                 if (activity.Type == ActivityTypes.Invoke)
                 {
@@ -217,9 +238,10 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="pipeName">The name of the Named Pipe to connect to.</param>
         /// <param name="bot">The bot to use when processing activities received over the Named Pipe.</param>
+        /// <param name="audience">The specified recipient of all outgoing activities.</param>
         /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
         /// for incoming requests on the Named Pipe.</returns>
-        public async Task ConnectNamedPipeAsync(string pipeName, IBot bot)
+        public async Task ConnectNamedPipeAsync(string pipeName, IBot bot, string audience = null)
         {
             if (string.IsNullOrEmpty(pipeName))
             {
@@ -234,7 +256,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 RequestHandlers = new List<StreamingRequestHandler>();
             }
 
-            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, Logger);
+            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, audience, Logger);
             RequestHandlers.Add(requestHandler);
 
             await requestHandler.ListenAsync().ConfigureAwait(false);
@@ -292,8 +314,30 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning disable CA2000 // Dispose objects before losing scope (We need to make ConnectorClient disposable to fix this, ignoring it for now)
             var streamingClient = new StreamingHttpClient(requestHandler, Logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient, disposeHttpClient: false);
             return connectorClient;
+        }
+
+        /// <summary>
+        /// Attempts to get an audience from the <see cref="Activity.CallerId"/>.
+        /// </summary>
+        /// <param name="activity">The incoming activity to be processed by a <see cref="StreamingRequestHandler"/>.</param>
+        private string GetAudienceFromCallerId(Activity activity)
+        {
+            switch (activity.CallerId)
+            {
+                case CallerIdConstants.PublicAzureChannel:
+                    return AuthenticationConstants.ToChannelFromBotOAuthScope;
+                case CallerIdConstants.USGovChannel:
+                    return GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope;
+                default:
+                    if (activity.CallerId.StartsWith(CallerIdConstants.BotToBotPrefix, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return activity.CallerId.Substring(CallerIdConstants.BotToBotPrefix.Length);
+                    }
+
+                    return null;
+            }
         }
     }
 }

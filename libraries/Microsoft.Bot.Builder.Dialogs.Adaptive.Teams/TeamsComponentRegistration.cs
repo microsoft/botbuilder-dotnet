@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -37,6 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsTeamRenamed>(OnTeamsTeamRenamed.Kind);
             yield return new DeclarativeType<OnTeamsTeamRestored>(OnTeamsTeamRestored.Kind);
             yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
+
+            // Actions
+            yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)

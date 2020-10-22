@@ -1,0 +1,52 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Tests for Showing Entity",
+  "httpRequestMocks": [
+    "LuisShowEntity.mock"
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "schema": "twoProperties.json",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Show()",
+        "property": "Bread",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "bread : rye"
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "show bread"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "bread : rye"
+    }
+  ]
+}

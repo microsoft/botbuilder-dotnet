@@ -1,0 +1,96 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"add tomato and lettuce\"",
+    "responses": [
+        {
+          "content": {
+            "query": "add tomato and lettuce",
+            "prediction": {
+              "entities": {
+                "$instance": {
+                  "Add()": [
+                    {
+                      "length": 22,
+                      "modelType": "Entity Extractor",
+                      "modelTypeId": 1,
+                      "recognitionSources": [
+                        "model"
+                      ],
+                      "startIndex": 0,
+                      "text": "add tomato and lettuce",
+                      "type": "Add()"
+                    }
+                  ]
+                },
+                "Add()": [
+                  {
+                    "$instance": {
+                      "Toppings": [
+                        {
+                          "length": 18,
+                          "modelType": "Entity Extractor",
+                          "modelTypeId": 1,
+                          "recognitionSources": [
+                            "model"
+                          ],
+                          "startIndex": 4,
+                          "text": "tomato and lettuce",
+                          "type": "Toppings"
+                        }
+                      ]
+                    },
+                    "Toppings": [
+                      {
+                        "$instance": {
+                          "ToppingsEntity": [
+                            {
+                              "length": 6,
+                              "modelType": "Entity Extractor",
+                              "modelTypeId": 1,
+                              "recognitionSources": [
+                                "model"
+                              ],
+                              "startIndex": 4,
+                              "text": "tomato",
+                              "type": "ToppingsEntity"
+                            },
+                            {
+                              "length": 7,
+                              "modelType": "Entity Extractor",
+                              "modelTypeId": 1,
+                              "recognitionSources": [
+                                "model"
+                              ],
+                              "startIndex": 15,
+                              "text": "lettuce",
+                              "type": "ToppingsEntity"
+                            }
+                          ]
+                        },
+                        "ToppingsEntity": [
+                          [
+                            "tomato"
+                          ],
+                          [
+                            "lettuce"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "intents": {
+                "sandwich": {
+                  "score": 0.9971155
+                }
+              },
+              "topIntent": "sandwich"
+            }
+          }
+        }
+    ]
+}

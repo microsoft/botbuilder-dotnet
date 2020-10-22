@@ -6,7 +6,7 @@
 name: $(Build.BuildId)
 
 pool:
-  name: Hosted Windows 2019 with VS2019
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
   demands:
   - msbuild
   - visualstudio
@@ -21,7 +21,7 @@ variables:
   BuildPlatform: any cpu
 #  DotNetCoverallsToken: define this in Azure
 #  GitHubCommentApiKey: define this in Azure
-  IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
+#  DisableApiCompatibityValidation: (optional) define this in Azure
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
@@ -68,6 +68,7 @@ stages:
     - template: ci-test-steps.yml
 
 - stage: API_Compatibility_Validation
+  condition: ne(variables['DisableApiCompatibityValidation'], 'true')
   dependsOn: Build
   jobs:
   - job: generate_multiconfig_var

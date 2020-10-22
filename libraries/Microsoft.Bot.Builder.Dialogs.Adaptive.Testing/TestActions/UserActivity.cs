@@ -69,6 +69,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 activity.From.Id = User;
                 activity.From.Name = User;
             }
+            else if (Activity.From != null)
+            {
+                activity.From = ObjectPath.Clone(Activity.From);
+            }
 
             Stopwatch sw = new Stopwatch();
             sw.Start();

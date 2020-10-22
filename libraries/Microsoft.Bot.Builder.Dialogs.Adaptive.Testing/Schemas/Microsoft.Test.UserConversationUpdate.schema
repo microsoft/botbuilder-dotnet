@@ -8,7 +8,7 @@
     "properties": {
         "membersAdded": {
             "type": "array",
-            "title": "Members Added",
+            "title": "Members added",
             "description": "Names of the members to add",
             "items": {
                 "type": "string",
@@ -18,7 +18,7 @@
         },
         "membersRemoved": {
             "type": "array",
-            "title": "Members Removed",
+            "title": "Members removed",
             "description": "Names of the members to remove",
             "items": {
                 "type": "string",

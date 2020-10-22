@@ -1552,6 +1552,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     usedEntities.Add(alternative.Entity);
                 }
 
+                alternatives = RemoveNonDefaultOp(alternatives, askDefaultOp, defaultOp).ToList();
+
                 if (candidate.IsExpected && candidate.Entity.Name != UtteranceKey)
                 {
                     // If expected binds entity, drop unexpected alternatives

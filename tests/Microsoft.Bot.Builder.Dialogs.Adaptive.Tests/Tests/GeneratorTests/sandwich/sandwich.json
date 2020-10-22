@@ -93,11 +93,11 @@
           "whiteOnions",
           "redOnions"
         ],
-        "maxItems": 3
+        "maxItems": 3,
+        "$entities": [
+          "ToppingsEntity"
+        ]
       },
-      "$entities": [
-        "ToppingsEntity"
-      ]
     },
     "Sauces": {
       "type": "array",
