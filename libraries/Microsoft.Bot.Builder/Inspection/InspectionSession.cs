@@ -18,11 +18,14 @@ namespace Microsoft.Bot.Builder
         private readonly ConversationReference _conversationReference;
         private readonly ILogger _logger;
 
+        // To detect redundant calls to Dispose()
+        private bool _disposed = false;
+
         public InspectionSession(ConversationReference conversationReference, MicrosoftAppCredentials credentials, HttpClient httpClient, ILogger logger)
         {
             _conversationReference = conversationReference;
             _logger = logger;
-            _connectorClient = new ConnectorClient(new Uri(_conversationReference.ServiceUrl), credentials, httpClient);
+            _connectorClient = new ConnectorClient(new Uri(_conversationReference.ServiceUrl), credentials, httpClient, disposeHttpClient: httpClient == null);
         }
 
         public async Task<bool> SendAsync(Activity activity, CancellationToken cancellationToken)
@@ -44,9 +47,22 @@ namespace Microsoft.Bot.Builder
             return true;
         }
 
-        public void Dispose()
+        public void Dispose() => Dispose(true);
+
+        protected virtual void Dispose(bool disposing)
         {
-            _connectorClient?.Dispose();
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed state (managed objects).
+                _connectorClient?.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }

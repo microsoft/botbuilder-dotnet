@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <remarks>InvalidOperationException will be thrown if meetingId, participantId or tenantId have not been
         /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
         /// <returns>Team participant channel account.</returns>
-        public static async Task<TeamsParticipantChannelAccount> GetMeetingParticipantAsync(ITurnContext turnContext, string meetingId = null, string participantId = null, string tenantId = null, CancellationToken cancellationToken = default)
+        public static async Task<TeamsMeetingParticipant> GetMeetingParticipantAsync(ITurnContext turnContext, string meetingId = null, string participantId = null, string tenantId = null, CancellationToken cancellationToken = default)
         {
             meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
             participantId ??= turnContext.Activity.From.AadObjectId ?? throw new InvalidOperationException($"{nameof(participantId)} is required.");

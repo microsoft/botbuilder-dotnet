@@ -28,7 +28,7 @@ namespace Microsoft.BotBuilderSamples.AdaptiveRootBot.Middleware
         {
             // Note: skill responses will show as ContinueConversation events; we don't log those.
             // We only log incoming messages from users.
-            if (turnContext.Activity.Type != ActivityTypes.Event && turnContext.Activity.Name != "ContinueConversation")
+            if (!(turnContext.Activity.Type == ActivityTypes.Event && turnContext.Activity.Name == ActivityEventNames.ContinueConversation))
             {
                 var message = $"User said: {turnContext.Activity.Text} Type: \"{turnContext.Activity.Type}\" Name: \"{turnContext.Activity.Name}\"";
                 _logger.LogInformation(message);

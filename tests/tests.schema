@@ -9686,6 +9686,11 @@
           "description": "The root dialog to execute the test script against.",
           "$ref": "#/definitions/Microsoft.IDialog"
         },
+        "languagePolicy": {
+          "type": "object",
+          "title": "Language policy",
+          "description": "Defines fall back languages to try per user input language."
+        },
         "description": {
           "type": "string",
           "title": "Description",

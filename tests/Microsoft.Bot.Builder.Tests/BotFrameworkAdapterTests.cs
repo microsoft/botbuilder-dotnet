@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Tests
             const string conversationIdName = "Id";
             const string conversationIdValue = "NewConversationId";
             const string tenantIdValue = "theTenantId";
-            const string eventActivityName = "CreateConversation";
+            const string eventActivityName = ActivityEventNames.CreateConversation;
 
             Task<HttpResponseMessage> CreateResponseMessage()
             {

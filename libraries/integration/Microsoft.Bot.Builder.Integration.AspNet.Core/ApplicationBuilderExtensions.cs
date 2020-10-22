@@ -77,8 +77,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
         /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
+        /// <param name="audience">The specified recipient of all outgoing activities.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseNamedPipes(this IApplicationBuilder applicationBuilder, string pipeName = "bfv4.pipes")
+        public static IApplicationBuilder UseNamedPipes(this IApplicationBuilder applicationBuilder, string pipeName = "bfv4.pipes", string audience = null)
         {
             if (applicationBuilder == null)
             {
@@ -86,7 +87,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             var bot = applicationBuilder.ApplicationServices.GetService(typeof(IBot)) as IBot;
-            _ = (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as BotFrameworkHttpAdapter).ConnectNamedPipeAsync(pipeName, bot);
+            _ = (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as BotFrameworkHttpAdapter).ConnectNamedPipeAsync(pipeName, bot, audience);
 
             return applicationBuilder;
         }

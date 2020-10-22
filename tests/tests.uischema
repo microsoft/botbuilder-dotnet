@@ -23,6 +23,31 @@
       }
     }
   },
+  "Microsoft.Ask": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response to ask a question",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Ask Activity"
+    }
+  },
+  "Microsoft.AttachmentInput": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for a file or an attachment",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Attachment Input"
+    }
+  },
   "Microsoft.BeginDialog": {
     "form": {
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
@@ -479,6 +504,19 @@
       "subtitle": "Activity received"
     }
   },
+  "Microsoft.OnAssignEntity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Handle a condition when an entity is assigned",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "EntityAssigned activity"
+    }
+  },
   "Microsoft.OnBeginDialog": {
     "form": {
       "hidden": [
@@ -544,6 +582,19 @@
         "*"
       ],
       "subtitle": "Dialog event"
+    }
+  },
+  "Microsoft.OnEndOfActions": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Handle a condition when actions have ended",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "EndOfActions activity"
     }
   },
   "Microsoft.OnEndOfConversationActivity": {

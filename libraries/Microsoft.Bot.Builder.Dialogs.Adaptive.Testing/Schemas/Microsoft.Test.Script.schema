@@ -10,6 +10,11 @@
             "title": "Dialog",
             "description": "The root dialog to execute the test script against."
         },
+        "languagePolicy": {
+            "type": "object",
+            "title": "Language policy",
+            "description": "Defines fall back languages to try per user input language."
+        },
         "description": {
             "type": "string",
             "title": "Description",
