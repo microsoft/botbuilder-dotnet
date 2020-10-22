@@ -23,31 +23,6 @@
       }
     }
   },
-  "Microsoft.Ask": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-send-activity",
-      "label": "Send a response to ask a question",
-      "order": [
-        "activity",
-        "*"
-      ],
-      "subtitle": "Ask Activity"
-    }
-  },
-  "Microsoft.AttachmentInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for a file or an attachment",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Attachment Input"
-    }
-  },
   "Microsoft.BeginDialog": {
     "form": {
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
@@ -387,6 +362,17 @@
       "helpLink": "https://aka.ms/bfc-debugging-bots",
       "label": "Emit a trace event",
       "subtitle": "Trace Activity"
+    }
+  },
+  "Microsoft.Ask": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response to ask a question",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Ask Activity"
     }
   },
   "Microsoft.AttachmentInput": {
