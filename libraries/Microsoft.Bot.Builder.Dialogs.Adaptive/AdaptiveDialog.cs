@@ -360,7 +360,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             EnsureDependenciesInstalled();
 
-            yield break;
+            foreach (var trigger in Triggers)
+            {
+                if (trigger is IDialogDependencies depends)
+                {
+                    foreach (var dlg in depends.GetDependencies())
+                    {
+                        yield return dlg;
+                    }
+                }
+            }
         }
 
         /// <summary>

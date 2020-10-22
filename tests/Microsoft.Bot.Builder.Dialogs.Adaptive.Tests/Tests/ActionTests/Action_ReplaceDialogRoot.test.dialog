@@ -30,6 +30,15 @@
                             },
                             "triggers": [
                                 {
+                                    "$kind": "Microsoft.OnUnknownIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "still here"
+                                        }
+                                    ]
+                                },
+                                {
                                     "$kind": "Microsoft.OnBeginDialog",
                                     "actions": [
                                         {
@@ -115,6 +124,14 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "To get to the other side"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "still there?"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "still here"
         }
     ]
 }

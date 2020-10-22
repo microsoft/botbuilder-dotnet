@@ -37,6 +37,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 RootDialog = rootDialog;
             }
 
+            RegisterContainerDialogs(rootDialog);
+
             _dialogStateProperty = dialogStateProperty ?? "DialogState";
         }
 
@@ -359,6 +361,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return turnResult;
+        }
+
+        /// <summary>
+        /// Recursively traverses the <see cref="Dialog"/> tree and registers instances of <see cref="DialogContainer"/>
+        /// in the <see cref="DialogSet"/> for this <see cref="DialogManager"/> instance.
+        /// </summary>
+        /// <param name="dialog">Root of the <see cref="Dialog"/> subtree to iterate and register containers from.</param>
+        private void RegisterContainerDialogs(Dialog dialog)
+        {
+            if (dialog is DialogContainer container)
+            {
+                Dialogs.Add(container);
+
+                foreach (var inner in container.Dialogs.GetDialogs())
+                {
+                    RegisterContainerDialogs(inner);
+                }
+            }
         }
 
         private async Task<DialogTurnResult> HandleBotOnTurnAsync(DialogContext dc, CancellationToken cancellationToken)
