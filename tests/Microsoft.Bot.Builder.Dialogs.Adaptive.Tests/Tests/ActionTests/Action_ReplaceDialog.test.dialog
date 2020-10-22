@@ -64,7 +64,7 @@
                                     ]
                                 }
                             ],
-                            "autoEndDialog": "false"
+                            "autoEndDialog": false
                         }
                     }
                 ]

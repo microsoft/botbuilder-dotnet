@@ -51,7 +51,7 @@
                         "dialog": {
                             "$kind": "Microsoft.AdaptiveDialog",
                             "id": "root",
-                            "autoEndDialog": "false",
+                            "autoEndDialog": false,
                             "triggers": [
                                 {
                                     "$kind": "Microsoft.OnBeginDialog",
@@ -65,7 +65,7 @@
                                             "dialog": {
                                                 "$kind": "Microsoft.AdaptiveDialog",
                                                 "id": "newDialog",
-                                                "autoEndDialog": "true",
+                                                "autoEndDialog": true,
                                                 "triggers": [
                                                     {
                                                         "$kind": "Microsoft.OnBeginDialog",

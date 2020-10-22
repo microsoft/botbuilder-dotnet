@@ -73,7 +73,7 @@
                                     ]
                                 }
                             ],
-                            "autoEndDialog": "false"
+                            "autoEndDialog": false
                         }
                     }
                 ]

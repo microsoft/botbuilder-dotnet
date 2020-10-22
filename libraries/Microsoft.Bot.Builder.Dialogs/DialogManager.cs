@@ -37,8 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 RootDialog = rootDialog;
             }
 
-            RegisterContainerDialogs(rootDialog);
-
             _dialogStateProperty = dialogStateProperty ?? "DialogState";
         }
 
@@ -114,7 +112,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     {
                         _rootDialogId = RootDialog.Id;
                         Dialogs.TelemetryClient = RootDialog.TelemetryClient;
-                        Dialogs.Add(RootDialog);
+                        
+                        RegisterContainerDialogs(RootDialog);
                     }
                 }
             }

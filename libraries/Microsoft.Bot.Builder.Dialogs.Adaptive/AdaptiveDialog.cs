@@ -359,17 +359,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IEnumerable<Dialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
-
-            foreach (var trigger in Triggers)
-            {
-                if (trigger is IDialogDependencies depends)
-                {
-                    foreach (var dlg in depends.GetDependencies())
-                    {
-                        yield return dlg;
-                    }
-                }
-            }
+            
+            yield break;
         }
 
         /// <summary>
