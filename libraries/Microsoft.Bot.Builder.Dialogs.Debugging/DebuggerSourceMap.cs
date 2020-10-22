@@ -73,6 +73,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             lock (_gate)
             {
+                // Map works on a last one wins basis. When we refresh the item for a range, 
+                // just keep the last range
+
+                // Remove old item instance for this range. 
+                // Find the entry for the current range
+                var rangeItemEntry = _sourceByItem.FirstOrDefault(kv => kv.Value.Equals(range) && kv.Key.GetType().Equals(item.GetType()));
+
+                if (rangeItemEntry.Key != null)
+                {
+                    // If found, remove the outdated item from the map
+                    _sourceByItem.Remove(rangeItemEntry.Key);
+                }
+
                 _sourceByItem[item] = range;
                 _dirty = true;
             }
