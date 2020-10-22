@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public abstract class AppCredentials : ServiceClientCredentials
     {
+        [Obsolete]
         internal static readonly IDictionary<string, DateTime> TrustedHostNames = new Dictionary<string, DateTime>
         {
             // { "state.botframework.com", DateTime.MaxValue }, // deprecated state api
@@ -145,9 +146,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
         /// <remarks>If expiration time is not provided, the expiration time will DateTime.UtcNow.AddDays(1).</remarks>
+#pragma warning disable CA1801 // Review unused parameters
         public static void TrustServiceUrl(string serviceUrl)
+#pragma warning restore CA1801 // Review unused parameters
         {
-            TrustServiceUrl(serviceUrl, DateTime.UtcNow.Add(TimeSpan.FromDays(1)));
         }
 
         /// <summary>
@@ -155,12 +157,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
+#pragma warning disable CA1801 // Review unused parameters
         public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
+#pragma warning restore CA1801 // Review unused parameters
         {
-            lock (TrustedHostNames)
-            {
-                TrustedHostNames[new Uri(serviceUrl).Host] = expirationTime;
-            }
         }
 
         /// <summary>
@@ -168,14 +168,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="serviceUrl">The service url.</param>
         /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
+#pragma warning disable CA1801 // Review unused parameters
         public static bool IsTrustedServiceUrl(string serviceUrl)
+#pragma warning restore CA1801 // Review unused parameters
         {
-            if (Uri.TryCreate(serviceUrl, UriKind.Absolute, out var uri))
-            {
-                return IsTrustedUrl(uri, NullLogger.Instance);
-            }
-
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -185,7 +182,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (ShouldSetToken(request, Logger))
+            if (ShouldSetToken())
             {
                 var token = await GetTokenAsync().ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -234,28 +231,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
-        private static bool IsTrustedUrl(Uri uri, ILogger logger)
-        {
-            lock (TrustedHostNames)
-            {
-                if (TrustedHostNames.TryGetValue(uri.Host, out var trustedServiceUrlExpiration))
-                {
-                    // check if the trusted service url is still valid
-                    if (trustedServiceUrlExpiration > DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(5)))
-                    {
-                        return true;
-                    }
-
-                    logger.LogWarning($"{typeof(AppCredentials).FullName}.IsTrustedUrl(): '{uri}' found in TrustedHostNames but it expired (Expiration is set to: {trustedServiceUrlExpiration}, current time is {DateTime.UtcNow}).");
-                    return false;
-                }
-
-                logger.LogWarning($"{typeof(AppCredentials).FullName}.IsTrustedUrl(): '{uri}' not found in TrustedHostNames.");
-                return false;
-            }
-        }
-
-        private bool ShouldSetToken(HttpRequestMessage request, ILogger logger)
+        private bool ShouldSetToken()
         {
             if (string.IsNullOrEmpty(MicrosoftAppId) || MicrosoftAppId == AuthenticationConstants.AnonymousSkillAppId)
             {
@@ -263,13 +239,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 return false;
             }
 
-            if (IsTrustedUrl(request.RequestUri, logger))
-            {
-                return true;
-            }
-
-            logger.LogWarning($"{typeof(AppCredentials).FullName}.ShouldSetToken(): '{request.RequestUri.Authority}' is not trusted and JwtToken cannot be sent to it.");
-            return false;
+            return true;
         }
     }
 }
