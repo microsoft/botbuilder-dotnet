@@ -359,7 +359,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IEnumerable<Dialog> GetDependencies()
         {
             EnsureDependenciesInstalled();
-            
+
             yield break;
         }
 
