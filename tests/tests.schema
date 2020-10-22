@@ -689,7 +689,10 @@
       }
     },
     "Microsoft.AgeEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Age entity recognizer",
       "description": "Recognizer which recognizes age.",
       "type": "object",
@@ -2035,7 +2038,10 @@
       }
     },
     "Microsoft.ConfirmationEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Confirmation entity recognizer",
       "description": "Recognizer which recognizes confirmation choices (yes/no).",
       "type": "object",
@@ -2211,7 +2217,10 @@
       }
     },
     "Microsoft.CurrencyEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Currency entity recognizer",
       "description": "Recognizer which recognizes currency.",
       "type": "object",
@@ -2241,7 +2250,10 @@
       }
     },
     "Microsoft.DateTimeEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Date and time entity recognizer",
       "description": "Recognizer which recognizes dates and time fragments.",
       "type": "object",
@@ -2639,7 +2651,10 @@
       }
     },
     "Microsoft.DimensionEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Dimension entity recognizer",
       "description": "Recognizer which recognizes dimension.",
       "type": "object",
@@ -2829,7 +2844,10 @@
       }
     },
     "Microsoft.EmailEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Email entity recognizer",
       "description": "Recognizer which recognizes email.",
       "type": "object",
@@ -3386,7 +3404,10 @@
       }
     },
     "Microsoft.GuidEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Guid entity recognizer",
       "description": "Recognizer which recognizes guids.",
       "type": "object",
@@ -3416,7 +3437,10 @@
       }
     },
     "Microsoft.HashtagEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Hashtag entity recognizer",
       "description": "Recognizer which recognizes Hashtags.",
       "type": "object",
@@ -3608,6 +3632,30 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3711,30 +3759,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
@@ -3845,10 +3869,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -3864,6 +3888,60 @@
         },
         {
           "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         }
       ]
     },
@@ -4274,7 +4352,10 @@
       }
     },
     "Microsoft.IpEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "IP entity recognizer",
       "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
       "type": "object",
@@ -4542,7 +4623,10 @@
       }
     },
     "Microsoft.MentionEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Mentions entity recognizer",
       "description": "Recognizer which recognizes @Mentions",
       "type": "object",
@@ -4658,7 +4742,10 @@
       }
     },
     "Microsoft.NumberEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Number entity recognizer",
       "description": "Recognizer which recognizes numbers.",
       "type": "object",
@@ -4859,7 +4946,10 @@
       }
     },
     "Microsoft.NumberRangeEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Number range entity recognizer",
       "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
       "type": "object",
@@ -6941,7 +7031,10 @@
       }
     },
     "Microsoft.OrdinalEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Ordinal entity recognizer",
       "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
       "type": "object",
@@ -6971,7 +7064,10 @@
       }
     },
     "Microsoft.PercentageEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Percentage entity recognizer",
       "description": "Recognizer which recognizes percentages.",
       "type": "object",
@@ -7001,7 +7097,10 @@
       }
     },
     "Microsoft.PhoneNumberEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Phone number entity recognizer",
       "description": "Recognizer which recognizes phone numbers.",
       "type": "object",
@@ -7457,7 +7556,10 @@
       }
     },
     "Microsoft.RegexEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Regex entity recognizer",
       "description": "Recognizer which recognizes patterns of input based on regex.",
       "type": "object",
@@ -8201,7 +8303,10 @@
       }
     },
     "Microsoft.TemperatureEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Temperature recognizer",
       "description": "Recognizer which recognizes temperatures.",
       "type": "object",
@@ -9738,7 +9843,10 @@
       }
     },
     "Microsoft.UrlEntityRecognizer": {
-      "$role": "implements(Microsoft.IEntityRecognizer)",
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
       "title": "Url recognizer",
       "description": "Recognizer which recognizes urls.",
       "type": "object",

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -21,6 +22,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityRecognizerSet"/> class.
         /// </summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmailEntityRecognizer"/> class.
+        /// </summary>
+        [JsonConstructor]
         public EntityRecognizerSet()
         {
         }

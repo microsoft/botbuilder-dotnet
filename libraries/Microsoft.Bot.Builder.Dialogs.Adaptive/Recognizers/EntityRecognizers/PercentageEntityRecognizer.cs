@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
@@ -19,7 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="PercentageEntityRecognizer"/> class.
         /// </summary>
-        public PercentageEntityRecognizer()
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
+        [JsonConstructor]
+        public PercentageEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(callerPath, callerLine)
         {
         }
 
