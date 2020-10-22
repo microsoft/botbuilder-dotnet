@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-samples/main/experimental/generation/runbot/runbot.schema",
   "$kind": "Microsoft.LuisRecognizer",
-  "applicationId": "=settings.luis.sandwich_en_us_lu.appId",
+  "applicationId": "=settings.luis.sandwich_en_us_lu",
   "endpoint": "=settings.luis.endpoint",
   "endpointKey": "=settings.luis.endpointKey",
   "predictionOptions": {
