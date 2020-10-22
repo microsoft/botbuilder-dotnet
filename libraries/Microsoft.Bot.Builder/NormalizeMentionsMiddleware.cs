@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder
                         if (entity.Type == "mention")
                         {
                             string entityText = (string)entity.Properties["text"];
-                            entity.Properties["text"] = RemoveAt(entityText?.Trim());
+                            entity.Properties["text"] = RemoveAt(entityText)?.Trim();
                         }
                     }
                 }
