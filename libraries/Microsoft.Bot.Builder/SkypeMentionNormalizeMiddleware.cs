@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder
     ///  the entity from Activity.Text.
     ///  This will remove the &lt;at&gt; nodes, leaving just the name.
     /// </description>
+    [Obsolete("You should use NormalizeMentionsMiddleware instead of this class.")]
     public class SkypeMentionNormalizeMiddleware : IMiddleware
     {
         /// <summary>
