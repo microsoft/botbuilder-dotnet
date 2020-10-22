@@ -1,5 +1,8 @@
 {
     "luis": {
-        "sandwich_en_us_lu": "9e9a1abf-be8b-49f5-bcae-9712ac56d727"
+        "sandwich_en_us_lu": {
+            "appId": "5daf270d-a85d-4602-8fff-7eeabab5955a",
+            "version": "0.6"
+        }
     }
 }
