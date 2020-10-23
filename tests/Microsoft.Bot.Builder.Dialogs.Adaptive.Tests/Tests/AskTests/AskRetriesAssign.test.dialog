@@ -55,7 +55,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "$Bread",
-                        "value": "@BreadEntity"
+                        "value":  "@BreadEntity"
                     }
                 ]
             }

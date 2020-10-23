@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="entity">Entity to compare.</param>
         /// <returns>True if entities overlap.</returns>
         public bool Overlaps(EntityInfo entity)
-            => (entity == this || entity.RootEntity != RootEntity) && Start <= entity.End && End >= entity.Start;
+            => Start <= entity.End && End >= entity.Start;
 
         /// <summary>
         /// True if entities come from exactly the same text in the utterance.
@@ -124,7 +124,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="entity">Entity to compare.</param>
         /// <returns>True if entity text completely covers other entity text.</returns>
         public bool Covers(EntityInfo entity)
-            => (entity == this || entity.RootEntity != RootEntity) && Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
+            => Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
+
+        /// <summary>
+        /// True if entities share the same root entity.
+        /// </summary>
+        /// <param name="entity">Entity to compare.</param>
+        /// <returns>True if entities share the same root.</returns>
+        public bool SharesRoot(EntityInfo entity)
+            => entity.RootEntity == RootEntity;
+
+        /// <summary>
+        /// True if entities are the same.
+        /// </summary>
+        /// <param name="entity">Entity to compare.</param>
+        /// <returns>True if entities are the same entity.</returns>
+        public bool IsSameEntity(EntityInfo entity)
+            => entity.SharesRoot(entity) && Alternative(entity);
 
         /// <summary>
         /// Returns a string that represents the current object.

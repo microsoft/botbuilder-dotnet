@@ -51,7 +51,6 @@
                         "$kind": "Microsoft.Ask",
                         "activity": "Choose",
                         "expectedProperties": [
-                            "PropertyToChange"
                         ]
                     }
                 ]
