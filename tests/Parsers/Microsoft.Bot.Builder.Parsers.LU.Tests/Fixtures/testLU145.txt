@@ -1,0 +1,6 @@
+
+    @regex r1
+    @r1 = /[0-9]{6}/
+    @r1 role1
+    @r1 hasRole role2
+    @r1 hasRoles role3, role4

@@ -1,0 +1,4 @@
+# test
+- this is a test of {test:role1 = {fromTime = 7AM}}
+
+$test:[fromTime]

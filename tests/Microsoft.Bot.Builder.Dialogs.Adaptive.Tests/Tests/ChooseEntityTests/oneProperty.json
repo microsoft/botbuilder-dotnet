@@ -1,0 +1,29 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "Bread": {
+      "type": "string",
+      "enum": [
+        "multiGrainWheat",
+        "rye",
+        "white",
+        "wholeWheat"
+      ],
+      "$entities": [
+        "BreadEntity"
+      ]
+    }
+  },
+  "required": [
+    "Bread"
+  ],
+  "$operations": [
+    "Add()"
+  ],
+  "$defaultOperation": {
+    "": {
+      "": "Add()"
+    }
+  }
+}

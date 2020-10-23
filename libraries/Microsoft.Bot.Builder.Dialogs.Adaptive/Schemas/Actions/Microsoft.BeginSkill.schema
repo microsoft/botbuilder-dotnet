@@ -21,7 +21,7 @@
         },
         "activityProcessed": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Activity Processed",
+            "title": "Activity processed",
             "description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
             "default": true,
             "examples": [
@@ -54,13 +54,13 @@
         },
         "connectionName": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "OAuth Connection Name (SSO)",
+            "title": "OAuth connection name (SSO)",
             "description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
             "default": "=settings.connectionName"
         },
         "skillAppId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Skill App ID",
+            "title": "Skill App Id",
             "description": "The Microsoft App ID for the skill."
         },
         "skillEndpoint": {
@@ -78,7 +78,7 @@
         },
         "allowInterruptions": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Allow Interruptions",
+            "title": "Allow interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the skill.",
             "default": true,
             "examples": [

@@ -1,0 +1,16 @@
+
+> phrase list as feature to intent (also applicable to entities)
+@ intent getUserProfileIntent usesFeature city, city2
+
+# getUserProfileIntent
+- test
+
+@ phraselist city
+@ city =
+    - Seattle
+    - SEATAC
+    - SEA
+@ phraselist city2(interchangeable)
+@ city2 =
+    - portland
+    - PDX

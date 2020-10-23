@@ -153,37 +153,30 @@ namespace Microsoft.Bot.Builder.Parsers.LU
 
         [JsonProperty("Path", NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }
-    }
-
-    public partial class SectionEntity : Section
-    {
-        public SectionEntity()
-        {
-        }
 
         [JsonProperty("Type", NullValueHandling = NullValueHandling.Ignore)]
         public string Type { get; set; }
 
+        [JsonProperty("ListBody", NullValueHandling = NullValueHandling.Ignore)]
+        public List<string> ListBody { get; set; }
+
+        [JsonProperty("Features", NullValueHandling = NullValueHandling.Ignore)]
+        public string Features { get; set; }
+
         [JsonProperty("Roles", NullValueHandling = NullValueHandling.Ignore)]
         public string Roles { get; set; }
 
-        [JsonProperty("ListBody", NullValueHandling = NullValueHandling.Ignore)]
-        public List<string> ListBody { get; set; }
+        [JsonProperty("SynonymsOrPhraseList", NullValueHandling = NullValueHandling.Ignore)]
+        public List<string> SynonymsOrPhraseList { get; set; }
+
+        [JsonProperty("SynonymsList", NullValueHandling = NullValueHandling.Ignore)]
+        public List<SynonymElement> SynonymsList { get; set; } = null;
 
         [JsonProperty("CompositeDefinition", NullValueHandling = NullValueHandling.Ignore)]
         public string CompositeDefinition { get; set; }
 
         [JsonProperty("RegexDefinition", NullValueHandling = NullValueHandling.Ignore)]
         public string RegexDefinition { get; set; }
-
-        [JsonProperty("SynonymsOrPhraseList", NullValueHandling = NullValueHandling.Ignore)]
-        public List<string> SynonymsOrPhraseList { get; set; }
-
-        [JsonProperty("Features", NullValueHandling = NullValueHandling.Ignore)]
-        public string Features { get; set; }
-
-        [JsonProperty("SynonymsList", NullValueHandling = NullValueHandling.Ignore)]
-        public List<SynonymElement> SynonymsList { get; set; } = null;
     }
 
     public partial class UtteranceAndEntitiesMap

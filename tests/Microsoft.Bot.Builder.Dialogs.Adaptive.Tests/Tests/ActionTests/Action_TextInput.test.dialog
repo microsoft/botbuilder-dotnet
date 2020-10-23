@@ -30,7 +30,8 @@
                         "unrecognizedPrompt": "How should I call you?",
                         "validations": [
                             "this.value.Length > 3"
-                        ]
+                        ],
+                        "outputFormat": ""
                     },
                     {
                         "$kind": "Microsoft.SendActivity",

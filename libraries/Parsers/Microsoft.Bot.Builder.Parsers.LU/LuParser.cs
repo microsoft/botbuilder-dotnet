@@ -8,18 +8,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU
 {
-    /// <summary>NewEntitySection class.</summary>
+    /// <summary>LuParser class.
+    /// Parse LU content to Sections output.
+    /// </summary>
     /// <remarks>This class is static.</remarks>
     public static class LuParser
     {
         /// <summary>
-        /// Entry point for parsing the LU file into a <see cref="LuResource"/> object.
+        /// Entry point for parsing the LU content into a <see cref="LuResource"/> object.
         /// </summary>
-        /// <param name="text">The LU file text.</param>
+        /// <param name="text">The LU file content.</param>
         /// <returns>The parsed <see cref="LuResource"/> object.</returns>
         public static LuResource Parse(string text)
         {
@@ -28,9 +29,10 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                 return new LuResource(new List<Section>(), string.Empty, new List<Error>());
             }
 
-            var fileContent = GetFileContent(text);
+            var errors = new List<Error>();
+            var fileContent = GetFileContent(text, errors);
 
-            return ExtractFileContent((LUFileParser.FileContext)fileContent, text, new List<Error>());
+            return ExtractFileContent((LUFileParser.FileContext)fileContent, text, errors);
         }
 
         private static LuResource ExtractFileContent(LUFileParser.FileContext fileContent, string content, List<Error> errors)
@@ -354,12 +356,13 @@ namespace Microsoft.Bot.Builder.Parsers.LU
             return qnaSectionsList;
         }
 
-        private static LUFileParser.FileContext GetFileContent(string text)
+        private static LUFileParser.FileContext GetFileContent(string text, List<Error> errors)
         {
             var chars = new AntlrInputStream(text);
             var lexer = new LUFileLexer(chars);
             var tokens = new CommonTokenStream(lexer);
             var parser = new LUFileParser(tokens);
+            parser.AddErrorListener(new LUErrorListener(errors));
             parser.BuildParseTree = true;
             return parser.file();
         }

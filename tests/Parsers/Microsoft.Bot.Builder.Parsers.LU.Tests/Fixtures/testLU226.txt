@@ -1,0 +1,5 @@
+## None
+- here's an utterance {aListEntity:ThisIsARole=avalue} with a role in it
+
+$aListEntity:some value= Roles=ThisIsARole
+- avalue

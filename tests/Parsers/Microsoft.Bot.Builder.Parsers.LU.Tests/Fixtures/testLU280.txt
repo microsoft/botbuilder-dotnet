@@ -1,0 +1,6 @@
+
+$location:redmond=
+- redmond
+
+# testIntent
+- book a flight to {location=redmond}

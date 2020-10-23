@@ -8,6 +8,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
@@ -15,6 +16,9 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Xunit;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Schema;
+using AdaptiveExpressions.Properties;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -420,6 +424,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .StartTestAsync();
         }
 
+        [Fact]
+        public async Task AdaptiveDialog_CustomAttachmentInputDialog_NoFile()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var dialogManager = new DialogManager(CreateDialogWithCustomInput());
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .Send("hello")
+                    .AssertReply("Upload picture")
+                .Send("skip")
+                    .AssertReply("passed")
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task AdaptiveDialog_CustomAttachmentInputDialog_File()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var dialogManager = new DialogManager(CreateDialogWithCustomInput());
+
+            var attachment = new Attachment("image/png", "https://contenturl.com", name: "image.png");
+            var pictureActivity = MessageFactory.Attachment(attachment);
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .Send("hello")
+                    .AssertReply("Upload picture")
+                .Send(pictureActivity)
+                    .AssertReply("passed")
+                .StartTestAsync();
+        }
+
         private static AdaptiveDialog CreateDialog(string custom)
         {
             return new AdaptiveDialog()
@@ -449,6 +503,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
+        }
+
+        private static AdaptiveDialog CreateDialogWithCustomInput()
+        {
+            return new AdaptiveDialog()
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new AttachmentOrNullInput
+                            {
+                                Prompt = new ActivityTemplate("Upload picture"),
+                                InvalidPrompt = new ActivityTemplate("Invalid"),
+                                Validations = new List<BoolExpression>
+                                {
+                                    // We provide two options for the user:
+                                    //   1) no attachment uploaded (skip)
+                                    //   2) an attachment upload of type png or jpeg
+                                    "(turn.activity.attachments == null || turn.activity.attachments.count == 0) || (turn.activity.attachments[0].contentType == 'image/jpeg' || turn.activity.attachments[0].contentType == 'image/png')",
+                                },
+                                Property = "user.picture"
+                            },
+                            new SendActivity("passed"),
+                        }
+                    }
+                }
+            };
+        }
+
+        public class AttachmentOrNullInput : AttachmentInput
+        {
+            public AttachmentOrNullInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+                : base(callerPath, callerLine)
+            { 
+            }
+
+            protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            {
+                var input = dc.State.GetValue<List<Attachment>>(VALUE_PROPERTY);
+                var first = input.Count > 0 ? input[0] : null;
+
+                // NOTE: this custom AttachmentInput allows for no attachment.
+                //if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
+                //{
+                //    return Task.FromResult(InputState.Unrecognized);
+                //}
+
+                switch (this.OutputFormat.GetValue(dc.State))
+                {
+                    case AttachmentOutputFormat.All:
+                        dc.State.SetValue(VALUE_PROPERTY, input);
+                        break;
+                    case AttachmentOutputFormat.First:
+                        dc.State.SetValue(VALUE_PROPERTY, first);
+                        break;
+                }
+
+                return Task.FromResult(InputState.Valid);
+            }
         }
 
         public class TestAdaptiveDialog : AdaptiveDialog

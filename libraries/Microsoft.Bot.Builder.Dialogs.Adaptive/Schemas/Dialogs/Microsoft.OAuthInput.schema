@@ -88,7 +88,7 @@
         },
         "allowInterruptions": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Allow Interruptions",
+            "title": "Allow interruptions",
             "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
             "default": true,
             "examples": [

@@ -1,0 +1,5 @@
+
+    @regex "foo bar" r1
+    @regex 'a b' r2, r3
+    @regex xyz hasRole r4
+    @regex 123 hasRoles r5,r6

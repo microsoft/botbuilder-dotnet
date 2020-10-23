@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public uint Timespan { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
             await Task.Delay((int)Timespan).ConfigureAwait(false);
             Trace.TraceInformation($"[Turn Ended => {Timespan} ms processing UserDelay[{Timespan}]");

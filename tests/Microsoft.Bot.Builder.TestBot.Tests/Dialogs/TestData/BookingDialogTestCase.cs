@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.TestBot.Shared;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
 {

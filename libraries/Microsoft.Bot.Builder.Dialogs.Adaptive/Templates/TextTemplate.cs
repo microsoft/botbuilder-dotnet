@@ -49,6 +49,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         /// <returns>Instance of string.</returns>
         public virtual async Task<string> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
         {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            if (data is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(data)} cannot be a cancellation token");
+            }
+
             if (string.IsNullOrEmpty(this.Template))
             {
                 throw new InvalidOperationException($"The {nameof(this.Template)} property can't be empty.");

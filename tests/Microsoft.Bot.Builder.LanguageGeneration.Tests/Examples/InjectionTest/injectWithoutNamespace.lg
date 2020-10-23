@@ -1,0 +1,4 @@
+﻿> !# @Exports = greeting
+
+# greeting
+- hi ${name}

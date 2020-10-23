@@ -1,5 +1,5 @@
 pool:
-  vmImage: 'windows-2019'
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
 
 variables:
   TriggeredReason: $[ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'] ) ]

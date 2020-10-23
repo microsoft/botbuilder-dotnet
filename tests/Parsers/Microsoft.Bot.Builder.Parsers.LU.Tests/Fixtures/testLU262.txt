@@ -1,0 +1,3 @@
+$test:/hrf-[0-9]{6}
+# test
+- this is a {test=one} utterance

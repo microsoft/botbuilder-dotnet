@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json;
@@ -24,6 +25,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         public const string Kind = "Microsoft.TemplateEngineLanguageGenerator";
 
         private const string DEFAULTLABEL = "Unknown";
+
+        private static readonly TaskFactory TaskFactory = new TaskFactory(
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            TaskContinuationOptions.None,
+            TaskScheduler.Default);
 
         private readonly LanguageGeneration.Templates lg;
 
@@ -91,6 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var content = resource.ReadTextAsync().GetAwaiter().GetResult();
             var lgResource = new LGResource(Id, resource.FullName, content);
             this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
+            RegisterSourcemap(lg, resource);
         }
 
         /// <summary>
@@ -112,7 +120,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>generated text.</returns>
         public override Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
-            var lgOpt = new EvaluationOptions() { Locale = dialogContext.GetLocale() };
+            EventHandler onEvent = (s, e) => RunSync(() => HandlerLGEventAsync(dialogContext, s, e, cancellationToken));
+
+            var lgOpt = new EvaluationOptions() { Locale = dialogContext.GetLocale(), OnEvent = onEvent };
 
             try
             {
@@ -127,6 +137,68 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 throw;
             }
+        }
+
+        private static void RunSync(Func<Task> func)
+        {
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
+            TaskFactory.StartNew(() =>
+            {
+                return func();
+            }).Unwrap().GetAwaiter().GetResult();
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+        }
+
+        private static void RegisterSourcemap(LanguageGeneration.Templates templates, Resource resource)
+        {
+            foreach (var template in templates.AllTemplates)
+            {
+                RegisterSourcemap(template, template.SourceRange, template.SourceRange.Source);
+                foreach (var expressionRef in template.Expressions)
+                {
+                    RegisterSourcemap(expressionRef, expressionRef.SourceRange, resource.FullName);
+                }
+            }
+        }
+
+        private static void RegisterSourcemap(object item, LanguageGeneration.SourceRange sr, string path)
+        {
+            if (Path.IsPathRooted(path))
+            {
+                var debugSM = new Debugging.SourceRange(
+                    path,
+                    sr.Range.Start.Line,
+                    sr.Range.Start.Character + 1,
+                    sr.Range.End.Line,
+                    sr.Range.End.Character + 1);
+
+                if (!DebugSupport.SourceMap.TryGetValue(item, out var _))
+                {
+                    DebugSupport.SourceMap.Add(item, debugSM);
+                }
+            }
+        }
+
+        private async Task HandlerLGEventAsync(DialogContext dialogContext, object sender, EventArgs eventArgs, CancellationToken cancellationToken = default)
+        {
+            // skip the events that is not LG event or the event path is invalid.
+            if (!(eventArgs is LGEventArgs))
+            {
+                await Task.CompletedTask.ConfigureAwait(false);
+            }
+
+            if (eventArgs is BeginTemplateEvaluationArgs || eventArgs is BeginExpressionEvaluationArgs)
+            {
+                // Send debugger event
+                await dialogContext.GetDebugger().StepAsync(dialogContext, sender, DialogEvents.Custom, cancellationToken).ConfigureAwait(false);
+            }
+            else if (eventArgs is MessageArgs message && dialogContext.GetDebugger() is IDebugger dda)
+            {
+                // send debugger message
+                await dda.OutputAsync(message.Text, sender, message.Text, cancellationToken).ConfigureAwait(false);
+            }
+
+            await Task.CompletedTask.ConfigureAwait(false);
         }
     }
 }

@@ -52,6 +52,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         {
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
+                var sentActivity = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
+                Assert.Equal(RoleTypes.Skill, sentActivity.Recipient.Role);
+
                 // Create mock response.
                 var response = new HttpResponseMessage(HttpStatusCode.OK)
                 {
@@ -109,30 +112,32 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Assert.Equal(new Uri("https://skillbot.com/api/messages"), request.RequestUri);
 
                 // Assert expected values are in the activity being sent.
-                var activitySent = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
-                Assert.Equal("https://parentbot.com/api/messages", activitySent.ServiceUrl);
-                Assert.Equal("NewConversationId", activitySent.Conversation.Id);
+                var sentActivity = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
+                Assert.Equal(RoleTypes.Skill, sentActivity.Recipient.Role);
+
+                Assert.Equal("https://parentbot.com/api/messages", sentActivity.ServiceUrl);
+                Assert.Equal("NewConversationId", sentActivity.Conversation.Id);
                 if (testRecipientId == null)
                 {
                     // Ensure a default recipient is set if we don't pass one.
-                    Assert.NotNull(activitySent.Recipient);
+                    Assert.NotNull(sentActivity.Recipient);
                 }
                 else
                 {
                     // Ensure the recipient we want is set if it is passed.
-                    Assert.Equal("42", activitySent.Recipient.Id);
+                    Assert.Equal("42", sentActivity.Recipient.Id);
                 }
 
-                Assert.NotNull(activitySent.RelatesTo);
-                Assert.Equal(testActivity.Conversation.Id, activitySent.RelatesTo.Conversation.Id);
-                Assert.Equal("TheActivityConversationName", activitySent.RelatesTo.Conversation.Name);
-                Assert.Equal("TheActivityConversationType", activitySent.RelatesTo.Conversation.ConversationType);
-                Assert.Equal("TheActivityAadObjectId", activitySent.RelatesTo.Conversation.AadObjectId);
-                Assert.Equal(true, activitySent.RelatesTo.Conversation.IsGroup);
-                Assert.NotNull(activitySent.RelatesTo.Conversation.Properties);
-                Assert.Equal("TheActivityRole", activitySent.RelatesTo.Conversation.Role);
-                Assert.Equal("TheActivityTenantId", activitySent.RelatesTo.Conversation.TenantId);
-                Assert.Equal("https://theactivityServiceUrl", activitySent.RelatesTo.ServiceUrl);
+                Assert.NotNull(sentActivity.RelatesTo);
+                Assert.Equal(testActivity.Conversation.Id, sentActivity.RelatesTo.Conversation.Id);
+                Assert.Equal("TheActivityConversationName", sentActivity.RelatesTo.Conversation.Name);
+                Assert.Equal("TheActivityConversationType", sentActivity.RelatesTo.Conversation.ConversationType);
+                Assert.Equal("TheActivityAadObjectId", sentActivity.RelatesTo.Conversation.AadObjectId);
+                Assert.Equal(true, sentActivity.RelatesTo.Conversation.IsGroup);
+                Assert.NotNull(sentActivity.RelatesTo.Conversation.Properties);
+                Assert.Equal("TheActivityRole", sentActivity.RelatesTo.Conversation.Role);
+                Assert.Equal("TheActivityTenantId", sentActivity.RelatesTo.Conversation.TenantId);
+                Assert.Equal("https://theactivityServiceUrl", sentActivity.RelatesTo.ServiceUrl);
 
                 // Create mock response.
                 var response = new HttpResponseMessage(HttpStatusCode.OK)

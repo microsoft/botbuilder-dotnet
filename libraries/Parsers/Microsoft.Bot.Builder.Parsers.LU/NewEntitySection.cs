@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU
             {
                 Errors.Add(
                     Diagnostic.BuildDiagnostic(
-                        message: "Invalid entity line, did you miss entity name after $?",
+                        message: "Invalid entity line, did you miss entity name after @",
                         context: parseTree.newEntityDefinition().newEntityLine()));
             }
 
@@ -167,6 +167,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                     {
                         var splitedStr = trimedItemStr.Split('-');
                         bodyElement.Synonyms.Add(splitedStr[1].Trim());
+
+                        if (bodyElement.NormalizedValue == null) 
+                        {
+                            bodyElement.NormalizedValue = splitedStr[1].Trim();
+                        }
                     }
                 }
 

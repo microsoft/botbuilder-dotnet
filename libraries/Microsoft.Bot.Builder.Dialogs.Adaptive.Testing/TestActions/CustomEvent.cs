@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public object Value { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
             if (Name == null)
             {

@@ -1,0 +1,2 @@
+# test
+- set alarm for {time:fromTime}

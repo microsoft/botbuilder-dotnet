@@ -1,18 +1,18 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.Test.ITestAction)",
-    "title": "Assert Reply",
+    "title": "Assert reply",
     "description": "Asserts that a reply text is valid.",
     "type": "object",
     "properties": {
         "text": {
             "type": "string",
-            "title": "Reply Text",
+            "title": "Reply text",
             "description": "Expected reply text"
         },
         "exact": {
             "type": "boolean",
-            "title": "Exact Match",
+            "title": "Exact match",
             "description": "If true then an exact match must happen, if false then the reply activity.text must contain the reply text. [Default:false]"
         },
         "description": {
@@ -27,7 +27,7 @@
         },
         "assertions": {
             "type": "array",
-            "title": "Assertions to perform to validate Activity that is sent by the dialog",
+            "title": "Assertions to validate activity",
             "description": "Sequence of expressions which must evaluate to true.",
             "items": {
                 "$ref": "schema:#/definitions/condition",

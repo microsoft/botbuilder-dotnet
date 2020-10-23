@@ -59,5 +59,10 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }
 
+        /// <summary>
+        /// Gets or sets the CacheInfo for this MessagingExtensionActionResponse.
+        /// </summary>
+        [JsonProperty(PropertyName = "cacheInfo")]
+        public CacheInfo CacheInfo { get; set; }
     }
 }

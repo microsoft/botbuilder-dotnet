@@ -17,9 +17,8 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class ParameterizedBotFrameworkAuthentication : BotFrameworkAuthentication
     {
-        private static HttpClient _defaultHttpClient = new HttpClient();
+        private static readonly HttpClient _defaultHttpClient = new HttpClient();
 
-        private readonly string _channelService;
         private readonly bool _validateAuthority;
         private readonly string _toChannelFromBotLoginUrl;
         private readonly string _toChannelFromBotOAuthScope;
@@ -34,7 +33,6 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly ILogger _logger;
 
         public ParameterizedBotFrameworkAuthentication(
-            string channelService,
             bool validateAuthority,
             string toChannelFromBotLoginUrl,
             string toChannelFromBotOAuthScope,
@@ -48,7 +46,6 @@ namespace Microsoft.Bot.Connector.Authentication
             HttpClient httpClient = null,
             ILogger logger = null)
         {
-            _channelService = channelService;
             _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
@@ -107,22 +104,28 @@ namespace Microsoft.Bot.Connector.Authentication
             if (string.IsNullOrWhiteSpace(authHeader))
             {
                 var isAuthDisabled = await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
-                if (isAuthDisabled)
+                if (!isAuthDisabled)
                 {
-                    // In the scenario where Auth is disabled, we still want to have the
-                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
-                    // adding in an empty claim.
-                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    // No Auth Header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
                 }
 
-                // No Auth Header. Auth is required. Request is not authorized.
-                throw new UnauthorizedAccessException();
+                // Check if the activity is for a skill call and is coming from the Emulator.
+                if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
+                {
+                    // Return an anonymous claim with an anonymous skill AppId
+                    return SkillValidation.CreateAnonymousSkillClaim();
+                }
+
+                // In the scenario where Auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
+                // adding in an empty claim.
+                return new ClaimsIdentity(new List<Claim>(), AuthenticationConstants.AnonymousAuthType);
             }
 
+            // Validate the header and extract claims.
             var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, credentialFactory, activity.ChannelId, authConfiguration, activity.ServiceUrl, httpClient, cancellationToken).ConfigureAwait(false);
-
             AppCredentials.TrustServiceUrl(activity.ServiceUrl);
-
             return claimsIdentity;
         }
 

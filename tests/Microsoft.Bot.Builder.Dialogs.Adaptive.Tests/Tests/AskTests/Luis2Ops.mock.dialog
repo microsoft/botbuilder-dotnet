@@ -1,0 +1,118 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"whole wheat\"",
+    "responses": [
+        {
+            "content": {
+                "query": "whole wheat",
+                "prediction": {
+                    "topIntent": "sandwich",
+                    "intents": {
+                        "sandwich": {
+                            "score": 0.9996801
+                        }
+                    },
+                    "entities": {
+                        "Add()": [
+                            {
+                                "Bread": [
+                                    {
+                                        "BreadEntity": [
+                                            [
+                                                "whole wheat"
+                                            ]
+                                        ],
+                                        "$instance": {
+                                            "BreadEntity": [
+                                                {
+                                                    "type": "BreadEntity",
+                                                    "text": "whole wheat",
+                                                    "startIndex": 0,
+                                                    "length": 7,
+                                                    "modelTypeId": 1,
+                                                    "modelType": "Entity Extractor",
+                                                    "recognitionSources": [
+                                                        "model"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "$instance": {
+                                    "Bread": [
+                                        {
+                                            "type": "Bread",
+                                            "text": "whole wheat",
+                                            "startIndex": 0,
+                                            "length": 11,
+                                            "modelTypeId": 1,
+                                            "modelType": "Entity Extractor",
+                                            "recognitionSources": [
+                                                "model"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "Show()": [
+                            {
+                                "Bread": [
+                                    {
+                                    }
+                                ],
+                                "$instance": {
+                                    "Bread": [
+                                        {
+                                            "type": "Bread",
+                                            "text": "Bread",
+                                            "startIndex": 0,
+                                            "length": 11,
+                                            "modelTypeId": 1,
+                                            "modelType": "Entity Extractor",
+                                            "recognitionSources": [
+                                                "model"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "$instance": {
+                            "Add()": [
+                                {
+                                    "type": "Add()",
+                                    "text": "whole wheat",
+                                    "startIndex": 0,
+                                    "length": 11,
+                                    "modelTypeId": 1,
+                                    "modelType": "Entity Extractor",
+                                    "recognitionSources": [
+                                        "model"
+                                    ]
+                                }
+                            ],
+                            "Show()": [
+                                {
+                                    "type": "Show()",
+                                    "text": "whole wheat",
+                                    "startIndex": 0,
+                                    "length": 11,
+                                    "modelTypeId": 1,
+                                    "modelType": "Entity Extractor",
+                                    "recognitionSources": [
+                                        "model"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
