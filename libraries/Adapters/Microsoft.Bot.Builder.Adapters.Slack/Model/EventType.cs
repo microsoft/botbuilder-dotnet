@@ -20,9 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 
         public string Ts { get; set; }
 
-#pragma warning disable CA2227 // Collection properties should be read only
-        public JObject Item { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public JObject Item { get; } = new JObject();
 
         [JsonProperty(PropertyName = "event_ts")]
         public string EventTs { get; set; }
