@@ -1,0 +1,21 @@
+﻿{
+    "token": "VerificationToken",
+    "team_id": "teamId",
+    "api_app_id": "apiAppId",
+    "event": {
+      "client_msg_id": "clientId",
+      "user": "userId",
+      "type": "reaction_added",
+      "reaction": "thumbsup",
+      "item_user": "U0G9QF9C6",
+      "item": {
+        "type": "message",
+        "channel": "C0G9QF9GZ",
+        "ts": "1360782400.498405"
+      }
+    },
+    "type": "event_callback",
+    "event_id": "eventId",
+    "event_time": 1568915625,
+    "event_ts": "1568915625.001000"
+}
