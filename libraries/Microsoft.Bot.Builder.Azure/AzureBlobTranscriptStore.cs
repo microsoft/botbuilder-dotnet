@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// Each activity is stored as json blob in structure of
     /// container/{channelId]/{conversationId}/{Timestamp.ticks}-{activity.id}.json.
     /// </remarks>
+    [Obsolete("This class is deprecated. Please use BlobsTranscriptStore from Microsoft.Bot.Builder.Azure.Blobs instead.")]
     public class AzureBlobTranscriptStore : ITranscriptStore
     {
         private static readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings()

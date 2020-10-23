@@ -1,7 +1,7 @@
 <Project>
   
   <PropertyGroup>
-    <LocalPackageVersion>4.10.0-local</LocalPackageVersion>
+    <LocalPackageVersion>4.11.0-local</LocalPackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -46,6 +46,10 @@
 
   <PropertyGroup Condition="'$(SignAssembly)'=='True' ">
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TF_BUILD)' != '' ">
+    <DefineConstants>$(DefineConstants);AUTOMATEDBUILD</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

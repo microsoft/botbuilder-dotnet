@@ -1,0 +1,40 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Continue conversation later (Queue)",
+    "description": "Continue conversation at later time (via Azure Storage Queue).",
+    "type": "object",
+    "required": [
+        "date",
+        "connectionString"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "date": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Date",
+            "description": "Date in the future as a ISO string when the conversation should continue.",
+            "examples": [
+                "=addHours(utcNow(), 1)"
+            ]
+        },
+        "value": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Value",
+            "description": "Value to send in the activity.value."
+        }
+
+    }
+}

@@ -13,6 +13,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
@@ -48,15 +49,38 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
+            : this(bot, activityProcessor, socket, null, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
+        /// establishes a connection over a WebSocket to a streaming channel.
+        /// </summary>
+        /// <remarks>
+        /// The audience represents the recipient at the other end of the StreamingRequestHandler's
+        /// streaming connection. Some acceptable audience values are as follows:
+        /// <list>
+        /// <item>- For Public Azure channels, use <see cref="Microsoft.Bot.Connector.Authentication.AuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
+        /// <item>- For Azure Government channels, use <see cref="Microsoft.Bot.Connector.Authentication.GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
+        /// </list>
+        /// </remarks>
+        /// <param name="bot">The bot for which we handle requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
+        /// <param name="socket">The base socket to use when connecting to the channel.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        /// <param name="audience">The specified recipient of all outgoing activities.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
-            
+
             if (socket == null)
             {
                 throw new ArgumentNullException(nameof(socket));
             }
 
+            Audience = audience;
             _logger = logger ?? NullLogger.Instance;
             _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
@@ -74,6 +98,28 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
+            : this(bot, activityProcessor, pipeName, null, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
+        /// establishes a connection over a Named Pipe to a streaming channel.
+        /// </summary>
+        /// <remarks>
+        /// The audience represents the recipient at the other end of the StreamingRequestHandler's
+        /// streaming connection. Some acceptable audience values are as follows:
+        /// <list>
+        /// <item>- For Public Azure channels, use <see cref="Microsoft.Bot.Connector.Authentication.AuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
+        /// <item>- For Azure Government channels, use <see cref="Microsoft.Bot.Connector.Authentication.GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope"/>.</item>
+        /// </list>
+        /// </remarks>
+        /// <param name="bot">The bot for which we handle requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
+        /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        /// <param name="audience">The specified recipient of all outgoing activities.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, string audience, ILogger logger = null)
         {
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
@@ -84,6 +130,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 throw new ArgumentNullException(nameof(pipeName));
             }
 
+            Audience = audience;
             _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
@@ -100,6 +147,14 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public string ServiceUrl { get; private set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
+
+        /// <summary>
+        /// Gets the intended recipient of <see cref="Activity">Activities</see> sent from this StreamingRequestHandler.
+        /// </summary>
+        /// <value>
+        /// The intended recipient of Activities sent from this StreamingRequestHandler.
+        /// </value>
+        public string Audience { get; private set; }
 
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
@@ -170,7 +225,7 @@ namespace Microsoft.Bot.Builder.Streaming
             string body;
             try
             {
-                body = request.ReadBodyAsString();
+                body = await request.ReadBodyAsStringAsync().ConfigureAwait(false);
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we log the exception and continue execution)
             catch (Exception ex)
@@ -224,6 +279,43 @@ namespace Microsoft.Bot.Builder.Streaming
                         activity.Attachments = streamAttachments.ToArray();
                     }
                 }
+
+                // Populate Activity.CallerId given the Audience value.
+                string callerId = null;
+                switch (Audience)
+                {
+                    case AuthenticationConstants.ToChannelFromBotOAuthScope:
+                        callerId = CallerIdConstants.PublicAzureChannel;
+                        break;
+                    case GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope:
+                        callerId = CallerIdConstants.USGovChannel;
+                        break;
+                    default:
+                        if (!string.IsNullOrEmpty(Audience))
+                        {
+                            if (Guid.TryParse(Audience, out var result))
+                            {
+                                // Large assumption drawn here; any GUID is an AAD AppId. This is prohibitive towards bots not using the Bot Framework auth model
+                                // but still using GUIDs/UUIDs as identifiers.
+                                // It's also indicative of the tight coupling between the Bot Framework protocol, authentication and transport mechanism in the SDK.
+                                // In R12, this work will be re-implemented to better utilize the CallerId and Audience set on BotFrameworkAuthentication instances
+                                // and decouple the three concepts mentioned above.
+                                callerId = $"{CallerIdConstants.BotToBotPrefix}{Audience}";
+                            }
+                            else
+                            {
+                                // Fallback to using the raw Audience as the CallerId. The auth model being used by the Adapter using this StreamingRequestHandler
+                                // is not known to the SDK, therefore it is assumed the developer knows what they're doing. The SDK should not prevent
+                                // the developer from extending it to use custom auth models in Streaming contexts.
+                                callerId = Audience;
+                            }
+                        }
+
+                        // A null Audience is an implicit statement indicating the bot does not support skills.
+                        break;
+                }
+
+                activity.CallerId = callerId;
 
                 // Now that the request has been converted into an activity we can send it to the adapter.
                 var adapterResponse = await _activityProcessor.ProcessStreamingActivityAsync(activity, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);

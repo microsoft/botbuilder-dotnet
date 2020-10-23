@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 
@@ -43,18 +44,18 @@ namespace Microsoft.Bot.Connector.Authentication
             HttpClient httpClient,
             ILogger logger)
         {
-            if (string.IsNullOrEmpty(channelService))
+            if (
+                !string.IsNullOrEmpty(toChannelFromBotLoginUrl) || 
+                !string.IsNullOrEmpty(toChannelFromBotOAuthScope) || 
+                !string.IsNullOrEmpty(toBotFromChannelTokenIssuer) || 
+                !string.IsNullOrEmpty(oAuthUrl) ||
+                !string.IsNullOrEmpty(toBotFromChannelOpenIdMetadataUrl) ||
+                !string.IsNullOrEmpty(toBotFromEmulatorOpenIdMetadataUrl) ||
+                !string.IsNullOrEmpty(callerId))
             {
-                return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
-            }
-            else if (channelService == GovernmentAuthenticationConstants.ChannelService)
-            {
-                return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
-            }
-            else
-            {
+                // if we have any of the 'parameterized' properties defined we'll assume this is the parameterized code
+
                 return new ParameterizedBotFrameworkAuthentication(
-                    channelService,
                     validateAuthority,
                     toChannelFromBotLoginUrl,
                     toChannelFromBotOAuthScope,
@@ -67,6 +68,25 @@ namespace Microsoft.Bot.Connector.Authentication
                     authConfiguration,
                     httpClient,
                     logger);
+            }
+            else
+            {
+                // else apply the built in default behavior, which is either the public cloud or the gov cloud depending on whether we have a channelService value present 
+
+                if (string.IsNullOrEmpty(channelService))
+                {
+                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
+                }
+                else if (channelService == GovernmentAuthenticationConstants.ChannelService)
+                {
+                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
+                }
+                else
+                {
+                    // The ChannelService value is used an indicator of which built in set of constants to use. If it is not recognized, a full configuration is expected.
+
+                    throw new ArgumentException("The provided ChannelService value is not supported.");
+                }
             }
         }
     }

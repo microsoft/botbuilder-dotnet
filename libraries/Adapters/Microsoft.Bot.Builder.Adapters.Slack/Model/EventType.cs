@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
 
         public string Ts { get; set; }
 
-        public string Item { get; set; }
+        public JObject Item { get; } = new JObject();
 
         [JsonProperty(PropertyName = "event_ts")]
         public string EventTs { get; set; }

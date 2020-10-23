@@ -180,7 +180,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             var choices = options.Choices;
 
-            var result = new PromptRecognizerResult<FoundChoice>();
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 var opt = this.RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();

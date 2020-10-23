@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
-    "title": "QnAMaker Recognizer",
+    "title": "QnAMaker recognizer",
     "description": "Recognizer for generating QnAMatch intents from a KB.",
     "type": "object",
     "properties": {
@@ -13,12 +13,12 @@
         "knowledgeBaseId": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "KnowledgeBase Id",
-            "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+            "description": "Knowledge base Id of your QnA Maker knowledge base.",
             "default": "=settings.qna.knowledgebaseid"
         },
         "endpointKey": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Endpoint Key",
+            "title": "Endpoint key",
             "description": "Endpoint key for the QnA Maker KB.",
             "default": "=settings.qna.endpointkey"
         },
@@ -39,7 +39,7 @@
         },
         "strictFilters": {
             "$ref": "schema:#/definitions/arrayExpression",
-            "title": "Strict Filters",
+            "title": "Strict filters",
             "description": "Metadata filters to use when calling the QnA Maker KB.",
             "items": {
                 "type": "object",
@@ -69,7 +69,7 @@
         },
         "isTest": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "IsTest",
+            "title": "Use test environment",
             "description": "True, if pointing to Test environment, else false.",
             "examples": [
                 true,
@@ -77,7 +77,7 @@
             ]
         },
         "rankerType": {
-            "title": "Ranker Type",
+            "title": "Ranker type",
             "description": "Type of Ranker.",
             "oneOf": [
                 {
@@ -102,7 +102,7 @@
             "description": "Join operator for Strict Filters.",
             "oneOf": [
                 {
-                    "title": "Join Operator",
+                    "title": "Join operator",
                     "description": "Value of Join Operator to be used as onjuction with Strict Filter values.",
                     "enum": [
                         "AND",
@@ -117,7 +117,7 @@
         },
         "includeDialogNameInMetadata": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Include Dialog Name",
+            "title": "Include dialog name",
             "description": "When set to false, the dialog name will not be passed to QnAMaker. (default) is true",
             "default": true,
             "examples": [
@@ -149,12 +149,12 @@
         },
         "context": {
             "$ref": "schema:#/definitions/objectExpression",
-            "title": "QnARequestContext",
+            "title": "QnA request context",
             "description": "Context to use for ranking."
         },
         "qnaId": {
             "$ref": "schema:#/definitions/integerExpression",
-            "title": "QnAId",
+            "title": "QnA Id",
             "description": "A number or expression which is the QnAId to paass to QnAMaker API."
         }
     },

@@ -20,12 +20,12 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 {
     public class SkillHandlerTests
     {
+        private readonly string _botId = Guid.NewGuid().ToString("N");
         private readonly ClaimsIdentity _claimsIdentity;
         private readonly string _conversationId;
         private readonly ConversationReference _conversationReference;
         private readonly Mock<BotAdapter> _mockAdapter = new Mock<BotAdapter>();
         private readonly Mock<IBot> _mockBot = new Mock<IBot>();
-        private readonly string _botId = Guid.NewGuid().ToString("N");
         private readonly string _skillId = Guid.NewGuid().ToString("N");
         private readonly TestConversationIdFactory _testConversationIdFactory = new TestConversationIdFactory();
 
@@ -43,11 +43,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var activity = (Activity)Activity.CreateMessageActivity();
             activity.ApplyConversationReference(_conversationReference);
-            var skill = new BotFrameworkSkill() 
-            { 
-                AppId = _skillId, 
-                Id = "skill", 
-                SkillEndpoint = new Uri("http://testbot.com/api/messages") 
+            var skill = new BotFrameworkSkill
+            {
+                AppId = _skillId,
+                Id = "skill",
+                SkillEndpoint = new Uri("http://testbot.com/api/messages")
             };
 
             var options = new SkillConversationIdFactoryOptions
@@ -57,12 +57,12 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 Activity = activity,
                 BotFrameworkSkill = skill
             };
-            
+
             _conversationId = _testConversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None).Result;
         }
 
         [Fact]
-        public async Task LegacyConversationIdFactoryTest()
+        public async Task LegacyConversationIdFactoryWorksTest()
         {
             var legacyFactory = new TestLegacyConversationIdFactory();
             var conversationReference = new ConversationReference
@@ -72,110 +72,191 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             };
 
             // Testing the deprecated method for backward compatibility.
-#pragma warning disable 618
+#pragma warning disable 612
             var conversationId = await legacyFactory.CreateSkillConversationIdAsync(conversationReference, CancellationToken.None);
-#pragma warning restore 618
-            BotCallbackHandler botCallback = null;
+#pragma warning restore 612
             _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (identity, reference, audience, callback, cancellationToken) =>
                 {
-                    botCallback = callback;
-                    Console.WriteLine("blah");
+                    // Invoke the callback created by the handler so we can assert the rest of the execution. 
+                    var turnContext = new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity());
+                    await callback(turnContext, cancellationToken);
                 });
-
-            var sut = CreateSkillHandlerForTesting(legacyFactory);
 
             var activity = Activity.CreateMessageActivity();
             activity.ApplyConversationReference(conversationReference);
 
+            var sut = CreateSkillHandlerForTesting(legacyFactory);
+
             await sut.TestOnSendToConversationAsync(_claimsIdentity, conversationId, (Activity)activity, CancellationToken.None);
-            Assert.NotNull(botCallback);
-            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, (Activity)activity), CancellationToken.None);
         }
 
-        [Fact]
-        public async Task OnSendToConversationAsyncTest()
-        {
+        [Theory]
+        [InlineData(ActivityTypes.EndOfConversation)]
+        [InlineData(ActivityTypes.Event)]
+        [InlineData(ActivityTypes.Message)]
+        public async Task OnSendToConversationAsyncTest(string activityType)
+        {            
+            var activity = new Activity(activityType);
+
             _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (identity, reference, audience, callback, cancellationToken) =>
                 {
-                    callback(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None).Wait();
+                    // Invoke the callback created by the handler so we can assert the rest of the execution. 
+                    var turnContext = new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity());
+                    await callback(turnContext, cancellationToken);
+
+                    // Assert the callback set the right properties.
+                    Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", turnContext.Activity.CallerId);
                 });
 
             _mockAdapter.Setup(x => x.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()))
                 .Callback<ITurnContext, Activity[], CancellationToken>((turnContext, activities, cancellationToken) =>
                 {
+                    // Messages should not have a caller id set when sent back to the caller.
+                    Assert.Null(activities[0].CallerId);
+                    Assert.Null(activities[0].ReplyToId);
                 })
                 .Returns(Task.FromResult(new[] { new ResourceResponse { Id = "resourceId" } }));
 
             var sut = CreateSkillHandlerForTesting();
-
-            var activity = (Activity)Activity.CreateMessageActivity();
-            activity.ApplyConversationReference(_conversationReference);
-
-            Assert.Null(activity.CallerId);
             var resourceResponse = await sut.TestOnSendToConversationAsync(_claimsIdentity, _conversationId, activity, CancellationToken.None);
-            Assert.Null(activity.CallerId);
-            Assert.Equal("resourceId", resourceResponse.Id);
+
+            if (activityType == ActivityTypes.Message)
+            {
+                // Assert mock SendActivitiesAsync was called
+                _mockAdapter.Verify(ma => ma.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+
+                Assert.Equal("resourceId", resourceResponse.Id);
+            }
         }
 
-        [Fact]
-        public async Task OnOnReplyToActivityAsyncTest()
+        [Theory]
+        [InlineData(ActivityTypes.EndOfConversation)]
+        [InlineData(ActivityTypes.Event)]
+        [InlineData(ActivityTypes.Message)]
+        public async Task OnOnReplyToActivityAsyncTest(string activityType)
         {
-            BotCallbackHandler botCallback = null;
+            var activity = new Activity(activityType);
+
+            // Mock ContinueConversationAsync (this is called at the end of ProcessActivityAsync). 
             _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (identity, reference, audience, callback, cancellationToken) =>
                 {
-                    botCallback = callback;
+                    // Invoke the callback created by the handler so we can assert the rest of the execution. 
+                    var turnContext = new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity());
+                    await callback(turnContext, cancellationToken);
+
+                    // Assert the callback set the right properties.
+                    Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", turnContext.Activity.CallerId);
                 });
 
+            var replyToActivityId = Guid.NewGuid().ToString("N");
+
+            // Mock SendActivitiesAsync, assert values sent and return an arbitrary ResourceResponse.
+            _mockAdapter.Setup(x => x.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()))
+                .Callback<ITurnContext, Activity[], CancellationToken>((turnContext, activities, cancellationToken) =>
+                {
+                    // Messages should not have a caller id set when sent back to the caller.
+                    Assert.Null(activities[0].CallerId);
+                    Assert.Equal(replyToActivityId, activities[0].ReplyToId);
+
+                    // Do nothing, we don't want the activities sent to the channel in the tests.
+                })
+                .Returns(Task.FromResult(new[] { new ResourceResponse { Id = "resourceId" } }));
+
+            // Call TestOnReplyToActivity on our helper so it calls the OnReply method on the handler and executes our mocks. 
             var sut = CreateSkillHandlerForTesting();
+            var resourceResponse = await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, replyToActivityId, activity, CancellationToken.None);
 
-            var activity = (Activity)Activity.CreateMessageActivity();
-            var activityId = Guid.NewGuid().ToString("N");
-            activity.ApplyConversationReference(_conversationReference);
+            // Assert mock ContinueConversationAsync was called
+            _mockAdapter.Verify(ma => ma.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            
+            if (activityType == ActivityTypes.Message)
+            {
+                // Assert mock SendActivitiesAsync was called
+                _mockAdapter.Verify(ma => ma.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
 
-            await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, activity, CancellationToken.None);
-            Assert.NotNull(botCallback);
-            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity()), CancellationToken.None);
-            Assert.Null(activity.CallerId);
-        }
-
-        [Fact]
-        public async Task EventActivityAsyncTest()
-        {
-            var activity = (Activity)Activity.CreateEventActivity();
-            await TestActivityCallback(activity);
-            Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
-        }
-
-        [Fact]
-        public async Task EndOfConversationActivityAsyncTest()
-        {
-            var activity = (Activity)Activity.CreateEndOfConversationActivity();
-            await TestActivityCallback(activity);
-            Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", activity.CallerId);
+                Assert.Equal("resourceId", resourceResponse.Id);
+            }
+            else
+            {
+                // Assert mock SendActivitiesAsync wasn't called
+                _mockAdapter.Verify(ma => ma.SendActivitiesAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity[]>(), It.IsAny<CancellationToken>()), Times.Never);
+            }
         }
 
         [Fact]
         public async Task OnUpdateActivityAsyncTest()
         {
-            var sut = CreateSkillHandlerForTesting();
-            var activity = Activity.CreateMessageActivity();
-            var activityId = Guid.NewGuid().ToString("N");
-            activity.ApplyConversationReference(_conversationReference);
+            // Mock ContinueConversationAsync (this is called at the end of OnUpdateActivityAsync). 
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (identity, reference, audience, callback, cancellationToken) =>
+                {
+                    // Create a TurnContext with our mock adapter. 
+                    var turnContext = new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity());
+                    
+                    // Execute the callback with our turnContext.
+                    await callback(turnContext, cancellationToken);
 
-            await Assert.ThrowsAsync<NotImplementedException>(() =>            
-                sut.TestOnUpdateActivityAsync(_claimsIdentity, _conversationId, activityId, (Activity)activity, CancellationToken.None));
+                    // Assert the callback set the right properties.
+                    Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{_skillId}", turnContext.Activity.CallerId);
+                });
+
+            var activity = Activity.CreateMessageActivity();
+            var message = activity.Text = $"TestUpdate {DateTime.Now}.";
+            var activityId = Guid.NewGuid().ToString("N");
+
+            // Mock UpdateActivityAsync, assert the activity being sent and return and arbitrary ResourceResponse.
+            _mockAdapter.Setup(x => x.UpdateActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                .Callback<ITurnContext, Activity, CancellationToken>((context, newActivity, cancellationToken) =>
+                {
+                    // Assert the activity being sent.
+                    Assert.Equal(activityId, newActivity.ReplyToId);
+                    Assert.Equal(message, newActivity.Text);
+                })
+                .Returns(Task.FromResult(new ResourceResponse { Id = "resourceId" }));
+
+            var sut = CreateSkillHandlerForTesting();
+            var resourceResponse = await sut.TestOnUpdateActivityAsync(_claimsIdentity, _conversationId, activityId, (Activity)activity, CancellationToken.None);
+
+            // Assert mock methods were called
+            _mockAdapter.Verify(ma => ma.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            _mockAdapter.Verify(ma => ma.UpdateActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+
+            Assert.Equal("resourceId", resourceResponse.Id);
         }
 
         [Fact]
         public async Task OnDeleteActivityAsyncTest()
         {
-            var sut = CreateSkillHandlerForTesting();
+            // Mock ContinueConversationAsync (this is called at the end of OnUpdateActivityAsync). 
+            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
+                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (identity, reference, audience, callback, cancellationToken) =>
+                {
+                    // Create a TurnContext with our mock adapter. 
+                    var turnContext = new TurnContext(_mockAdapter.Object, _conversationReference.GetContinuationActivity());
+                    
+                    // Execute the callback with our turnContext.
+                    await callback(turnContext, cancellationToken);
+                });
+
             var activityId = Guid.NewGuid().ToString("N");
-            await Assert.ThrowsAsync<NotImplementedException>(() =>
-                sut.TestOnDeleteActivityAsync(_claimsIdentity, _conversationId, activityId, CancellationToken.None));
+
+            // Mock UpdateActivityAsync, assert the activity being sent
+            _mockAdapter.Setup(x => x.DeleteActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>()))
+                .Callback<ITurnContext, ConversationReference, CancellationToken>((context, conversationReference, cancellationToken) =>
+                {
+                    // Assert the activityId being deleted.
+                    Assert.Equal(activityId, conversationReference.ActivityId);
+                });
+
+            var sut = CreateSkillHandlerForTesting();
+            await sut.TestOnDeleteActivityAsync(_claimsIdentity, _conversationId, activityId, CancellationToken.None);
+
+            // Assert mock methods were called
+            _mockAdapter.Verify(ma => ma.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            _mockAdapter.Verify(ma => ma.DeleteActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
         }
 
         [Fact]
@@ -240,7 +321,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             var conversationId = Guid.NewGuid().ToString("N");
             var transcript = new Transcript();
             await Assert.ThrowsAsync<NotImplementedException>(() =>
-             sut.TestOnSendConversationHistoryAsync(_claimsIdentity, conversationId, transcript, CancellationToken.None));
+                sut.TestOnSendConversationHistoryAsync(_claimsIdentity, conversationId, transcript, CancellationToken.None));
         }
 
         [Fact]
@@ -251,26 +332,6 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             var attachmentData = new AttachmentData();
             await Assert.ThrowsAsync<NotImplementedException>(() =>
                 sut.TestOnUploadAttachmentAsync(_claimsIdentity, conversationId, attachmentData, CancellationToken.None));
-        }
-
-        private async Task TestActivityCallback(Activity activity)
-        {
-            BotCallbackHandler botCallback = null;
-            _mockAdapter.Setup(x => x.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>((identity, reference, audience, callback, cancellationToken) =>
-                {
-                    botCallback = callback;
-                    Console.WriteLine("blah");
-                });
-
-            var sut = CreateSkillHandlerForTesting();
-
-            var activityId = Guid.NewGuid().ToString("N");
-            activity.ApplyConversationReference(_conversationReference);
-
-            await sut.TestOnReplyToActivityAsync(_claimsIdentity, _conversationId, activityId, activity, CancellationToken.None);
-            Assert.NotNull(botCallback);
-            await botCallback.Invoke(new TurnContext(_mockAdapter.Object, activity), CancellationToken.None);
         }
 
         private SkillHandlerInstanceForTests CreateSkillHandlerForTesting(SkillConversationIdFactoryBase overrideFactory = null)
@@ -348,7 +409,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         }
 
         /// <summary>
-        /// A helper class that provides public methods that allow us to test protected methods in <see cref="SkillHandler"/> bypassing authentication.
+        /// A helper class that provides public methods that allow us to test protected methods
+        /// in <see cref="SkillHandler"/> bypassing authentication.
         /// </summary>
         private class SkillHandlerInstanceForTests : SkillHandler
         {

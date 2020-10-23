@@ -22,31 +22,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public async Task AskRetriesSetProperty()
+        public async Task AskRetriesAssign()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task AskRetriesSetProperties()
+        public async Task AskRetriesOnChooseEntity()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task AskRetriesDeleteProperty()
+        public async Task AskRetriesOnChooseProperty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task AskRetriesDeleteProperties()
-        {
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
-        }
-
-        [Fact]
-        public async Task AskRetriesEditArray()
+        public async Task DefaultOp()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }

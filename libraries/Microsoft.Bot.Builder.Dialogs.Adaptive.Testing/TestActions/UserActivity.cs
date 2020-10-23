@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         public string User { get; set; }
 
         /// <inheritdoc/>
-        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, DialogInspector inspector)
+        public async override Task ExecuteAsync(TestAdapter adapter, BotCallbackHandler callback, Inspector inspector = null)
         {
             if (Activity == null)
             {
@@ -68,6 +68,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 activity.From = ObjectPath.Clone(activity.From);
                 activity.From.Id = User;
                 activity.From.Name = User;
+            }
+            else if (Activity.From != null)
+            {
+                activity.From = ObjectPath.Clone(Activity.From);
             }
 
             Stopwatch sw = new Stopwatch();

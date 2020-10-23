@@ -17,6 +17,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestClass]
     [TestCategory("FunctionalTests")]
     [TestCategory("Adapters")]
+#if !AUTOMATEDBUILD
+    [Ignore]
+#endif
     public class TwilioNumberTests
     {
         private string _botEndpoint;
@@ -101,31 +104,31 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 _twilioNumber = Environment.GetEnvironmentVariable("TWILIO_NUMBER");
                 if (string.IsNullOrWhiteSpace(_twilioNumber))
                 {
-                    Assert.Inconclusive("Environment variable 'TwilioNumber' not found.");
+                    Assert.Fail("Environment variable 'TwilioNumber' not found.");
                 }
 
                 _twilioAuthToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
                 if (string.IsNullOrWhiteSpace(_twilioAuthToken))
                 {
-                    Assert.Inconclusive("Environment variable 'TWILIO_AUTH_TOKEN' not found.");
+                    Assert.Fail("Environment variable 'TWILIO_AUTH_TOKEN' not found.");
                 }
 
                 _twilioAccountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
                 if (string.IsNullOrWhiteSpace(_twilioAccountSid))
                 {
-                    Assert.Inconclusive("Environment variable 'TWILIO_ACCOUNT_SID' not found.");
+                    Assert.Fail("Environment variable 'TWILIO_ACCOUNT_SID' not found.");
                 }
 
                 _senderNumber = Environment.GetEnvironmentVariable("SENDER_NUMBER");
                 if (string.IsNullOrWhiteSpace(_senderNumber))
                 {
-                    Assert.Inconclusive("Environment variable 'SENDER_NUMBER' not found.");
+                    Assert.Fail("Environment variable 'SENDER_NUMBER' not found.");
                 }
 
                 _botEndpoint = Environment.GetEnvironmentVariable("TwilioValidationUrl");
                 if (string.IsNullOrWhiteSpace(_botEndpoint))
                 {
-                    Assert.Inconclusive("Environment variable 'TwilioValidationUrl' not found.");
+                    Assert.Fail("Environment variable 'TwilioValidationUrl' not found.");
                 }
             }
         }

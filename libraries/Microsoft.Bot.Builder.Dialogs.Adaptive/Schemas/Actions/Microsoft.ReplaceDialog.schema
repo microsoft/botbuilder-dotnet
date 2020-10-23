@@ -47,7 +47,7 @@
         },
         "activityProcessed": {
             "$ref": "schema:#/definitions/booleanExpression",
-            "title": "Activity Processed",
+            "title": "Activity processed",
             "description": "When set to false, the dialog that is called can process the current activity.",
             "default": true
         }

@@ -47,7 +47,7 @@
             ]
         },
         "choiceOptions": {
-            "title": "Choice Options",
+            "title": "Choice options",
             "description": "Choice Options or expression which provides Choice Options to control display choices to the user.",
             "oneOf": [
                 {
