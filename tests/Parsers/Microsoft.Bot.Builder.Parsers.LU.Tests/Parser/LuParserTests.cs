@@ -364,13 +364,14 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var result = LuParser.Parse(luContent);
             var serializedResult = JsonConvert.SerializeObject(result);
 
-            LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json")));
-            var serializedExpected = JsonConvert.SerializeObject(expected);
-
-            if (serializedExpected.Contains("\r"))
+            var expectedSanitized = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json")); 
+            if (expectedSanitized.Contains("\r"))
             {
-                serializedExpected = serializedExpected.Replace("\r", string.Empty);
-            } 
+                expectedSanitized = expectedSanitized.Replace("\r", string.Empty);
+            }
+
+            LuResource expected = JsonConvert.DeserializeObject<LuResource>(expectedSanitized);
+            var serializedExpected = JsonConvert.SerializeObject(expected);
 
             Assert.Equal(serializedExpected, serializedResult);
         }
