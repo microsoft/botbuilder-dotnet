@@ -305,13 +305,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.True(test.Bool.TryGetValue(data).Value);
 
-            // test backtick in stringExpression
-            test.Str = new StringExpression(data => "test `name");
-            Assert.Equal("test `name", test.Str.TryGetValue(data).Value);
-
-            test.Str = new StringExpression(data => "test //`name");
-            Assert.Equal("test //`name", test.Str.TryGetValue(data).Value);
-
             // test null assignment
             var testNull = new ImplicitCastTest()
             {
@@ -372,6 +365,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             (result, error) = str.TryGetValue(data);
             Assert.Equal("c:\test\test\test", result);
             Assert.Null(error);
+
+            // test backtick in stringExpression
+            str = new StringExpression("test `name");
+            Assert.Equal("test `name", str.TryGetValue(data).Value);
+
+            str = new StringExpression("test //`name");
+            Assert.Equal("test //`name", str.TryGetValue(data).Value);
         }
 
         [Fact]
