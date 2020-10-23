@@ -132,7 +132,6 @@ namespace Microsoft.Bot.Builder.Streaming
 
             Audience = audience;
             _conversations = new ConcurrentDictionary<string, DateTime>();
-            
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
             _serverIsConnected = true;
