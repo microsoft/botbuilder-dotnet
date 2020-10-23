@@ -1,0 +1,6 @@
+
+@ regex number usesFeature city = /[0-9]{7}/
+@ phraselist city =
+    - Seattle
+    - SEATAC
+    - SEA

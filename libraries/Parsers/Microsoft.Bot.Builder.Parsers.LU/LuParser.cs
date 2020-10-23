@@ -28,9 +28,10 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                 return new LuResource(new List<Section>(), string.Empty, new List<Error>());
             }
 
-            var fileContent = GetFileContent(text);
+            var errors = new List<Error>();
+            var fileContent = GetFileContent(text, errors);
 
-            return ExtractFileContent((LUFileParser.FileContext)fileContent, text, new List<Error>());
+            return ExtractFileContent((LUFileParser.FileContext)fileContent, text, errors);
         }
 
         private static LuResource ExtractFileContent(LUFileParser.FileContext fileContent, string content, List<Error> errors)
@@ -354,12 +355,13 @@ namespace Microsoft.Bot.Builder.Parsers.LU
             return qnaSectionsList;
         }
 
-        private static LUFileParser.FileContext GetFileContent(string text)
+        private static LUFileParser.FileContext GetFileContent(string text, List<Error> errors)
         {
             var chars = new AntlrInputStream(text);
             var lexer = new LUFileLexer(chars);
             var tokens = new CommonTokenStream(lexer);
             var parser = new LUFileParser(tokens);
+            parser.AddErrorListener(new LUErrorListener(errors));
             parser.BuildParseTree = true;
             return parser.file();
         }

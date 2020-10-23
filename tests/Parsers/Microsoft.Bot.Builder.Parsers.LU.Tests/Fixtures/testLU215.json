@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"entitySection","Id":"entitySection_three","Body":"","Name":"three","Type":"test :: a = Roles=[from,to]","SynonymsOrPhraseList":["foo","bar"],"Range":{"Start":{"Line":1,"Character":0},"End":{"Line":3,"Character":6}}}],"Content":"$three : test :: a = Roles=[from,to]\n- foo\n- bar\n","Errors":[]}

@@ -1,0 +1,3 @@
+
+@patternany "foo bar"
+@patternany 'a b'

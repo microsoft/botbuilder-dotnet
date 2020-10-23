@@ -1,0 +1,12 @@
+> # Intent definitions
+
+## Intent
+- holiday request to {regex1:to=32}
+- holiday request vacation from {regex1:from=today}
+- i want vacation from {regex1:from} until {regex1:to}
+
+> # Entity definitions
+
+> # PREBUILT Entity definitions
+
+$regex1:/[0-9]/ Roles=to, from

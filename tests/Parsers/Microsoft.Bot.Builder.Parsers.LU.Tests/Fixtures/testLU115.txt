@@ -1,0 +1,10 @@
+
+## None
+## intent1
+@ ml nDepth usesFeatures intent1,phraselist1
+    - @ age nDepth_child1
+    - @ ml nDepth_child2 usesFeatures intent1,phraselist1
+        - @ ml nDepth_child2.1
+@ prebuilt age
+@ phraselist phraselist1(interchangeable) = 
+    - who,why,where,what

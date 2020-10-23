@@ -1,0 +1,12 @@
+> # Intent definitions
+
+## Intent
+- holiday request to {datetimeV2:to=next day}
+- holiday request vacation from {datetimeV2:from=today}
+- i want vacation from {datetimeV2:from} until {datetimeV2:to}
+
+> # Entity definitions
+
+> # PREBUILT Entity definitions
+
+$PREBUILT:datetimeV2 Roles=to, from

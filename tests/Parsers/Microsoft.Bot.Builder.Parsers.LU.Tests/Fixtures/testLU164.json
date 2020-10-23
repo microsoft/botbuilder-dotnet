@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_xyz","Body":"","Name":"xyz","ListBody":["        - one, two"],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":3,"Character":19}}}],"Content":"\n    @xyz = \n        - one, two\n","Errors":[]}

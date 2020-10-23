@@ -1,0 +1,5 @@
+$product : simple
+
+$product : phraseList
+- one
+- two

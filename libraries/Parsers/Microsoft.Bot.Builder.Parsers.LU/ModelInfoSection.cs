@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using static Microsoft.Bot.Builder.Parsers.LU.LUFileParser;
+using static LUFileParser;
 
 namespace Microsoft.Bot.Builder.Parsers.LU
 {

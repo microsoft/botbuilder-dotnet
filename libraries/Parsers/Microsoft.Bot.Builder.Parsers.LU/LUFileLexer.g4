@@ -231,5 +231,5 @@ NEWLINE_IN_QNA
   ;
 
 QNA_TEXT
-  : ~[\t\r\n]+
+  : ~[\r\n]+
   ;

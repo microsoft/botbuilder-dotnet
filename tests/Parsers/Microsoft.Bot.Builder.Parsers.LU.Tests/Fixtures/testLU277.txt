@@ -1,0 +1,4 @@
+# getUserName
+- call me {name:userName}
+
+$name: simple

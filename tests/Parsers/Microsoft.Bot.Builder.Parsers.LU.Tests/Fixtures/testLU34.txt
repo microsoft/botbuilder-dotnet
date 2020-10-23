@@ -1,0 +1,27 @@
+
+# test
+- one
+
+@ ml simple1
+@ intent test usesFeature simple1
+
+@ regex regex1
+@ intent test usesFeature regex1
+
+@ list list1
+@ intent test usesFeature list1
+
+@ composite c1
+@ intent test usesFeature c1
+
+@ prebuilt number
+@ prebuilt age
+@ intent test usesFeatures number, age
+
+@ phraselist pl1 = 
+    - one
+    - two
+@ intent test usesFeature pl1, number, age, c1, list1, regex1,simple1, test2
+
+# test2
+- abc

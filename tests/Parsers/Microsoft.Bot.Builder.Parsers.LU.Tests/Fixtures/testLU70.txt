@@ -1,0 +1,14 @@
+
+@ ml s1
+@ list l1
+@ composite c1
+@ prebuilt number
+@ regex r1
+@ phraselist PL1
+# test
+- one
+@ intent test usesFeatures s1, l1, c1, number, r1, PL1
+# test2
+- one
+@ s1 usesFeature test2, l1, c1, number, r1, PL1
+@ c1 usesFeature test2, l1, number, r1, PL1, s1

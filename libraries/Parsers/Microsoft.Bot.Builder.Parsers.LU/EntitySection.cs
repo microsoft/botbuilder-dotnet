@@ -7,10 +7,14 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Parsers.LU
 {
     /// <summary>SectionEntity class.</summary>
-    public partial class SectionEntity
+    public partial class SectionEntity : Section
     {
         // TODO: pass this constant to a helper class.
         private readonly char[] _invalidCharsInIntentOrEntityName = { '<', '>', '*', '%', '&', ':', '\\', '$' };
+
+        public SectionEntity()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SectionEntity"/> class.
