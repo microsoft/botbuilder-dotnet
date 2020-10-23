@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// Recognizes mention input.
+    /// Recognizes @mention input.
     /// </summary>
     public class MentionEntityRecognizer : TextEntityRecognizer
     {

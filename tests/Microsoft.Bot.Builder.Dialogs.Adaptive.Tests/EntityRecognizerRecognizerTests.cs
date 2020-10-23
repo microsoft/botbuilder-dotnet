@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
@@ -26,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                     new GuidEntityRecognizer(),
                     new HashtagEntityRecognizer(),
                     new IpEntityRecognizer(),
+                    new ClientMentionEntityRecognizer(),
                     new MentionEntityRecognizer(),
                     new NumberEntityRecognizer(),
                     new NumberRangeEntityRecognizer(),
@@ -185,8 +189,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.Equal("None", results.Intents.Single().Key);
 
             dynamic entities = results.Entities;
+            dynamic instanceData = entities["$instance"];
             Assert.NotNull(entities.mention);
+            Assert.Equal("@joesmith", (string)entities.mention[0]);
+            Assert.Equal("@joesmith", (string)instanceData.mention[0].text);
+            Assert.Equal(0, (int)instanceData.mention[0].startIndex);
+            Assert.Equal(8, (int)instanceData.mention[0].endIndex);
+
             Assert.Null(entities.boolean);
+        }
+
+        [Fact]
+        public void TestClientMentionRecognizer()
+        {
+            var dialogContext = GetDialogContext(nameof(TestMention), $"joelee bobsm...");
+            dialogContext.Context.Activity.Entities = new List<Entity>();
+
+            dynamic mention = new JObject();
+            mention.type = "mention";
+            mention.mentioned = new JObject();
+            mention.mentioned.id = "15";
+            mention.mentioned.name = "Joe Lee";
+            mention.text = "joelee";
+            dialogContext.Context.Activity.Entities.Add(((JObject)mention).ToObject<Entity>());
+
+            mention = new JObject();
+            mention.type = "mention";
+            mention.mentioned = new JObject();
+            mention.mentioned.id = "30";
+            mention.mentioned.name = "Bob Smithson";
+            mention.text = "bobsm";
+            dialogContext.Context.Activity.Entities.Add(((JObject)mention).ToObject<Entity>());
+
+            var results = recognizers.Value.RecognizeAsync(dialogContext, dialogContext.Context.Activity).Result;
+
+            Assert.Equal(1, results.Intents.Count);
+            Assert.Equal("None", results.Intents.Single().Key);
+
+            dynamic entities = results.Entities;
+            dynamic instanceData = entities["$instance"];
+            Assert.NotNull(entities.mention);
+            Assert.Equal("15", (string)entities.mention[0]);
+            Assert.Equal("joelee", (string)instanceData.mention[0].text);
+            Assert.Equal("Joe Lee", (string)instanceData.mention[0].resolution.value);
+            Assert.Equal(0, (int)instanceData.mention[0].startIndex);
+            Assert.Equal(5, (int)instanceData.mention[0].endIndex);
+
+            Assert.Equal("30", (string)entities.mention[1]);
+            Assert.Equal("bobsm", (string)instanceData.mention[1].text);
+            Assert.Equal("Bob Smithson", (string)instanceData.mention[1].resolution.value);
+            Assert.Equal(7, (int)instanceData.mention[1].startIndex);
+            Assert.Equal(11, (int)instanceData.mention[1].endIndex);
         }
 
         [Fact]

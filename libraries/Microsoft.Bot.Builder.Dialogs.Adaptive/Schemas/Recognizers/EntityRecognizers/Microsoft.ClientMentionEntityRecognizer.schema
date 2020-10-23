@@ -1,0 +1,8 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.IRecognizer)" ],
+    "title": "Client mention entity recognizer",
+    "description": "Recognizes mention entities passed from the client (such as teams/skype).",
+    "type": "object",
+    "properties": {}
+}
