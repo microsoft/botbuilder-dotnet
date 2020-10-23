@@ -368,6 +368,8 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json"), Encoding.ASCII));
             var serializedExpected = JsonConvert.SerializeObject(expected);
 
+            serializedExpected = serializedExpected.Replace("\r", string.Empty);
+
             Assert.Equal(serializedExpected, serializedResult);
         }
     }
