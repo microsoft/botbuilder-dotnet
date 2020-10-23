@@ -20,10 +20,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
-        /// <summary>
-        /// State property for turn locale.
-        /// </summary>
-        public const string TurnLocaleProperty = "turn.locale";
+        private const string TurnLocale = "turn.locale";
 
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
@@ -96,8 +93,8 @@ namespace Microsoft.Bot.Builder
         /// <value>The string of locale on this context object.</value>
         public string Locale
         {
-            get => this.TurnState.Get<string>(TurnLocaleProperty);
-            set { this.TurnState.Set(TurnLocaleProperty, value); }
+            get => this.TurnState.Get<string>(TurnLocale);
+            set { this.TurnState.Set(TurnLocale, value); }
         }
 
         /// <summary>
