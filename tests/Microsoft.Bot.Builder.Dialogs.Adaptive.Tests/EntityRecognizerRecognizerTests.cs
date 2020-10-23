@@ -228,18 +228,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             dynamic entities = results.Entities;
             dynamic instanceData = entities["$instance"];
-            Assert.NotNull(entities.mention);
-            Assert.Equal("15", (string)entities.mention[0]);
-            Assert.Equal("joelee", (string)instanceData.mention[0].text);
-            Assert.Equal("Joe Lee", (string)instanceData.mention[0].resolution.value);
-            Assert.Equal(0, (int)instanceData.mention[0].startIndex);
-            Assert.Equal(5, (int)instanceData.mention[0].endIndex);
 
-            Assert.Equal("30", (string)entities.mention[1]);
-            Assert.Equal("bobsm", (string)instanceData.mention[1].text);
-            Assert.Equal("Bob Smithson", (string)instanceData.mention[1].resolution.value);
-            Assert.Equal(7, (int)instanceData.mention[1].startIndex);
-            Assert.Equal(11, (int)instanceData.mention[1].endIndex);
+            // resolution [0]
+            Assert.NotNull(entities.channelMention);
+            Assert.Equal("15", (string)entities.channelMention[0].id);
+            Assert.Equal("Joe Lee", (string)entities.channelMention[0].name);
+
+            // instancedata[0]
+            Assert.Equal("joelee", (string)instanceData.channelMention[0].text);
+            Assert.Equal(0, (int)instanceData.channelMention[0].startIndex);
+            Assert.Equal(5, (int)instanceData.channelMention[0].endIndex);
+
+            // resolution [1]
+            Assert.Equal("30", (string)entities.channelMention[1].id);
+            Assert.Equal("Bob Smithson", (string)entities.channelMention[1].name);
+
+            // instanceData [1]
+            Assert.Equal("bobsm", (string)instanceData.channelMention[1].text);
+            Assert.Equal(7, (int)instanceData.channelMention[1].startIndex);
+            Assert.Equal(11, (int)instanceData.channelMention[1].endIndex);
         }
 
         [Fact]

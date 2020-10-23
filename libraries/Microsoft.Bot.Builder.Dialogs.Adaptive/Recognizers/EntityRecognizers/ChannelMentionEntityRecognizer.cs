@@ -13,10 +13,29 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// Recognizer which maps activity.Entities passed by a channel of @type=mention into <see cref="RecognizerResult" /> format.
+    /// Recognizer which maps channel activity.Entities of type mention into <see cref="RecognizerResult" /> format.
     /// </summary>
     /// <remarks>
     /// This makes it easy to pass explicit mentions from channels like Teams/Skype to LUIS models.
+    /// The generated entity is named 'channelMention' with resolution {name,id} like this:
+    /// "entities": {
+    ///   "channelMention": [
+    ///      {
+    ///         "id": "28:0047c760-1f42-4a78-b1bd-9ecd95ec3615"
+    ///         "name":"Tess"
+    ///      }
+    ///   ],
+    ///   "$instance": {
+    ///     "channelMention": [
+    ///        {
+    ///            "startIndex": 10,
+    ///            "endIndex": 13,
+    ///            "score": 1.0,
+    ///            "text": "tess"
+    ///         }
+    ///      ]
+    ///   }
+    /// }.
     /// </remarks>
     public class ChannelMentionEntityRecognizer : Recognizer
     {
@@ -66,30 +85,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 {
                     // into recognizeresult that looks like this:
                     // "entities": {
-                    //   "mention": [
-                    //      "28:0047c760-1f42-4a78-b1bd-9ecd95ec3615"
+                    //   "channelMention": [
+                    //      {
+                    //         "id": "28:0047c760-1f42-4a78-b1bd-9ecd95ec3615"
+                    //         "name":"Tess"
+                    //      }
                     //   ],
                     //   "$instance": {
-                    //     "mention": [
+                    //     "channelMention": [
                     //        {
                     //            "startIndex": 10,
                     //            "endIndex": 13,
                     //            "score": 1.0,
-                    //            "text": "@tom",
-                    //            "type": "mention",
-                    //            "resolution": {
-                    //              "value": "@tom"
-                    //            }
+                    //            "text": "tess"
                     //         }
                     //      ]
                     //   }
                     // }
-                    if (entities.mention == null)
+                    if (entities.channelMention == null)
                     {
-                        entities.mention = new JArray();
+                        entities.channelMention = new JArray();
                     }
 
-                    entities.mention.Add(entity.mentioned.id ?? entity.mentioned.name);
+                    entities.channelMention.Add(entity.mentioned);
 
                     dynamic instance = entities["$instance"];
                     if (instance == null)
@@ -98,9 +116,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                         entities["$instance"] = instance;
                     }
 
-                    if (instance.mention == null)
+                    if (instance.channelMention == null)
                     {
-                        instance.mention = new JArray();
+                        instance.channelMention = new JArray();
                     }
 
                     string mentionedText = (string)entity.text;
@@ -108,18 +126,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     if (iStart >= 0)
                     {
                         dynamic mentionData = new JObject();
-                        mentionData.type = "mention";
                         mentionData.startIndex = iStart;
                         mentionData.endIndex = iStart + mentionedText.Length - 1;
                         mentionData.text = mentionedText;
                         mentionData.score = 1.0;
-                        if (entity.mentioned.name != null)
-                        {
-                            mentionData.resolution = new JObject();
-                            mentionData.resolution.value = entity.mentioned.name;
-                        }
-
-                        instance.mention.Add(mentionData);
+                        instance.channelMention.Add(mentionData);
 
                         // note, we increment so next pass through continues after the token we just processed.
                         iStart++;
