@@ -394,6 +394,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_ReplaceDialogDifferentLevel()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task Action_ReplaceDialogRoot()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_HttpRequest()
         {
             var handler = new MockHttpMessageHandler();

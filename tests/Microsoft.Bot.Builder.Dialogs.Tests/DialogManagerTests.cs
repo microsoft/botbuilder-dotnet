@@ -236,6 +236,114 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
+        [Fact]
+        public async Task DialogManager_ContainerRegistration()
+        {
+            var root = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog> { new AdaptiveDialog("inner") }
+                    }
+                } 
+            };
+
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter();
+            adapter
+                .UseStorage(storage)
+                .UseBotState(userState, convoState);
+
+            // The inner adaptive dialog should be registered on the DialogManager after OnTurn
+            var dm = new DialogManager(root);
+            
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+                .SendConversationUpdate()
+                .StartTestAsync();
+
+            Assert.NotNull(dm.Dialogs.Find("inner"));
+        }
+
+        [Fact]
+        public async Task DialogManager_ContainerRegistration_DoubleNesting()
+        {
+            // Create the following dialog tree
+            // Root (adaptive) -> inner (adaptive) -> innerinner(adaptive) -> helloworld (SendActivity)
+            var root = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog> 
+                        { 
+                            new AdaptiveDialog("inner")
+                            {
+                                Triggers = new List<OnCondition>
+                                {
+                                    new OnBeginDialog()
+                                    {
+                                        Actions = new List<Dialog>
+                                        {
+                                            new AdaptiveDialog("innerinner")
+                                            { 
+                                                Triggers = new List<OnCondition>()
+                                                { 
+                                                    new OnBeginDialog()
+                                                    { 
+                                                        Actions = new List<Dialog>()
+                                                        { 
+                                                            new SendActivity("helloworld")
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter();
+            adapter
+                .UseStorage(storage)
+                .UseBotState(userState, convoState);
+
+            // The inner adaptive dialog should be registered on the DialogManager after OnTurn
+            var dm = new DialogManager(root);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+                .SendConversationUpdate()
+                .StartTestAsync();
+
+            // Top level containers should be registered
+            Assert.NotNull(dm.Dialogs.Find("inner"));
+
+            // Mid level containers should be registered
+            Assert.NotNull(dm.Dialogs.Find("innerinner"));
+
+            // Leaf nodes / non-contaners should not be registered
+            Assert.DoesNotContain(dm.Dialogs.GetDialogs(), d => d.GetType() == typeof(SendActivity));
+        }
+
         [Theory]
         [InlineData(SkillFlowTestCase.RootBotOnly, false)]
         [InlineData(SkillFlowTestCase.RootBotConsumingSkill, false)]

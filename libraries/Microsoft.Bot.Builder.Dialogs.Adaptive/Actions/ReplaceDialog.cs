@@ -69,14 +69,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var dialog = this.ResolveDialog(dc);
 
-            // use bindingOptions to bind to the bound options
+            // Use bindingOptions to bind to the bound options
             var boundOptions = BindOptions(dc, options);
 
-            // set the activity processed state (default is true)
+            // Set the activity processed state (default is true)
             dc.State.SetValue(TurnPath.ActivityProcessed, this.ActivityProcessed.GetValue(dc.State));
 
-            // replace dialog with bound options passed in as the options
-            return await dc.ReplaceDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+            // Replace dialog with bound options passed in as the options
+            return await dc.Parent.ReplaceDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }
