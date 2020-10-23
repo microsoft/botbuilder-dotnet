@@ -373,6 +373,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             LuResource expected = JsonConvert.DeserializeObject<LuResource>(expectedSanitized);
             var serializedExpected = JsonConvert.SerializeObject(expected);
 
+            if (serializedExpected.Contains("\r"))
+            {
+                serializedExpected = serializedExpected.Replace("\r", string.Empty);
+            }
+
             Assert.Equal(serializedExpected, serializedResult);
         }
     }
