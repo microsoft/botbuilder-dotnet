@@ -64,6 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = null;
             LineBreakStyle = null;
             Locale = null;
+            OnEvent = null;
             CacheScope = null;
         }
 
@@ -77,6 +78,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             NullSubstitution = opt.NullSubstitution;
             LineBreakStyle = opt.LineBreakStyle;
             Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
+            OnEvent = opt.OnEvent;
             CacheScope = opt.CacheScope;
         }
 
@@ -147,6 +149,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// A function.
         /// </value>
         public Func<string, object> NullSubstitution { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets an event handler that handles the emitted events in the evaluation process.
+        /// </summary>
+        /// <value>
+        /// An event handler that handles the emitted events in the evaluation process.
+        /// </value>
+        public EventHandler OnEvent { get; set; } = null;
 
         /// <summary>
         /// Gets or sets cache scope of the evaluation result.

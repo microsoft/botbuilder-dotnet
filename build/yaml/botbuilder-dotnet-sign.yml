@@ -6,33 +6,18 @@
 name: $(Date:yyyyMMdd).$(Build.BuildId)
 
 pool:
-  name: Hosted Windows 2019 with VS2019
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
   demands:
   - msbuild
   - visualstudio
 
-trigger: # ci trigger
-  branches:
-    include:
-     - main
-  paths:
-    include:
-      - '*'
-    exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
-
-pr: none # no pr trigger
+trigger: none # ci trigger is set in ADO
+pr: none # pr trigger is set in ADO
 
 variables:
   BuildConfiguration: Release-Windows
   TestConfiguration: Release
   BuildPlatform: any cpu
-  IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:PublishRepositoryUrl=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.

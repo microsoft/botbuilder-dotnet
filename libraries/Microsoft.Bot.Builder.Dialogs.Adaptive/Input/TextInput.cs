@@ -54,7 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var (outputValue, error) = this.OutputFormat.TryGetValue(dc.State);
                 if (error == null)
                 {
-                    input = outputValue.ToString();
+                    if (!string.IsNullOrWhiteSpace(outputValue))
+                    {
+                        // if the result is null or empty string, ignore it.
+                        input = outputValue.ToString();
+                    }
                 }
                 else
                 {

@@ -19,7 +19,8 @@
     "Bread"
   ],
   "$operations": [
-    "Add()"
+    "Add()",
+    "Show()"
   ],
   "$defaultOperation": {
     "": {

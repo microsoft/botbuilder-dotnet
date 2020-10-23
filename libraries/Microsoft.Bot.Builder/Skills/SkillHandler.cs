@@ -118,6 +118,40 @@ namespace Microsoft.Bot.Builder.Skills
             return await ProcessActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
+        protected override async Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
+        {
+            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
+                await turnContext.DeleteActivityAsync(activityId, cancellationToken).ConfigureAwait(false);
+            });
+
+            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
+        {
+            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
+
+            ResourceResponse resourceResponse = null;
+            var callback = new BotCallbackHandler(async (turnContext, ct) =>
+            {
+                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
+                activity.ApplyConversationReference(skillConversationReference.ConversationReference);
+                turnContext.Activity.Id = activityId;
+                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
+                resourceResponse = await turnContext.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            });
+
+            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
+
+            return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+        }
+
         private static void ApplyEoCToTurnContextActivity(ITurnContext turnContext, Activity endOfConversationActivity)
         {
             // transform the turnContext.Activity to be the EndOfConversation.
@@ -153,7 +187,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.Properties = eventActivity.Properties;
         }
 
-        private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
+        private async Task<SkillConversationReference> GetSkillConversationReferenceAsync(string conversationId, CancellationToken cancellationToken)
         {
             SkillConversationReference skillConversationReference;
             try
@@ -162,6 +196,8 @@ namespace Microsoft.Bot.Builder.Skills
             }
             catch (NotImplementedException)
             {
+                _logger.LogWarning("Got NotImplementedException when trying to call GetSkillConversationReferenceAsync() on the ConversationIdFactory, attempting to use deprecated GetConversationReferenceAsync() method instead.");
+                
                 // Attempt to get SkillConversationReference using deprecated method.
                 // this catch should be removed once we remove the deprecated method. 
                 // We need to use the deprecated method for backward compatibility.
@@ -177,8 +213,16 @@ namespace Microsoft.Bot.Builder.Skills
 
             if (skillConversationReference == null)
             {
+                _logger.LogError($"Unable to get skill conversation reference for conversationId {conversationId}.");
                 throw new KeyNotFoundException();
             }
+
+            return skillConversationReference;
+        }
+
+        private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
+        {
+            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
 
             ResourceResponse resourceResponse = null;
 

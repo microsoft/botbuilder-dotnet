@@ -177,8 +177,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.NetCore21", "tests\Microsoft.Bot.Builder.TestBot.NetCore21\Microsoft.Bot.Builder.TestBot.NetCore21.csproj", "{99C466C3-1931-4C0E-AA0A-A8D9D140F56E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.NetCore21.Tests", "tests\Microsoft.Bot.Builder.TestBot.NetCore21.Tests\Microsoft.Bot.Builder.TestBot.NetCore21.Tests.csproj", "{2FBA2BB7-73C8-45CD-99B7-D65F817C9051}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Testing", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj", "{D921D320-0450-455F-8DF2-70EDAC5CCE68}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skills", "Skills", "{54DA838C-8BB8-4038-8BDB-D887C02B2D9A}"
@@ -219,6 +217,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{37BA1593-FE3D-4CB9-A040-6CAB7B2D134A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Parsers.LU.Tests", "tests\Parsers\Microsoft.Bot.Builder.Parsers.LU.Tests\Microsoft.Bot.Builder.Parsers.LU.Tests.csproj", "{D7FFAB17-C7BE-490F-A974-584B5E37CF6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.Shared", "tests\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj", "{92F88315-B33B-4D8C-AD8E-9E94CADC867F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -852,6 +852,14 @@ Global
 		{36641924-DE75-4EA9-B139-87F5330D4A09}.Release|Any CPU.Build.0 = Release|Any CPU
 		{36641924-DE75-4EA9-B139-87F5330D4A09}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{36641924-DE75-4EA9-B139-87F5330D4A09}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+        {92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
@@ -964,6 +972,7 @@ Global
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509} = {ABB57A05-A284-40BA-A143-0CFEADE2B630}
 		{37BA1593-FE3D-4CB9-A040-6CAB7B2D134A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D7FFAB17-C7BE-490F-A974-584B5E37CF6D} = {37BA1593-FE3D-4CB9-A040-6CAB7B2D134A}
+        {92F88315-B33B-4D8C-AD8E-9E94CADC867F} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -59,6 +59,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
         /// <returns>Instance of <see cref="Activity"/>.</returns>
         public virtual async Task<Activity> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
         {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext));
+            }
+
+            if (data is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(data)} cannot be a cancellation token");
+            }
+
             if (!string.IsNullOrEmpty(this.Template))
             {
                 var languageGenerator = dialogContext.Services.Get<LanguageGenerator>();

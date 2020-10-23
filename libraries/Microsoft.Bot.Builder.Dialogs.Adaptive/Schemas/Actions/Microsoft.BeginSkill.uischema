@@ -3,6 +3,13 @@
     "form": {
         "label": "Connect to a skill",
         "subtitle": "Skill Dialog",
-        "helpLink": "https://aka.ms/bf-composer-docs-connect-skill"
+        "helpLink": "https://aka.ms/bf-composer-docs-connect-skill",
+        "properties": {
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
     }
 }

@@ -3,6 +3,17 @@
     "form": {
         "label": "Set properties",
         "subtitle": "Set Properties",
-        "helpLink": "https://aka.ms/bfc-using-memory"
+        "helpLink": "https://aka.ms/bfc-using-memory",
+        "properties": {
+            "assignments": {
+                "properties": {
+                    "property": {
+                        "intellisenseScopes": [
+                            "variable-scopes"
+                        ]
+                    }
+                }
+            }
+        }
     }
 }

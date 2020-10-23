@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot;
 using Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot
             services.AddControllers().AddNewtonsoftJson();
 
             // Create the Bot Framework Facebook Adapter.
-            services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapterWithTag>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, PrimaryBot>();

@@ -8,6 +8,7 @@ using Azure.Storage.Queues;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Azure.Queues;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -40,13 +41,15 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                        .UseStorage(new MemoryStorage())
                        .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
 
+                var queueStorage = new AzureQueueStorage(ConnectionString, queueName);
                 var dm = new DialogManager(new ContinueConversationLater()
                 {
-                    ConnectionString = ConnectionString,
-                    QueueName = queueName,
                     Date = "=addSeconds(utcNow(), 2)",
                     Value = "foo"
                 });
+
+                dm.InitialTurnState.Set<QueueStorage>(queueStorage);
+
                 await new TestFlow((TestAdapter)adapter, dm.OnTurnAsync)
                     .Send("hi")
                     .StartTestAsync();
@@ -56,7 +59,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var messageJson = Encoding.UTF8.GetString(Convert.FromBase64String(message.MessageText));
                 var activity = JsonConvert.DeserializeObject<Activity>(messageJson);
                 Assert.Equal(ActivityTypes.Event, activity.Type);
-                Assert.Equal("ContinueConversation", activity.Name);
+                Assert.Equal(ActivityEventNames.ContinueConversation, activity.Name);
                 Assert.Equal("foo", activity.Value);
                 Assert.NotNull(activity.RelatesTo);
                 var cr2 = activity.GetConversationReference();

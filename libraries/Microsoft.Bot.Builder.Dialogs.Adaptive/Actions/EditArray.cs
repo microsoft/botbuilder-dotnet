@@ -245,9 +245,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             dc.State.SetValue(property, array);
 
-            // Explicit state change resets retries
-            dc.State.RemoveValue(DialogPath.Retries);
-
             if (ResultProperty != null)
             {
                 dc.State.SetValue(this.ResultProperty.GetValue(dc.State), result);

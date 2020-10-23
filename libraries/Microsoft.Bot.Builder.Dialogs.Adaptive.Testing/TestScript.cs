@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -26,6 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
     /// <seealso cref="TestAdapter"/>
     public class TestScript
     {
+        /// <summary>
+        /// Test script ended event.
+        /// </summary>
+        public const string TestScriptEnded = "TestScriptEnded";
+
         /// <summary>
         /// Sets the Kind for this class. 
         /// </summary>
@@ -74,6 +80,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <value>the locale (Default:en-us).</value>
         [JsonProperty("locale")]
         public string Locale { get; set; } = "en-us";
+
+        /// <summary>
+        /// Gets or sets the language policy.
+        /// </summary>
+        /// <value>
+        /// the language policy.
+        /// </value>
+        [JsonProperty("languagePolicy")]
+#pragma warning disable CA2227 // Collection properties should be read only
+        public LanguagePolicy LanguagePolicy { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets the mock data for Microsoft.HttpRequest.
@@ -128,7 +145,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
-                .Use(new SetTestOptionsMiddleware());
+                .Use(new SetTestOptionsMiddleware())
+                .Use(new SetSkillConversationIdFactoryBaseMiddleware())
+                .Use(new SetSkillBotFrameworkClientMiddleware());
 
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;
@@ -160,24 +179,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 userToken.Setup(adapter);
             }
 
-            var inspector = new DialogInspector(Dialog, resourceExplorer);
-            if (callback != null)
+            async Task Inspect(DialogContextInspector inspector)
             {
-                foreach (var testAction in Script)
-                {
-                    await testAction.ExecuteAsync(adapter, callback, inspector).ConfigureAwait(false);
-                }
+                var di = new DialogInspector(Dialog, resourceExplorer);
+                var activity = new Activity();
+                activity.ApplyConversationReference(adapter.Conversation, isIncoming: true);
+                activity.Type = "event";
+                activity.Name = "inspector";
+                await adapter.ProcessActivityAsync(
+                           activity,
+                           async (turnContext, cancellationToken) => await di.InspectAsync(turnContext, inspector).ConfigureAwait(false)).ConfigureAwait(false);
             }
-            else
+
+            DialogManager dm;
+            if (callback == null)
             {
-                var dm = new DialogManager(Dialog)
+                dm = new DialogManager(Dialog)
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
-                foreach (var testAction in Script)
+                if (LanguagePolicy != null)
                 {
-                    await testAction.ExecuteAsync(adapter, dm.OnTurnAsync, inspector).ConfigureAwait(false);
+                    dm.UseLanguagePolicy(LanguagePolicy);
                 }
+
+                callback = dm.OnTurnAsync;
+            }
+
+            foreach (var testAction in Script)
+            {
+                await testAction.ExecuteAsync(adapter, callback, Inspect).ConfigureAwait(false);
             }
         }
 

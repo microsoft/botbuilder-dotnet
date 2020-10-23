@@ -1480,6 +1480,41 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestTemplateAndExpressionEvaluationEvents()
+        {
+            var expressionEvalTime = 0;
+            var templateEvalTime = 0;
+
+            EventHandler onEvent = (object sender, EventArgs e) =>
+            {
+                if (e is BeginTemplateEvaluationArgs bt)
+                {
+                    templateEvalTime++;
+                    Assert.Equal("template1", bt.TemplateName);
+                }
+                else if (e is BeginExpressionEvaluationArgs be)
+                {
+                    expressionEvalTime++;
+                    Assert.Equal("if(name==null, 'friend', name)", be.Expression);
+                }
+                else if (e is MessageArgs msg)
+                {
+                    var options = new List<string>()
+                    {
+                        "Evaluate template [template1] get result: hi friend",
+                        "Evaluate expression 'if(name==null, 'friend', name)' get result: friend"
+                    };
+                    Assert.Contains(msg.Text, options);
+                }
+            };
+
+            var templates = Templates.ParseFile(GetExampleFilePath("Event.lg"));
+            var result = templates.Evaluate("template1", null, new EvaluationOptions { OnEvent = onEvent });
+            Assert.Equal(1, expressionEvalTime);
+            Assert.Equal(1, templateEvalTime);
+        }
+
+        [Fact]
         public void TestCustomFunction()
         {
             var parser = new ExpressionParser((string func) =>
@@ -1572,6 +1607,35 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var scope2 = new { i = 1, j = 2, k = 3, l = 4 };
             (evaled, error) = Expression.Parse("common.sumFourNumbers(i, j, k, l)").TryEvaluate(scope2);
             Assert.Equal("10", evaled.ToString());
+        }
+
+        [Fact]
+        public void TestInjectLGWithoutNamespace()
+        {
+            // using Id as the namespace
+            var lgPath = GetExampleFilePath("./InjectionTest/injectWithoutNamespace.lg");
+            var resource = new LGResource("myId", lgPath, File.ReadAllText(lgPath));
+            Templates.ParseResource(resource);
+
+            var (evaled, error) = Expression.Parse("myId.greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Null(error);
+            Assert.Equal("hi Alice", evaled.ToString());
+
+            // using the fuileName parsed from Id as the namespace
+            resource = new LGResource("./path/myNewId.lg", lgPath, File.ReadAllText(lgPath));
+            Templates.ParseResource(resource);
+
+            (evaled, error) = Expression.Parse("myNewId.greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Null(error);
+            Assert.Equal("hi Alice", evaled.ToString());
+
+            // With empty id
+            resource = new LGResource(string.Empty, lgPath, File.ReadAllText(lgPath));
+            Templates.ParseResource(resource);
+
+            (evaled, error) = Expression.Parse("greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Null(error);
+            Assert.Equal("hi Alice", evaled.ToString());
         }
 
         public class LoopClass

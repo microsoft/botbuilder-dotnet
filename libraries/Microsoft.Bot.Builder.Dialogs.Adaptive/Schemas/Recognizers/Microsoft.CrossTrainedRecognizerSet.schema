@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IRecognizer)",
-    "title": "Cross-trained Recognizer Set",
+    "title": "Cross-trained recognizer set",
     "description": "Recognizer for selecting between cross trained recognizers.",
     "type": "object",
     "properties": {

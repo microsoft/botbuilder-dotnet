@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
 
 namespace AdaptiveExpressions
 {
@@ -11,6 +11,9 @@ namespace AdaptiveExpressions
     {
         public static readonly RegexErrorListener Instance = new RegexErrorListener();
 
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e) => throw new Exception($"Regular expression is invalid.");
+        public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
+        {
+            throw new Exception($"Regular expression is invalid.");
+        }
     }
 }
