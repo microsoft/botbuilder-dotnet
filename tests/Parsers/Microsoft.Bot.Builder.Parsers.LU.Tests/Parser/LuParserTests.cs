@@ -356,7 +356,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".txt");
             var luContent = File.ReadAllText(path);
-            if (luContent.Contains("\r")) 
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && luContent.Contains("\r")) 
             {
                 luContent = luContent.Replace("\r", string.Empty);
             }
@@ -364,19 +364,8 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var result = LuParser.Parse(luContent);
             var serializedResult = JsonConvert.SerializeObject(result);
 
-            var expectedSanitized = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json")); 
-            if (expectedSanitized.Contains("\r"))
-            {
-                expectedSanitized = expectedSanitized.Replace("\r", string.Empty);
-            }
-
-            LuResource expected = JsonConvert.DeserializeObject<LuResource>(expectedSanitized);
+            LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json")));
             var serializedExpected = JsonConvert.SerializeObject(expected);
-
-            if (serializedExpected.Contains("\r"))
-            {
-                serializedExpected = serializedExpected.Replace("\r", string.Empty);
-            }
 
             Assert.Equal(serializedExpected, serializedResult);
         }
