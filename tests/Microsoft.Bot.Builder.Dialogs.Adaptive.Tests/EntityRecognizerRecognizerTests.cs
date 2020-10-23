@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                     new GuidEntityRecognizer(),
                     new HashtagEntityRecognizer(),
                     new IpEntityRecognizer(),
-                    new ClientMentionEntityRecognizer(),
+                    new ChannelMentionEntityRecognizer(),
                     new MentionEntityRecognizer(),
                     new NumberEntityRecognizer(),
                     new NumberRangeEntityRecognizer(),
@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public void TestClientMentionRecognizer()
+        public void TestChannelMentionEntityRecognizer()
         {
             var dialogContext = GetDialogContext(nameof(TestMention), $"joelee bobsm...");
             dialogContext.Context.Activity.Entities = new List<Entity>();

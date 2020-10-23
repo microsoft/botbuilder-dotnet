@@ -13,26 +13,26 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// Recognizer which maps entities passed from the client activity.Entities (@type=mention) into <see cref="RecognizerResult" /> format.
+    /// Recognizer which maps activity.Entities passed by a channel of @type=mention into <see cref="RecognizerResult" /> format.
     /// </summary>
     /// <remarks>
-    /// This makes it easy to pass explicit mentions from clients like Teams/Skype to LUIS models.
+    /// This makes it easy to pass explicit mentions from channels like Teams/Skype to LUIS models.
     /// </remarks>
-    public class ClientMentionEntityRecognizer : Recognizer
+    public class ChannelMentionEntityRecognizer : Recognizer
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.ClientMentionEntityRecognizer";
+        public const string Kind = "Microsoft.ChannelMentionEntityRecognizer";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientMentionEntityRecognizer"/> class.
+        /// Initializes a new instance of the <see cref="ChannelMentionEntityRecognizer"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public ClientMentionEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ChannelMentionEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
         {
         }

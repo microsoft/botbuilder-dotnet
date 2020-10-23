@@ -41,10 +41,10 @@
       "$ref": "#/definitions/Microsoft.CancelDialog"
     },
     {
-      "$ref": "#/definitions/Microsoft.ChoiceInput"
+      "$ref": "#/definitions/Microsoft.ChannelMentionEntityRecognizer"
     },
     {
-      "$ref": "#/definitions/Microsoft.ClientMentionEntityRecognizer"
+      "$ref": "#/definitions/Microsoft.ChoiceInput"
     },
     {
       "$ref": "#/definitions/Microsoft.ConditionalSelector"
@@ -1354,6 +1354,38 @@
         }
       }
     },
+    "Microsoft.ChannelMentionEntityRecognizer": {
+      "$role": [
+        "implements(Microsoft.IRecognizer)"
+      ],
+      "title": "Channel mention entity recognizer",
+      "description": "Promotes mention entities passed by a channel via the activity.entities into recognizer result.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ChannelMentionEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.ChoiceInput": {
       "$role": [
         "implements(Microsoft.IDialog)",
@@ -1693,38 +1725,6 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.ChoiceInput"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Microsoft.ClientMentionEntityRecognizer": {
-      "$role": [
-        "implements(Microsoft.IRecognizer)"
-      ],
-      "title": "Client mention entity recognizer",
-      "description": "Recognizes mention entities passed from the client (such as teams/skype).",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.ClientMentionEntityRecognizer"
         },
         "$designer": {
           "title": "Designer information",
@@ -3667,6 +3667,30 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3770,30 +3794,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
@@ -3928,7 +3928,7 @@
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.ClientMentionEntityRecognizer"
+          "$ref": "#/definitions/Microsoft.ChannelMentionEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
