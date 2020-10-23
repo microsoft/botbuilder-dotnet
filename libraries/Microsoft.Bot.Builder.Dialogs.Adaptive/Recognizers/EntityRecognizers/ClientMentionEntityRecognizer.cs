@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text;
-using Microsoft.Recognizers.Text.Sequence;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// Recognizer which maps entities passed from the client activity.Entities (@type=mention) into RecognizerResult format.
+    /// Recognizer which maps entities passed from the client activity.Entities (@type=mention) into <see cref="RecognizerResult" /> format.
     /// </summary>
     /// <remarks>
     /// This makes it easy to pass explicit mentions from clients like Teams/Skype to LUIS models.
