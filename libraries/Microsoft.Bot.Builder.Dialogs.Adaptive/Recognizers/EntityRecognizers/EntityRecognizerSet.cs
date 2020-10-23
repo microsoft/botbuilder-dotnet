@@ -22,9 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityRecognizerSet"/> class.
         /// </summary>
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EmailEntityRecognizer"/> class.
-        /// </summary>
         [JsonConstructor]
         public EntityRecognizerSet()
         {

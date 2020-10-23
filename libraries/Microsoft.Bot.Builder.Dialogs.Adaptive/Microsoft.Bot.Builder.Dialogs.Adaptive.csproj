@@ -40,10 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Recognizers\EntityRecognizers\Microsoft.ClientMentionEntityRecognizer.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
