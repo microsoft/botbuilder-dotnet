@@ -193,8 +193,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.NotNull(entities.mention);
             Assert.Equal("@joesmith", (string)entities.mention[0]);
             Assert.Equal("@joesmith", (string)instanceData.mention[0].text);
-            Assert.Equal(0, (int)instanceData.mention[0].startIndex);
-            Assert.Equal(8, (int)instanceData.mention[0].endIndex);
+            Assert.Equal(5, (int)instanceData.mention[0].startIndex);
+            Assert.Equal(13, (int)instanceData.mention[0].endIndex);
 
             Assert.Null(entities.boolean);
         }

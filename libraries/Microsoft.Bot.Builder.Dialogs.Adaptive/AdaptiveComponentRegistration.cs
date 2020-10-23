@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<RegexEntityRecognizer>(RegexEntityRecognizer.Kind);
             yield return new DeclarativeType<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.Kind);
             yield return new DeclarativeType<UrlEntityRecognizer>(UrlEntityRecognizer.Kind);
-            yield return new DeclarativeType<ClientMentionEntityRecognizer>(UrlEntityRecognizer.Kind);
+            yield return new DeclarativeType<ClientMentionEntityRecognizer>(ClientMentionEntityRecognizer.Kind);
 
             // selectors
             yield return new DeclarativeType<ConditionalSelector>(ConditionalSelector.Kind);
