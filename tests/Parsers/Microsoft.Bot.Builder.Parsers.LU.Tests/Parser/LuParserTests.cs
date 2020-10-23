@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using Microsoft.Bot.Builder.Parsers.LU;
 using Newtonsoft.Json;
 using Xunit;
@@ -364,7 +365,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var result = LuParser.Parse(luContent);
             var serializedResult = JsonConvert.SerializeObject(result);
 
-            LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json")));
+            LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json"), Encoding.ASCII));
             var serializedExpected = JsonConvert.SerializeObject(expected);
 
             Assert.Equal(serializedExpected, serializedResult);
