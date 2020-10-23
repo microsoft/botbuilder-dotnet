@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string InstanceKey = "$instance";
         private const string NoneIntentKey = "None";
         private const string OperationsKey = "$operations";
+        private const string RequiresValueKey = "$requiresValue";
         private const string UtteranceKey = "utterance";
 
         // unique key for change tracking of the turn state (TURN STATE ONLY)
@@ -1266,12 +1267,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return entityToInfo;
         }
 
+        // An entity matches an assignment if the detected operation/property match
+        private bool MatchesAssignment(EntityInfo entity, EntityAssignment assignment)
+         => (entity.Operation == null || entity.Operation == assignment.Operation)
+            && (entity.Property == null || entity.Property == assignment.Property);
+
         // Generate candidate assignments including property and operation
         private IEnumerable<EntityAssignment> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected, string lastEvent, EntityAssignment nextAssignment, JObject askDefault, JObject dialogDefault)
         {
-            // For ChooseProperty alternative properties are expected
-            var choices = lastEvent == AdaptiveEvents.ChooseProperty ? nextAssignment.Alternatives.Select(a => a.Property).ToArray() : Array.Empty<string>();
             var globalExpectedOnly = dialogSchema.Schema[ExpectedOnlyKey]?.ToObject<List<string>>() ?? new List<string>();
+            var requiresValue = dialogSchema.Schema[RequiresValueKey]?.ToObject<List<string>>() ?? new List<string>();
             var assignments = new List<EntityAssignment>();
 
             // Add entities with a recognized property
@@ -1279,7 +1284,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var alternative in alternatives)
                 {
-                    if (alternative.Property != null)
+                    if (alternative.Property != null && (alternative.Value != null || !requiresValue.Contains(alternative.Operation)))
                     {
                         assignments.Add(new EntityAssignment
                         {
@@ -1351,21 +1356,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             // Add choose property matches
-            if (choices.Any())
+            if (lastEvent == AdaptiveEvents.ChooseProperty)
             {
                 foreach (var alternatives in entities.Values)
                 {
                     foreach (var alternative in alternatives)
                     {
-                        if (alternative.Value == null && alternative.Operation == null && choices.Contains(alternative.Property))
+                        if (alternative.Value == null)
                         {
-                            assignments.Add(new EntityAssignment
+                            // If alternative matches one alternative it answers chooseProperty
+                            var matches = nextAssignment.Alternatives.Where(a => MatchesAssignment(alternative, a));
+                            if (matches.Count() == 1)
                             {
-                                Entity = alternative,
-                                Property = alternative.Property,
-                                Operation = AdaptiveEvents.ChooseProperty,
-                                IsExpected = true
-                            });
+                                assignments.Add(new EntityAssignment
+                                {
+                                    Entity = alternative,
+                                    Operation = AdaptiveEvents.ChooseProperty,
+                                    IsExpected = true
+                                });
+                            }
                         }
                     }
                 }
@@ -1393,33 +1402,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return assignments;
         }
 
-        private void AddMapping(EntityAssignment mapping, EntityAssignments assignments)
+        private void AddAssignment(EntityAssignment assignment, EntityAssignments assignments)
         {
             // Entities without a property or operation are available as entities only when found
-            if (mapping.Property != null || mapping.Operation != null)
+            if (assignment.Property != null || assignment.Operation != null)
             {
-                if (mapping.Alternative != null)
+                if (assignment.Alternative != null)
                 {
-                    mapping.Event = AdaptiveEvents.ChooseProperty;
+                    assignment.Event = AdaptiveEvents.ChooseProperty;
                 }
-                else if (mapping.Entity.Value is JArray arr)
+                else if (assignment.Entity.Value is JArray arr)
                 {
                     if (arr.Count > 1)
                     {
-                        mapping.Event = AdaptiveEvents.ChooseEntity;
+                        assignment.Event = AdaptiveEvents.ChooseEntity;
                     }
                     else
                     {
-                        mapping.Event = AdaptiveEvents.AssignEntity;
-                        mapping.Entity.Value = arr[0];
+                        assignment.Event = AdaptiveEvents.AssignEntity;
+                        assignment.Entity.Value = arr[0];
                     }
                 }
                 else
                 {
-                    mapping.Event = AdaptiveEvents.AssignEntity;
+                    assignment.Event = AdaptiveEvents.AssignEntity;
                 }
 
-                assignments.Assignments.Add(mapping);
+                assignments.Assignments.Add(assignment);
             }
         }
 
@@ -1492,22 +1501,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return operation;
         }
 
-        // If there is a default op, remove any overlapping non default op
-        private IEnumerable<EntityAssignment> RemoveNonDefaultOp(IEnumerable<EntityAssignment> assignments, JObject askDefaultOp, JObject dialogDefaultOp)
-        {
-            var hasDefault = assignments.Any(a => a.Operation == DefaultOperation(a, askDefaultOp, dialogDefaultOp));
-            foreach (var assignment in assignments)
-            {
-                if (!hasDefault 
-                    || assignment.Operation == AdaptiveEvents.ChooseEntity 
-                    || assignment.Operation == AdaptiveEvents.ChooseProperty 
-                    || assignment.Operation == DefaultOperation(assignment, askDefaultOp, dialogDefaultOp))
-                {
-                    yield return assignment;
-                }
-            }
-        }
-
         // Choose between competing interpretations
         // This works by:
         // * Generate candidate assignments including inferred property and operator if missing
@@ -1552,15 +1545,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     usedEntities.Add(alternative.Entity);
                 }
 
-                alternatives = RemoveNonDefaultOp(alternatives, askDefaultOp, defaultOp).ToList();
-
                 if (candidate.IsExpected && candidate.Entity.Name != UtteranceKey)
                 {
-                    // If expected binds entity, drop unexpected alternatives
-                    alternatives.RemoveAll(a => !a.IsExpected);
+                    // If expected binds entity, drop unexpected alternatives unless they have an explicit operation
+                    alternatives.RemoveAll(a => !a.IsExpected && a.Entity.Operation == null);
                 }
-
-                alternatives = RemoveNonDefaultOp(alternatives, askDefaultOp, defaultOp).ToList();
 
                 // Find alternative that covers the largest amount of utterance
                 candidate = (from alternative in alternatives orderby alternative.Entity.Name == UtteranceKey ? 0 : alternative.Entity.End - alternative.Entity.Start descending select alternative).First();
@@ -1578,14 +1567,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 else if (candidate.Operation == AdaptiveEvents.ChooseProperty)
                 {
                     choices = nextAssignment.Alternatives.ToList();
-                    var choice = choices.Find(p => p.Property == candidate.Property);
+                    var choice = choices.Find(a => MatchesAssignment(candidate.Entity, a));
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments
                         choice.IsExpected = true;
                         choice.Alternative = null;
                         expectedChoices.Add(choice.Property);
-                        AddMapping(choice, assignments);
+                        AddAssignment(choice, assignments);
                         choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
                         mapped = true;
                     }
@@ -1594,7 +1583,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 candidate.AddAlternatives(alternatives);
                 if (!mapped)
                 {
-                    AddMapping(candidate, assignments);
+                    AddAssignment(candidate, assignments);
                 }
             }
 
@@ -1609,7 +1598,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     var choice = choices.First();
                     var overlaps = from alt in choices where choice.Entity.Overlaps(alt.Entity) select alt;
                     choice.AddAlternatives(overlaps);
-                    AddMapping(choice, assignments);
+                    AddAssignment(choice, assignments);
                     choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
                 }
 
