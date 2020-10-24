@@ -366,7 +366,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var result = LuParser.Parse(luContent);
             var serializedResult = JsonConvert.SerializeObject(result);
 
-            LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json"), Encoding.ASCII));
+            LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json")).Replace("\r", string.Empty));
             var serializedExpected = JsonConvert.SerializeObject(expected);
 
             var serExpected = serializedExpected.Replace("\n", string.Empty).Replace("\r", string.Empty);
