@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Pull change lists from turn context
             var queue = this.Changes ?? new List<ActionChangeList>();
-            queue.Add(changes);
+            queue.Insert(0, changes);
 
             // Save back changes to turn context
             Changes = queue;
