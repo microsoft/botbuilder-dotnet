@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
             var sb = new StringBuilder();
             for (var i = 0; i < s.Length; i++)
             {
-                if (s[i].Equals("\r"))
+                if (s[i].Equals("\\r"))
                 {
                     continue;
                 }
