@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Bot.Builder.Parsers.LU;
 using Newtonsoft.Json;
 using Xunit;
@@ -367,10 +368,9 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
 
             LuResource expected = JsonConvert.DeserializeObject<LuResource>(File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".json"), Encoding.ASCII));
             var serializedExpected = JsonConvert.SerializeObject(expected);
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && serializedExpected.Contains("\r"))
-            {
-                serializedExpected = serializedExpected.Replace("\r", string.Empty);
-            }
+
+            serializedExpected = Regex.Replace(serializedExpected, @"\s+", string.Empty);
+            serializedResult = Regex.Replace(serializedResult, @"\s+", string.Empty);
 
             Assert.Equal(serializedExpected, serializedResult);
         }
