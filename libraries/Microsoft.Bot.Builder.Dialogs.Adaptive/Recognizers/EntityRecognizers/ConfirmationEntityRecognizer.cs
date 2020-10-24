@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Choice;
 using Newtonsoft.Json;
@@ -19,7 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfirmationEntityRecognizer"/> class.
         /// </summary>
-        public ConfirmationEntityRecognizer()
+        /// <param name="callerPath">Optional, source file full path.</param>
+        /// <param name="callerLine">Optional, line number in source file.</param>
+        [JsonConstructor]
+        public ConfirmationEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(callerPath, callerLine)
         {
         }
 
