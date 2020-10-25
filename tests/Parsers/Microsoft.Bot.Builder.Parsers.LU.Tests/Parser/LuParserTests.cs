@@ -377,18 +377,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
 
         private string SanitizeString(string s)
         {
-            var sb = new StringBuilder();
-            for (var i = 0; i < s.Length; i++)
-            {
-                if (s[i].Equals("\\r"))
-                {
-                    continue;
-                }
-
-                sb.Append(s[i]);
-            }
-
-            return sb.ToString();
+            return s.Replace("\r\n", "\n");
         }
     }
 }
