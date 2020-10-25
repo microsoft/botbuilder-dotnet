@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU
 {
+    /// <summary>
+    /// Class for Synonyms in List Entities.
+    /// </summary>
     public class SynonymElement
     {
         [JsonProperty("NormalizedValue", NullValueHandling = NullValueHandling.Ignore)]

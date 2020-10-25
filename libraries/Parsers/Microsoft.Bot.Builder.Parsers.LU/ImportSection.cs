@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Parsers.LU
 {
-    /// <summary>NewEntitySection class.</summary>
+    /// <summary>Import Section class.</summary>
     public class ImportSection : Section
     {
         /// <summary>

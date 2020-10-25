@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Parsers.LU
 {
+    /// <summary>
+    /// Class for PrompDefinitions.
+    /// </summary>
     public class PromptDefinition
     {
         /// <summary>
