@@ -19,12 +19,10 @@ using Xunit.Sdk;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
     /// <summary>
-    /// NOTE: This requires BF CLI to be installed.
+    /// Test schema merging and instances.
     /// </summary>
     /// <remarks>
-    /// npm config set registry https://botbuilder.myget.org/F/botframework-cli/npm/
-    /// npm i -g @microsoft/botframework-cli
-    /// bf plugins:install @microsoft/bf-dialog
+    /// This will install the latest version of botframewrork-cli if the schema changed and npm is present.
     /// </remarks>
     public class SchemaMergeTests
     {
@@ -57,16 +55,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 ProcessStartInfo startInfo;
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
+                    var args = $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o {schemaPath}";
+                    var oldSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
                     File.Delete(schemaPath);
-                    startInfo = new ProcessStartInfo("cmd.exe", $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o {schemaPath}");
+                    startInfo = new ProcessStartInfo("cmd.exe", args);
                     startInfo.WorkingDirectory = projectPath;
                     startInfo.UseShellExecute = false;
                     startInfo.CreateNoWindow = true;
+                    startInfo.RedirectStandardOutput = true;
                     startInfo.RedirectStandardError = true;
 
                     var process = Process.Start(startInfo);
                     var error = process.StandardError.ReadToEnd();
                     process.WaitForExit();
+
+                    var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
+                    if (error.Length != 0 || !newSchema.Equals(oldSchema))
+                    {
+                        // Try installing latest bf if the schema changed
+                        startInfo.Arguments = $"/C npm i -g @microsoft/botframework-cli@next";
+                        process = Process.Start(startInfo);
+                        var output = process.StandardOutput.ReadToEnd();
+                        Assert.True(output.Contains("updated"), output);
+                        process.WaitForExit();
+                        startInfo.Arguments = args;
+                        process = Process.Start(startInfo);
+                        error = process.StandardError.ReadToEnd();
+                        process.WaitForExit();
+                    }
 
                     Assert.True(error.Length == 0, error);
                 }
