@@ -377,7 +377,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
 
         private string SanitizeString(string s)
         {
-            return s.Replace("\r\n", "\n");
+            return s.Replace("\\r\\n", "\\n");
         }
     }
 }
