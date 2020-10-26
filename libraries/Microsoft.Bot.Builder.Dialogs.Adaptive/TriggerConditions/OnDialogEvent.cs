@@ -60,5 +60,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             return Expression.AndExpression(Expression.Parse($"{TurnPath.DialogEvent}.name == '{this.Event}'"), base.GetExpression());
         }
+
+        /// <summary>
+        /// Called when a change list is created.
+        /// </summary>
+        /// <param name="actionContext">Context to use for evaluation.</param>
+        /// <param name="dialogOptions">Optional, object with dialog options.</param>
+        /// <returns>An <see cref="ActionChangeList"/> with the list of actions.</returns>
+        protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
+        {
+            var changeList = base.OnCreateChangeList(actionContext, dialogOptions);
+            var current = actionContext.ActiveDialog.Version;
+            var version = actionContext.Dialogs.GetVersion();
+
+            if (current == null || current == version)
+            {
+                changeList.ChangeType = ActionChangeType.AppendActions;
+            }
+
+            return changeList;
+        }
     }
 }
