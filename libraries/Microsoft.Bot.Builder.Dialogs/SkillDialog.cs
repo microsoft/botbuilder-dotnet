@@ -251,6 +251,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             Activity eocActivity = null;
             if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities != null && response.Body.Activities.Any())
             {
+                // Track sent invoke responses, so more than one is not sent.
+                bool sentInvokeResponse = false;
+
                 // Process replies in the response.Body.
                 foreach (var activityFromSkill in response.Body.Activities)
                 {
@@ -262,16 +265,29 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // The conversation has ended, so cleanup the conversation id.
                         await DialogOptions.ConversationIdFactory.DeleteConversationReferenceAsync(skillConversationId, cancellationToken).ConfigureAwait(false);
                     }
-                    else if (await InterceptOAuthCardsAsync(context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
+                    else if (!sentInvokeResponse && await InterceptOAuthCardsAsync(context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
                     {
                         // do nothing. Token exchange succeeded, so no OAuthCard needs to be shown to the user
+                        sentInvokeResponse = true;
                     }
                     else
                     {
-                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse && activityFromSkill.Value is JObject jObject)
+                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse)
                         {
+                            // An invoke respones has already been sent.  This is a bug in the skill.  Multiple invoke responses
+                            // are not possible.
+                            if (sentInvokeResponse)
+                            {
+                                continue;
+                            }
+
+                            sentInvokeResponse = true;
+
                             // Ensure the value in the invoke response is of type InvokeResponse (it gets deserialized as JObject by default).
-                            activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                            if (activityFromSkill.Value is JObject jObject)
+                            {
+                                activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                            }
                         }
 
                         // Send the response back to the channel. 
