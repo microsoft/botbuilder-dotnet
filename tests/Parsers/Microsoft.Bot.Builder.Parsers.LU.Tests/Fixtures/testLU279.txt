@@ -1,0 +1,5 @@
+
+$PREBUILT:datetimeV2
+
+# testIntent
+- set alartm at {datetimeV2=7AM}

@@ -1,0 +1,5 @@
+
+    @phraselist xyz(interchangeable) hasRoles r1 = 
+        - one
+        - two
+        - three

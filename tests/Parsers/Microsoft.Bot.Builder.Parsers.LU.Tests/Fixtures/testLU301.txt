@@ -1,0 +1,2 @@
+$Want:PhraseList roles=[foo,bar]
+- require, need, desire, know

@@ -1,0 +1,3 @@
+
+$deviceTemperature : [bar]
+$deviceTemperature : [foo]

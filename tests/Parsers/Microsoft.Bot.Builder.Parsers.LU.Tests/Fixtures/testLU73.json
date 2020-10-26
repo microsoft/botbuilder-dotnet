@@ -1,0 +1,25 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_\"my city\"",
+      "Body": "",
+      "Name": "\"my city\"",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 17
+        }
+      }
+    }
+  ],
+  "Content": "\n@ list \"my city\"\n",
+  "Errors": []
+}

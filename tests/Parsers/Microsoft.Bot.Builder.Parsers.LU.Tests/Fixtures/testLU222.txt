@@ -1,0 +1,10 @@
+
+
+$number : phraseList
+    - one
+    - two
+
+    # test
+    - this is {number:first = one}
+
+    $number : /one/

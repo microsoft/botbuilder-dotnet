@@ -1,0 +1,102 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test",
+      "Body": "    - this is a {@r1} from {@r2}\r\n    \r\n    @ml test r1\r\n    @list list1 r2 =\r\n        - one:\r\n            - uno\r\n    \r\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "this is a {@r1} from {@r2}",
+          "entities": [
+            {
+              "type": "patternAnyEntities",
+              "entity": "@r1",
+              "role": ""
+            },
+            {
+              "type": "patternAnyEntities",
+              "entity": "@r2",
+              "role": ""
+            }
+          ],
+          "errorMsgs": [],
+          "contextText": "- this is a {@r1} from {@r2}",
+          "range": {
+            "Start": {
+              "Line": 3,
+              "Character": 4
+            },
+            "End": {
+              "Line": 3,
+              "Character": 32
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "ml",
+          "Roles": "r1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 5,
+              "Character": 4
+            },
+            "End": {
+              "Line": 6,
+              "Character": 4
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_list1",
+          "Body": "",
+          "Name": "list1",
+          "Type": "list",
+          "Roles": "r2",
+          "SynonymsList": [
+            {
+              "NormalizedValue": "one",
+              "Synonyms": [
+                "uno"
+              ]
+            }
+          ],
+          "Range": {
+            "Start": {
+              "Line": 6,
+              "Character": 4
+            },
+            "End": {
+              "Line": 9,
+              "Character": 4
+            }
+          }
+        }
+      ],
+      "Name": "test",
+      "IntentNameLine": "# test",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 10,
+          "Character": 0
+        }
+      }
+    }
+  ],
+  "Content": "\n    # test\n    - this is a {@r1} from {@r2}\n    \n    @ml test r1\n    @list list1 r2 =\n        - one:\n            - uno\n    \n",
+  "Errors": []
+}

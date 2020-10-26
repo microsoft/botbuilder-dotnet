@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_p1","Body":"","Name":"p1","Type":"patternany","Roles":"r1, r2","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":35}}}],"Content":"\n    @patternany p1 hasRoles r1, r2\n","Errors":[]}

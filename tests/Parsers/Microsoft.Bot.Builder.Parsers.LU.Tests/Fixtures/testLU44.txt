@@ -1,0 +1,8 @@
+
+@ intent getUserProfileIntent usesFeature city
+
+@ phraselist city(interchangeable) = 
+    - seattle
+    - space needle
+    - SEATAC
+    - SEA
