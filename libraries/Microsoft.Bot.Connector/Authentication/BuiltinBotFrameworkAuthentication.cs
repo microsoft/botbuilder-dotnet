@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -9,10 +8,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// Note regarding porting to other languages.
+    /// 
+    /// This INTERNAL code leverages the existing auth implementation in the .NET repo. Ultimately, the "parameterized"
+    /// version of this code can do everything this code does. In the future this "buildin" implementation will be
+    /// replaced with the "parameterized" version appropriately parameterized with the builtin constants.
+    /// </summary>
     internal abstract class BuiltinBotFrameworkAuthentication : BotFrameworkAuthentication
     {
         private readonly string _toChannelFromBotOAuthScope;
@@ -65,9 +70,15 @@ namespace Microsoft.Bot.Connector.Authentication
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
         }
 
-        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override async Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var scope = audience ?? _toChannelFromBotOAuthScope;
+
+            var appId = GetAppId(claimsIdentity);
+
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
+
+            return new ProactiveCredentialsResult { Credentials = credentials, Scope = scope };
         }
 
         private IChannelProvider GetChannelProvider()

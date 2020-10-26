@@ -1,0 +1,163 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "outer",
+        "autoEndDialog": false,
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "start",
+                    "pattern": "start"
+                },
+                {
+                    "intent": "where",
+                    "pattern": "where"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Say 'start' to get started"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "where",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "outer dialog.."
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "start",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Starting child dialog"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "id": "root",
+                            "autoEndDialog": false,
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnBeginDialog",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "Replacing this dialog with a child"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.ReplaceDialog",
+                                            "dialog": {
+                                                "$kind": "Microsoft.AdaptiveDialog",
+                                                "id": "newDialog",
+                                                "autoEndDialog": true,
+                                                "triggers": [
+                                                    {
+                                                        "$kind": "Microsoft.OnBeginDialog",
+                                                        "actions": [
+                                                            {
+                                                                "$kind": "Microsoft.SendActivity",
+                                                                "activity": "This dialog (newDialog) will end after this message"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "You should not see these actions since this dialog has been replaced!"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$kind": "Microsoft.OnIntent",
+                                    "intent": "JokeIntent",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "Why did the chicken cross the road?"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.EndTurn",
+                                            "id": "EndTurn"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "To get to the other side"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "child dialog has ended and returned back"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Say 'start' to get started"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "where"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "outer dialog.."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "start"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Starting child dialog"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Replacing this dialog with a child"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "This dialog (newDialog) will end after this message"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "child dialog has ended and returned back"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "where"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "outer dialog.."
+        }
+    ]
+}

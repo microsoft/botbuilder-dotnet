@@ -27,8 +27,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             // Set a special base address so then we can make sure the connector client is honoring this http client
             customHttpClient.BaseAddress = baseUri;
-            var connectorClient = new ConnectorClient(new Uri("https://test.coffee"), new MicrosoftAppCredentials("big-guid-here", "appPasswordHere"), customHttpClient);
             
+            var connectorClient = new ConnectorClient(new Uri("https://test.coffee"), MicrosoftAppCredentials.Empty, customHttpClient);
+
             var activity = new Activity
             {
                 Type = "message",
@@ -42,8 +43,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     },
                 },
             };
-            
-            var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider("big-guid-here", "appPasswordHere"), customHttpClient: customHttpClient), activity);
+
+            var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: customHttpClient), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
             turnContext.Activity.ServiceUrl = "https://test.coffee";
             var handler = new TestTeamsActivityHandler();
@@ -301,7 +302,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 var message = MessageFactory.Text("hi");
                 var channelId = "channelId123";
-                var creds = new MicrosoftAppCredentials("big-guid-here", "appPasswordHere");
+                var creds = new MicrosoftAppCredentials(string.Empty, string.Empty);
                 var cancelToken = new CancellationToken();
                 var reference = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContext, message, channelId, creds, cancelToken);
 
@@ -352,9 +353,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 var participant = await TeamsInfo.GetMeetingParticipantAsync(turnContext);
 
-                Assert.Equal("Organizer", participant.MeetingRole);
+                Assert.Equal("Organizer", participant.Meeting.Role);
                 Assert.Equal("meetigConversationId-1", participant.Conversation.Id);
-                Assert.Equal("userPrincipalName-1", participant.UserPrincipalName);
+                Assert.Equal("userPrincipalName-1", participant.User.UserPrincipalName);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
@@ -520,8 +521,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 {
                     var content = new JObject
                         {
-                            new JProperty("meetingRole", "Organizer"),
-                            new JProperty("userPrincipalName", "userPrincipalName-1"),
+                            new JProperty("user", new JObject(new JProperty("userPrincipalName", "userPrincipalName-1"))),
+                            new JProperty("meeting", new JObject(new JProperty("role", "Organizer"))),
                             new JProperty("conversation", new JObject(new JProperty("Id", "meetigConversationId-1"))),
                         };
                     response.Content = new StringContent(content.ToString());

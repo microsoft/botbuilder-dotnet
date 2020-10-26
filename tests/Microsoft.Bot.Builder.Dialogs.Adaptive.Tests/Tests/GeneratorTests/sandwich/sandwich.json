@@ -194,6 +194,10 @@
     "Help()",
     "Change()"
   ],
+  "$requiresValue": [
+    "Add()",
+    "Remove()"
+  ],
   "$defaultOperation": {
     "CancelConfirmation": {
       "": "Set()"

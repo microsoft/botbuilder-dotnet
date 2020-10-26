@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="activity">The inbound Activity.</param>
         /// <param name="authHeader">The http auth header.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>Asynchronous Task with Authentication results.</returns>
+        /// <returns>Asynchronous Task with <see cref="AuthenticateRequestResult"/>.</returns>
         /// <exception cref="UnauthorizedAccessException">If the validation returns false.</exception>
         public abstract Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken);
 
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="claimsIdentity">The inbound Activity.</param>
         /// <param name="audience">The http auth header.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>Asynchronous Task with Authentication results.</returns>
-        public abstract Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken);
+        /// <returns>Asynchronous Task with <see cref="ProactiveCredentialsResult"/>.</returns>
+        public abstract Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken);
     }
 }

@@ -1,0 +1,8 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.IRecognizer)" ],
+    "title": "Channel mention entity recognizer",
+    "description": "Promotes mention entities passed by a channel via the activity.entities into recognizer result.",
+    "type": "object",
+    "properties": {}
+}
