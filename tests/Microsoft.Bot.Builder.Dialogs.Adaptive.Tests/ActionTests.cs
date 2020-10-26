@@ -8,11 +8,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
@@ -60,13 +62,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public async Task Action_BeginSkill()
         {
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+            var middleware = new List<IMiddleware>();
+            middleware.Add(new SetSkillConversationIdFactoryBaseMiddleware());
+            middleware.Add(new SetSkillBotFrameworkClientMiddleware());
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, middlweare: middleware);
         }
 
         [Fact]
         public async Task Action_BeginSkillEndDialog()
         {
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+            var middleware = new List<IMiddleware>();
+            middleware.Add(new SetSkillConversationIdFactoryBaseMiddleware());
+            middleware.Add(new SetSkillBotFrameworkClientMiddleware());
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, middlweare: middleware);
         }
 
         [Fact]
@@ -627,6 +635,83 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal(2, ((Dictionary<string, string>)testEventInvocation.Arguments[1]).Count);
             Assert.Equal("value1", ((Dictionary<string, string>)testEventInvocation.Arguments[1])["prop1"]);
             Assert.Equal("value2", ((Dictionary<string, string>)testEventInvocation.Arguments[1])["prop2"]);
+        }
+
+        private class SetSkillConversationIdFactoryBaseMiddleware : IMiddleware
+        {
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
+            {
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    var mockSkillConversationIdFactoryBase = new Mock<SkillConversationIdFactoryBase>();
+                    mockSkillConversationIdFactoryBase.SetupAllProperties();
+                    turnContext.TurnState.Add(mockSkillConversationIdFactoryBase.Object);
+                }
+
+                await next(cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private class SetSkillBotFrameworkClientMiddleware : IMiddleware
+        {
+            /// <inheritdoc/>
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
+            {
+                if (turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    turnContext.TurnState.Add<BotFrameworkClient>(new MockSkillBotFrameworkClient());
+                }
+
+                await next(cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private class MockSkillBotFrameworkClient : BotFrameworkClient
+        {
+            public override Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+            {
+                var responseActivity = activity;
+
+                if (activity.Text.Contains("skill"))
+                {
+                    responseActivity = new Activity()
+                    {
+                        Type = "message",
+                        Text = "This is the skill talking: hello"
+                    };
+                }
+
+                if (activity.Text.Contains("end"))
+                {
+                    responseActivity = new Activity()
+                    {
+                        Type = "endOfConversation"
+                    };
+                }
+
+                var response = new InvokeResponse<ExpectedReplies>()
+                {
+                    Status = 200,
+                    Body = new ExpectedReplies
+                    {
+                        Activities = new List<Activity>()
+                    {
+                        responseActivity
+                    }
+                    }
+                };
+
+                var casted = (InvokeResponse<T>)Convert.ChangeType(response, typeof(InvokeResponse<T>), new System.Globalization.CultureInfo("en-US"));
+                var result = Task.FromResult(casted);
+                return result;
+            }
+
+            /// <inheritdoc/>
+            /// <remarks>Not implemented.</remarks>
+            public override Task<InvokeResponse> PostActivityAsync(string fromBotId, string toBotId, Uri toUrl, Uri serviceUrl, string conversationId, Activity activity, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
