@@ -9,7 +9,7 @@
 - [Java]
 - [Antlr Java binaries](https://www.antlr.org/download.html)
 
-Antlr is composed of two partxs, the tool to generate the lexer and parser and the runtime.
+Antlr is composed of two parts, the tool to generate the lexer and parser and the runtime.
 
 1. Install the tool you can follow the instructions from this [tutorial](https://tomassetti.me/antlr-mega-tutorial/#setup-antlr)
 2. Copy the grammar and lex files from `\libraries\AdaptiveExpressions\parser` to `\libraries\AdaptiveExpressionsCpp\AdaptiveExpressionsCpp\Parser`

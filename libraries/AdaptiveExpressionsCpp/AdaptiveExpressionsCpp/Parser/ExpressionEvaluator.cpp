@@ -19,5 +19,15 @@ ValueErrorTuple ExpressionEvaluator::TryEvaluate(Expression* expression, void* s
 
 void ExpressionEvaluator::ValidateExpression(Expression* expression)
 {
-    // m_validator(expression);
+    m_validator(expression);
+}
+
+void ExpressionEvaluator::setReturnType(ReturnType returnType)
+{
+    m_returnType = returnType;
+}
+
+ReturnType ExpressionEvaluator::getReturnType()
+{
+    return m_returnType;
 }

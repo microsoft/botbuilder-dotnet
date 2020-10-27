@@ -7,7 +7,7 @@
 #include "ExpressionAntlrParserBaseVisitor.h"
 #include <string>
 
-class ExpressionParser // : antlr4::Parser // ?? IExpressionParser
+class ExpressionParser
 {
 public:
     ExpressionParser(EvaluatorLookup lookup);
@@ -24,9 +24,19 @@ private:
     public:
         ExpressionTransformer(EvaluatorLookup lookup);
         Expression* Transform(antlr4::tree::ParseTree* context);
+
         antlrcpp::Any visitFile(ExpressionAntlrParser::FileContext* ctx) override;
-        antlrcpp::Any visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx) override;
+        
+        antlrcpp::Any visitUnaryOpExp(ExpressionAntlrParser::UnaryOpExpContext* ctx) override;
         antlrcpp::Any visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx) override;
+        antlrcpp::Any visitFuncInvokeExp(ExpressionAntlrParser::FuncInvokeExpContext* ctx) override;
+        antlrcpp::Any visitIdAtom(ExpressionAntlrParser::IdAtomContext* ctx) override;
+        antlrcpp::Any visitIndexAccessExp(ExpressionAntlrParser::IndexAccessExpContext* ctx) override;
+        antlrcpp::Any visitMemberAccessExp(ExpressionAntlrParser::MemberAccessExpContext* ctx) override;
+        antlrcpp::Any visitParenthesisExp(ExpressionAntlrParser::ParenthesisExpContext* ctx) override;
+        antlrcpp::Any visitArrayCreationExp(ExpressionAntlrParser::ArrayCreationExpContext* ctx) override;
+
+        antlrcpp::Any visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx) override;
         antlrcpp::Any visitNumericAtom(ExpressionAntlrParser::NumericAtomContext* ctx) override;
 
     private:

@@ -62,6 +62,19 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(Expressio
     return Expression::ConstantExpression(text);
 }
 
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitUnaryOpExp(ExpressionAntlrParser::UnaryOpExpContext* ctx)
+{
+    auto unaryOperationName = ctx->children.at(0)->getText();
+    auto operand = visit(ctx->expression());
+    if (unaryOperationName == ExpressionType::Subtract
+        || unaryOperationName == ExpressionType::Add)
+    {
+        return MakeExpression(unaryOperationName, 2, std::vector<Expression*>{new Constant(0), operand});
+    }
+
+    return MakeExpression(unaryOperationName, 1, std::vector<Expression*>{operand});
+}
+
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx)
 {
     auto binaryOperationName = ctx->children.at(1)->getText();
@@ -77,6 +90,36 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitBinaryOpExp(Expressi
     return MakeExpression(binaryOperationName, 2, children);
 }
 
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFuncInvokeExp(ExpressionAntlrParser::FuncInvokeExpContext* ctx)
+{
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitIdAtom(ExpressionAntlrParser::IdAtomContext* ctx)
+{
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitIndexAccessExp(ExpressionAntlrParser::IndexAccessExpContext* ctx)
+{
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitMemberAccessExp(ExpressionAntlrParser::MemberAccessExpContext* ctx)
+{
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitParenthesisExp(ExpressionAntlrParser::ParenthesisExpContext* ctx)
+{
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitArrayCreationExp(ExpressionAntlrParser::ArrayCreationExpContext* ctx)
+{
+    return antlrcpp::Any();
+}
+
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitNumericAtom(ExpressionAntlrParser::NumericAtomContext* ctx)
 {
     std::string numericString = ctx->getText();
@@ -86,7 +129,8 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitNumericAtom(Expressi
         int integer = std::stoi(numericString);
         return Expression::ConstantExpression(integer);
     }
-    catch (const std::bad_any_cast&) {}
+    catch (const std::bad_any_cast&) 
+    {}
 
     try
     {
@@ -100,9 +144,12 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitNumericAtom(Expressi
         double decimalValue = std::stod(numericString);
         return Expression::ConstantExpression(decimalValue);
     }
-    catch (const std::bad_any_cast&) {}
+    catch (const std::bad_any_cast&) 
+    {
+        // throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
+    }
 
-    // throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
+    
     return Expression::ConstantExpression(0);
 }
 

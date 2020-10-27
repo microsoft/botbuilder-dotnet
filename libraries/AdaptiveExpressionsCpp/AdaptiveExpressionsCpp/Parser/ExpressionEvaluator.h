@@ -18,9 +18,15 @@ public:
 
     ValueErrorTuple TryEvaluate(Expression* expression, void* state, void* options);
     void ValidateExpression(Expression* expression);
+
+    void setReturnType(ReturnType returnType);
+    ReturnType getReturnType();
     
     std::string m_type;
-    ReturnType m_returnType{};
+    
     EvaluateExpressionLambda m_evaluator;
     EvaluateExpressionValidatorFunction m_validator;
+
+protected:
+    ReturnType m_returnType{};
 };

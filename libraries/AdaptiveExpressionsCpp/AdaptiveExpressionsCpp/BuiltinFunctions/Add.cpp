@@ -55,22 +55,6 @@ ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::ReverseEvaluatorInter
     auto firstItem = args[0];
     auto secondItem = args[1];
 
-    /*
-    try
-    {
-        antlrcpp::Any anyValue = std::any_cast<antlrcpp::Any>(firstItem);
-        if (anyValue.is<int>())
-        {
-            int val = anyValue.as<int>();
-            val++;
-        }
-    }
-    catch (const std::bad_any_cast&) 
-    {
-        return ValueErrorTuple();
-    }
-    */
-
     bool stringConcat = !FunctionUtils::isNumber(firstItem) || !FunctionUtils::isNumber(secondItem);
 
     if ((!firstItem.has_value() && FunctionUtils::isNumber(secondItem))
@@ -120,5 +104,5 @@ std::any AdaptiveExpressions_BuiltinFunctions::Add::EvalAdd(std::any a, std::any
 
 void AdaptiveExpressions_BuiltinFunctions::Add::Validator(Expression* expression)
 {
-    FunctionUtils::ValidateArityAndAnyType(expression, 2, INT_MAX, (ReturnType)((int)ReturnType::String | (int)ReturnType::Number));
+    FunctionUtils::ValidateArityAndAnyType(expression, 2, INT_MAX, ReturnType::String | ReturnType::Number);
 }

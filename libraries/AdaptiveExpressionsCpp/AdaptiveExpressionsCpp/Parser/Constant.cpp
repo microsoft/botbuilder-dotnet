@@ -5,13 +5,13 @@
 #include "FunctionUtils.h"
 #include "ExpressionType.h"
 
-Constant::Constant(antlrcpp::Any value) : 
+Constant::Constant(std::any value) : 
     Expression(new ExpressionEvaluator(ExpressionType::Constant, Evaluator()))
 {
-    m_value = value;
+    setValue(value);
 }
 
-antlrcpp::Any Constant::getValue()
+std::any Constant::getValue()
 {
     return m_value;
 }
@@ -25,14 +25,14 @@ EvaluateExpressionLambda Constant::Evaluator()
     };;
 }
 
-void Constant::setValue(antlrcpp::Any value)
+void Constant::setValue(std::any value)
 {
     // Have to figure out how to check if it's an array
-    getEvaluator()->m_returnType =
-        value.is<std::string>() ? ReturnType::String :
-        FunctionUtils::isNumber(value) ? ReturnType::Number :
-        value.is<bool>() ? ReturnType::String :
-        ReturnType::Object;
+    m_evaluator->setReturnType(FunctionUtils::isOfType<std::string>(value) ? ReturnType::String :
+                               FunctionUtils::isNumber(value) ? ReturnType::Number :
+                               FunctionUtils::isOfType<bool>(value) ? ReturnType::String :
+                               // FunctionUtils::isOfType<std::vector<template T>> ? ReturnType::Array :
+                               ReturnType::Object);
 
     m_value = value;
 }

@@ -10,6 +10,8 @@ namespace AdaptiveExpressions_BuiltinFunctions
         static std::any EvalAdd(std::any a, std::any b);
         static ValueErrorTuple ReverseEvaluatorInternal(std::vector<std::any> args);
 
+
+
     private:
         static EvaluateExpressionLambda Evaluator();
         static EvaluateExpressionLambda ReverseEvaluator();

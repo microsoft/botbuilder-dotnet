@@ -8,14 +8,14 @@ class Constant : public Expression
 {
 
 public:
-    Constant(antlrcpp::Any value);
+    Constant(std::any value);
    // ExpressionEvaluator* getEvaluator() override { return Expression::getEvaluator(); }
 
     static EvaluateExpressionLambda Evaluator();
 
-    antlrcpp::Any getValue();
-    void setValue(antlrcpp::Any value);
+    std::any getValue();
+    void setValue(std::any value);
 
 private:
-    antlrcpp::Any m_value;
+    std::any m_value;
 };

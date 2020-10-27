@@ -13,6 +13,7 @@
 #include <any>
 #include <functional>
 #include <algorithm>
+#include "../Parser/ReturnType.h"
 
 class Expression;
 class Constant;

@@ -55,7 +55,7 @@ std::string trimStart(const std::string& s, std::string chars)
     return std::string();
 }
 
-Expression* Expression::ConstantExpression(antlrcpp::Any value)
+Expression* Expression::ConstantExpression(std::any value)
 {
     return new Constant(value);
 }
@@ -100,6 +100,11 @@ void Expression::Validate()
 ExpressionEvaluator* Expression::getEvaluator()
 {
     return m_evaluator;
+}
+
+ReturnType Expression::getReturnType()
+{
+    return m_evaluator->getReturnType();
 }
 
 size_t Expression::getChildrenCount()

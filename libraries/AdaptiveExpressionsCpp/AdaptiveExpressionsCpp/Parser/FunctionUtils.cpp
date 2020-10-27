@@ -17,28 +17,6 @@ bool FunctionUtils::isNumber(antlrcpp::Any value)
     return isInteger(value) || value.is<float>() || value.is<double>();
 }
 
-template<class T>
-inline bool FunctionUtils::isOfType(std::any value)
-{
-    try
-    {
-        std::any_cast<T>(value);
-        return true;
-    }
-    catch (const std::bad_any_cast&)
-    {
-        try
-        {
-            antlrcpp::Any antlrValue = std::any_cast<antlrcpp::Any>(value);
-            return antlrValue.is<T>();
-        }
-        catch (const std::bad_any_cast&)
-        {
-            return false;
-        }
-    }
-}
-
 bool FunctionUtils::isShort(std::any value)
 {
     return isOfType<short>(value) || isOfType<unsigned short>(value);
@@ -234,26 +212,25 @@ EvaluateExpressionLambda FunctionUtils::ApplySequenceWithError(std::function<Val
 
 void FunctionUtils::ValidateArityAndAnyType(Expression* expression, int minArity, int maxArity, ReturnType returnType)
 {
-    /*
-    if (expression->Children.Length < minArity)
+    if (expression->getChildrenCount() < minArity)
     {
-        throw new ArgumentException($"{expression} should have at least {minArity} children.");
+        // throw new ArgumentException($"{expression} should have at least {minArity} children.");
     }
 
-    if (expression.Children.Length > maxArity)
+    if (expression->getChildrenCount() > maxArity)
     {
-        throw new ArgumentException($"{expression} can't have more than {maxArity} children.");
+        // throw new ArgumentException($"{expression} can't have more than {maxArity} children.");
     }
 
-    if ((returnType & ReturnType.Object) == 0)
+    if ((returnType & ReturnType::Object) == 0)
     {
-        foreach(var child in expression.Children)
+        for (int i = 0; i < expression->getChildrenCount(); ++i)
         {
-            if ((child.ReturnType & ReturnType.Object) == 0 && (returnType & child.ReturnType) == 0)
+            Expression* child = expression->getChildAt(i);
+            if ((child->getReturnType() & ReturnType::Object) == 0 && (returnType & child->getReturnType()) == 0)
             {
-                throw new ArgumentException(BuildTypeValidatorError(returnType, child, expression));
+                // throw new ArgumentException(BuildTypeValidatorError(returnType, child, expression));
             }
         }
     }
-    */
 }

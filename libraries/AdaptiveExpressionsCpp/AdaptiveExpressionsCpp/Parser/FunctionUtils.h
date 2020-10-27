@@ -53,6 +53,28 @@ private:
 };
 
 template<class T>
+inline bool FunctionUtils::isOfType(std::any value)
+{
+    try
+    {
+        std::any_cast<T>(value);
+        return true;
+    }
+    catch (const std::bad_any_cast&)
+    {
+        try
+        {
+            antlrcpp::Any antlrValue = std::any_cast<antlrcpp::Any>(value);
+            return antlrValue.is<T>();
+        }
+        catch (const std::bad_any_cast&)
+        {
+            return false;
+        }
+    }
+}
+
+template<class T>
 inline T FunctionUtils::castToType(std::any value, bool& castSuccessful)
 {
     T returnValue{};
