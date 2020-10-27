@@ -7,89 +7,89 @@
 		- length
 
 > Define property entity and optional value for Length property.
-@ ml Length usesFeature LengthPhrases
+@ ml LengthProperty usesFeature LengthPhrases
     - @ dimension dimension
 
 > Define operations on 'Length' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Length usesFeature Length
+	-@ ml LengthProperty usesFeature LengthProperty
 		- @ dimension dimension
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Length usesFeature Length
+	-@ ml LengthProperty usesFeature LengthProperty
 		- @ dimension dimension
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Length usesFeature Length
+	-@ ml LengthProperty usesFeature LengthProperty
 		- @ dimension dimension
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Length usesFeature Length
+	-@ ml LengthProperty usesFeature LengthProperty
 		- @ dimension dimension
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Length usesFeature Length
+	-@ ml LengthProperty usesFeature LengthProperty
 		- @ dimension dimension
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Length usesFeature Length
+	-@ ml LengthProperty usesFeature LengthProperty
 		- @ dimension dimension
 
 
 > Add examples for operations on the 'Length' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Length with dimension
-- {@Length={@dimension=2 feet}}
-- {@Length={@dimension=19 inches}}
-- {@Length={@dimension=2.5 meters}}
-- {@Length={@dimension=200 sq feet}}
-- {@Length={@dimension=2 feet} length}
-- {@Length={@dimension=19 inches} length}
-- {@Length={@dimension=2.5 meters} length}
-- {@Length={@dimension=200 sq feet} length}
+>> entity: Standalone LengthProperty with dimension
+- {@LengthProperty={@dimension=2 feet}}
+- {@LengthProperty={@dimension=19 inches}}
+- {@LengthProperty={@dimension=2.5 meters}}
+- {@LengthProperty={@dimension=200 sq feet}}
+- {@LengthProperty={@dimension=2 feet} length}
+- {@LengthProperty={@dimension=19 inches} length}
+- {@LengthProperty={@dimension=2.5 meters} length}
+- {@LengthProperty={@dimension=200 sq feet} length}
 
->> property: Standalone Length name
-- {@Length=length}
+>> property: Standalone LengthProperty name
+- {@LengthProperty=length}
 
-> Add() examples for Length and dimension
-- {@Add()=add {@Length={@dimension=200 sq feet} length}}
-- {@Add()=add {@Length={@dimension=2.5 meters} length}}
-- {@Add()=add {@Length={@dimension=19 inches} length}}
-- {@Add()=with {@Length={@dimension=2.5 meters}}}
-- {@Add()=with {@Length={@dimension=2 feet}}}
-- {@Add()=with {@Length={@dimension=200 sq feet}}}
-- {@Add()={@Length=length is {@dimension=200 sq feet}}}
-- {@Add()={@Length=length is {@dimension=19 inches}}}
-- {@Add()={@Length=length is {@dimension=2 feet}}}
-- {@Add()={@Length=length of {@dimension=2.5 meters}}}
-- {@Add()={@Length=length of {@dimension=2 feet}}}
-- {@Add()={@Length=length of {@dimension=200 sq feet}}}
+> Add() examples for LengthProperty and dimension
+- {@Add()=add {@LengthProperty={@dimension=200 sq feet} length}}
+- {@Add()=add {@LengthProperty={@dimension=2.5 meters} length}}
+- {@Add()=add {@LengthProperty={@dimension=19 inches} length}}
+- {@Add()=with {@LengthProperty={@dimension=2.5 meters}}}
+- {@Add()=with {@LengthProperty={@dimension=2 feet}}}
+- {@Add()=with {@LengthProperty={@dimension=200 sq feet}}}
+- {@Add()={@LengthProperty=length is {@dimension=200 sq feet}}}
+- {@Add()={@LengthProperty=length is {@dimension=19 inches}}}
+- {@Add()={@LengthProperty=length is {@dimension=2 feet}}}
+- {@Add()={@LengthProperty=length of {@dimension=2.5 meters}}}
+- {@Add()={@LengthProperty=length of {@dimension=2 feet}}}
+- {@Add()={@LengthProperty=length of {@dimension=200 sq feet}}}
 
-> Remove() examples for Length and dimension
-- {@Remove()=remove {@Length={@dimension=2.5 meters}}
-- {@Remove()=remove {@Length={@dimension=2 feet}}
-- {@Remove()=remove {@Length={@dimension=19 inches}}
+> Remove() examples for LengthProperty and dimension
+- {@Remove()=remove {@LengthProperty={@dimension=2.5 meters}}
+- {@Remove()=remove {@LengthProperty={@dimension=2 feet}}
+- {@Remove()=remove {@LengthProperty={@dimension=19 inches}}
 - {@Remove()=with no {@dimension=19 inches} length}
 - {@Remove()=with no {@dimension=2.5 meters} length}
 
-> Clear() examples for Length
-- {@Clear()=clear {@Length=length}}
-- {@Clear()=reset {@Length=length}}
+> Clear() examples for LengthProperty
+- {@Clear()=clear {@LengthProperty=length}}
+- {@Clear()=reset {@LengthProperty=length}}
 
-> Show() examples for Length
-- {@Show()=show {@Length=length}}
-- {@Show()=value of {@Length=length}}
-- {@Show()={@Length=length} values}
-- {@Show()={@Length=length} selection}
+> Show() examples for LengthProperty
+- {@Show()=show {@LengthProperty=length}}
+- {@Show()=value of {@LengthProperty=length}}
+- {@Show()={@LengthProperty=length} values}
+- {@Show()={@LengthProperty=length} selection}
 
-> Help() examples for Length
-- {@Help()=help {@Length=length}}
-- {@Help()=what can I say for {@Length=length}}
-- {@Help()={@Length=length} help}
+> Help() examples for LengthProperty
+- {@Help()=help {@LengthProperty=length}}
+- {@Help()=what can I say for {@LengthProperty=length}}
+- {@Help()={@LengthProperty=length} help}
 
-> Change() examples for Length
-- {@Change()=change {@Length=length}}
-- {@Change()=goto {@Length=length}}
+> Change() examples for LengthProperty
+- {@Change()=change {@LengthProperty=length}}
+- {@Change()=goto {@LengthProperty=length}}
 
 
 

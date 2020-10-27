@@ -210,7 +210,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Azure.Queues", "libraries\Microsoft.Bot.Builder.Azure.Queues\Microsoft.Bot.Builder.Azure.Queues.csproj", "{36641924-DE75-4EA9-B139-87F5330D4A09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.Shared", "tests\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj", "{92F88315-B33B-4D8C-AD8E-9E94CADC867F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Shared", "tests\Microsoft.Bot.Builder.TestBot.Shared\Microsoft.Bot.Builder.TestBot.Shared.csproj", "{92F88315-B33B-4D8C-AD8E-9E94CADC867F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{ABB57A05-A284-40BA-A143-0CFEADE2B630}"
 EndProject
@@ -218,7 +218,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Parse
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{37BA1593-FE3D-4CB9-A040-6CAB7B2D134A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Parsers.LU.Tests", "tests\Parsers\Microsoft.Bot.Builder.Parsers.LU.Tests\Microsoft.Bot.Builder.Parsers.LU.Tests.csproj", "{D7FFAB17-C7BE-490F-A974-584B5E37CF6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Parsers.LU.Tests", "tests\Parsers\Microsoft.Bot.Builder.Parsers.LU.Tests\Microsoft.Bot.Builder.Parsers.LU.Tests.csproj", "{D7FFAB17-C7BE-490F-A974-584B5E37CF6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -852,7 +852,7 @@ Global
 		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{92F88315-B33B-4D8C-AD8E-9E94CADC867F}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-        {C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
@@ -960,7 +960,6 @@ Global
 		{8EDAA935-DAA1-4E00-9596-7E40D8C0F58C} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{36641924-DE75-4EA9-B139-87F5330D4A09} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{92F88315-B33B-4D8C-AD8E-9E94CADC867F} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-        {ABB57A05-A284-40BA-A143-0CFEADE2B630} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C395D6D2-DF99-4FD9-B5C5-04E8BB866509} = {ABB57A05-A284-40BA-A143-0CFEADE2B630}
 		{37BA1593-FE3D-4CB9-A040-6CAB7B2D134A} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D7FFAB17-C7BE-490F-A974-584B5E37CF6D} = {37BA1593-FE3D-4CB9-A040-6CAB7B2D134A}

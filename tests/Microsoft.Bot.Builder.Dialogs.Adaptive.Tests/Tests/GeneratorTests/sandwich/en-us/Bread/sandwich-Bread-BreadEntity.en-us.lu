@@ -1,5 +1,5 @@
 
-> List entity for Bread enum values
+> List entity for BreadProperty enum values
 @ list BreadEntity =
 	- multiGrainWheat:
 		- multi
@@ -23,102 +23,102 @@
 		- bread
 
 > Define property entity and optional value for Bread property.
-@ ml Bread usesFeature BreadPhrases
+@ ml BreadProperty usesFeature BreadPhrases
     - @ BreadEntity BreadEntity
 
 > Define operations on 'Bread' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Bread usesFeature Bread
+	-@ ml BreadProperty usesFeature BreadProperty
 		- @ BreadEntity BreadEntity
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Bread usesFeature Bread
+	-@ ml BreadProperty usesFeature BreadProperty
 		- @ BreadEntity BreadEntity
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Bread usesFeature Bread
+	-@ ml BreadProperty usesFeature BreadProperty
 		- @ BreadEntity BreadEntity
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Bread usesFeature Bread
+	-@ ml BreadProperty usesFeature BreadProperty
 		- @ BreadEntity BreadEntity
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Bread usesFeature Bread
+	-@ ml BreadProperty usesFeature BreadProperty
 		- @ BreadEntity BreadEntity
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Bread usesFeature Bread
+	-@ ml BreadProperty usesFeature BreadProperty
 		- @ BreadEntity BreadEntity
 
 
 > Add examples for operations on the 'Bread' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Bread with BreadEntity
-- {@Bread={@BreadEntity=multi}}
-- {@Bread={@BreadEntity=grain}}
-- {@Bread={@BreadEntity=wheat}}
-- {@Bread={@BreadEntity=multi grain}}
-- {@Bread={@BreadEntity=grain wheat}}
-- {@Bread={@BreadEntity=multi grain wheat}}
-- {@Bread={@BreadEntity=rye}}
-- {@Bread={@BreadEntity=white}}
-- {@Bread={@BreadEntity=whole}}
-- {@Bread={@BreadEntity=whole wheat}}
-- {@Bread={@BreadEntity=multi} bread}
-- {@Bread={@BreadEntity=grain} bread}
-- {@Bread={@BreadEntity=wheat} bread}
-- {@Bread={@BreadEntity=multi grain} bread}
-- {@Bread={@BreadEntity=grain wheat} bread}
-- {@Bread={@BreadEntity=multi grain wheat} bread}
-- {@Bread={@BreadEntity=rye} bread}
-- {@Bread={@BreadEntity=white} bread}
-- {@Bread={@BreadEntity=whole} bread}
-- {@Bread={@BreadEntity=whole wheat} bread}
+>> entity: Standalone BreadProperty with BreadEntity
+- {@BreadProperty={@BreadEntity=multi}}
+- {@BreadProperty={@BreadEntity=grain}}
+- {@BreadProperty={@BreadEntity=wheat}}
+- {@BreadProperty={@BreadEntity=multi grain}}
+- {@BreadProperty={@BreadEntity=grain wheat}}
+- {@BreadProperty={@BreadEntity=multi grain wheat}}
+- {@BreadProperty={@BreadEntity=rye}}
+- {@BreadProperty={@BreadEntity=white}}
+- {@BreadProperty={@BreadEntity=whole}}
+- {@BreadProperty={@BreadEntity=whole wheat}}
+- {@BreadProperty={@BreadEntity=multi} bread}
+- {@BreadProperty={@BreadEntity=grain} bread}
+- {@BreadProperty={@BreadEntity=wheat} bread}
+- {@BreadProperty={@BreadEntity=multi grain} bread}
+- {@BreadProperty={@BreadEntity=grain wheat} bread}
+- {@BreadProperty={@BreadEntity=multi grain wheat} bread}
+- {@BreadProperty={@BreadEntity=rye} bread}
+- {@BreadProperty={@BreadEntity=white} bread}
+- {@BreadProperty={@BreadEntity=whole} bread}
+- {@BreadProperty={@BreadEntity=whole wheat} bread}
 
->> property: Standalone Bread name
-- {@Bread=bread}
+>> property: Standalone BreadProperty name
+- {@BreadProperty=bread}
 
-> Add() examples for Bread and BreadEntity
-- {@Add()=add {@Bread={@BreadEntity=multi grain} bread}}
-- {@Add()=add {@Bread={@BreadEntity=multi} bread}}
-- {@Add()=add {@Bread={@BreadEntity=multi grain wheat} bread}}
-- {@Add()=with {@Bread={@BreadEntity=grain}}}
-- {@Add()=with {@Bread={@BreadEntity=white}}}
-- {@Add()=with {@Bread={@BreadEntity=rye}}}
-- {@Add()={@Bread=bread is {@BreadEntity=multi grain}}}
-- {@Add()={@Bread=bread is {@BreadEntity=whole wheat}}}
-- {@Add()={@Bread=bread is {@BreadEntity=grain wheat}}}
-- {@Add()={@Bread=bread of {@BreadEntity=multi}}}
-- {@Add()={@Bread=bread of {@BreadEntity=white}}}
-- {@Add()={@Bread=bread of {@BreadEntity=whole}}}
+> Add() examples for BreadProperty and BreadEntity
+- {@Add()=add {@BreadProperty={@BreadEntity=multi grain} bread}}
+- {@Add()=add {@BreadProperty={@BreadEntity=multi} bread}}
+- {@Add()=add {@BreadProperty={@BreadEntity=multi grain wheat} bread}}
+- {@Add()=with {@BreadProperty={@BreadEntity=grain}}}
+- {@Add()=with {@BreadProperty={@BreadEntity=white}}}
+- {@Add()=with {@BreadProperty={@BreadEntity=rye}}}
+- {@Add()={@BreadProperty=bread is {@BreadEntity=multi grain}}}
+- {@Add()={@BreadProperty=bread is {@BreadEntity=whole wheat}}}
+- {@Add()={@BreadProperty=bread is {@BreadEntity=grain wheat}}}
+- {@Add()={@BreadProperty=bread of {@BreadEntity=multi}}}
+- {@Add()={@BreadProperty=bread of {@BreadEntity=white}}}
+- {@Add()={@BreadProperty=bread of {@BreadEntity=whole}}}
 
-> Remove() examples for Bread and BreadEntity
-- {@Remove()=remove {@Bread={@BreadEntity=multi grain}}
-- {@Remove()=remove {@Bread={@BreadEntity=multi grain wheat}}
-- {@Remove()=remove {@Bread={@BreadEntity=wheat}}
+> Remove() examples for BreadProperty and BreadEntity
+- {@Remove()=remove {@BreadProperty={@BreadEntity=multi grain}}
+- {@Remove()=remove {@BreadProperty={@BreadEntity=multi grain wheat}}
+- {@Remove()=remove {@BreadProperty={@BreadEntity=wheat}}
 - {@Remove()=with no {@BreadEntity=whole wheat} bread}
 - {@Remove()=with no {@BreadEntity=multi} bread}
 - {@Remove()=with no {@BreadEntity=grain} bread}
 
 > Clear() examples for Bread
-- {@Clear()=clear {@Bread=bread}}
-- {@Clear()=reset {@Bread=bread}}
+- {@Clear()=clear {@BreadProperty=bread}}
+- {@Clear()=reset {@BreadProperty=bread}}
 
 > Show() examples for Bread
-- {@Show()=show {@Bread=bread}}
-- {@Show()=value of {@Bread=bread}}
-- {@Show()={@Bread=bread} values}
-- {@Show()={@Bread=bread} selection}
+- {@Show()=show {@BreadProperty=bread}}
+- {@Show()=value of {@BreadProperty=bread}}
+- {@Show()={@BreadProperty=bread} values}
+- {@Show()={@BreadProperty=bread} selection}
 
 > Help() examples for Bread
-- {@Help()=help {@Bread=bread}}
-- {@Help()=what can I say for {@Bread=bread}}
-- {@Help()={@Bread=bread} help}
+- {@Help()=help {@BreadProperty=bread}}
+- {@Help()=what can I say for {@BreadProperty=bread}}
+- {@Help()={@BreadProperty=bread} help}
 
 > Change() examples for Bread
-- {@Change()=change {@Bread=bread}}
-- {@Change()=goto {@Bread=bread}}
+- {@Change()=change {@BreadProperty=bread}}
+- {@Change()=goto {@BreadProperty=bread}}
 
 
 

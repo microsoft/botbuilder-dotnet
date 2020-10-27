@@ -11,7 +11,7 @@
             "prediction": {
               "entities": {
                 "$instance": {
-                  "Meat": [
+                  "MeatProperty": [
                     {
                       "length": 4,
                       "modelType": "Entity Extractor",
@@ -21,11 +21,11 @@
                       ],
                       "startIndex": 0,
                       "text": "meat",
-                      "type": "Meat"
+                      "type": "MeatProperty"
                     }
                   ]
                 },
-                "Meat": [
+                "MeatProperty": [
                   {}
                 ]
               },

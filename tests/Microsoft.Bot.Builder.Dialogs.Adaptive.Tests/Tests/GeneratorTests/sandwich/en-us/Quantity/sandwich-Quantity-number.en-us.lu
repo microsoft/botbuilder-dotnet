@@ -7,92 +7,92 @@
 		- quantity
 
 > Define property entity and optional value for Quantity property.
-@ ml Quantity usesFeature QuantityPhrases
+@ ml QuantityProperty usesFeature QuantityPhrases
     - @ number number
 
 > Define operations on 'Quantity' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Quantity usesFeature Quantity
+	-@ ml QuantityProperty usesFeature QuantityProperty
 		- @ number number
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Quantity usesFeature Quantity
+	-@ ml QuantityProperty usesFeature QuantityProperty
 		- @ number number
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Quantity usesFeature Quantity
+	-@ ml QuantityProperty usesFeature QuantityProperty
 		- @ number number
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Quantity usesFeature Quantity
+	-@ ml QuantityProperty usesFeature QuantityProperty
 		- @ number number
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Quantity usesFeature Quantity
+	-@ ml QuantityProperty usesFeature QuantityProperty
 		- @ number number
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Quantity usesFeature Quantity
+	-@ ml QuantityProperty usesFeature QuantityProperty
 		- @ number number
 
 
 > Add examples for operations on the 'Quantity' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Quantity with number
-- {@Quantity={@number=1}}
-- {@Quantity={@number=32.4}}
-- {@Quantity={@number=99}}
-- {@Quantity={@number=215}}
-- {@Quantity={@number=1000}}
-- {@Quantity={@number=1} quantity}
-- {@Quantity={@number=32.4} quantity}
-- {@Quantity={@number=99} quantity}
-- {@Quantity={@number=215} quantity}
-- {@Quantity={@number=1000} quantity}
+>> entity: Standalone QuantityProperty with number
+- {@QuantityProperty={@number=1}}
+- {@QuantityProperty={@number=32.4}}
+- {@QuantityProperty={@number=99}}
+- {@QuantityProperty={@number=215}}
+- {@QuantityProperty={@number=1000}}
+- {@QuantityProperty={@number=1} quantity}
+- {@QuantityProperty={@number=32.4} quantity}
+- {@QuantityProperty={@number=99} quantity}
+- {@QuantityProperty={@number=215} quantity}
+- {@QuantityProperty={@number=1000} quantity}
 
->> property: Standalone Quantity name
-- {@Quantity=quantity}
+>> property: Standalone QuantityProperty name
+- {@QuantityProperty=quantity}
 
-> Add() examples for Quantity and number
-- {@Add()=add {@Quantity={@number=32.4} quantity}}
-- {@Add()=add {@Quantity={@number=1} quantity}}
-- {@Add()=add {@Quantity={@number=215} quantity}}
-- {@Add()=with {@Quantity={@number=215}}}
-- {@Add()=with {@Quantity={@number=99}}}
-- {@Add()=with {@Quantity={@number=1000}}}
-- {@Add()={@Quantity=quantity is {@number=99}}}
-- {@Add()={@Quantity=quantity is {@number=215}}}
-- {@Add()={@Quantity=quantity is {@number=32.4}}}
-- {@Add()={@Quantity=quantity of {@number=1}}}
-- {@Add()={@Quantity=quantity of {@number=32.4}}}
-- {@Add()={@Quantity=quantity of {@number=99}}}
+> Add() examples for QuantityProperty and number
+- {@Add()=add {@QuantityProperty={@number=32.4} quantity}}
+- {@Add()=add {@QuantityProperty={@number=1} quantity}}
+- {@Add()=add {@QuantityProperty={@number=215} quantity}}
+- {@Add()=with {@QuantityProperty={@number=215}}}
+- {@Add()=with {@QuantityProperty={@number=99}}}
+- {@Add()=with {@QuantityProperty={@number=1000}}}
+- {@Add()={@QuantityProperty=quantity is {@number=99}}}
+- {@Add()={@QuantityProperty=quantity is {@number=215}}}
+- {@Add()={@QuantityProperty=quantity is {@number=32.4}}}
+- {@Add()={@QuantityProperty=quantity of {@number=1}}}
+- {@Add()={@QuantityProperty=quantity of {@number=32.4}}}
+- {@Add()={@QuantityProperty=quantity of {@number=99}}}
 
-> Remove() examples for Quantity and number
-- {@Remove()=remove {@Quantity={@number=1000}}
-- {@Remove()=remove {@Quantity={@number=32.4}}
-- {@Remove()=remove {@Quantity={@number=1}}
+> Remove() examples for QuantityProperty and number
+- {@Remove()=remove {@QuantityProperty={@number=1000}}
+- {@Remove()=remove {@QuantityProperty={@number=32.4}}
+- {@Remove()=remove {@QuantityProperty={@number=1}}
 - {@Remove()=with no {@number=1} quantity}
 - {@Remove()=with no {@number=32.4} quantity}
 - {@Remove()=with no {@number=215} quantity}
 
-> Clear() examples for Quantity
-- {@Clear()=clear {@Quantity=quantity}}
-- {@Clear()=reset {@Quantity=quantity}}
+> Clear() examples for QuantityProperty
+- {@Clear()=clear {@QuantityProperty=quantity}}
+- {@Clear()=reset {@QuantityProperty=quantity}}
 
-> Show() examples for Quantity
-- {@Show()=show {@Quantity=quantity}}
-- {@Show()=value of {@Quantity=quantity}}
-- {@Show()={@Quantity=quantity} values}
-- {@Show()={@Quantity=quantity} selection}
+> Show() examples for QuantityProperty
+- {@Show()=show {@QuantityProperty=quantity}}
+- {@Show()=value of {@QuantityProperty=quantity}}
+- {@Show()={@QuantityProperty=quantity} values}
+- {@Show()={@QuantityProperty=quantity} selection}
 
-> Help() examples for Quantity
-- {@Help()=help {@Quantity=quantity}}
-- {@Help()=what can I say for {@Quantity=quantity}}
-- {@Help()={@Quantity=quantity} help}
+> Help() examples for QuantityProperty
+- {@Help()=help {@QuantityProperty=quantity}}
+- {@Help()=what can I say for {@QuantityProperty=quantity}}
+- {@Help()={@QuantityProperty=quantity} help}
 
-> Change() examples for Quantity
-- {@Change()=change {@Quantity=quantity}}
-- {@Change()=goto {@Quantity=quantity}}
+> Change() examples for QuantityProperty
+- {@Change()=change {@QuantityProperty=quantity}}
+- {@Change()=goto {@QuantityProperty=quantity}}
 
 
 

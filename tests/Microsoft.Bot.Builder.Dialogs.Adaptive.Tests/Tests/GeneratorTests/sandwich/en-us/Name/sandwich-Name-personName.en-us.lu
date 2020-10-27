@@ -7,87 +7,87 @@
 		- name
 
 > Define property entity and optional value for Name property.
-@ ml Name usesFeature NamePhrases
+@ ml NameProperty usesFeature NamePhrases
     - @ personName personName
 
 > Define operations on 'Name' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Name usesFeature Name
+	-@ ml NameProperty usesFeature NameProperty
 		- @ personName personName
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Name usesFeature Name
+	-@ ml NameProperty usesFeature NameProperty
 		- @ personName personName
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Name usesFeature Name
+	-@ ml NameProperty usesFeature NameProperty
 		- @ personName personName
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Name usesFeature Name
+	-@ ml NameProperty usesFeature NameProperty
 		- @ personName personName
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Name usesFeature Name
+	-@ ml NameProperty usesFeature NameProperty
 		- @ personName personName
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Name usesFeature Name
+	-@ ml NameProperty usesFeature NameProperty
 		- @ personName personName
 
 
 > Add examples for operations on the 'Name' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Name with personName
-- {@Name={@personName=Bart Simpson}}
-- {@Name={@personName=Thomas Matthews}}
-- {@Name={@personName=Christopher Robin}}
-- {@Name={@personName=Bart Simpson} name}
-- {@Name={@personName=Thomas Matthews} name}
-- {@Name={@personName=Christopher Robin} name}
+>> entity: Standalone NameProperty with personName
+- {@NameProperty={@personName=Bart Simpson}}
+- {@NameProperty={@personName=Thomas Matthews}}
+- {@NameProperty={@personName=Christopher Robin}}
+- {@NameProperty={@personName=Bart Simpson} name}
+- {@NameProperty={@personName=Thomas Matthews} name}
+- {@NameProperty={@personName=Christopher Robin} name}
 
->> property: Standalone Name name
-- {@Name=name}
+>> property: Standalone NameProperty name
+- {@NameProperty=name}
 
-> Add() examples for Name and personName
-- {@Add()=add {@Name={@personName=Christopher Robin} name}}
-- {@Add()=add {@Name={@personName=Bart Simpson} name}}
-- {@Add()=add {@Name={@personName=Thomas Matthews} name}}
-- {@Add()=with {@Name={@personName=Christopher Robin}}}
-- {@Add()=with {@Name={@personName=Thomas Matthews}}}
-- {@Add()={@Name=name is {@personName=Thomas Matthews}}}
-- {@Add()={@Name=name is {@personName=Christopher Robin}}}
-- {@Add()={@Name=name is {@personName=Bart Simpson}}}
-- {@Add()={@Name=name of {@personName=Bart Simpson}}}
-- {@Add()={@Name=name of {@personName=Thomas Matthews}}}
-- {@Add()={@Name=name of {@personName=Christopher Robin}}}
+> Add() examples for NameProperty and personName
+- {@Add()=add {@NameProperty={@personName=Christopher Robin} name}}
+- {@Add()=add {@NameProperty={@personName=Bart Simpson} name}}
+- {@Add()=add {@NameProperty={@personName=Thomas Matthews} name}}
+- {@Add()=with {@NameProperty={@personName=Christopher Robin}}}
+- {@Add()=with {@NameProperty={@personName=Thomas Matthews}}}
+- {@Add()={@NameProperty=name is {@personName=Thomas Matthews}}}
+- {@Add()={@NameProperty=name is {@personName=Christopher Robin}}}
+- {@Add()={@NameProperty=name is {@personName=Bart Simpson}}}
+- {@Add()={@NameProperty=name of {@personName=Bart Simpson}}}
+- {@Add()={@NameProperty=name of {@personName=Thomas Matthews}}}
+- {@Add()={@NameProperty=name of {@personName=Christopher Robin}}}
 
-> Remove() examples for Name and personName
-- {@Remove()=remove {@Name={@personName=Bart Simpson}}
-- {@Remove()=remove {@Name={@personName=Christopher Robin}}
-- {@Remove()=remove {@Name={@personName=Thomas Matthews}}
+> Remove() examples for NameProperty and personName
+- {@Remove()=remove {@NameProperty={@personName=Bart Simpson}}
+- {@Remove()=remove {@NameProperty={@personName=Christopher Robin}}
+- {@Remove()=remove {@NameProperty={@personName=Thomas Matthews}}
 - {@Remove()=with no {@personName=Bart Simpson} name}
 - {@Remove()=with no {@personName=Christopher Robin} name}
 - {@Remove()=with no {@personName=Thomas Matthews} name}
 
-> Clear() examples for Name
-- {@Clear()=clear {@Name=name}}
-- {@Clear()=reset {@Name=name}}
+> Clear() examples for NameProperty
+- {@Clear()=clear {@NameProperty=name}}
+- {@Clear()=reset {@NameProperty=name}}
 
-> Show() examples for Name
-- {@Show()=show {@Name=name}}
-- {@Show()=value of {@Name=name}}
-- {@Show()={@Name=name} values}
-- {@Show()={@Name=name} selection}
+> Show() examples for NameProperty
+- {@Show()=show {@NameProperty=name}}
+- {@Show()=value of {@NameProperty=name}}
+- {@Show()={@NameProperty=name} values}
+- {@Show()={@NameProperty=name} selection}
 
-> Help() examples for Name
-- {@Help()=help {@Name=name}}
-- {@Help()=what can I say for {@Name=name}}
-- {@Help()={@Name=name} help}
+> Help() examples for NameProperty
+- {@Help()=help {@NameProperty=name}}
+- {@Help()=what can I say for {@NameProperty=name}}
+- {@Help()={@NameProperty=name} help}
 
-> Change() examples for Name
-- {@Change()=change {@Name=name}}
-- {@Change()=goto {@Name=name}}
+> Change() examples for NameProperty
+- {@Change()=change {@NameProperty=name}}
+- {@Change()=goto {@NameProperty=name}}
 
 
 
