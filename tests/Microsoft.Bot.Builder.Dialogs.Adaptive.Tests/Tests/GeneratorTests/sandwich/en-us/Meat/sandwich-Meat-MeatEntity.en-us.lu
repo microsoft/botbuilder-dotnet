@@ -1,5 +1,5 @@
 
-> List entity for Meat enum values
+> List entity for MeatProperty enum values
 @ list MeatEntity =
 	- bacon:
 		- bacon
@@ -28,106 +28,106 @@
 		- meat
 
 > Define property entity and optional value for Meat property.
-@ ml Meat usesFeature MeatPhrases
+@ ml MeatProperty usesFeature MeatPhrases
     - @ MeatEntity MeatEntity
 
 > Define operations on 'Meat' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Meat usesFeature Meat
+	-@ ml MeatProperty usesFeature MeatProperty
 		- @ MeatEntity MeatEntity
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Meat usesFeature Meat
+	-@ ml MeatProperty usesFeature MeatProperty
 		- @ MeatEntity MeatEntity
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Meat usesFeature Meat
+	-@ ml MeatProperty usesFeature MeatProperty
 		- @ MeatEntity MeatEntity
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Meat usesFeature Meat
+	-@ ml MeatProperty usesFeature MeatProperty
 		- @ MeatEntity MeatEntity
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Meat usesFeature Meat
+	-@ ml MeatProperty usesFeature MeatProperty
 		- @ MeatEntity MeatEntity
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Meat usesFeature Meat
+	-@ ml MeatProperty usesFeature MeatProperty
 		- @ MeatEntity MeatEntity
 
 
 > Add examples for operations on the 'Meat' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Meat with MeatEntity
-- {@Meat={@MeatEntity=bacon}}
-- {@Meat={@MeatEntity=chicken}}
-- {@Meat={@MeatEntity=ham}}
-- {@Meat={@MeatEntity=pulled}}
-- {@Meat={@MeatEntity=pork}}
-- {@Meat={@MeatEntity=pulled pork}}
-- {@Meat={@MeatEntity=roast}}
-- {@Meat={@MeatEntity=beef}}
-- {@Meat={@MeatEntity=roast beef}}
-- {@Meat={@MeatEntity=salami}}
-- {@Meat={@MeatEntity=turkey}}
-- {@Meat={@MeatEntity=none}}
-- {@Meat={@MeatEntity=bacon} meat}
-- {@Meat={@MeatEntity=chicken} meat}
-- {@Meat={@MeatEntity=ham} meat}
-- {@Meat={@MeatEntity=pulled} meat}
-- {@Meat={@MeatEntity=pork} meat}
-- {@Meat={@MeatEntity=pulled pork} meat}
-- {@Meat={@MeatEntity=roast} meat}
-- {@Meat={@MeatEntity=beef} meat}
-- {@Meat={@MeatEntity=roast beef} meat}
-- {@Meat={@MeatEntity=salami} meat}
-- {@Meat={@MeatEntity=turkey} meat}
-- {@Meat={@MeatEntity=none} meat}
+>> entity: Standalone MeatProperty with MeatEntity
+- {@MeatProperty={@MeatEntity=bacon}}
+- {@MeatProperty={@MeatEntity=chicken}}
+- {@MeatProperty={@MeatEntity=ham}}
+- {@MeatProperty={@MeatEntity=pulled}}
+- {@MeatProperty={@MeatEntity=pork}}
+- {@MeatProperty={@MeatEntity=pulled pork}}
+- {@MeatProperty={@MeatEntity=roast}}
+- {@MeatProperty={@MeatEntity=beef}}
+- {@MeatProperty={@MeatEntity=roast beef}}
+- {@MeatProperty={@MeatEntity=salami}}
+- {@MeatProperty={@MeatEntity=turkey}}
+- {@MeatProperty={@MeatEntity=none}}
+- {@MeatProperty={@MeatEntity=bacon} meat}
+- {@MeatProperty={@MeatEntity=chicken} meat}
+- {@MeatProperty={@MeatEntity=ham} meat}
+- {@MeatProperty={@MeatEntity=pulled} meat}
+- {@MeatProperty={@MeatEntity=pork} meat}
+- {@MeatProperty={@MeatEntity=pulled pork} meat}
+- {@MeatProperty={@MeatEntity=roast} meat}
+- {@MeatProperty={@MeatEntity=beef} meat}
+- {@MeatProperty={@MeatEntity=roast beef} meat}
+- {@MeatProperty={@MeatEntity=salami} meat}
+- {@MeatProperty={@MeatEntity=turkey} meat}
+- {@MeatProperty={@MeatEntity=none} meat}
 
->> property: Standalone Meat name
-- {@Meat=meat}
+>> property: Standalone MeatProperty name
+- {@MeatProperty=meat}
 
-> Add() examples for Meat and MeatEntity
-- {@Add()=add {@Meat={@MeatEntity=roast} meat}}
-- {@Add()=add {@Meat={@MeatEntity=none} meat}}
-- {@Add()=add {@Meat={@MeatEntity=chicken} meat}}
-- {@Add()=with {@Meat={@MeatEntity=salami}}}
-- {@Add()=with {@Meat={@MeatEntity=roast beef}}}
-- {@Add()=with {@Meat={@MeatEntity=pulled}}}
-- {@Add()={@Meat=meat is {@MeatEntity=beef}}}
-- {@Add()={@Meat=meat is {@MeatEntity=roast beef}}}
-- {@Add()={@Meat=meat is {@MeatEntity=pulled}}}
-- {@Add()={@Meat=meat of {@MeatEntity=turkey}}}
-- {@Add()={@Meat=meat of {@MeatEntity=roast}}}
-- {@Add()={@Meat=meat of {@MeatEntity=chicken}}}
+> Add() examples for MeatProperty and MeatEntity
+- {@Add()=add {@MeatProperty={@MeatEntity=roast} meat}}
+- {@Add()=add {@MeatProperty={@MeatEntity=none} meat}}
+- {@Add()=add {@MeatProperty={@MeatEntity=chicken} meat}}
+- {@Add()=with {@MeatProperty={@MeatEntity=salami}}}
+- {@Add()=with {@MeatProperty={@MeatEntity=roast beef}}}
+- {@Add()=with {@MeatProperty={@MeatEntity=pulled}}}
+- {@Add()={@MeatProperty=meat is {@MeatEntity=beef}}}
+- {@Add()={@MeatProperty=meat is {@MeatEntity=roast beef}}}
+- {@Add()={@MeatProperty=meat is {@MeatEntity=pulled}}}
+- {@Add()={@MeatProperty=meat of {@MeatEntity=turkey}}}
+- {@Add()={@MeatProperty=meat of {@MeatEntity=roast}}}
+- {@Add()={@MeatProperty=meat of {@MeatEntity=chicken}}}
 
-> Remove() examples for Meat and MeatEntity
-- {@Remove()=remove {@Meat={@MeatEntity=pulled}}
-- {@Remove()=remove {@Meat={@MeatEntity=ham}}
-- {@Remove()=remove {@Meat={@MeatEntity=pork}}
+> Remove() examples for MeatProperty and MeatEntity
+- {@Remove()=remove {@MeatProperty={@MeatEntity=pulled}}
+- {@Remove()=remove {@MeatProperty={@MeatEntity=ham}}
+- {@Remove()=remove {@MeatProperty={@MeatEntity=pork}}
 - {@Remove()=with no {@MeatEntity=ham} meat}
 - {@Remove()=with no {@MeatEntity=pulled pork} meat}
 - {@Remove()=with no {@MeatEntity=none} meat}
 
-> Clear() examples for Meat
-- {@Clear()=clear {@Meat=meat}}
-- {@Clear()=reset {@Meat=meat}}
+> Clear() examples for MeatProperty
+- {@Clear()=clear {@MeatProperty=meat}}
+- {@Clear()=reset {@MeatProperty=meat}}
 
-> Show() examples for Meat
-- {@Show()=show {@Meat=meat}}
-- {@Show()=value of {@Meat=meat}}
-- {@Show()={@Meat=meat} values}
-- {@Show()={@Meat=meat} selection}
+> Show() examples for MeatProperty
+- {@Show()=show {@MeatProperty=meat}}
+- {@Show()=value of {@MeatProperty=meat}}
+- {@Show()={@MeatProperty=meat} values}
+- {@Show()={@MeatProperty=meat} selection}
 
-> Help() examples for Meat
-- {@Help()=help {@Meat=meat}}
-- {@Help()=what can I say for {@Meat=meat}}
-- {@Help()={@Meat=meat} help}
+> Help() examples for MeatProperty
+- {@Help()=help {@MeatProperty=meat}}
+- {@Help()=what can I say for {@MeatProperty=meat}}
+- {@Help()={@MeatProperty=meat} help}
 
-> Change() examples for Meat
-- {@Change()=change {@Meat=meat}}
-- {@Change()=goto {@Meat=meat}}
+> Change() examples for MeatProperty
+- {@Change()=change {@MeatProperty=meat}}
+- {@Change()=goto {@MeatProperty=meat}}
 
 
 

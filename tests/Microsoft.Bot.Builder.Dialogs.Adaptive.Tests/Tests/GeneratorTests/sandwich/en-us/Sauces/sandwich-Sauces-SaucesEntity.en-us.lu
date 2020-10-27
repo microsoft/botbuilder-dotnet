@@ -18,142 +18,142 @@
 		- vinegar
 
 
-> Define phrase list for Sauces property.
+> Define phrase list for SaucesProperty.
 @ phraselist SaucesPhrases(interchangeable)=
 		- sauces
 
-> Define property entity and optional value for Sauces property.
-@ ml Sauces usesFeature SaucesPhrases
+> Define property entity and optional value for SaucesProperty.
+@ ml SaucesProperty usesFeature SaucesPhrases
     - @ SaucesEntity SaucesEntity
 
 > Define operations on 'Sauces' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Sauces usesFeature Sauces
+	-@ ml SaucesProperty usesFeature SaucesProperty
 		- @ SaucesEntity SaucesEntity
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Sauces usesFeature Sauces
+	-@ ml SaucesProperty usesFeature SaucesProperty
 		- @ SaucesEntity SaucesEntity
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Sauces usesFeature Sauces
+	-@ ml SaucesProperty usesFeature SaucesProperty
 		- @ SaucesEntity SaucesEntity
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Sauces usesFeature Sauces
+	-@ ml SaucesProperty usesFeature SaucesProperty
 		- @ SaucesEntity SaucesEntity
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Sauces usesFeature Sauces
+	-@ ml SaucesProperty usesFeature SaucesProperty
 		- @ SaucesEntity SaucesEntity
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Sauces usesFeature Sauces
+	-@ ml SaucesProperty usesFeature SaucesProperty
 		- @ SaucesEntity SaucesEntity
 
 
 > Add examples for operations on the 'Sauces' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Sauces with SaucesEntity
-- {@Sauces={@SaucesEntity=pepper}}
-- {@Sauces={@SaucesEntity=salt}}
-- {@Sauces={@SaucesEntity=yellow}}
-- {@Sauces={@SaucesEntity=mustard}}
-- {@Sauces={@SaucesEntity=yellow mustard}}
-- {@Sauces={@SaucesEntity=dijon}}
-- {@Sauces={@SaucesEntity=dijon mustard}}
-- {@Sauces={@SaucesEntity=mayo}}
-- {@Sauces={@SaucesEntity=vinegar}}
-- {@Sauces={@SaucesEntity=pepper} sauces}
-- {@Sauces={@SaucesEntity=salt} sauces}
-- {@Sauces={@SaucesEntity=yellow} sauces}
-- {@Sauces={@SaucesEntity=mustard} sauces}
-- {@Sauces={@SaucesEntity=yellow mustard} sauces}
-- {@Sauces={@SaucesEntity=dijon} sauces}
-- {@Sauces={@SaucesEntity=dijon mustard} sauces}
-- {@Sauces={@SaucesEntity=mayo} sauces}
-- {@Sauces={@SaucesEntity=vinegar} sauces}
+>> entity: Standalone SaucesProperty with SaucesEntity
+- {@SaucesProperty={@SaucesEntity=pepper}}
+- {@SaucesProperty={@SaucesEntity=salt}}
+- {@SaucesProperty={@SaucesEntity=yellow}}
+- {@SaucesProperty={@SaucesEntity=mustard}}
+- {@SaucesProperty={@SaucesEntity=yellow mustard}}
+- {@SaucesProperty={@SaucesEntity=dijon}}
+- {@SaucesProperty={@SaucesEntity=dijon mustard}}
+- {@SaucesProperty={@SaucesEntity=mayo}}
+- {@SaucesProperty={@SaucesEntity=vinegar}}
+- {@SaucesProperty={@SaucesEntity=pepper} sauces}
+- {@SaucesProperty={@SaucesEntity=salt} sauces}
+- {@SaucesProperty={@SaucesEntity=yellow} sauces}
+- {@SaucesProperty={@SaucesEntity=mustard} sauces}
+- {@SaucesProperty={@SaucesEntity=yellow mustard} sauces}
+- {@SaucesProperty={@SaucesEntity=dijon} sauces}
+- {@SaucesProperty={@SaucesEntity=dijon mustard} sauces}
+- {@SaucesProperty={@SaucesEntity=mayo} sauces}
+- {@SaucesProperty={@SaucesEntity=vinegar} sauces}
 
->> property: Standalone Sauces name
-- {@Sauces=sauces}
+>> property: Standalone SaucesProperty name
+- {@SaucesProperty=sauces}
 
-> Add() examples for Sauces and SaucesEntity
-- {@Add()=add {@Sauces={@SaucesEntity=vinegar} sauces}}
-- {@Add()=add {@Sauces={@SaucesEntity=mayo} sauces}}
-- {@Add()=add {@Sauces={@SaucesEntity=dijon mustard} sauces}}
-- {@Add()=with {@Sauces={@SaucesEntity=mayo}}}
-- {@Add()=with {@Sauces={@SaucesEntity=pepper}}}
-- {@Add()=with {@Sauces={@SaucesEntity=yellow mustard}}}
-- {@Add()={@Sauces=sauces is {@SaucesEntity=vinegar}}}
-- {@Add()={@Sauces=sauces is {@SaucesEntity=mustard}}}
-- {@Add()={@Sauces=sauces is {@SaucesEntity=dijon mustard}}}
-- {@Add()={@Sauces=sauces of {@SaucesEntity=vinegar}}}
-- {@Add()={@Sauces=sauces of {@SaucesEntity=mayo}}}
-- {@Add()={@Sauces=sauces of {@SaucesEntity=yellow mustard}}}
+> Add() examples for SaucesProperty and SaucesEntity
+- {@Add()=add {@SaucesProperty={@SaucesEntity=vinegar} sauces}}
+- {@Add()=add {@SaucesProperty={@SaucesEntity=mayo} sauces}}
+- {@Add()=add {@SaucesProperty={@SaucesEntity=dijon mustard} sauces}}
+- {@Add()=with {@SaucesProperty={@SaucesEntity=mayo}}}
+- {@Add()=with {@SaucesProperty={@SaucesEntity=pepper}}}
+- {@Add()=with {@SaucesProperty={@SaucesEntity=yellow mustard}}}
+- {@Add()={@SaucesProperty=sauces is {@SaucesEntity=vinegar}}}
+- {@Add()={@SaucesProperty=sauces is {@SaucesEntity=mustard}}}
+- {@Add()={@SaucesProperty=sauces is {@SaucesEntity=dijon mustard}}}
+- {@Add()={@SaucesProperty=sauces of {@SaucesEntity=vinegar}}}
+- {@Add()={@SaucesProperty=sauces of {@SaucesEntity=mayo}}}
+- {@Add()={@SaucesProperty=sauces of {@SaucesEntity=yellow mustard}}}
 
 > Add() examples with multiple SaucesEntity
-- {@Add()={@Sauces=sauces are {@SaucesEntity=mustard}}}
-- {@Add()={@Sauces=sauces are {@SaucesEntity=vinegar}}}
-- {@Add()={@Sauces=sauces are {@SaucesEntity=dijon}}}
-- {@Add()=add {@Sauces={@SaucesEntity=dijon mustard} and {@SaucesEntity=dijon mustard} sauces}
-- {@Add()=add {@Sauces={@SaucesEntity=yellow} and {@SaucesEntity=mayo} sauces}
-- {@Add()=add {@Sauces={@SaucesEntity=salt} and {@SaucesEntity=salt} sauces}
-- {@Add()=set {@Sauces={@SaucesEntity=salt} and {@SaucesEntity=pepper}}
-- {@Add()=set {@Sauces={@SaucesEntity=pepper} and {@SaucesEntity=dijon mustard}}
-- {@Add()=set {@Sauces={@SaucesEntity=mustard} and {@SaucesEntity=mustard}}
-- {@Add()=with {@Sauces={@SaucesEntity=pepper}, {@SaucesEntity=dijon} and {@SaucesEntity=yellow mustard} sauces}
-- {@Add()=with {@Sauces={@SaucesEntity=vinegar}, {@SaucesEntity=mustard} and {@SaucesEntity=dijon mustard} sauces}
-- {@Add()=with {@Sauces={@SaucesEntity=salt}, {@SaucesEntity=salt} and {@SaucesEntity=dijon mustard} sauces}
-- {@Add()=add {@Sauces={@SaucesEntity=pepper}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=dijon}} 
-- {@Add()=add {@Sauces={@SaucesEntity=dijon mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=vinegar}} 
-- {@Add()=add {@Sauces={@SaucesEntity=yellow mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=mustard}} 
-- {@Add()={@Sauces=sauces are {@SaucesEntity=mayo} and {@SaucesEntity=vinegar}}}
-- {@Add()={@Sauces=sauces are {@SaucesEntity=pepper} and {@SaucesEntity=dijon}}}
-- {@Add()={@Sauces=sauces are {@SaucesEntity=yellow} and {@SaucesEntity=dijon mustard}}}
-- {@Add()={@Sauces=sauces of {@SaucesEntity=yellow mustard}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow mustard}}}
-- {@Add()={@Sauces=sauces of {@SaucesEntity=dijon mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=mayo}}}
-- {@Add()={@Sauces=sauces of {@SaucesEntity=mustard}, {@SaucesEntity=mayo} and {@SaucesEntity=mayo}}}
+- {@Add()={@SaucesProperty=sauces are {@SaucesEntity=mustard}}}
+- {@Add()={@SaucesProperty=sauces are {@SaucesEntity=vinegar}}}
+- {@Add()={@SaucesProperty=sauces are {@SaucesEntity=dijon}}}
+- {@Add()=add {@SaucesProperty={@SaucesEntity=dijon mustard} and {@SaucesEntity=dijon mustard} sauces}
+- {@Add()=add {@SaucesProperty={@SaucesEntity=yellow} and {@SaucesEntity=mayo} sauces}
+- {@Add()=add {@SaucesProperty={@SaucesEntity=salt} and {@SaucesEntity=salt} sauces}
+- {@Add()=set {@SaucesProperty={@SaucesEntity=salt} and {@SaucesEntity=pepper}}
+- {@Add()=set {@SaucesProperty={@SaucesEntity=pepper} and {@SaucesEntity=dijon mustard}}
+- {@Add()=set {@SaucesProperty={@SaucesEntity=mustard} and {@SaucesEntity=mustard}}
+- {@Add()=with {@SaucesProperty={@SaucesEntity=pepper}, {@SaucesEntity=dijon} and {@SaucesEntity=yellow mustard} sauces}
+- {@Add()=with {@SaucesProperty={@SaucesEntity=vinegar}, {@SaucesEntity=mustard} and {@SaucesEntity=dijon mustard} sauces}
+- {@Add()=with {@SaucesProperty={@SaucesEntity=salt}, {@SaucesEntity=salt} and {@SaucesEntity=dijon mustard} sauces}
+- {@Add()=add {@SaucesProperty={@SaucesEntity=pepper}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=dijon}} 
+- {@Add()=add {@SaucesProperty={@SaucesEntity=dijon mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=vinegar}} 
+- {@Add()=add {@SaucesProperty={@SaucesEntity=yellow mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=mustard}} 
+- {@Add()={@SaucesProperty=sauces are {@SaucesEntity=mayo} and {@SaucesEntity=vinegar}}}
+- {@Add()={@SaucesProperty=sauces are {@SaucesEntity=pepper} and {@SaucesEntity=dijon}}}
+- {@Add()={@SaucesProperty=sauces are {@SaucesEntity=yellow} and {@SaucesEntity=dijon mustard}}}
+- {@Add()={@SaucesProperty=sauces of {@SaucesEntity=yellow mustard}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=yellow mustard}}}
+- {@Add()={@SaucesProperty=sauces of {@SaucesEntity=dijon mustard}, {@SaucesEntity=vinegar} and {@SaucesEntity=mayo}}}
+- {@Add()={@SaucesProperty=sauces of {@SaucesEntity=mustard}, {@SaucesEntity=mayo} and {@SaucesEntity=mayo}}}
 
-> Remove() examples for Sauces and SaucesEntity
-- {@Remove()=remove {@Sauces={@SaucesEntity=pepper}}
-- {@Remove()=remove {@Sauces={@SaucesEntity=dijon}}
-- {@Remove()=remove {@Sauces={@SaucesEntity=mustard}}
+> Remove() examples for SaucesProperty and SaucesEntity
+- {@Remove()=remove {@SaucesProperty={@SaucesEntity=pepper}}
+- {@Remove()=remove {@SaucesProperty={@SaucesEntity=dijon}}
+- {@Remove()=remove {@SaucesProperty={@SaucesEntity=mustard}}
 - {@Remove()=with no {@SaucesEntity=yellow mustard} sauces}
 - {@Remove()=with no {@SaucesEntity=mustard} sauces}
 - {@Remove()=with no {@SaucesEntity=yellow} sauces}
 
-> Remove() examples for Sauces and 2-3 SaucesEntity
-- {@Remove()=delete {@Sauces={@SaucesEntity=salt} and {@SaucesEntity=pepper}}}
-- {@Remove()=delete {@Sauces={@SaucesEntity=mustard} and {@SaucesEntity=mustard}}}
-- {@Remove()=delete {@Sauces={@SaucesEntity=dijon mustard} and {@SaucesEntity=mayo}}}
-- {@Remove()=without {@Sauces={@SaucesEntity=yellow}, {@SaucesEntity=salt} and {@SaucesEntity=salt}}}
-- {@Remove()=without {@Sauces={@SaucesEntity=vinegar}, {@SaucesEntity=vinegar} and {@SaucesEntity=vinegar}}}
-- {@Remove()=without {@Sauces={@SaucesEntity=dijon}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=mayo}}}
-- {@Remove()=remove {@Sauces={@SaucesEntity=salt} and {@SaucesEntity=mustard} sauces}}
-- {@Remove()=remove {@Sauces={@SaucesEntity=yellow mustard} and {@SaucesEntity=dijon mustard} sauces}}
-- {@Remove()=remove {@Sauces={@SaucesEntity=vinegar} and {@SaucesEntity=mayo} sauces}}
-- {@Remove()=delete {@Sauces={@SaucesEntity=dijon mustard}, {@SaucesEntity=mustard} and {@SaucesEntity=dijon} sauces}}
-- {@Remove()=delete {@Sauces={@SaucesEntity=vinegar}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=yellow mustard} sauces}}
-- {@Remove()=delete {@Sauces={@SaucesEntity=vinegar}, {@SaucesEntity=yellow} and {@SaucesEntity=yellow mustard} sauces}}
+> Remove() examples for SaucesProperty and 2-3 SaucesEntity
+- {@Remove()=delete {@SaucesProperty={@SaucesEntity=salt} and {@SaucesEntity=pepper}}}
+- {@Remove()=delete {@SaucesProperty={@SaucesEntity=mustard} and {@SaucesEntity=mustard}}}
+- {@Remove()=delete {@SaucesProperty={@SaucesEntity=dijon mustard} and {@SaucesEntity=mayo}}}
+- {@Remove()=without {@SaucesProperty={@SaucesEntity=yellow}, {@SaucesEntity=salt} and {@SaucesEntity=salt}}}
+- {@Remove()=without {@SaucesProperty={@SaucesEntity=vinegar}, {@SaucesEntity=vinegar} and {@SaucesEntity=vinegar}}}
+- {@Remove()=without {@SaucesProperty={@SaucesEntity=dijon}, {@SaucesEntity=dijon mustard} and {@SaucesEntity=mayo}}}
+- {@Remove()=remove {@SaucesProperty={@SaucesEntity=salt} and {@SaucesEntity=mustard} sauces}}
+- {@Remove()=remove {@SaucesProperty={@SaucesEntity=yellow mustard} and {@SaucesEntity=dijon mustard} sauces}}
+- {@Remove()=remove {@SaucesProperty={@SaucesEntity=vinegar} and {@SaucesEntity=mayo} sauces}}
+- {@Remove()=delete {@SaucesProperty={@SaucesEntity=dijon mustard}, {@SaucesEntity=mustard} and {@SaucesEntity=dijon} sauces}}
+- {@Remove()=delete {@SaucesProperty={@SaucesEntity=vinegar}, {@SaucesEntity=yellow mustard} and {@SaucesEntity=yellow mustard} sauces}}
+- {@Remove()=delete {@SaucesProperty={@SaucesEntity=vinegar}, {@SaucesEntity=yellow} and {@SaucesEntity=yellow mustard} sauces}}
 
-> Clear() examples for Sauces
-- {@Clear()=clear {@Sauces=sauces}}
-- {@Clear()=reset {@Sauces=sauces}}
+> Clear() examples for SaucesProperty
+- {@Clear()=clear {@SaucesProperty=sauces}}
+- {@Clear()=reset {@SaucesProperty=sauces}}
 
-> Show() examples for Sauces
-- {@Show()=show {@Sauces=sauces}}
-- {@Show()=value of {@Sauces=sauces}}
-- {@Show()={@Sauces=sauces} values}
-- {@Show()={@Sauces=sauces} selection}
+> Show() examples for SaucesProperty
+- {@Show()=show {@SaucesProperty=sauces}}
+- {@Show()=value of {@SaucesProperty=sauces}}
+- {@Show()={@SaucesProperty=sauces} values}
+- {@Show()={@SaucesProperty=sauces} selection}
 
-> Help() examples for Sauces
-- {@Help()=help {@Sauces=sauces}}
-- {@Help()=what can I say for {@Sauces=sauces}}
-- {@Help()={@Sauces=sauces} help}
+> Help() examples for SaucesProperty
+- {@Help()=help {@SaucesProperty=sauces}}
+- {@Help()=what can I say for {@SaucesProperty=sauces}}
+- {@Help()={@SaucesProperty=sauces} help}
 
-> Change() examples for Sauces
-- {@Change()=change {@Sauces=sauces}}
-- {@Change()=goto {@Sauces=sauces}}
+> Change() examples for SaucesProperty
+- {@Change()=change {@SaucesProperty=sauces}}
+- {@Change()=goto {@SaucesProperty=sauces}}
 
 
 
