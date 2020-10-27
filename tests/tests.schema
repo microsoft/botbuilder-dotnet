@@ -3904,10 +3904,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"

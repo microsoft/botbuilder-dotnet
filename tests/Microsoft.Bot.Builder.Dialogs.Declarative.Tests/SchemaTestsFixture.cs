@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var mergeCommand = $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o {schemaPath}";
                 var error = RunCommand(mergeCommand);
 
-                // Check if there were any errors of if the new schema file has changed.
+                // Check if there were any errors or if the new schema file has changed.
                 var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
                 if (error.Length != 0 || !newSchema.Equals(oldSchema))
                 {
