@@ -498,10 +498,15 @@ namespace AdaptiveExpressions.Tests
             Test("one > 0? one : two", 1),
             Test("hello * 5?'r1':'r2'", "r2"),
             Test("timestampObj < timestampObj2", false),
+            Test("timestampObj2 < timestampObj", true),
             Test("timestampObj > timestampObj2", true),
+            Test("timestampObj2 > timestampObj", false),
             Test("timestampObj >= timestampObj2", true),
+            Test("timestampObj2 >= timestampObj", false),
             Test("timestampObj <= timestampObj2", false),
+            Test("timestampObj2 <= timestampObj", true),
             Test("timestampObj == timestampObj2", false),
+            Test("timestampObj == timestampObj", true),
             #endregion
 
             #region  String functions test
