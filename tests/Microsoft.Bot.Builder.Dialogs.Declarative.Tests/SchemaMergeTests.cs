@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
@@ -20,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// </summary>
     public class SchemaMergeTests : IClassFixture<SchemaTestsFixture>
     {
-        private readonly SchemaTestsFixture _fixture;
+        private readonly SchemaTestsFixture _schemaTestsFixture;
 
         /// <summary>
         /// Initializes static members of the <see cref="SchemaMergeTests"/> class.
@@ -52,9 +51,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 });
         }
 
-        public SchemaMergeTests(SchemaTestsFixture fixture)
+        public SchemaMergeTests(SchemaTestsFixture schemaTestsFixture)
         {
-            _fixture = fixture;
+            _schemaTestsFixture = schemaTestsFixture;
         }
 
         public static IEnumerable<object[]> Dialogs { get; }
@@ -74,32 +73,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var jObj = (JObject)jToken;
             var schema = jObj["$schema"]?.ToString();
 
+            // everything should have $schema
+            Assert.NotNull(schema);
+
+            if (schema.StartsWith("http"))
+            {
+                // NOTE: Some schemas are not local.  We don't validate against those because they often depend on the SDK itself
+                return;
+            }
+
+            var folder = Path.GetDirectoryName(fileResource.FullName);
+            Assert.True(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
+
+            // NOTE: Microsoft.SendActivity in the first file fails validation even though it is valid, same as Microsoft.StaticActivityTemplate on the last two.
+            // Bug filed with Newtonsoft: https://stackoverflow.com/questions/63493078/why-does-validation-fail-in-code-but-work-in-newtonsoft-web-validator
+            var omit = new List<string>
+            {
+                "Action_SendActivity.test.dialog",
+                "Action_BeginSkill.test.dialog",
+                "Action_BeginSkillEndDialog.test.dialog"
+            };
+            if (omit.Any(e => fileResource.FullName.Contains(e)))
+            {
+                // schema is in the omit list, end the test.
+                return;
+            }
+
             try
             {
-                // everything should have $schema
-                Assert.NotNull(schema);
-
-                var folder = Path.GetDirectoryName(fileResource.FullName);
-
-                // NOTE: Some schemas are not local.  We don't validate against those because they often depend on the SDK itself
-                if (!schema.StartsWith("http"))
-                {
-                    Assert.True(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
-
-                    // NOTE: Microsoft.SendActivity in the first file fails validation even though it is valid, same as Microsoft.StaticActivityTemplate on the last two.
-                    // Bug filed with Newtonsoft: https://stackoverflow.com/questions/63493078/why-does-validation-fail-in-code-but-work-in-newtonsoft-web-validator
-                    var omit = new List<string>
-                    {
-                        "Action_SendActivity.test.dialog",
-                        "Action_BeginSkill.test.dialog",
-                        "Action_BeginSkillEndDialog.test.dialog"
-                    };
-
-                    if (!omit.Any(e => fileResource.FullName.Contains(e)))
-                    {
-                        jToken.Validate(_fixture.Schema);
-                    }
-                }
+                jToken.Validate(_schemaTestsFixture.Schema);
             }
             catch (JSchemaValidationException err)
             {

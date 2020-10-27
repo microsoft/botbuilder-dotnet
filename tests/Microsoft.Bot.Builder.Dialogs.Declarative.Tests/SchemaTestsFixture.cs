@@ -14,7 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// This class uses the command line to merge all the schemas in the project.
     /// </summary>
     /// <remarks>
+    /// This fixture creates or updates test.schema by calling bf dialog:merge on all the schema files in the solution.
     /// This will install the latest version of botframewrork-cli if the schema changed and npm is present.
+    /// This only runs on Windows platforms.
     /// </remarks>
     public class SchemaTestsFixture : IDisposable
     {
@@ -38,8 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
                 if (error.Length != 0 || !newSchema.Equals(oldSchema))
                 {
-                    // Try installing latest bf if the schema changed to make sure the discrepancy is not because
-                    // we are using a different version.
+                    // We may get there because there was an error running bf dialog:merge or because 
+                    // the generated file is different than the one that is in source control.
+                    // In either case we try installing latest bf if the schema changed to make sure the
+                    // discrepancy is not because we are using a different version of the CLI
+                    // and we ensure it is installed while on it.
                     error = RunCommand("/C npm i -g @microsoft/botframework-cli@next");
                     if (error.Length != 0)
                     {
@@ -76,6 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         {
         }
 
+        // Helper to run cmd.exe commands
         private static string RunCommand(string args)
         {
             var startInfo = new ProcessStartInfo("cmd.exe", args)
