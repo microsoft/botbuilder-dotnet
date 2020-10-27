@@ -70,10 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         protected override ActionChangeList OnCreateChangeList(ActionContext actionContext, object dialogOptions = null)
         {
             var changeList = base.OnCreateChangeList(actionContext, dialogOptions);
-            var current = actionContext.ActiveDialog.Version;
-            var version = actionContext.Dialogs.GetVersion();
-
-            if (current == null || current == version)
+            if (Event != DialogEvents.VersionChanged)
             {
                 changeList.ChangeType = ActionChangeType.AppendActions;
             }
