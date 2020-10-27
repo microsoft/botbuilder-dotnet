@@ -418,6 +418,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("hello")
                     .AssertReply("test")
                 .Send("hello")
+                    .AssertReply("test2")
                     .AssertReply("changed")
                 .Send("hello")
                     .AssertReply("test2")
