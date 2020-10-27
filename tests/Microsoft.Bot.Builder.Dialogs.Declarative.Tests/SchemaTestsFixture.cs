@@ -41,11 +41,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     // Try installing latest bf if the schema changed to make sure the discrepancy is not because
                     // we are using a different version.
                     error = RunCommand("/C npm i -g @microsoft/botframework-cli@next");
-                    Assert.True(error.Length == 0, error);
+                    if (error.Length != 0)
+                    {
+                        throw new InvalidOperationException(error);
+                    }
 
                     // Rerun merge command
                     error = RunCommand(mergeCommand);
-                    Assert.True(error.Length == 0, error);
+                    if (error.Length != 0)
+                    {
+                        throw new InvalidOperationException(error);
+                    }
                 }
             }
 
