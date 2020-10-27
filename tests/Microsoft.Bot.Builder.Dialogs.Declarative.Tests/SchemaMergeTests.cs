@@ -1,19 +1,16 @@
-﻿// Licensed under the MIT License.
-// Copyright (c) Microsoft Corporation. All rights reserved.
-#pragma warning disable SA1629 // Documentation text should end with a period
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
@@ -21,104 +18,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// <summary>
     /// Test schema merging and instances.
     /// </summary>
-    /// <remarks>
-    /// This will install the latest version of botframewrork-cli if the schema changed and npm is present.
-    /// </remarks>
-    public class SchemaMergeTests
+    public class SchemaMergeTests : IClassFixture<SchemaTestsFixture>
     {
+        private readonly SchemaTestsFixture _fixture;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="SchemaMergeTests"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This constructor  loads the dialogs to be tested in a static <see cref="Dialogs"/> property so they can be used in theory tests.
+        /// </remarks>
         static SchemaMergeTests()
         {
-            // static field initialization
-            var projectPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
-            var testsPath = Path.GetFullPath(Path.Combine(projectPath, ".."));
-            var solutionPath = Path.GetFullPath(Path.Combine(projectPath, PathUtils.NormalizePath(@"..\..")));
-            var schemaPath = Path.Combine(testsPath, "tests.schema");
-
-            var ignoreFolders = new string[]
+            var ignoreFolders = new[]
             {
                 PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\EmailBot"),
                 PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\CalendarBot"),
                 "bin"
             };
 
-            ResourceExplorer = new ResourceExplorer()
-                .AddFolders(Path.Combine(solutionPath, "libraries"), monitorChanges: false)
-                .AddFolders(Path.Combine(solutionPath, "tests"), monitorChanges: false);
+            var resourceExplorer = new ResourceExplorer()
+                .AddFolders(Path.Combine(SchemaTestsFixture.SolutionPath, "libraries"), monitorChanges: false)
+                .AddFolders(Path.Combine(SchemaTestsFixture.SolutionPath, "tests"), monitorChanges: false);
 
-            Dialogs = ResourceExplorer.GetResources(".dialog")
+            // Store the dialog list in the Dialogs property.
+            Dialogs = resourceExplorer.GetResources(".dialog")
                 .Cast<FileResource>()
                 .Where(r => !r.Id.EndsWith(".schema.dialog") && !ignoreFolders.Any(f => r.FullName.Contains(f)))
-                .Select(resource => new object[] { resource });
-
-            try
-            {
-                ProcessStartInfo startInfo;
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                .Select(resource => new object[]
                 {
-                    var args = $"/C bf dialog:merge ../../libraries/**/*.schema ../../libraries/**/*.uischema ../**/*.schema !../**/testbot.schema -o {schemaPath}";
-                    var oldSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
-                    File.Delete(schemaPath);
-                    startInfo = new ProcessStartInfo("cmd.exe", args);
-                    startInfo.WorkingDirectory = projectPath;
-                    startInfo.UseShellExecute = false;
-                    startInfo.CreateNoWindow = true;
-                    startInfo.RedirectStandardOutput = true;
-                    startInfo.RedirectStandardError = true;
-
-                    var process = Process.Start(startInfo);
-                    var error = process.StandardError.ReadToEnd();
-                    process.WaitForExit();
-
-                    var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
-                    if (error.Length != 0 || !newSchema.Equals(oldSchema))
-                    {
-                        // Try installing latest bf if the schema changed
-                        startInfo.Arguments = $"/C npm i -g @microsoft/botframework-cli@next";
-                        process = Process.Start(startInfo);
-                        var output = process.StandardOutput.ReadToEnd();
-                        Assert.True(output.Contains("updated"), output);
-                        process.WaitForExit();
-                        startInfo.Arguments = args;
-                        process = Process.Start(startInfo);
-                        error = process.StandardError.ReadToEnd();
-                        process.WaitForExit();
-                    }
-
-                    Assert.True(error.Length == 0, error);
-                }
-            }
-            catch (Exception err)
-            {
-                throw new XunitException(err.Message);
-            }
-
-            Assert.True(File.Exists(schemaPath));
-            var json = File.ReadAllText(schemaPath);
-            Schema = JSchema.Parse(json);
+                    resource.Id,
+                    resource.FullName
+                });
         }
 
-        public static ResourceExplorer ResourceExplorer { get; set; }
+        public SchemaMergeTests(SchemaTestsFixture fixture)
+        {
+            _fixture = fixture;
+        }
 
-        public static JSchema Schema { get; set; }
-
-        public static IEnumerable<object[]> Dialogs { get; set; }
+        public static IEnumerable<object[]> Dialogs { get; }
 
         [Theory]
         [MemberData(nameof(Dialogs))]
-        public async Task TestDialogResourcesAreValidForSchema(Resource resource)
+        public async Task TestDialogResourcesAreValidForSchema(string resourceId, string resourceName)
         {
-            if (Schema == null)
-            {
-                throw new XunitException("missing schema file");
-            }
+            Assert.NotNull(resourceId);
+            Assert.NotNull(resourceName);
 
-            var fileResource = resource as FileResource;
-
-            // load the merged app schema file (validating it's truly a jsonschema doc
+            // load the merged app schema file (validating it's truly a json schema doc
             // and use it to validate all .dialog files are valid to this schema
-            var json = await resource.ReadTextAsync();
-            var jToken = (JToken)JsonConvert.DeserializeObject(json);
-            var jObj = jToken as JObject;
+            var fileResource = new FileResource(resourceName);
+            var json = await fileResource.ReadTextAsync();
+            var jToken = JsonConvert.DeserializeObject<JToken>(json);
+            var jObj = (JObject)jToken;
             var schema = jObj["$schema"]?.ToString();
 
             try
@@ -132,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 if (!schema.StartsWith("http"))
                 {
                     Assert.True(File.Exists(Path.Combine(folder, PathUtils.NormalizePath(schema))), $"$schema {schema}");
-                    
+
                     // NOTE: Microsoft.SendActivity in the first file fails validation even though it is valid, same as Microsoft.StaticActivityTemplate on the last two.
                     // Bug filed with Newtonsoft: https://stackoverflow.com/questions/63493078/why-does-validation-fail-in-code-but-work-in-newtonsoft-web-validator
                     var omit = new List<string>
@@ -144,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                     if (!omit.Any(e => fileResource.FullName.Contains(e)))
                     {
-                        jToken.Validate(Schema);
+                        jToken.Validate(_fixture.Schema);
                     }
                 }
             }
