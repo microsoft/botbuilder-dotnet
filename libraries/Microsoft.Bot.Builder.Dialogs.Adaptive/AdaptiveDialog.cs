@@ -1075,6 +1075,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
+        private string StripProperty(string name)
+            => name.EndsWith(PropertyEnding, StringComparison.InvariantCulture) ? name.Substring(0, name.Length - PropertyEnding.Length) : name;
+
         // Expand the array of entities for a particular entity
         private void ExpandEntities(
             string name, JArray entities, JArray instances, JObject rootInstance, string op, string property, List<string> operations, List<string> properties, uint turn, string text, Dictionary<string, List<EntityInfo>> entityToInfo)
@@ -1082,7 +1085,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (!name.StartsWith("$", StringComparison.InvariantCulture))
             {
                 // Entities representing schema properties end in "Property" to prevent name collisions with the property itself.
-                var propName = name.EndsWith(PropertyEnding, StringComparison.InvariantCulture) ? name.Substring(0, name.Length - PropertyEnding.Length) : name;
+                var propName = StripProperty(name);
                 string entityName = null;
                 var isOp = false;
                 var isProperty = false;
@@ -1305,9 +1308,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var isExpected = expected.Contains(propSchema.Name);
                 var expectedOnly = propSchema.ExpectedOnly ?? globalExpectedOnly;
-                foreach (var entityName in propSchema.Entities)
+                foreach (var propEntity in propSchema.Entities)
                 {
-
+                    var entityName = StripProperty(propEntity);
                     if (entities.TryGetValue(entityName, out var matches) && (isExpected || !expectedOnly.Contains(entityName)))
                     {
                         foreach (var entity in matches)
