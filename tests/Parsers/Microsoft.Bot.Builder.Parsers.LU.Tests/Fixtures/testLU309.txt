@@ -1,0 +1,13 @@
+> # Intent definitions
+
+## Intent
+- holiday request to {list1:to=32}
+- holiday request vacation from {list1:from=today}
+- i want vacation from {list1:from} until {list1:to}
+
+> # Entity definitions
+
+> # PREBUILT Entity definitions
+
+$list1: a = Roles = to, from
+    - 32

@@ -47,10 +47,7 @@
         "actions": [
           {
             "$kind": "Microsoft.Ask",
-            "activity": "meat or cheese ?",
-            "expectedProperties": [
-              "PropertyToChange"
-            ]
+            "activity": "meat or cheese ?"
           }
         ]
       },

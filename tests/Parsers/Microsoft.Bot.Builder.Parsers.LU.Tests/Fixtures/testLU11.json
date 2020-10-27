@@ -1,0 +1,44 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_\"foo bar\"",
+      "Body": "",
+      "Name": "\"foo bar\"",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 16
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_'a b'",
+      "Body": "",
+      "Name": "'a b'",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 12
+        }
+      }
+    }
+  ],
+  "Content": "\n@list \"foo bar\"\n@list 'a b'\n",
+  "Errors": []
+}

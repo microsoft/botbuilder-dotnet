@@ -1,0 +1,54 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_xyz",
+      "Body": "",
+      "Name": "xyz",
+      "Type": "phraselist",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 22
+        }
+      }
+    }
+  ],
+  "Content": "\n    @phraselist xyz = abc\n",
+  "Errors": [
+    {
+      "Message": "syntax error: no viable alternative at input ' abc'",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 22
+        },
+        "End": {
+          "Line": 2,
+          "Character": 25
+        }
+      },
+      "Severity": "ERROR"
+    },
+    {
+      "Message": "syntax error: extraneous input 'abc' expecting {<EOF>, WS, NEWLINE, QNA_SOURCE_INFO, MODEL_INFO, QNA, HASH, '$', '@', IMPORT, REFERENCE, QNA_ID_MARK}",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 22
+        },
+        "End": {
+          "Line": 2,
+          "Character": 25
+        }
+      },
+      "Severity": "ERROR"
+    }
+  ]
+}

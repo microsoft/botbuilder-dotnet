@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_x1","Body":"","Name":"x1","Type":"list","Roles":"r1, r2","SynonymsList":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":20}}}],"Content":"\n    @list x1 r1, r2\n","Errors":[]}

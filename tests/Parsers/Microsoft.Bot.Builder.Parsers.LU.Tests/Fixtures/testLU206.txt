@@ -1,0 +1,6 @@
+# Greeting
+- hi {commPreference=test call}
+
+$commPreference:simple
+$commPreference:call=
+- phone call

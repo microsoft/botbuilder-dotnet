@@ -1,0 +1,14 @@
+
+# test
+- my name is vishwac
+    - my {@userProfile = name is vishwac}
+    - my name is {@userName = vishwac}
+- I'm 36
+    - I'm {@userProfile = {@userAge = 36}}
+
+@ ml userProfile = 
+    - @ personName userName
+    - @ age userAge
+
+@ prebuilt personName
+@ prebuilt age

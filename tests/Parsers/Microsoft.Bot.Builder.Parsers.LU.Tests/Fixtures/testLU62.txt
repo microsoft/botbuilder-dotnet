@@ -1,0 +1,9 @@
+
+@phraselist xyz =
+    - a
+    - b
+    - c
+@phraselist abc usesFeature xyz = 
+    - 1
+    - 2
+    - 3

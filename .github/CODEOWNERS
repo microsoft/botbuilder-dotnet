@@ -48,14 +48,14 @@
 /tests/Microsoft.Bot.Builder.Azure.Tests/**                                         @EricDahlvang @mrivera-ms
 
 # Adaptive Dialogs
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
-/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive/**                                @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams/**                          @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
+/libraries/Microsoft.Bot.Builder.Dialogs.Adaptive.Testing/**                        @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
 #   Adaptive Dialogs' tests
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
-/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Profiling/**                          @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests/**                        @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Templates.Tests/**                    @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
+/tests/Microsoft.Bot.Builder.Dialogs.Adaptive.Tests/**                              @microsoft/bf-adaptive @EricDahlvang @mrivera-ms @ccastro
 
 # AdaptiveExpressions & LanguageGeneration libraries
 /libraries/Microsoft.Bot.Builder.Dialogs.Declarative/**                             @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
@@ -66,8 +66,8 @@
 /tests/AdaptiveExpressions.Tests/**                                                 @microsoft/bf-adaptive @EricDahlvang @mrivera-ms
 
 # BotBuilder Dialogs Debugging
-/libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                               @mrivera-ms @tomlm @gabog
-/tests/Microsoft.Bot.Builder.Dialogs.Debugging.Tests/**                             @mrivera-ms @tomlm @gabog
+/libraries/Microsoft.Bot.Builder.Dialogs.Debugging/**                               @mrivera-ms @tomlm @gabog @ccastro
+/tests/Microsoft.Bot.Builder.Dialogs.Debugging.Tests/**                             @mrivera-ms @tomlm @gabog @ccastro
 
 # TemplateManager
 /libraries/Microsoft.Bot.Builder.TemplateManager/**                                 @mrivera-ms @tomlm

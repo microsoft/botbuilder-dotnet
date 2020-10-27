@@ -1,0 +1,3 @@
+
+@ phraselist "phone pl"(interchangeable) = 
+    - phone,phone number,telephone,cellphone

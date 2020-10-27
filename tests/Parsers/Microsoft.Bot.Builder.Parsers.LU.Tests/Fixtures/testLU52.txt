@@ -1,0 +1,13 @@
+
+@ phraselist city
+@ city =
+    - Seattle
+    - SEATAC
+    - SEA
+@ phraselist city2(interchangeable)
+@ city2 =
+    - portland
+    - PDX
+
+@ ml number hasRoles r1 usesFeature city 
+@ number usesFeature city

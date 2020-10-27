@@ -1,0 +1,7 @@
+> !# @parser.OnAmbiguousLabels = throwAnError
+
+# test
+- {@cuisineEntity=chinese cuisine}
+
+# test
+- {@cuisineEntity=chinese} cuisine

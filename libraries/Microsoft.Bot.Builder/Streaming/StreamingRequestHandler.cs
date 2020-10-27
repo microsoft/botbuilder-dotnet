@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Streaming
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
         private readonly string _userAgent;
-        private readonly IDictionary<string, DateTime> _conversations;
+        private readonly ConcurrentDictionary<string, DateTime> _conversations;
         private readonly IStreamingTransportServer _server;
 
         private bool _serverIsConnected;
@@ -200,7 +200,8 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="conversationId">The ID of the conversation to remove.</param>
         public void ForgetConversation(string conversationId)
         {
-            _conversations.Remove(conversationId);
+            // Ignore the result, since the goal is to simply remove the conversation.
+            _conversations.TryRemove(conversationId, out _);
         }
 
         /// <summary>
@@ -252,7 +253,9 @@ namespace Microsoft.Bot.Builder.Streaming
                 // adapter is able to route requests to the correct handler.
                 if (!HasConversation(activity.Conversation.Id))
                 {
-                    _conversations.Add(activity.Conversation.Id, DateTime.Now);
+                    // Ignore the result, since the goal is simply to ensure the Conversation.Id is in _conversations.
+                    // If some other thread added it already, does not matter.
+                    _conversations.TryAdd(activity.Conversation.Id, DateTime.Now);
                 }
 
                 /*

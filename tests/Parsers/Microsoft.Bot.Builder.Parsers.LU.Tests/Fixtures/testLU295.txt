@@ -1,0 +1,3 @@
+
+$location:seattle= roles=[fromCity,toCity]
+    - seattle

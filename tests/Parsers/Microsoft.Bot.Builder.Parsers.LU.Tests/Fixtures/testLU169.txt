@@ -1,0 +1,7 @@
+
+    # test
+    - this is a {number=one}
+
+    @prebuilt number
+    @number hasRole age
+    @number hasRoles r1, r2

@@ -1,0 +1,130 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test",
+      "Body": "- {@AddToQuantity={@PROPERTYName=Quantity} is {@number=99}}\r\n\r\n@ml AddToQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n\r\n@ list PROPERTYName\r\n    - Quantity:\r\n\t\t- property\r\n\r\n@ prebuilt number\r\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "Quantity is 99",
+          "entities": [
+            {
+              "type": "entities",
+              "entity": "@PROPERTYName",
+              "role": "",
+              "startPos": 0,
+              "endPos": 7
+            },
+            {
+              "type": "entities",
+              "entity": "@number",
+              "role": "",
+              "startPos": 12,
+              "endPos": 13
+            },
+            {
+              "type": "entities",
+              "entity": "@AddToQuantity",
+              "role": "",
+              "startPos": 0,
+              "endPos": 13
+            }
+          ],
+          "errorMsgs": [],
+          "contextText": "- {@AddToQuantity={@PROPERTYName=Quantity} is {@number=99}}",
+          "range": {
+            "Start": {
+              "Line": 3,
+              "Character": 0
+            },
+            "End": {
+              "Line": 3,
+              "Character": 59
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_AddToQuantity",
+          "Body": "",
+          "Name": "AddToQuantity",
+          "Type": "ml",
+          "ListBody": [ "    - @number number", "    - @PROPERTYName PROPERTYName" ],
+          "Range": {
+            "Start": {
+              "Line": 5,
+              "Character": 0
+            },
+            "End": {
+              "Line": 7,
+              "Character": 33
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_PROPERTYName",
+          "Body": "",
+          "Name": "PROPERTYName",
+          "Type": "list",
+          "SynonymsList": [
+            {
+              "NormalizedValue": "Quantity",
+              "Synonyms": [
+                "property"
+              ]
+            }
+          ],
+          "Range": {
+            "Start": {
+              "Line": 9,
+              "Character": 0
+            },
+            "End": {
+              "Line": 11,
+              "Character": 13
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_number",
+          "Body": "",
+          "Name": "number",
+          "Type": "prebuilt",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 13,
+              "Character": 0
+            },
+            "End": {
+              "Line": 13,
+              "Character": 18
+            }
+          }
+        }
+      ],
+      "Name": "test",
+      "IntentNameLine": "# test",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 14,
+          "Character": 0
+        }
+      }
+    }
+  ],
+  "Content": "\n# test\n- {@AddToQuantity={@PROPERTYName=Quantity} is {@number=99}}\n\n@ml AddToQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n\n@ list PROPERTYName\n    - Quantity:\n\t\t- property\n\n@ prebuilt number\n",
+  "Errors": []
+}

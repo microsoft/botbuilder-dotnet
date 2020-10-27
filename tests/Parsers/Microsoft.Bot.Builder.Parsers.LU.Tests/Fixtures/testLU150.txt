@@ -1,0 +1,15 @@
+
+    > phrase list as feature to intent (also applicable to entities)
+    @ intent getUserProfileIntent usesFeature city
+    
+    # getUserProfileIntent
+    - test
+    
+    @ phraselist city
+    @ city =
+        - Seattle
+        - SEATAC
+        - SEA
+    
+    @ city enabledForAllModels
+    @ city disabled

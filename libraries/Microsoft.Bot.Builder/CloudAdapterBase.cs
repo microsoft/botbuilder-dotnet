@@ -240,13 +240,13 @@ namespace Microsoft.Bot.Builder
         protected async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             // Use the cloud environment to create the credentials for proactive requests.
-            var credentials = await _botFrameworkAuthentication.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
+            var proactiveCredentialsResult = await _botFrameworkAuthentication.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
 
             // Create the connector client to use for outbound requests.
-            using (var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), credentials, _httpClient, disposeHttpClient: _httpClient == null))
+            using (var connectorClient = new ConnectorClient(new Uri(reference.ServiceUrl), proactiveCredentialsResult.Credentials, _httpClient, disposeHttpClient: _httpClient == null))
             {
                 // Create a turn context and run the pipeline.
-                using (var context = CreateTurnContext(reference.GetContinuationActivity(), claimsIdentity, audience, connectorClient, callback))
+                using (var context = CreateTurnContext(reference.GetContinuationActivity(), claimsIdentity, proactiveCredentialsResult.Scope, connectorClient, callback))
                 {
                     // Run the pipeline.
                     await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
@@ -260,7 +260,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// The implementation for processing an Activity sent to this bot.
         /// </summary>
-        /// <param name="authHeader">The authorization header from teh http request.</param>
+        /// <param name="authHeader">The authorization header from the http request.</param>
         /// <param name="activity">The <see cref="Activity"/> to process.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
         /// <param name="cancellationToken">Cancellation token.</param>

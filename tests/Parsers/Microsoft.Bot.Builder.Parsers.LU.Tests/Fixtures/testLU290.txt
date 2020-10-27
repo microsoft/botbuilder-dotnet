@@ -1,0 +1,4 @@
+$name:simple roles=[firstname, lastname]
+
+# test 
+- my middle name is {name:middlename=sena}

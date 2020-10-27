@@ -1,0 +1,8 @@
+
+
+$product : phraseList
+- one
+- two
+
+# test
+- this is {product = one}

@@ -1,0 +1,6 @@
+
+    @composite x1 = [s1, number]
+    @ml s1
+    @prebuilt number
+    @composite x1 = [s1, age]
+    @prebuilt age

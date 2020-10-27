@@ -1,0 +1,7 @@
+
+    @composite name
+    @name r1
+    @name r2
+    @name = 
+        - child1
+        - child2

@@ -1,0 +1,27 @@
+
+@ list list1
+@ list list2
+@ list list3
+@ list list4
+@ regex regex1
+@ regex regex2
+@ prebuilt number
+@ml 1 = 
+    - @ ml s1
+    - @ ml 2 =
+        - @ number n2
+        - @ml 3 =
+            - @ list1 l3
+            - @ml 4 =
+                - @ regex1 r4
+                - @ ml 5 =
+                    - @ regex2 r5
+                    - @ list2 l5
+                    - @ number n5
+                    - @ ml s5
+                - @ list3 l4
+                - @ number n4
+                - @ ml s4
+            - @ number n3
+            - @ ml s3
+        - @ ml s2

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="role">Role of the participant in the current meeting.</param>
         /// <param name="inMeeting">True, if the participant is in the meeting.</param>
-        public MeetingParticipantInfo(string role = default(string), bool inMeeting = default(bool))
+        public MeetingParticipantInfo(string role = default(string), bool? inMeeting = null)
         { 
             Role = role;
             InMeeting = inMeeting;
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// The value indicating if the participant is in the meeting.
         /// </value>
         [JsonProperty(PropertyName = "inMeeting")]
-        public bool InMeeting { get; set; }
+        public bool? InMeeting { get; set; }
 
         /// <summary>
         /// Gets or sets the participant's role in the meeting.

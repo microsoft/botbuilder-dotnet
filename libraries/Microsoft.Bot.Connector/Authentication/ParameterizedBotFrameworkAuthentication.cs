@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -75,9 +74,15 @@ namespace Microsoft.Bot.Connector.Authentication
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
         }
 
-        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override async Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var scope = audience ?? _toChannelFromBotOAuthScope;
+
+            var appId = BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity);
+
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl, true, cancellationToken).ConfigureAwait(false);
+
+            return new ProactiveCredentialsResult { Credentials = credentials, Scope = scope };
         }
 
         private async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
@@ -176,6 +181,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     ValidateIssuer = true,
                     ValidIssuers = new[]
                     {
+                        // TODO: presumably this table should also come from configuration
                         "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
                         "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
                         "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
@@ -255,6 +261,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     ValidateIssuer = true,
                     ValidIssuers = new[]
                     {
+                        // TODO: presumably this table should also come from configuration
                         "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
                         "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
                         "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token

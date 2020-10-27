@@ -1,0 +1,5 @@
+
+@ patternany p1
+# test
+- one
+@ intent test usesFeature p1

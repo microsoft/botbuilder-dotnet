@@ -1,0 +1,13 @@
+
+# test
+- {@AddToQuantity={@PROPERTYName=Quantity} is {@number=99}}
+
+@ml AddToQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+
+@ list PROPERTYName
+    - Quantity:
+		- property
+
+@ prebuilt number
