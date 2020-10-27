@@ -16,7 +16,7 @@
                         }
                     },
                     "entities": {
-                        "Meat": [
+                        "MeatProperty": [
                             {
                                 "MeatEntity": [
                                     [
@@ -40,7 +40,7 @@
                                 }
                             }
                         ],
-                        "Cheese": [
+                        "CheeseProperty": [
                             {
                                 "CheeseEntity": [
                                     [
@@ -65,9 +65,9 @@
                             }
                         ],
                         "$instance": {
-                            "Meat": [
+                            "MeatProperty": [
                                 {
-                                    "type": "Meat",
+                                    "type": "MeatProperty",
                                     "text": "none",
                                     "startIndex": 0,
                                     "length": 4,
@@ -78,9 +78,9 @@
                                     ]
                                 }
                             ],
-                            "Cheese": [
+                            "CheeseProperty": [
                                 {
-                                    "type": "Cheese",
+                                    "type": "CheeseProperty",
                                     "text": "none",
                                     "startIndex": 0,
                                     "length": 4,

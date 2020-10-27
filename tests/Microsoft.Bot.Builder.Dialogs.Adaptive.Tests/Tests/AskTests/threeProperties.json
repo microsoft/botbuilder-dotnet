@@ -35,9 +35,9 @@
     "PropertyToChange": {
       "type": "string",
       "$entities": [
-        "Bread",
-        "Cheese",
-        "Meat"
+        "BreadProperty",
+        "CheeseProperty",
+        "MeatProperty"
       ]
     }
   },

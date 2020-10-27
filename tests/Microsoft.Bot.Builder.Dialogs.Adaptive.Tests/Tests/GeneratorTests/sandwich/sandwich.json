@@ -145,29 +145,29 @@
       "type": "string",
       "$entities": [
         "boolean",
-        "Quantity",
-        "Length",
-        "Name",
-        "Bread",
-        "Meat",
-        "Cheese",
-        "Toppings",
-        "Sauces",
-        "Price"
+        "QuantityProperty",
+        "LengthProperty",
+        "NameProperty",
+        "BreadProperty",
+        "MeatProperty",
+        "CheeseProperty",
+        "ToppingsProperty",
+        "SaucesProperty",
+        "PriceProperty"
       ]
     },
     "PropertyToChange": {
       "type": "string",
       "$entities": [
-        "Quantity",
-        "Length",
-        "Name",
-        "Bread",
-        "Meat",
-        "Cheese",
-        "Toppings",
-        "Sauces",
-        "Price"
+        "QuantityProperty",
+        "LengthProperty",
+        "NameProperty",
+        "BreadProperty",
+        "MeatProperty",
+        "CheeseProperty",
+        "ToppingsProperty",
+        "SaucesProperty",
+        "PriceProperty"
       ]
     }
   },
