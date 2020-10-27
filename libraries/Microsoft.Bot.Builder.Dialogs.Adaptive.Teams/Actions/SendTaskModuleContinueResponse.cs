@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// An string expression. 
         /// </value>
-        [JsonProperty("url")]
+        [JsonProperty("fallbackUrl")]
         public StringExpression FallbackUrl { get; set; }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// An string expression. 
         /// </value>
-        [JsonProperty("url")]
+        [JsonProperty("completionBotId")]
         public StringExpression CompletionBotId { get; set; }
 
         /// <summary>
