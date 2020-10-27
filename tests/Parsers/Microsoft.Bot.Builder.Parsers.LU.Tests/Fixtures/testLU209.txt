@@ -1,0 +1,6 @@
+$p1:phraseList
+- m&m,mars,mints,spearmings,payday,jelly,kit kat,kitkat,twix
+
+$p1:phraseList interchangeable
+- m&m,mars,mints,spearmings,payday,jelly,kit kat,kitkat,twix
+

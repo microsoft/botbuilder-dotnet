@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_\"entity 1\"","Body":"","Name":"\"entity 1\"","Type":"ml","Roles":"\"role 1\", \"role 2\"","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":44}}}],"Content":"\n@ ml \"entity 1\" hasRoles \"role 1\", \"role 2\"\n","Errors":[]}

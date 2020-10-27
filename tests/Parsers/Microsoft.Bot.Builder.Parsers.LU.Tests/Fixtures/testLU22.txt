@@ -1,0 +1,4 @@
+
+$deviceTemperature : [p1; child2]
+# test
+- this is a test with {p1=vishwac}

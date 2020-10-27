@@ -1,0 +1,46 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_l1",
+      "Body": "",
+      "Name": "l1",
+      "Type": "list",
+      "Features": "s2",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 25
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_s2",
+      "Body": "",
+      "Name": "s2",
+      "Type": "ml",
+      "Features": "l1",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 23
+        }
+      }
+    }
+  ],
+  "Content": "\n@ list l1 usesFeature s2\n@ ml s2 usesFeature l1\n",
+  "Errors": []
+}

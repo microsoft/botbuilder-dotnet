@@ -1,0 +1,7 @@
+## RequestItem
+- i need more {Item=water}
+
+$Item:simple
+
+$Item:phraseList interchangeable
+- water,coffee

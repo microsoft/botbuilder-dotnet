@@ -22,6 +22,29 @@ namespace Microsoft.Bot.Builder.Teams
     public static class TeamsInfo
     {
         /// <summary>
+        /// Gets the details for the given meeting participant. This only works in teams meeting scoped conversations. 
+        /// </summary>
+        /// <param name="turnContext">Turn context.</param>
+        /// <param name="meetingId">The id of the Teams meeting. TeamsChannelData.Meeting.Id will be used if none provided.</param>
+        /// <param name="participantId">The id of the Teams meeting participant. From.AadObjectId will be used if none provided.</param>
+        /// <param name="tenantId">The id of the Teams meeting Tenant. TeamsChannelData.Tenant.Id will be used if none provided.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <remarks>InvalidOperationException will be thrown if meetingId, participantId or tenantId have not been
+        /// provided, and also cannot be retrieved from turnContext.Activity.</remarks>
+        /// <returns>Team participant channel account.</returns>
+        public static async Task<TeamsMeetingParticipant> GetMeetingParticipantAsync(ITurnContext turnContext, string meetingId = null, string participantId = null, string tenantId = null, CancellationToken cancellationToken = default)
+        {
+            meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of a MS Teams Meeting.");
+            participantId ??= turnContext.Activity.From.AadObjectId ?? throw new InvalidOperationException($"{nameof(participantId)} is required.");
+            tenantId ??= turnContext.Activity.GetChannelData<TeamsChannelData>()?.Tenant?.Id ?? throw new InvalidOperationException($"{nameof(tenantId)} is required.");
+
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.FetchParticipantAsync(meetingId, participantId, tenantId, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Gets the details for the given team id. This only works in teams scoped conversations. 
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
@@ -31,9 +54,10 @@ namespace Microsoft.Bot.Builder.Teams
         public static async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
-#pragma warning disable CA2000 // Dispose objects before losing scope (we need to review this, disposing the connectorClient may have unintended consequences)
-            return await GetTeamsConnectorClient(turnContext).Teams.FetchTeamDetailsAsync(t, cancellationToken).ConfigureAwait(false);
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.FetchTeamDetailsAsync(t, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -47,10 +71,11 @@ namespace Microsoft.Bot.Builder.Teams
         public static async Task<IList<ChannelInfo>> GetTeamChannelsAsync(ITurnContext turnContext, string teamId = null, CancellationToken cancellationToken = default)
         {
             var t = teamId ?? turnContext.Activity.TeamsGetTeamInfo()?.Id ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
-#pragma warning disable CA2000 // Dispose objects before losing scope (we need to review this, disposing the connectorClient may have unintended consequences)
-            var channelList = await GetTeamsConnectorClient(turnContext).Teams.FetchChannelListAsync(t, cancellationToken).ConfigureAwait(false);
-#pragma warning restore CA2000 // Dispose objects before losing scope
-            return channelList.Conversations;
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                var channelList = await teamsClient.Teams.FetchChannelListAsync(t, cancellationToken).ConfigureAwait(false);
+                return channelList.Conversations;
+            }
         }
 
         /// <summary>
@@ -272,7 +297,7 @@ namespace Microsoft.Bot.Builder.Teams
             var connectorClient = GetConnectorClient(turnContext);
             if (connectorClient is ConnectorClient connectorClientImpl)
             {
-                return new TeamsConnectorClient(connectorClientImpl.BaseUri, connectorClientImpl.Credentials, connectorClientImpl.HttpClient);
+                return new TeamsConnectorClient(connectorClientImpl.BaseUri, connectorClientImpl.Credentials, connectorClientImpl.HttpClient, connectorClientImpl.HttpClient == null);
             }
             else
             {

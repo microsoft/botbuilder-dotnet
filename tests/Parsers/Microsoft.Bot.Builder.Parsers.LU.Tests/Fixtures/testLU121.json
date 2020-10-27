@@ -1,0 +1,143 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test",
+      "Body": "- remove {@RemoveFromQuantity={@number=99}}\r\n\r\n@ml AddToQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n@ml RemoveFromQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n\r\n@ prebuilt number hasRole Quantity\r\n@ list PROPERTYName\r\n    - Quantity:\r\n\t\t- property\r\n\r\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "remove 99",
+          "entities": [
+            {
+              "type": "entities",
+              "entity": "@number",
+              "role": "",
+              "startPos": 7,
+              "endPos": 8
+            },
+            {
+              "type": "entities",
+              "entity": "@RemoveFromQuantity",
+              "role": "",
+              "startPos": 7,
+              "endPos": 8
+            }
+          ],
+          "errorMsgs": [],
+          "contextText": "- remove {@RemoveFromQuantity={@number=99}}",
+          "range": {
+            "Start": {
+              "Line": 3,
+              "Character": 0
+            },
+            "End": {
+              "Line": 3,
+              "Character": 43
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_AddToQuantity",
+          "Body": "",
+          "Name": "AddToQuantity",
+          "Type": "ml",
+          "ListBody": [ "    - @number number", "    - @PROPERTYName PROPERTYName" ],
+          "Range": {
+            "Start": {
+              "Line": 5,
+              "Character": 0
+            },
+            "End": {
+              "Line": 7,
+              "Character": 33
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_RemoveFromQuantity",
+          "Body": "",
+          "Name": "RemoveFromQuantity",
+          "Type": "ml",
+          "ListBody": [ "    - @number number", "    - @PROPERTYName PROPERTYName" ],
+          "Range": {
+            "Start": {
+              "Line": 8,
+              "Character": 0
+            },
+            "End": {
+              "Line": 10,
+              "Character": 33
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_number",
+          "Body": "",
+          "Name": "number",
+          "Type": "prebuilt",
+          "Roles": "Quantity",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 12,
+              "Character": 0
+            },
+            "End": {
+              "Line": 12,
+              "Character": 35
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_PROPERTYName",
+          "Body": "",
+          "Name": "PROPERTYName",
+          "Type": "list",
+          "SynonymsList": [
+            {
+              "NormalizedValue": "Quantity",
+              "Synonyms": [
+                "property"
+              ]
+            }
+          ],
+          "Range": {
+            "Start": {
+              "Line": 13,
+              "Character": 0
+            },
+            "End": {
+              "Line": 15,
+              "Character": 13
+            }
+          }
+        }
+      ],
+      "Name": "test",
+      "IntentNameLine": "# test",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 17,
+          "Character": 0
+        }
+      }
+    }
+  ],
+  "Content": "\n# test\n- remove {@RemoveFromQuantity={@number=99}}\n\n@ml AddToQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n@ml RemoveFromQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n\n@ prebuilt number hasRole Quantity\n@ list PROPERTYName\n    - Quantity:\n\t\t- property\n\n",
+  "Errors": []
+}

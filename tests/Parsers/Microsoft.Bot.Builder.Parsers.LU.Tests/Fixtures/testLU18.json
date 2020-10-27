@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"entitySection","Id":"entitySection_deviceTemperature","Body":"","Name":"deviceTemperature","Type":"[child1; child2]","SynonymsOrPhraseList":[],"Range":{"Start":{"Line":1,"Character":0},"End":{"Line":1,"Character":37}}}],"Content":"$deviceTemperature : [child1; child2]","Errors":[]}

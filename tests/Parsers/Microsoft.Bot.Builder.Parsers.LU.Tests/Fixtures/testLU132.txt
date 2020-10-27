@@ -1,0 +1,13 @@
+
+    @ml entity1
+    @entity1 r1
+
+    @ml entity2
+    @entity2 hasRole r2
+
+    @ml entity3
+    @entity3 hasRoles r3
+
+    @ml entity4
+    @entity4 hasRoles r4,r5
+    @entity4 r6

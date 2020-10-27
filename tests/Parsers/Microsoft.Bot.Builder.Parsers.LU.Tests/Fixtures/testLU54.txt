@@ -1,0 +1,6 @@
+
+@ prebuilt number usesFeature city
+@ phraselist city =
+    - Seattle
+    - SEATAC
+    - SEA

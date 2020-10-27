@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_name","Body":"","Name":"name","Type":"composite","Roles":"r1, r2","ListBody":["        - child1,child2"],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":3,"Character":24}}}],"Content":"\n    @composite name hasRoles r1, r2 = \n        - child1,child2\n","Errors":[]}

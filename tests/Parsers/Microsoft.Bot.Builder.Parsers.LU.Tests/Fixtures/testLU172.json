@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_name","Body":"","Name":"name","Type":"composite","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":20}}}],"Content":"\n    @composite name\n","Errors":[]}

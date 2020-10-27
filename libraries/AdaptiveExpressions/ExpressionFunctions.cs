@@ -137,6 +137,7 @@ namespace AdaptiveExpressions
                 new BuiltinFunctions.RemoveProperty(),
                 new BuiltinFunctions.Replace(),
                 new BuiltinFunctions.ReplaceIgnoreCase(),
+                new BuiltinFunctions.Reverse(),
                 new BuiltinFunctions.Round(),
                 new BuiltinFunctions.Select(),
                 new BuiltinFunctions.SentenceCase(),

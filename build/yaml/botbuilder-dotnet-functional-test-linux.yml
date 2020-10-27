@@ -1,30 +1,36 @@
 #
-# Run functional tests on bot deployed to Azure Unix
+# Run functional tests on bot deployed to Azure Unix 
 #
 
 # "name" here defines the build number format. Build number is accessed via $(Build.BuildNumber)
 name: $(Build.BuildId)
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
 
 trigger: # ci trigger
   batch: true
   branches:
     include:
-     - main
+    - main
   paths:
     include:
-      - '*'
+    - '*'
     exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
+    - doc/
+    - specs/
+    - Changes.md
+    - LICENSE
+    - README.md
+    - UsingMyGet.md
 
-pr: none # no pr trigger
+pr: # pr trigger
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/yaml/botbuilder-dotnet-functional-test-linux.yml
 
 variables:
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false

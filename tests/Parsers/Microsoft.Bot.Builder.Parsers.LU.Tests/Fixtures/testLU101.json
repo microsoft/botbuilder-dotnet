@@ -1,0 +1,158 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_list1",
+      "Body": "",
+      "Name": "list1",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 13
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_list2",
+      "Body": "",
+      "Name": "list2",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 13
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_list3",
+      "Body": "",
+      "Name": "list3",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 4,
+          "Character": 0
+        },
+        "End": {
+          "Line": 4,
+          "Character": 13
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_list4",
+      "Body": "",
+      "Name": "list4",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 5,
+          "Character": 0
+        },
+        "End": {
+          "Line": 5,
+          "Character": 13
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_regex1",
+      "Body": "",
+      "Name": "regex1",
+      "Type": "regex",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 6,
+          "Character": 0
+        },
+        "End": {
+          "Line": 6,
+          "Character": 15
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_regex2",
+      "Body": "",
+      "Name": "regex2",
+      "Type": "regex",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 7,
+          "Character": 0
+        },
+        "End": {
+          "Line": 7,
+          "Character": 15
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_number",
+      "Body": "",
+      "Name": "number",
+      "Type": "prebuilt",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 8,
+          "Character": 0
+        },
+        "End": {
+          "Line": 8,
+          "Character": 18
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_1",
+      "Body": "",
+      "Name": "1",
+      "Type": "ml",
+      "ListBody": [ "    - @ ml s1", "    - @ ml 2 =", "        - @ number n2", "        - @ml 3 =", "            - @ list1 l3", "            - @ml 4 =", "                - @ regex1 r4", "                - @ ml 5 =", "                    - @ regex2 r5", "                    - @ list2 l5", "                    - @ number n5", "                    - @ ml s5", "                - @ list3 l4", "                - @ number n4", "                - @ ml s4", "            - @ number n3", "            - @ ml s3", "        - @ ml s2" ],
+      "Range": {
+        "Start": {
+          "Line": 9,
+          "Character": 0
+        },
+        "End": {
+          "Line": 27,
+          "Character": 17
+        }
+      }
+    }
+  ],
+  "Content": "\n@ list list1\n@ list list2\n@ list list3\n@ list list4\n@ regex regex1\n@ regex regex2\n@ prebuilt number\n@ml 1 = \n    - @ ml s1\n    - @ ml 2 =\n        - @ number n2\n        - @ml 3 =\n            - @ list1 l3\n            - @ml 4 =\n                - @ regex1 r4\n                - @ ml 5 =\n                    - @ regex2 r5\n                    - @ list2 l5\n                    - @ number n5\n                    - @ ml s5\n                - @ list3 l4\n                - @ number n4\n                - @ ml s4\n            - @ number n3\n            - @ ml s3\n        - @ ml s2",
+  "Errors": []
+}

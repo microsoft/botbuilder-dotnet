@@ -11,13 +11,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
     internal class ParameterizedBotFrameworkAuthentication : BotFrameworkAuthentication
     {
-        private static HttpClient _defaultHttpClient = new HttpClient();
+        private static readonly HttpClient _defaultHttpClient = new HttpClient();
 
         private readonly bool _validateAuthority;
         private readonly string _toChannelFromBotLoginUrl;
@@ -75,9 +74,15 @@ namespace Microsoft.Bot.Connector.Authentication
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
         }
 
-        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override async Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var scope = audience ?? _toChannelFromBotOAuthScope;
+
+            var appId = BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity);
+
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _toChannelFromBotLoginUrl, true, cancellationToken).ConfigureAwait(false);
+
+            return new ProactiveCredentialsResult { Credentials = credentials, Scope = scope };
         }
 
         private async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
@@ -104,22 +109,28 @@ namespace Microsoft.Bot.Connector.Authentication
             if (string.IsNullOrWhiteSpace(authHeader))
             {
                 var isAuthDisabled = await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
-                if (isAuthDisabled)
+                if (!isAuthDisabled)
                 {
-                    // In the scenario where Auth is disabled, we still want to have the
-                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
-                    // adding in an empty claim.
-                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    // No Auth Header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
                 }
 
-                // No Auth Header. Auth is required. Request is not authorized.
-                throw new UnauthorizedAccessException();
+                // Check if the activity is for a skill call and is coming from the Emulator.
+                if (activity.ChannelId == Channels.Emulator && activity.Recipient?.Role == RoleTypes.Skill)
+                {
+                    // Return an anonymous claim with an anonymous skill AppId
+                    return SkillValidation.CreateAnonymousSkillClaim();
+                }
+
+                // In the scenario where Auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
+                // adding in an empty claim.
+                return new ClaimsIdentity(new List<Claim>(), AuthenticationConstants.AnonymousAuthType);
             }
 
+            // Validate the header and extract claims.
             var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, credentialFactory, activity.ChannelId, authConfiguration, activity.ServiceUrl, httpClient, cancellationToken).ConfigureAwait(false);
-
             AppCredentials.TrustServiceUrl(activity.ServiceUrl);
-
             return claimsIdentity;
         }
 
@@ -170,6 +181,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     ValidateIssuer = true,
                     ValidIssuers = new[]
                     {
+                        // TODO: presumably this table should also come from configuration
                         "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
                         "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
                         "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
@@ -249,6 +261,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     ValidateIssuer = true,
                     ValidIssuers = new[]
                     {
+                        // TODO: presumably this table should also come from configuration
                         "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
                         "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
                         "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token

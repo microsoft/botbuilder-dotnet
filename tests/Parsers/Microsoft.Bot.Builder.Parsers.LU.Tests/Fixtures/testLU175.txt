@@ -1,0 +1,3 @@
+
+    @composite name hasRoles r1, r2 = 
+        - [child1, child2]

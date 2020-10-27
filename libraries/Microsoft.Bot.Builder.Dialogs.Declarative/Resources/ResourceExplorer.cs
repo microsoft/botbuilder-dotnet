@@ -217,13 +217,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 if (err.InnerException is SyntaxErrorException)
                 {
-                    throw new SyntaxErrorException(err.InnerException.Message)
+                    throw new SyntaxErrorException(err.InnerException.Message, err)
                     {
                         Source = $"{id}{err.InnerException.Source}"
                     };
                 }
 
-                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}");
+                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}", err);
             }
         }
 
@@ -604,7 +604,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             var converters = new List<JsonConverter>();
 
             // Get converters
-            foreach (var component in ComponentRegistration.Components.OfType<IComponentDeclarativeTypes>())
+            foreach (var component in GetComponentRegistrations())
             {
                 var result = component.GetConverters(this, sourceContext);
                 if (result.Any())

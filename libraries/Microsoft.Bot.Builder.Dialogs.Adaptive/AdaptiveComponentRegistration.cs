@@ -151,6 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<RegexEntityRecognizer>(RegexEntityRecognizer.Kind);
             yield return new DeclarativeType<TemperatureEntityRecognizer>(TemperatureEntityRecognizer.Kind);
             yield return new DeclarativeType<UrlEntityRecognizer>(UrlEntityRecognizer.Kind);
+            yield return new DeclarativeType<ChannelMentionEntityRecognizer>(ChannelMentionEntityRecognizer.Kind);
 
             // selectors
             yield return new DeclarativeType<ConditionalSelector>(ConditionalSelector.Kind);
@@ -197,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new InterfaceConverter<EntityRecognizer>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<TriggerSelector>(resourceExplorer, sourceContext);
             yield return new ITemplateActivityConverter(resourceExplorer, sourceContext);
-            
+
             // yield return new ActivityTemplateConverter(resourceExplorer, sourceContext);
 
             yield return new IntExpressionConverter();

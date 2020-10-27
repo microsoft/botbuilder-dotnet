@@ -1,0 +1,41 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_x1",
+      "Body": "",
+      "Name": "x1",
+      "Type": "list",
+      "Roles": "r1, r2",
+      "SynonymsList": [
+        {
+          "NormalizedValue": "a1",
+          "Synonyms": [
+            "one",
+            "two"
+          ]
+        },
+        {
+          "NormalizedValue": "a2",
+          "Synonyms": [
+            "three",
+            "four"
+          ]
+        }
+      ],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 8,
+          "Character": 18
+        }
+      }
+    }
+  ],
+  "Content": "\n    @list x1 r1, r2 = \n        - a1:\n            - one\n            - two\n        - a2:\n            -three\n            -four\n",
+  "Errors": []
+}

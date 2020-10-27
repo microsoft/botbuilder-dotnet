@@ -1,0 +1,4 @@
+
+    @prebuilt number
+    @number hasRole age
+    @number hasRoles r1, r2

@@ -1,0 +1,10 @@
+
+
+$product : phraseList
+- one
+- two
+
+# test
+- this is {product = {type=sandwich}}
+
+$product : [type]

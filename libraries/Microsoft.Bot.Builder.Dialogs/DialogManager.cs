@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         _rootDialogId = RootDialog.Id;
                         Dialogs.TelemetryClient = RootDialog.TelemetryClient;
                         Dialogs.Add(RootDialog);
+                        RegisterContainerDialogs(RootDialog, registerRoot: false);
                     }
                 }
             }
@@ -311,9 +312,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Handle remote cancellation request from parent.
                 var activeDialogContext = GetActiveDialogContext(dc);
 
-                var remoteCancelText = "Skill was canceled through an EndOfConversation activity from the parent.";
-                await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{remoteCancelText}", cancellationToken: cancellationToken).ConfigureAwait(false);
-
                 // Send cancellation message to the top dialog in the stack to ensure all the parents are canceled in the right order. 
                 return await activeDialogContext.CancelAllDialogsAsync(true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -337,8 +335,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (turnResult.Status == DialogTurnStatus.Empty)
             {
                 // restart root dialog
-                var startMessageText = $"Starting {_rootDialogId}.";
-                await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{startMessageText}", cancellationToken: cancellationToken).ConfigureAwait(false);
                 turnResult = await dc.BeginDialogAsync(_rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
@@ -346,9 +342,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (ShouldSendEndOfConversationToParent(turnContext, turnResult))
             {
-                var endMessageText = $"Dialog {_rootDialogId} has **completed**. Sending EndOfConversation.";
-                await turnContext.TraceActivityAsync($"{GetType().Name}.OnTurnAsync()", label: $"{endMessageText}", value: turnResult.Result, cancellationToken: cancellationToken).ConfigureAwait(false);
-
                 // Send End of conversation at the end.
                 var activity = new Activity(ActivityTypes.EndOfConversation)
                 {
@@ -359,6 +352,28 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return turnResult;
+        }
+
+        /// <summary>
+        /// Recursively traverses the <see cref="Dialog"/> tree and registers instances of <see cref="DialogContainer"/>
+        /// in the <see cref="DialogSet"/> for this <see cref="DialogManager"/> instance.
+        /// </summary>
+        /// <param name="dialog">Root of the <see cref="Dialog"/> subtree to iterate and register containers from.</param>
+        /// <param name="registerRoot">Whether to register the root of the subtree. </param>
+        private void RegisterContainerDialogs(Dialog dialog, bool registerRoot = true)
+        {
+            if (dialog is DialogContainer container)
+            {
+                if (registerRoot)
+                {
+                    Dialogs.Add(container);
+                }
+
+                foreach (var inner in container.Dialogs.GetDialogs())
+                {
+                    RegisterContainerDialogs(inner);
+                }
+            }
         }
 
         private async Task<DialogTurnResult> HandleBotOnTurnAsync(DialogContext dc, CancellationToken cancellationToken)

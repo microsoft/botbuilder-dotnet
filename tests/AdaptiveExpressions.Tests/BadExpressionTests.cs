@@ -356,6 +356,8 @@ namespace AdaptiveExpressions.Tests
             Test("contains('hello world', 'hello', 'new')"), // should have 2 parameter
             Test("count(items, 1)"), // should have 1 parameter
             Test("count(1)"), // first param should be list or string
+            Test("reverse(items, 1)"), // should have 1 parameter
+            Test("reverse(1)"), // first param should be list or string
             Test("empty(1,2)"), // should have two params
             Test("first(items,2)"), // should have 1 param
             Test("last(items,2)"), // should have 1 param

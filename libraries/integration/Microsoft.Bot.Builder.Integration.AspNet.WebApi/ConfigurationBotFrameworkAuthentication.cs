@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         }
 
         /// <inheritdoc/>
-        public override Task<ServiceClientCredentials> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
         {
             return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken);
         }

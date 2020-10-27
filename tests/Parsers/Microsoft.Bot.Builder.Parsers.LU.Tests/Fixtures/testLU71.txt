@@ -1,0 +1,8 @@
+
+## Demo
+- demo
+
+@ ml "phone number entity" usesFeature phonePL
+
+@ phraselist phonePL(interchangeable) = 
+    - phone,phone number,telephone,cellphone

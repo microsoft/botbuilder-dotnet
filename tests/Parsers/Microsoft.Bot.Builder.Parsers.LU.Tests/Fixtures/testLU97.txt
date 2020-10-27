@@ -1,0 +1,6 @@
+
+@regex r1
+@ml xyz1 = 
+- @r1 xyz
+    - @ml xyz2
+

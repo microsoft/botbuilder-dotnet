@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.TestBot.Shared;
 using Microsoft.Bot.Builder.Testing.XUnit;
 
 namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData

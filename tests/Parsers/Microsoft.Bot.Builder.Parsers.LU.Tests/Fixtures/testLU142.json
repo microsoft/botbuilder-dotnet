@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_r1","Body":"","Name":"r1","Type":"regex","RegexDefinition":"/[0-9]{6}/","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":27}}}],"Content":"\n    @regex r1 = /[0-9]{6}/\n","Errors":[]}

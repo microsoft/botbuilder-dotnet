@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_foo","Body":"","Name":"foo","Type":"regex","RegexDefinition":"//","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":20}}}],"Content":"\n    @regex foo = //\n","Errors":[]}

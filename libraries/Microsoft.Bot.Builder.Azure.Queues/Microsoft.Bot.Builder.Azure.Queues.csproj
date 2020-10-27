@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</Version>
-    <Version Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</Version>
-    <PackageVersion Condition=" '$(IsBuildServer)' == '' ">$(LocalPackageVersion)</PackageVersion>
-    <PackageVersion Condition=" '$(IsBuildServer)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Version Condition=" '$(PreviewPackageVersion)' == '' ">$(LocalPackageVersion)</Version>
+    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">$(LocalPackageVersion)</PackageVersion>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Azure.Queues.xml</DocumentationFile>
@@ -36,8 +36,8 @@
     <PackageReference Include="Azure.Storage.Queues" Version="12.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(IsBuildServer)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

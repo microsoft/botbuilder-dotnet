@@ -1,0 +1,20 @@
+
+$device : thermostat=
+    - Thermostat
+    - Heater
+    - AC
+    - Air conditioner
+
+$device : refrigerator=
+    - Fridge
+    - Cooler
+
+$customDevice : simple
+
+$PREBUILT : temperature
+
+$deviceTemperature: [device, customDevice, temperature]
+
+# setThermostat
+    - Please set {deviceTemperature = thermostat to 72}
+    - Set {deviceTemperature = {customDevice = owen} to 72}

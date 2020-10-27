@@ -1,0 +1,9 @@
+## None
+- {MyComposite:c1=here's an {Entity2:t1=utterance {Entity1:t2=avalue}}} with a composite in it
+> here's an utterance avalue with a composite in it
+> MyComposite:0,25; Entity2:10,25, Entity1:20,25
+$Entity1:simple
+
+$Entity2:simple
+
+$MyComposite:[Entity1, Entity2]

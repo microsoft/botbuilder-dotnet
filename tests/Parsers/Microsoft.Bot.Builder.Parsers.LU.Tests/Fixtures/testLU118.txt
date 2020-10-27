@@ -1,0 +1,11 @@
+
+@ ml userProfile
+- @ number number
+- @ personName name
+
+@ prebuilt number
+@ prebuilt personName
+
+# userProfile
+- I'm {@userProfile = {@number = 36}} years old
+        
