@@ -11,6 +11,13 @@
             }
         ]
     },
+    "dialogs" : 
+        {
+        "TestName.dialog": 
+                        {
+                            "dialog": "TestName"
+                        }
+        }
     "triggers": [
         {
             "$kind": "Microsoft.OnBeginDialog",
@@ -29,7 +36,7 @@
                     "$kind": "Microsoft.BeginDialog",
                     "activityProcessed": true,
                     "dialog": "=concat('Test', 'Name')"
-                  }
+                }
             ]
         },
         {
