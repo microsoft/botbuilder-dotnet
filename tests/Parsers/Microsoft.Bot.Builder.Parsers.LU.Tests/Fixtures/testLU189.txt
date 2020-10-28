@@ -1,0 +1,14 @@
+
+@ phraselist LeaveModifiers(interchangeable) = 
+	- Change,cancel,replace,edit,remove,modify,delete,alter,change,drop
+
+@ phraselist Durations(interchangeable) = 
+	- days,day,month,months,weeks,week
+
+@ phraselist "Months of the Year"(interchangeable) = 
+- January,Jan,Feburary,Feb,March,Mar,April,Apr,May,June,Jun,July,Jul,August,Aug,September,Sep,Sept,October,Oct,November,Nov,December,Dec
+
+@ ml Leave
+    - @ ml LeaveType
+    - @ ml LeaveDate
+        - @ ml "Start Date" usesFeatures "Months of the Year"

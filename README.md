@@ -21,7 +21,7 @@ For more information jump to a section below.
 
  | Branch | Description        | Build Status | Coverage Status | Windows Bot Test Status | Linux Bot Test Status |
  |----|---------------|--------------|-----------------|--|--|
- |Main | 4.11.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-Signed-daily?branchName=main)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=277&branchName=main) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=main&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=main) | [![Tests Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/FunctionalTests/BotBuilder-DotNet-Functional-Tests-Windows-yaml?branchName=main)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=834&branchName=main) |  [![Tests Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/FunctionalTests/BotBuilder-DotNet-Functional-Tests-Linux-yaml?branchName=main)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=779&branchName=main)
+ |Main | 4.12.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-Signed-daily?branchName=main)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=277&branchName=main) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=main&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=main) | [![Tests Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/FunctionalTests/BotBuilder-DotNet-Functional-Tests-Windows-yaml?branchName=main)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=834&branchName=main) |  [![Tests Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/FunctionalTests/BotBuilder-DotNet-Functional-Tests-Linux-yaml?branchName=main)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=779&branchName=main)
 
 ## Packages
 
@@ -67,7 +67,7 @@ For instructions to add the feed to your NuGet configuration, [visit this page](
 - To use the daily builds published to MyGet, please follow the instructions [here](UsingMyGet.md). **NOTE**: The MyGet feed will be depecrated soon. Please use the Azure Artifacts daily feed instead.
 
 ## Dependency Graph
-To view our libraries' interdependencies, you can refer to the [dependency graph](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.9.2/InterdependencyGraph.html) for our libraries.
+To view our libraries' interdependencies, you can refer to the [dependency graph](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.10.0/InterdependencyGraph.html) for our libraries.
 
 ## Getting Started
 To get started building bots using the SDK, see the [Azure Bot Service Documentation](https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0).

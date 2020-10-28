@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="application">The LUIS application to use to recognize text.</param>
         public LuisRecognizerOptionsV2(LuisApplication application)
-        : base(application) 
+        : base(application)
         {
         }
 
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value> This settings will be used to call Luis.</value>
         public LuisPredictionOptions PredictionOptions { get; set; } = new LuisPredictionOptions();
 
-        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, HttpClient httpClient, CancellationToken cancellationToken)
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, Activity actiivty, HttpClient httpClient, CancellationToken cancellationToken)
             => await RecognizeInternalAsync(context.Context, httpClient, cancellationToken).ConfigureAwait(false);
 
         internal override async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, HttpClient httpClient, CancellationToken cancellationToken)

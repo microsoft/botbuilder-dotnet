@@ -93,6 +93,9 @@
     ],
     "defaultResultProperty": "dialog.result"
   },
+  "languagePolicy": {
+      "": [ "en-gb", "" ]
+  },
   "locale": "",
   "script": [
     {

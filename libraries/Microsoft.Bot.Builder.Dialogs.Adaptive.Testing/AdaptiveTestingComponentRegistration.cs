@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             yield return new DeclarativeType<AssertReply>(AssertReply.Kind);
             yield return new DeclarativeType<AssertReplyOneOf>(AssertReplyOneOf.Kind);
             yield return new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.Kind);
+            yield return new DeclarativeType<AssertNoActivity>(AssertNoActivity.Kind); 
             yield return new DeclarativeType<MemoryAssertions>(MemoryAssertions.Kind);
             yield return new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind);
             yield return new DeclarativeType<UserTokenBasicMock>(UserTokenBasicMock.Kind);

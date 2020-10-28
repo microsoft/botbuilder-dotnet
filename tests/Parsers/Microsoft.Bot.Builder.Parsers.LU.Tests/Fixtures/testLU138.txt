@@ -1,0 +1,5 @@
+
+    # test
+    - this is a {foodType:r2}
+
+    @ regex foodType r1

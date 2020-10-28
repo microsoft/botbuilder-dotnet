@@ -1,0 +1,4 @@
+# test
+- what is the email id for {hrf-number}
+
+$hrf-number:/hrf-[0-9]{6}/

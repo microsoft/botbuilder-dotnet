@@ -1,0 +1,17 @@
+
+# test
+- add {@AddToQuantity={@number=1000}}
+
+@ml AddToQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+
+@ list PROPERTYName
+    - Quantity:
+		- property
+
+@ prebuilt number
+        

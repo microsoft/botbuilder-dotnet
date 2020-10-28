@@ -1,0 +1,7 @@
+
+@ ml fooBar r1
+@ ml fooBar2 2r1, 2r2
+@ ml fooBar3 hasRole 3r1
+@ ml fooBar4 hasRoles 4r1, 4r2
+@ ml fooBar5
+@ fooBar5 5r1

@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 {
                     foreach (var assignment in Assignments)
                     {
-                        dc.State.SetValue(assignment.Property.Value, assignment.Value.Value);
+                        dc.State.SetValue(assignment.Property.GetValue(dc.State), assignment.Value.GetValue(dc.State));
                     }
                 }).ConfigureAwait(false);
                 Trace.TraceInformation($"[Turn Ended => SetProperties completed]");

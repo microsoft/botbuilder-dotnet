@@ -1,0 +1,334 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test",
+      "Body": "- one\r\n\r\n@ ml simple1\r\n@ intent test usesFeature simple1\r\n\r\n@ regex regex1\r\n@ intent test usesFeature regex1\r\n\r\n@ list list1\r\n@ intent test usesFeature list1\r\n\r\n@ composite c1\r\n@ intent test usesFeature c1\r\n\r\n@ prebuilt number\r\n@ prebuilt age\r\n@ intent test usesFeatures number, age\r\n\r\n@ phraselist pl1 = \r\n    - one\r\n    - two\r\n@ intent test usesFeatures pl1, test2",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "one",
+          "entities": [],
+          "errorMsgs": [],
+          "contextText": "- one",
+          "range": {
+            "Start": {
+              "Line": 3,
+              "Character": 0
+            },
+            "End": {
+              "Line": 3,
+              "Character": 5
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_simple1",
+          "Body": "",
+          "Name": "simple1",
+          "Type": "ml",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 5,
+              "Character": 0
+            },
+            "End": {
+              "Line": 5,
+              "Character": 13
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "simple1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 6,
+              "Character": 0
+            },
+            "End": {
+              "Line": 6,
+              "Character": 34
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_regex1",
+          "Body": "",
+          "Name": "regex1",
+          "Type": "regex",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 8,
+              "Character": 0
+            },
+            "End": {
+              "Line": 8,
+              "Character": 15
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "regex1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 9,
+              "Character": 0
+            },
+            "End": {
+              "Line": 9,
+              "Character": 33
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_list1",
+          "Body": "",
+          "Name": "list1",
+          "Type": "list",
+          "SynonymsList": [],
+          "Range": {
+            "Start": {
+              "Line": 11,
+              "Character": 0
+            },
+            "End": {
+              "Line": 11,
+              "Character": 13
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "list1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 12,
+              "Character": 0
+            },
+            "End": {
+              "Line": 12,
+              "Character": 32
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_c1",
+          "Body": "",
+          "Name": "c1",
+          "Type": "composite",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 14,
+              "Character": 0
+            },
+            "End": {
+              "Line": 14,
+              "Character": 15
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "c1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 15,
+              "Character": 0
+            },
+            "End": {
+              "Line": 15,
+              "Character": 29
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_number",
+          "Body": "",
+          "Name": "number",
+          "Type": "prebuilt",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 17,
+              "Character": 0
+            },
+            "End": {
+              "Line": 17,
+              "Character": 18
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_age",
+          "Body": "",
+          "Name": "age",
+          "Type": "prebuilt",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 18,
+              "Character": 0
+            },
+            "End": {
+              "Line": 18,
+              "Character": 15
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "number, age",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 19,
+              "Character": 0
+            },
+            "End": {
+              "Line": 19,
+              "Character": 39
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_pl1",
+          "Body": "",
+          "Name": "pl1",
+          "Type": "phraselist",
+          "ListBody": [ "    - one", "    - two" ],
+          "Range": {
+            "Start": {
+              "Line": 21,
+              "Character": 0
+            },
+            "End": {
+              "Line": 23,
+              "Character": 10
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "pl1, test2",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 24,
+              "Character": 0
+            },
+            "End": {
+              "Line": 24,
+              "Character": 38
+            }
+          }
+        }
+      ],
+      "Name": "test",
+      "IntentNameLine": "# test",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 24,
+          "Character": 37
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test2",
+      "Body": "- abc\r\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "abc",
+          "entities": [],
+          "errorMsgs": [],
+          "contextText": "- abc",
+          "range": {
+            "Start": {
+              "Line": 26,
+              "Character": 0
+            },
+            "End": {
+              "Line": 26,
+              "Character": 5
+            }
+          }
+        }
+      ],
+      "Entities": [],
+      "Name": "test2",
+      "IntentNameLine": "# test2",
+      "Range": {
+        "Start": {
+          "Line": 25,
+          "Character": 0
+        },
+        "End": {
+          "Line": 27,
+          "Character": 0
+        }
+      }
+    }
+  ],
+  "Content": "\n# test\n- one\n\n@ ml simple1\n@ intent test usesFeature simple1\n\n@ regex regex1\n@ intent test usesFeature regex1\n\n@ list list1\n@ intent test usesFeature list1\n\n@ composite c1\n@ intent test usesFeature c1\n\n@ prebuilt number\n@ prebuilt age\n@ intent test usesFeatures number, age\n\n@ phraselist pl1 = \n    - one\n    - two\n@ intent test usesFeatures pl1, test2\n# test2\n- abc\n",
+  "Errors": []
+}

@@ -1407,7 +1407,6 @@
           "$kind": "Microsoft.Ask",
           "activity": "${getChoosePropertiesText()}",
           "expectedProperties": [
-            "PropertyToChange"
           ]
         }
       ],

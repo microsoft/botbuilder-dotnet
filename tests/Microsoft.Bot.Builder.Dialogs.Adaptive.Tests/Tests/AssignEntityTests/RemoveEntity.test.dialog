@@ -1,0 +1,111 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Tests for Removing Entity",
+  "httpRequestMocks": [
+    "LuisAddToppingsEntity.mock",
+    "LuisRemoveEntity.mock"
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "schema": "twoProperties.json",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnEndOfActions",
+        "condition": "=!$Toppings",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Toppings?",
+            "expectedProperties": [
+              "Toppings"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Add()",
+        "property": "Toppings",
+        "entity": "ToppingsEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Set toppings to tomato and lettuce"
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "push",
+            "itemsProperty": "$Toppings",
+            "value": "=@ToppingsEntity"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Remove()",
+        "property": "Toppings",
+        "entity": "ToppingsEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "tomato has been removed"
+          },
+          {
+            "$kind": "Microsoft.EditArray",
+            "changeType": "remove",
+            "itemsProperty": "$Toppings",
+            "value": "=@ToppingsEntity"
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Toppings?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "add tomato and lettuce"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Set toppings to tomato and lettuce"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "remove tomato"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "tomato has been removed"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "$Toppings"
+      ]
+    }
+
+  ]
+}

@@ -1,0 +1,8 @@
+
+# test
+- add {{@AddToSauces={@SaucesEntity=yellow}}, {{@AddToSauces={@SaucesEntity=mustard}} and {{@AddToSauces={@SaucesEntity=yellow}}
+- add {{@AddToSauces={@SaucesEntity=mustard}}, {{@AddToSauces={@SaucesEntity=mustard}} and {{@AddToSauces={@SaucesEntity=dijon mustard}}
+- add {{@AddToSauces={@SaucesEntity=mustard}}, {{@AddToSauces={@SaucesEntity=yellow}} and {{@AddToSauces={@SaucesEntity=pepper}}
+
+@ml AddToSauces = 
+    - @ml SaucesEntity

@@ -1,0 +1,139 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_fooBar",
+      "Body": "",
+      "Name": "fooBar",
+      "Type": "ml",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 12
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_x1",
+      "Body": "",
+      "Name": "x1",
+      "Type": "ml",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 8
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_number",
+      "Body": "",
+      "Name": "number",
+      "Type": "prebuilt",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 4,
+          "Character": 0
+        },
+        "End": {
+          "Line": 4,
+          "Character": 18
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_l1",
+      "Body": "",
+      "Name": "l1",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 5,
+          "Character": 0
+        },
+        "End": {
+          "Line": 5,
+          "Character": 10
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_c1",
+      "Body": "",
+      "Name": "c1",
+      "Type": "composite",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 6,
+          "Character": 0
+        },
+        "End": {
+          "Line": 6,
+          "Character": 15
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_r1",
+      "Body": "",
+      "Name": "r1",
+      "Type": "regex",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 7,
+          "Character": 0
+        },
+        "End": {
+          "Line": 7,
+          "Character": 11
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_fooBar",
+      "Body": "",
+      "Name": "fooBar",
+      "Features": "x1, number, l1, c1, r1",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 8,
+          "Character": 0
+        },
+        "End": {
+          "Line": 8,
+          "Character": 44
+        }
+      }
+    }
+  ],
+  "Content": "\n@ ml fooBar\n@ ml x1\n@ prebuilt number\n@ list l1\n@ composite c1\n@ regex r1\n@fooBar usesFeatures x1, number, l1, c1, r1\n",
+  "Errors": []
+}

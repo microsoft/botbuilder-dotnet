@@ -1,0 +1,9 @@
+
+# test intent
+- foo
+
+@ ml "test ml entity"
+
+@ phraselist "test pl"
+
+@ ml "another entity" usesFeatures "test intent", "test ml entity", "test pl"

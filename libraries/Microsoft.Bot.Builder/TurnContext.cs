@@ -322,6 +322,14 @@ namespace Microsoft.Bot.Builder
                     {
                         var activity = bufferedActivities[index];
                         BufferedReplyActivities.Add(activity);
+
+                        // Ensure the TurnState has the InvokeResponseKey, since this activity
+                        // is not being sent through the adapter, where it would be added to TurnState.
+                        if (activity.Type == ActivityTypesEx.InvokeResponse)
+                        {
+                            TurnState.Add(BotFrameworkAdapter.InvokeResponseKey, activity);
+                        }
+
                         responses[index] = new ResourceResponse();
 
                         sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;

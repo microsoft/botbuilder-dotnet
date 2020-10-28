@@ -1,0 +1,6 @@
+@ list foo=
+@ ml operation=
+    - @foo foo
+
+# Test
+- Pattern {foo}

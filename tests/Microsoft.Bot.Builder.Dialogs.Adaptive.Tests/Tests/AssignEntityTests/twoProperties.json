@@ -1,0 +1,53 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "Bread": {
+      "type": "string",
+      "enum": [
+        "multiGrainWheat",
+        "rye",
+        "white",
+        "wholeWheat"
+      ],
+      "$entities": [
+        "BreadEntity"
+      ]
+    },
+    "Toppings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "tomato",
+          "lettuce",
+          "pickles",
+          "greenPeppers",
+          "redPepppers",
+          "whiteOnions",
+          "redOnions"
+        ],
+        "maxItems": 3
+      },
+      "$entities": [
+        "ToppingsEntity"
+      ]
+    }
+  },
+  "required": [
+    "Bread",
+    "Toppings"
+  ],
+  "$operations": [
+    "Add()",
+    "Remove()",
+    "Clear()",
+    "Show()",
+    "Help()"
+  ],
+  "$defaultOperation": {
+    "": {
+      "": "Add()"
+    }
+  }
+}

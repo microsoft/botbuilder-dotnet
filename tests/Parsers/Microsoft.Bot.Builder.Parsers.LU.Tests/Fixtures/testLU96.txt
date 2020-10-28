@@ -1,0 +1,3 @@
+
+@ml xyz1 = 
+    - @ ml 'x y z'

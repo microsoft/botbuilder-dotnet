@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -56,8 +55,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var dialogArgs = ValidateBeginDialogArgs(options);
 
-            await dc.Context.TraceActivityAsync($"{GetType().Name}.BeginDialogAsync()", label: $"Using activity of type: {dialogArgs.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
-
             // Create deep clone of the original activity to avoid altering it before forwarding it.
             var skillActivity = ObjectPath.Clone(dialogArgs.Activity);
 
@@ -99,12 +96,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return EndOfTurn;
             }
 
-            await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: $"ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
-
             // Handle EndOfConversation from the skill (this will be sent to the this dialog by the SkillHandler if received from the Skill)
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
-                await dc.Context.TraceActivityAsync($"{GetType().Name}.ContinueDialogAsync()", label: $"Got {ActivityTypes.EndOfConversation}", cancellationToken: cancellationToken).ConfigureAwait(false);
                 return await dc.EndDialogAsync(dc.Context.Activity.Value, cancellationToken).ConfigureAwait(false);
             }
 
@@ -178,7 +172,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Send of of conversation to the skill if the dialog has been cancelled. 
             if (reason == DialogReason.CancelCalled || reason == DialogReason.ReplaceCalled)
             {
-                await turnContext.TraceActivityAsync($"{GetType().Name}.EndDialogAsync()", label: $"ActivityType: {turnContext.Activity.Type}", cancellationToken: cancellationToken).ConfigureAwait(false);
                 var activity = (Activity)Activity.CreateEndOfConversationActivity();
 
                 // Apply conversation reference and common properties from incoming activity before sending.
@@ -258,6 +251,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             Activity eocActivity = null;
             if (activity.DeliveryMode == DeliveryModes.ExpectReplies && response.Body.Activities != null && response.Body.Activities.Any())
             {
+                // Track sent invoke responses, so more than one is not sent.
+                bool sentInvokeResponse = false;
+
                 // Process replies in the response.Body.
                 foreach (var activityFromSkill in response.Body.Activities)
                 {
@@ -269,16 +265,29 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // The conversation has ended, so cleanup the conversation id.
                         await DialogOptions.ConversationIdFactory.DeleteConversationReferenceAsync(skillConversationId, cancellationToken).ConfigureAwait(false);
                     }
-                    else if (await InterceptOAuthCardsAsync(context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
+                    else if (!sentInvokeResponse && await InterceptOAuthCardsAsync(context, activityFromSkill, DialogOptions.ConnectionName, cancellationToken).ConfigureAwait(false))
                     {
                         // do nothing. Token exchange succeeded, so no OAuthCard needs to be shown to the user
+                        sentInvokeResponse = true;
                     }
                     else
                     {
-                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse && activityFromSkill.Value is JObject jObject)
+                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse)
                         {
+                            // An invoke respones has already been sent.  This is a bug in the skill.  Multiple invoke responses
+                            // are not possible.
+                            if (sentInvokeResponse)
+                            {
+                                continue;
+                            }
+
+                            sentInvokeResponse = true;
+
                             // Ensure the value in the invoke response is of type InvokeResponse (it gets deserialized as JObject by default).
-                            activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                            if (activityFromSkill.Value is JObject jObject)
+                            {
+                                activityFromSkill.Value = jObject.ToObject<InvokeResponse>();
+                            }
                         }
 
                         // Send the response back to the channel. 

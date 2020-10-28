@@ -365,6 +365,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             (result, error) = str.TryGetValue(data);
             Assert.Equal("c:\test\test\test", result);
             Assert.Null(error);
+
+            // test backtick in stringExpression
+            str = new StringExpression("test `name");
+            Assert.Equal("test `name", str.TryGetValue(data).Value);
+
+            str = new StringExpression("test //`name");
+            Assert.Equal("test //`name", str.TryGetValue(data).Value);
         }
 
         [Fact]
@@ -417,6 +424,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             val = new ValueExpression("c:\test\test\test");
             (result, error) = val.TryGetValue(data);
             Assert.Equal("c:\test\test\test", result);
+            Assert.Null(error);
+
+            // test backtick in valueExpression
+            val = new ValueExpression("name `backtick");
+            (result, error) = val.TryGetValue(data);
+            Assert.Equal("name `backtick", result);
+            Assert.Null(error);
+
+            val = new ValueExpression("name \\`backtick");
+            (result, error) = val.TryGetValue(data);
+            Assert.Equal("name \\`backtick", result);
             Assert.Null(error);
         }
 

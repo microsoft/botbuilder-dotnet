@@ -12,19 +12,25 @@ trigger: # ci trigger
   batch: true
   branches:
     include:
-     - main
+    - main
   paths:
     include:
-      - '*'
+    - '*'
     exclude:
-      - doc/
-      - specs/
-      - Changes.md
-      - LICENSE
-      - README.md
-      - UsingMyGet.md
+    - doc/
+    - specs/
+    - Changes.md
+    - LICENSE
+    - README.md
+    - UsingMyGet.md
 
-pr: none # no pr trigger
+pr: # pr trigger
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/yaml/botbuilder-dotnet-ci-facebook-test.yml
 
 variables:
   AppId: $(FacebookTestBotAppId)

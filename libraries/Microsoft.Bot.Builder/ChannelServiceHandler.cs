@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,6 @@ namespace Microsoft.Bot.Builder
     public class ChannelServiceHandler
     {
         private readonly AuthenticationConfiguration _authConfiguration;
-        private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
             _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
-            _channelProvider = channelProvider;
+            ChannelProvider = channelProvider;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// The channel provider that implements <see cref="IChannelProvider"/>.
         /// </value>
-        protected IChannelProvider ChannelProvider => _channelProvider;
+        protected IChannelProvider ChannelProvider { get; }
 
         /// <summary>
         /// Sends an activity to the end of a conversation.
@@ -510,24 +510,34 @@ namespace Microsoft.Bot.Builder
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Helper to authenticate the header.
+        /// </summary>
+        /// <remarks>
+        /// This code is very similar to the code in <see cref="JwtTokenValidation.AuthenticateRequest(IActivity, string, ICredentialProvider, IChannelProvider, AuthenticationConfiguration, HttpClient)"/>,
+        /// we should move this code somewhere in that library when we refactor auth, for now we keep it private to avoid adding more public static
+        /// functions that we will need to deprecate later.
+        /// </remarks>
         private async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
                 var isAuthDisabled = await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
-                if (isAuthDisabled)
+                if (!isAuthDisabled)
                 {
-                    // In the scenario where auth is disabled, we still want to have the
-                    // IsAuthenticated flag set in the ClaimsIdentity. To do this requires
-                    // adding in an empty claim.
-                    return new ClaimsIdentity(new List<Claim>(), "anonymous");
+                    // No auth header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
                 }
 
-                // No auth header. Auth is required. Request is not authorized.
-                throw new UnauthorizedAccessException();
+                // In the scenario where auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity.
+                // To do this requires adding in an empty claim.
+                // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
+                return SkillValidation.CreateAnonymousSkillClaim();
             }
 
-            return await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, "unknown", _authConfiguration).ConfigureAwait(false);
+            // Validate the header and extract claims.
+            return await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, ChannelProvider, "unknown", _authConfiguration).ConfigureAwait(false);
         }
     }
 }

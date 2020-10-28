@@ -1,6 +1,6 @@
 ﻿{
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
-    "title": "Microsoft Test IUserTokenMock",
+    "title": "User token mock",
     "description": "Components which derive from UserTokenMock class",
     "$role": "interface"
 }

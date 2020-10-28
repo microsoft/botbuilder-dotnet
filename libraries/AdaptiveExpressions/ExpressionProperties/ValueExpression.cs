@@ -133,7 +133,7 @@ namespace AdaptiveExpressions.Properties
                 }
 
                 // keep the string as quoted expression, which will be literal unless string interpolation is used.
-                this.ExpressionText = $"=`{stringOrExpression.Replace("\\", "\\\\")}`";
+                this.ExpressionText = $"=`{stringOrExpression.Replace("\\", "\\\\").Replace("`", "\\`")}`";
                 return;
             }
 

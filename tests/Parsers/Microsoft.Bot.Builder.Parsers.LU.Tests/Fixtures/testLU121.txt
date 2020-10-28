@@ -1,0 +1,16 @@
+
+# test
+- remove {@RemoveFromQuantity={@number=99}}
+
+@ml AddToQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+@ml RemoveFromQuantity = 
+    - @number number
+    - @PROPERTYName PROPERTYName
+
+@ prebuilt number hasRole Quantity
+@ list PROPERTYName
+    - Quantity:
+		- property
+

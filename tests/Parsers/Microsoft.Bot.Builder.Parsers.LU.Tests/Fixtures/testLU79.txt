@@ -1,0 +1,5 @@
+
+# test intent
+- I want {@food type = tomato}
+
+@ ml 'food type'
