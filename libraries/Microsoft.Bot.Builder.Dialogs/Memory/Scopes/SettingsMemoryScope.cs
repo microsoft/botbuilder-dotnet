@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -143,22 +144,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
         private static object ConvertNodeToObject(Node node)
         {
+            if (node.Children.Count == 0)
+            {
+                return new Dictionary<string, object>();
+            }
+
             // If the child is leaf node, return its value directly.
             if (node.Children.Count == 1 && node.Children[0].Children.Count == 0)
             {
                 return node.Children[0].Value;
             }
 
-            if (node.Children.All(u => int.TryParse(u.Value, out var number) && number >= 0))
+            // check if all the children are number format.
+            var pureNumberIndex = true;
+            var indexArray = new List<int>();
+            foreach (var child in node.Children)
+            {
+                if (int.TryParse(child.Value, out var number) && number >= 0)
+                {
+                    indexArray.Add(number);
+                }
+                else
+                {
+                    pureNumberIndex = false;
+                    break;
+                }
+            }
+
+            if (pureNumberIndex)
             {
                 // all children are int number, treat it as Array
-                var pairs = new List<Tuple<int, object>>();
-                node.Children.ForEach(u => pairs.Add(new Tuple<int, object>(int.Parse(u.Value, CultureInfo.InvariantCulture), ConvertNodeToObject(u))));
-                var maxIndex = pairs.Select(u => u.Item1).Max();
-                var list = new object[maxIndex + 1];
-                pairs.ForEach(p => list[p.Item1] = p.Item2);
+                var listResult = new object[indexArray.Max() + 1];
+                for (var i = 0; i < node.Children.Count; i++)
+                {
+                    listResult[indexArray[i]] = ConvertNodeToObject(node.Children[i]);
+                }
 
-                return list;
+                return listResult;
             }
 
             // Convert all children into dictionary
