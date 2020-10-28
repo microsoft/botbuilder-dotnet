@@ -16,7 +16,7 @@
                         }
                     },
                     "entities": {
-                        "Bread": [
+                        "BreadProperty": [
                             {
                                 "BreadEntity": [
                                     [
@@ -41,9 +41,9 @@
                             }
                         ],
                         "$instance": {
-                            "Bread": [
+                            "BreadProperty": [
                                 {
-                                    "type": "Bread",
+                                    "type": "BreadProperty",
                                     "text": "rye",
                                     "startIndex": 0,
                                     "length": 3,

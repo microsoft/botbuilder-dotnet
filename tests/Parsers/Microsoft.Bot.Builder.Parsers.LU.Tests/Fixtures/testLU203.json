@@ -1,0 +1,87 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_foo=",
+      "Body": "",
+      "Name": "foo=",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 1,
+          "Character": 0
+        },
+        "End": {
+          "Line": 1,
+          "Character": 12
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_operation=",
+      "Body": "",
+      "Name": "operation=",
+      "Type": "ml",
+      "ListBody": [ "    - @foo foo" ],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 15
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_Test",
+      "Body": "- Pattern {foo}",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "Pattern {foo}",
+          "entities": [
+            {
+              "type": "patternAnyEntities",
+              "entity": "foo",
+              "role": ""
+            }
+          ],
+          "errorMsgs": [],
+          "contextText": "- Pattern {foo}",
+          "range": {
+            "Start": {
+              "Line": 6,
+              "Character": 0
+            },
+            "End": {
+              "Line": 6,
+              "Character": 15
+            }
+          }
+        }
+      ],
+      "Entities": [],
+      "Name": "Test",
+      "IntentNameLine": "# Test",
+      "Range": {
+        "Start": {
+          "Line": 5,
+          "Character": 0
+        },
+        "End": {
+          "Line": 6,
+          "Character": 15
+        }
+      }
+    }
+  ],
+  "Content": "@ list foo=\n@ ml operation=\n    - @foo foo\n\n# Test\n- Pattern {foo}",
+  "Errors": []
+}

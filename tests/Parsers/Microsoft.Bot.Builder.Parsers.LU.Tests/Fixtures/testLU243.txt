@@ -1,0 +1,4 @@
+# test
+- I want {p = x {q = y} and {r = a} with} {foodType=tomato} and {foodType=orange}
+
+$ p : [q, r]

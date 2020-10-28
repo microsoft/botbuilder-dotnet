@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_xyz","Body":"","Name":"xyz","Type":"intent","Roles":"r1","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":25}}}],"Content":"\n@ intent xyz hasRoles r1\n","Errors":[]}

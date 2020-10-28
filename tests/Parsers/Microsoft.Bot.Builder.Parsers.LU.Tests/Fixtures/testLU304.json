@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"entitySection","Id":"entitySection_location","Body":"","Name":"location","Type":"seattle= role=fromCity","SynonymsOrPhraseList":["seattle"],"Range":{"Start":{"Line":1,"Character":0},"End":{"Line":2,"Character":9}}}],"Content":"$location:seattle= role=fromCity\n- seattle","Errors":[]}

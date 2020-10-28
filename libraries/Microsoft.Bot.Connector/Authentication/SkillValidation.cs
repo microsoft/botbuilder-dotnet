@@ -33,7 +33,9 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
                     "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",           // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",       // Auth for US Gov, 2.0 token
                 },
                 ValidateAudience = false, // Audience validation takes place manually in code.
                 ValidateLifetime = true,
@@ -85,6 +87,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public static bool IsSkillClaim(IEnumerable<Claim> claims)
         {
             var claimsList = claims.ToList();
+
+            if (claimsList.Any(c => c.Value == AuthenticationConstants.AnonymousSkillAppId && c.Type == AuthenticationConstants.AppIdClaim))
+            {
+                return true;
+            }
 
             var version = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.VersionClaim);
             if (string.IsNullOrWhiteSpace(version?.Value))
@@ -148,6 +155,15 @@ namespace Microsoft.Bot.Connector.Authentication
             await ValidateIdentityAsync(identity, credentials).ConfigureAwait(false);
 
             return identity;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="ClaimsIdentity"/> for an anonymous (unauthenticated) skill. 
+        /// </summary>
+        /// <returns>A <see cref="ClaimsIdentity"/> instance with authentication type set to <see cref="AuthenticationConstants.AnonymousAuthType"/> and a reserved <see cref="AuthenticationConstants.AnonymousSkillAppId"/> claim.</returns>
+        public static ClaimsIdentity CreateAnonymousSkillClaim()
+        {
+            return new ClaimsIdentity(new List<Claim> { new Claim(AuthenticationConstants.AppIdClaim, AuthenticationConstants.AnonymousSkillAppId) }, AuthenticationConstants.AnonymousAuthType);
         }
 
         internal static async Task ValidateIdentityAsync(ClaimsIdentity identity, ICredentialProvider credentials)

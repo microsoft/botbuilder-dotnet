@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_x1","Body":"","Name":"x1","Features":"city3","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":23}}}],"Content":"\n@ x1 usesFeature city3\n","Errors":[]}

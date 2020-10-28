@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Streaming
@@ -53,11 +54,22 @@ namespace Microsoft.Bot.Streaming
         /// </returns>
         public static string ReadBodyAsString(this ReceiveResponse response)
         {
+            return response.ReadBodyAsStringAsync().GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Serializes the body of this <see cref="ReceiveResponse"/> as a <see cref="string"/>.
+        /// </summary>
+        /// <param name="response">The current instance of <see cref="ReceiveResponse"/>.</param>
+        /// <returns>On success, an <see cref="string"/> of the data from the <see cref="ReceiveResponse"/> body.
+        /// </returns>
+        public static async Task<string> ReadBodyAsStringAsync(this ReceiveResponse response)
+        {
             var contentStream = response.Streams.FirstOrDefault();
 
             if (contentStream != null)
             {
-                return contentStream.Stream.ReadAsUtf8String();
+                return await contentStream.Stream.ReadAsUtf8StringAsync().ConfigureAwait(false);
             }
 
             return string.Empty;

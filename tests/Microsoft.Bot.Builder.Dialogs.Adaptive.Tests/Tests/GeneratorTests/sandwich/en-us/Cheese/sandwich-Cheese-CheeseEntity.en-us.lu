@@ -26,38 +26,38 @@
 		- cheese
 
 > Define property entity and optional value for Cheese property.
-@ ml Cheese usesFeature CheesePhrases
+@ ml CheeseProperty usesFeature CheesePhrases
     - @ CheeseEntity CheeseEntity
 
 > Define operations on 'Cheese' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Cheese usesFeature Cheese
+	-@ ml CheeseProperty usesFeature CheeseProperty
 		- @ CheeseEntity CheeseEntity
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Cheese usesFeature Cheese
+	-@ ml CheeseProperty usesFeature CheeseProperty
 		- @ CheeseEntity CheeseEntity
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Cheese usesFeature Cheese
+	-@ ml CheeseProperty usesFeature CheeseProperty
 		- @ CheeseEntity CheeseEntity
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Cheese usesFeature Cheese
+	-@ ml CheeseProperty usesFeature CheeseProperty
 		- @ CheeseEntity CheeseEntity
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Cheese usesFeature Cheese
+	-@ ml CheeseProperty usesFeature CheeseProperty
 		- @ CheeseEntity CheeseEntity
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Cheese usesFeature Cheese
+	-@ ml CheeseProperty usesFeature CheeseProperty
 		- @ CheeseEntity CheeseEntity
 
 
 > Add examples for operations on the 'Cheese' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Cheese with CheeseEntity
+>> entity: Standalone CheeseProperty with CheeseEntity
 - {@Cheese={@CheeseEntity=american}}
 - {@Cheese={@CheeseEntity=cheddar}}
 - {@Cheese={@CheeseEntity=feta}}
@@ -79,10 +79,10 @@
 - {@Cheese={@CheeseEntity=swiss} cheese}
 - {@Cheese={@CheeseEntity=none} cheese}
 
->> property: Standalone Cheese name
+>> property: Standalone CheeseProperty name
 - {@Cheese=cheese}
 
-> Add() examples for Cheese and CheeseEntity
+> Add() examples for CheeseProperty and CheeseEntity
 - {@Add()=add {@Cheese={@CheeseEntity=provolone} cheese}}
 - {@Add()=add {@Cheese={@CheeseEntity=american} cheese}}
 - {@Add()=add {@Cheese={@CheeseEntity=gouda} cheese}}
@@ -96,7 +96,7 @@
 - {@Add()={@Cheese=cheese of {@CheeseEntity=none}}}
 - {@Add()={@Cheese=cheese of {@CheeseEntity=pepper}}}
 
-> Remove() examples for Cheese and CheeseEntity
+> Remove() examples for CheeseProperty and CheeseEntity
 - {@Remove()=remove {@Cheese={@CheeseEntity=none}}
 - {@Remove()=remove {@Cheese={@CheeseEntity=provolone}}
 - {@Remove()=remove {@Cheese={@CheeseEntity=swiss}}
@@ -104,22 +104,22 @@
 - {@Remove()=with no {@CheeseEntity=jack} cheese}
 - {@Remove()=with no {@CheeseEntity=swiss} cheese}
 
-> Clear() examples for Cheese
+> Clear() examples for CheeseProperty
 - {@Clear()=clear {@Cheese=cheese}}
 - {@Clear()=reset {@Cheese=cheese}}
 
-> Show() examples for Cheese
+> Show() examples for CheeseProperty
 - {@Show()=show {@Cheese=cheese}}
 - {@Show()=value of {@Cheese=cheese}}
 - {@Show()={@Cheese=cheese} values}
 - {@Show()={@Cheese=cheese} selection}
 
-> Help() examples for Cheese
+> Help() examples for CheeseProperty
 - {@Help()=help {@Cheese=cheese}}
 - {@Help()=what can I say for {@Cheese=cheese}}
 - {@Help()={@Cheese=cheese} help}
 
-> Change() examples for Cheese
+> Change() examples for CheeseProperty
 - {@Change()=change {@Cheese=cheese}}
 - {@Change()=goto {@Cheese=cheese}}
 

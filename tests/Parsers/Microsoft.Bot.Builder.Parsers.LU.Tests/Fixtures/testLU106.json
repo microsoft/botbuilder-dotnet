@@ -1,0 +1,44 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_list1",
+      "Body": "",
+      "Name": "list1",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 13
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_1",
+      "Body": "",
+      "Name": "1",
+      "Type": "ml",
+      "ListBody": [ "- @ list1 l1", "- @ ml " ],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 5,
+          "Character": 8
+        }
+      }
+    }
+  ],
+  "Content": "\n@ list list1\n@ml 1 = \n- @ list1 l1\n- @ ml \n",
+  "Errors": []
+}

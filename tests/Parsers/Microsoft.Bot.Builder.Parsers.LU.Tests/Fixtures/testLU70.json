@@ -1,0 +1,254 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_s1",
+      "Body": "",
+      "Name": "s1",
+      "Type": "ml",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 8
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_l1",
+      "Body": "",
+      "Name": "l1",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 10
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_c1",
+      "Body": "",
+      "Name": "c1",
+      "Type": "composite",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 4,
+          "Character": 0
+        },
+        "End": {
+          "Line": 4,
+          "Character": 15
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_number",
+      "Body": "",
+      "Name": "number",
+      "Type": "prebuilt",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 5,
+          "Character": 0
+        },
+        "End": {
+          "Line": 5,
+          "Character": 18
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_r1",
+      "Body": "",
+      "Name": "r1",
+      "Type": "regex",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 6,
+          "Character": 0
+        },
+        "End": {
+          "Line": 6,
+          "Character": 11
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_PL1",
+      "Body": "",
+      "Name": "PL1",
+      "Type": "phraselist",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 7,
+          "Character": 0
+        },
+        "End": {
+          "Line": 7,
+          "Character": 17
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test",
+      "Body": "- one\r\n@ intent test usesFeatures s1, l1, c1, number, r1, PL1",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "one",
+          "entities": [],
+          "errorMsgs": [],
+          "contextText": "- one",
+          "range": {
+            "Start": {
+              "Line": 9,
+              "Character": 0
+            },
+            "End": {
+              "Line": 9,
+              "Character": 5
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_test",
+          "Body": "",
+          "Name": "test",
+          "Type": "intent",
+          "Features": "s1, l1, c1, number, r1, PL1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 10,
+              "Character": 0
+            },
+            "End": {
+              "Line": 10,
+              "Character": 55
+            }
+          }
+        }
+      ],
+      "Name": "test",
+      "IntentNameLine": "# test",
+      "Range": {
+        "Start": {
+          "Line": 8,
+          "Character": 0
+        },
+        "End": {
+          "Line": 10,
+          "Character": 54
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test2",
+      "Body": "- one\r\n@ s1 usesFeature test2, l1, c1, number, r1, PL1\r\n@ c1 usesFeature test2, l1, number, r1, PL1, s1\r\n",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "one",
+          "entities": [],
+          "errorMsgs": [],
+          "contextText": "- one",
+          "range": {
+            "Start": {
+              "Line": 12,
+              "Character": 0
+            },
+            "End": {
+              "Line": 12,
+              "Character": 5
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_s1",
+          "Body": "",
+          "Name": "s1",
+          "Features": "test2, l1, c1, number, r1, PL1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 13,
+              "Character": 0
+            },
+            "End": {
+              "Line": 13,
+              "Character": 48
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_c1",
+          "Body": "",
+          "Name": "c1",
+          "Features": "test2, l1, number, r1, PL1, s1",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 14,
+              "Character": 0
+            },
+            "End": {
+              "Line": 14,
+              "Character": 48
+            }
+          }
+        }
+      ],
+      "Name": "test2",
+      "IntentNameLine": "# test2",
+      "Range": {
+        "Start": {
+          "Line": 11,
+          "Character": 0
+        },
+        "End": {
+          "Line": 15,
+          "Character": 0
+        }
+      }
+    }
+  ],
+  "Content": "\n@ ml s1\n@ list l1\n@ composite c1\n@ prebuilt number\n@ regex r1\n@ phraselist PL1\n# test\n- one\n@ intent test usesFeatures s1, l1, c1, number, r1, PL1\n# test2\n- one\n@ s1 usesFeature test2, l1, c1, number, r1, PL1\n@ c1 usesFeature test2, l1, number, r1, PL1, s1\n",
+  "Errors": []
+}

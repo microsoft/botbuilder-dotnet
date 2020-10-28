@@ -1,0 +1,2 @@
+
+@ composite "test composite"

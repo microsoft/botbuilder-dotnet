@@ -1,0 +1,66 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "autoEndDialog": false,
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "SkillIntent",
+                    "pattern": "skill"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "autoEndDialog": false,
+                "intent": "SkillIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.BeginSkill",
+                        "BotId": "test-bot-id",
+                        "SkillHostEndpoint": "http://localhost:3978/api/skills/",
+                        "SkillEndpoint": "http://localhost:39782/api/messages",
+                        "SkillAppId": "test-app-id",
+                        "ConnectionName": "test-skill-connection-name",
+                        "AllowInterruptions": false,
+                        "activity": {
+                            "$kind": "Microsoft.StaticActivityTemplate",
+                            "activity": {
+                                "type": "message",
+                                "text": "skill",
+                                "deliveryMode": "expectReplies"
+                            }
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Success"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "skill"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "This is the skill talking: hello"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "end"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Success"
+        }
+    ]
+}

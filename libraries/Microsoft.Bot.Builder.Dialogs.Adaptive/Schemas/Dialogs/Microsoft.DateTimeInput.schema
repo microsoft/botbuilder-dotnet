@@ -8,7 +8,7 @@
         "defaultValue": {
             "$ref": "schema:#/definitions/stringExpression",
             "format": "date-time",
-            "title": "Default Date",
+            "title": "Default date",
             "description": "'Property' will be set to the value or the result of the expression when max turn count is exceeded.",
             "examples": [
                 "=user.birthday"

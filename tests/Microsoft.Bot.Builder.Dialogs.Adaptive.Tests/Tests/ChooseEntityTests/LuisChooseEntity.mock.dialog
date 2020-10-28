@@ -12,7 +12,7 @@
               "topIntent": "sandwich",
               "intents": { "sandwich": { "score": 0.9939042 } },
               "entities": {
-                "Bread": [
+                "BreadProperty": [
                   {
                     "BreadEntity": [ [ "multiGrainWheat", "wholeWheat" ] ],
                     "$instance": {
@@ -31,9 +31,9 @@
                   }
                 ],
                 "$instance": {
-                  "Bread": [
+                  "BreadProperty": [
                     {
-                      "type": "Bread",
+                      "type": "BreadProperty",
                       "text": "wheat",
                       "startIndex": 0,
                       "length": 5,

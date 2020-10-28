@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_fooBar","Body":"","Name":"fooBar","Type":"ml","ListBody":[],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":2,"Character":16}}}],"Content":"\n    @ ml fooBar\n","Errors":[]}

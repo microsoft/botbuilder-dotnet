@@ -1,0 +1,3 @@
+
+@ list l1 usesFeature s2
+@ ml s2 usesFeature l1

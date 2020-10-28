@@ -92,6 +92,8 @@
     <None Remove="ExceptionExamples\RunTimeErrors.lg" />
     <None Remove="ExceptionExamples\ExpressionFormatError.lg" />
     <None Remove="ExceptionExamples\ErrorLine.lg" />
+    <None Remove="ExceptionExamples\CycleRef1.lg" />
+    <None Remove="ExceptionExamples\CycleRef2.lg" />
     <None Remove="MultiLanguage\a.lg" />
     <None Remove="MultiLanguage\a.en.lg" />
   </ItemGroup>
@@ -332,6 +334,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ErrorLine.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\CycleRef1.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\CycleRef2.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MultiLanguage\a.lg">

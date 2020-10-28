@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"entitySection","Id":"entitySection_Want","Body":"","Name":"Want","Type":"PhraseList roles=[foo,bar]","SynonymsOrPhraseList":["require, need, desire, know"],"Range":{"Start":{"Line":1,"Character":0},"End":{"Line":2,"Character":29}}}],"Content":"$Want:PhraseList roles=[foo,bar]\n- require, need, desire, know","Errors":[]}

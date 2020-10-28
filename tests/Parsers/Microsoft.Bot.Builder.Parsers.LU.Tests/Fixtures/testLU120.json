@@ -1,0 +1,142 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "simpleIntentSection",
+      "Id": "simpleIntentSection_test",
+      "Body": "- add {@AddToQuantity={@number=1000}}\r\n\r\n@ml AddToQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n@ml RemoveFromQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n\r\n@ list PROPERTYName\r\n    - Quantity:\r\n\t\t- property\r\n\r\n@ prebuilt number\r\n        ",
+      "UtteranceAndEntitiesMap": [
+        {
+          "utterance": "add 1000",
+          "entities": [
+            {
+              "type": "entities",
+              "entity": "@number",
+              "role": "",
+              "startPos": 4,
+              "endPos": 7
+            },
+            {
+              "type": "entities",
+              "entity": "@AddToQuantity",
+              "role": "",
+              "startPos": 4,
+              "endPos": 7
+            }
+          ],
+          "errorMsgs": [],
+          "contextText": "- add {@AddToQuantity={@number=1000}}",
+          "range": {
+            "Start": {
+              "Line": 3,
+              "Character": 0
+            },
+            "End": {
+              "Line": 3,
+              "Character": 37
+            }
+          }
+        }
+      ],
+      "Entities": [
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_AddToQuantity",
+          "Body": "",
+          "Name": "AddToQuantity",
+          "Type": "ml",
+          "ListBody": [ "    - @number number", "    - @PROPERTYName PROPERTYName" ],
+          "Range": {
+            "Start": {
+              "Line": 5,
+              "Character": 0
+            },
+            "End": {
+              "Line": 7,
+              "Character": 33
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_RemoveFromQuantity",
+          "Body": "",
+          "Name": "RemoveFromQuantity",
+          "Type": "ml",
+          "ListBody": [ "    - @number number", "    - @PROPERTYName PROPERTYName" ],
+          "Range": {
+            "Start": {
+              "Line": 8,
+              "Character": 0
+            },
+            "End": {
+              "Line": 10,
+              "Character": 33
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_PROPERTYName",
+          "Body": "",
+          "Name": "PROPERTYName",
+          "Type": "list",
+          "SynonymsList": [
+            {
+              "NormalizedValue": "Quantity",
+              "Synonyms": [
+                "property"
+              ]
+            }
+          ],
+          "Range": {
+            "Start": {
+              "Line": 12,
+              "Character": 0
+            },
+            "End": {
+              "Line": 14,
+              "Character": 13
+            }
+          }
+        },
+        {
+          "Errors": [],
+          "SectionType": "newEntitySection",
+          "Id": "newEntitySection_number",
+          "Body": "",
+          "Name": "number",
+          "Type": "prebuilt",
+          "ListBody": [],
+          "Range": {
+            "Start": {
+              "Line": 16,
+              "Character": 0
+            },
+            "End": {
+              "Line": 17,
+              "Character": 8
+            }
+          }
+        }
+      ],
+      "Name": "test",
+      "IntentNameLine": "# test",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 17,
+          "Character": 8
+        }
+      }
+    }
+  ],
+  "Content": "\n# test\n- add {@AddToQuantity={@number=1000}}\n\n@ml AddToQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n@ml RemoveFromQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n\n@ list PROPERTYName\n    - Quantity:\n\t\t- property\n\n@ prebuilt number\n        ",
+  "Errors": []
+}

@@ -28,7 +28,7 @@
             "Remove()": [
               {
                 "$instance": {
-                  "Toppings": [
+                  "ToppingsProperty": [
                     {
                       "length": 6,
                       "modelType": "Entity Extractor",
@@ -38,11 +38,11 @@
                       ],
                       "startIndex": 7,
                       "text": "tomato",
-                      "type": "Toppings"
+                      "type": "ToppingsProperty"
                     }
                   ]
                 },
-                "Toppings": [
+                "ToppingsProperty": [
                   {
                     "$instance": {
                       "ToppingsEntity": [

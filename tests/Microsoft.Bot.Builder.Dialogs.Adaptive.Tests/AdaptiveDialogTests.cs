@@ -474,6 +474,189 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .StartTestAsync();
         }
 
+        [Fact]
+        public async Task AdaptiveDialog_ReplaceParent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Replacing this dialog with a child"),
+                            new ReplaceDialog()
+                            {
+                                Dialog = "newDialog"
+                            },
+                            new SendActivity("You should not see these actions since this dialog has been replaced!")
+                        }
+                    }
+                }
+            };
+
+            var newDialog = new AdaptiveDialog("newDialog")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("This dialog (newDialog) will end after this message"),
+                        }
+                    }
+                },
+                AutoEndDialog = false
+            };
+
+            var dialogManager = new DialogManager(rootDialog);
+            dialogManager.Dialogs.Add(rootDialog);
+            dialogManager.Dialogs.Add(newDialog);
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .Send("hello")
+                    .AssertReply("Replacing this dialog with a child")
+                    .AssertReply("This dialog (newDialog) will end after this message")
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task AdaptiveDialog_ReplaceParentComplex_VerifyPostReplace()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var storage = new MemoryStorage();
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(new UserState(storage), new ConversationState(storage));
+
+            var outderDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+
+                //Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern()
+                        {
+                            Intent = "start",
+                            Pattern = "start"
+                        },
+                        new IntentPattern()
+                        {
+                            Intent = "where",
+                            Pattern = "where"
+                        }
+                    }
+                },
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Say 'start' to get started")
+                        }
+                    },
+
+                    // joke is always available if it is an interruption.
+                    new OnIntent()
+                    {
+                        Intent = "start",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Starting child dialog"),
+                            new BeginDialog()
+                            {
+                                Dialog = "root"
+                            },
+                            new SendActivity("child dialog has ended and returned back")
+                        }
+                    },
+                    new OnIntent()
+                    {
+                        Intent = "where",
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("outer dialog..")
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("Replacing this dialog with a child"),
+                            new ReplaceDialog()
+                            {
+                                Dialog = "newDialog"
+                            },
+                            new SendActivity("You should not see these actions since this dialog has been replaced!")
+                        }
+                    }
+                }
+            };
+
+            var newDialog = new AdaptiveDialog("newDialog")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("This dialog (newDialog) will end after this message")
+                        }
+                    }
+                }
+            };
+
+            var dialogManager = new DialogManager(outderDialog);
+            dialogManager.Dialogs.Add(rootDialog);
+            dialogManager.Dialogs.Add(newDialog);
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken);
+            })
+                .Send("hello")
+                    .AssertReply("Say 'start' to get started")
+                .Send("where")
+                    .AssertReply("outer dialog..")
+                .Send("start")
+                    .AssertReply("Starting child dialog")
+                    .AssertReply("Replacing this dialog with a child")
+                    .AssertReply("This dialog (newDialog) will end after this message")
+                    .AssertReply("child dialog has ended and returned back")
+                 .Send("where")
+                    .AssertReply("outer dialog..")
+                .StartTestAsync();
+        }
+
         private static AdaptiveDialog CreateDialog(string custom)
         {
             return new AdaptiveDialog()

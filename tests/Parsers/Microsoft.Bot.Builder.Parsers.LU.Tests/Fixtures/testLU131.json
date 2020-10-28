@@ -1,0 +1,83 @@
+{
+  "Sections": [
+    {
+      "Errors": [
+        {
+          "Message": "Invalid entity line, did you miss entity name after @",
+          "Range": {
+            "Start": {
+              "Line": 2,
+              "Character": 0
+            },
+            "End": {
+              "Line": 2,
+              "Character": 7
+            }
+          },
+          "Severity": "ERROR"
+        }
+      ],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_",
+      "Body": "",
+      "Name": "",
+      "Type": "ml",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 8
+        }
+      }
+    }
+  ],
+  "Content": "\n    @ml ml\n",
+  "Errors": [
+    {
+      "Message": "syntax error: no viable alternative at input ' ml'",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 8
+        },
+        "End": {
+          "Line": 2,
+          "Character": 10
+        }
+      },
+      "Severity": "ERROR"
+    },
+    {
+      "Message": "syntax error: extraneous input 'ml' expecting {<EOF>, WS, NEWLINE, QNA_SOURCE_INFO, MODEL_INFO, QNA, HASH, '$', '@', IMPORT, REFERENCE, QNA_ID_MARK}",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 8
+        },
+        "End": {
+          "Line": 2,
+          "Character": 10
+        }
+      },
+      "Severity": "ERROR"
+    },
+    {
+      "Message": "Invalid entity line, did you miss entity name after @",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 7
+        }
+      },
+      "Severity": "ERROR"
+    }
+  ]
+}

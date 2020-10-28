@@ -82,6 +82,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public string Locale { get; set; } = "en-us";
 
         /// <summary>
+        /// Gets or sets the language policy.
+        /// </summary>
+        /// <value>
+        /// the language policy.
+        /// </value>
+        [JsonProperty("languagePolicy")]
+#pragma warning disable CA2227 // Collection properties should be read only
+        public LanguagePolicy LanguagePolicy { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
         /// Gets the mock data for Microsoft.HttpRequest.
         /// </summary>
         /// <value>
@@ -120,9 +131,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// </summary>
         /// <param name="resourceExplorer">Resource explorer to use.</param>
         /// <param name="testName">Name of test.</param>
+        /// <param name="middlweare">Middleware to add to the adapter.</param>
         /// <returns>Test adapter.</returns>
 #pragma warning disable CA1801 // Review unused parameters (excluding for now but consider removing the resourceExplorer parameter if it is not needed)
-        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null)
+        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middlweare = null)
 #pragma warning restore CA1801 // Review unused parameters
         {
             var storage = new MemoryStorage();
@@ -135,6 +147,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
                 .Use(new SetTestOptionsMiddleware());
+
+            if (middlweare != null)
+            {
+                foreach (var m in middlweare)
+                {
+                    adapter.Use(m);
+                }
+            }
 
             adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
             return adapter;
@@ -149,13 +169,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// <param name="testName">Name of the test.</param>
         /// <param name="callback">The bot logic.</param>
         /// <param name="adapter">optional test adapter.</param>
-        /// <param name="languagePolicy">The default language policy.</param>
+        /// <param name="middlweare">Middleware to add to the adapter.</param>
         /// <returns>Runs the exchange between the user and the bot.</returns>
-        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null, LanguagePolicy languagePolicy = null)
+        public async Task ExecuteAsync(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, BotCallbackHandler callback = null, TestAdapter adapter = null, IEnumerable<IMiddleware> middlweare = null)
         {
             if (adapter == null)
             {
-                adapter = DefaultTestAdapter(resourceExplorer, testName);
+                adapter = DefaultTestAdapter(resourceExplorer, testName, middlweare);
             }
 
             adapter.EnableTrace = EnableTrace;
@@ -186,9 +206,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
 
-                if (languagePolicy != null)
+                if (LanguagePolicy != null)
                 {
-                    dm.UseLanguagePolicy(languagePolicy);
+                    dm.UseLanguagePolicy(LanguagePolicy);
                 }
 
                 callback = dm.OnTurnAsync;

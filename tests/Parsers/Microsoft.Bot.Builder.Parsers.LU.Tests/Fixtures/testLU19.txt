@@ -1,0 +1,3 @@
+$deviceTemperature : [p1; child2]
+    # testIntent
+    - I'm {p1}
