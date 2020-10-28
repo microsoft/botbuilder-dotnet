@@ -23,9 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="OrdinalEntityRecognizer"/> class.
         /// </summary>
+        [JsonConstructor]
+        public OrdinalEntityRecognizer()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrdinalEntityRecognizer"/> class.
+        /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
-        [JsonConstructor]
         public OrdinalEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
         {

@@ -23,9 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberEntityRecognizer"/> class.
         /// </summary>
+        [JsonConstructor]
+        public NumberEntityRecognizer()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NumberEntityRecognizer"/> class.
+        /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
-        [JsonConstructor]
         public NumberEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
         {

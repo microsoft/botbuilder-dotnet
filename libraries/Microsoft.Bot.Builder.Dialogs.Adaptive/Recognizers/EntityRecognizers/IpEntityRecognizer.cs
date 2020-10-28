@@ -23,9 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="IpEntityRecognizer"/> class.
         /// </summary>
+        [JsonConstructor]
+        public IpEntityRecognizer()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IpEntityRecognizer"/> class.
+        /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
-        [JsonConstructor]
         public IpEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
         {
