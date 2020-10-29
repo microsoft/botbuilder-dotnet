@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The dialogs referenced in this dialog contaner.</value>
         [JsonProperty("dialogs")]
 #pragma warning disable CA2227 // Collection properties should be read only
-        public List<string> RefereceDialogs { get; set; }
+        public List<string> RefereceDialogs { get; set; } = new List<string>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
