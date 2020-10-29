@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 var instance = new JArray();
                 var data = JObject.FromObject(topAnswer);
                 data["startIndex"] = 0;
-                data["endIndex"] = activity.Text.Length;
+                data["endIndex"] = activity.Text.Length - 1;
                 instance.Add(data);
                 ObjectPath.SetPathValue(recognizerResult, "entities.$instance.answer", instance);
 

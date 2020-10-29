@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 Text = text,
             };
-            
+
             if (string.IsNullOrWhiteSpace(text))
             {
                 // nothing to recognize, return empty recognizerResult
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // map entityPool of Entity objects => RecognizerResult entity format
             recognizerResult.Entities = new JObject();
 
-            foreach (var entityResult in entityPool)
+            foreach (var entityResult in entityPool.Where(entity => entity != textEntity))
             {
                 // add value
                 JToken values;

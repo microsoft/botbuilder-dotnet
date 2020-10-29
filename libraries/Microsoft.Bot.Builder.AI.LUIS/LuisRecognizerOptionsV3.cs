@@ -85,9 +85,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
                                             && childInstance.ContainsKey("startIndex")
                                             && childInstance.ContainsKey("endIndex"))
                                         {
-                                            var start = childInstance["startIndex"].Value<int>();
-                                            var end = childInstance["endIndex"].Value<int>();
-                                            options.ExternalEntities.Add(new LuisV3.ExternalEntity(child.Key, start, end - start, child.Value));
+                                            var startIndex = childInstance["startIndex"].Value<int>();
+                                            var endIndex = childInstance["endIndex"].Value<int>();
+                                            var length = (endIndex + 1) - startIndex;
+                                            options.ExternalEntities.Add(new LuisV3.ExternalEntity(child.Key, startIndex, length, child.Value));
                                         }
                                     }
                                 }
