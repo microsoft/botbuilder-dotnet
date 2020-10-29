@@ -497,6 +497,16 @@ namespace AdaptiveExpressions.Tests
             Test("bag.name == null ? \"hello\": bag.name", "mybag"),
             Test("one > 0? one : two", 1),
             Test("hello * 5?'r1':'r2'", "r2"),
+            Test("timestampObj < timestampObj2", false),
+            Test("timestampObj2 < timestampObj", true),
+            Test("timestampObj > timestampObj2", true),
+            Test("timestampObj2 > timestampObj", false),
+            Test("timestampObj >= timestampObj2", true),
+            Test("timestampObj2 >= timestampObj", false),
+            Test("timestampObj <= timestampObj2", false),
+            Test("timestampObj2 <= timestampObj", true),
+            Test("timestampObj == timestampObj2", false),
+            Test("timestampObj == timestampObj", true),
             #endregion
 
             #region  String functions test
@@ -615,7 +625,9 @@ namespace AdaptiveExpressions.Tests
             Test("less(5, 2)", false),
             Test("less(2, 2)", false),
             Test("less(one, two)", true),
-            Test("less(one, two)", true, OneTwo),
+            Test("less(false, true)", true),
+            Test("less(one, two)", true),
+            Test("less('abc', 'xyz')", true),
             Test("lessOrEquals(one, one)", true, new HashSet<string> { "one" }),
             Test("lessOrEquals(one, two)", true, OneTwo),
             Test("lessOrEquals(one, one)", true),

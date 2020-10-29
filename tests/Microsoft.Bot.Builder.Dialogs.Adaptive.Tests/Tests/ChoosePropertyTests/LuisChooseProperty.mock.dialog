@@ -24,7 +24,7 @@
                       "type": "CheeseEntity"
                     }
                   ],
-                  "Meat": [
+                  "MeatProperty": [
                     {
                       "length": 4,
                       "modelType": "Entity Extractor",
@@ -34,7 +34,7 @@
                       ],
                       "startIndex": 0,
                       "text": "none",
-                      "type": "Meat"
+                      "type": "MeatProperty"
                     }
                   ]
                 },
@@ -43,7 +43,7 @@
                     "none"
                   ]
                 ],
-                "Meat": [
+                "MeatProperty": [
                   {
                     "$instance": {
                       "MeatEntity": [

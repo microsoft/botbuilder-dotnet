@@ -28,7 +28,7 @@
                 "Add()": [
                   {
                     "$instance": {
-                      "Toppings": [
+                      "ToppingsProperty": [
                         {
                           "length": 18,
                           "modelType": "Entity Extractor",
@@ -38,11 +38,11 @@
                           ],
                           "startIndex": 4,
                           "text": "tomato and lettuce",
-                          "type": "Toppings"
+                          "type": "ToppingsProperty"
                         }
                       ]
                     },
-                    "Toppings": [
+                    "ToppingsProperty": [
                       {
                         "$instance": {
                           "ToppingsEntity": [
