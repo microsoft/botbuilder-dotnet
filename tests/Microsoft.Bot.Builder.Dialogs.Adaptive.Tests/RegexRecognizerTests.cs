@@ -69,6 +69,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             ValidateCodeIntent(result);
 
+            // verify seed text is not exposed
+            dynamic entities = result.Entities;
+            Assert.Null(entities.text);
+            Assert.NotNull(entities.code);
+
             dc = CreateContext("I would like color red and orange");
             result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             ValidateColorIntent(result);
