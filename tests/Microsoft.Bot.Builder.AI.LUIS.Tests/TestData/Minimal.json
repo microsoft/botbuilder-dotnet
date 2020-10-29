@@ -22,7 +22,7 @@
   },
   "intents": {
     "Roles": {
-      "score": 0.446264923
+      "score": 0.42429316
     }
   },
   "sentiment": {
@@ -124,7 +124,7 @@
         },
         "intents": {
           "Roles": {
-            "score": 0.446264923
+            "score": 0.42429316
           }
         },
         "normalizedQuery": "fly on delta at 3pm",

@@ -825,7 +825,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             return new MockedHttpClientHandler(mockMessageHandler.ToHttpClient());
         }
 
-        private string GetRequestUrl() => $"{Endpoint}/luis/v3.0-preview/apps/{AppId}/*";
+        private string GetRequestUrl() => $"{Endpoint}/luis/v3.0/apps/{AppId}/*";
 
         private Stream GetResponse(string fileName)
         {

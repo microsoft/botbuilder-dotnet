@@ -1,6 +1,18 @@
 {
   "entities": {
     "$instance": {
+      "begin": [
+        {
+          "endIndex": 12,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 0,
+          "text": "12 years old",
+          "type": "builtin.age"
+        }
+      ],
       "Composite1": [
         {
           "endIndex": 306,
@@ -8,13 +20,25 @@
           "recognitionSources": [
             "model"
           ],
-          "score": 0.880988955,
+          "score": 0.9074669,
           "startIndex": 0,
           "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
           "type": "Composite1"
         }
       ],
-      "ordinalV2": [
+      "end": [
+        {
+          "endIndex": 27,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 17,
+          "text": "3 days old",
+          "type": "builtin.age"
+        }
+      ],
+      "endpos": [
         {
           "endIndex": 47,
           "modelType": "Prebuilt Entity Extractor",
@@ -24,7 +48,21 @@
           "startIndex": 44,
           "text": "3rd",
           "type": "builtin.ordinalV2"
-        },
+        }
+      ],
+      "max": [
+        {
+          "endIndex": 167,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 162,
+          "text": "$4.25",
+          "type": "builtin.currency"
+        }
+      ],
+      "ordinalV2": [
         {
           "endIndex": 199,
           "modelType": "Prebuilt Entity Extractor",
@@ -57,31 +95,15 @@
         }
       ]
     },
+    "begin": [
+      {
+        "number": 12,
+        "units": "Year"
+      }
+    ],
     "Composite1": [
       {
         "$instance": {
-          "age": [
-            {
-              "endIndex": 12,
-              "modelType": "Prebuilt Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "startIndex": 0,
-              "text": "12 years old",
-              "type": "builtin.age"
-            },
-            {
-              "endIndex": 27,
-              "modelType": "Prebuilt Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "startIndex": 17,
-              "text": "3 days old",
-              "type": "builtin.age"
-            }
-          ],
           "datetime": [
             {
               "endIndex": 8,
@@ -178,16 +200,6 @@
               "startIndex": 155,
               "text": "$4",
               "type": "builtin.currency"
-            },
-            {
-              "endIndex": 167,
-              "modelType": "Prebuilt Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "startIndex": 162,
-              "text": "$4.25",
-              "type": "builtin.currency"
             }
           ],
           "number": [
@@ -198,7 +210,6 @@
                 "model"
               ],
               "startIndex": 0,
-              "subtype": "integer",
               "text": "12",
               "type": "builtin.number"
             },
@@ -209,7 +220,6 @@
                 "model"
               ],
               "startIndex": 17,
-              "subtype": "integer",
               "text": "3",
               "type": "builtin.number"
             },
@@ -220,7 +230,6 @@
                 "model"
               ],
               "startIndex": 49,
-              "subtype": "integer",
               "text": "2019",
               "type": "builtin.number"
             },
@@ -231,7 +240,6 @@
                 "model"
               ],
               "startIndex": 91,
-              "subtype": "integer",
               "text": "5",
               "type": "builtin.number"
             },
@@ -242,7 +250,6 @@
                 "model"
               ],
               "startIndex": 102,
-              "subtype": "integer",
               "text": "4",
               "type": "builtin.number"
             },
@@ -253,7 +260,6 @@
                 "model"
               ],
               "startIndex": 114,
-              "subtype": "integer",
               "text": "4",
               "type": "builtin.number"
             },
@@ -264,7 +270,6 @@
                 "model"
               ],
               "startIndex": 156,
-              "subtype": "integer",
               "text": "4",
               "type": "builtin.number"
             },
@@ -275,7 +280,6 @@
                 "model"
               ],
               "startIndex": 163,
-              "subtype": "decimal",
               "text": "4.25",
               "type": "builtin.number"
             },
@@ -286,7 +290,6 @@
                 "model"
               ],
               "startIndex": 177,
-              "subtype": "integer",
               "text": "32",
               "type": "builtin.number"
             },
@@ -297,7 +300,6 @@
                 "model"
               ],
               "startIndex": 184,
-              "subtype": "decimal",
               "text": "210.4",
               "type": "builtin.number"
             },
@@ -308,7 +310,6 @@
                 "model"
               ],
               "startIndex": 204,
-              "subtype": "integer",
               "text": "10",
               "type": "builtin.number"
             },
@@ -319,7 +320,6 @@
                 "model"
               ],
               "startIndex": 212,
-              "subtype": "decimal",
               "text": "10.5",
               "type": "builtin.number"
             },
@@ -330,7 +330,6 @@
                 "model"
               ],
               "startIndex": 222,
-              "subtype": "integer",
               "text": "425",
               "type": "builtin.number"
             },
@@ -341,7 +340,6 @@
                 "model"
               ],
               "startIndex": 226,
-              "subtype": "integer",
               "text": "555",
               "type": "builtin.number"
             },
@@ -352,7 +350,6 @@
                 "model"
               ],
               "startIndex": 230,
-              "subtype": "integer",
               "text": "1234",
               "type": "builtin.number"
             },
@@ -363,7 +360,6 @@
                 "model"
               ],
               "startIndex": 239,
-              "subtype": "integer",
               "text": "3",
               "type": "builtin.number"
             },
@@ -374,7 +370,6 @@
                 "model"
               ],
               "startIndex": 253,
-              "subtype": "decimal",
               "text": "-27.5",
               "type": "builtin.number"
             },
@@ -385,7 +380,6 @@
                 "model"
               ],
               "startIndex": 282,
-              "subtype": "integer",
               "text": "one",
               "type": "builtin.number"
             },
@@ -396,7 +390,6 @@
                 "model"
               ],
               "startIndex": 303,
-              "subtype": "integer",
               "text": "one",
               "type": "builtin.number"
             }
@@ -459,16 +452,6 @@
             }
           ]
         },
-        "age": [
-          {
-            "number": 12,
-            "units": "Year"
-          },
-          {
-            "number": 3,
-            "units": "Day"
-          }
-        ],
         "datetime": [
           {
             "timex": [
@@ -518,10 +501,6 @@
           {
             "number": 4,
             "units": "Dollar"
-          },
-          {
-            "number": 4.25,
-            "units": "Dollar"
           }
         ],
         "number": [
@@ -564,11 +543,25 @@
         ]
       }
     ],
-    "ordinalV2": [
+    "end": [
+      {
+        "number": 3,
+        "units": "Day"
+      }
+    ],
+    "endpos": [
       {
         "offset": 3,
         "relativeTo": "start"
-      },
+      }
+    ],
+    "max": [
+      {
+        "number": 4.25,
+        "units": "Dollar"
+      }
+    ],
+    "ordinalV2": [
       {
         "offset": 1,
         "relativeTo": "start"
@@ -585,37 +578,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 1.56337478E-06
+      "score": 1.54311692E-06
     },
     "Delivery": {
-      "score": 0.0002846266
+      "score": 0.000280677923
     },
     "EntityTests": {
-      "score": 0.953405857
+      "score": 0.958614767
     },
     "Greeting": {
-      "score": 8.20979437E-07
+      "score": 8.076372E-07
     },
     "Help": {
-      "score": 4.81870757E-06
+      "score": 4.74059061E-06
     },
     "None": {
-      "score": 0.01040122
+      "score": 0.0101076821
     },
     "Roles": {
-      "score": 0.197366714
+      "score": 0.191202149
     },
     "search": {
-      "score": 0.14049834
+      "score": 0.00475360872
     },
     "SpecifyName": {
-      "score": 0.000137732946
+      "score": 7.367716E-05
     },
     "Travel": {
-      "score": 0.0100996653
+      "score": 0.00232480234
     },
     "Weather_GetForecast": {
-      "score": 0.0143940123
+      "score": 0.0141556319
     }
   },
   "sentiment": {
@@ -1285,6 +1278,20 @@
       "prediction": {
         "entities": {
           "$instance": {
+            "begin": [
+              {
+                "length": 12,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "role": "begin",
+                "startIndex": 0,
+                "text": "12 years old",
+                "type": "builtin.age"
+              }
+            ],
             "Composite1": [
               {
                 "length": 306,
@@ -1293,13 +1300,27 @@
                 "recognitionSources": [
                   "model"
                 ],
-                "score": 0.880988955,
+                "score": 0.9074669,
                 "startIndex": 0,
                 "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
                 "type": "Composite1"
               }
             ],
-            "ordinalV2": [
+            "end": [
+              {
+                "length": 10,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "role": "end",
+                "startIndex": 17,
+                "text": "3 days old",
+                "type": "builtin.age"
+              }
+            ],
+            "endpos": [
               {
                 "length": 3,
                 "modelType": "Prebuilt Entity Extractor",
@@ -1307,10 +1328,27 @@
                 "recognitionSources": [
                   "model"
                 ],
+                "role": "endpos",
                 "startIndex": 44,
                 "text": "3rd",
                 "type": "builtin.ordinalV2"
-              },
+              }
+            ],
+            "max": [
+              {
+                "length": 5,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "role": "max",
+                "startIndex": 162,
+                "text": "$4.25",
+                "type": "builtin.currency"
+              }
+            ],
+            "ordinalV2": [
               {
                 "length": 5,
                 "modelType": "Prebuilt Entity Extractor",
@@ -1346,33 +1384,15 @@
               }
             ]
           },
+          "begin": [
+            {
+              "number": 12,
+              "unit": "Year"
+            }
+          ],
           "Composite1": [
             {
               "$instance": {
-                "age": [
-                  {
-                    "length": 12,
-                    "modelType": "Prebuilt Entity Extractor",
-                    "modelTypeId": 2,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "startIndex": 0,
-                    "text": "12 years old",
-                    "type": "builtin.age"
-                  },
-                  {
-                    "length": 10,
-                    "modelType": "Prebuilt Entity Extractor",
-                    "modelTypeId": 2,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "startIndex": 17,
-                    "text": "3 days old",
-                    "type": "builtin.age"
-                  }
-                ],
                 "datetimeV2": [
                   {
                     "length": 8,
@@ -1477,17 +1497,6 @@
                     ],
                     "startIndex": 155,
                     "text": "$4",
-                    "type": "builtin.currency"
-                  },
-                  {
-                    "length": 5,
-                    "modelType": "Prebuilt Entity Extractor",
-                    "modelTypeId": 2,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "startIndex": 162,
-                    "text": "$4.25",
                     "type": "builtin.currency"
                   }
                 ],
@@ -1765,16 +1774,6 @@
                   }
                 ]
               },
-              "age": [
-                {
-                  "number": 12,
-                  "unit": "Year"
-                },
-                {
-                  "number": 3,
-                  "unit": "Day"
-                }
-              ],
               "datetimeV2": [
                 {
                   "type": "duration",
@@ -1840,10 +1839,6 @@
                 {
                   "number": 4,
                   "unit": "Dollar"
-                },
-                {
-                  "number": 4.25,
-                  "unit": "Dollar"
                 }
               ],
               "number": [
@@ -1886,11 +1881,25 @@
               ]
             }
           ],
-          "ordinalV2": [
+          "end": [
+            {
+              "number": 3,
+              "unit": "Day"
+            }
+          ],
+          "endpos": [
             {
               "offset": 3,
               "relativeTo": "start"
-            },
+            }
+          ],
+          "max": [
+            {
+              "number": 4.25,
+              "unit": "Dollar"
+            }
+          ],
+          "ordinalV2": [
             {
               "offset": 1,
               "relativeTo": "start"
@@ -1907,37 +1916,37 @@
         },
         "intents": {
           "Cancel": {
-            "score": 1.56337478E-06
+            "score": 1.54311692E-06
           },
           "Delivery": {
-            "score": 0.0002846266
+            "score": 0.000280677923
           },
           "EntityTests": {
-            "score": 0.953405857
+            "score": 0.958614767
           },
           "Greeting": {
-            "score": 8.20979437E-07
+            "score": 8.076372E-07
           },
           "Help": {
-            "score": 4.81870757E-06
+            "score": 4.74059061E-06
           },
           "None": {
-            "score": 0.01040122
+            "score": 0.0101076821
           },
           "Roles": {
-            "score": 0.197366714
+            "score": 0.191202149
           },
           "search": {
-            "score": 0.14049834
+            "score": 0.00475360872
           },
           "SpecifyName": {
-            "score": 0.000137732946
+            "score": 7.367716E-05
           },
           "Travel": {
-            "score": 0.0100996653
+            "score": 0.00232480234
           },
           "Weather.GetForecast": {
-            "score": 0.0143940123
+            "score": 0.0141556319
           }
         },
         "normalizedQuery": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",

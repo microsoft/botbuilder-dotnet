@@ -78,10 +78,7 @@
       "lisa simpson"
     ],
     "endloc": [
-      {
-        "location": "jakarta",
-        "type": "city"
-      }
+      "jakarta"
     ],
     "ordinalV2": [
       {
@@ -93,10 +90,7 @@
       "homer simpson"
     ],
     "startloc": [
-      {
-        "location": "london",
-        "type": "city"
-      }
+      "london"
     ],
     "startpos": [
       {
@@ -107,37 +101,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.000107549029
+      "score": 0.000106304564
     },
     "Delivery": {
-      "score": 0.00123035291
+      "score": 0.00121616619
     },
     "EntityTests": {
-      "score": 0.0009487789
+      "score": 0.00107762846
     },
     "Greeting": {
-      "score": 5.293933E-05
+      "score": 5.23392373E-05
     },
     "Help": {
-      "score": 0.0001358991
+      "score": 0.000134394242
     },
     "None": {
-      "score": 0.0109820236
+      "score": 0.0108486973
     },
     "Roles": {
-      "score": 0.999204934
+      "score": 0.9991838
     },
     "search": {
-      "score": 0.0263254233
+      "score": 0.002142746
     },
     "SpecifyName": {
-      "score": 0.00104324089
+      "score": 0.0006965211
     },
     "Travel": {
-      "score": 0.01043327
+      "score": 0.0046763327
     },
     "Weather_GetForecast": {
-      "score": 0.0106523167
+      "score": 0.0105504664
     }
   },
   "sentiment": {
@@ -362,10 +356,7 @@
             "lisa simpson"
           ],
           "endloc": [
-            {
-              "value": "jakarta",
-              "type": "city"
-            }
+            "jakarta"
           ],
           "ordinalV2": [
             {
@@ -377,10 +368,7 @@
             "homer simpson"
           ],
           "startloc": [
-            {
-              "value": "london",
-              "type": "city"
-            }
+            "london"
           ],
           "startpos": [
             {
@@ -391,37 +379,37 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.000107549029
+            "score": 0.000106304564
           },
           "Delivery": {
-            "score": 0.00123035291
+            "score": 0.00121616619
           },
           "EntityTests": {
-            "score": 0.0009487789
+            "score": 0.00107762846
           },
           "Greeting": {
-            "score": 5.293933E-05
+            "score": 5.23392373E-05
           },
           "Help": {
-            "score": 0.0001358991
+            "score": 0.000134394242
           },
           "None": {
-            "score": 0.0109820236
+            "score": 0.0108486973
           },
           "Roles": {
-            "score": 0.999204934
+            "score": 0.9991838
           },
           "search": {
-            "score": 0.0263254233
+            "score": 0.002142746
           },
           "SpecifyName": {
-            "score": 0.00104324089
+            "score": 0.0006965211
           },
           "Travel": {
-            "score": 0.01043327
+            "score": 0.0046763327
           },
           "Weather.GetForecast": {
-            "score": 0.0106523167
+            "score": 0.0105504664
           }
         },
         "normalizedQuery": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
