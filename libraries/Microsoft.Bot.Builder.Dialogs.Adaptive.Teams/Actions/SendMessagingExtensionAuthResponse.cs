@@ -18,7 +18,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'auth' message in response..
+    /// Send a messaging extension 'auth' response.
     /// </summary>
     public class SendMessagingExtensionAuthResponse : Dialog
     {
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression Disabled { get; set; }
         
         /// <summary>
-        /// Gets or sets property path to put the value in.
+        /// Gets or sets property path to put the TokenResponse value in once retrieved.
         /// </summary>
         /// <value>
         /// Property path to put the value in.
@@ -96,6 +96,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            if (!(dc.Context.Adapter is IExtendedUserTokenProvider tokenProvider))
+            {
+                throw new InvalidOperationException("SendMessagingExtensionOauthResponse(): not supported by the current adapter");
+            }
+
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -113,47 +118,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Messaging Extension Auth Response requires a Title.");
             }
 
-            // When the Bot Service Auth flow completes, the action.State will contain a magic code used for verification.
-            string state = null;
-            var valueAsOjbect = dc.Context.Activity.Value as JObject;
-            if (valueAsOjbect != null)
-            {
-                state = valueAsOjbect.Value<string>("state");
-            }
-
-            string magicCode = null;
-            if (!string.IsNullOrEmpty(state))
-            {
-                int parsed = 0;
-                if (int.TryParse(state, out parsed))
-                {
-                    magicCode = parsed.ToString(CultureInfo.InvariantCulture);
-                }
-            }
-            
-            // TODO: SSO and skills token exchange
-
-            var response = await (dc.Context.Adapter as IUserTokenProvider).GetUserTokenAsync(dc.Context, connectionName, magicCode, cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (response != null && !string.IsNullOrEmpty(response.Token))
+            var tokenResponse = await GetUserTokenAsync(dc, tokenProvider, connectionName, cancellationToken).ConfigureAwait(false);
+            if (tokenResponse != null && !string.IsNullOrEmpty(tokenResponse.Token))
             {
                 // we have the token, so the user is already signed in.
-                // Similar to OAuthInput, just return the token in the property.    
-                dc.State.SetValue(this.Property.GetValue(dc.State), response);
+                // Similar to OAuthInput, just return the token in the property.
                 if (this.Property != null)
                 {
-                    dc.State.SetValue(this.Property.GetValue(dc.State), response);
+                    dc.State.SetValue(this.Property.GetValue(dc.State), tokenResponse);
                 }
 
                 // End the dialog and return the token response
-                return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
             }
 
             // There is no token, so the user has not signed in yet.
 
-            // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
-            var signInLink = await (dc.Context.Adapter as IUserTokenProvider).GetOauthSignInLinkAsync(dc.Context, connectionName, cancellationToken).ConfigureAwait(false);
+            var activity = await GetInvokeResponseWithSignInLinkAsync(dc, title, tokenProvider, connectionName, cancellationToken).ConfigureAwait(false);
+            var properties = new Dictionary<string, string>()
+            {
+                { "SendMessagingExtensionAuthResponse", activity.ToString() },
+                { "title", title ?? string.Empty },
+            };
+            TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var activity = new Activity
+            await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+
+            // Since a token was not retrieved above, end the turn.
+            return Dialog.EndOfTurn;
+        }
+
+        /// <summary>
+        /// Builds the compute Id for the dialog.
+        /// </summary>
+        /// <returns>A string representing the compute Id.</returns>
+        protected override string OnComputeId()
+        {
+            return $"{this.GetType().Name}[{this.Title?.ToString() ?? string.Empty}]";
+        }
+
+        private static async Task<Activity> GetInvokeResponseWithSignInLinkAsync(DialogContext dc, string title, IExtendedUserTokenProvider tokenProvider, string connectionName, CancellationToken cancellationToken)
+        {
+            // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
+            var signInLink = await tokenProvider.GetOauthSignInLinkAsync(dc.Context, connectionName, cancellationToken).ConfigureAwait(false);
+
+            return new Activity
             {
                 Value = new InvokeResponse
                 {
@@ -180,27 +189,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 },
                 Type = ActivityTypesEx.InvokeResponse
             };
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionAuthResponse", activity.ToString() },
-                { "title", title ?? string.Empty },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
-            await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-
-            // Since a token was not retrieved above, end the turn.
-            return Dialog.EndOfTurn;
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
-        protected override string OnComputeId()
+        private static Task<TokenResponse> GetUserTokenAsync(DialogContext dc, IExtendedUserTokenProvider tokenProvider, string connectionName, CancellationToken cancellationToken)
         {
-            return $"{this.GetType().Name}[{this.Title?.ToString() ?? string.Empty}]";
+            // When the Bot Service Auth flow completes, the action.State will contain a magic code used for verification.
+            string state = null;
+            if (dc.Context.Activity.Value is JObject valueAsObject)
+            {
+                state = valueAsObject.Value<string>("state");
+            }
+
+            string magicCode = null;
+            if (!string.IsNullOrEmpty(state))
+            {
+                int parsed = 0;
+                if (int.TryParse(state, out parsed))
+                {
+                    magicCode = parsed.ToString(CultureInfo.InvariantCulture);
+                }
+            }
+
+            // TODO: SSO and skills token exchange
+
+            return tokenProvider.GetUserTokenAsync(dc.Context, connectionName, magicCode, cancellationToken: cancellationToken);
         }
     }
 }
