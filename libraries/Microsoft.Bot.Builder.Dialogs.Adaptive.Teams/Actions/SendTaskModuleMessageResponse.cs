@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send a simple message task module response.
     /// </summary>
-    public class SendTaskModuleMessageResponse : Dialog
+    public class SendTaskModuleMessageResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
@@ -36,18 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Message = message ?? string.Empty;
         }
-
-        /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
-        /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
-        /// <value>
-        /// A boolean expression. 
-        /// </value>
-        [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets response message to send.
@@ -110,22 +99,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var activity = new Activity 
-            { 
-                Value = new InvokeResponse
-                {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new Schema.Teams.TaskModuleResponse
-                    {
-                        Task = new Schema.Teams.TaskModuleMessageResponse(message)
-                    }
-                }, 
-                Type = ActivityTypesEx.InvokeResponse 
+            var response = new TaskModuleResponse
+            {
+                Task = new TaskModuleMessageResponse(message),
+                CacheInfo = GetCacheInfo(dc),
             };
 
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            var responseActivity = CreateInvokeResponseActivity(response);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await dc.EndDialogAsync(sendResponse, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

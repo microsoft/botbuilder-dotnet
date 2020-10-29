@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send a messaging extension 'auth' response.
     /// </summary>
-    public class SendMessagingExtensionAuthResponse : Dialog
+    public class SendMessagingExtensionAuthResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
@@ -45,24 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
-        /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
-        /// <value>
-        /// A boolean expression. 
-        /// </value>
-        [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; }
-        
-        /// <summary>
         /// Gets or sets property path to put the TokenResponse value in once retrieved.
         /// </summary>
         /// <value>
         /// Property path to put the value in.
         /// </value>
-        [JsonProperty("property")]
+        [JsonProperty("resultProperty")]
         public StringExpression Property { get; set; }
 
         /// <summary>
@@ -129,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 // End the dialog and return the token response
-                return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
+                return await dc.EndDialogAsync(tokenResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             // There is no token, so the user has not signed in yet.
@@ -142,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Since a token was not retrieved above, end the turn.
             return Dialog.EndOfTurn;
@@ -155,40 +143,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{this.Title?.ToString() ?? string.Empty}]";
-        }
-
-        private static async Task<Activity> GetInvokeResponseWithSignInLinkAsync(DialogContext dc, string title, IExtendedUserTokenProvider tokenProvider, string connectionName, CancellationToken cancellationToken)
-        {
-            // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
-            var signInLink = await tokenProvider.GetOauthSignInLinkAsync(dc.Context, connectionName, cancellationToken).ConfigureAwait(false);
-
-            return new Activity
-            {
-                Value = new InvokeResponse
-                {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new MessagingExtensionResponse
-                    {
-                        ComposeExtension = new MessagingExtensionResult
-                        {
-                            Type = "auth",
-                            SuggestedActions = new MessagingExtensionSuggestedAction
-                            {
-                                Actions = new List<CardAction>
-                                {
-                                    new CardAction
-                                    {
-                                        Type = ActionTypes.OpenUrl,
-                                        Value = signInLink,
-                                        Title = title,
-                                    },
-                                },
-                            },
-                        },
-                    }
-                },
-                Type = ActivityTypesEx.InvokeResponse
-            };
         }
 
         private static Task<TokenResponse> GetUserTokenAsync(DialogContext dc, IExtendedUserTokenProvider tokenProvider, string connectionName, CancellationToken cancellationToken)
@@ -213,6 +167,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // TODO: SSO and skills token exchange
 
             return tokenProvider.GetUserTokenAsync(dc.Context, connectionName, magicCode, cancellationToken: cancellationToken);
+        }
+
+        private async Task<Activity> GetInvokeResponseWithSignInLinkAsync(DialogContext dc, string title, IExtendedUserTokenProvider tokenProvider, string connectionName, CancellationToken cancellationToken)
+        {
+            // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
+            var signInLink = await tokenProvider.GetOauthSignInLinkAsync(dc.Context, connectionName, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            var response = new MessagingExtensionResponse
+            {
+                ComposeExtension = new MessagingExtensionResult
+                {
+                    Type = "auth",
+                    SuggestedActions = new MessagingExtensionSuggestedAction
+                    {
+                        Actions = new List<CardAction>
+                                {
+                                    new CardAction
+                                    {
+                                        Type = ActionTypes.OpenUrl,
+                                        Value = signInLink,
+                                        Title = title,
+                                    },
+                                },
+                    },
+                },
+                CacheInfo = GetCacheInfo(dc)
+            };
+
+            return CreateInvokeResponseActivity(response);
         }
     }
 }

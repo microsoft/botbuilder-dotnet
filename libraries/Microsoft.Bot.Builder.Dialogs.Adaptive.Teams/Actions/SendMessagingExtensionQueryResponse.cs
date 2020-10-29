@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send a messaging extension 'result' in response to a Teams Invoke with name of 'composeExtension/query'.
     /// </summary>
-    public class SendMessagingExtensionQueryResponse : Dialog
+    public class SendMessagingExtensionQueryResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
@@ -37,18 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Message = message ?? string.Empty;
         }
-
-        /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
-        /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
-        /// <value>
-        /// A boolean expression. 
-        /// </value>
-        [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
 
         /// <summary>
         /// Gets or sets response message to send.
@@ -111,28 +99,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var activity = new Activity
+            var response = new MessagingExtensionResponse
             {
-                Value = new InvokeResponse
+                ComposeExtension = new MessagingExtensionResult
                 {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new Schema.Teams.MessagingExtensionResponse
-                    {
-                        ComposeExtension = new MessagingExtensionResult
-                        {
-                            Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-                            
-                            AttachmentLayout = "list", // 'list', 'grid' // TODO: enum
-                            Attachments = null,
-                        }
-                    }
-                }, 
-                Type = ActivityTypesEx.InvokeResponse 
+                    Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
+
+                    AttachmentLayout = "list", // 'list', 'grid' // TODO: enum
+                    Attachments = null,
+                },
+                CacheInfo = GetCacheInfo(dc),
             };
 
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateInvokeResponseActivity(response);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await dc.EndDialogAsync(sendResponse, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

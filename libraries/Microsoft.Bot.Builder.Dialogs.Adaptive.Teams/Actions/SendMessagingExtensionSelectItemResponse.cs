@@ -8,7 +8,6 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
@@ -19,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send a messaging extension 'message' response.
     /// </summary>
-    public class SendMessagingExtensionSelectItemResponse : Dialog
+    public class SendMessagingExtensionSelectItemResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
@@ -39,18 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Activity = new StaticActivityTemplate(activity);
         }
-
-        /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
-        /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
-        /// <value>
-        /// A boolean expression. 
-        /// </value>
-        [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card with an Attachment to send.
@@ -98,27 +85,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
 
-            var activity = new Activity
+            var response = new MessagingExtensionResponse
             {
-                Value = new InvokeResponse
+                ComposeExtension = new MessagingExtensionResult
                 {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new Schema.Teams.MessagingExtensionResponse
-                    {
-                        ComposeExtension = new MessagingExtensionResult
-                        {
-                            Type = "result",
-                            AttachmentLayout = "list", // TODO: enum this
-                            Attachments = new List<MessagingExtensionAttachment> { extentionAttachment }
-                        }
-                    }
-                }, 
-                Type = ActivityTypesEx.InvokeResponse 
+                    Type = "result",
+                    AttachmentLayout = "list", // TODO: enum this
+                    Attachments = new List<MessagingExtensionAttachment> { extentionAttachment }
+                },
+                CacheInfo = GetCacheInfo(dc),
             };
 
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateInvokeResponseActivity(response);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await dc.EndDialogAsync(sendResponse, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send a messaging extension 'config' response. This is the type of response used for a 'composeExtension/querySettingUrl' request.
     /// </summary>
-    public class SendMessagingExtensionConfigQuerySettingUrlResponse : Dialog
+    public class SendMessagingExtensionConfigQuerySettingUrlResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
@@ -37,18 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
             this.ConfigUrl = configUrl ?? string.Empty;
         }
-
-        /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
-        /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
-        /// <value>
-        /// A boolean expression. 
-        /// </value>
-        [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets config url response to send. i.e $"{config.siteUrl}/searchSettings.html?settings={escapedSettings}".
@@ -91,19 +79,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var activity = new Activity
+            var response = new MessagingExtensionResponse
             {
-                Value = new InvokeResponse
+                ComposeExtension = new MessagingExtensionResult
                 {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new MessagingExtensionResponse
+                    Type = "config",
+                    SuggestedActions = new MessagingExtensionSuggestedAction
                     {
-                        ComposeExtension = new MessagingExtensionResult
-                        {
-                            Type = "config",
-                            SuggestedActions = new MessagingExtensionSuggestedAction
-                            {
-                                Actions = new List<CardAction>
+                        Actions = new List<CardAction>
                                 {
                                     new CardAction
                                     {
@@ -111,16 +94,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                                         Value = configUrl,
                                     },
                                 },
-                            },
-                        }
-                    }
-                }, 
-                Type = ActivityTypesEx.InvokeResponse 
+                    },
+                },
+                CacheInfo = GetCacheInfo(dc)
             };
 
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateInvokeResponseActivity(response);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await dc.EndDialogAsync(sendResponse, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

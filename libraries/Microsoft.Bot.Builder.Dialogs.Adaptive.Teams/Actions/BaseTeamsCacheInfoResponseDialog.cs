@@ -2,11 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Xml.Schema;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
@@ -17,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Base dialog for Teams Invoke Responses having a CacheInfo property.
     /// </summary>
-    public class BaseTeamsCacheInfoResponseDialog : Dialog
+    public abstract class BaseTeamsCacheInfoResponseDialog : Dialog
     {
         /// <summary>
         /// Gets or sets an optional expression which if is true will disable this action.
@@ -32,85 +29,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression Disabled { get; set; }
 
         /// <summary>
-        /// Gets or sets config url response to send. i.e $"{config.siteUrl}/searchSettings.html?settings={escapedSettings}".
+        /// Gets or sets config CacheType.
         /// </summary>
         /// <value>
-        /// Message to send.
+        /// "cache" or "no_cache".
         /// </value>
-        [JsonProperty("message")]
-        public StringExpression ConfigUrl { get; set; }
+        [JsonProperty("cacheType")]
+        public StringExpression CacheType { get; set; }
 
         /// <summary>
-        /// Called when the dialog is started and pushed onto the dialog stack.
+        /// Gets or sets cache duration in seconds for which the cached object should remain in the cache.
         /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
-        /// <param name="options">Optional, initial information to pass to the dialog.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        /// <value>
+        /// Duration the result should be cached in seconds.
+        /// </value>
+        [JsonProperty("cacheDuration")]
+        public IntExpression CacheDuration { get; set; }
+        
+        /// <summary>
+        /// Create an InvokeResponse activity with the specified body.
+        /// </summary>
+        /// <param name="body">The body to return in the InvokeResponse.</param>
+        /// <param name="statusCode"><see cref="HttpStatusCode"/> for the InvokeResponse.  Default is HttpStatusCode.OK.</param>
+        /// <returns>An Activity of type InvokeResponse, containing a Value of InvokeResponse.</returns>
+        protected static Activity CreateInvokeResponseActivity(object body, int statusCode = (int)HttpStatusCode.OK)
         {
-            if (options is CancellationToken)
-            {
-                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
-            }
-
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
-            {
-                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-
-            string configUrl = ConfigUrl.GetValue(dc.State);
-            if (string.IsNullOrEmpty(configUrl)) 
-            { 
-                throw new InvalidOperationException($"{nameof(ConfigUrl)} is Required for a Messaging Extension Config Response");
-            }
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendTaskModuleConfigResponse", configUrl },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
-            var activity = new Activity
+            return new Activity
             {
                 Value = new InvokeResponse
                 {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new MessagingExtensionResponse
-                    {
-                        ComposeExtension = new MessagingExtensionResult
-                        {
-                            Type = "config",
-                            SuggestedActions = new MessagingExtensionSuggestedAction
-                            {
-                                Actions = new List<CardAction>
-                                {
-                                    new CardAction
-                                    {
-                                        Type = ActionTypes.OpenUrl,
-                                        Value = configUrl,
-                                    },
-                                },
-                            },
-                        }
-                    }
-                }, 
-                Type = ActivityTypesEx.InvokeResponse 
+                    Status = statusCode,
+                    Body = body
+                },
+                Type = ActivityTypesEx.InvokeResponse
             };
-
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-
-            return await dc.EndDialogAsync(sendResponse, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Builds the compute Id for the dialog.
+        /// Retrieve a Cache Info object from the CacheType and CacheDuration, if present.
         /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
-        protected override string OnComputeId()
+        /// <param name="dc">Dialog Context to use for retrieving CacheType and CacheDuration from state.</param>
+        /// <returns>A <see cref="CacheInfo"/> object if <see cref="CacheDuration"/> 
+        /// and <see cref="CacheType"/> resolve to valid values.</returns>
+        protected CacheInfo GetCacheInfo(DialogContext dc)
         {
-            return $"{this.GetType().Name}[{this.ConfigUrl?.ToString() ?? string.Empty}]";
+            var cacheType = CacheType.GetValue(dc.State);
+            var cacheDuration = CacheDuration.GetValue(dc.State);
+            if (cacheDuration > 0 && !string.IsNullOrEmpty(cacheType))
+            {
+                // Valid ranges for CacheDuration are 2592000 < > 60
+                cacheDuration = Math.Min(Math.Max(60, cacheDuration), 2592000);
+                return new CacheInfo(cacheType: cacheType, cacheDuration: cacheDuration);
+            }
+
+            return null;
         }
     }
 }
