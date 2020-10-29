@@ -3,52 +3,55 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'message' response.
+    /// Send a messaging extension 'auth' message in response..
     /// </summary>
-    public class SendMessagingExtensionMessageResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendMessagingExtensionActionResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionMessageResponse";
+        public const string Kind = "Teams.SendMessagingExtensionActionResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionMessageResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendMessagingExtensionActionResponse"/> class.
         /// </summary>
-        /// <param name="message">Text to create the message response.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionMessageResponse(string message = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionActionResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            if (!string.IsNullOrEmpty(message))
-            {
-                Message = new TextTemplate(message);
-            }
+
+            //if (title != null)
+            //{
+            //    Title = new TextTemplate(title);
+            //}
         }
 
         /// <summary>
-        /// Gets or sets the template or text to use to generate the response message to send.
+        /// Gets or sets property path to put the value in.
         /// </summary>
         /// <value>
-        /// Message to send.
+        /// Property path to put the value in.
         /// </value>
-        [JsonProperty("message")]
-        public ITemplate<string> Message { get; set; }
+        [JsonProperty("resultProperty")]
+        public StringExpression Property { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -65,33 +68,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (Disabled != null && Disabled.GetValue(dc.State) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string message = await Message.BindAsync(dc, dc.State, cancellationToken).ConfigureAwait(false);
+            //var properties = new Dictionary<string, string>()
+            //{
+            //    { "SendMessagingExtensionAuthResponse", activity.ToString() },
+            //    { "title", title ?? string.Empty },
+            //};
+            //TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendTaskModuleMessageResponse", message },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
+            //await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
 
-            var response = new MessagingExtensionResponse
-            {
-                ComposeExtension = new MessagingExtensionResult
-                {
-                    Type = "message", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-                    Text = message,
-                },
-                CacheInfo = GetCacheInfo(dc)
-            };
-
-            var invokeResponse = CreateInvokeResponseActivity(response);
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            // Since a token was not retrieved above, end the turn.
+            return Dialog.EndOfTurn;
         }
 
         /// <summary>
@@ -100,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{Message?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{null ?? string.Empty}]";
         }
     }
 }

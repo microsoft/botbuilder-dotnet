@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send Task Module Message Response",
-    "description": "Send a message response to a Task Module request.",
+    "title": "Send messaging extension auth response",
+    "description": "Send a response to a messaging extensin requiring auth. If the user is signed in, the dialog will end setting the TokenResponse in the specified property.",
     "type": "object",
     "properties": {
         "id": {
@@ -20,12 +20,18 @@
             "title": "Cache duration",
             "description": "Optional duration in seconds of the result in the cache."
         },
-        "message": {
+        "connectionName": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Message",
-            "description": "The response message to send.",
+            "title": "OAuth connection name",
+            "description": "The OAuth Connection Name, that will be used to perform the Sign On.",
+            "default": "=settings.connectionName"
+        },
+        "resultProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Property",
+            "description": "Property to store the TokenResponse in once Sign In completes.",
             "examples": [
-                "Thanks, have a nice day! :)"
+                "dialog.userName"
             ]
         },
         "disabled": {

@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send Task Module Continue Response",
+    "title": "Send task module continue response",
     "description": "Send a continue response to a Task Module request.",
     "type": "object",
     "properties": {
@@ -9,6 +9,16 @@
             "type": "string",
             "title": "Id",
             "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+            "type": "string",
+            "title": "Cache type",
+            "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+            "type": "string",
+            "title": "Cache duration",
+            "description": "Optional duration in seconds of the result in the cache."
         },
         "title": {
             "$ref": "schema:#/definitions/stringExpression",

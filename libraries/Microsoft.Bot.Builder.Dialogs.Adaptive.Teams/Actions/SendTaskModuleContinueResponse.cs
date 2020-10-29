@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send an Task Module Continue response to the user.
     /// </summary>
-    public class SendTaskModuleContinueResponse : Dialog
+    public class SendTaskModuleContinueResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
@@ -55,18 +56,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.CompletionBotId = completionBotId;
             this.Activity = new StaticActivityTemplate(activity);
         }
-
-        /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
-        /// </summary>
-        /// <example>
-        /// "user.age > 18".
-        /// </example>
-        /// <value>
-        /// A boolean expression. 
-        /// </value>
-        [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets the optional template or text to use to generate the title message to send.
@@ -173,30 +162,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var fallbackUrl = FallbackUrl.GetValue(dc.State);
             var completionBotId = CompletionBotId.GetValue(dc.State);
 
-            var responseActivity = new Activity
+            var response = new TaskModuleResponse
             {
-                Value = new InvokeResponse
+                Task = new TaskModuleContinueResponse
                 {
-                    Status = (int)HttpStatusCode.OK,
-                    Body = new Schema.Teams.TaskModuleResponse
+                    Value = new TaskModuleTaskInfo
                     {
-                        Task = new Schema.Teams.TaskModuleContinueResponse
-                        {
-                            Value = new Schema.Teams.TaskModuleTaskInfo
-                            {
-                                Title = title,
-                                Card = attachment,
-                                Url = url,
-                                FallbackUrl = fallbackUrl,
-                                Height = height,
-                                Width = width,
-                                CompletionBotId = completionBotId,
-                            },
-                        },
-                    }
+                        Title = title,
+                        Card = attachment,
+                        Url = url,
+                        FallbackUrl = fallbackUrl,
+                        Height = height,
+                        Width = width,
+                        CompletionBotId = completionBotId,
+                    },
                 },
-                Type = ActivityTypesEx.InvokeResponse
+                CacheInfo = GetCacheInfo(dc),
             };
+            var responseActivity = CreateInvokeResponseActivity(response);
 
             var properties = new Dictionary<string, string>()
             {
@@ -204,9 +187,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken).ConfigureAwait(false);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            return await dc.EndDialogAsync(sendResponse, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

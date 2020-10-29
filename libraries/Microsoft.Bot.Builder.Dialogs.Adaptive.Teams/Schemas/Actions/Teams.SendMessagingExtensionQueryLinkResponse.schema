@@ -10,6 +10,16 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
+        "cacheType": {
+            "type": "string",
+            "title": "Cache type",
+            "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+            "type": "string",
+            "title": "Cache duration",
+            "description": "Optional duration in seconds of the result in the cache."
+        },
         "activity": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Activity",
