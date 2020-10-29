@@ -41,6 +41,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
                     if (error == null)
                     {
+                        // If start exceeds the number of elements, an empty IEnumerable<T> is returned.
+                        // If start is less than or equal to zero, all elements of source are returned.
                         start = Math.Max(Math.Min(list.Count, start), 0);
                         result = list.OfType<object>().Skip(start).ToList();
                     }

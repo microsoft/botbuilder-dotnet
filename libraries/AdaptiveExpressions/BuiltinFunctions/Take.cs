@@ -44,11 +44,15 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     {
                         if (arrIsList)
                         {
+                            // If count exceeds the number of elements, all elements of source are returned.
+                            // If count is less than or equal to zero, an empty IEnumerable<T> is returned.
                             count = Math.Max(Math.Min(list.Count, count), 0);
                             result = list.OfType<object>().Take(count).ToList();
                         }
                         else
                         {
+                            // If count exceeds the length of string, original string is returned.
+                            // If count is less than or equal to zero, an empty string is returned.
                             count = Math.Max(Math.Min(arr.ToString().Length, count), 0);
                             result = arr.ToString().Substring(0, count);
                         }
