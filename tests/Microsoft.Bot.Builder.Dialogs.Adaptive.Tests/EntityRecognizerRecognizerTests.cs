@@ -193,9 +193,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.NotNull(entities.mention);
             Assert.Equal("@joesmith", (string)entities.mention[0]);
             Assert.Equal("@joesmith", (string)instanceData.mention[0].text);
-            Assert.Equal(5, (int)instanceData.mention[0].startIndex);
-            Assert.Equal(13, (int)instanceData.mention[0].endIndex);
-
+            var startIndex = (int)instanceData.mention[0].startIndex;
+            var endIndex = (int)instanceData.mention[0].endIndex;
+            Assert.Equal("@joesmith", dialogContext.Context.Activity.Text.Substring(startIndex, endIndex - startIndex));
             Assert.Null(entities.boolean);
         }
 
@@ -236,8 +236,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             // instancedata[0]
             Assert.Equal("joelee", (string)instanceData.channelMention[0].text);
-            Assert.Equal(0, (int)instanceData.channelMention[0].startIndex);
-            Assert.Equal(5, (int)instanceData.channelMention[0].endIndex);
+            var startIndex = (int)instanceData.channelMention[0].startIndex;
+            var endIndex = (int)instanceData.channelMention[0].endIndex;
+            Assert.Equal("joelee", dialogContext.Context.Activity.Text.Substring(startIndex, endIndex - startIndex));
 
             // resolution [1]
             Assert.Equal("30", (string)entities.channelMention[1].id);
@@ -245,8 +246,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             // instanceData [1]
             Assert.Equal("bobsm", (string)instanceData.channelMention[1].text);
-            Assert.Equal(7, (int)instanceData.channelMention[1].startIndex);
-            Assert.Equal(11, (int)instanceData.channelMention[1].endIndex);
+            startIndex = (int)instanceData.channelMention[1].startIndex;
+            endIndex = (int)instanceData.channelMention[1].endIndex;
+            Assert.Equal("bobsm", dialogContext.Context.Activity.Text.Substring(startIndex, endIndex - startIndex));
         }
 
         [Fact]
