@@ -33,6 +33,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogSet Dialogs { get; set; } = new DialogSet();
 
         /// <summary>
+        /// Gets or sets the referenced dialogs.
+        /// </summary>
+        /// <value>The dialogs referenced in this dialog contaner.</value>
+        [JsonProperty("dialogs")]
+#pragma warning disable CA2227 // Collection properties should be read only
+        public List<string> RefereceDialogs { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
         /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
         /// When setting this property, all of the contained dialogs' <see cref="Dialog.TelemetryClient"/>
         /// properties are also set.

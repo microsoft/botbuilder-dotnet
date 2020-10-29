@@ -1,0 +1,15 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [{
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Hello now we are in the TestName dialog"
+        }]
+      }
+    ]
+  }
+  

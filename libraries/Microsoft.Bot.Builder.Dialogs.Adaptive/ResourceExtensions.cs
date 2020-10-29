@@ -29,6 +29,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             dialogManager.InitialTurnState.Add(resourceExplorer);
 
+            if (dialogManager.RootDialog is DialogContainer container)
+            {
+                foreach (var refDialog in container.RefereceDialogs)
+                {
+                    var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
+                    var dialog = resourceExplorer.LoadType<Dialog>(resource);
+                    dialogManager.Dialogs.Add(dialog);
+                }
+            }
+
             return dialogManager;
         }
     }
