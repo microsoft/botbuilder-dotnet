@@ -260,10 +260,7 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(botAppId))
-            {
-                throw new ArgumentNullException(nameof(botAppId));
-            }
+            botAppId = botAppId ?? string.Empty;
 
             if (reference == null)
             {
