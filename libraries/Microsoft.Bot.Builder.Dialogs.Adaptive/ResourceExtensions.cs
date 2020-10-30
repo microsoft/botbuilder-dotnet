@@ -28,8 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             dialogManager.InitialTurnState.Add(resourceExplorer);
-            var visitedDialogs = new List<string>() { dialogManager.RootDialog.Id };
-            dialogManager.AddReferencedDialog(dialogManager.RootDialog, resourceExplorer, visitedDialogs);
+            if (dialogManager.RootDialog != null)
+            {
+                var visitedDialogs = new List<string>() { dialogManager.RootDialog.Id };
+                dialogManager.AddReferencedDialog(dialogManager.RootDialog, resourceExplorer, visitedDialogs);
+            }
+            
             return dialogManager;
         }
 
