@@ -10,18 +10,16 @@ param
 )
 pushd $path
 
-# Download temporary version of Archive module that fixes issue on macOS/Linux with path separator
-#Invoke-WebRequest -Uri "https://raw.githubusercontent.com/PowerShell/Microsoft.PowerShell.Archive/master/Microsoft.PowerShell.Archive/Microsoft.PowerShell.Archive.psm1" -OutFile .\archive.psm1
-#Import-Module .\archive.psm1
-
+# This Powershell patch install now errors: FullyQualifiedErrorId : NoMatchFoundForCriteria,Microsoft.PowerShell.PackageManagement.Cmdlets.InstallPackage
+# The patch, put in place in June 2019, is likely no longer necessary. The fix is likely integrated into Powershell by now. 10/30/2020
 # Ensure Powershell.Archive minimum version 1.2.3.0 is installed. That fixes a path separator issue on macOS/Linux. 
-$ver = (Get-Command -Module Microsoft.PowerShell.Archive | Select-Object -Property version -First 1).Version.ToString()
-if ($ver -lt '1.2.3.0') { 
-    Write-Host "Installing Microsoft.Powershell.Archive 1.2.3.0 (fix for Linux path separator bug)"
-    Install-Module -Name Microsoft.PowerShell.Archive -MinimumVersion '1.2.3.0' -AllowClobber -Force -AcceptLicense 
-} else { 
-    Write-Host "Already installed: Microsoft.Powershell.Archive $ver"
-}
+#$ver = (Get-Command -Module Microsoft.PowerShell.Archive | Select-Object -Property version -First 1).Version.ToString()
+#if ($ver -lt '1.2.3.0') { 
+#    Write-Host "Installing Microsoft.Powershell.Archive 1.2.3.0 (fix for Linux path separator bug)"
+#    Install-Module -Name Microsoft.PowerShell.Archive -MinimumVersion '1.2.3.0' -AllowClobber -Force -AcceptLicense 
+#} else { 
+#    Write-Host "Already installed: Microsoft.Powershell.Archive $ver"
+#}
 
 [int]$itemsProcessed = 0
 if ($extract) {
