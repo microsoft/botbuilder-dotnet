@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -34,16 +35,15 @@ namespace AdaptiveExpressions.BuiltinFunctions
             {
                 if (FunctionUtils.TryParseList(arr, out var list))
                 {
-                    int start = 0;
+                    int start;
                     var startExpr = expression.Children[1];
                     (start, error) = startExpr.TryEvaluate<int>(state, options);
-                    if (error == null && (start < 0 || start >= list.Count))
-                    {
-                        error = $"{startExpr}={start} which is out of range for {arr}";
-                    }
 
                     if (error == null)
                     {
+                        // If start exceeds the number of elements, an empty IEnumerable<T> is returned.
+                        // If start is less than or equal to zero, all elements of source are returned.
+                        start = Math.Max(Math.Min(list.Count, start), 0);
                         result = list.OfType<object>().Skip(start).ToList();
                     }
                 }
