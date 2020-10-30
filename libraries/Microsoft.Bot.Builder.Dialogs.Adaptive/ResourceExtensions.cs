@@ -28,20 +28,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             dialogManager.InitialTurnState.Add(resourceExplorer);
-            dialogManager.AddReferencedDialog(dialogManager.RootDialog, resourceExplorer);
+            var visitedDialogs = new List<string>() { dialogManager.RootDialog.Id };
+            dialogManager.AddReferencedDialog(dialogManager.RootDialog, resourceExplorer, visitedDialogs);
             return dialogManager;
         }
 
-        private static DialogManager AddReferencedDialog(this DialogManager dialogManager, Dialog dialog, ResourceExplorer resourceExplorer)
+        private static DialogManager AddReferencedDialog(this DialogManager dialogManager, Dialog dialog, ResourceExplorer resourceExplorer, List<string> visited)
         {
             if (dialog is DialogContainer container)
             {
                 foreach (var refDialog in container.RefereceDialogs)
                 {
-                    var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
-                    var loadedDialog = resourceExplorer.LoadType<Dialog>(resource);
-                    dialogManager.Dialogs.Add(loadedDialog);
-                    AddReferencedDialog(dialogManager, loadedDialog, resourceExplorer);
+                    if (!visited.Contains(refDialog))
+                    {
+                        visited.Add(refDialog);
+                        var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
+                        var loadedDialog = resourceExplorer.LoadType<Dialog>(resource);
+                        dialogManager.Dialogs.Add(loadedDialog);
+                        AddReferencedDialog(dialogManager, loadedDialog, resourceExplorer, visited);
+                    }
                 }
             }
 
