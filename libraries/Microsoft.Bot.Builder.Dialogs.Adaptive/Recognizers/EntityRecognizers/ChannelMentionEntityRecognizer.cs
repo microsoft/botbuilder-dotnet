@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     //     "channelMention": [
                     //        {
                     //            "startIndex": 10,
-                    //            "endIndex": 13,
+                    //            "endIndex": 14, 
                     //            "score": 1.0,
                     //            "text": "tess"
                     //         }
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     {
                         dynamic mentionData = new JObject();
                         mentionData.startIndex = iStart;
-                        mentionData.endIndex = iStart + mentionedText.Length - 1;
+                        mentionData.endIndex = iStart + mentionedText.Length;
                         mentionData.text = mentionedText;
                         mentionData.score = 1.0;
                         instance.channelMention.Add(mentionData);

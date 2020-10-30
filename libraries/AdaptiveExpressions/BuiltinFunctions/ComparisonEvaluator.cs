@@ -34,38 +34,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 (args, error) = FunctionUtils.EvaluateChildren(expression, state, new Options(options) { NullSubstitution = null }, verify);
                 if (error == null)
                 {
-                    // Ensure args are all of same type
-                    bool? isNumber = null;
-                    foreach (var arg in args)
+                    try
                     {
-                        var obj = arg;
-                        if (isNumber.HasValue)
-                        {
-                            if (obj != null && obj.IsNumber() != isNumber.Value)
-                            {
-                                error = $"Arguments must either all be numbers or strings in {expression}";
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            isNumber = obj.IsNumber();
-                        }
+                        result = function(args);
                     }
-
-                    if (error == null)
-                    {
-                        try
-                        {
-                            result = function(args);
-                        }
 #pragma warning disable CA1031 // Do not catch general exception types (we are capturing the exception and returning it)
-                        catch (Exception e)
+                    catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
-                        {
-                            // NOTE: This should not happen in normal execution
-                            error = e.Message;
-                        }
+                    {
+                        // NOTE: This should not happen in normal execution
+                        error = e.Message;
                     }
                 }
                 else
