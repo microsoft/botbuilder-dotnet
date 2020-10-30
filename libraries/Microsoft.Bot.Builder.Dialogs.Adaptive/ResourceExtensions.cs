@@ -28,15 +28,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             dialogManager.InitialTurnState.Add(resourceExplorer);
+            dialogManager.AddReferencedDialog(dialogManager.RootDialog, resourceExplorer);
+            return dialogManager;
+        }
 
-            if (dialogManager.RootDialog is DialogContainer container)
+        private static DialogManager AddReferencedDialog(this DialogManager dialogManager, Dialog dialog, ResourceExplorer resourceExplorer)
+        {
+            if (dialog is DialogContainer container)
             {
                 foreach (var refDialog in container.RefereceDialogs)
                 {
                     //ToDo: should recursively find all ref dialogs in any sub dialog.
                     var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
-                    var dialog = resourceExplorer.LoadType<Dialog>(resource);
-                    dialogManager.Dialogs.Add(dialog);
+                    var loadedDialog = resourceExplorer.LoadType<Dialog>(resource);
+                    dialogManager.Dialogs.Add(loadedDialog);
+                    AddReferencedDialog(dialogManager, loadedDialog, resourceExplorer);
                 }
             }
 
