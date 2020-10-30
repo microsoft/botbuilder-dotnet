@@ -28,7 +28,7 @@
                       "Show()": [
                         {
                           "$instance": {
-                            "Bread": [
+                            "BreadProperty": [
                               {
                                 "length": 5,
                                 "modelType": "Entity Extractor",
@@ -38,11 +38,11 @@
                                 ],
                                 "startIndex": 5,
                                 "text": "bread",
-                                "type": "Bread"
+                                "type": "BreadProperty"
                               }
                             ]
                           },
-                          "Bread": [
+                          "BreadProperty": [
                             {}
                           ]
                         }

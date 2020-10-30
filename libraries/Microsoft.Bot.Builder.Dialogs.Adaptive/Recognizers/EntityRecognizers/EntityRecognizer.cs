@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // map entityPool of Entity objects => RecognizerResult entity format
             recognizerResult.Entities = new JObject();
 
-            foreach (var entityResult in entityPool)
+            foreach (var entityResult in entityPool.Where(e => e != textEntity))
             {
                 // add value
                 JToken values;

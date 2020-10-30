@@ -7,87 +7,87 @@
 		- price
 
 > Define property entity and optional value for Price property.
-@ ml Price usesFeature PricePhrases
+@ ml PriceProperty usesFeature PricePhrases
     - @ money money
 
 > Define operations on 'Price' property.
 @ ml Add() usesFeature AddPhrases
-	-@ ml Price usesFeature Price
+	-@ ml PriceProperty usesFeature PriceProperty
 		- @ money money
 
 @ ml Remove() usesFeature RemovePhrases
-	-@ ml Price usesFeature Price
+	-@ ml PriceProperty usesFeature PriceProperty
 		- @ money money
 
 @ ml Clear() usesFeature ClearPhrases
-	-@ ml Price usesFeature Price
+	-@ ml PriceProperty usesFeature PriceProperty
 		- @ money money
 
 @ ml Change() usesFeature ChangePhrases
-	-@ ml Price usesFeature Price
+	-@ ml PriceProperty usesFeature PriceProperty
 		- @ money money
 
 @ ml Show() usesFeature ShowPhrases
-	-@ ml Price usesFeature Price
+	-@ ml PriceProperty usesFeature PriceProperty
 		- @ money money
 
 @ ml Help() usesFeature HelpPhrases
-	-@ ml Price usesFeature Price
+	-@ ml PriceProperty usesFeature PriceProperty
 		- @ money money
 
 
 > Add examples for operations on the 'Price' property to the intent 'sandwich'.
 # sandwich
->> entity: Standalone Price with money
-- {@Price={@money=$3.50}}
-- {@Price={@money=12 dollars}}
-- {@Price={@money=8 dollars and 25 cents}}
-- {@Price={@money=$3.50} price}
-- {@Price={@money=12 dollars} price}
-- {@Price={@money=8 dollars and 25 cents} price}
+>> entity: Standalone PriceProperty with money
+- {@PriceProperty={@money=$3.50}}
+- {@PriceProperty={@money=12 dollars}}
+- {@PriceProperty={@money=8 dollars and 25 cents}}
+- {@PriceProperty={@money=$3.50} price}
+- {@PriceProperty={@money=12 dollars} price}
+- {@PriceProperty={@money=8 dollars and 25 cents} price}
 
->> property: Standalone Price name
-- {@Price=price}
+>> property: Standalone PriceProperty name
+- {@PriceProperty=price}
 
-> Add() examples for Price and money
-- {@Add()=add {@Price={@money=8 dollars and 25 cents} price}}
-- {@Add()=add {@Price={@money=$3.50} price}}
-- {@Add()=add {@Price={@money=12 dollars} price}}
-- {@Add()=with {@Price={@money=8 dollars and 25 cents}}}
-- {@Add()=with {@Price={@money=12 dollars}}}
-- {@Add()={@Price=price is {@money=12 dollars}}}
-- {@Add()={@Price=price is {@money=8 dollars and 25 cents}}}
-- {@Add()={@Price=price is {@money=$3.50}}}
-- {@Add()={@Price=price of {@money=$3.50}}}
-- {@Add()={@Price=price of {@money=12 dollars}}}
-- {@Add()={@Price=price of {@money=8 dollars and 25 cents}}}
+> Add() examples for PriceProperty and money
+- {@Add()=add {@PriceProperty={@money=8 dollars and 25 cents} price}}
+- {@Add()=add {@PriceProperty={@money=$3.50} price}}
+- {@Add()=add {@PriceProperty={@money=12 dollars} price}}
+- {@Add()=with {@PriceProperty={@money=8 dollars and 25 cents}}}
+- {@Add()=with {@PriceProperty={@money=12 dollars}}}
+- {@Add()={@PriceProperty=price is {@money=12 dollars}}}
+- {@Add()={@PriceProperty=price is {@money=8 dollars and 25 cents}}}
+- {@Add()={@PriceProperty=price is {@money=$3.50}}}
+- {@Add()={@PriceProperty=price of {@money=$3.50}}}
+- {@Add()={@PriceProperty=price of {@money=12 dollars}}}
+- {@Add()={@PriceProperty=price of {@money=8 dollars and 25 cents}}}
 
-> Remove() examples for Price and money
-- {@Remove()=remove {@Price={@money=$3.50}}
-- {@Remove()=remove {@Price={@money=8 dollars and 25 cents}}
-- {@Remove()=remove {@Price={@money=12 dollars}}
+> Remove() examples for PriceProperty and money
+- {@Remove()=remove {@PriceProperty={@money=$3.50}}
+- {@Remove()=remove {@PriceProperty={@money=8 dollars and 25 cents}}
+- {@Remove()=remove {@PriceProperty={@money=12 dollars}}
 - {@Remove()=with no {@money=$3.50} price}
 - {@Remove()=with no {@money=8 dollars and 25 cents} price}
 - {@Remove()=with no {@money=12 dollars} price}
 
-> Clear() examples for Price
-- {@Clear()=clear {@Price=price}}
-- {@Clear()=reset {@Price=price}}
+> Clear() examples for PriceProperty
+- {@Clear()=clear {@PriceProperty=price}}
+- {@Clear()=reset {@PriceProperty=price}}
 
-> Show() examples for Price
-- {@Show()=show {@Price=price}}
-- {@Show()=value of {@Price=price}}
-- {@Show()={@Price=price} values}
-- {@Show()={@Price=price} selection}
+> Show() examples for PriceProperty
+- {@Show()=show {@PriceProperty=price}}
+- {@Show()=value of {@PriceProperty=price}}
+- {@Show()={@PriceProperty=price} values}
+- {@Show()={@PriceProperty=price} selection}
 
-> Help() examples for Price
-- {@Help()=help {@Price=price}}
-- {@Help()=what can I say for {@Price=price}}
-- {@Help()={@Price=price} help}
+> Help() examples for PriceProperty
+- {@Help()=help {@PriceProperty=price}}
+- {@Help()=what can I say for {@PriceProperty=price}}
+- {@Help()={@PriceProperty=price} help}
 
-> Change() examples for Price
-- {@Change()=change {@Price=price}}
-- {@Change()=goto {@Price=price}}
+> Change() examples for PriceProperty
+- {@Change()=change {@PriceProperty=price}}
+- {@Change()=goto {@PriceProperty=price}}
 
 
 

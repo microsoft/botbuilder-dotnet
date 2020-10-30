@@ -16,13 +16,13 @@
                         }
                     },
                     "entities": {
-                        "Meat": [
+                        "MeatProperty": [
                             {}
                         ],
                         "$instance": {
-                            "Meat": [
+                            "MeatProperty": [
                                 {
-                                    "type": "Meat",
+                                    "type": "MeatProperty",
                                     "text": "Meat",
                                     "startIndex": 0,
                                     "length": 4,
