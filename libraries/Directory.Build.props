@@ -2,6 +2,7 @@
 <Project>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GeneratePackageOnBuild>$(GeneratePackages)</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
