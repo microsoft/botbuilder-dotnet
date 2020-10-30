@@ -357,9 +357,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             else
             {
                 var uri = new UriBuilder(_application.Endpoint);
-
-                // TODO: When the endpoint GAs, we will need to change this.  I could make it an option, but other code is likely to need to change.
-                uri.Path += $"luis/v3.0-preview/apps/{_application.ApplicationId}";
+                uri.Path += $"luis/prediction/v3.0/apps/{_application.ApplicationId}";
 
                 var query = AddParam(null, "verbose", options.IncludeInstanceData);
                 query = AddParam(query, "log", options.Log);

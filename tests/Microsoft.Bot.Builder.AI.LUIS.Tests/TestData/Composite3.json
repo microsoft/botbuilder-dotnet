@@ -187,14 +187,14 @@
         {
           "endIndex": 20,
           "entity": "va",
-          "score": 0.941649556,
+          "score": 0.9684971,
           "startIndex": 19,
           "type": "State"
         },
         {
           "endIndex": 32,
           "entity": "wa",
-          "score": 0.9893861,
+          "score": 0.988121331,
           "startIndex": 31,
           "type": "State"
         },
@@ -202,7 +202,7 @@
           "endIndex": 20,
           "entity": "12345 va",
           "role": "Source",
-          "score": 0.9345161,
+          "score": 0.9659546,
           "startIndex": 13,
           "type": "Address"
         },
@@ -210,7 +210,7 @@
           "endIndex": 32,
           "entity": "12346 wa",
           "role": "Destination",
-          "score": 0.9818366,
+          "score": 0.987832844,
           "startIndex": 25,
           "type": "Address"
         },
@@ -238,47 +238,47 @@
       "intents": [
         {
           "intent": "Roles",
-          "score": 0.999911964
+          "score": 0.99991256
         },
         {
           "intent": "Delivery",
-          "score": 0.00238572317
-        },
-        {
-          "intent": "search",
-          "score": 9.494859E-06
-        },
-        {
-          "intent": "Travel",
-          "score": 3.09763345E-06
+          "score": 0.00239894539
         },
         {
           "intent": "None",
-          "score": 1.17844979E-06
+          "score": 1.18518381E-06
         },
         {
           "intent": "Weather.GetForecast",
-          "score": 1.02792524E-06
+          "score": 1.03386708E-06
+        },
+        {
+          "intent": "search",
+          "score": 9.45E-09
         },
         {
           "intent": "SpecifyName",
-          "score": 3.0666667E-09
+          "score": 3.08333337E-09
+        },
+        {
+          "intent": "Travel",
+          "score": 3.08333337E-09
         },
         {
           "intent": "Greeting",
-          "score": 1.0875E-09
+          "score": 1.09375E-09
         },
         {
           "intent": "Cancel",
-          "score": 1.01764708E-09
+          "score": 1.02352937E-09
         },
         {
           "intent": "Help",
-          "score": 1.01764708E-09
+          "score": 1.02352937E-09
         },
         {
           "intent": "EntityTests",
-          "score": 4.757576E-10
+          "score": 4.617647E-10
         }
       ],
       "query": "Deliver from 12345 VA to 12346 WA",
@@ -288,7 +288,7 @@
       },
       "topScoringIntent": {
         "intent": "Roles",
-        "score": 0.999911964
+        "score": 0.99991256
       }
     }
   },
@@ -451,7 +451,6 @@
             "score": 1.02792524E-06
           }
         },
-        "normalizedQuery": "deliver from 12345 va to 12346 wa",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

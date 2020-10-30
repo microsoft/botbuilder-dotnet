@@ -8,7 +8,7 @@
           "recognitionSources": [
             "model"
           ],
-          "score": 0.933022,
+          "score": 0.980508447,
           "startIndex": 11,
           "text": "Emad",
           "type": "Name"
@@ -36,42 +36,42 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.00561066
+      "score": 0.00555860251
     },
     "Delivery": {
-      "score": 0.005594687
+      "score": 0.005572036
     },
     "EntityTests": {
-      "score": 0.006150753
+      "score": 0.006504555
     },
     "Greeting": {
-      "score": 0.07383378
+      "score": 0.07429792
     },
     "Help": {
-      "score": 0.00488031236
+      "score": 0.004867298
     },
     "None": {
-      "score": 0.0109978123
+      "score": 0.0109896818
     },
     "Roles": {
-      "score": 0.03883836
+      "score": 0.0382854156
     },
     "search": {
-      "score": 0.007004893
+      "score": 0.0006921758
     },
     "SpecifyName": {
-      "score": 0.797829032
+      "score": 0.794012964
     },
     "Travel": {
-      "score": 0.00329105835
+      "score": 0.00203858572
     },
     "Weather_GetForecast": {
-      "score": 0.00686998945
+      "score": 0.006886828
     }
   },
   "sentiment": {
     "label": "positive",
-    "score": 0.8283453
+    "score": 0.7930478
   },
   "text": "My name is Emad",
   "v2": {
@@ -86,7 +86,7 @@
         {
           "endIndex": 14,
           "entity": "emad",
-          "score": 0.933022,
+          "score": 0.980508447,
           "startIndex": 11,
           "type": "Name"
         },
@@ -100,57 +100,57 @@
       "intents": [
         {
           "intent": "SpecifyName",
-          "score": 0.797829032
+          "score": 0.794012964
         },
         {
           "intent": "Greeting",
-          "score": 0.07383378
+          "score": 0.07429792
         },
         {
           "intent": "Roles",
-          "score": 0.03883836
+          "score": 0.0382854156
         },
         {
           "intent": "None",
-          "score": 0.0109978123
-        },
-        {
-          "intent": "search",
-          "score": 0.007004893
+          "score": 0.0109896818
         },
         {
           "intent": "Weather.GetForecast",
-          "score": 0.00686998945
+          "score": 0.006886828
         },
         {
           "intent": "EntityTests",
-          "score": 0.006150753
-        },
-        {
-          "intent": "Cancel",
-          "score": 0.00561066
+          "score": 0.006504555
         },
         {
           "intent": "Delivery",
-          "score": 0.005594687
+          "score": 0.005572036
+        },
+        {
+          "intent": "Cancel",
+          "score": 0.00555860251
         },
         {
           "intent": "Help",
-          "score": 0.00488031236
+          "score": 0.004867298
         },
         {
           "intent": "Travel",
-          "score": 0.00329105835
+          "score": 0.00203858572
+        },
+        {
+          "intent": "search",
+          "score": 0.0006921758
         }
       ],
       "query": "My name is Emad",
       "sentimentAnalysis": {
         "label": "positive",
-        "score": 0.8283453
+        "score": 0.7930478
       },
       "topScoringIntent": {
         "intent": "SpecifyName",
-        "score": 0.797829032
+        "score": 0.794012964
       }
     }
   },
@@ -175,7 +175,6 @@
                 "recognitionSources": [
                   "model"
                 ],
-                "score": 0.933022,
                 "startIndex": 11,
                 "text": "Emad",
                 "type": "Name"
@@ -204,43 +203,42 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.00561066
+            "score": 0.00555860251
           },
           "Delivery": {
-            "score": 0.005594687
+            "score": 0.005572036
           },
           "EntityTests": {
-            "score": 0.006150753
+            "score": 0.006504555
           },
           "Greeting": {
-            "score": 0.07383378
+            "score": 0.07429792
           },
           "Help": {
-            "score": 0.00488031236
+            "score": 0.004867298
           },
           "None": {
-            "score": 0.0109978123
+            "score": 0.0109896818
           },
           "Roles": {
-            "score": 0.03883836
+            "score": 0.0382854156
           },
           "search": {
-            "score": 0.007004893
+            "score": 0.0006921758
           },
           "SpecifyName": {
-            "score": 0.797829032
+            "score": 0.794012964
           },
           "Travel": {
-            "score": 0.00329105835
+            "score": 0.00203858572
           },
           "Weather.GetForecast": {
-            "score": 0.00686998945
+            "score": 0.006886828
           }
         },
-        "normalizedQuery": "my name is emad",
         "sentiment": {
           "label": "positive",
-          "score": 0.8283453
+          "score": 0.7930478
         },
         "topIntent": "SpecifyName"
       },
