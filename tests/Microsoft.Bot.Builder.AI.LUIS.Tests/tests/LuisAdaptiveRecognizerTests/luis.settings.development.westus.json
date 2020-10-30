@@ -1,6 +1,12 @@
 {
-    "luis": {
-        "DynamicLists_test_en_us_lu": "e9768105-e984-4144-af3c-25ff3a0ffcea",
-        "ExternalEntities_test_en_us_lu": "f09e1e47-2f29-44bf-b4e4-7af2890cd88a"
+  "luis": {
+    "DynamicLists_test_en_us_lu": {
+      "appId": "c45b959c-a9e2-47bb-962d-db82f7b571e8",
+      "version": "0.1"
+    },
+    "ExternalEntities_test_en_us_lu": {
+      "appId": "fb69bbfd-f9bc-4319-b935-f041e9d9c6c3",
+      "version": "0.1"
     }
+  }
 }

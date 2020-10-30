@@ -43,4 +43,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="tests\LuisAdaptiveRecognizerTests\cachedResponses\" />
+  </ItemGroup>
 </Project>
