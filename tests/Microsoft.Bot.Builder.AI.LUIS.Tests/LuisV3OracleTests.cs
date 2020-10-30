@@ -772,9 +772,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var luisRecognizer = GetLuisRecognizer(mockHttp, options);
             var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
             var typedJson = Utils.Json(typedResult, version, oracle);
-
-            // Threshold is 0.0 so when hitting endpoint get exact and when mocking isn't needed.
-            if (!Utils.WithinDelta(oracle, typedJson, 0.0) && !JToken.DeepEquals(typedJson[version], oldResponse))
+            if (!Utils.WithinDelta(oracle, typedJson, Mock ? 0.0 : 0.01) && !JToken.DeepEquals(typedJson[version], oldResponse))
             {
                 using (var writer = new StreamWriter(newPath))
                 {
