@@ -38,7 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var refDialog in container.RefereceDialogs)
                 {
-                    //ToDo: should recursively find all ref dialogs in any sub dialog.
                     var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
                     var loadedDialog = resourceExplorer.LoadType<Dialog>(resource);
                     dialogManager.Dialogs.Add(loadedDialog);
