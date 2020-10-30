@@ -45,7 +45,10 @@
       ]
     ],
     "endloc": [
-      "zimbabwe"
+      {
+        "location": "zimbabwe",
+        "type": "countryRegion"
+      }
     ]
   },
   "intents": {
@@ -165,7 +168,10 @@
             ]
           ],
           "endloc": [
-            "zimbabwe"
+            {
+              "type": "countryRegion",
+              "value": "zimbabwe"
+            }
           ]
         },
         "intents": {
@@ -203,7 +209,6 @@
             "score": 0.006632081
           }
         },
-        "normalizedQuery": "fly zimbabwe airlines or deltaair",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

@@ -8,7 +8,7 @@
           "recognitionSources": [
             "model"
           ],
-          "score": 0.7077416,
+          "score": 0.6503277,
           "startIndex": 0,
           "text": "http://foo.com is where you can get a weather forecast for seattle",
           "type": "Composite2"
@@ -25,23 +25,23 @@
           "text": "seattle",
           "type": "builtin.geographyV2.city"
         }
+      ],
+      "oldURL": [
+        {
+          "endIndex": 14,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 0,
+          "text": "http://foo.com",
+          "type": "builtin.url"
+        }
       ]
     },
     "Composite2": [
       {
         "$instance": {
-          "url": [
-            {
-              "endIndex": 14,
-              "modelType": "Prebuilt Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "startIndex": 0,
-              "text": "http://foo.com",
-              "type": "builtin.url"
-            }
-          ],
           "Weather_Location": [
             {
               "endIndex": 66,
@@ -49,16 +49,13 @@
               "recognitionSources": [
                 "model"
               ],
-              "score": 0.76184386,
+              "score": 0.8245291,
               "startIndex": 59,
               "text": "seattle",
               "type": "Weather.Location"
             }
           ]
         },
-        "url": [
-          "http://foo.com"
-        ],
         "Weather_Location": [
           "seattle"
         ]
@@ -69,41 +66,44 @@
         "location": "seattle",
         "type": "city"
       }
+    ],
+    "oldURL": [
+      "http://foo.com"
     ]
   },
   "intents": {
     "Cancel": {
-      "score": 0.000171828113
+      "score": 0.00017013021
     },
     "Delivery": {
-      "score": 0.0011408634
+      "score": 0.00114031672
     },
     "EntityTests": {
-      "score": 0.342939854
+      "score": 0.286522
     },
     "Greeting": {
-      "score": 0.0001518702
+      "score": 0.000150978623
     },
     "Help": {
-      "score": 0.0005502715
+      "score": 0.000547617
     },
     "None": {
-      "score": 0.0175834317
+      "score": 0.01798658
     },
     "Roles": {
-      "score": 0.0432791822
+      "score": 0.0459664278
     },
     "search": {
-      "score": 0.01050759
+      "score": 0.0009428267
     },
     "SpecifyName": {
-      "score": 0.001833231
+      "score": 0.0009960134
     },
     "Travel": {
-      "score": 0.004430798
+      "score": 0.00235179346
     },
     "Weather_GetForecast": {
-      "score": 0.669524968
+      "score": 0.6732952
     }
   },
   "sentiment": {
@@ -123,10 +123,6 @@
         {
           "children": [
             {
-              "type": "builtin.url",
-              "value": "http://foo.com"
-            },
-            {
               "type": "Weather.Location",
               "value": "seattle"
             }
@@ -139,14 +135,14 @@
         {
           "endIndex": 65,
           "entity": "seattle",
-          "score": 0.76184386,
+          "score": 0.8245291,
           "startIndex": 59,
           "type": "Weather.Location"
         },
         {
           "endIndex": 65,
           "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
-          "score": 0.7077416,
+          "score": 0.6503277,
           "startIndex": 0,
           "type": "Composite2"
         },
@@ -162,6 +158,7 @@
           "resolution": {
             "value": "http://foo.com"
           },
+          "role": "oldURL",
           "startIndex": 0,
           "type": "builtin.url"
         }
@@ -169,47 +166,47 @@
       "intents": [
         {
           "intent": "Weather.GetForecast",
-          "score": 0.669524968
+          "score": 0.6732952
         },
         {
           "intent": "EntityTests",
-          "score": 0.342939854
+          "score": 0.286522
         },
         {
           "intent": "Roles",
-          "score": 0.0432791822
+          "score": 0.0459664278
         },
         {
           "intent": "None",
-          "score": 0.0175834317
-        },
-        {
-          "intent": "search",
-          "score": 0.01050759
+          "score": 0.01798658
         },
         {
           "intent": "Travel",
-          "score": 0.004430798
-        },
-        {
-          "intent": "SpecifyName",
-          "score": 0.001833231
+          "score": 0.00235179346
         },
         {
           "intent": "Delivery",
-          "score": 0.0011408634
+          "score": 0.00114031672
+        },
+        {
+          "intent": "SpecifyName",
+          "score": 0.0009960134
+        },
+        {
+          "intent": "search",
+          "score": 0.0009428267
         },
         {
           "intent": "Help",
-          "score": 0.0005502715
+          "score": 0.000547617
         },
         {
           "intent": "Cancel",
-          "score": 0.000171828113
+          "score": 0.00017013021
         },
         {
           "intent": "Greeting",
-          "score": 0.0001518702
+          "score": 0.000150978623
         }
       ],
       "query": "http://foo.com is where you can get a weather forecast for seattle",
@@ -219,7 +216,7 @@
       },
       "topScoringIntent": {
         "intent": "Weather.GetForecast",
-        "score": 0.669524968
+        "score": 0.6732952
       }
     }
   },
@@ -244,7 +241,6 @@
                 "recognitionSources": [
                   "model"
                 ],
-                "score": 0.7077416,
                 "startIndex": 0,
                 "text": "http://foo.com is where you can get a weather forecast for seattle",
                 "type": "Composite2"
@@ -262,24 +258,25 @@
                 "text": "seattle",
                 "type": "builtin.geographyV2.city"
               }
+            ],
+            "oldURL": [
+              {
+                "length": 14,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "role": "oldURL",
+                "startIndex": 0,
+                "text": "http://foo.com",
+                "type": "builtin.url"
+              }
             ]
           },
           "Composite2": [
             {
               "$instance": {
-                "url": [
-                  {
-                    "length": 14,
-                    "modelType": "Prebuilt Entity Extractor",
-                    "modelTypeId": 2,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "startIndex": 0,
-                    "text": "http://foo.com",
-                    "type": "builtin.url"
-                  }
-                ],
                 "Weather.Location": [
                   {
                     "length": 7,
@@ -288,16 +285,12 @@
                     "recognitionSources": [
                       "model"
                     ],
-                    "score": 0.76184386,
                     "startIndex": 59,
                     "text": "seattle",
                     "type": "Weather.Location"
                   }
                 ]
               },
-              "url": [
-                "http://foo.com"
-              ],
               "Weather.Location": [
                 "seattle"
               ]
@@ -308,44 +301,46 @@
               "type": "city",
               "value": "seattle"
             }
+          ],
+          "oldURL": [
+            "http://foo.com"
           ]
         },
         "intents": {
           "Cancel": {
-            "score": 0.000171828113
+            "score": 0.00017013021
           },
           "Delivery": {
-            "score": 0.0011408634
+            "score": 0.00114031672
           },
           "EntityTests": {
-            "score": 0.342939854
+            "score": 0.286522
           },
           "Greeting": {
-            "score": 0.0001518702
+            "score": 0.000150978623
           },
           "Help": {
-            "score": 0.0005502715
+            "score": 0.000547617
           },
           "None": {
-            "score": 0.0175834317
+            "score": 0.01798658
           },
           "Roles": {
-            "score": 0.0432791822
+            "score": 0.0459664278
           },
           "search": {
-            "score": 0.01050759
+            "score": 0.0009428267
           },
           "SpecifyName": {
-            "score": 0.001833231
+            "score": 0.0009960134
           },
           "Travel": {
-            "score": 0.004430798
+            "score": 0.00235179346
           },
           "Weather.GetForecast": {
-            "score": 0.669524968
+            "score": 0.6732952
           }
         },
-        "normalizedQuery": "http://foo.com is where you can get a weather forecast for seattle",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

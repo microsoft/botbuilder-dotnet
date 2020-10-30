@@ -94,7 +94,10 @@
       }
     ],
     "geographyV2": [
-      "seattle"
+      {
+        "location": "seattle",
+        "type": "city"
+      }
     ],
     "oldURL": [
       "http://foo.com"
@@ -156,10 +159,6 @@
               "value": "denver"
             },
             {
-              "type": "builtin.url",
-              "value": "http://foo.com"
-            },
-            {
               "type": "City::From",
               "value": "seattle"
             },
@@ -174,30 +173,30 @@
       ],
       "entities": [
         {
-          "endIndex": 57,
-          "entity": "dallas",
-          "score": 0.9984612,
-          "startIndex": 52,
-          "type": "City::To"
-        },
-        {
           "endIndex": 47,
           "entity": "seattle",
-          "score": 0.999511,
+          "score": 0.997107,
           "startIndex": 41,
           "type": "City::From"
         },
         {
+          "endIndex": 57,
+          "entity": "dallas",
+          "score": 0.998217642,
+          "startIndex": 52,
+          "type": "City::To"
+        },
+        {
           "endIndex": 68,
           "entity": "denver",
-          "score": 0.984581649,
+          "score": 0.991177261,
           "startIndex": 63,
           "type": "City"
         },
         {
           "endIndex": 68,
           "entity": "http : / / foo . com is where you can fly from seattle to dallas via denver",
-          "score": 0.97076714,
+          "score": 0.9807907,
           "startIndex": 0,
           "type": "Composite2"
         },
@@ -213,6 +212,7 @@
           "resolution": {
             "value": "http://foo.com"
           },
+          "role": "oldURL",
           "startIndex": 0,
           "type": "builtin.url"
         }
@@ -220,47 +220,47 @@
       "intents": [
         {
           "intent": "EntityTests",
-          "score": 0.94500196
+          "score": 0.956510365
         },
         {
           "intent": "Roles",
-          "score": 0.0300086979
+          "score": 0.02785043
         },
         {
           "intent": "Weather.GetForecast",
-          "score": 0.0237181056
+          "score": 0.0228957664
         },
         {
           "intent": "Travel",
-          "score": 0.0154484725
-        },
-        {
-          "intent": "search",
-          "score": 0.0108942846
+          "score": 0.01013992
         },
         {
           "intent": "None",
-          "score": 0.004187195
+          "score": 0.003814332
         },
         {
-          "intent": "SpecifyName",
-          "score": 0.00168467627
+          "intent": "search",
+          "score": 0.00132194813
         },
         {
           "intent": "Delivery",
-          "score": 0.001310123
+          "score": 0.00125586381
+        },
+        {
+          "intent": "SpecifyName",
+          "score": 0.000922683743
         },
         {
           "intent": "Help",
-          "score": 0.000547201431
+          "score": 0.0005319686
         },
         {
           "intent": "Cancel",
-          "score": 0.000227437369
+          "score": 0.000219483933
         },
         {
           "intent": "Greeting",
-          "score": 0.000152356763
+          "score": 0.00014909108
         }
       ],
       "query": "http://foo.com is where you can fly from seattle to dallas via denver",
@@ -270,7 +270,7 @@
       },
       "topScoringIntent": {
         "intent": "EntityTests",
-        "score": 0.94500196
+        "score": 0.956510365
       }
     }
   },
@@ -295,7 +295,6 @@
                 "recognitionSources": [
                   "model"
                 ],
-                "score": 0.9807907,
                 "startIndex": 0,
                 "text": "http://foo.com is where you can fly from seattle to dallas via denver",
                 "type": "Composite2"
@@ -340,7 +339,6 @@
                     "recognitionSources": [
                       "model"
                     ],
-                    "score": 0.991177261,
                     "startIndex": 63,
                     "text": "denver",
                     "type": "City"
@@ -354,7 +352,6 @@
                     "recognitionSources": [
                       "model"
                     ],
-                    "score": 0.997107,
                     "startIndex": 41,
                     "text": "seattle",
                     "type": "City::From"
@@ -368,7 +365,6 @@
                     "recognitionSources": [
                       "model"
                     ],
-                    "score": 0.998217642,
                     "startIndex": 52,
                     "text": "dallas",
                     "type": "City::To"
@@ -387,7 +383,10 @@
             }
           ],
           "geographyV2": [
-            "seattle"
+            {
+              "type": "city",
+              "value": "seattle"
+            }
           ],
           "oldURL": [
             "http://foo.com"
@@ -428,7 +427,6 @@
             "score": 0.0228957664
           }
         },
-        "normalizedQuery": "http://foo.com is where you can fly from seattle to dallas via denver",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

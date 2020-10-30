@@ -83,7 +83,7 @@
       },
       "topScoringIntent": {
         "intent": "Roles",
-        "score": 0.446264923
+        "score": 0.42429316
       }
     }
   },
@@ -109,8 +109,12 @@
               "type": "time",
               "values": [
                 {
-                  "timex": "T15",
-                  "value": "15:00:00"
+                  "resolution": [
+                    {
+                      "value": "15:00:00"
+                    }
+                  ],
+                  "timex": "T15"
                 }
               ]
             }
@@ -118,7 +122,7 @@
           "dimension": [
             {
               "number": 3,
-              "unit": "Picometer"
+              "units": "Picometer"
             }
           ]
         },
@@ -127,7 +131,6 @@
             "score": 0.42429316
           }
         },
-        "normalizedQuery": "fly on delta at 3pm",
         "sentiment": {
           "label": "neutral",
           "score": 0.5
