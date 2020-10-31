@@ -18,8 +18,8 @@ pushd $path
 # An "ObjectNotFound" error can result from a temporary Powershell module repository outage. 
 $ver = (Get-Command -Module Microsoft.PowerShell.Archive | Select-Object -Property version -First 1).Version.ToString()
 if ($ver -lt '1.2.3.0') { 
-    Write-Host "Installing Microsoft.Powershell.Archive 1.2.3.0 (fix for Linux path separator bug)"
-    Install-Module -Name Microsoft.PowerShell.Archive -MinimumVersion '1.2.3.0' -AllowClobber -Force -AcceptLicense 
+    Write-Host "Installing Microsoft.Powershell.Archive 1.2.5 (fix for Linux path separator bug)"
+    Install-Module -Name Microsoft.PowerShell.Archive -MinimumVersion '1.2.5' -AllowClobber -Force -AcceptLicense 
 } else { 
     Write-Host "Already installed: Microsoft.Powershell.Archive $ver"
 }
