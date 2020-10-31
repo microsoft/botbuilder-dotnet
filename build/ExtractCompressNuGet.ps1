@@ -10,8 +10,6 @@ param
 )
 pushd $path
 
-# Patch is ourmoded: Ensure Powershell.Archive minimum version 1.2.3.0 is installed. That fixes a path separator issue on macOS/Linux. 
-
 [int]$itemsProcessed = 0
 if ($extract) {
     # Extract .nupkg packages in the path.
