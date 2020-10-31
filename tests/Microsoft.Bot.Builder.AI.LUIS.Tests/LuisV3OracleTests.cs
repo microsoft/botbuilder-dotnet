@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         [Fact]
         public void LuisRecognizer_Timeout()
         {
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var expectedTimeout = 300;
 
             var options = new LuisRecognizerOptionsV3(new LuisApplication(endpoint))
@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var fieldInfo = typeof(LuisRecognizer).GetField("_luisRecognizerOptions", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
@@ -312,7 +312,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -364,7 +364,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -412,7 +412,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -459,7 +459,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -511,7 +511,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -574,7 +574,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -618,7 +618,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -662,7 +662,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
             var clientHandler = new EmptyLuisResponseClientHandlerV3();
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
@@ -772,9 +772,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var luisRecognizer = GetLuisRecognizer(mockHttp, options);
             var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
             var typedJson = Utils.Json(typedResult, version, oracle);
-
-            // Threshold is 0.0 so when hitting endpoint get exact and when mocking isn't needed.
-            if (!Utils.WithinDelta(oracle, typedJson, 0.0) && !JToken.DeepEquals(typedJson[version], oldResponse))
+            if (!Utils.WithinDelta(oracle, typedJson, Mock ? 0.0 : 0.01) && !JToken.DeepEquals(typedJson[version], oldResponse))
             {
                 using (var writer = new StreamWriter(newPath))
                 {

@@ -1,40 +1,4 @@
 {
-  "text": "fly on delta tomorrow",
-  "intents": {
-    "EntityTests": {
-      "score": 0.126392737
-    },
-    "Roles": {
-      "score": 0.0872572
-    },
-    "Travel": {
-      "score": 0.0195455234
-    },
-    "Cancel": {
-      "score": 0.0102540366
-    },
-    "None": {
-      "score": 0.008133633
-    },
-    "SpecifyName": {
-      "score": 0.00811035
-    },
-    "Help": {
-      "score": 0.007471661
-    },
-    "Greeting": {
-      "score": 0.0070632
-    },
-    "search": {
-      "score": 0.005809559
-    },
-    "Delivery": {
-      "score": 0.005539678
-    },
-    "Weather_GetForecast": {
-      "score": 0.004351445
-    }
-  },
   "entities": {
     "Airline": [
       [
@@ -50,46 +14,28 @@
       }
     ]
   },
+  "intents": {
+    "EntityTests": {
+      "score": 0.190871954
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "fly on delta tomorrow",
   "v3": {
+    "options": {
+      "DateTimeReference": "05/05/2019 12:00:00",
+      "IncludeAllIntents": false,
+      "IncludeAPIResults": true,
+      "IncludeInstanceData": false,
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Slot": "production"
+    },
     "response": {
-      "query": "fly on delta tomorrow",
       "prediction": {
-        "topIntent": "EntityTests",
-        "intents": {
-          "EntityTests": {
-            "score": 0.126392737
-          },
-          "Roles": {
-            "score": 0.0872572
-          },
-          "Travel": {
-            "score": 0.0195455234
-          },
-          "Cancel": {
-            "score": 0.0102540366
-          },
-          "None": {
-            "score": 0.008133633
-          },
-          "SpecifyName": {
-            "score": 0.00811035
-          },
-          "Help": {
-            "score": 0.007471661
-          },
-          "Greeting": {
-            "score": 0.0070632
-          },
-          "search": {
-            "score": 0.005809559
-          },
-          "Delivery": {
-            "score": 0.005539678
-          },
-          "Weather.GetForecast": {
-            "score": 0.004351445
-          }
-        },
         "entities": {
           "Airline": [
             [
@@ -101,27 +47,29 @@
               "type": "date",
               "values": [
                 {
-                  "timex": "2019-05-06",
                   "resolution": [
                     {
                       "value": "2019-05-06"
                     }
-                  ]
+                  ],
+                  "timex": "2019-05-06"
                 }
               ]
             }
           ]
-        }
-      }
-    },
-    "options": {
-      "includeAllIntents": false,
-      "includeAPIResults": true,
-      "includeInstanceData": false,
-      "log": true,
-      "preferExternalEntities": true,
-      "slot": "production",
-      "datetimeReference": "2019-05-05T12:00:00"
+        },
+        "intents": {
+          "EntityTests": {
+            "score": 0.190871954
+          }
+        },
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "EntityTests"
+      },
+      "query": "fly on delta tomorrow"
     }
   }
 }

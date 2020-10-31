@@ -1,1 +1,1 @@
-{"query":"three","prediction":{"topIntent":"intent","intents":{"intent":{"score":0.9651823}},"entities":{"numberEntity":[["3"]]}}}
+{"query":"three","prediction":{"topIntent":"intent","intents":{"intent":{"score":0.9738456}},"entities":{"numberEntity":[["3"]]}}}

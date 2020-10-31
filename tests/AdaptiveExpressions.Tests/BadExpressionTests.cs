@@ -388,12 +388,8 @@ namespace AdaptiveExpressions.Tests
             Test("union(one, two)"), // should have collection param
             Test("intersection(one, two)"), // should have collection param
             Test("skip(one, two)"), // should have collection param
-            Test("skip(items,-1)"), // the second parameter shoule not less than zero
-            Test("skip(items,3)"), // the second parameter shoule  less than the length of the collection
             Test("take(one, two)"), // should have collection param
             Test("take(createArray('H','e','l','l','0'),items[5])"), // the second param expr is wrong
-            Test("take(items,-1)"), // the second parameter shoule not less than zero
-            Test("take(items,4)"), // the second parameter shoule  less than the length of the collection
             Test("subArray(one,1,4)"), // should have collection param
             Test("subArray(items,-1,4)"), // the second parameter shoule not less than zero
             Test("subArray(items,1,4)"), // the second parameter shoule  less than the length of the collection

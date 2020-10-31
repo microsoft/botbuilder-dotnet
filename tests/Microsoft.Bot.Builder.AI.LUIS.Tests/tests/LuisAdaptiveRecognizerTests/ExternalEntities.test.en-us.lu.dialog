@@ -1,6 +1,6 @@
 {
     "$kind": "Microsoft.LuisRecognizer",
-    "applicationId": "=settings.luis.ExternalEntities_test_en_us_lu",
+    "applicationId": "=settings.luis.ExternalEntities_test_en_us_lu.appId",
     "endpoint": "=settings.luis.endpoint",
     "endpointKey": "=settings.luis.endpointKey",
     "$schema": "../../../tests.schema"

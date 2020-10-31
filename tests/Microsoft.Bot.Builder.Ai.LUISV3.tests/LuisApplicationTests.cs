@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             // Arrange
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
-            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
+            var endpoint = "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
 
             // Act
             var app = new LuisApplication(endpoint);
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         public void ListApplicationFromLuisEndpointBadArguments()
         {
             Assert.Throws<ArgumentException>(() => new LuisApplication("this.is.not.a.uri"));
-            Assert.Throws<ArgumentException>(() => new LuisApplication("https://westus.api.cognitive.microsoft.com/luis/v3.0-preview/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&q="));
+            Assert.Throws<ArgumentException>(() => new LuisApplication("https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b/slots/production/predict?verbose=true&timezoneOffset=-360&q="));
             Assert.Throws<ArgumentException>(() => new LuisApplication("https://westus.api.cognitive.microsoft.com?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q="));
         }
 
