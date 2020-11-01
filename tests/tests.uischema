@@ -766,5 +766,85 @@
       "label": "Emit a trace event",
       "subtitle": "Trace Activity"
     }
+  },
+  "Teams.OnMessagingExtensionFetchTask": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension fetch task",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/fetchTask'"
+    }
+  },
+  "Teams.OnTaskModuleFetch": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams task module fetch",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='task/fetch'"
+    }
+  },
+  "Teams.OnTaskModuleSubmit": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams task module submit",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='task/submit'"
+    }
+  },
+  "Teams.SendMessagingExtensionQueryLinkResponse": {
+    "form": {
+      "label": "Send a query link response",
+      "order": [
+        "activity",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a response to a query link request."
+    }
+  },
+  "Teams.SendTaskModuleContinueResponse": {
+    "form": {
+      "label": "Send task module continue response",
+      "order": [
+        "activity",
+        "title",
+        "height",
+        "width",
+        "url",
+        "fallbackUrl",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a continue response to task module request."
+    }
+  },
+  "Teams.SendTaskModuleMessageResponse": {
+    "form": {
+      "label": "Send task module message response",
+      "order": [
+        "message",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a message response to task module request."
+    }
   }
 }

@@ -38,11 +38,14 @@
 
   <ItemGroup>
     <None Remove="Schemas\Actions\Teams.GetMeetingParticipant.schema" />
+    <None Remove="Schemas\Actions\Teams.GetMember.schema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAuthResponse.schema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionQueryLinkResponse.schema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionQueryLinkResponse.uischema" />
     <None Remove="Schemas\Actions\Teams.SendTaskModuleContinueResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendTaskModuleContinueResponse.uischema" />
     <None Remove="Schemas\Actions\Teams.SendTaskModuleMessageResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendTaskModuleMessageResponse.uischema" />
     <None Remove="Schemas\TriggerConditions\Microsoft.OnInvokeActivity.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnChannelRestored.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionFetchTask.uischema" />

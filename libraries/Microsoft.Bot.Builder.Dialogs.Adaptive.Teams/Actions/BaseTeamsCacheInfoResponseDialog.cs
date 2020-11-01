@@ -73,13 +73,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// and <see cref="CacheType"/> resolve to valid values.</returns>
         protected CacheInfo GetCacheInfo(DialogContext dc)
         {
-            var cacheType = CacheType.GetValue(dc.State);
-            var cacheDuration = CacheDuration.GetValue(dc.State);
-            if (cacheDuration > 0 && !string.IsNullOrEmpty(cacheType))
+            if (CacheType != null && CacheDuration != null)
             {
-                // Valid ranges for CacheDuration are 2592000 < > 60
-                cacheDuration = Math.Min(Math.Max(60, cacheDuration), 2592000);
-                return new CacheInfo(cacheType: cacheType, cacheDuration: cacheDuration);
+                var cacheType = CacheType.GetValue(dc.State);
+                var cacheDuration = CacheDuration.GetValue(dc.State);
+                if (cacheDuration > 0 && !string.IsNullOrEmpty(cacheType))
+                {
+                    // Valid ranges for CacheDuration are 60 < > 2592000
+                    cacheDuration = Math.Min(Math.Max(60, cacheDuration), 2592000);
+                    return new CacheInfo(cacheType: cacheType, cacheDuration: cacheDuration);
+                }
             }
 
             return null;

@@ -8,7 +8,7 @@
         "hidden": [
             "actions"
         ],
-        "label": "Teams Messaging Extension Fetch Task",
+        "label": "Teams messaging extension fetch task",
         "subtitle": "Invoke activity.name='composeExtension/fetchTask'"
     }
 }

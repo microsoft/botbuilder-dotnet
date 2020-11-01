@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// a task/submit invoke event with a JSON object in the event payload.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
-        public SendTaskModuleContinueResponse(string title = null, Activity activity = null, int? height = null, int? width = null, string url = null, string fallbackUrl = null, string completionBotId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendTaskModuleContinueResponse(string title = null, string activity = null, int? height = null, int? width = null, string url = null, string fallbackUrl = null, string completionBotId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             if (!string.IsNullOrEmpty(title))
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.Url = url;
             this.FallbackUrl = fallbackUrl;
             this.CompletionBotId = completionBotId;
-            this.Activity = new StaticActivityTemplate(activity);
+            this.Activity = new ActivityTemplate(activity);
         }
 
         /// <summary>
@@ -154,13 +154,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 attachment = boundActivity.Attachments[0];
             }
+            else if (Url == null)
+            {
+                throw new ArgumentException($"Invalid Activity. A valid url, or valid attachment is required for Task Module Continue Response.");
+            }
 
             var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
-            var height = Height.GetValue(dc.State);
-            var width = Width.GetValue(dc.State);
-            var url = Url.GetValue(dc.State);
-            var fallbackUrl = FallbackUrl.GetValue(dc.State);
-            var completionBotId = CompletionBotId.GetValue(dc.State);
+            var height = Height?.GetValue(dc.State);
+            var width = Width?.GetValue(dc.State);
+            var url = Url?.GetValue(dc.State);
+            var fallbackUrl = FallbackUrl?.GetValue(dc.State);
+            var completionBotId = CompletionBotId?.GetValue(dc.State);
 
             var response = new TaskModuleResponse
             {

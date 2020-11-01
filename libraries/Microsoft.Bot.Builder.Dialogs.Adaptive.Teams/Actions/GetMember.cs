@@ -14,23 +14,23 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Calls TeamsInfo.GetMeetingParticipantAsync and sets the result to a memory property.
+    /// Calls TeamsInfo.GetMember and sets the result to a memory property.
     /// </summary>
-    public class GetMeetingParticipant : Dialog
+    public class GetMember : Dialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.GetMeetingParticipant";
+        public const string Kind = "Teams.GetMember";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetMeetingParticipant"/> class.
+        /// Initializes a new instance of the <see cref="GetMember"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public GetMeetingParticipant([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public GetMember([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -58,31 +58,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public StringExpression Property { get; set; }
 
         /// <summary>
-        /// Gets or sets the expression to get the value to use for meeting id.
+        /// Gets or sets the expression to get the value to use for member id.
         /// </summary>
         /// <value>
-        /// The expression to get the value to use for meeting id. Default value is turn.activity.channelData.meeting.id.
+        /// The expression to get the value to use for member id. Default value is turn.activity.from.id.
         /// </value>
-        [JsonProperty("meetingId")]
-        public StringExpression MeetingId { get; set; } = "=turn.activity.channelData.meeting.id";
-
-        /// <summary>
-        /// Gets or sets the expression to get the value to use for participant id.
-        /// </summary>
-        /// <value>
-        /// The expression to get the value to use for participant id. Default value is turn.activity.from.aadObjectId.
-        /// </value>
-        [JsonProperty("participantId")]
-        public StringExpression ParticipantId { get; set; } = "=turn.activity.from.aadObjectId";
-
-        /// <summary>
-        /// Gets or sets the expression to get the value to use for tenant id.
-        /// </summary>
-        /// <value>
-        /// The expression to get the value to use for tenant id. Default value is turn.activity.channelData.meetingInfo.Id.
-        /// </value>
-        [JsonProperty("tenantId")]
-        public StringExpression TenantId { get; set; } = "=turn.activity.channelData.tenant.id";
+        [JsonProperty("memberId")]
+        public StringExpression MemberId { get; set; } = "=turn.activity.from.id";
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -106,22 +88,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("TeamsInfo.GetMeetingParticipantAsync() works only on the Teams channel.");
+                throw new Exception("TeamsInfo.GetMember() works only on the Teams channel.");
             }
 
-            string meetingId = GetValueOrNull(dc, this.MeetingId);
-            string participantId = GetValueOrNull(dc, this.ParticipantId);
-            string tenantId = GetValueOrNull(dc, this.TenantId);
-
-            if (participantId == null)
+            string memberId = null;
+            if (MemberId != null)
             {
-                // TeamsInfo.GetMeetingParticipantAsync will default to retrieving the current meeting's participant
-                // if none is provided.  This could lead to unexpected results.  Therefore, GetMeetingParticipant action
-                // throws an exception if the expression provided somehow maps to an invalid result.
-                throw new InvalidOperationException($"GetMeetingParticipant could determine the participant id by expression value provided. {nameof(participantId)} is required.");
+                var (value, valueError) = MemberId.TryGetValue(dc.State);
+                if (valueError != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {MemberId.ExpressionText}. Error: {valueError}");
+                }
+
+                memberId = value as string;
             }
 
-            var result = await TeamsInfo.GetMeetingParticipantAsync(dc.Context, meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(memberId))
+            {
+                throw new InvalidOperationException($"Missing {nameof(MemberId)} in {nameof(GetMember)}");
+            }
+
+            var result = await TeamsInfo.GetMemberAsync(dc.Context, memberId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (this.Property != null)
             {
@@ -137,23 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.MeetingId?.ToString() ?? string.Empty},{this.ParticipantId?.ToString() ?? string.Empty},{this.TenantId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
-        }
-
-        private string GetValueOrNull(DialogContext dc, StringExpression stringExpression)
-        {
-            if (stringExpression != null)
-            {
-                var (value, valueError) = stringExpression.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {stringExpression.ExpressionText}. Error: {valueError}");
-                }
-
-                return value as string;
-            }
-
-            return null;
+            return $"{this.GetType().Name}[{this.MemberId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
         }
     }
 }
