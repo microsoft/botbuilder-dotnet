@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send task module message response",
-    "description": "Send a message response to a Task Module request.",
+    "title": "Get member",
+    "description": "Get teams member information.",
     "type": "object",
     "properties": {
         "id": {
@@ -10,22 +10,20 @@
             "title": "Id",
             "description": "Optional id for the dialog"
         },
-        "cacheType": {
-            "type": "string",
-            "title": "Cache type",
-            "description": "Optional type of cache: 'cache' or 'no_cache'."
-        },
-        "cacheDuration": {
-            "type": "string",
-            "title": "Cache duration",
-            "description": "Optional duration in seconds of the result in the cache."
-        },
-        "message": {
+        "property": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Message",
-            "description": "The response message to send.",
+            "title": "Property",
+            "description": "Property (named location to store information).",
             "examples": [
-                "Thanks, have a nice day! :)"
+                "user.memberInfo"
+            ]
+        },
+        "memberId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Member Id",
+            "description": "Member Id or expression to a member id to use to get the member information. Default value is the current turn.activity.from.id.",
+            "examples": [
+                "=turn.activity.from.id"
             ]
         },
         "disabled": {

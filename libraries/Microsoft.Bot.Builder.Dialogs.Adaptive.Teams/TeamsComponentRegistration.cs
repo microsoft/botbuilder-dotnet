@@ -40,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
 
             // Actions
+            yield return new DeclarativeType<GetMember>(GetMember.Kind);
             yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);
             yield return new DeclarativeType<SendTaskModuleMessageResponse>(SendTaskModuleMessageResponse.Kind);
             yield return new DeclarativeType<SendTaskModuleContinueResponse>(SendTaskModuleContinueResponse.Kind);
@@ -50,7 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<SendMessagingExtensionQueryResponse>(SendMessagingExtensionQueryResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionResultResponse>(SendMessagingExtensionResultResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionSelectItemResponse>(SendMessagingExtensionSelectItemResponse.Kind);
-            yield return new DeclarativeType<SendTaskModuleContinueResponse>(SendTaskModuleContinueResponse.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)

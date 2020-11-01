@@ -1,10 +1,10 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
     "form": {
-        "label": "Send a query link response",
-        "subtitle": "Send a response to a query link request.",
+        "label": "Send task module message response",
+        "subtitle": "Send a message response to task module request.",
         "order": [
-            "activity",
+            "message",
             "cacheType",
             "cacheDuration",
             "*"

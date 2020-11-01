@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send task module continue response",
+        "subtitle": "Send a continue response to task module request.",
+        "order": [
+            "activity",
+            "title",
+            "height",
+            "width",
+            "url",
+            "fallbackUrl",
+            "cacheType",
+            "cacheDuration",
+            "*"
+        ]
+    }
+}

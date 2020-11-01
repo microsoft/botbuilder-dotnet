@@ -8,7 +8,7 @@
         "hidden": [
             "actions"
         ],
-        "label": "Teams Task Module Submit",
+        "label": "Teams task module submit",
         "subtitle": "Invoke activity.name='task/submit'"
     }
 }

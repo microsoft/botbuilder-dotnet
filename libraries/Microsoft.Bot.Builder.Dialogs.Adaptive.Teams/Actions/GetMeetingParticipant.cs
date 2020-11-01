@@ -123,7 +123,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var result = await TeamsInfo.GetMeetingParticipantAsync(dc.Context, meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            dc.State.SetValue(this.Property.GetValue(dc.State), result);
+            if (this.Property != null)
+            {
+                dc.State.SetValue(this.Property.GetValue(dc.State), result);
+            }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
