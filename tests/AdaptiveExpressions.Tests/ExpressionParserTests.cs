@@ -369,6 +369,10 @@ namespace AdaptiveExpressions.Tests
             #region string interpolation test
             Test("``", string.Empty),
             Test("`hi`", "hi"),
+            Test("`hi\r\n`", "hi\r\n"),
+            Test("`hi\\r\\n`", "hi\\r\\n"),
+            Test("`hi\\\\``", "hi\\`"),
+            Test("`hi\\$`", "hi$"),
             Test(@"`hi\``", "hi`"),
             Test("`${world}`", "world"),
             Test(@"`hi ${string('jack`')}`", "hi jack`"),
