@@ -593,17 +593,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.Single(((Activity)activity).Attachments);
                 Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
-
-                // Add a magic code to the adapter
-                //adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
             })
             .Send(messageActivityWithNullText)
             .AssertReply(retryPromptText)
-
-            //.Send(magicCode)
-            //.AssertReply("Logged in.")
             .StartTestAsync();
         }
 
