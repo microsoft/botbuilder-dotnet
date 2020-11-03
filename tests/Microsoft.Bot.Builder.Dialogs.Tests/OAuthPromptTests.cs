@@ -547,6 +547,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [Fact]
+        public async Task RecognizeTokenAsync_WithNullTextMessageActivity_DoesNotThrow()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var connectionName = "myConnection";
+            var retryPromptText = "Sorry, invalid input. Please sign in.";
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions() { RetryPrompt = MessageFactory.Text(retryPromptText) }, cancellationToken: cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    if (results.Result is TokenResponse)
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Logged in."), cancellationToken);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Failed."), cancellationToken);
+                    }
+                }
+            };
+
+            var messageActivityWithNullText = Activity.CreateMessageActivity();
+
+            await new TestFlow(adapter, botCallbackHandler)
+            .Send("hello")
+            .AssertReply(activity =>
+            {
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+
+                // Add a magic code to the adapter
+                //adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
+            })
+            .Send(messageActivityWithNullText)
+            .AssertReply(retryPromptText)
+
+            //.Send(magicCode)
+            //.AssertReply("Logged in.")
+            .StartTestAsync();
+        }
+
         private async Task OAuthPrompt(IStorage storage)
         {
             var convoState = new ConversationState(storage);
