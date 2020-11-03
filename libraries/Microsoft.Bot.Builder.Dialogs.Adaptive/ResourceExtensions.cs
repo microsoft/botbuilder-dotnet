@@ -41,15 +41,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (dialog is DialogContainer container)
             {
-                foreach (var refDialog in container.RefereceDialogs)
+                if (container != null)
                 {
-                    if (!visited.Contains(refDialog))
+                    foreach (var refDialog in container.RefereceDialogs)
                     {
-                        visited.Add(refDialog);
-                        var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
-                        var loadedDialog = resourceExplorer.LoadType<Dialog>(resource);
-                        dialogManager.Dialogs.Add(loadedDialog);
-                        AddReferencedDialog(dialogManager, loadedDialog, resourceExplorer, visited);
+                        if (!visited.Contains(refDialog))
+                        {
+                            visited.Add(refDialog);
+                            var resource = resourceExplorer.GetResource($"{refDialog}.dialog");
+                            var loadedDialog = resourceExplorer.LoadType<Dialog>(resource);
+                            dialogManager.Dialogs.Add(loadedDialog);
+                            AddReferencedDialog(dialogManager, loadedDialog, resourceExplorer, visited);
+                        }
                     }
                 }
             }
