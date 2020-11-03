@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    public class CosmosDbPartitionStorageFixture : IDisposable
+    public class CosmosDbPartitionStorageFixture : IAsyncLifetime
     {
         private const string CosmosServiceEndpoint = "https://localhost:8081";
         private const string CosmosAuthKey = "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
@@ -40,7 +42,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return false;
         });
 
-        public CosmosDbPartitionStorageFixture()
+        public async Task InitializeAsync()
         {
             if (HasEmulator.Value)
             {
@@ -49,11 +51,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     CosmosAuthKey,
                     new CosmosClientOptions());
 
-                client.CreateDatabaseIfNotExistsAsync(CosmosDatabaseName);
+                await client.CreateDatabaseIfNotExistsAsync(CosmosDatabaseName);
             }
         }
 
-        public async void Dispose()
+        public async Task DisposeAsync()
         {
             if (HasEmulator.Value)
             {
