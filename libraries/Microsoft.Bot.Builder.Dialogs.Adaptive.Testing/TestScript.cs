@@ -202,9 +202,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             DialogManager dm;
             if (callback == null)
             {
-                dm = new DialogManager(Dialog)
+                dm = new DialogManager()
                     .UseResourceExplorer(resourceExplorer)
                     .UseLanguageGeneration();
+
+                dm.RootDialog = Dialog;
 
                 if (LanguagePolicy != null)
                 {
