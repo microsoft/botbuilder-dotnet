@@ -9,6 +9,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
@@ -262,6 +263,30 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 .AssertReply("You got it at the 4th try!")
                 .AssertReply("step3")
                 .StartTestAsync();
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [IgnoreOnNoEmulatorFact]
+        public async Task Should_Be_Aware_Of_Nesting_Limit()
+        {
+            static JObject CreateNestedData(int count) => new JObject
+            {
+                { "data", count > 0 ? CreateNestedData(count - 1) : null },
+            };
+
+            var dict = new Dictionary<string, object>
+            {
+                { "foo", CreateNestedData(128) },
+            };
+
+            var changes = new Dictionary<string, object>
+            {
+                { "CONTEXTKEY", dict },
+            };
+
+            Console.WriteLine("Writing...");
+
+            await _storage.WriteAsync(changes);
         }
     }
 }
