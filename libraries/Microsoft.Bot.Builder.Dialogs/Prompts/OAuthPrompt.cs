@@ -385,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                if (turnContext.Activity.Text != null)
+                if (!string.IsNullOrEmpty(turnContext.Activity.Text))
                 {
                     // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
                     var magicCodeRegex = new Regex(@"(\d{6})");
