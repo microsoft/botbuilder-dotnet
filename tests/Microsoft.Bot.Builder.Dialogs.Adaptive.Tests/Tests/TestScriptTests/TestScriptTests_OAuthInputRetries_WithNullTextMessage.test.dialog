@@ -36,10 +36,15 @@
             ]
         },
         {
-            "$kind": "Microsoft.Test.CustomEvent",
-            "name": "SetTestOptions",
-            "value": {
-              "randomValue": 42
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "attachments": [
+                    {
+                        "contentType": "image/jpg",
+                        "contentUrl": "http://example.org/photo"
+                    }
+                ]
             }
         },
         {
