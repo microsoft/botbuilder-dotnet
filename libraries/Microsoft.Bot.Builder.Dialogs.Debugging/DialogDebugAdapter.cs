@@ -14,7 +14,9 @@ using Microsoft.Bot.Builder.Dialogs.Debugging.DataModels;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Events;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Transport;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -24,43 +26,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// <summary>
     /// Class which implements Debug Adapter protocol connected to IDialogDebugger data.
     /// </summary>
-    internal sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger, IDebugger
+    internal sealed class DialogDebugAdapter : IMiddleware, IDialogDebugger, IDebugger
     {
         // https://en.wikipedia.org/wiki/Region-based_memory_management
         private readonly IIdentifier<ArenaModel> _arenas = new Identifier<ArenaModel>().WithMutex();
-        private readonly IBreakpoints _breakpoints;
-        private readonly CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
+        private readonly IDebugTransport _transport;
+        private readonly IBreakpoints _breakpoints;
         private readonly ICodeModel _codeModel;
         private readonly IDataModel _dataModel;
         private readonly IEvents _events;
         private readonly OutputModel _output = new OutputModel();
         private readonly ISourceMap _sourceMap;
 
-        private readonly Task _task;
         private readonly Action _terminate;
+        private readonly ILogger _logger;
 
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> _threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly IIdentifier<ThreadModel> _threads = new Identifier<ThreadModel>().WithMutex();
 
-        // To detect redundant calls
-        private bool _disposed;
-
         private LaunchAttach _options = new LaunchAttach();
         private int _sequence;
                 
-        public DialogDebugAdapter(int port, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
-            : base(logger)
+        public DialogDebugAdapter(IDebugTransport transport, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
         {
+            _transport = transport ?? throw new ArgumentNullException(nameof(transport));
             _events = events ?? new Events<DialogEvents>();
             _codeModel = codeModel ?? new CodeModel();
             _dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
             _sourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
             _breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             _terminate = terminate ?? (() => Environment.Exit(0));
-            _task = ListenAsync(new IPEndPoint(IPAddress.Any, port), _cancellationToken.Token);
+            _logger = logger ?? NullLogger.Instance;
             _arenas.Add(_output);
+
+            // lazily complete circular dependency
+            _transport.Accept = AcceptAsync;
         }
 
         /// <summary>
@@ -120,18 +122,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             };
 
             await SendAsync(Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task DisposeAsync()
-        {
-            _cancellationToken.Cancel();
-            using (_cancellationToken)
-            {
-                using (_task)
-                {
-                    await _task.ConfigureAwait(false);
-                }
-            }
         }
 
         async Task IDialogDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
@@ -202,14 +192,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
                 else
                 {
-                    Logger.LogError("thread context not found");
+                    _logger.LogError("thread context not found");
                 }
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we just log the exception and we continue the execution)
             catch (Exception error)
 #pragma warning restore CA1031 // Do not catch general exception types
             {
-                Logger.LogError(error, error.Message);
+                _logger.LogError(error, error.Message);
             }
         }
 
@@ -238,34 +228,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 _arenas.Remove(thread);
             }
         }
-        
-        // Protected implementation of Dispose pattern.
-        protected override void Dispose(bool disposing)
+
+        private static string TurnIdFor(ITurnContext turnContext)
         {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                // Dispose managed state (managed objects).
-                _cancellationToken?.Dispose();
-            }
-
-            _disposed = true;
-
-            // Call base class implementation.
-            base.Dispose(disposing);
+            return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
-        protected override async Task AcceptAsync(CancellationToken cancellationToken)
+        private async Task AcceptAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var token = await ReadAsync(cancellationToken).ConfigureAwait(false);
+                    var token = await _transport.ReadAsync(cancellationToken).ConfigureAwait(false);
                     var request = ProtocolMessage.Parse(token);
                     Message message;
                     try
@@ -283,18 +258,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
                 catch (Exception error)
                 {
-                    Logger.LogError(error, error.Message);
+                    _logger.LogError(error, error.Message);
 
                     ResetOnDisconnect();
 
                     throw;
                 }
             }
-        }
-
-        private static string TurnIdFor(ITurnContext turnContext)
-        {
-            return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
         private ulong EncodeValue(ArenaModel arena, object value)
@@ -440,12 +410,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private async Task SendAsync(Message message, CancellationToken cancellationToken)
         {
-            var token = JToken.FromObject(message, new JsonSerializer
-            {
-                NullValueHandling = NullValueHandling.Include,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-            await SendAsync(token, cancellationToken).ConfigureAwait(false);
+            var token = ProtocolMessage.ToToken(message);
+            await _transport.SendAsync(token, cancellationToken).ConfigureAwait(false);
         }
 
         private Capabilities MakeCapabilities()
