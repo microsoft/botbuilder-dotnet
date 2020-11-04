@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 {
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
         public static string MakePath(params string[] names)
             => Path.ChangeExtension(Path.Combine(GetProjectPath(), "TraceOracles", Path.Combine(names)), "json");
 
-        public static async Task ValidateAsync(string pathFile, IReadOnlyList<JToken> listNew)
+        public static async Task ValidateAsync(string pathFile, IReadOnlyList<JToken> listNew, ITestOutputHelper output)
         {
             // ensure the trace oracles directory exists
             var pathRoot = Path.GetDirectoryName(pathFile);
@@ -71,7 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
                     // and updated the saved trace oracle for review
                     var jsonNew = JsonConvert.SerializeObject(items, Settings);
-                    await File.WriteAllTextAsync(pathFile, jsonNew);
+                    await File.WriteAllTextAsync(pathFile, jsonNew).ConfigureAwait(false);
+
+                    output.WriteLine(jsonNew);
 
                     throw;
                 }
@@ -82,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                 // 1. establishing a new trace
                 // 2. the developer deleted the older one after code updates with expected changes
                 var jsonNew = JsonConvert.SerializeObject(listNew, Settings);
-                await File.WriteAllTextAsync(pathFile, jsonNew);
+                await File.WriteAllTextAsync(pathFile, jsonNew).ConfigureAwait(false);
             }
         }
 

@@ -15,11 +15,19 @@ using Microsoft.Bot.Builder.Dialogs.Debugging.Transport;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 {
     public sealed class TraceTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public TraceTests(ITestOutputHelper output)
+        {
+            _output = output ?? throw new ArgumentNullException(nameof(output));
+        }
+
         [Fact]
         public async Task ProtocolMessages_AreConsistent()
         {
@@ -62,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             }
 
             var pathJson = TraceOracle.MakePath(nameof(ProtocolMessages_AreConsistent));
-            await TraceOracle.ValidateAsync(pathJson, trace);
+            await TraceOracle.ValidateAsync(pathJson, trace, _output);
         }
 
         internal static DialogDebugAdapter MakeDebugger(IDebugTransport transport)
@@ -119,7 +127,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                             case "initialized":
                                 Request(new Attach() { BreakOnStart = true });
                                 Request(new ConfigurationDone());
-
                                 Request(new Threads());
                                 break;
                             case "stopped":
