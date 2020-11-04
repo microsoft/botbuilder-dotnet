@@ -96,19 +96,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// This method treats / and \ both as separators regardless of OS, for Windows that means / -> \ and for Linux/Mac \ -> /.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivalents for importing.
         /// </remarks>
-        /// <param name="ambigiousPath">Authored path.</param>
+        /// <param name="ambiguousPath">Authored path.</param>
         /// <returns>Path expressed as OS path.</returns>
-        public static string NormalizePath(this string ambigiousPath)
+        public static string NormalizePath(this string ambiguousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Map Linux/Mac separator -> Windows
-                return ambigiousPath.Replace("/", "\\");
+                return ambiguousPath.Replace("/", "\\");
             }
             else
             {
                 // Map Windows separator -> Linux/Mac
-                return ambigiousPath.Replace("\\", "/");
+                return ambiguousPath.Replace("\\", "/");
             }
         }
 
