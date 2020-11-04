@@ -2,6 +2,9 @@
     "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "description": "Test OAuthInput prompts retry when it receives a Message with null text",
+    "userTokenMocks": [
+        "magiccode.mock"
+    ],
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "triggers": [
@@ -10,7 +13,7 @@
             "actions": [
               {
                 "$kind": "Microsoft.OAuthInput",
-                "connectionName": "MyTestConnection",
+                "connectionName": "magiccode connection",
                 "text": "Please sign in",
                 "title": "Login",
                 "property": "dialog.token",
@@ -60,6 +63,10 @@
         {
             "$kind": "Microsoft.Test.UserSays",
             "text": "000000"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "magiccode token"
         }
     ]
 }
