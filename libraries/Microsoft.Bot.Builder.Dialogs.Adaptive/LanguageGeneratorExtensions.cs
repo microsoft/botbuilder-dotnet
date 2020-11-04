@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public static class LanguageGeneratorExtensions
     {
-        private static Dictionary<ResourceExplorer, LanguageGeneratorManager> languageGeneratorManagers = new Dictionary<ResourceExplorer, LanguageGeneratorManager>();
+        private static ConditionalWeakTable<ResourceExplorer, LanguageGeneratorManager> languageGeneratorManagers = new ConditionalWeakTable<ResourceExplorer, LanguageGeneratorManager>();
 
         /// <summary>
         /// Register default LG file as language generation.
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (!languageGeneratorManagers.TryGetValue(resourceExplorer ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(resourceExplorer)}."), out var lgm))
                 {
                     lgm = new LanguageGeneratorManager(resourceExplorer);
-                    languageGeneratorManagers[resourceExplorer] = lgm;
+                    languageGeneratorManagers.Add(resourceExplorer, lgm);
                 }
 
                 dialogManager.InitialTurnState.Add<LanguageGeneratorManager>(lgm);
