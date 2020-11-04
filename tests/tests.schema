@@ -634,6 +634,14 @@
           "description": "Value that will be passed back to the parent dialog.",
           "default": "dialog.result"
         },
+        "dialogs": {
+          "type": "array",
+          "title": "Referenced dialogs.",
+          "description": "Dialogs referenced by current dialog.",
+          "items": {
+            "type": "string"
+          }
+        },
         "recognizer": {
           "$kind": "Microsoft.IRecognizer",
           "title": "Recognizer",
@@ -1019,12 +1027,19 @@
           ]
         },
         "dialog": {
-          "oneOf": [
+          "anyOf": [
             {
               "$kind": "Microsoft.IDialog",
               "pattern": "^(?!(=)).*",
               "title": "Dialog",
               "$ref": "#/definitions/Microsoft.IDialog"
+            },
+            {
+              "$ref": "#/definitions/stringExpression",
+              "examples": [
+                "=concat('name', 'dialog')",
+                "stringName"
+              ]
             },
             {
               "$ref": "#/definitions/equalsExpression",

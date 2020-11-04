@@ -22,6 +22,14 @@
             "description": "Value that will be passed back to the parent dialog.",
             "default": "dialog.result"
         },
+        "dialogs": {
+            "type": "array",
+            "title": "Referenced dialogs.",
+            "items": {
+                        "type": "string"
+                     },
+                "description": "Dialogs referenced by current dialog."
+            },
         "recognizer": {
             "$kind": "Microsoft.IRecognizer",
             "title": "Recognizer",
