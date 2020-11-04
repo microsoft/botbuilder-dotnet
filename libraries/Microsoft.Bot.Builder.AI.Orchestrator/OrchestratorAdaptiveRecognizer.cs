@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                                 },
                             });
 
-                            // replace RecognizerResult with ChooseIntent => Amibgious recognizerResults as candidates.
+                            // replace RecognizerResult with ChooseIntent => Ambiguous recognizerResults as candidates.
                             recognizerResult = CreateChooseIntentResult(recognizerResults.ToDictionary(result => Guid.NewGuid().ToString(), result => result));
                         }
                     }
