@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private LaunchAttach _options = new LaunchAttach();
         private int _sequence;
-                
+
         public DialogDebugAdapter(IDebugTransport transport, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
         {
             _transport = transport ?? throw new ArgumentNullException(nameof(transport));
@@ -431,260 +431,257 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private async Task<Message> DispatchAsync(Message message, CancellationToken cancellationToken)
         {
-            if (message is Request<Initialize> initialize)
-            {
-                var body = MakeCapabilities();
-                var response = Response.From(NextSeq, initialize, body);
-                await SendAsync(response, cancellationToken).ConfigureAwait(false);
-                return Event.From(NextSeq, "initialized", new { });
-            }
-
-            if (message is Request<Launch> launch)
-            {
-                _options = launch.Arguments;
-                return Response.From(NextSeq, launch, new { });
-            }
-
-            if (message is Request<Attach> attach)
-            {
-                _options = attach.Arguments;
-                return Response.From(NextSeq, attach, new { });
-            }
-
-            if (message is Request<SetBreakpoints> setBreakpoints)
-            {
-                var arguments = setBreakpoints.Arguments;
-                var file = Path.GetFileName(arguments.Source.Path);
-                await OutputAsync($"Set breakpoints for {file}", null, null, cancellationToken).ConfigureAwait(false);
-
-                var breakpoints = _breakpoints.SetBreakpoints(arguments.Source, arguments.Breakpoints);
-                foreach (var breakpoint in breakpoints)
-                {
-                    if (breakpoint.Verified)
-                    {
-                        var item = _breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {_codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-
-                return Response.From(NextSeq, setBreakpoints, new { breakpoints });
-            }
-
-            if (message is Request<SetFunctionBreakpoints> setFunctionBreakpoints)
-            {
-                var arguments = setFunctionBreakpoints.Arguments;
-                await OutputAsync("Set function breakpoints.", null, null, cancellationToken).ConfigureAwait(false);
-                var breakpoints = _breakpoints.SetBreakpoints(arguments.Breakpoints);
-                foreach (var breakpoint in breakpoints)
-                {
-                    if (breakpoint.Verified)
-                    {
-                        var item = _breakpoints.ItemFor(breakpoint);
-                        await OutputAsync($"Set breakpoint at {_codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-
-                return Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
-            }
-
-            if (message is Request<SetExceptionBreakpoints> setExceptionBreakpoints)
-            {
-                var arguments = setExceptionBreakpoints.Arguments;
-                _events.Reset(arguments.Filters);
-
-                return Response.From(NextSeq, setExceptionBreakpoints, new { });
-            }
-
-            if (message is Request<Threads> threads)
-            {
-                var body = new
-                {
-                    threads = _threads.Select(t => new
-                    {
-                        id = t.Key,
-                        name = t.Value.Name
-                    }).ToArray()
-                };
-
-                return Response.From(NextSeq, threads, body);
-            }
-
-            if (message is Request<StackTrace> stackTrace)
-            {
-                var arguments = stackTrace.Arguments;
-                var thread = _threads[arguments.ThreadId];
-
-                var frames = thread.Frames;
-                var stackFrames = new List<StackFrame>();
-                foreach (var frame in frames)
-                {
-                    var stackFrame = new StackFrame
-                    {
-                        Id = EncodeFrame(thread, frame),
-                        Name = frame.Name
-                    };
-
-                    var item = _codeModel.NameFor(frame.Item);
-                    DebuggerSourceMap.Assign(stackFrame, item, frame.More);
-
-                    if (_sourceMap.TryGetValue(frame.Item, out var range))
-                    {
-                        DebuggerSourceMap.Assign(stackFrame, range);
-                    }
-
-                    stackFrames.Add(stackFrame);
-                }
-
-                return Response.From(NextSeq, stackTrace, new { stackFrames });
-            }
-
-            if (message is Request<Scopes> scopes)
-            {
-                var arguments = scopes.Arguments;
-                DecodeFrame(arguments.FrameId, out var thread, out var frame);
-                const bool expensive = false;
-
-                var body = new
-                {
-                    scopes = new[]
-                    {
-                        new
-                        {
-                            expensive,
-                            name = frame.Name,
-                            variablesReference = EncodeValue(thread, frame.Data)
-                        }
-                    }
-                };
-
-                return Response.From(NextSeq, scopes, body);
-            }
-
-            if (message is Request<Variables> vars)
-            {
-                var arguments = vars.Arguments;
-                DecodeValue(arguments.VariablesReference, out var arena, out var context);
-
-                var names = _dataModel.Names(context);
-
-                var body = new
-                {
-                    variables = (from name in names
-                            let value = _dataModel[context, name]
-                            let variablesReference = EncodeValue(arena, value)
-                            select new
-                            {
-                                name = _dataModel.ToString(name),
-                                value = _dataModel.ToString(value),
-                                variablesReference
-                            })
-                        .ToArray()
-                };
-
-                return Response.From(NextSeq, vars, body);
-            }
-
-            if (message is Request<SetVariable> setVariable)
-            {
-                var arguments = setVariable.Arguments;
-                DecodeValue(arguments.VariablesReference, out var arena, out var context);
-
-                var value = _dataModel[context, arguments.Name] = JToken.Parse(arguments.Value);
-
-                var body = new
-                {
-                    value = _dataModel.ToString(value),
-                    variablesReference = EncodeValue(arena, value)
-                };
-
-                return Response.From(NextSeq, setVariable, body);
-            }
-
-            if (message is Request<Evaluate> evaluate)
-            {
-                var arguments = evaluate.Arguments;
-                DecodeFrame(arguments.FrameId, out var thread, out var frame);
-                var expression = arguments.Expression.Trim('"');
-
-                try
-                {
-                    var result = frame.Evaluate(expression);
-                    var body = new
-                    {
-                        result = _dataModel.ToString(result),
-                        variablesReference = EncodeValue(thread, result),
-                    };
-
-                    return Response.From(NextSeq, evaluate, body);
-                }
-#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and return it)
-                catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    return Response.Fail(NextSeq, evaluate, ex.Message);
-                }
-            }
-
-            if (message is Request<Continue> cont)
-            {
-                var found = _threads.TryGetValue(cont.Arguments.ThreadId, out var thread);
-                if (found)
-                {
-                    thread.Run.Post(Phase.Continue);
-                }
-
-                return Response.From(NextSeq, cont, new { allThreadsContinued = false });
-            }
-
-            if (message is Request<Pause> pause)
-            {
-                var found = _threads.TryGetValue(pause.Arguments.ThreadId, out var thread);
-                if (found)
-                {
-                    thread.Run.Post(Phase.Pause);
-                }
-
-                return Response.From(NextSeq, pause, new { });
-            }
-
-            if (message is Request<Next> next)
-            {
-                var found = _threads.TryGetValue(next.Arguments.ThreadId, out var thread);
-                if (found)
-                {
-                    thread.Run.Post(Phase.Next);
-                }
-
-                return Response.From(NextSeq, next, new { });
-            }
-
-            if (message is Request<Terminate> terminate)
-            {
-                if (_terminate != null)
-                {
-                    _terminate();
-                }
-
-                return Response.From(NextSeq, terminate, new { });
-            }
-
-            if (message is Request<Disconnect> disconnect)
-            {
-                var arguments = disconnect.Arguments;
-                if (arguments.TerminateDebuggee && _terminate != null)
-                {
-                    _terminate();
-                }
-                else
-                {
-                    ResetOnDisconnect();
-                }
-
-                return Response.From(NextSeq, disconnect, new { });
-            }
-
             if (message is Request request)
             {
+                if (message is Request<Initialize> initialize)
+                {
+                    var body = MakeCapabilities();
+                    var response = Response.From(NextSeq, initialize, body);
+                    await SendAsync(response, cancellationToken).ConfigureAwait(false);
+                    return Event.From(NextSeq, "initialized", new { });
+                }
+
+                if (message is Request<Launch> launch)
+                {
+                    _options = launch.Arguments;
+                    return Response.From(NextSeq, launch, new { });
+                }
+
+                if (message is Request<Attach> attach)
+                {
+                    _options = attach.Arguments;
+                    return Response.From(NextSeq, attach, new { });
+                }
+
+                if (message is Request<SetBreakpoints> setBreakpoints)
+                {
+                    var arguments = setBreakpoints.Arguments;
+                    var file = Path.GetFileName(arguments.Source.Path);
+                    await OutputAsync($"Set breakpoints for {file}", null, null, cancellationToken).ConfigureAwait(false);
+
+                    var breakpoints = _breakpoints.SetBreakpoints(arguments.Source, arguments.Breakpoints);
+                    foreach (var breakpoint in breakpoints)
+                    {
+                        if (breakpoint.Verified)
+                        {
+                            var item = _breakpoints.ItemFor(breakpoint);
+                            await OutputAsync($"Set breakpoint at {_codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    return Response.From(NextSeq, setBreakpoints, new { breakpoints });
+                }
+
+                if (message is Request<SetFunctionBreakpoints> setFunctionBreakpoints)
+                {
+                    var arguments = setFunctionBreakpoints.Arguments;
+                    await OutputAsync("Set function breakpoints.", null, null, cancellationToken).ConfigureAwait(false);
+                    var breakpoints = _breakpoints.SetBreakpoints(arguments.Breakpoints);
+                    foreach (var breakpoint in breakpoints)
+                    {
+                        if (breakpoint.Verified)
+                        {
+                            var item = _breakpoints.ItemFor(breakpoint);
+                            await OutputAsync($"Set breakpoint at {_codeModel.NameFor(item)}", item, null, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    return Response.From(NextSeq, setFunctionBreakpoints, new { breakpoints });
+                }
+
+                if (message is Request<SetExceptionBreakpoints> setExceptionBreakpoints)
+                {
+                    var arguments = setExceptionBreakpoints.Arguments;
+                    _events.Reset(arguments.Filters);
+
+                    return Response.From(NextSeq, setExceptionBreakpoints, new { });
+                }
+
+                if (message is Request<Threads> threads)
+                {
+                    var body = new
+                    {
+                        threads = _threads.Select(t => new
+                        {
+                            id = t.Key,
+                            name = t.Value.Name
+                        }).ToArray()
+                    };
+
+                    return Response.From(NextSeq, threads, body);
+                }
+
+                if (message is Request<StackTrace> stackTrace)
+                {
+                    var arguments = stackTrace.Arguments;
+                    var thread = _threads[arguments.ThreadId];
+
+                    var frames = thread.Frames;
+                    var stackFrames = new List<StackFrame>();
+                    foreach (var frame in frames)
+                    {
+                        var stackFrame = new StackFrame
+                        {
+                            Id = EncodeFrame(thread, frame),
+                            Name = frame.Name
+                        };
+
+                        var item = _codeModel.NameFor(frame.Item);
+                        DebuggerSourceMap.Assign(stackFrame, item, frame.More);
+
+                        if (_sourceMap.TryGetValue(frame.Item, out var range))
+                        {
+                            DebuggerSourceMap.Assign(stackFrame, range);
+                        }
+
+                        stackFrames.Add(stackFrame);
+                    }
+
+                    return Response.From(NextSeq, stackTrace, new { stackFrames });
+                }
+
+                if (message is Request<Scopes> scopes)
+                {
+                    var arguments = scopes.Arguments;
+                    DecodeFrame(arguments.FrameId, out var thread, out var frame);
+                    const bool expensive = false;
+
+                    var body = new
+                    {
+                        scopes = new[]
+                        {
+                            new
+                            {
+                                expensive,
+                                name = frame.Name,
+                                variablesReference = EncodeValue(thread, frame.Data)
+                            }
+                        }
+                    };
+
+                    return Response.From(NextSeq, scopes, body);
+                }
+
+                if (message is Request<Variables> vars)
+                {
+                    var arguments = vars.Arguments;
+                    DecodeValue(arguments.VariablesReference, out var arena, out var context);
+
+                    var names = _dataModel.Names(context);
+
+                    var body = new
+                    {
+                        variables = (from name in names
+                                     let value = _dataModel[context, name]
+                                     let variablesReference = EncodeValue(arena, value)
+                                     select new
+                                     {
+                                         name = _dataModel.ToString(name),
+                                         value = _dataModel.ToString(value),
+                                         variablesReference
+                                     })
+                            .ToArray()
+                    };
+
+                    return Response.From(NextSeq, vars, body);
+                }
+
+                if (message is Request<SetVariable> setVariable)
+                {
+                    var arguments = setVariable.Arguments;
+                    DecodeValue(arguments.VariablesReference, out var arena, out var context);
+
+                    var value = _dataModel[context, arguments.Name] = JToken.Parse(arguments.Value);
+
+                    var body = new
+                    {
+                        value = _dataModel.ToString(value),
+                        variablesReference = EncodeValue(arena, value)
+                    };
+
+                    return Response.From(NextSeq, setVariable, body);
+                }
+
+                if (message is Request<Evaluate> evaluate)
+                {
+                    var arguments = evaluate.Arguments;
+                    DecodeFrame(arguments.FrameId, out var thread, out var frame);
+                    var expression = arguments.Expression.Trim('"');
+
+                    try
+                    {
+                        var result = frame.Evaluate(expression);
+                        var body = new
+                        {
+                            result = _dataModel.ToString(result),
+                            variablesReference = EncodeValue(thread, result),
+                        };
+
+                        return Response.From(NextSeq, evaluate, body);
+                    }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and return it)
+                    catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
+                    {
+                        return Response.Fail(NextSeq, evaluate, ex.Message);
+                    }
+                }
+
+                Response Post<TBody>(PerThread perThread, Phase phase, TBody body)
+                {
+                    // "constructing the response" and "posting to the thread" have side-effects
+                    // for extra determinism, construct the response before signaling the thread
+                    var response = Response.From(NextSeq, request, body);
+
+                    var found = _threads.TryGetValue(perThread.ThreadId, out var thread);
+                    if (found)
+                    {
+                        thread.Run.Post(phase);
+                    }
+
+                    return response;
+                }
+
+                if (message is Request<Continue> cont)
+                {
+                    return Post(cont.Arguments, Phase.Continue, new { allThreadsContinued = false });
+                }
+
+                if (message is Request<Pause> pause)
+                {
+                    return Post(pause.Arguments, Phase.Pause, new { });
+                }
+
+                if (message is Request<Next> next)
+                {
+                    return Post(next.Arguments, Phase.Next, new { });
+                }
+
+                if (message is Request<Terminate> terminate)
+                {
+                    if (_terminate != null)
+                    {
+                        _terminate();
+                    }
+
+                    return Response.From(NextSeq, terminate, new { });
+                }
+
+                if (message is Request<Disconnect> disconnect)
+                {
+                    var arguments = disconnect.Arguments;
+                    if (arguments.TerminateDebuggee && _terminate != null)
+                    {
+                        _terminate();
+                    }
+                    else
+                    {
+                        ResetOnDisconnect();
+                    }
+
+                    return Response.From(NextSeq, disconnect, new { });
+                }
+
                 return Response.From(NextSeq, request, new { });
             }
 
