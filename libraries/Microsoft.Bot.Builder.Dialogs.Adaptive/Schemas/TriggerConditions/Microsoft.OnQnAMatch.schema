@@ -5,6 +5,5 @@
     "description": "Actions to perform on when an match from QnAMaker is found.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

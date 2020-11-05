@@ -12,7 +12,6 @@
         }
     },
     "required": [
-        "actions",
         "event"
     ]
 }
