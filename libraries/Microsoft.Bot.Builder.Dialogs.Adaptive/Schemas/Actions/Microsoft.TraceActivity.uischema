@@ -3,6 +3,6 @@
     "form": {
         "label": "Emit a trace event",
         "subtitle": "Trace Activity",
-        "helpLink": "https://aka.ms/bfc-debugging-bots"
+        "helpLink": "https://aka.ms/composer-telemetry"
     }
 }
