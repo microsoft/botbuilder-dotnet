@@ -48,13 +48,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 this.Title = new TextTemplate(title);
             }
+            
+            if (!string.IsNullOrEmpty(activity))
+            {
+                this.Activity = new ActivityTemplate(activity);
+            }
 
             this.Height = height;
             this.Width = width;
             this.Url = url;
             this.FallbackUrl = fallbackUrl;
             this.CompletionBotId = completionBotId;
-            this.Activity = new ActivityTemplate(activity);
         }
 
         /// <summary>
@@ -143,26 +147,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             Attachment attachment = null;
-            if (Activity != null)
+            string url = Url?.GetValue(dc.State);
+            if (string.IsNullOrEmpty(url))
             {
-                var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
-
-                if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
+                if (Activity != null)
                 {
-                    throw new ArgumentException($"Invalid Activity. A valid url, or valid attachment is required for Task Module Continue Response.");
-                }
+                    var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
 
-                attachment = boundActivity.Attachments[0];
-            }
-            else if (Url == null)
-            {
-                throw new ArgumentException($"Invalid Activity. A valid url, or valid attachment is required for Task Module Continue Response.");
+                    if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
+                    {
+                        throw new ArgumentException($"Invalid Activity. A valid url was not provided, and the activity does not contain a valid attachment is required for Task Module Continue Response.");
+                    }
+
+                    attachment = boundActivity.Attachments[0];
+                }
+                else
+                {
+                    throw new ArgumentException($" A valid url, or valid Activity attachment is required for Task Module Continue Response.");
+                }
             }
 
             var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
             var height = Height?.GetValue(dc.State);
             var width = Width?.GetValue(dc.State);
-            var url = Url?.GetValue(dc.State);
+            
             var fallbackUrl = FallbackUrl?.GetValue(dc.State);
             var completionBotId = CompletionBotId?.GetValue(dc.State);
 
