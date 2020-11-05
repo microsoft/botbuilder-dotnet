@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging.Events;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Protocol;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Transport;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                 nameof(ProtocolMessages_AreConsistent),
                 new[] { MakeStep("hello"), MakeStep("world") });
 
-            var trace = new List<JToken>();
+            var trace = new List<MockTransport.Event>();
             var transport = new MockTransport(trace);
             var debugger = MakeDebugger(transport);
 
@@ -60,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
                 await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
                 {
-                    await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await dialogManager.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
                 })
                 .Send("one")
                 .AssertReply("hello")
@@ -70,7 +72,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             }
 
             var pathJson = TraceOracle.MakePath(nameof(ProtocolMessages_AreConsistent));
-            await TraceOracle.ValidateAsync(pathJson, trace, _output);
+
+            trace.Sort((l, r) =>
+            {
+                // we expect client and server to be (separately) consistent
+                if (l.Client == r.Client)
+                {
+                    var compare = l.Seq.CompareTo(r.Seq);
+                    if (compare != 0)
+                    {
+                        return compare;
+                    }
+                }
+
+                // default to stable sort
+                return l.Order.CompareTo(r.Order);
+            });
+
+            var tokens = trace.Select(JToken.FromObject).ToArray();
+            await TraceOracle.ValidateAsync(pathJson, tokens, _output);
         }
 
         internal static DialogDebugAdapter MakeDebugger(IDebugTransport transport)
@@ -86,13 +106,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
         internal sealed class MockTransport : IDebugTransport
         {
-            private readonly List<JToken> _trace;
+            private readonly List<Event> _trace;
             private readonly Queue<JToken> _queue = new Queue<JToken>();
             private readonly SemaphoreSlim _count = new SemaphoreSlim(0, int.MaxValue);
             private readonly object _gate = new object();
             private int _seq = 0;
+            private int _order = 0;
 
-            public MockTransport(List<JToken> trace)
+            public MockTransport(List<Event> trace)
             {
                 _trace = trace;
 
@@ -116,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                 {
                     lock (_gate)
                     {
-                        _trace.Add(token);
+                        _trace.Add(new Event(++_order, token, false));
                     }
 
                     var incoming = token.ToObject<Incoming>();
@@ -165,15 +186,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                 {
                     message.Seq = ++_seq;
                     var token = ProtocolMessage.ToToken(message);
-                    _trace.Add(token);
+                    _trace.Add(new Event(++_order, token, true));
                     _queue.Enqueue(token);
                 }
 
                 _count.Release();
             }
 
+            public sealed class Event
+            {
+                public Event(int order, JToken token, bool client)
+                {
+                    Order = order;
+                    Token = token ?? throw new ArgumentNullException(nameof(token));
+                    Client = client;
+                }
+
+                [JsonIgnore]
+                public int Seq => Token.ToObject<Incoming>().Seq;
+
+                [JsonIgnore]
+                public int Order { get; private set; }
+
+                public JToken Token { get; private set; }
+
+                public bool Client { get; private set; }
+            }
+
             private sealed class Incoming
             {
+                public int Seq { get; set; }
+
                 public string Type { get; set; }
 
                 public string Command { get; set; }
