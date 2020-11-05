@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
                 public BodyType Body { get; set; }
 
-                public sealed class BodyType
+                public sealed class BodyType : HasRest
                 {
                     public ulong ThreadId { get; set; }
                 }
