@@ -73,24 +73,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
             var pathJson = TraceOracle.MakePath(nameof(ProtocolMessages_AreConsistent));
 
-            trace.Sort((l, r) =>
+            var sorted = TraceOracle.TopologicalSort(trace, source =>
             {
-                // we expect client and server to be (separately) consistent
-                if (l.Client == r.Client)
-                {
-                    var compare = l.Seq.CompareTo(r.Seq);
-                    if (compare != 0)
-                    {
-                        return compare;
-                    }
-                }
+                var targets = from target in trace
+                                let score
 
-                // default to stable sort
-                return l.Order.CompareTo(r.Order);
+                                    // responses come after requests
+                                    = source.Client != target.Client && source.Seq == target.RequestSeq ? 2
+
+                                    // consistent within client xor server
+                                    : source.Client == target.Client && source.Seq < target.Seq ? 1
+
+                                    // unrelated so remove
+                                    : 0
+                                where score != 0
+                                orderby score descending, target.Order ascending
+                                select target;
+
+                return targets.ToArray();
             });
 
-            var tokens = trace.Select(JToken.FromObject).ToArray();
-            await TraceOracle.ValidateAsync(pathJson, tokens, _output);
+            var tokens = sorted.Select(JToken.FromObject).ToArray();
+            await TraceOracle.ValidateAsync(pathJson, tokens, _output).ConfigureAwait(false);
         }
 
         internal static DialogDebugAdapter MakeDebugger(IDebugTransport transport)
@@ -206,6 +210,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                 public int Seq => Token.ToObject<Incoming>().Seq;
 
                 [JsonIgnore]
+                public int? RequestSeq => Token.ToObject<Incoming>().RequestSeq;
+
+                [JsonIgnore]
                 public int Order { get; private set; }
 
                 public JToken Token { get; private set; }
@@ -216,6 +223,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             private sealed class Incoming
             {
                 public int Seq { get; set; }
+
+                [JsonProperty("request_seq")]
+                public int? RequestSeq { get; set; }
 
                 public string Type { get; set; }
 

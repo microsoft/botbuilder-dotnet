@@ -89,6 +89,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             }
         }
 
+        public static IReadOnlyList<T> TopologicalSort<T>(IEnumerable<T> nodes, Func<T, IReadOnlyList<T>> targetsBySource, IEqualityComparer<T> comparer = null)
+        {
+            comparer = comparer ?? EqualityComparer<T>.Default;
+
+            // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
+            var sort = new List<T>();
+            var done = new HashSet<T>(comparer);
+
+            void Until(T source)
+            {
+                if (done.Add(source))
+                {
+                    var targets = targetsBySource(source);
+
+                    // iterate in reverse order to preserve ordering after Reverse below
+                    for (var index = targets.Count - 1; index >= 0; --index)
+                    {
+                        var target = targets[index];
+                        Until(target);
+                    }
+
+                    sort.Add(source);
+                }
+            }
+
+            foreach (var node in nodes)
+            {
+                Until(node);
+            }
+
+            sort.Reverse();
+            return sort;
+        }
+
         private static string GetProjectPath()
         {
             var parent = Directory.GetCurrentDirectory();

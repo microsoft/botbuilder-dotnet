@@ -102,24 +102,6 @@
   },
   {
     "Token": {
-      "arguments": {},
-      "command": "configurationdone",
-      "seq": 3,
-      "type": "request"
-    },
-    "Client": true
-  },
-  {
-    "Token": {
-      "arguments": {},
-      "command": "threads",
-      "seq": 4,
-      "type": "request"
-    },
-    "Client": true
-  },
-  {
-    "Token": {
       "body": {},
       "request_seq": 2,
       "success": true,
@@ -132,6 +114,15 @@
   },
   {
     "Token": {
+      "arguments": {},
+      "command": "configurationdone",
+      "seq": 3,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
       "body": {},
       "request_seq": 3,
       "success": true,
@@ -141,6 +132,15 @@
       "type": "response"
     },
     "Client": false
+  },
+  {
+    "Token": {
+      "arguments": {},
+      "command": "threads",
+      "seq": 4,
+      "type": "request"
+    },
+    "Client": true
   },
   {
     "Token": {
