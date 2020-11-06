@@ -774,12 +774,9 @@
           "description": "Optional id for the dialog"
         },
         "disabled": {
-          "$ref": "#/definitions/stringExpression",
+          "$ref": "#/definitions/booleanExpression",
           "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "user.age > 3"
-          ]
+          "description": "Optional condition which if true will disable this action."
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
@@ -7916,12 +7913,9 @@
           "description": "Optional id for the dialog"
         },
         "disabled": {
-          "$ref": "#/definitions/stringExpression",
+          "$ref": "#/definitions/booleanExpression",
           "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "user.age > 3"
-          ]
+          "description": "Optional condition which if true will disable this action."
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
