@@ -11,12 +11,9 @@
             "description": "Optional id for the dialog"
         },
         "disabled": {
-            "$ref": "schema:#/definitions/stringExpression",
+            "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",
-            "description": "Optional condition which if true will disable this action.",
-            "examples": [
-                "user.age > 3"
-            ]
+            "description": "Optional condition which if true will disable this action."
         },
         "activity": {
             "$kind": "Microsoft.IActivityTemplate",
