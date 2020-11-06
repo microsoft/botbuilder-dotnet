@@ -31,42 +31,42 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.006906527
+      "score": 0.006839604
     },
     "Delivery": {
-      "score": 0.00567273
+      "score": 0.005634159
     },
     "EntityTests": {
-      "score": 0.128755629
+      "score": 0.1439953
     },
     "Greeting": {
-      "score": 0.00450348156
+      "score": 0.004496467
     },
     "Help": {
-      "score": 0.00583425
+      "score": 0.005810102
     },
     "None": {
-      "score": 0.0135525977
+      "score": 0.0134399384
     },
     "Roles": {
-      "score": 0.04635598
+      "score": 0.0453764722
     },
     "search": {
-      "score": 0.008885799
+      "score": 0.00117916975
     },
     "SpecifyName": {
-      "score": 0.00721160974
+      "score": 0.00377203338
     },
     "Travel": {
-      "score": 0.005146626
+      "score": 0.00252068671
     },
     "Weather_GetForecast": {
-      "score": 0.00913477
-    },
-    "sentiment": {
-      "label": "positive",
-      "score": 0.7149857
+      "score": 0.009093848
     }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
   },
   "text": "buy hul and 2 items",
   "v3": {
@@ -122,43 +122,42 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.006906527
+            "score": 0.006839604
           },
           "Delivery": {
-            "score": 0.00567273
+            "score": 0.005634159
           },
           "EntityTests": {
-            "score": 0.128755629
+            "score": 0.1439953
           },
           "Greeting": {
-            "score": 0.00450348156
+            "score": 0.004496467
           },
           "Help": {
-            "score": 0.00583425
+            "score": 0.005810102
           },
           "None": {
-            "score": 0.0135525977
+            "score": 0.0134399384
           },
           "Roles": {
-            "score": 0.04635598
+            "score": 0.0453764722
           },
           "search": {
-            "score": 0.008885799
+            "score": 0.00117916975
           },
           "SpecifyName": {
-            "score": 0.00721160974
+            "score": 0.00377203338
           },
           "Travel": {
-            "score": 0.005146626
+            "score": 0.00252068671
           },
           "Weather.GetForecast": {
-            "score": 0.00913477
+            "score": 0.009093848
           }
         },
-        "normalizedQuery": "buy hul and 2 items",
         "sentiment": {
-          "label": "positive",
-          "score": 0.7149857
+          "label": "neutral",
+          "score": 0.5
         },
         "topIntent": "EntityTests"
       },

@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 var arr1 = (JArray)expectedToken;
                 var arr2 = (JArray)actualToken;
                 withinDelta = arr1.Count == arr2.Count;
-                for (var i = 0; i < arr1.Count; ++i)
+                for (var i = 0; withinDelta && i < arr1.Count; ++i)
                 {
                     withinDelta = WithinDelta(arr1[i], arr2[i], delta) || withinDelta;
                 }

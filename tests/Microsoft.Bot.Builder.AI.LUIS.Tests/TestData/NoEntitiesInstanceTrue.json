@@ -4,8 +4,12 @@
   },
   "intents": {
     "Greeting": {
-      "score": 0.9589885
+      "score": 0.959510267
     }
+  },
+  "sentiment": {
+    "label": "positive",
+    "score": 0.9431402
   },
   "text": "Hi",
   "v3": {
@@ -18,16 +22,20 @@
       "Slot": "production"
     },
     "response": {
-      "query": "Hi",
       "prediction": {
-        "topIntent": "Greeting",
+        "entities": {},
         "intents": {
           "Greeting": {
-            "score": 0.9589885
+            "score": 0.959510267
           }
         },
-        "entities": {}
-      }
+        "sentiment": {
+          "label": "positive",
+          "score": 0.9431402
+        },
+        "topIntent": "Greeting"
+      },
+      "query": "Hi"
     }
   }
 }

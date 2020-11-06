@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
     /// </summary>
     public class MockLuisLoader : ICustomDeserializer
     {
+        private const string AppId = ".appId";
         private IConfiguration _configuration;
 
         /// <summary>
@@ -33,6 +34,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
             var name = recognizer.ApplicationId.ToString();
             if (name.StartsWith("=", StringComparison.Ordinal))
             {
+                if (name.EndsWith(AppId, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    name = name.Substring(0, name.Length - AppId.Length);
+                }
+
                 var start = name.LastIndexOf('.') + 1;
                 name = name.Substring(start);
             }

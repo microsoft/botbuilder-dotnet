@@ -6,7 +6,6 @@
     <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">$(LocalPackageVersion)</PackageVersion>
     <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Bot.Builder.AI.Orchestrator.xml</DocumentationFile>
     <!-- TODO: Remove the Platforms element below once we support Any CPU for Orchestrator -->
     <Platforms>x64</Platforms>

@@ -1,20 +1,17 @@
 {
   "entities": {
     "$instance": {
-      "Address": [
+      "number": [
         {
-          "endIndex": 13,
-          "modelType": "Composite Entity Extractor",
+          "endIndex": 10,
+          "modelType": "Prebuilt Entity Extractor",
           "recognitionSources": [
             "model"
           ],
-          "score": 0.7033113,
           "startIndex": 8,
-          "text": "37 wa",
-          "type": "Address"
-        }
-      ],
-      "number": [
+          "text": "37",
+          "type": "builtin.number"
+        },
         {
           "endIndex": 19,
           "modelType": "Prebuilt Entity Extractor",
@@ -28,6 +25,16 @@
       ],
       "State": [
         {
+          "endIndex": 13,
+          "modelType": "Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
+          "startIndex": 11,
+          "text": "wa",
+          "type": "State"
+        },
+        {
           "endIndex": 22,
           "modelType": "Entity Extractor",
           "recognitionSources": [
@@ -39,50 +46,14 @@
         }
       ]
     },
-    "Address": [
-      {
-        "$instance": {
-          "number": [
-            {
-              "endIndex": 10,
-              "modelType": "Prebuilt Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "startIndex": 8,
-              "text": "37",
-              "type": "builtin.number"
-            }
-          ],
-          "State": [
-            {
-              "endIndex": 13,
-              "modelType": "Entity Extractor",
-              "recognitionSources": [
-                "model",
-                "externalEntities"
-              ],
-              "score": 0.5987082,
-              "startIndex": 11,
-              "text": "wa",
-              "type": "State"
-            }
-          ]
-        },
-        "number": [
-          37
-        ],
-        "State": [
-          {
-            "state": "Washington"
-          }
-        ]
-      }
-    ],
     "number": [
+      37,
       82
     ],
     "State": [
+      {
+        "state": "Washington"
+      },
       {
         "state": "Colorado"
       }
@@ -90,37 +61,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.004045653
+      "score": 0.004019331
     },
     "Delivery": {
-      "score": 0.511144161
+      "score": 0.509761333
     },
     "EntityTests": {
-      "score": 0.004197402
+      "score": 0.004867602
     },
     "Greeting": {
-      "score": 0.00286332145
+      "score": 0.002855288
     },
     "Help": {
-      "score": 0.00351834856
+      "score": 0.00350000733
     },
     "None": {
-      "score": 0.01229356
+      "score": 0.0121234478
     },
     "Roles": {
-      "score": 0.08465987
+      "score": 0.08292572
     },
     "search": {
-      "score": 0.009909824
+      "score": 0.0009203224
     },
     "SpecifyName": {
-      "score": 0.006426142
+      "score": 0.00308484654
     },
     "Travel": {
-      "score": 0.008369388
+      "score": 0.00362442387
     },
     "Weather_GetForecast": {
-      "score": 0.0112502193
+      "score": 0.01115346
     }
   },
   "sentiment": {
@@ -159,21 +130,18 @@
       "prediction": {
         "entities": {
           "$instance": {
-            "Address": [
+            "number": [
               {
-                "length": 5,
-                "modelType": "Composite Entity Extractor",
-                "modelTypeId": 4,
+                "length": 2,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
                 "recognitionSources": [
                   "model"
                 ],
-                "score": 0.7033113,
                 "startIndex": 8,
-                "text": "37 wa",
-                "type": "Address"
-              }
-            ],
-            "number": [
+                "text": "37",
+                "type": "builtin.number"
+              },
               {
                 "length": 2,
                 "modelType": "Prebuilt Entity Extractor",
@@ -194,58 +162,31 @@
                 "recognitionSources": [
                   "externalEntities"
                 ],
+                "startIndex": 11,
+                "text": "wa",
+                "type": "State"
+              },
+              {
+                "length": 2,
+                "modelType": "Entity Extractor",
+                "modelTypeId": 1,
+                "recognitionSources": [
+                  "externalEntities"
+                ],
                 "startIndex": 20,
                 "text": "co",
                 "type": "State"
               }
             ]
           },
-          "Address": [
-            {
-              "$instance": {
-                "number": [
-                  {
-                    "length": 2,
-                    "modelType": "Prebuilt Entity Extractor",
-                    "modelTypeId": 2,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "startIndex": 8,
-                    "text": "37",
-                    "type": "builtin.number"
-                  }
-                ],
-                "State": [
-                  {
-                    "length": 2,
-                    "modelType": "Entity Extractor",
-                    "modelTypeId": 1,
-                    "recognitionSources": [
-                      "model",
-                      "externalEntities"
-                    ],
-                    "score": 0.5987082,
-                    "startIndex": 11,
-                    "text": "wa",
-                    "type": "State"
-                  }
-                ]
-              },
-              "number": [
-                37
-              ],
-              "State": [
-                {
-                  "state": "Washington"
-                }
-              ]
-            }
-          ],
           "number": [
+            37,
             82
           ],
           "State": [
+            {
+              "state": "Washington"
+            },
             {
               "state": "Colorado"
             }
@@ -253,40 +194,39 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.004045653
+            "score": 0.004019331
           },
           "Delivery": {
-            "score": 0.511144161
+            "score": 0.509761333
           },
           "EntityTests": {
-            "score": 0.004197402
+            "score": 0.004867602
           },
           "Greeting": {
-            "score": 0.00286332145
+            "score": 0.002855288
           },
           "Help": {
-            "score": 0.00351834856
+            "score": 0.00350000733
           },
           "None": {
-            "score": 0.01229356
+            "score": 0.0121234478
           },
           "Roles": {
-            "score": 0.08465987
+            "score": 0.08292572
           },
           "search": {
-            "score": 0.009909824
+            "score": 0.0009203224
           },
           "SpecifyName": {
-            "score": 0.006426142
+            "score": 0.00308484654
           },
           "Travel": {
-            "score": 0.008369388
+            "score": 0.00362442387
           },
           "Weather.GetForecast": {
-            "score": 0.0112502193
+            "score": 0.01115346
           }
         },
-        "normalizedQuery": "deliver 37 wa to 82 co",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

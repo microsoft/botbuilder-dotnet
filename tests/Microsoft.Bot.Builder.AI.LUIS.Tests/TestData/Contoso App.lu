@@ -1,0 +1,294 @@
+
+> LUIS application information
+> !# @app.name = Contoso App V3
+> !# @app.desc = Default Intents for Azure Bot Service V2
+> !# @app.versionId = 0.1
+> !# @app.culture = en-us
+> !# @app.luis_schema_version = 7.0.0
+> !# @app.settings.UseAllTrainingData = true
+> !# @app.tokenizerVersion = 1.0.0
+
+
+> # Intent definitions
+
+# Cancel
+- abort
+- disregard
+- do not do it
+- do not do that
+- don't
+- don't do it
+- don't do that
+- hello
+- i would like to cancel
+- never mind
+- no thanks
+- nope
+- please cancel
+- please disregard
+- please stop
+- stop
+
+
+# Delivery
+- cancel
+- deliver {@Address=12345 {@State=va}} to {@Address=12346 {@State=wa}}
+- delivery address is in {@Address=45654 {@State=ga}}
+- i want this in {@Address=98052 {@State=wa}}
+- please deliver february 2nd 2001
+- please deliver to {@Address=98033 {@State=wa}}
+- please delivery it to {@Address=98033 {@State=wa}}
+- the address is {@Address=66666 {@State=fl}}
+- this is requested in {@Address=55555 {@State=ny}}
+
+
+# EntityTests
+- $2 and $4.25
+- $4 and $4.25
+- $4 and $99
+- $4.25 and $4
+- $99 and $4.50
+- 10 years old and 4 years old
+- 12 years old and 3 days old
+- {@Composite1=12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one}
+- 12% and 8%
+- 3 degrees and -27.5 degrees c
+- 4% and 5%
+- 425-555-1212
+- 425-555-1234
+- 8% and 12%
+- 8% and 14%
+- 8% and 9%
+- 9.2% and 10.3%
+- and $10 and $20
+- and $4 and $4.25
+- and 4$
+- and 425-765-5555
+- bart simpson
+- calcutta
+- {@Composite2=fly from paris, texas to chicago via stork}
+- {@Composite2=http://blah.com is where you can fly from {@City::From=dallas} to {@City::To=seattle} via {@City=denver}}
+- http://foo.com
+- http://foo.com is ok
+- {@Composite2=http://foo.com is where you can fly from {@City::From=seattle} to {@City::To=dallas} via {@City=denver}}
+- http://woof.com
+- {@Composite2=http://woof.com is where you can fly from {@City::From=seattle} to {@City::To=dallas} via {@City=chicago}}
+- {@Composite2=http://woof.com is where you can fly from {@City::From=seattle} to {@City::To=dallas} via {@City=chicago} on delta}
+- joeseph@hotmail.com
+- kb409 is cool
+
+
+# Greeting
+- good afternoon
+- good evening
+- good morning
+- good night
+- hello bot
+- hi
+- hi bot
+- hi emad
+- hiya
+- how are you
+- how are you doing today?
+- how are you doing?
+- how are you today?
+- howdy
+- how's it goig
+
+
+# Help
+- assist
+- help
+- help me
+- help me please
+- help please
+- i am stuck
+- i'm stuck
+- mayday
+- please help me
+- sos
+- what can i say
+- what can you do
+- what can you help me with
+- what do i do now?
+- what do i do?
+- why doesn't this work ?
+
+
+# None
+- " tell me {@Weather.Location=perth} weather , sclimate & temperature at australia "
+- get {@Weather.Location=florence} temperature in september
+- get for me the weather conditions in {@Weather.Location=sonoma county}
+- get the daily temperature {@Weather.Location=greenwood indiana}
+- get the weather at {@Weather.Location=saint george utah}
+- how much rain does {@Weather.Location=chambersburg} get a year
+- my water bottle is green.
+- show average rainfall for {@Weather.Location=boise}
+- temperature of {@Weather.Location=delhi} in celsius please
+- there is a large deep dish pizza in your future.
+- was last year about this time as wet as it is now in the {@Weather.Location=south} ?
+- what ' s the weather like in {@Weather.Location=minneapolis}
+- what is the rain volume in {@Weather.Location=sonoma county} ?
+- what to wear in march in {@Weather.Location=california}
+
+
+# Roles
+- {@minimum=12%} to {@maximum=8%}
+- {@length=3 inches} long by {@width=2 inches} wide
+- {@length=3 inches} long by {@width=2 inches} wide and {@minimum=5%} to {@maximum=10%} and are you between {@begin=6 years old} and {@end=8 years old} and can i trade kb457 for {@buy=kb922} and change 425-777-1212 to 206-666-4123 and did {@Buyer=delta} buy {@Seller=virgin} and did the rain from {@source=hawaii} get to {@destination=redmond} and http://foo.com changed to http://blah.com and i like between 68 degrees and {@b=72 degrees} and {@liker=john} likes {@likee=mary} and leave {@leave=3pm} and arrive {@arrive=5pm} and pay between {@min=$400} and {@max=$500} and send {@receiver=chrimc@hotmail.com} from emad@gmail.com
+- {@minimum=4%} to {@maximum=12%}
+- {@minimum=5%} to {@maximum=10%}
+- {@minimum=8%} to {@maximum=12%}
+- {@length=9 feet} long by {@width=4 feet} wide
+- and can i trade {@sell=kb457} for {@buy=kb922}
+- are you between {@begin=13 years old} and {@end=16 years old}
+- are you between {@begin=4 years old} and {@end=7 years old}
+- are you between {@begin=6 years old} and {@end=10 years old}
+- are you between 6 years old and {@end=8 years old}
+- {@child=bart simpson} helps {@parent=homer simpson}
+- {@parent=bart simpson} is parent of {@child=lisa simpson} to move {@startloc=calcutta} to {@endloc=london}
+- can i trade {@sell=kb457} for {@buy=kb922}
+- can i trade {@sell=kb922} for {@buy=kb457}
+- change {@old=425-765-1111} to {@newPhone=425-888-4444}
+- change {@old=425-777-1212} to {@newPhone=206-666-4123}
+- did delta buy virgin
+- did {@Buyer=delta} buy {@Seller=virgin}?
+- did {@Buyer=virgin} buy {@Seller=delta}
+- go from {@startpos=3rd} to {@endpos=5th}
+- go from {@startpos=first} to {@endpos=last}
+- go from {@startpos=next to last} to last move {@startloc=london} to {@endloc=jakarta} and {@parent=homer simpson} is the parent of {@child=lisa simpson}
+- homer simpson is parent of bart simpson
+- homer simpson is parent of {@child=bart simpson} to move {@startloc=jakarta} to {@endloc=calcutta}
+- {@parent=homer simpson} is parent of {@child=lisa simpson}
+- {@oldURL=http://blah.com} changed to http://foo.com
+- {@oldURL=http://foo.com} changed to http://blah.com
+- i like between {@a=68 degrees} and 72 degrees
+- i like between {@a=72 degrees} and {@b=80 degrees}
+- {@liker=john} likes {@likee=mary}
+- leave {@leave=3pm} and arrive {@arrive=5pm}
+- move {@startloc=calcutta} to {@endloc=mumbai}
+- move {@startloc=jakarta} to {@endloc=london}
+- move {@startloc=london} to {@endloc=calcutta}
+- move {@startloc=london} to {@endloc=jakarta}
+- pay between {@min=$4} and {@max=$4.25}
+- pay between {@min=$4} and {@max=$40}
+- pay between {@min=$400} and {@max=$500}
+- send {@receiver=bob@foo.com} from {@sender=chris@ark.com}
+- send {@receiver=bob@hob.com} from {@sender=main@gmail.com}
+- send {@receiver=cancel@foo.com} from {@sender=help@h.com}
+- send {@receiver=chrimc@hotmail.com} from {@sender=emad@gmail.com}
+- send {@receiver=chris@ark.com} from {@sender=bob@foo.com}
+- send {@receiver=ham@ham.com} from {@sender=chr@live.com}
+- send {@receiver=help@h.com} from {@sender=cancel@foo.com}
+- send {@receiver=tom@foo.com} from {@sender=john@hotmail.com}
+- start with the first one
+- {@liker=tom} likes {@likee=susan}
+- deliver from {@Address:Source} to {Address:Destination}
+
+
+# search
+- email about dogs from chris and also cats
+- email from {@person:from} to {person:to}
+- email about {@subject} [from {person}] [and also {subject:extra}]
+
+
+# SpecifyName
+- he is {@Name=yousef}
+- his name is {@Name=tom}
+- i am {@Name=lili}
+- my name is {@Name=emad}
+- this is {@Name=chris}
+
+
+# Travel
+- i want to arrive at {@City::To=newyork}
+- i want to fly out of {@City::From=seattle}
+- i want to travel
+- i want to travel from {@City::From=seattle} to {@City::To=dallas}
+- i'll be leaving from {@City::From=cairo} to {@City::To=paris}
+
+
+# Weather.GetForecast
+- " i need to know the temperature at bangor , sme "
+- did the rain from {@source=hawaii} get to {@destination=redmond}
+- forecast in celcius
+- get the forcast for me
+- {@Composite2=https://foo.com is where you can get weather for {@Weather.Location=seattle}}
+- i want to know the temperature at {@Weather.Location=death valley}
+- provide me by {@Weather.Location=toronto} weather please
+- show me the forecast at {@Weather.Location=alabama}
+- soliciting today ' s weather
+- what ' s the weather going to be like in {@Weather.Location=hawaii} ?
+- what is the weather in {@Weather.Location=redmond} ?
+- what is the weather today at 10 day {@Weather.Location=durham} ?
+- what will the weather be tomorrow in {@Weather.Location=accord new york} ?
+- will it be raining in {@Weather.Location=ranchi}
+- will it rain this weekend
+- will it snow today
+
+
+> # Entity definitions
+
+@ ml Name hasRoles liker,likee
+
+@ ml State
+
+@ ml Weather.Location hasRoles source,destination
+
+
+> # PREBUILT Entity definitions
+
+@ prebuilt age hasRoles end,begin
+
+@ prebuilt datetimeV2 hasRoles leave,arrive
+
+@ prebuilt dimension hasRoles length,width
+
+@ prebuilt email hasRoles sender,receiver
+
+@ prebuilt geographyV2 hasRoles endloc,startloc
+
+@ prebuilt money hasRoles max,min
+
+@ prebuilt number
+
+@ prebuilt ordinalV2 hasRoles endpos,startpos
+
+@ prebuilt percentage hasRoles maximum,minimum
+
+@ prebuilt personName hasRoles child,parent
+
+@ prebuilt phonenumber hasRoles old,newPhone
+
+@ prebuilt temperature hasRoles a,b
+
+@ prebuilt url hasRole oldURL
+
+
+> # Phrase list definitions
+
+
+> # List entities
+
+@ list Airline hasRoles Buyer,Seller = 
+	- Delta :
+		- DL
+	- Alaska :
+	- United :
+	- Virgin :
+		- DL
+
+
+> # RegEx entities
+
+@ regex Part hasRoles sell,buy = /kb[0-9]+/
+
+> # Composite entities
+
+@ composite Address hasRoles Source,Destination = [number, State]
+@ composite Composite1 = [age, datetimeV2, dimension, email, money, number, percentage, phonenumber, temperature]
+@ composite Composite2 = [Airline, City, url, City::From, City::To, Weather.Location]
+> # Pattern.Any entities
+
+@ patternany person hasRoles from,to
+@ patternany subject hasRole extra

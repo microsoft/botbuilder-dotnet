@@ -5,6 +5,5 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

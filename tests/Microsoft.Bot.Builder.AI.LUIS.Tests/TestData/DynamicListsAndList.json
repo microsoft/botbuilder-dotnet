@@ -53,38 +53,42 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.006612578
+      "score": 0.006457624
     },
     "Delivery": {
-      "score": 0.00618253648
+      "score": 0.00599454
     },
     "EntityTests": {
-      "score": 0.05013815
+      "score": 0.084535785
     },
     "Greeting": {
-      "score": 0.005450715
+      "score": 0.005392684
     },
     "Help": {
-      "score": 0.00571808033
+      "score": 0.005619145
     },
     "None": {
-      "score": 0.0357324854
+      "score": 0.03300121
     },
     "Roles": {
-      "score": 0.0241017919
+      "score": 0.0213384479
     },
     "search": {
-      "score": 0.006795147
+      "score": 0.000823451439
     },
     "SpecifyName": {
-      "score": 0.006843741
+      "score": 0.0037871073
     },
     "Travel": {
-      "score": 0.017196469
+      "score": 0.008902215
     },
     "Weather_GetForecast": {
-      "score": 0.006921158
+      "score": 0.006632081
     }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
   },
   "text": "fly zimbabwe airlines or deltaair",
   "v3": {
@@ -172,38 +176,42 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.006612578
+            "score": 0.006457624
           },
           "Delivery": {
-            "score": 0.00618253648
+            "score": 0.00599454
           },
           "EntityTests": {
-            "score": 0.05013815
+            "score": 0.084535785
           },
           "Greeting": {
-            "score": 0.005450715
+            "score": 0.005392684
           },
           "Help": {
-            "score": 0.00571808033
+            "score": 0.005619145
           },
           "None": {
-            "score": 0.0357324854
+            "score": 0.03300121
           },
           "Roles": {
-            "score": 0.0241017919
+            "score": 0.0213384479
           },
           "search": {
-            "score": 0.006795147
+            "score": 0.000823451439
           },
           "SpecifyName": {
-            "score": 0.006843741
+            "score": 0.0037871073
           },
           "Travel": {
-            "score": 0.017196469
+            "score": 0.008902215
           },
           "Weather.GetForecast": {
-            "score": 0.006921158
+            "score": 0.006632081
           }
+        },
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
         },
         "topIntent": "EntityTests"
       },

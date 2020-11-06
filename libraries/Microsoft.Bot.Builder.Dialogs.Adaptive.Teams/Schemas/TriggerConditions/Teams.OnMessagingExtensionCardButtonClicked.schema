@@ -5,6 +5,5 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

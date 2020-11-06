@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         protected const string OFFSETKEY = "this.offset";
 
+        private List<Dialog> actions = new List<Dialog>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionScope"/> class.
         /// </summary>
@@ -28,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (actions != null)
             {
-                this.Actions = new List<Dialog>(actions);
+                this.actions = new List<Dialog>(actions);
             }
         }
 
@@ -37,7 +39,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <value>The actions to execute.</value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public List<Dialog> Actions { get; set; } = new List<Dialog>();
+        public List<Dialog> Actions
+        {
+            get
+            {
+                return this.actions;
+            }
+
+            set
+            {
+                this.actions = value ?? new List<Dialog>();
+            }
+        }
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>

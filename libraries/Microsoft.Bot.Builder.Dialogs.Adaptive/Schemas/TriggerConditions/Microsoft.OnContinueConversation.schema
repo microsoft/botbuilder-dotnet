@@ -5,6 +5,5 @@
     "description": "Actions to perform when a conversation is started up again from a ContinueConversationLater action.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

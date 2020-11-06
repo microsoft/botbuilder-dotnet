@@ -5,6 +5,5 @@
     "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }
