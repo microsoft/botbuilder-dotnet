@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -121,6 +120,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
 
             sort.Reverse();
             return sort;
+        }
+
+        public static JToken Normalize(JToken token)
+            => Visit(token, FixLineEnding);
+
+        private static JToken FixLineEnding(JToken token)
+            => token is JValue value && value.Value is string text
+            ? new JValue(FixLineEnding(text))
+            : token;
+
+        // https://stackoverflow.com/questions/55475483/regex-to-find-and-fix-lf-lineendings-to-crlf
+        private static string FixLineEnding(string text)
+            => Regex.Replace(text, "(?<!\r)\n", "\r\n", RegexOptions.None);
+
+        private static JToken Visit(JToken token, Func<JToken, JToken> visitor)
+        {
+            if (token is JValue value)
+            {
+                return visitor(value);
+            }
+            else if (token is JContainer container)
+            {
+                var children = container.Children().Select(c => Visit(c, visitor));
+                if (token is JProperty property)
+                {
+                    return visitor(new JProperty(property.Name) { Value = children.Single() });
+                }
+                else if (token is JArray array)
+                {
+                    return visitor(new JArray(children));
+                }
+                else if (token is JObject record)
+                {
+                    return visitor(new JObject(children));
+                }
+            }
+
+            throw new NotImplementedException();
         }
 
         private static string GetProjectPath()

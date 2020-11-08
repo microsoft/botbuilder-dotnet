@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -93,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
                 return targets.ToArray();
             });
 
-            var tokens = sorted.Select(JToken.FromObject).ToArray();
+            var tokens = sorted.Select(JToken.FromObject).Select(TraceOracle.Normalize).ToArray();
             await TraceOracle.ValidateAsync(pathJson, tokens, _output).ConfigureAwait(false);
         }
 
