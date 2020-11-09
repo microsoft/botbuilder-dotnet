@@ -54,7 +54,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 {
                     var newEntity = JObject.FromObject(result, serializer).ToObject<Entity>();
                     newEntity.Type = result.TypeName;
-                    newEntity.Properties.Remove("TypeName");
+                    newEntity.Properties.Remove("typeName");
+
+                    // the text recognizer libraries return models with End => array inclusive endIndex.  We want end to be (end-start) = length, 
+                    // length = endIndex - startIndex
+                    newEntity.Properties["end"] = (int)newEntity.Properties["end"] + 1;
                     newEntities.Add(newEntity);
                 }
             }

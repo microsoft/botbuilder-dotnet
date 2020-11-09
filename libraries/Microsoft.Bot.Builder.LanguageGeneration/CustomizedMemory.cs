@@ -57,8 +57,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Try to get the value from a given path. Firstly, get result from global memory,
-        /// if global memory does not contain, get from local memory.
+        /// Try to get the value from a given path. Firstly, get result from local memory,
+        /// if local memory does not contain, get from global memory.
         /// </summary>
         /// <param name="path">Memory path.</param>
         /// <param name="value">Resolved value.</param>
@@ -77,11 +77,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (this.GlobalMemory != null)
             {
-                this.GlobalMemory.TryGetValue(path, out var result);
-                value = result;
+                if (this.GlobalMemory.TryGetValue(path, out var result))
+                {
+                    value = result;
+                    return true;
+                }
             }
 
-            return true;
+            return false;
         }
 
         public string Version()

@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// </summary>
         /// <param name="configuration">IConfiguration that we are running with.</param>
         /// <returns>projected dictionary for settings.</returns>
-        protected static Dictionary<string, object> LoadSettings(IConfiguration configuration)
+        protected static ImmutableDictionary<string, object> LoadSettings(IConfiguration configuration)
         {
             var settings = new Dictionary<string, object>();
 
@@ -78,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 root.Children.ForEach(u => settings.Add(u.Value, ConvertNodeToObject(u)));
             }
 
-            return settings;
+            return settings.ToImmutableDictionary();
         }
 
         /// <summary>

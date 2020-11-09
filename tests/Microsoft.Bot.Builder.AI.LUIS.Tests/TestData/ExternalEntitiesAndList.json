@@ -35,37 +35,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.00330878259
+      "score": 0.00322572654
     },
     "Delivery": {
-      "score": 0.00452178251
+      "score": 0.00437863264
     },
     "EntityTests": {
-      "score": 0.052175343
+      "score": 0.07901226
     },
     "Greeting": {
-      "score": 0.002769983
+      "score": 0.00273721316
     },
     "Help": {
-      "score": 0.002995687
+      "score": 0.00294000562
     },
     "None": {
-      "score": 0.0302589461
+      "score": 0.0279089436
     },
     "Roles": {
-      "score": 0.132316783
+      "score": 0.120735578
     },
     "search": {
-      "score": 0.007362695
+      "score": 0.000854549464
     },
     "SpecifyName": {
-      "score": 0.00500302855
+      "score": 0.002717544
     },
     "Travel": {
-      "score": 0.0146034053
+      "score": 0.00884681847
     },
     "Weather_GetForecast": {
-      "score": 0.005048246
+      "score": 0.00485026464
     }
   },
   "sentiment": {
@@ -132,40 +132,39 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.00330878259
+            "score": 0.00322572654
           },
           "Delivery": {
-            "score": 0.00452178251
+            "score": 0.00437863264
           },
           "EntityTests": {
-            "score": 0.052175343
+            "score": 0.07901226
           },
           "Greeting": {
-            "score": 0.002769983
+            "score": 0.00273721316
           },
           "Help": {
-            "score": 0.002995687
+            "score": 0.00294000562
           },
           "None": {
-            "score": 0.0302589461
+            "score": 0.0279089436
           },
           "Roles": {
-            "score": 0.132316783
+            "score": 0.120735578
           },
           "search": {
-            "score": 0.007362695
+            "score": 0.000854549464
           },
           "SpecifyName": {
-            "score": 0.00500302855
+            "score": 0.002717544
           },
           "Travel": {
-            "score": 0.0146034053
+            "score": 0.00884681847
           },
           "Weather.GetForecast": {
-            "score": 0.005048246
+            "score": 0.00485026464
           }
         },
-        "normalizedQuery": "fly on humberg airlines or delta",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

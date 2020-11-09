@@ -3,17 +3,6 @@
     "$instance": {
       "Address": [
         {
-          "endIndex": 13,
-          "modelType": "Composite Entity Extractor",
-          "recognitionSources": [
-            "model"
-          ],
-          "score": 0.7160641,
-          "startIndex": 8,
-          "text": "35 WA",
-          "type": "Address"
-        },
-        {
           "endIndex": 33,
           "modelType": "Composite Entity Extractor",
           "recognitionSources": [
@@ -23,44 +12,21 @@
           "text": "repent harelquin",
           "type": "Address"
         }
+      ],
+      "number": [
+        {
+          "endIndex": 10,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 8,
+          "text": "35",
+          "type": "builtin.number"
+        }
       ]
     },
     "Address": [
-      {
-        "$instance": {
-          "number": [
-            {
-              "endIndex": 10,
-              "modelType": "Prebuilt Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "startIndex": 8,
-              "text": "35",
-              "type": "builtin.number"
-            }
-          ],
-          "State": [
-            {
-              "endIndex": 13,
-              "modelType": "Entity Extractor",
-              "recognitionSources": [
-                "model"
-              ],
-              "score": 0.614376,
-              "startIndex": 11,
-              "text": "WA",
-              "type": "State"
-            }
-          ]
-        },
-        "number": [
-          35
-        ],
-        "State": [
-          "WA"
-        ]
-      },
       {
         "number": [
           3
@@ -69,41 +35,44 @@
           "France"
         ]
       }
+    ],
+    "number": [
+      35
     ]
   },
   "intents": {
     "Cancel": {
-      "score": 0.00325984019
+      "score": 0.00324298278
     },
     "Delivery": {
-      "score": 0.482009649
+      "score": 0.480763137
     },
     "EntityTests": {
-      "score": 0.00372873852
+      "score": 0.004284346
     },
     "Greeting": {
-      "score": 0.00283122621
+      "score": 0.00282274443
     },
     "Help": {
-      "score": 0.00292110164
+      "score": 0.00290596974
     },
     "None": {
-      "score": 0.0208108239
+      "score": 0.0205373727
     },
     "Roles": {
-      "score": 0.069060266
+      "score": 0.06780239
     },
     "search": {
-      "score": 0.009682492
+      "score": 0.000895992853
     },
     "SpecifyName": {
-      "score": 0.00586992875
+      "score": 0.002745299
     },
     "Travel": {
-      "score": 0.007831623
+      "score": 0.00337635027
     },
     "Weather_GetForecast": {
-      "score": 0.009580207
+      "score": 0.00949979
     }
   },
   "sentiment": {
@@ -141,18 +110,6 @@
           "$instance": {
             "Address": [
               {
-                "length": 5,
-                "modelType": "Composite Entity Extractor",
-                "modelTypeId": 4,
-                "recognitionSources": [
-                  "model"
-                ],
-                "score": 0.7160641,
-                "startIndex": 8,
-                "text": "35 WA",
-                "type": "Address"
-              },
-              {
                 "length": 16,
                 "modelType": "Composite Entity Extractor",
                 "modelTypeId": 4,
@@ -163,46 +120,22 @@
                 "text": "repent harelquin",
                 "type": "Address"
               }
+            ],
+            "number": [
+              {
+                "length": 2,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 8,
+                "text": "35",
+                "type": "builtin.number"
+              }
             ]
           },
           "Address": [
-            {
-              "$instance": {
-                "number": [
-                  {
-                    "length": 2,
-                    "modelType": "Prebuilt Entity Extractor",
-                    "modelTypeId": 2,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "startIndex": 8,
-                    "text": "35",
-                    "type": "builtin.number"
-                  }
-                ],
-                "State": [
-                  {
-                    "length": 2,
-                    "modelType": "Entity Extractor",
-                    "modelTypeId": 1,
-                    "recognitionSources": [
-                      "model"
-                    ],
-                    "score": 0.614376,
-                    "startIndex": 11,
-                    "text": "WA",
-                    "type": "State"
-                  }
-                ]
-              },
-              "number": [
-                35
-              ],
-              "State": [
-                "WA"
-              ]
-            },
             {
               "number": [
                 3
@@ -211,44 +144,46 @@
                 "France"
               ]
             }
+          ],
+          "number": [
+            35
           ]
         },
         "intents": {
           "Cancel": {
-            "score": 0.00325984019
+            "score": 0.00324298278
           },
           "Delivery": {
-            "score": 0.482009649
+            "score": 0.480763137
           },
           "EntityTests": {
-            "score": 0.00372873852
+            "score": 0.004284346
           },
           "Greeting": {
-            "score": 0.00283122621
+            "score": 0.00282274443
           },
           "Help": {
-            "score": 0.00292110164
+            "score": 0.00290596974
           },
           "None": {
-            "score": 0.0208108239
+            "score": 0.0205373727
           },
           "Roles": {
-            "score": 0.069060266
+            "score": 0.06780239
           },
           "search": {
-            "score": 0.009682492
+            "score": 0.000895992853
           },
           "SpecifyName": {
-            "score": 0.00586992875
+            "score": 0.002745299
           },
           "Travel": {
-            "score": 0.007831623
+            "score": 0.00337635027
           },
           "Weather.GetForecast": {
-            "score": 0.009580207
+            "score": 0.00949979
           }
         },
-        "normalizedQuery": "deliver 35 wa to repent harelquin",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

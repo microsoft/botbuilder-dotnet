@@ -13,7 +13,6 @@
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.Core</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
