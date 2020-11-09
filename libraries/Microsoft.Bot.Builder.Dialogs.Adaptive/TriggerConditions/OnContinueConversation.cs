@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public OnContinueConversation(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(actions, condition, callerPath, callerLine)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <inheritdoc/>
