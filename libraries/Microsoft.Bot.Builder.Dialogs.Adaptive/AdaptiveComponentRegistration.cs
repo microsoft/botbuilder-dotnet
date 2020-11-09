@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<TemplateEngineLanguageGenerator>(TemplateEngineLanguageGenerator.Kind);
 
             // Dialogs
-            yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.Kind) { CustomDeserializer = new AdaptiveDialogDeserializer(resourceExplorer) };
+            yield return new DeclarativeType<AdaptiveDialog>(AdaptiveDialog.Kind);
 
             // register x.dialog.schema/x.dialog as DynamicBeginDialog $kind="x" => DynamicBeginDialog(x.dialog) resource.
             foreach (var schema in resourceExplorer.GetResources(".schema").Where(s => resourceExplorer.GetTypeForKind(Path.GetFileNameWithoutExtension(s.Id)) == null))
@@ -225,6 +225,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new JObjectConverter(resourceExplorer, sourceContext);
             yield return new ActivityTemplateConverter();
             yield return new StaticActivityTemplateConverter();
+
+            yield return new DialogSetConverter(resourceExplorer);
         }
     }
 }
