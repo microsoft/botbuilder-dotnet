@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.ItemsProperty == null)
             {
-                throw new Exception($"EditArray: \"{changeType}\" operation couldn't be performed because the {nameof(ItemsProperty)} wasn't specified.");
+                throw new InvalidOperationException($"EditArray: \"{changeType}\" operation couldn't be performed because the {nameof(ItemsProperty)} wasn't specified.");
             }
 
             var property = this.ItemsProperty.GetValue(dc.State);
@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Value == null)
             {
-                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ItemsProperty}\" because a value wasn't specified.");
+                throw new InvalidOperationException($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ItemsProperty}\" because a value wasn't specified.");
             }
         }
     }

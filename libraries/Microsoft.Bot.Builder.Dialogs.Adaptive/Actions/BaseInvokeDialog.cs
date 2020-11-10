@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // NOTE: we want the result of the expression as a string so we can look up the string using external FindDialog().
             var se = new StringExpression($"={this.Dialog.ExpressionText}");
             var dialogId = se.GetValue(dc.State);
-            return dc.FindDialog(dialogId ?? throw new Exception($"{this.Dialog.ToString()} not found."));
+            return dc.FindDialog(dialogId ?? throw new InvalidOperationException($"{this.Dialog.ToString()} not found."));
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    throw new InvalidOperationException($"Unable to get a value for \"{binding.Value}\" from state. {error}");
                 }
 
                 if (val != null)
