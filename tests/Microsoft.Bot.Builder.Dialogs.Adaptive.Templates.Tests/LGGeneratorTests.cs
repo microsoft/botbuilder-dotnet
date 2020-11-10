@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var context = GetDialogContext(string.Empty);
             var lg = new TemplateEngineLanguageGenerator();
-            await Assert.ThrowsAsync<Exception>(() => lg.GenerateAsync(context, "${tesdfdfsst()}", null));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => lg.GenerateAsync(context, "${tesdfdfsst()}", null));
         }
 
         [Fact]
