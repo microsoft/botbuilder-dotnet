@@ -138,6 +138,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaledObj = templates.Evaluate("crtObj2");
             Assert.Equal(evaledObj, JObject.Parse("{'a': \"value\"}"));
 
+            evaledObj = templates.Evaluate("crtObj3");
+            var objJson = "{\"key1\":{\"key2\":\"value\"}, \"key3\":\"value2\"}";
+            Assert.Equal(evaledObj, JObject.Parse(objJson));
+
             evaledArray = templates.Evaluate("crtArr1");
             Assert.Equal(evaledArray, actualArr);
 

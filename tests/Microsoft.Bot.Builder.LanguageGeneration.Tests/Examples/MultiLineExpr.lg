@@ -58,6 +58,12 @@ b:2
     key:"value"
 }}
 
+#crtObj3
+- ${{
+    key1:{key2:"value"},
+    key3:"value2"
+}}
+
 #crtArr1
 - ${[
 1,2,
@@ -70,3 +76,4 @@ b:2
 1,2,
 3,
 4]}
+
