@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             dialogManager.InitialTurnState.Add(resourceExplorer);
+
             return dialogManager;
         }
     }
