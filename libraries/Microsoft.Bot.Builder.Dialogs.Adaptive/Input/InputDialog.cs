@@ -506,7 +506,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var (value, valueError) = this.Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
-                    throw new Exception($"In InputDialog, this.Value expression evaluation resulted in an error. Expression: {this.Value}. Error: {valueError}");
+                    throw new InvalidOperationException($"In InputDialog, this.Value expression evaluation resulted in an error. Expression: {this.Value}. Error: {valueError}");
                 }
 
                 input = value;

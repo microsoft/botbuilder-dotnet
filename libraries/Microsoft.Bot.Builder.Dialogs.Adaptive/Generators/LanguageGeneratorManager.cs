@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 var resource = resources.FirstOrDefault(u => LGResourceLoader.ParseLGFileName(u.Id).prefix.ToLowerInvariant() == LGResourceLoader.ParseLGFileName(resourceName).prefix.ToLowerInvariant());
                 if (resource == null)
                 {
-                    throw new Exception($"There is no matching LG resource for {resourceName}");
+                    throw new InvalidOperationException($"There is no matching LG resource for {resourceName}");
                 }
                 else
                 {
