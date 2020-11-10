@@ -46,20 +46,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public List<string> Intents { get; set; } = new List<string>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
-        /// <summary>
-        /// Get the expression for this rule.
-        /// </summary>
-        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // add constraints for the intents property if set
             if (this.Intents?.Any() == true)
             {
                 var constraints = this.Intents.Select(subIntent => Expression.Parse($"contains(jPath({TurnPath.Recognized}, '$.candidates[*].intent'), '{subIntent}')"));
-                return Expression.AndExpression(base.GetExpression(), Expression.AndExpression(constraints.ToArray()));
+                return Expression.AndExpression(base.CreateExpression(), Expression.AndExpression(constraints.ToArray()));
             }
 
-            return base.GetExpression();
+            return base.CreateExpression();
         }
     }
 }

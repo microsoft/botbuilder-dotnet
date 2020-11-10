@@ -73,11 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}({this.Intent})[{string.Join(",", this.Entities)}]";
         }
 
-        /// <summary>
-        /// Gets the expression for this rule.
-        /// </summary>
-        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // add constraints for the intents property
             if (string.IsNullOrEmpty(this.Intent))
@@ -103,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                     }).ToArray()));
             }
 
-            return Expression.AndExpression(intentExpression, base.GetExpression());
+            return Expression.AndExpression(intentExpression, base.CreateExpression());
         }
 
         /// <summary>
