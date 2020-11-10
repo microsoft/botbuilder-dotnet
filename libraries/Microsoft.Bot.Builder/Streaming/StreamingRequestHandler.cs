@@ -383,7 +383,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    throw new Exception("Error while attempting to send: Streaming transport is disconnected.");
+                    throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -415,7 +415,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!_serverIsConnected)
                 {
-                    throw new Exception("Error while attempting to send: Streaming transport is disconnected.");
+                    throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
