@@ -53,17 +53,17 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 || !(children[0] is Constant cnst)
                 || cnst.ReturnType != ReturnType.String)
             {
-                throw new Exception($"{expression} must have a string as first argument.");
+                throw new ArgumentException($"{expression} must have a string as first argument.");
             }
 
             if (children.Length > 2)
             {
-                throw new Exception($"{expression} has more than 2 children.");
+                throw new ArgumentException($"{expression} has more than 2 children.");
             }
 
             if (children.Length == 2 && (children[1].ReturnType & ReturnType.Object) == 0)
             {
-                throw new Exception($"{expression} must have an object as its second argument.");
+                throw new ArgumentException($"{expression} must have an object as its second argument.");
             }
         }
     }

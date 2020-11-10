@@ -196,7 +196,7 @@ namespace AdaptiveExpressions
                     return Expression.ConstantExpression(doubleValue);
                 }
 
-                throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
+                throw new ArgumentException($"{context.GetText()} is not a number in expression \"{context.GetText()}\"");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionAntlrParser.ParenthesisExpContext context) => Visit(context.expression());
@@ -220,7 +220,7 @@ namespace AdaptiveExpressions
                 }
                 else
                 {
-                    throw new Exception($"Invalid string {text}");
+                    throw new ArgumentException($"Invalid string {text}");
                 }
 
                 return Expression.ConstantExpression(EvalEscape(text));
