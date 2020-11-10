@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnDialogEvent(),
                 new OnEndOfActions(),
                 new OnError(),
-                new OnIntent(),
+                new OnIntent() { Intent = "test" },
                 new OnQnAMatch(),
                 new OnRepromptDialog(),
                 new OnUnknownIntent(),
