@@ -4,9 +4,64 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "planningTest",
-        "dialogs": [
-            "AskNameDialog",
-            "TellJokeDialog"
+        "dialogs": [{
+                "$schema": "../../../tests.schema",
+                "$kind": "Microsoft.AdaptiveDialog",
+                "id": "AskNameDialog",
+                "dialogs": ["TellJokeDialog"],
+                "triggers": [
+                    {
+                        "$kind": "Microsoft.OnBeginDialog",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "(user.name == null)",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.TextInput",
+                                        "property": "user.name",
+                                        "prompt": "Hello, what is your name?",
+                                        "unrecognizedPrompt": "How should I call you?",
+                                        "invalidPrompt": "That does not soud like a name"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Hello ${user.name}, nice to meet you!"
+                            }
+                        ]
+                    }
+                ],
+                "autoEndDialog": true,
+                "defaultResultProperty": "dialog.result"
+            },
+            {
+                "$schema": "../../../tests.schema",
+                "$kind": "Microsoft.AdaptiveDialog",
+                "id": "TellJokeDialog",
+                "triggers": [
+                    {
+                        "$kind": "Microsoft.OnBeginDialog",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Why did the chicken cross the road?"
+                            },
+                            {
+                                "$kind": "Microsoft.EndTurn",
+                                "id": "EndTurn"
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "To get to the other side"
+                            }
+                        ]
+                    }
+                ],
+                "autoEndDialog": true,
+                "defaultResultProperty": "dialog.result"
+            }
         ],
         "triggers": [
             {

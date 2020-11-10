@@ -24,12 +24,25 @@
         },
         "dialogs": {
             "type": "array",
-            "title": "Referenced dialogs.",
-            "items": {
-                        "type": "string"
-                     },
-                "description": "Dialogs referenced by current dialog."
-            },
+            "title": "Dialogs added to DialogSet.",
+            "dialog": {
+                "oneOf": [
+                    {
+                        "$kind": "Microsoft.IDialog",
+                        "pattern": "^(?!(=)).*",
+                        "title": "Dialog"
+                    },
+                    {
+                        "$ref": "schema:#/definitions/equalsExpression",
+                        "examples": [
+                            "=settings.dialogId"
+                        ]
+                    }
+                ],
+                "title": "Dialog name",
+                "description": "Name of the dialog to call."
+            }
+        },
         "recognizer": {
             "$kind": "Microsoft.IRecognizer",
             "title": "Recognizer",

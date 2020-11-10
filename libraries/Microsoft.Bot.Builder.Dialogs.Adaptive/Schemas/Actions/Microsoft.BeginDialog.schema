@@ -26,13 +26,6 @@
                     "title": "Dialog"
                 },
                 {
-                    "$ref": "schema:#/definitions/stringExpression",
-                    "examples": [
-                        "=concat('name', 'dialog')",
-                        "stringName"
-                    ]
-                },
-                {
                     "$ref": "schema:#/definitions/equalsExpression",
                     "examples": [
                         "=settings.dialogId"
