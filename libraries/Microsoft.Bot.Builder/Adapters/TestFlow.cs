@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     {
                         if (!equalityComparer.Equals(expected, reply))
                         {
-                            throw new ArgumentException($"Expected:{expected}\nReceived:{reply}");
+                            throw new InvalidOperationException($"Expected:{expected}\nReceived:{reply}");
                         }
                     }
                     else
