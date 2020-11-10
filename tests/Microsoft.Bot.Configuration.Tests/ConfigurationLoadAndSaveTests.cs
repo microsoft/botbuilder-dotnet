@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [Fact]
         public async Task FailLoadFromFolderWithNoSecret()
         {
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 var secret = BotConfiguration.GenerateKey();
                 var config = await BotConfiguration.LoadAsync(testBotFileName);

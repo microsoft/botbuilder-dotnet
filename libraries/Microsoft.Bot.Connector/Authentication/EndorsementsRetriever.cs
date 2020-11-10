@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 if (!documentResponse.IsSuccessStatusCode)
                 {
-                    throw new Exception($"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
+                    throw new InvalidOperationException($"An non-success status code of {documentResponse.StatusCode} was received while fetching the endorsements document.");
                 }
 
                 var json = await documentResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     if (!keysResponse.IsSuccessStatusCode)
                     {
-                        throw new Exception($"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
+                        throw new InvalidOperationException($"An non-success status code of {keysResponse.StatusCode} was received while fetching the web key set document.");
                     }
 
                     return await keysResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
