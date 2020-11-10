@@ -234,12 +234,12 @@ namespace Microsoft.Bot.Builder.Adapters
                     {
                         if (description == null)
                         {
-                            throw new ArgumentException(
+                            throw new InvalidOperationException(
                                 $"Expected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
                         }
                         else
                         {
-                            throw new ArgumentException(
+                            throw new InvalidOperationException(
                                 $"{description}:\nExpected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
                         }
                     }
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     description = description ?? expected.AsMessageActivity()?.Text.Trim();
                     if (expected.Type != reply.Type)
                     {
-                        throw new ArgumentException($"{description}: Type should match");
+                        throw new InvalidOperationException($"{description}: Type should match");
                     }
 
                     if (equalityComparer != null)
@@ -296,11 +296,11 @@ namespace Microsoft.Bot.Builder.Adapters
                         {
                             if (description == null)
                             {
-                                throw new ArgumentException($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                                throw new InvalidOperationException($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
                             }
                             else
                             {
-                                throw new ArgumentException($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                                throw new InvalidOperationException($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
                             }
                         }
                     }
@@ -530,7 +530,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
 
-                    throw new ArgumentException(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
+                    throw new InvalidOperationException(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,
                 timeout);
