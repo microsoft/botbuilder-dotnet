@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var (choices, error) = this.Choices.TryGetValue(dc.State);
                 if (error != null)
                 {
-                    throw new ArgumentException(error);
+                    throw new InvalidOperationException(error);
                 }
 
                 op.Choices = choices;
