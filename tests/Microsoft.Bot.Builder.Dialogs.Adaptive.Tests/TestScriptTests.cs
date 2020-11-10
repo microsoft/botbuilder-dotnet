@@ -156,5 +156,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
+
+        [Fact]
+        public async Task TestScriptTests_OAuthInputRetries_WithNullMessageText()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
     }
 }
