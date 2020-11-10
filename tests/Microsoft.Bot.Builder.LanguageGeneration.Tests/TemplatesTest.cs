@@ -131,6 +131,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaledMultilineResult = templates.Evaluate("evalMultiLineObj");
             Assert.Equal("{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}", evaledMultilineResult);
+
+            evaledObj = templates.Evaluate("crtObj1");
+            Assert.Equal(evaledObj, JObject.Parse(json));
+
+            evaledObj = templates.Evaluate("crtObj2");
+            Assert.Equal(evaledObj, JObject.Parse("{'a': \"value\"}"));
+
+            evaledArray = templates.Evaluate("crtArr1");
+            Assert.Equal(evaledArray, actualArr);
+
+            evaledArray = templates.Evaluate("crtArr2");
+            Assert.Equal(evaledArray, actualArr);
         }
 
         [Fact]
