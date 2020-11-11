@@ -31,12 +31,6 @@
                         "$kind": "Microsoft.IDialog",
                         "pattern": "^(?!(=)).*",
                         "title": "Dialog"
-                    },
-                    {
-                        "$ref": "schema:#/definitions/equalsExpression",
-                        "examples": [
-                            "=settings.dialogId"
-                        ]
                     }
                 ],
                 "title": "Dialog name",
