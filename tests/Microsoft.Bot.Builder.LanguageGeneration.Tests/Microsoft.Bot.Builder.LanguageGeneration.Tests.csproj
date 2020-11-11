@@ -83,6 +83,7 @@
     <None Remove="ExceptionExamples\LgTemplateFunctionError.lg" />
     <None Remove="ExceptionExamples\LoopDetected.lg" />
     <None Remove="ExceptionExamples\MultiLineVariation.lg" />
+    <None Remove="ExceptionExamples\MultiLineTemplate.lg" />
     <None Remove="ExceptionExamples\NoNormalTemplateBody.lg" />
     <None Remove="ExceptionExamples\NoTemplateRef.lg" />
     <None Remove="ExceptionExamples\SwitchCaseFormatError.lg" />
@@ -307,6 +308,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\MultiLineVariation.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\MultiLineTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\NoNormalTemplateBody.lg">
