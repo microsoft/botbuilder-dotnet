@@ -941,7 +941,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(17, newTemplate.SourceRange.Range.End.Line);
 
             // add an exist template
-            var exception = Assert.Throws<Exception>(() => templates.AddTemplate("newtemplate", null, "- hi2 "));
+            var exception = Assert.Throws<ArgumentException>(() => templates.AddTemplate("newtemplate", null, "- hi2 "));
             Assert.Equal(TemplateErrors.TemplateExist("newtemplate"), exception.Message);
         }
 
