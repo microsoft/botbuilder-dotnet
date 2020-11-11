@@ -641,7 +641,6 @@
             "oneOf": [
               {
                 "$kind": "Microsoft.IDialog",
-                "pattern": "^(?!(=)).*",
                 "title": "Dialog",
                 "$ref": "#/definitions/Microsoft.IDialog"
               }
@@ -1032,10 +1031,9 @@
           ]
         },
         "dialog": {
-          "anyOf": [
+          "oneOf": [
             {
               "$kind": "Microsoft.IDialog",
-              "pattern": "^(?!(=)).*",
               "title": "Dialog",
               "$ref": "#/definitions/Microsoft.IDialog"
             },
@@ -3819,7 +3817,8 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?!(=)).*"
         }
       ]
     },

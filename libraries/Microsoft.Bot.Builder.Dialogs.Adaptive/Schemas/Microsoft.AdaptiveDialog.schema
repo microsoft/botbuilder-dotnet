@@ -29,7 +29,6 @@
                 "oneOf": [
                     {
                         "$kind": "Microsoft.IDialog",
-                        "pattern": "^(?!(=)).*",
                         "title": "Dialog"
                     }
                 ],

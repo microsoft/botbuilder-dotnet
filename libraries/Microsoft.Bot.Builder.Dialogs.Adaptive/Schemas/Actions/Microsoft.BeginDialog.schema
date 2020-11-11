@@ -19,10 +19,9 @@
             ]
         },
         "dialog": {
-            "anyOf": [
+            "oneOf": [
                 {
                     "$kind": "Microsoft.IDialog",
-                    "pattern": "^(?!(=)).*",
                     "title": "Dialog"
                 },
                 {
