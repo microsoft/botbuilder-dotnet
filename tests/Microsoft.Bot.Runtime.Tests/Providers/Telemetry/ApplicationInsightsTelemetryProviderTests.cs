@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
+#if NETCOREAPP2_1
 using Microsoft.AspNetCore.Hosting.Internal;
+#endif
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.ApplicationInsights;
@@ -68,7 +70,11 @@ namespace Microsoft.Bot.Runtime.Tests.Providers.Telemetry
             var services = new ServiceCollection();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+#if NETCOREAPP2_1
             services.AddTransient<IHostingEnvironment, HostingEnvironment>();
+#elif NETCOREAPP3_1
+            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
+#endif
 
             new ApplicationInsightsTelemetryProvider
             {

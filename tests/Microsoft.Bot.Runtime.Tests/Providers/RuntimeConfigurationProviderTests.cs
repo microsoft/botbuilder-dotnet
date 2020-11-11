@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
 using Microsoft.AspNetCore.Hosting;
+#if NETCOREAPP2_1
 using Microsoft.AspNetCore.Hosting.Internal;
+#endif
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -91,7 +93,11 @@ namespace Microsoft.Bot.Runtime.Tests.Providers
             var services = new ServiceCollection();
 
             services.AddTransient<IConfiguration>(_ => configuration);
+#if NETCOREAPP2_1
             services.AddTransient<IHostingEnvironment, HostingEnvironment>();
+#elif NETCOREAPP3_1
+            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
+#endif
             services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer(new[]
             {
                 new JsonResource(ResourceId, data: BuildDialog())
