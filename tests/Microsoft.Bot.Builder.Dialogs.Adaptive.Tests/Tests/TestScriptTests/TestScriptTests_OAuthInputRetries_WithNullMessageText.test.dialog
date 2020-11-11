@@ -1,0 +1,72 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test OAuthInput prompts retry when it receives a Message with null text",
+    "userTokenMocks": [
+        "magiccode.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+          {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+              {
+                "$kind": "Microsoft.OAuthInput",
+                "connectionName": "magiccode connection",
+                "text": "Please sign in",
+                "title": "Login",
+                "property": "dialog.token",
+                "invalidPrompt":  "Sorry, invalid input. Please try again."
+              },
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${dialog.token.token}"
+              }
+            ]
+          }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "attachments[0].contentType == 'application/vnd.microsoft.card.oauth'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "attachments": [
+                    {
+                        "contentType": "image/jpg",
+                        "contentUrl": "http://example.org/photo"
+                    }
+                ]
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Sorry, invalid input. Please try again."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "attachments[0].contentType == 'application/vnd.microsoft.card.oauth'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "000000"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "magiccode token"
+        }
+    ]
+}
