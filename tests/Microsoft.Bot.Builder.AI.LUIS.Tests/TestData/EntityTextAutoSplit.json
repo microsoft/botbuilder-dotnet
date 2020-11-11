@@ -1,0 +1,157 @@
+{
+  "entities": {
+    "$instance": {
+      "parent": [
+        {
+          "endIndex": 12,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 0,
+          "text": "bart simpson",
+          "type": "builtin.personName"
+        }
+      ],
+      "person": [
+        {
+          "endIndex": 12,
+          "modelType": "Pattern.Any Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 0,
+          "text": "bart simpson",
+          "type": "person"
+        }
+      ]
+    },
+    "parent": [
+      "bart simpson"
+    ],
+    "person": [
+      "bart simpson"
+    ]
+  },
+  "intents": {
+    "Cancel": {
+      "score": 1.02352937E-09
+    },
+    "Delivery": {
+      "score": 1.81E-09
+    },
+    "EntityTests": {
+      "score": 1.15439843E-05
+    },
+    "Greeting": {
+      "score": 1.09375E-09
+    },
+    "Help": {
+      "score": 1.02352937E-09
+    },
+    "None": {
+      "score": 2.394552E-06
+    },
+    "Roles": {
+      "score": 5.6224585E-06
+    },
+    "search": {
+      "score": 0.9999948
+    },
+    "SpecifyName": {
+      "score": 3.08333337E-09
+    },
+    "Travel": {
+      "score": 3.08333337E-09
+    },
+    "Weather_GetForecast": {
+      "score": 1.03386708E-06
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "bart simpson",
+  "v2": {
+    "options": {
+      "IncludeAllIntents": true,
+      "IncludeInstanceData": true,
+      "LogPersonalInformation": false,
+      "Timeout": 100000.0
+    },
+    "response": {
+      "entities": [
+        {
+          "endIndex": 15,
+          "entity": "bart simpson",
+          "role": "parent",
+          "startIndex": 0,
+          "type": "builtin.personName"
+        },
+        {
+          "endIndex": 15,
+          "entity": "bart simpson",
+          "role": "",
+          "startIndex": 0,
+          "type": "person"
+        }
+      ],
+      "intents": [
+        {
+          "intent": "search",
+          "score": 0.9999948
+        },
+        {
+          "intent": "EntityTests",
+          "score": 1.15439843E-05
+        },
+        {
+          "intent": "Roles",
+          "score": 5.6224585E-06
+        },
+        {
+          "intent": "None",
+          "score": 2.394552E-06
+        },
+        {
+          "intent": "Weather.GetForecast",
+          "score": 1.03386708E-06
+        },
+        {
+          "intent": "SpecifyName",
+          "score": 3.08333337E-09
+        },
+        {
+          "intent": "Travel",
+          "score": 3.08333337E-09
+        },
+        {
+          "intent": "Delivery",
+          "score": 1.81E-09
+        },
+        {
+          "intent": "Greeting",
+          "score": 1.09375E-09
+        },
+        {
+          "intent": "Cancel",
+          "score": 1.02352937E-09
+        },
+        {
+          "intent": "Help",
+          "score": 1.02352937E-09
+        }
+      ],
+      "query": "bart simpson",
+      "sentimentAnalysis": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topScoringIntent": {
+        "intent": "search",
+        "score": 0.9999948
+      }
+    }
+  }
+}

@@ -165,13 +165,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal static JObject ExtractEntityMetadata(EntityModel entity, string utterance)
         {
-            var start = (int)entity.StartIndex;
-            var end = (int)entity.EndIndex + 1;
+            var start = entity.StartIndex;
+            var end = entity.EndIndex + 1;
             dynamic obj = JObject.FromObject(new
             {
                 startIndex = start,
                 endIndex = end,
-                text = entity.Entity.Length == end - start ? entity.Entity : utterance.Substring(start, end - start),
+                text = entity.Entity.Length <= end - start ? entity.Entity : utterance.Substring(start, end - start),
                 type = entity.Type,
             });
 

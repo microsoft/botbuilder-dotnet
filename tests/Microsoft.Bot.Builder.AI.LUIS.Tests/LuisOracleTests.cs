@@ -213,6 +213,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task Composite3() => await TestJson<RecognizerResult>("Composite3.json");
 
         [Fact]
+        public async Task EntityTextAutoSplit() => await TestJson<RecognizerResult>("EntityTextAutoSplit.json");
+
+        [Fact]
         public async Task GeoPeopleOrdinal() => await TestJson<RecognizerResult>("GeoPeopleOrdinal.json");
 
         [Fact]
