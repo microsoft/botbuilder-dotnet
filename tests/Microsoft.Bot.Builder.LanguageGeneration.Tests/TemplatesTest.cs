@@ -1475,7 +1475,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello", "Hiya" };
             Assert.True(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
-            var exception = Assert.Throws<Exception>(() => templates.EvaluateText("${ErrrorTemplate()}"));
+            var exception = Assert.Throws<InvalidOperationException>(() => templates.EvaluateText("${ErrrorTemplate()}"));
             Assert.Contains("it's not a built-in function or a custom function", exception.Message);
         }
 
