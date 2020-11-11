@@ -5,6 +5,5 @@
     "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

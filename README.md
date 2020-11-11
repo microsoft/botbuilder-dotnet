@@ -67,7 +67,7 @@ For instructions to add the feed to your NuGet configuration, [visit this page](
 - To use the daily builds published to MyGet, please follow the instructions [here](UsingMyGet.md). **NOTE**: The MyGet feed will be depecrated soon. Please use the Azure Artifacts daily feed instead.
 
 ## Dependency Graph
-To view our libraries' interdependencies, you can refer to the [dependency graph](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/4.10.0/InterdependencyGraph.html) for our libraries.
+To view our libraries' interdependencies, you can refer to the [dependency graph](https://botbuildersdkblobstorage.blob.core.windows.net/sdk-dotnet-dependency-reports/latest/InterdependencyGraph.html) for our libraries.
 
 ## Getting Started
 To get started building bots using the SDK, see the [Azure Bot Service Documentation](https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0).

@@ -24,10 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
         {
         }
 
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // if name is 'composeExtension/selectItem'
-            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.ChannelId == '{Channels.Msteams}' && {TurnPath.Activity}.name == 'composeExtension/selectItem'"), base.GetExpression());
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.ChannelId == '{Channels.Msteams}' && {TurnPath.Activity}.name == 'composeExtension/selectItem'"), base.CreateExpression());
         }
     }
 }

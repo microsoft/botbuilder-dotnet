@@ -107,37 +107,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.000107549029
+      "score": 0.000106304564
     },
     "Delivery": {
-      "score": 0.00123035291
+      "score": 0.00121616619
     },
     "EntityTests": {
-      "score": 0.0009487789
+      "score": 0.00107762846
     },
     "Greeting": {
-      "score": 5.293933E-05
+      "score": 5.23392373E-05
     },
     "Help": {
-      "score": 0.0001358991
+      "score": 0.000134394242
     },
     "None": {
-      "score": 0.0109820236
+      "score": 0.0108486973
     },
     "Roles": {
-      "score": 0.999204934
+      "score": 0.9991838
     },
     "search": {
-      "score": 0.0263254233
+      "score": 0.002142746
     },
     "SpecifyName": {
-      "score": 0.00104324089
+      "score": 0.0006965211
     },
     "Travel": {
-      "score": 0.01043327
+      "score": 0.0046763327
     },
     "Weather_GetForecast": {
-      "score": 0.0106523167
+      "score": 0.0105504664
     }
   },
   "sentiment": {
@@ -207,47 +207,47 @@
       "intents": [
         {
           "intent": "Roles",
-          "score": 0.999204934
-        },
-        {
-          "intent": "search",
-          "score": 0.0263254233
+          "score": 0.9991838
         },
         {
           "intent": "None",
-          "score": 0.0109820236
+          "score": 0.0108486973
         },
         {
           "intent": "Weather.GetForecast",
-          "score": 0.0106523167
+          "score": 0.0105504664
         },
         {
           "intent": "Travel",
-          "score": 0.01043327
+          "score": 0.0046763327
+        },
+        {
+          "intent": "search",
+          "score": 0.002142746
         },
         {
           "intent": "Delivery",
-          "score": 0.00123035291
-        },
-        {
-          "intent": "SpecifyName",
-          "score": 0.00104324089
+          "score": 0.00121616619
         },
         {
           "intent": "EntityTests",
-          "score": 0.0009487789
+          "score": 0.00107762846
+        },
+        {
+          "intent": "SpecifyName",
+          "score": 0.0006965211
         },
         {
           "intent": "Help",
-          "score": 0.0001358991
+          "score": 0.000134394242
         },
         {
           "intent": "Cancel",
-          "score": 0.000107549029
+          "score": 0.000106304564
         },
         {
           "intent": "Greeting",
-          "score": 5.293933E-05
+          "score": 5.23392373E-05
         }
       ],
       "query": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
@@ -257,7 +257,7 @@
       },
       "topScoringIntent": {
         "intent": "Roles",
-        "score": 0.999204934
+        "score": 0.9991838
       }
     }
   },
@@ -363,8 +363,8 @@
           ],
           "endloc": [
             {
-              "value": "jakarta",
-              "type": "city"
+              "type": "city",
+              "value": "jakarta"
             }
           ],
           "ordinalV2": [
@@ -378,8 +378,8 @@
           ],
           "startloc": [
             {
-              "value": "london",
-              "type": "city"
+              "type": "city",
+              "value": "london"
             }
           ],
           "startpos": [
@@ -391,40 +391,39 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.000107549029
+            "score": 0.000106304564
           },
           "Delivery": {
-            "score": 0.00123035291
+            "score": 0.00121616619
           },
           "EntityTests": {
-            "score": 0.0009487789
+            "score": 0.00107762846
           },
           "Greeting": {
-            "score": 5.293933E-05
+            "score": 5.23392373E-05
           },
           "Help": {
-            "score": 0.0001358991
+            "score": 0.000134394242
           },
           "None": {
-            "score": 0.0109820236
+            "score": 0.0108486973
           },
           "Roles": {
-            "score": 0.999204934
+            "score": 0.9991838
           },
           "search": {
-            "score": 0.0263254233
+            "score": 0.002142746
           },
           "SpecifyName": {
-            "score": 0.00104324089
+            "score": 0.0006965211
           },
           "Travel": {
-            "score": 0.01043327
+            "score": 0.0046763327
           },
           "Weather.GetForecast": {
-            "score": 0.0106523167
+            "score": 0.0105504664
           }
         },
-        "normalizedQuery": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

@@ -199,6 +199,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestMultiLineTemplate()
+        {
+            var diagnostics = GetDiagnostics("MultiLineTemplate.lg");
+
+            Assert.Equal(1, diagnostics.Count);
+            Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.Contains(TemplateErrors.NoEndingInMultiline, diagnostics[0].Message);
+        }
+
+        [Fact]
         public void TestNoNormalTemplateBody()
         {
             var diagnostics = GetDiagnostics("NoNormalTemplateBody.lg");

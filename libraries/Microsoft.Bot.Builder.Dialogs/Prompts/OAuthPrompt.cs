@@ -385,21 +385,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
-                var magicCodeRegex = new Regex(@"(\d{6})");
-                var matched = magicCodeRegex.Match(turnContext.Activity.Text);
-                if (matched.Success)
+                if (!string.IsNullOrEmpty(turnContext.Activity.Text))
                 {
-                    if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
+                    // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
+                    var magicCodeRegex = new Regex(@"(\d{6})");
+                    var matched = magicCodeRegex.Match(turnContext.Activity.Text);
+                    if (matched.Success)
                     {
-                        throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
-                    }
+                        if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
+                        {
+                            throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                        }
 
-                    var token = await adapter.GetUserTokenAsync(turnContext, settings.OAuthAppCredentials, settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
-                    if (token != null)
-                    {
-                        result.Succeeded = true;
-                        result.Value = token;
+                        var token = await adapter.GetUserTokenAsync(turnContext, settings.OAuthAppCredentials, settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
+                        if (token != null)
+                        {
+                            result.Succeeded = true;
+                            result.Value = token;
+                        }
                     }
                 }
             }

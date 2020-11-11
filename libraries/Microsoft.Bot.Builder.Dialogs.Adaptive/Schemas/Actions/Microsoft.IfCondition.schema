@@ -5,8 +5,7 @@
     "description": "Two-way branch the conversation flow based on a condition.",
     "type": "object",
     "required": [
-        "condition",
-        "actions"
+        "condition"
     ],
     "properties": {
         "id": {

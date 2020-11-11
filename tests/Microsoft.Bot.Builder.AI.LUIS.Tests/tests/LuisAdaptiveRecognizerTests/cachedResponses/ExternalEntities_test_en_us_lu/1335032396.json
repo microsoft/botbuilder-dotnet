@@ -1,1 +1,1 @@
-{"query":"a","prediction":{"topIntent":"intent","intents":{"intent":{"score":0.829455853}},"entities":{"alphaEntity":[["a"]]}}}
+{"query":"a","prediction":{"topIntent":"intent","intents":{"intent":{"score":0.909639955}},"entities":{"alphaEntity":[["a"]]}}}

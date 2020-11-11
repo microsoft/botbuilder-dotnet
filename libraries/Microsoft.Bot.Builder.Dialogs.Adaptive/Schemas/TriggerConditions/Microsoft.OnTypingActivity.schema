@@ -5,6 +5,5 @@
     "description": "Actions to perform on receipt of an activity with type 'Typing'.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

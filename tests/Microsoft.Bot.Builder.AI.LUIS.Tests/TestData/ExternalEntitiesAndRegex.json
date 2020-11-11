@@ -31,37 +31,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.0127721056
+      "score": 0.0128021352
     },
     "Delivery": {
-      "score": 0.004578639
+      "score": 0.004558195
     },
     "EntityTests": {
-      "score": 0.008811761
+      "score": 0.009367461
     },
     "Greeting": {
-      "score": 0.00256775436
+      "score": 0.0025622393
     },
     "Help": {
-      "score": 0.00214677141
+      "score": 0.0021368505
     },
     "None": {
-      "score": 0.27875194
+      "score": 0.2778768
     },
     "Roles": {
-      "score": 0.0273685548
+      "score": 0.0273504611
     },
     "search": {
-      "score": 0.0084077
+      "score": 0.000832980848
     },
     "SpecifyName": {
-      "score": 0.0148377549
+      "score": 0.00770643726
     },
     "Travel": {
-      "score": 0.0039825947
+      "score": 0.00204822514
     },
     "Weather_GetForecast": {
-      "score": 0.009611839
+      "score": 0.009585343
     }
   },
   "sentiment": {
@@ -121,40 +121,39 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.0127721056
+            "score": 0.0128021352
           },
           "Delivery": {
-            "score": 0.004578639
+            "score": 0.004558195
           },
           "EntityTests": {
-            "score": 0.008811761
+            "score": 0.009367461
           },
           "Greeting": {
-            "score": 0.00256775436
+            "score": 0.0025622393
           },
           "Help": {
-            "score": 0.00214677141
+            "score": 0.0021368505
           },
           "None": {
-            "score": 0.27875194
+            "score": 0.2778768
           },
           "Roles": {
-            "score": 0.0273685548
+            "score": 0.0273504611
           },
           "search": {
-            "score": 0.0084077
+            "score": 0.000832980848
           },
           "SpecifyName": {
-            "score": 0.0148377549
+            "score": 0.00770643726
           },
           "Travel": {
-            "score": 0.0039825947
+            "score": 0.00204822514
           },
           "Weather.GetForecast": {
-            "score": 0.009611839
+            "score": 0.009585343
           }
         },
-        "normalizedQuery": "42ski is a part like kb423",
         "sentiment": {
           "label": "neutral",
           "score": 0.5

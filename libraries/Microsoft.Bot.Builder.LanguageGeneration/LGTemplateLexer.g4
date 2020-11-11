@@ -41,11 +41,15 @@ fragment ESCAPE_CHARACTER_FRAGMENT : '\\' ~[\r\n]?;
 fragment IDENTIFIER : (LETTER | NUMBER | '_') (LETTER | NUMBER | '_')*;
 
 fragment OBJECT_DEFINITION
-  : '{' ((WHITESPACE) | ((IDENTIFIER | STRING_LITERAL) ':' ( STRING_LITERAL | ~[{}'"`] | OBJECT_DEFINITION)+))* '}'
+  : '{' (OBJECT_DEFINITION | STRING_LITERAL | ~[{}'"`])* '}'
   ;
   
 fragment EXPRESSION_FRAGMENT
   : '$' '{' (STRING_LITERAL | STRING_INTERPOLATION | OBJECT_DEFINITION | ~[}'"`])+ '}'?
+  ;
+
+fragment NEWLINE_FRAGMENT
+  : '\r'? '\n'
   ;
 
 WS
@@ -53,11 +57,11 @@ WS
   ;
 
 NEWLINE
-  : '\r'? '\n' -> skip
+  : NEWLINE_FRAGMENT -> skip
   ;
 
 COMMENTS
-  : '>' ~('\r'|'\n')* -> skip
+  : '>' ~[\r\n]* -> skip
   ;
 
 DASH
@@ -83,7 +87,7 @@ MULTILINE_PREFIX
   ;
 
 NEWLINE_IN_BODY
-  : '\r'? '\n' { ignoreWS = true;} -> skip, popMode
+  : NEWLINE_FRAGMENT { ignoreWS = true;} -> skip, popMode
   ;
 
 IF
@@ -137,7 +141,7 @@ MULTILINE_EXPRESSION
   ;
 
 MULTILINE_TEXT
-  : (('\r'? '\n') | ~[\r\n])+? -> type(TEXT)
+  : (NEWLINE_FRAGMENT | ~[\r\n])+? -> type(TEXT)
   ;
 
 mode STRUCTURE_NAME_MODE;
@@ -147,7 +151,7 @@ WS_IN_STRUCTURE_NAME
   ;
 
 NEWLINE_IN_STRUCTURE_NAME
-  : '\r'? '\n' { ignoreWS = true;} {beginOfStructureProperty = true;}-> skip, pushMode(STRUCTURE_BODY_MODE)
+  : NEWLINE_FRAGMENT { ignoreWS = true;} {beginOfStructureProperty = true;}-> skip, pushMode(STRUCTURE_BODY_MODE)
   ;
 
 STRUCTURE_NAME
@@ -161,7 +165,7 @@ TEXT_IN_STRUCTURE_NAME
 mode STRUCTURE_BODY_MODE;
 
 STRUCTURED_COMMENTS
-  : '>' ~[\r\n]* '\r'?'\n' { !inStructuredValue && beginOfStructureProperty}? -> skip
+  : '>' ~[\r\n]* NEWLINE_FRAGMENT { !inStructuredValue && beginOfStructureProperty}? -> skip
   ;
 
 WS_IN_STRUCTURE_BODY
@@ -169,7 +173,7 @@ WS_IN_STRUCTURE_BODY
   ;
 
 STRUCTURED_NEWLINE
-  : '\r'? '\n' { ignoreWS = true; inStructuredValue = false; beginOfStructureProperty = true;}
+  : NEWLINE_FRAGMENT { ignoreWS = true; inStructuredValue = false; beginOfStructureProperty = true;}
   ;
 
 STRUCTURED_BODY_END

@@ -189,12 +189,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     {
                         var thresholdScore = DisambiguationScoreThreshold.GetValue(dc.State);
                         var classifyingScore = Math.Round(topScore, 2) - Math.Round(thresholdScore, 2);
-                        var ambigiousResults = results.Where(item => item.Score >= classifyingScore).ToList();
+                        var ambiguousResults = results.Where(item => item.Score >= classifyingScore).ToList();
 
-                        if (ambigiousResults.Count > 1)
+                        if (ambiguousResults.Count > 1)
                         {
-                            // create a RecognizerResult for each ambigious result.
-                            var recognizerResults = ambigiousResults.Select(result => new RecognizerResult()
+                            // create a RecognizerResult for each ambiguous result.
+                            var recognizerResults = ambiguousResults.Select(result => new RecognizerResult()
                             {
                                 Text = text,
                                 AlteredText = result.ClosestText,
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                                 },
                             });
 
-                            // replace RecognizerResult with ChooseIntent => Amibgious recognizerResults as candidates. 
+                            // replace RecognizerResult with ChooseIntent => Ambiguous recognizerResults as candidates.
                             recognizerResult = CreateChooseIntentResult(recognizerResults.ToDictionary(result => Guid.NewGuid().ToString(), result => result));
                         }
                     }
@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 var fullModelPath = Path.GetFullPath(PathUtils.NormalizePath(_modelPath));
 
-                // Create Orchestrator 
+                // Create Orchestrator
                 try
                 {
                     orchestrator = new BotFramework.Orchestrator.Orchestrator(fullModelPath);

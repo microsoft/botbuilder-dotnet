@@ -12,17 +12,17 @@ namespace Microsoft.Bot.Configuration.Tests
     {
         private readonly string testBotFileName = NormalizePath(@"..\..\..\test.bot");
 
-        public static string NormalizePath(string ambigiousPath)
+        public static string NormalizePath(string ambiguousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // map linux/mac sep -> windows
-                return ambigiousPath.Replace("/", "\\");
+                return ambiguousPath.Replace("/", "\\");
             }
             else
             {
                 // map windows sep -> linux/mac
-                return ambigiousPath.Replace("\\", "/");
+                return ambiguousPath.Replace("\\", "/");
             }
         }
 
