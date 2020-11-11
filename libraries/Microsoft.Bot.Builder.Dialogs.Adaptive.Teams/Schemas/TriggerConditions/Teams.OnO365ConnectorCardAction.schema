@@ -5,6 +5,5 @@
     "description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

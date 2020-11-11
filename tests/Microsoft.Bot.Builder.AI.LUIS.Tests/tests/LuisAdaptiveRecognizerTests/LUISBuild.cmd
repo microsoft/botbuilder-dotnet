@@ -1,2 +1,2 @@
 ﻿@echo off
-bf luis:build --in . --authoringKey %LUIS_AUTHORING_KEY% --botName LUISRecognizerTests --dialog %1
+bf luis:build --in . --authoringKey %LUIS_AUTHORING_KEY% --botName LUISRecognizerTests --dialog multiLanguage --out .

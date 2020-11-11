@@ -547,6 +547,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [Fact]
+        public async Task OAuthPromptRecognizeTokenAsync_WithNullTextMessageActivity_DoesNotThrow()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var connectionName = "myConnection";
+            var retryPromptText = "Sorry, invalid input. Please sign in.";
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions() { RetryPrompt = MessageFactory.Text(retryPromptText) }, cancellationToken: cancellationToken);
+                }
+            };
+
+            var messageActivityWithNullText = Activity.CreateMessageActivity();
+
+            await new TestFlow(adapter, botCallbackHandler)
+            .Send("hello")
+            .AssertReply(activity =>
+            {
+                Assert.Single(((Activity)activity).Attachments);
+                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+            })
+            .Send(messageActivityWithNullText)
+            .AssertReply(retryPromptText)
+            .StartTestAsync();
+        }
+
         private async Task OAuthPrompt(IStorage storage)
         {
             var convoState = new ConversationState(storage);

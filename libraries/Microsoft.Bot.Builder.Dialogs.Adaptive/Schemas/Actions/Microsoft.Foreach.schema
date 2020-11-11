@@ -48,7 +48,6 @@
         }
     },
     "required": [
-        "itemsProperty",
-        "actions"
+        "itemsProperty"
     ]
 }

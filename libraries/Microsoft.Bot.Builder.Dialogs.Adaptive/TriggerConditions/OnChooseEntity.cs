@@ -61,13 +61,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public override string GetIdentity()
             => $"{this.GetType().Name}({this.Property}, {this.Entity})";
 
-        /// <summary>
-        /// Get the expression for this rule.
-        /// </summary>
-        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
-            var expressions = new List<Expression> { base.GetExpression() };
+            var expressions = new List<Expression> { base.CreateExpression() };
             if (this.Property != null)
             {
                 expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.property == '{this.Property}'"));

@@ -1,111 +1,167 @@
 {
-  "luis_schema_version": "3.2.0",
-  "versionId": "GeoPeople",
-  "name": "Contoso App V3",
-  "desc": "Default Intents for Azure Bot Service V2",
-  "culture": "en-us",
-  "tokenizerVersion": "1.0.0",
+  "luis_schema_version": "7.0.0",
   "intents": [
     {
-      "name": "Cancel"
+      "name": "Cancel",
+      "features": []
     },
     {
-      "name": "Delivery"
+      "name": "Delivery",
+      "features": []
     },
     {
-      "name": "EntityTests"
+      "name": "EntityTests",
+      "features": []
     },
     {
-      "name": "Greeting"
+      "name": "Greeting",
+      "features": []
     },
     {
-      "name": "Help"
+      "name": "Help",
+      "features": []
     },
     {
-      "name": "None"
+      "name": "None",
+      "features": []
     },
     {
-      "name": "Roles"
+      "name": "Roles",
+      "features": []
     },
     {
-      "name": "search"
+      "name": "search",
+      "features": []
     },
     {
-      "name": "SpecifyName"
+      "name": "SpecifyName",
+      "features": []
     },
     {
-      "name": "Travel"
+      "name": "Travel",
+      "features": []
     },
     {
-      "name": "Weather.GetForecast"
+      "name": "Weather.GetForecast",
+      "features": []
     }
   ],
   "entities": [
     {
       "name": "Name",
+      "children": [],
       "roles": [
         "liker",
         "likee"
-      ]
+      ],
+      "features": []
     },
     {
       "name": "State",
-      "roles": []
+      "children": [],
+      "roles": [],
+      "features": []
     },
     {
       "name": "Weather.Location",
+      "children": [],
       "roles": [
         "source",
         "destination"
-      ]
-    },
+      ],
+      "features": []
+    }
+  ],
+  "hierarchicals": [
     {
       "name": "City",
       "children": [
-        "To",
-        "From"
+        {
+          "name": "To"
+        },
+        {
+          "name": "From"
+        }
       ],
-      "roles": []
+      "roles": [],
+      "features": []
     }
   ],
   "composites": [
     {
       "name": "Address",
       "children": [
-        "number",
-        "State"
+        {
+          "name": "number"
+        },
+        {
+          "name": "State"
+        }
       ],
       "roles": [
         "Source",
         "Destination"
-      ]
+      ],
+      "features": []
     },
     {
       "name": "Composite1",
       "children": [
-        "age",
-        "datetimeV2",
-        "dimension",
-        "email",
-        "money",
-        "number",
-        "percentage",
-        "phonenumber",
-        "temperature"
+        {
+          "name": "age"
+        },
+        {
+          "name": "datetimeV2"
+        },
+        {
+          "name": "dimension"
+        },
+        {
+          "name": "email"
+        },
+        {
+          "name": "money"
+        },
+        {
+          "name": "number"
+        },
+        {
+          "name": "percentage"
+        },
+        {
+          "name": "phonenumber"
+        },
+        {
+          "name": "temperature"
+        }
       ],
-      "roles": []
+      "roles": [],
+      "features": []
     },
     {
       "name": "Composite2",
       "children": [
-        "Airline",
-        "City",
-        "url",
-        "City::From",
-        "City::To",
-        "Weather.Location"
+        {
+          "name": "Airline"
+        },
+        {
+          "name": "City"
+        },
+        {
+          "name": "url"
+        },
+        {
+          "name": "City::From"
+        },
+        {
+          "name": "City::To"
+        },
+        {
+          "name": "Weather.Location"
+        }
       ],
-      "roles": []
+      "roles": [],
+      "features": []
     }
   ],
   "closedLists": [
@@ -136,33 +192,6 @@
       "roles": [
         "Buyer",
         "Seller"
-      ]
-    }
-  ],
-  "patternAnyEntities": [
-    {
-      "name": "person",
-      "roles": [
-        "from",
-        "to"
-      ],
-      "explicitList": []
-    },
-    {
-      "name": "subject",
-      "roles": [
-        "extra"
-      ],
-      "explicitList": []
-    }
-  ],
-  "regex_entities": [
-    {
-      "name": "Part",
-      "regexPattern": "kb[0-9]+",
-      "roles": [
-        "sell",
-        "buy"
       ]
     }
   ],
@@ -255,22 +284,6 @@
       ]
     }
   ],
-  "model_features": [],
-  "regex_features": [],
-  "patterns": [
-    {
-      "pattern": "deliver from {Address:Source} to {Address:Destination}",
-      "intent": "Roles"
-    },
-    {
-      "pattern": "email from {person:from} to {person:to}",
-      "intent": "search"
-    },
-    {
-      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
-      "intent": "search"
-    }
-  ],
   "utterances": [
     {
       "text": "\" i need to know the temperature at bangor , sme \"",
@@ -284,7 +297,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 10,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         }
       ]
     },
@@ -330,7 +344,8 @@
         {
           "entity": "Composite1",
           "startPos": 0,
-          "endPos": 299
+          "endPos": 299,
+          "children": []
         }
       ]
     },
@@ -347,13 +362,15 @@
           "entity": "percentage",
           "role": "minimum",
           "startPos": 0,
-          "endPos": 2
+          "endPos": 2,
+          "children": []
         },
         {
           "entity": "percentage",
           "role": "maximum",
           "startPos": 7,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         }
       ]
     },
@@ -370,13 +387,15 @@
           "entity": "dimension",
           "role": "length",
           "startPos": 0,
-          "endPos": 7
+          "endPos": 7,
+          "children": []
         },
         {
           "entity": "dimension",
           "role": "width",
           "startPos": 17,
-          "endPos": 24
+          "endPos": 24,
+          "children": []
         }
       ]
     },
@@ -388,115 +407,134 @@
           "entity": "dimension",
           "role": "length",
           "startPos": 0,
-          "endPos": 7
+          "endPos": 7,
+          "children": []
         },
         {
           "entity": "dimension",
           "role": "width",
           "startPos": 17,
-          "endPos": 24
+          "endPos": 24,
+          "children": []
         },
         {
           "entity": "percentage",
           "role": "minimum",
           "startPos": 35,
-          "endPos": 36
+          "endPos": 36,
+          "children": []
         },
         {
           "entity": "percentage",
           "role": "maximum",
           "startPos": 41,
-          "endPos": 43
+          "endPos": 43,
+          "children": []
         },
         {
           "entity": "age",
           "role": "begin",
           "startPos": 65,
-          "endPos": 75
+          "endPos": 75,
+          "children": []
         },
         {
           "entity": "age",
           "role": "end",
           "startPos": 81,
-          "endPos": 91
+          "endPos": 91,
+          "children": []
         },
         {
           "entity": "Part",
           "role": "buy",
           "startPos": 119,
-          "endPos": 123
+          "endPos": 123,
+          "children": []
         },
         {
           "entity": "Airline",
           "role": "Buyer",
           "startPos": 173,
-          "endPos": 177
+          "endPos": 177,
+          "children": []
         },
         {
           "entity": "Airline",
           "role": "Seller",
           "startPos": 183,
-          "endPos": 188
+          "endPos": 188,
+          "children": []
         },
         {
           "entity": "Weather.Location",
           "role": "source",
           "startPos": 212,
-          "endPos": 217
+          "endPos": 217,
+          "children": []
         },
         {
           "entity": "Weather.Location",
           "role": "destination",
           "startPos": 226,
-          "endPos": 232
+          "endPos": 232,
+          "children": []
         },
         {
           "entity": "temperature",
           "role": "b",
           "startPos": 314,
-          "endPos": 323
+          "endPos": 323,
+          "children": []
         },
         {
           "entity": "Name",
           "role": "liker",
           "startPos": 329,
-          "endPos": 332
+          "endPos": 332,
+          "children": []
         },
         {
           "entity": "Name",
           "role": "likee",
           "startPos": 340,
-          "endPos": 343
+          "endPos": 343,
+          "children": []
         },
         {
           "entity": "datetimeV2",
           "role": "leave",
           "startPos": 355,
-          "endPos": 357
+          "endPos": 357,
+          "children": []
         },
         {
           "entity": "datetimeV2",
           "role": "arrive",
           "startPos": 370,
-          "endPos": 372
+          "endPos": 372,
+          "children": []
         },
         {
           "entity": "money",
           "role": "min",
           "startPos": 390,
-          "endPos": 393
+          "endPos": 393,
+          "children": []
         },
         {
           "entity": "money",
           "role": "max",
           "startPos": 399,
-          "endPos": 402
+          "endPos": 402,
+          "children": []
         },
         {
           "entity": "email",
           "role": "receiver",
           "startPos": 413,
-          "endPos": 430
+          "endPos": 430,
+          "children": []
         }
       ]
     },
@@ -513,13 +551,15 @@
           "entity": "percentage",
           "role": "minimum",
           "startPos": 0,
-          "endPos": 1
+          "endPos": 1,
+          "children": []
         },
         {
           "entity": "percentage",
           "role": "maximum",
           "startPos": 6,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         }
       ]
     },
@@ -541,13 +581,15 @@
           "entity": "percentage",
           "role": "minimum",
           "startPos": 0,
-          "endPos": 1
+          "endPos": 1,
+          "children": []
         },
         {
           "entity": "percentage",
           "role": "maximum",
           "startPos": 6,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         }
       ]
     },
@@ -574,13 +616,15 @@
           "entity": "percentage",
           "role": "minimum",
           "startPos": 0,
-          "endPos": 1
+          "endPos": 1,
+          "children": []
         },
         {
           "entity": "percentage",
           "role": "maximum",
           "startPos": 6,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         }
       ]
     },
@@ -592,13 +636,15 @@
           "entity": "dimension",
           "role": "length",
           "startPos": 0,
-          "endPos": 5
+          "endPos": 5,
+          "children": []
         },
         {
           "entity": "dimension",
           "role": "width",
           "startPos": 15,
-          "endPos": 20
+          "endPos": 20,
+          "children": []
         }
       ]
     },
@@ -640,13 +686,15 @@
           "entity": "Part",
           "role": "sell",
           "startPos": 16,
-          "endPos": 20
+          "endPos": 20,
+          "children": []
         },
         {
           "entity": "Part",
           "role": "buy",
           "startPos": 26,
-          "endPos": 30
+          "endPos": 30,
+          "children": []
         }
       ]
     },
@@ -658,13 +706,15 @@
           "entity": "age",
           "role": "begin",
           "startPos": 16,
-          "endPos": 27
+          "endPos": 27,
+          "children": []
         },
         {
           "entity": "age",
           "role": "end",
           "startPos": 33,
-          "endPos": 44
+          "endPos": 44,
+          "children": []
         }
       ]
     },
@@ -676,13 +726,15 @@
           "entity": "age",
           "role": "begin",
           "startPos": 16,
-          "endPos": 26
+          "endPos": 26,
+          "children": []
         },
         {
           "entity": "age",
           "role": "end",
           "startPos": 32,
-          "endPos": 42
+          "endPos": 42,
+          "children": []
         }
       ]
     },
@@ -694,13 +746,15 @@
           "entity": "age",
           "role": "begin",
           "startPos": 16,
-          "endPos": 26
+          "endPos": 26,
+          "children": []
         },
         {
           "entity": "age",
           "role": "end",
           "startPos": 32,
-          "endPos": 43
+          "endPos": 43,
+          "children": []
         }
       ]
     },
@@ -712,7 +766,8 @@
           "entity": "age",
           "role": "end",
           "startPos": 32,
-          "endPos": 42
+          "endPos": 42,
+          "children": []
         }
       ]
     },
@@ -734,13 +789,15 @@
           "entity": "personName",
           "role": "child",
           "startPos": 0,
-          "endPos": 11
+          "endPos": 11,
+          "children": []
         },
         {
           "entity": "personName",
           "role": "parent",
           "startPos": 19,
-          "endPos": 31
+          "endPos": 31,
+          "children": []
         }
       ]
     },
@@ -752,25 +809,29 @@
           "entity": "personName",
           "role": "parent",
           "startPos": 0,
-          "endPos": 11
+          "endPos": 11,
+          "children": []
         },
         {
           "entity": "personName",
           "role": "child",
           "startPos": 26,
-          "endPos": 37
+          "endPos": 37,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 47,
-          "endPos": 54
+          "endPos": 54,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 59,
-          "endPos": 64
+          "endPos": 64,
+          "children": []
         }
       ]
     },
@@ -787,13 +848,15 @@
           "entity": "Part",
           "role": "sell",
           "startPos": 12,
-          "endPos": 16
+          "endPos": 16,
+          "children": []
         },
         {
           "entity": "Part",
           "role": "buy",
           "startPos": 22,
-          "endPos": 26
+          "endPos": 26,
+          "children": []
         }
       ]
     },
@@ -805,13 +868,15 @@
           "entity": "Part",
           "role": "sell",
           "startPos": 12,
-          "endPos": 16
+          "endPos": 16,
+          "children": []
         },
         {
           "entity": "Part",
           "role": "buy",
           "startPos": 22,
-          "endPos": 26
+          "endPos": 26,
+          "children": []
         }
       ]
     },
@@ -828,13 +893,15 @@
           "entity": "phonenumber",
           "role": "old",
           "startPos": 7,
-          "endPos": 18
+          "endPos": 18,
+          "children": []
         },
         {
           "entity": "phonenumber",
           "role": "newPhone",
           "startPos": 23,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -846,13 +913,15 @@
           "entity": "phonenumber",
           "role": "old",
           "startPos": 7,
-          "endPos": 18
+          "endPos": 18,
+          "children": []
         },
         {
           "entity": "phonenumber",
           "role": "newPhone",
           "startPos": 23,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -863,22 +932,26 @@
         {
           "entity": "Address",
           "startPos": 8,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 14,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "Address",
           "startPos": 20,
-          "endPos": 27
+          "endPos": 27,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 26,
-          "endPos": 27
+          "endPos": 27,
+          "children": []
         }
       ]
     },
@@ -889,12 +962,14 @@
         {
           "entity": "Address",
           "startPos": 23,
-          "endPos": 30
+          "endPos": 30,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 29,
-          "endPos": 30
+          "endPos": 30,
+          "children": []
         }
       ]
     },
@@ -911,13 +986,15 @@
           "entity": "Airline",
           "role": "Buyer",
           "startPos": 4,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         },
         {
           "entity": "Airline",
           "role": "Seller",
           "startPos": 14,
-          "endPos": 19
+          "endPos": 19,
+          "children": []
         }
       ]
     },
@@ -929,13 +1006,15 @@
           "entity": "Weather.Location",
           "role": "source",
           "startPos": 18,
-          "endPos": 23
+          "endPos": 23,
+          "children": []
         },
         {
           "entity": "Weather.Location",
           "role": "destination",
           "startPos": 32,
-          "endPos": 38
+          "endPos": 38,
+          "children": []
         }
       ]
     },
@@ -947,13 +1026,15 @@
           "entity": "Airline",
           "role": "Buyer",
           "startPos": 4,
-          "endPos": 9
+          "endPos": 9,
+          "children": []
         },
         {
           "entity": "Airline",
           "role": "Seller",
           "startPos": 15,
-          "endPos": 19
+          "endPos": 19,
+          "children": []
         }
       ]
     },
@@ -993,6 +1074,18 @@
       "entities": []
     },
     {
+      "text": "fly from paris, texas to chicago via stork",
+      "intent": "EntityTests",
+      "entities": [
+        {
+          "entity": "Composite2",
+          "startPos": 0,
+          "endPos": 41,
+          "children": []
+        }
+      ]
+    },
+    {
       "text": "forecast in celcius",
       "intent": "Weather.GetForecast",
       "entities": []
@@ -1004,7 +1097,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 4,
-          "endPos": 11
+          "endPos": 11,
+          "children": []
         }
       ]
     },
@@ -1015,7 +1109,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 37,
-          "endPos": 49
+          "endPos": 49,
+          "children": []
         }
       ]
     },
@@ -1026,7 +1121,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 26,
-          "endPos": 42
+          "endPos": 42,
+          "children": []
         }
       ]
     },
@@ -1042,7 +1138,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 19,
-          "endPos": 35
+          "endPos": 35,
+          "children": []
         }
       ]
     },
@@ -1054,13 +1151,15 @@
           "entity": "ordinalV2",
           "role": "startpos",
           "startPos": 8,
-          "endPos": 10
+          "endPos": 10,
+          "children": []
         },
         {
           "entity": "ordinalV2",
           "role": "endpos",
           "startPos": 15,
-          "endPos": 17
+          "endPos": 17,
+          "children": []
         }
       ]
     },
@@ -1072,13 +1171,15 @@
           "entity": "ordinalV2",
           "role": "startpos",
           "startPos": 8,
-          "endPos": 12
+          "endPos": 12,
+          "children": []
         },
         {
           "entity": "ordinalV2",
           "role": "endpos",
           "startPos": 17,
-          "endPos": 20
+          "endPos": 20,
+          "children": []
         }
       ]
     },
@@ -1090,31 +1191,36 @@
           "entity": "ordinalV2",
           "role": "startpos",
           "startPos": 8,
-          "endPos": 19
+          "endPos": 19,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 34,
-          "endPos": 39
+          "endPos": 39,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 44,
-          "endPos": 50
+          "endPos": 50,
+          "children": []
         },
         {
           "entity": "personName",
           "role": "parent",
           "startPos": 56,
-          "endPos": 68
+          "endPos": 68,
+          "children": []
         },
         {
           "entity": "personName",
           "role": "child",
           "startPos": 87,
-          "endPos": 98
+          "endPos": 98,
+          "children": []
         }
       ]
     },
@@ -1145,7 +1251,8 @@
         {
           "entity": "Name",
           "startPos": 6,
-          "endPos": 11
+          "endPos": 11,
+          "children": []
         }
       ]
     },
@@ -1201,7 +1308,8 @@
         {
           "entity": "Name",
           "startPos": 12,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         }
       ]
     },
@@ -1223,19 +1331,22 @@
           "entity": "personName",
           "role": "child",
           "startPos": 27,
-          "endPos": 38
+          "endPos": 38,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 48,
-          "endPos": 54
+          "endPos": 54,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 59,
-          "endPos": 66
+          "endPos": 66,
+          "children": []
         }
       ]
     },
@@ -1247,13 +1358,15 @@
           "entity": "personName",
           "role": "parent",
           "startPos": 0,
-          "endPos": 12
+          "endPos": 12,
+          "children": []
         },
         {
           "entity": "personName",
           "role": "child",
           "startPos": 27,
-          "endPos": 38
+          "endPos": 38,
+          "children": []
         }
       ]
     },
@@ -1284,7 +1397,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 19,
-          "endPos": 30
+          "endPos": 30,
+          "children": []
         }
       ]
     },
@@ -1306,7 +1420,8 @@
           "entity": "url",
           "role": "oldURL",
           "startPos": 0,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         }
       ]
     },
@@ -1317,22 +1432,26 @@
         {
           "entity": "Composite2",
           "startPos": 0,
-          "endPos": 69
+          "endPos": 69,
+          "children": []
         },
         {
           "entity": "City::From",
           "startPos": 42,
-          "endPos": 47
+          "endPos": 47,
+          "children": []
         },
         {
           "entity": "City::To",
           "startPos": 52,
-          "endPos": 58
+          "endPos": 58,
+          "children": []
         },
         {
           "entity": "City",
           "startPos": 64,
-          "endPos": 69
+          "endPos": 69,
+          "children": []
         }
       ]
     },
@@ -1349,7 +1468,8 @@
           "entity": "url",
           "role": "oldURL",
           "startPos": 0,
-          "endPos": 13
+          "endPos": 13,
+          "children": []
         }
       ]
     },
@@ -1365,22 +1485,26 @@
         {
           "entity": "Composite2",
           "startPos": 0,
-          "endPos": 68
+          "endPos": 68,
+          "children": []
         },
         {
           "entity": "City::From",
           "startPos": 41,
-          "endPos": 47
+          "endPos": 47,
+          "children": []
         },
         {
           "entity": "City::To",
           "startPos": 52,
-          "endPos": 57
+          "endPos": 57,
+          "children": []
         },
         {
           "entity": "City",
           "startPos": 63,
-          "endPos": 68
+          "endPos": 68,
+          "children": []
         }
       ]
     },
@@ -1396,22 +1520,26 @@
         {
           "entity": "Composite2",
           "startPos": 0,
-          "endPos": 70
+          "endPos": 70,
+          "children": []
         },
         {
           "entity": "City::From",
           "startPos": 42,
-          "endPos": 48
+          "endPos": 48,
+          "children": []
         },
         {
           "entity": "City::To",
           "startPos": 53,
-          "endPos": 58
+          "endPos": 58,
+          "children": []
         },
         {
           "entity": "City",
           "startPos": 64,
-          "endPos": 70
+          "endPos": 70,
+          "children": []
         }
       ]
     },
@@ -1422,22 +1550,26 @@
         {
           "entity": "Composite2",
           "startPos": 0,
-          "endPos": 79
+          "endPos": 79,
+          "children": []
         },
         {
           "entity": "City::From",
           "startPos": 42,
-          "endPos": 48
+          "endPos": 48,
+          "children": []
         },
         {
           "entity": "City::To",
           "startPos": 53,
-          "endPos": 58
+          "endPos": 58,
+          "children": []
         },
         {
           "entity": "City",
           "startPos": 64,
-          "endPos": 70
+          "endPos": 70,
+          "children": []
         }
       ]
     },
@@ -1448,12 +1580,14 @@
         {
           "entity": "Composite2",
           "startPos": 0,
-          "endPos": 55
+          "endPos": 55,
+          "children": []
         },
         {
           "entity": "Weather.Location",
           "startPos": 49,
-          "endPos": 55
+          "endPos": 55,
+          "children": []
         }
       ]
     },
@@ -1464,7 +1598,8 @@
         {
           "entity": "Name",
           "startPos": 5,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         }
       ]
     },
@@ -1481,7 +1616,8 @@
           "entity": "temperature",
           "role": "a",
           "startPos": 15,
-          "endPos": 24
+          "endPos": 24,
+          "children": []
         }
       ]
     },
@@ -1493,13 +1629,15 @@
           "entity": "temperature",
           "role": "a",
           "startPos": 15,
-          "endPos": 24
+          "endPos": 24,
+          "children": []
         },
         {
           "entity": "temperature",
           "role": "b",
           "startPos": 30,
-          "endPos": 39
+          "endPos": 39,
+          "children": []
         }
       ]
     },
@@ -1510,12 +1648,14 @@
         {
           "entity": "Address",
           "startPos": 15,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 21,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         }
       ]
     },
@@ -1526,7 +1666,8 @@
         {
           "entity": "City::To",
           "startPos": 20,
-          "endPos": 26
+          "endPos": 26,
+          "children": []
         }
       ]
     },
@@ -1537,7 +1678,8 @@
         {
           "entity": "City::From",
           "startPos": 21,
-          "endPos": 27
+          "endPos": 27,
+          "children": []
         }
       ]
     },
@@ -1548,7 +1690,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 34,
-          "endPos": 45
+          "endPos": 45,
+          "children": []
         }
       ]
     },
@@ -1564,12 +1707,14 @@
         {
           "entity": "City::From",
           "startPos": 22,
-          "endPos": 28
+          "endPos": 28,
+          "children": []
         },
         {
           "entity": "City::To",
           "startPos": 33,
-          "endPos": 38
+          "endPos": 38,
+          "children": []
         }
       ]
     },
@@ -1585,12 +1730,14 @@
         {
           "entity": "City::From",
           "startPos": 21,
-          "endPos": 25
+          "endPos": 25,
+          "children": []
         },
         {
           "entity": "City::To",
           "startPos": 30,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -1612,13 +1759,15 @@
           "entity": "Name",
           "role": "liker",
           "startPos": 0,
-          "endPos": 3
+          "endPos": 3,
+          "children": []
         },
         {
           "entity": "Name",
           "role": "likee",
           "startPos": 11,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         }
       ]
     },
@@ -1635,13 +1784,15 @@
           "entity": "datetimeV2",
           "role": "leave",
           "startPos": 6,
-          "endPos": 8
+          "endPos": 8,
+          "children": []
         },
         {
           "entity": "datetimeV2",
           "role": "arrive",
           "startPos": 21,
-          "endPos": 23
+          "endPos": 23,
+          "children": []
         }
       ]
     },
@@ -1658,13 +1809,15 @@
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 5,
-          "endPos": 12
+          "endPos": 12,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 17,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         }
       ]
     },
@@ -1676,13 +1829,15 @@
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 5,
-          "endPos": 11
+          "endPos": 11,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 16,
-          "endPos": 21
+          "endPos": 21,
+          "children": []
         }
       ]
     },
@@ -1694,13 +1849,15 @@
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 5,
-          "endPos": 10
+          "endPos": 10,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 15,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         }
       ]
     },
@@ -1712,13 +1869,15 @@
           "entity": "geographyV2",
           "role": "startloc",
           "startPos": 5,
-          "endPos": 10
+          "endPos": 10,
+          "children": []
         },
         {
           "entity": "geographyV2",
           "role": "endloc",
           "startPos": 15,
-          "endPos": 21
+          "endPos": 21,
+          "children": []
         }
       ]
     },
@@ -1729,7 +1888,8 @@
         {
           "entity": "Name",
           "startPos": 11,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         }
       ]
     },
@@ -1761,13 +1921,15 @@
           "entity": "money",
           "role": "min",
           "startPos": 12,
-          "endPos": 13
+          "endPos": 13,
+          "children": []
         },
         {
           "entity": "money",
           "role": "max",
           "startPos": 19,
-          "endPos": 23
+          "endPos": 23,
+          "children": []
         }
       ]
     },
@@ -1779,13 +1941,15 @@
           "entity": "money",
           "role": "min",
           "startPos": 12,
-          "endPos": 13
+          "endPos": 13,
+          "children": []
         },
         {
           "entity": "money",
           "role": "max",
           "startPos": 19,
-          "endPos": 21
+          "endPos": 21,
+          "children": []
         }
       ]
     },
@@ -1797,13 +1961,15 @@
           "entity": "money",
           "role": "min",
           "startPos": 12,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "money",
           "role": "max",
           "startPos": 21,
-          "endPos": 24
+          "endPos": 24,
+          "children": []
         }
       ]
     },
@@ -1824,12 +1990,14 @@
         {
           "entity": "Address",
           "startPos": 18,
-          "endPos": 25
+          "endPos": 25,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 24,
-          "endPos": 25
+          "endPos": 25,
+          "children": []
         }
       ]
     },
@@ -1840,12 +2008,14 @@
         {
           "entity": "Address",
           "startPos": 22,
-          "endPos": 29
+          "endPos": 29,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 28,
-          "endPos": 29
+          "endPos": 29,
+          "children": []
         }
       ]
     },
@@ -1871,7 +2041,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 14,
-          "endPos": 20
+          "endPos": 20,
+          "children": []
         }
       ]
     },
@@ -1883,13 +2054,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 22,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -1901,13 +2074,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 22,
-          "endPos": 35
+          "endPos": 35,
+          "children": []
         }
       ]
     },
@@ -1919,13 +2094,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 18
+          "endPos": 18,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 25,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -1937,13 +2114,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 29,
-          "endPos": 42
+          "endPos": 42,
+          "children": []
         }
       ]
     },
@@ -1955,13 +2134,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 17
+          "endPos": 17,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 24,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -1973,13 +2154,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 22,
-          "endPos": 33
+          "endPos": 33,
+          "children": []
         }
       ]
     },
@@ -1991,13 +2174,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 21,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -2009,13 +2194,15 @@
           "entity": "email",
           "role": "receiver",
           "startPos": 5,
-          "endPos": 15
+          "endPos": 15,
+          "children": []
         },
         {
           "entity": "email",
           "role": "sender",
           "startPos": 22,
-          "endPos": 37
+          "endPos": 37,
+          "children": []
         }
       ]
     },
@@ -2026,7 +2213,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 26,
-          "endPos": 30
+          "endPos": 30,
+          "children": []
         }
       ]
     },
@@ -2037,7 +2225,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 24,
-          "endPos": 30
+          "endPos": 30,
+          "children": []
         }
       ]
     },
@@ -2068,7 +2257,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 15,
-          "endPos": 19
+          "endPos": 19,
+          "children": []
         }
       ]
     },
@@ -2079,12 +2269,14 @@
         {
           "entity": "Address",
           "startPos": 15,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 21,
-          "endPos": 22
+          "endPos": 22,
+          "children": []
         }
       ]
     },
@@ -2100,7 +2292,8 @@
         {
           "entity": "Name",
           "startPos": 8,
-          "endPos": 12
+          "endPos": 12,
+          "children": []
         }
       ]
     },
@@ -2111,12 +2304,14 @@
         {
           "entity": "Address",
           "startPos": 21,
-          "endPos": 28
+          "endPos": 28,
+          "children": []
         },
         {
           "entity": "State",
           "startPos": 27,
-          "endPos": 28
+          "endPos": 28,
+          "children": []
         }
       ]
     },
@@ -2128,13 +2323,15 @@
           "entity": "Name",
           "role": "liker",
           "startPos": 0,
-          "endPos": 2
+          "endPos": 2,
+          "children": []
         },
         {
           "entity": "Name",
           "role": "likee",
           "startPos": 10,
-          "endPos": 14
+          "endPos": 14,
+          "children": []
         }
       ]
     },
@@ -2145,7 +2342,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 57,
-          "endPos": 61
+          "endPos": 61,
+          "children": []
         }
       ]
     },
@@ -2156,7 +2354,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 41,
-          "endPos": 46
+          "endPos": 46,
+          "children": []
         }
       ]
     },
@@ -2167,7 +2366,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 29,
-          "endPos": 39
+          "endPos": 39,
+          "children": []
         }
       ]
     },
@@ -2203,7 +2403,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 27,
-          "endPos": 39
+          "endPos": 39,
+          "children": []
         }
       ]
     },
@@ -2214,7 +2415,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 23,
-          "endPos": 29
+          "endPos": 29,
+          "children": []
         }
       ]
     },
@@ -2225,7 +2427,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 36,
-          "endPos": 41
+          "endPos": 41,
+          "children": []
         }
       ]
     },
@@ -2236,7 +2439,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 25,
-          "endPos": 34
+          "endPos": 34,
+          "children": []
         }
       ]
     },
@@ -2247,7 +2451,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 37,
-          "endPos": 51
+          "endPos": 51,
+          "children": []
         }
       ]
     },
@@ -2263,7 +2468,8 @@
         {
           "entity": "Weather.Location",
           "startPos": 22,
-          "endPos": 27
+          "endPos": 27,
+          "children": []
         }
       ]
     },
@@ -2278,5 +2484,58 @@
       "entities": []
     }
   ],
-  "settings": []
+  "versionId": "0.1",
+  "name": "Contoso App V3",
+  "desc": "Default Intents for Azure Bot Service V2",
+  "culture": "en-us",
+  "tokenizerVersion": "1.0.0",
+  "patternAnyEntities": [
+    {
+      "name": "person",
+      "roles": [
+        "from",
+        "to"
+      ],
+      "explicitList": []
+    },
+    {
+      "name": "subject",
+      "roles": [
+        "extra"
+      ],
+      "explicitList": []
+    }
+  ],
+  "regex_entities": [
+    {
+      "name": "Part",
+      "regexPattern": "kb[0-9]+",
+      "roles": [
+        "sell",
+        "buy"
+      ]
+    }
+  ],
+  "phraselists": [],
+  "regex_features": [],
+  "patterns": [
+    {
+      "pattern": "deliver from {Address:Source} to {Address:Destination}",
+      "intent": "Roles"
+    },
+    {
+      "pattern": "email from {person:from} to {person:to}",
+      "intent": "search"
+    },
+    {
+      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
+      "intent": "search"
+    }
+  ],
+  "settings": [
+    {
+      "name": "UseAllTrainingData",
+      "value": "true"
+    }
+  ]
 }

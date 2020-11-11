@@ -13,7 +13,7 @@
   },
   "intents": {
     "EntityTests": {
-      "score": 0.149930492
+      "score": 0.466911465
     }
   },
   "sentiment": {
@@ -50,7 +50,7 @@
       },
       "topScoringIntent": {
         "intent": "EntityTests",
-        "score": 0.149930492
+        "score": 0.466911465
       }
     }
   },
