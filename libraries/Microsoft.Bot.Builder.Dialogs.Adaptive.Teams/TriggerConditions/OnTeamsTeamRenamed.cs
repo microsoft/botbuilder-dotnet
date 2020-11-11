@@ -27,10 +27,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
         {
         }
 
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // if teams channel and eventType == 'teamRenamed'
-            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.ChannelId == '{Channels.Msteams}' && {TurnPath.Activity}.channelData.eventType == 'teamRenamed'"), base.GetExpression());
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.ChannelId == '{Channels.Msteams}' && {TurnPath.Activity}.channelData.eventType == 'teamRenamed'"), base.CreateExpression());
         }
     }
 }
