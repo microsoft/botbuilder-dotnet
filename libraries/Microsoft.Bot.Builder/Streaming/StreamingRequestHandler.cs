@@ -241,6 +241,14 @@ namespace Microsoft.Bot.Builder.Streaming
             try
             {
                 var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+                var conversationId = activity?.Conversation?.Id;
+
+                // An Activity with Conversation.Id is required.
+                if (activity == null || string.IsNullOrEmpty(conversationId))
+                {
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return response;
+                }
 
                 // All activities received by this StreamingRequestHandler will originate from the same channel, but we won't
                 // know what that channel is until we've received the first request.
@@ -251,11 +259,11 @@ namespace Microsoft.Bot.Builder.Streaming
 
                 // If this is the first time the handler has seen this conversation it needs to be added to the dictionary so the
                 // adapter is able to route requests to the correct handler.
-                if (!HasConversation(activity.Conversation.Id))
+                if (!HasConversation(conversationId))
                 {
                     // Ignore the result, since the goal is simply to ensure the Conversation.Id is in _conversations.
                     // If some other thread added it already, does not matter.
-                    _conversations.TryAdd(activity.Conversation.Id, DateTime.Now);
+                    _conversations.TryAdd(conversationId, DateTime.Now);
                 }
 
                 /*
