@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             var response = await handler.ProcessRequestAsync(testRequest);
 
             // Assert
-            Assert.Equal(400, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
