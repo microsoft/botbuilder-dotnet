@@ -214,6 +214,7 @@
     <ClInclude Include="..\antlr4-runtime\Vocabulary.h" />
     <ClInclude Include="..\antlr4-runtime\WritableToken.h" />
     <ClInclude Include="..\BuiltinFunctions\Add.h" />
+    <ClInclude Include="..\BuiltinFunctions\Subtract.h" />
     <ClInclude Include="..\Code\pch.h" />
     <ClInclude Include="..\Parser\Constant.h" />
     <ClInclude Include="..\Parser\Expression.h" />
@@ -231,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\BuiltinFunctions\Add.cpp" />
+    <ClCompile Include="..\BuiltinFunctions\Subtract.cpp" />
     <ClCompile Include="..\Code\pch.cpp" />
     <ClCompile Include="..\Parser\Constant.cpp" />
     <ClCompile Include="..\Parser\Expression.cpp" />
@@ -239,6 +241,7 @@
     <ClCompile Include="..\Parser\ExpressionAntlrParserBaseVisitor.cpp" />
     <ClCompile Include="..\Parser\ExpressionAntlrParserVisitor.cpp" />
     <ClCompile Include="..\Parser\ExpressionEvaluator.cpp" />
+    <ClCompile Include="..\Parser\ExpressionEvaluatorWithArgs.cpp" />
     <ClCompile Include="..\Parser\ExpressionFunctions.cpp" />
     <ClCompile Include="..\Parser\ExpressionParser.cpp" />
     <ClCompile Include="..\Parser\ExpressionType.cpp" />

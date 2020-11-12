@@ -3,11 +3,11 @@
 
 namespace AdaptiveExpressions_BuiltinFunctions
 {
-    class Add : public ExpressionEvaluatorWithArgs
+    class Subtract : public ExpressionEvaluatorWithArgs
     {
     public:
-        Add();
-        static std::any EvalAdd(std::any a, std::any b);
+        Subtract();
+        static std::any EvalSubtract(std::any a, std::any b);
         void ValidateExpression(Expression* expression);
 
     private:

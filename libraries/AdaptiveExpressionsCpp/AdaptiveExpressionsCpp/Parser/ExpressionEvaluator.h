@@ -12,21 +12,17 @@ class ExpressionEvaluator
 public:
     ExpressionEvaluator(
         std::string type,
-        EvaluateExpressionLambda evaluator,
-        ReturnType returnType = ReturnType::Object,
-        EvaluateExpressionValidatorFunction validator = nullptr);
+        ReturnType returnType = ReturnType::Object);
 
-    ValueErrorTuple TryEvaluate(Expression* expression, void* state, void* options);
-    void ValidateExpression(Expression* expression);
+    virtual ValueErrorTuple TryEvaluate(Expression* expression, void* state, void* options) = 0;
+    virtual void ValidateExpression(Expression* expression) = 0;
 
     void setReturnType(ReturnType returnType);
     ReturnType getReturnType();
-    
-    std::string m_type;
-    
-    EvaluateExpressionLambda m_evaluator;
-    EvaluateExpressionValidatorFunction m_validator;
 
-protected:
+    std::string m_type;
+
+
+
     ReturnType m_returnType{};
 };

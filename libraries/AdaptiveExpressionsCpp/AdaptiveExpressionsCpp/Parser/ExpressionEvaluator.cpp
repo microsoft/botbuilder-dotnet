@@ -2,24 +2,13 @@
 // Licensed under the MIT License.
 
 #include "ExpressionEvaluator.h"
+#include "../Parser/FunctionUtils.h"
+#include "../BuiltinFunctions/Subtract.h"
 
-ExpressionEvaluator::ExpressionEvaluator(std::string type, EvaluateExpressionLambda evaluator, ReturnType returnType, EvaluateExpressionValidatorFunction validator)
+ExpressionEvaluator::ExpressionEvaluator(std::string type, ReturnType returnType)
 {
     m_type = type;
-    m_evaluator = evaluator;
     m_returnType = returnType;
-    m_validator = validator;
-}
-
-ValueErrorTuple ExpressionEvaluator::TryEvaluate(Expression* expression, void* state, void* options)
-{ 
-    ValueErrorTuple valueAndError = m_evaluator(expression, state, options);
-    return valueAndError;
-}
-
-void ExpressionEvaluator::ValidateExpression(Expression* expression)
-{
-    m_validator(expression);
 }
 
 void ExpressionEvaluator::setReturnType(ReturnType returnType)
@@ -31,3 +20,4 @@ ReturnType ExpressionEvaluator::getReturnType()
 {
     return m_returnType;
 }
+

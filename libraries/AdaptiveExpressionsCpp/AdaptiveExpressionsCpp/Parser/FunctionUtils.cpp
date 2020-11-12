@@ -105,57 +105,6 @@ std::string FunctionUtils::VerifyNumberOrStringOrNull(std::any value, Expression
     return error;
 }
 
-ValueErrorTuple FunctionUtils::ReverseApplySequenceWithError(std::vector<std::any> args, void* verify)
-{
-    std::vector<std::any> binaryArgs(2);
-    std::any sofar = args[0];
-    for (auto i = 1; i < args.size(); ++i)
-    {
-        binaryArgs[0] = sofar;
-        binaryArgs[1] = args[i];
-
-        ValueErrorTuple resultAndError = AdaptiveExpressions_BuiltinFunctions::Add::ReverseEvaluatorInternal(binaryArgs);
-        if (!resultAndError.second.empty())
-        {
-            return resultAndError;
-        }
-        else
-        {
-            sofar = resultAndError.first;
-        }
-    }
-
-    return ValueErrorTuple(sofar, std::string());
-}
-
-ValueErrorTuple FunctionUtils::ReverseApplyWithError(Expression* expression, void* state, void* options)
-{
-    std::any value;
-    std::string error;
-    void* verify = nullptr;
-    ValueErrorTuple argsAndError = EvaluateChildren(expression, state, options, verify);
-    if (argsAndError.second.empty())
-    {
-        std::vector<std::any> args = std::any_cast<std::vector<std::any>>(argsAndError.first);
-
-        try
-        {
-            ValueErrorTuple valueAndError = ReverseApplySequenceWithError(args, nullptr);
-            value = valueAndError.first;
-        }
-#pragma warning disable CA1031 // Do not catch general exception types (capture any exception and return it in the error)
-        catch (std::exception e)
-#pragma warning restore CA1031 // Do not catch general exception types
-        {
-            error = std::string(e.what());
-        }
-    }
-
-    value = ResolveValue(value);
-
-    return ValueErrorTuple(value, error);
-}
-
 EvaluateExpressionLambda FunctionUtils::ApplyWithError(std::function<ValueErrorTuple(std::vector<std::any>)> f, void* verify)
 {
     return [&](Expression* expression, void* state, void* options)
