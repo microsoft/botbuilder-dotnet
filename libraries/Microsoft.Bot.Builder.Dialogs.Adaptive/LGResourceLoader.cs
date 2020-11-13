@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return string.Empty;
             }
 
-            throw new Exception($"there is no locale fallback for {locale}");
+            throw new InvalidOperationException($"there is no locale fallback for {locale}");
         }
 
         /// <summary>

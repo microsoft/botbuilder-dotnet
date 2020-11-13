@@ -37,6 +37,8 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
+  skipComponentGovernanceDetection: true # Disables unnecessary Component Governanace Detection step 
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureDeploymentPassword: define this in Azure
 #  AzureDeploymentUser: define this in Azure

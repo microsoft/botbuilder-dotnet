@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 if (!string.IsNullOrEmpty(this.Id))
                 {
-                    throw new Exception($"{Id}:{err.Message}");
+                    throw new InvalidOperationException($"{Id}:{err.Message}");
                 }
 
                 throw;

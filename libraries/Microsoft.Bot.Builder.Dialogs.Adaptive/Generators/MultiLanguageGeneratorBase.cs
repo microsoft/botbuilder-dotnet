@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             if (fallbackLocales.Count == 0)
             {
-                throw new Exception($"No supported language found for {targetLocale}");
+                throw new InvalidOperationException($"No supported language found for {targetLocale}");
             }
 
             var generators = new List<LanguageGenerator>();
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             if (generators.Count == 0)
             {
-                throw new Exception($"No generator found for language {targetLocale}");
+                throw new InvalidOperationException($"No generator found for language {targetLocale}");
             }
 
             var errors = new List<string>();
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
             }
 
-            throw new Exception(string.Join(",\n", errors.Distinct()));
+            throw new InvalidOperationException(string.Join(",\n", errors.Distinct()));
         }
     }
 }

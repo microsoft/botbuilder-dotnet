@@ -19,14 +19,15 @@ variables:
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
-#  DotNetCoverallsToken: define this in Azure
-#  GitHubCommentApiKey: define this in Azure
-#  DisableApiCompatibityValidation: (optional) define this in Azure
+  IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   ReleasePackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
+#  DotNetCoverallsToken: define this in Azure
+#  GitHubCommentApiKey: define this in Azure
+#  DisableApiCompatibityValidation: (optional) define this in Azure
 
 # The following 2 stages run multi-configuration, multi-agent parallel jobs.
 # Debug-Windows/Release-Windows => Builds everything in Debug/Release + the ASP.NET Desktop.
@@ -70,6 +71,8 @@ stages:
 - stage: API_Compatibility_Validation
   condition: ne(variables['DisableApiCompatibityValidation'], 'true')
   dependsOn: Build
+  variables:
+    skipComponentGovernanceDetection: true # the task is already injected into the build jobs, so unnecessary here.
   jobs:
   - job: generate_multiconfig_var
     steps:

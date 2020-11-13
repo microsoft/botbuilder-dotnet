@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("from c.en.lg", result);
 
             // there is no 'greeting' template in b.en-us.lg, no more fallback to b.lg
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
             Assert.Contains("greeting does not have an evaluator", ex.Message);
 
             resource = resourceExplorer.GetResource("a.lg") as FileResource;

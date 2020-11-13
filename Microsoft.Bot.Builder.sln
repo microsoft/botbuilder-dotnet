@@ -114,6 +114,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		bot_icon.png = bot_icon.png
 		BotBuilder-DotNet.ruleset = BotBuilder-DotNet.ruleset
 		CodeCoverage.runsettings = CodeCoverage.runsettings
+		libraries\copySchemas.cmd = libraries\copySchemas.cmd
 		Directory.Build.props = Directory.Build.props
 		tests\tests.schema = tests\tests.schema
 	EndProjectSection

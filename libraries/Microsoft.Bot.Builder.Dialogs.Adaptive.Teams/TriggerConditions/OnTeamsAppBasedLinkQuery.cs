@@ -23,10 +23,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
         {
         }
 
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // if name is 'composeExtension/queryLink'
-            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.name == 'composeExtension/queryLink'"), base.GetExpression());
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.name == 'composeExtension/queryLink'"), base.CreateExpression());
         }
     }
 }
