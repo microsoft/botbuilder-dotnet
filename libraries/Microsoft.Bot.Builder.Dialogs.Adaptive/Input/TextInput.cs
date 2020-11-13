@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
             if (!(input is string strInput))
             {
-                return Task.FromResult(InputState.Unrecognized);
+                return Task.FromResult(InputState.Invalid);
             }
             
             if (this.OutputFormat != null)

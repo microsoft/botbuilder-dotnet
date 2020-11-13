@@ -27,6 +27,7 @@
                                 "property": "user.name",
                                 "prompt": "Hello, what is your name?",
                                 "unrecognizedPrompt": "How should I call you?",
+                                "invalidPrompt": "That does not soud like a name",
                                 "value": "=json(`{'foo': '$firstName','item': '$lastName'}`)"
                             }
                         ]
@@ -44,7 +45,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "How should I call you?"
+            "text": "That does not soud like a name"
         }
     ]
 }
