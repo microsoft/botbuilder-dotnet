@@ -31,6 +31,8 @@ namespace Microsoft.Bot.Builder.Runtime
                 TelemetryMiddlewareBuilder.Kind);
             yield return new DeclarativeType<TranscriptLoggerMiddlewareBuilder>(
                 TranscriptLoggerMiddlewareBuilder.Kind);
+            yield return new DeclarativeType<RemoveRecipientMentionMiddlewareBuilder>(
+                RemoveRecipientMentionMiddlewareBuilder.Kind);
 
             // Transcript Logger builders
             yield return new DeclarativeType<FileTranscriptLoggerBuilder>(
