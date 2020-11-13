@@ -27,13 +27,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Gets or sets the id for the recognizer.
         /// </summary>
         /// <value>
-        /// The id for the recognizer.
+        /// The id for the recognizer.  Useful for looking up specific recognizer in multiple recognizers scenario.
         /// </value>
         [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the full path to the NLR model to use.
+        /// Gets or sets the folder path to Orchestrator base model to use.
         /// </summary>
         /// <value>
         /// Model path.
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public string ModelPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the full path to the snapshot to use.
+        /// Gets or sets the full path to Orchestrator snapshot file to use.
         /// </summary>
         /// <value>
         /// Snapshot path.

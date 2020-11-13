@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         }
 
         /// <summary>
-        /// Gets or sets the full path to the NLR model to use.
+        /// Gets or sets the folder path to Orchestrator base model to use.
         /// </summary>
         /// <value>
         /// Model path.
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public StringExpression ModelPath { get; set; } = "=settings.orchestrator.modelPath";
 
         /// <summary>
-        /// Gets or sets the full path to the snapshot to use.
+        /// Gets or sets the full path to Orchestrator snapshot file to use.
         /// </summary>
         /// <value>
         /// Snapshot path.
