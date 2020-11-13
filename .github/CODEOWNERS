@@ -126,6 +126,10 @@
 /tests/Microsoft.Bot.Builder.Tests/Teams/**                                         @microsoft/bf-teams
 /tests/Teams/**                                                                     @microsoft/bf-teams
 
+# Runtime
+/libraries/Microsoft.Bot.Builder.Runtime/**                                         @microsoft/bf-runtime
+/tests/Microsoft.Bot.Builder.Runtime.Tests/**                                       @microsoft/bf-runtime
+
 # Ownership by specific files or file types
 # This section MUST stay at the bottom of the CODEOWNERS file. For more information, see
 # https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#example-of-a-codeowners-file
