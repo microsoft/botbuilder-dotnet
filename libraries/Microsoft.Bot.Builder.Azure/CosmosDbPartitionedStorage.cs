@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Bot.Builder.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -17,6 +19,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// </summary>
     public class CosmosDbPartitionedStorage : IStorage, IDisposable
     {
+        private const int MaxDepthAllowed = 127;
         private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
         private Container _container;
@@ -201,28 +204,47 @@ namespace Microsoft.Bot.Builder.Azure
                 };
 
                 var etag = (change.Value as IStoreItem)?.ETag;
-                if (etag == null || etag == "*")
+
+                try
                 {
-                    // if new item or * then insert or replace unconditionally
-                    await _container.UpsertItemAsync(
-                            documentChange,
-                            GetPartitionKey(documentChange.PartitionKey),
-                            cancellationToken: cancellationToken)
-                        .ConfigureAwait(false);
+                    if (etag == null || etag == "*")
+                    {
+                        // if new item or * then insert or replace unconditionally
+                        await _container.UpsertItemAsync(
+                                documentChange,
+                                GetPartitionKey(documentChange.PartitionKey),
+                                cancellationToken: cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    else if (etag.Length > 0)
+                    {
+                        // if we have an etag, do opt. concurrency replace
+                        await _container.UpsertItemAsync(
+                                documentChange,
+                                GetPartitionKey(documentChange.PartitionKey),
+                                new ItemRequestOptions() { IfMatchEtag = etag, },
+                                cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        throw new Exception("etag empty");
+                    }
                 }
-                else if (etag.Length > 0)
+                catch (CosmosException ex)
                 {
-                    // if we have an etag, do opt. concurrency replace
-                    await _container.UpsertItemAsync(
-                            documentChange,
-                            GetPartitionKey(documentChange.PartitionKey),
-                            new ItemRequestOptions() { IfMatchEtag = etag, },
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                else
-                {
-                    throw new Exception("etag empty");
+                    // This check could potentially be performed before even attempting to upsert the item
+                    // so that a request wouldn't be made to Cosmos if it's expected to fail.
+                    // However, performing the check here ensures that this custom exception is only thrown
+                    // if Cosmos returns an error first.
+                    // This way, the nesting limit is not imposed on the Bot Framework side
+                    // and no exception will be thrown if the limit is eventually changed on the Cosmos side.
+                    if (GetNestingErrorMessage(json) is string message)
+                    {
+                        throw new BotStateException(message, ex);
+                    }
+
+                    throw;
                 }
             }
         }
@@ -377,6 +399,44 @@ namespace Microsoft.Bot.Builder.Azure
 
             _container = containerResponse.Container;
         }
+
+        private string GetNestingErrorMessage(JObject json)
+        {
+            using var reader = new JTokenReader(json);
+
+            while (reader.Read())
+            {
+                if (reader.Depth > MaxDepthAllowed)
+                {
+                    var errorMessage = $"Maximum nesting depth of {MaxDepthAllowed} exceeded.";
+
+                    if (IsInDialogState(json.SelectToken(reader.Path)))
+                    {
+                        errorMessage += " This is most likely caused by recursive component dialogs."
+                            + " Try reworking your dialog code to make sure it does not keep dialogs on the stack that it's not using."
+                            + " For example, consider using ReplaceDialogAsync instead of BeginDialogAsync in some cases.";
+                    }
+                    else
+                    {
+                        errorMessage += " Please check your data for signs of unintended recursion.";
+                    }
+
+                    return errorMessage;
+                }
+            }
+
+            return null;
+        }
+
+        private bool IsInDialogState(JToken jToken) => jToken
+            .Ancestors()
+            .Where(ancestor => ancestor is JProperty prop && prop.Name == "dialogStack")
+            .Any(dialogStackProperty => dialogStackProperty?
+                .Parent["$type"]?
+                .ToString()
+                .StartsWith(
+                    "Microsoft.Bot.Builder.Dialogs.DialogState",
+                    StringComparison.OrdinalIgnoreCase) is true);
 
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
