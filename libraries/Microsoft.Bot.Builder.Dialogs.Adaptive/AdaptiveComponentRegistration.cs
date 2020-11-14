@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<DeleteActivity>(DeleteActivity.Kind);
             yield return new DeclarativeType<GetActivityMembers>(GetActivityMembers.Kind);
             yield return new DeclarativeType<GetConversationMembers>(GetConversationMembers.Kind);
+            yield return new DeclarativeType<GetConversationReference>(GetConversationReference.Kind);
             yield return new DeclarativeType<SignOutUser>(SignOutUser.Kind);
             yield return new DeclarativeType<TelemetryTrackEventAction>(TelemetryTrackEventAction.Kind);
             yield return new DeclarativeType<ContinueConversation>(ContinueConversation.Kind);

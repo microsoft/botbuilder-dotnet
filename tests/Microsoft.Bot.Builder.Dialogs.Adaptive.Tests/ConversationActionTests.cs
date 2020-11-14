@@ -9,13 +9,14 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    public class ContinuationTests
+    public class ConversationActionTests
     {
         [Fact]
         public async Task ContinueConversationLaterTests()
@@ -97,6 +98,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             cr2.ActivityId = null;
             crReceived.ActivityId = null;
             Assert.Equal(JsonConvert.SerializeObject(cr2), JsonConvert.SerializeObject(crReceived));
+        }
+
+        [Fact]
+        public async Task GetConversationReferenceTest()
+        {
+            var conv1 = $"{nameof(ContinueConversationTests)}1";
+            var cr1 = TestAdapter.CreateConversation(conv1);
+            var adapter = new TestAdapter(cr1)
+                   .UseStorage(new MemoryStorage())
+                   .UseBotState(new ConversationState(new MemoryStorage()), new UserState(new MemoryStorage()));
+
+            var queueStorage = new MockQueue();
+            var dm = new DialogManager(new AdaptiveDialog()
+            {
+                Triggers = new List<OnCondition>()
+                    {
+                        new OnMessageActivity()
+                        {
+                            Actions = new List<Dialog>()
+                            {
+                                new GetConversationReference()
+                                {
+                                    Property = "$cr"
+                                },
+                                new AssertCondition() { Condition = "$cr.channelId == 'test' " },
+                                new AssertCondition() { Condition = $"$cr.conversation.id == '{cr1.Conversation.Id}' " },
+                                new AssertCondition() { Condition = $"$cr.conversation.id == turn.activity.conversation.id" },
+                                new AssertCondition() { Condition = $"$cr.bot.id == turn.activity.recipient.id" },
+                                new AssertCondition() { Condition = $"$cr.user.id == turn.activity.from.id" },
+                                new SendActivity("ok")
+                            }
+                        }
+                    }
+            });
+
+            dm.InitialTurnState.Set<QueueStorage>(queueStorage);
+
+            await new TestFlow((TestAdapter)adapter, dm.OnTurnAsync)
+                .Send("hi")
+                    .AssertReply($"ok")
+                .StartTestAsync();
         }
     }
 }
