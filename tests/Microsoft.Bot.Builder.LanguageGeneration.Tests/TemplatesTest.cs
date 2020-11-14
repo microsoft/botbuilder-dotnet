@@ -1477,6 +1477,41 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestCacheScopeOption()
+        {
+            //Global cache test
+            var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/GlobalCache.lg"));
+            var evaled = templates.Evaluate("globalCache", new { param = "ms" });
+            var resultList = evaled.ToString().Split(" ");
+            Assert.True(resultList.Length == 2);
+            Assert.True(resultList[0] == resultList[1]);
+
+            // locale cache test
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/LocalCache.lg"));
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
+            Assert.NotNull(evaled);
+            resultList = evaled.ToString().Split(" ");
+            Assert.True(resultList.Length == 2);
+            Assert.True(resultList[0] == resultList[1]);
+
+            // default cache test
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/DefaultCache.lg"));
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
+            Assert.NotNull(evaled);
+            resultList = evaled.ToString().Split(" ");
+            Assert.True(resultList.Length == 2);
+            Assert.True(resultList[0] == resultList[1]);
+
+            // api override options in LG file
+            // use global cache to override the none cache.
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/NoneCache.lg"));
+            evaled = templates.Evaluate("globalCache", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
+            resultList = evaled.ToString().Split(" ");
+            Assert.True(resultList.Length == 2);
+            Assert.True(resultList[0] == resultList[1]);
+        }
+
+        [Fact]
         public void TestInlineEvaluate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
