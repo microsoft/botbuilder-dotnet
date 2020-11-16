@@ -27,13 +27,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Gets or sets the id for the recognizer.
         /// </summary>
         /// <value>
-        /// The id for the recognizer.
+        /// The id for the recognizer.  Useful for looking up specific recognizer in multiple recognizers scenario.
         /// </value>
         [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the full path to the NLR model to use.
+        /// Gets or sets the folder path to Orchestrator base model to use.
         /// </summary>
         /// <value>
         /// Model path.
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public string ModelPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the full path to the snapshot to use.
+        /// Gets or sets the full path to Orchestrator snapshot file to use.
         /// </summary>
         /// <value>
         /// Snapshot path.
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Gets or sets the disambiguation score threshold.
         /// </summary>
         /// <value>
-        /// Recognizer returns ChooseIntent (disambiguation) if other intents are classified within this score of the top scoring intent.
+        /// Recognizer returns ChooseIntent (disambiguation) if other intents are classified within this threshold of the top scoring intent.
         /// </value>
         [JsonProperty("disambiguationScoreThreshold")]
         public float DisambiguationScoreThreshold { get; set; } = 0.05F;
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Gets or sets a value indicating whether detect ambiguous intents.
         /// </summary>
         /// <value>
-        /// When true, recognizer will look for ambiguous intents (intents with close recognition scores from top scoring intent).
+        /// When true, recognizer will look for ambiguous intents - those within specified threshold to top scoring intent.
         /// </value>
         [JsonProperty("detectAmbiguousIntents")]
         public bool DetectAmbiguousIntents { get; set; } = false;
