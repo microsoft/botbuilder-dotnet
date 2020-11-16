@@ -152,6 +152,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var list = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
             var index = dc.State.GetIntValue(Index.GetValue(dc.State));
 
+            if (list == null)
+            {
+                // The list is null, so just end the dialog.
+                return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             // Next item
             if (++index < list.Count)
             {
