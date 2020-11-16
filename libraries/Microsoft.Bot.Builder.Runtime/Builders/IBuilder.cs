@@ -6,8 +6,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Runtime.Builders
 {
-    public interface IBuilder<out TItem>
+    public interface IBuilder<out T>
     {
-        TItem Build(IServiceProvider services, IConfiguration configuration);
+        T Build(IServiceProvider services, IConfiguration configuration);
     }
 }
