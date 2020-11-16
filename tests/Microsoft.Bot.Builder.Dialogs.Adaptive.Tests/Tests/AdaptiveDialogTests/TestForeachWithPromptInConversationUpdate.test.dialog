@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "generator": {
+      "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnConversationUpdateActivity",
+        "actions": [
+          {
+            "$kind": "Microsoft.Foreach",
+            "itemsProperty": "turn.activity.membersAdded",
+            "actions": [
+              {
+                "$kind": "Microsoft.TextInput",
+                "alwaysPrompt": true,
+                "property": "dialog.answer",
+                "prompt": "Please send me some text."
+              },
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "You said '${dialog.answer}'"
+              }
+            ]
+          },
+        ]
+      }
+    ],
+    "autoEndDialog": true,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "john"
+      ]
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Please send me some text."
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "user text"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "You said 'user text'"
+    }
+  ]
+}
