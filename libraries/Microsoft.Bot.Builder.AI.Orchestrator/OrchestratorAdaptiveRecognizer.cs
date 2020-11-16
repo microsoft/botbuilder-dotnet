@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         }
 
         /// <summary>
-        /// Gets or sets the full path to the NLR model to use.
+        /// Gets or sets the folder path to Orchestrator base model to use.
         /// </summary>
         /// <value>
         /// Model path.
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public StringExpression ModelPath { get; set; } = "=settings.orchestrator.modelPath";
 
         /// <summary>
-        /// Gets or sets the full path to the snapshot to use.
+        /// Gets or sets the full path to Orchestrator snapshot file to use.
         /// </summary>
         /// <value>
         /// Snapshot path.
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Gets or sets the disambiguation score threshold.
         /// </summary>
         /// <value>
-        /// Recognizer returns ChooseIntent (disambiguation) if other intents are classified within this score of the top scoring intent.
+        /// Recognizer returns ChooseIntent (disambiguation) if other intents are classified within this threshold of the top scoring intent.
         /// </value>
         [JsonProperty("disambiguationScoreThreshold")]
         public NumberExpression DisambiguationScoreThreshold { get; set; } = 0.05F;
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Gets or sets detect ambiguous intents.
         /// </summary>
         /// <value>
-        /// When true, recognizer will look for ambiguous intents (intents with close recognition scores from top scoring intent).
+        /// When true, recognizer will look for ambiguous intents - those within specified threshold to top scoring intent.
         /// </value>
         [JsonProperty("detectAmbiguousIntents")]
         public BoolExpression DetectAmbiguousIntents { get; set; } = false;
