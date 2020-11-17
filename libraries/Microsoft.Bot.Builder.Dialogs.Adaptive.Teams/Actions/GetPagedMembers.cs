@@ -6,28 +6,31 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Teams;
+using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Calls BotFrameworkAdapter.GetConversationMembers () and sets the result to a memory property.
+    /// Calls TeamsInfo.GetPagedMembers to retrieve a pagined list of members of
+    /// one-on-one, group, or team conversation and sets the result to a memory property.
     /// </summary>
-    public class GetConversationMembers : Dialog
+    public class GetPagedMembers : Dialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.GetConversationMembers";
+        public const string Kind = "Teams.GetPagedMembers";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetConversationMembers"/> class.
+        /// Initializes a new instance of the <see cref="GetPagedMembers"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public GetConversationMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public GetPagedMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -55,6 +58,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public StringExpression Property { get; set; }
 
         /// <summary>
+        /// Gets or sets the expression to get the value to use for the continuationToken.
+        /// </summary>
+        /// <value>
+        /// The expression to get the value to use for continuationToken. Default value is null.
+        /// </value>
+        [JsonProperty("continuationToken")]
+        public StringExpression ContinuationToken { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the expression to get the value to use for the page size.
+        /// </summary>
+        /// <value>
+        /// The expression to get the value to use for page size. Default value is null.
+        /// </value>
+        [JsonProperty("pageSize")]
+        public IntExpression PageSize { get; set; }
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -68,19 +89,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-
+            
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
-            if (bfAdapter == null)
+            if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("GetConversationMembersAsync() only works with BotFrameworkAdapter");
+                throw new Exception("TeamsInfo.GetPagedMembersAsync() works only on the Teams channel.");
             }
 
-            var result = await bfAdapter.GetConversationMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+            string continuationToken = null;
+            if (ContinuationToken != null)
+            {
+                var (value, valueError) = ContinuationToken.TryGetValue(dc.State);
+                if (valueError != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {ContinuationToken.ExpressionText}. Error: {valueError}");
+                }
+
+                continuationToken = value as string;
+            }
+
+            int? pageSize = null;
+            if (PageSize != null)
+            {
+                var (value, valueError) = PageSize.TryGetValue(dc.State);
+                if (valueError != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {PageSize.ExpressionText}. Error: {valueError}");
+                }
+
+                pageSize = value;
+            }
+
+            var result = await TeamsInfo.GetPagedMembersAsync(dc.Context, pageSize, continuationToken, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (this.Property != null)
             {
@@ -96,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Property?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.ContinuationToken?.ToString() ?? string.Empty},{this.PageSize?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
         }
     }
 }

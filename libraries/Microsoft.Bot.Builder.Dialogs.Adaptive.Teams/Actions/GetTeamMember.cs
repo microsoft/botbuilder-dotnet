@@ -6,28 +6,31 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Teams;
+using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Calls BotFrameworkAdapter.GetConversationMembers () and sets the result to a memory property.
+    /// Calls TeamsInfo.GetTeamMember to retrieve the list of members in a teams
+    /// scoped conversation and sets the result to a memory property.
     /// </summary>
-    public class GetConversationMembers : Dialog
+    public class GetTeamMember : Dialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Microsoft.GetConversationMembers";
+        public const string Kind = "Teams.GetTeamMember";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetConversationMembers"/> class.
+        /// Initializes a new instance of the <see cref="GetTeamMember"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public GetConversationMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public GetTeamMember([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -55,6 +58,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public StringExpression Property { get; set; }
 
         /// <summary>
+        /// Gets or sets the expression to get the value to use for member id.
+        /// </summary>
+        /// <value>
+        /// The expression to get the value to use for member id. Default value is turn.activity.from.id.
+        /// </value>
+        [JsonProperty("memberId")]
+        public StringExpression MemberId { get; set; } = "=turn.activity.from.id";
+
+        /// <summary>
+        /// Gets or sets the expression to get the value to use for team id.
+        /// </summary>
+        /// <value>
+        /// The expression to get the value to use for team id. Default value is turn.activity.channelData.team.id.
+        /// </value>
+        [JsonProperty("teamId")]
+        public StringExpression TeamId { get; set; } = "=turn.activity.channelData.team.id";
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -68,19 +89,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-
+            
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
-            if (bfAdapter == null)
+            if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("GetConversationMembersAsync() only works with BotFrameworkAdapter");
+                throw new Exception("TeamsInfo.GetMember() works only on the Teams channel.");
             }
 
-            var result = await bfAdapter.GetConversationMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+            string memberId = null;
+            if (MemberId != null)
+            {
+                var (value, valueError) = MemberId.TryGetValue(dc.State);
+                if (valueError != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {MemberId.ExpressionText}. Error: {valueError}");
+                }
+
+                memberId = value as string;
+            }
+
+            if (string.IsNullOrEmpty(memberId))
+            {
+                throw new InvalidOperationException($"Missing {nameof(MemberId)} in {nameof(GetTeamMember)}");
+            }
+
+            string teamId = null;
+            if (TeamId != null)
+            {
+                var (value, valueError) = TeamId.TryGetValue(dc.State);
+                if (valueError != null)
+                {
+                    throw new Exception($"Expression evaluation resulted in an error. Expression: {TeamId.ExpressionText}. Error: {valueError}");
+                }
+
+                teamId = value as string;
+            }
+
+            var result = await TeamsInfo.GetTeamMemberAsync(dc.Context, memberId, teamId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (this.Property != null)
             {
@@ -96,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Property?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.MemberId?.ToString() ?? string.Empty},{this.TeamId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
         }
     }
 }
