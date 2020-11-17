@@ -778,6 +778,31 @@
       "subtitle": "Trace Activity"
     }
   },
+  "Teams.GetPagedMembers": {
+    "form": {
+      "label": "Get paged member information.",
+      "order": [
+        "property",
+        "pageSize",
+        "continuationToken",
+        "*"
+      ],
+      "subtitle": "Gets a pagined list of members of a one-on-one, group, or team conversation."
+    }
+  },
+  "Teams.GetPagedTeamMembers": {
+    "form": {
+      "label": "Get paged member information.",
+      "order": [
+        "property",
+        "teamId",
+        "pageSize",
+        "continuationToken",
+        "*"
+      ],
+      "subtitle": "Gets a pagined list of members of a team conversation."
+    }
+  },
   "Teams.OnMessagingExtensionFetchTask": {
     "form": {
       "hidden": [
@@ -815,6 +840,19 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='task/submit'"
+    }
+  },
+  "Teams.SendMessageToTeamsChannel": {
+    "form": {
+      "label": "Send a message to a teams channel.",
+      "order": [
+        "activity",
+        "teamsChannelId",
+        "activityIdProperty",
+        "conversationReferenceProperty",
+        "*"
+      ],
+      "subtitle": "Create a thread and send a message to a teams channel."
     }
   },
   "Teams.SendMessagingExtensionQueryLinkResponse": {
