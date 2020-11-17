@@ -389,6 +389,21 @@
       "$ref": "#/definitions/Teams.GetMember"
     },
     {
+      "$ref": "#/definitions/Teams.GetPagedMembers"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetPagedTeamMembers"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetTeamChannels"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetTeamDetails"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetTeamMember"
+    },
+    {
       "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
     },
     {
@@ -456,6 +471,9 @@
     },
     {
       "$ref": "#/definitions/Teams.OnTeamUnarchived"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
     },
     {
       "$ref": "#/definitions/Teams.SendMessagingExtensionAuthResponse"
@@ -3810,6 +3828,24 @@
         },
         {
           "$ref": "#/definitions/Teams.GetMember"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetPagedMembers"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetPagedTeamMembers"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamChannels"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamDetails"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamMember"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
         },
         {
           "$ref": "#/definitions/Teams.SendMessagingExtensionAuthResponse"
@@ -10040,6 +10076,319 @@
         }
       }
     },
+    "Teams.GetPagedMembers": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get paged members",
+      "description": "Get a paginated list of members.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "conversation.pagedMembers"
+          ]
+        },
+        "pageSize": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Page Size",
+          "description": "Page Size or expression to use to get the page size.",
+          "examples": [
+            "100"
+          ]
+        },
+        "continuationToken": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Continuation token",
+          "description": "The continuation token that will be used to retrieve the members.",
+          "default": "=dialog.membersContinuationToken"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetPagedMembers"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetPagedTeamMembers": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get paged team members",
+      "description": "Get a paginated list of team members.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "conversation.pagedMembers"
+          ]
+        },
+        "pageSize": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Page size",
+          "description": "Page Size or expression to use to get the page size.",
+          "examples": [
+            "100"
+          ]
+        },
+        "continuationToken": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Continuation token",
+          "description": "The continuation token that will be used to retrieve the members.",
+          "default": "=dialog.membersContinuationToken"
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "The team id that will be used to retrieve the members.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetPagedTeamMembers"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetTeamChannels": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get team channels",
+      "description": "Get channels for a team.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "conversation.teamChannels"
+          ]
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "Team Id or expression to a team id to use to get the team channels. Default value is the current turn.activity.channelData.team.id.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetTeamChannels"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetTeamDetails": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get team details",
+      "description": "Get details for a team.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "conversation.teamChannels"
+          ]
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "Team Id or expression to a team id to use to get the team details. Default value is the current turn.activity.channelData.team.id.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetTeamDetails"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetTeamMember": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get member",
+      "description": "Get teams member information.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "user.memberInfo"
+          ]
+        },
+        "memberId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Member id",
+          "description": "Member Id or expression to a member id to use to get the member information. Default value is the current turn.activity.from.id.",
+          "default": "=turn.activity.from.id"
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Member id",
+          "description": "Team Id or expression to a team id to use to get the member information. Default value is the current turn.activity.channelData.team.id.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetTeamMember"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.OnAppBasedLinkQuery": {
       "$role": [
         "implements(Microsoft.ITrigger)",
@@ -11505,6 +11854,77 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Teams.OnTeamUnarchived"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessageToTeamsChannel": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a message to a teams channel",
+      "description": "Create a thread in a teams channel, and send a message.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "conversationReferenceProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property path to put the newly created activity's Conversation Reference.",
+          "examples": [
+            "conversation.channelThreadReference"
+          ]
+        },
+        "activityIdProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property path to put the newly created activity's id.",
+          "examples": [
+            "conversation.channelThreadId"
+          ]
+        },
+        "teamsChannelId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Fallback Url",
+          "description": "Teams channel id to send a message to.",
+          "default": "=turn.activity.channelData.channel.id"
+        },
+        "activity": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Activity",
+          "description": "Expession for an activity to send to the channel.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessageToTeamsChannel"
         },
         "$designer": {
           "title": "Designer information",
