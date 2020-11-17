@@ -843,7 +843,7 @@
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a continue response to task module request."
+      "subtitle": "Send a continue response containing a card, or url."
     }
   },
   "Teams.SendTaskModuleMessageResponse": {
@@ -855,7 +855,7 @@
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a message response to task module request."
+      "subtitle": "Send a message response containing text only."
     }
   }
 }
