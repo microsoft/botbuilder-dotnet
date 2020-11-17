@@ -8,12 +8,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Runtime.Extensions
 {
-    // TODO #22: Refactor bot path adapter
-
     /// <summary>
     /// Bot path adapter, for development environment, use '../../' as the bot path, for deployment and production environment, use 'ComposerDialogs' as bot path.
     /// </summary>
-    public static class IConfigurationBuilderExtensions
+    public static class ConfigurationBuilderExtensions
     {
         private const string ComposerDialogsDirectoryName = "ComposerDialogs";
         private const string DevelopmentApplicationRoot = "../../../";

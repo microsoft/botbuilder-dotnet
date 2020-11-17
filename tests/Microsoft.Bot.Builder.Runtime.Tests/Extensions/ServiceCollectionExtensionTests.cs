@@ -17,7 +17,7 @@ using Xunit;
 namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 {
     [Collection("ComponentRegistrations")]
-    public class IServiceCollectionExtensionTests
+    public class ServiceCollectionExtensionTests
     {
         private const string ResourceId = "runtime.json";
 
