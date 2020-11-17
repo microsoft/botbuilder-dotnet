@@ -1,4 +1,4 @@
-# Instructions for Contributing Code
+# Instructions for Contributing Code  
 
 ## Contributing bug fixes and features
 
