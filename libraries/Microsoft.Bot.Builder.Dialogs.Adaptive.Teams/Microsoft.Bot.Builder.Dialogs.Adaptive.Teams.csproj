@@ -39,6 +39,15 @@
   <ItemGroup>
     <None Remove="Schemas\Actions\Teams.GetMeetingParticipant.schema" />
     <None Remove="Schemas\Actions\Teams.GetMember.schema" />
+    <None Remove="Schemas\Actions\Teams.GetPagedMembers.schema" />
+    <None Remove="Schemas\Actions\Teams.GetPagedMembers.uischema" />
+    <None Remove="Schemas\Actions\Teams.GetPagedTeamMembers.schema" />
+    <None Remove="Schemas\Actions\Teams.GetPagedTeamMembers.uischema" />
+    <None Remove="Schemas\Actions\Teams.GetTeamChannels.schema" />
+    <None Remove="Schemas\Actions\Teams.GetTeamDetails.schema" />
+    <None Remove="Schemas\Actions\Teams.GetTeamMember.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessageToTeamsChannel.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessageToTeamsChannel.uischema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAuthResponse.schema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionQueryLinkResponse.schema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionQueryLinkResponse.uischema" />

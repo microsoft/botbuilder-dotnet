@@ -1,0 +1,14 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Get paged member information.",
+        "subtitle": "Gets a pagined list of members of a team conversation.",
+        "order": [
+            "property",
+            "teamId",
+            "pageSize",
+            "continuationToken",
+            "*"
+        ]
+    }
+}
