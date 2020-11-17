@@ -2,6 +2,7 @@
   
   <PropertyGroup>
     <LocalPackageVersion>4.11.0-local</LocalPackageVersion>
+    <dummy>dummy</dummy>
   </PropertyGroup>
 
   <PropertyGroup>
