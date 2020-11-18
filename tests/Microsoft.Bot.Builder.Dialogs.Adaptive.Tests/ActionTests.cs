@@ -336,6 +336,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_TextInputWithNonStringInput()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_TextInputWithValueExpression()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
