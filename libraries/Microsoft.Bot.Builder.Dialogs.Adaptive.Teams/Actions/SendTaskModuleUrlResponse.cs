@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,36 +14,44 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'config' response. This is the type of response used for a 'composeExtension/querySettingUrl' request.
+    /// Send a url Task Module Continue response to the user.
     /// </summary>
-    public class SendMessagingExtensionConfigQuerySettingUrlResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendTaskModuleUrlResponse : BaseSendTaskModuleContinueResponse
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse";
+        public const string Kind = "Teams.SendTaskModuleUrlResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionConfigQuerySettingUrlResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendTaskModuleUrlResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionConfigQuerySettingUrlResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
+        public SendTaskModuleUrlResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets config url response to send. i.e $"{config.siteUrl}/searchSettings.html?settings={escapedSettings}".
+        /// Gets or sets an optional expression for the Url of the Task Module response.
         /// </summary>
         /// <value>
-        /// Message to send.
+        /// An string expression. 
         /// </value>
-        [JsonProperty("message")]
-        public StringExpression ConfigUrl { get; set; }
+        [JsonProperty("url")]
+        public StringExpression Url { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expression for the Fallback Url the Task Module Task Info response.
+        /// </summary>
+        /// <value>
+        /// An string expression. 
+        /// </value>
+        [JsonProperty("fallbackUrl")]
+        public StringExpression FallbackUrl { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -66,40 +73,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string configUrl = ConfigUrl.GetValue(dc.State);
-            if (string.IsNullOrEmpty(configUrl)) 
-            { 
-                throw new InvalidOperationException($"{nameof(ConfigUrl)} is Required for a Messaging Extension Config Response");
+            string url = Url?.GetValue(dc.State);
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new InvalidOperationException("Missing Url for Task Module Continue Response.");
             }
+
+            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var height = Height?.GetValue(dc.State);
+            var width = Width?.GetValue(dc.State);
+            
+            var fallbackUrl = FallbackUrl?.GetValue(dc.State);
+            var completionBotId = CompletionBotId?.GetValue(dc.State);
+
+            var response = new TaskModuleResponse
+            {
+                Task = new TaskModuleContinueResponse
+                {
+                    Value = new TaskModuleTaskInfo
+                    {
+                        Title = title,
+                        Url = url,
+                        FallbackUrl = fallbackUrl,
+                        Height = height,
+                        Width = width,
+                        CompletionBotId = completionBotId,
+                    },
+                },
+                CacheInfo = GetCacheInfo(dc),
+            };
+            var responseActivity = CreateInvokeResponseActivity(response);
 
             var properties = new Dictionary<string, string>()
             {
-                { "SendTaskModuleConfigResponse", configUrl },
+                { "SendTaskModuleContinueResponse", responseActivity.ToString() },
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var response = new MessagingExtensionResponse
-            {
-                ComposeExtension = new MessagingExtensionResult
-                {
-                    Type = "config",
-                    SuggestedActions = new MessagingExtensionSuggestedAction
-                    {
-                        Actions = new List<CardAction>
-                                {
-                                    new CardAction
-                                    {
-                                        Type = ActionTypes.OpenUrl,
-                                        Value = configUrl,
-                                    },
-                                },
-                    },
-                },
-                CacheInfo = GetCacheInfo(dc)
-            };
-
-            var invokeResponse = CreateInvokeResponseActivity(response);
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
@@ -110,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.ConfigUrl?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}('{this.Url?.ToString() ?? string.Empty},{this.Title?.ToString() ?? string.Empty}')";
         }
     }
 }

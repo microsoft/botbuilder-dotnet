@@ -28,23 +28,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="SendMessagingExtensionResultResponse"/> class.
         /// </summary>
-        /// <param name="attachmentLayout">Layout for the attachments in the response. 'list' or 'grid'.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionResultResponse(string attachmentLayout = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionResultResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.AttachmentLayout = attachmentLayout ?? "list";
         }
 
         /// <summary>
-        /// Gets or sets response message to send.
+        /// Gets or sets the attachment layout to use for the response 'list' or 'grid'.
         /// </summary>
         /// <value>
-        /// Message to send.
+        /// Attachment Layout for the response.
         /// </value>
-        [JsonProperty("message")]
+        [JsonProperty("attachmentLayout")]
         public StringExpression AttachmentLayout { get; set; } = "list";
 
         /*

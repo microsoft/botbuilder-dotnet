@@ -3,7 +3,6 @@
 
 using System;
 using System.Net;
-using System.Xml.Schema;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;

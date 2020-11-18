@@ -2,7 +2,7 @@
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Send a message to a teams channel",
-    "description": "Create a thread in a teams channel, and send a message.",
+    "description": "The resulting ConversationReference and ActivityId can be stored for later use.",
     "type": "object",
     "properties": {
         "id": {
@@ -12,23 +12,23 @@
         },
         "conversationReferenceProperty": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Property",
+            "title": "Conversation reference property",
             "description": "Property path to put the newly created activity's Conversation Reference.",
             "examples": [
-                "conversation.channelThreadReference"
+                "dialog.threadReference"
             ]
         },
         "activityIdProperty": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Property",
+            "title": "Activity id property",
             "description": "Property path to put the newly created activity's id.",
             "examples": [
-                "conversation.channelThreadId"
+                "dialog.threadId"
             ]
         },
         "teamsChannelId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Fallback Url",
+            "title": "Teams channel id",
             "description": "Teams channel id to send a message to.",
             "default": "=turn.activity.channelData.channel.id"
         },

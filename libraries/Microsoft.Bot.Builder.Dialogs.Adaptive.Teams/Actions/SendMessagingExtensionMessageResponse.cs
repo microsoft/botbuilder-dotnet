@@ -28,17 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="SendMessagingExtensionMessageResponse"/> class.
         /// </summary>
-        /// <param name="message">Text to create the message response.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionMessageResponse(string message = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionMessageResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            if (!string.IsNullOrEmpty(message))
-            {
-                Message = new TextTemplate(message);
-            }
         }
 
         /// <summary>

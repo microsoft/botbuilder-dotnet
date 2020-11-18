@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the list of members in a teams scoped conversation.
+        /// Gets the member of a teams scoped conversation.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="userId"> user id. </param>

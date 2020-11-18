@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,30 +15,29 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'result' response when a Teams Invoke Activity is received with activity.name='composeExtension/queryLink'.
+    /// Send an Card Task Module Continue response to the user.
     /// </summary>
-    public class SendMessagingExtensionQueryLinkResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendTaskModuleCardResponse : BaseSendTaskModuleContinueResponse
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionQueryLinkResponse";
+        public const string Kind = "Teams.SendTaskModuleCardResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionQueryLinkResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendTaskModuleCardResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
-        [JsonConstructor]
-        public SendMessagingExtensionQueryLinkResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendTaskModuleCardResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets template for the attachment template of a Thumbnail or Hero Card to send.
+        /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card with an Attachment to send.
         /// </summary>
         /// <value>
         /// Template for the activity.
@@ -74,37 +72,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
-                    throw new ArgumentException($"Invalid Activity. A attachment is required for Send Messaging Extension Query Link Response.");
+                    throw new ArgumentException($"Invalid Activity. The activity does not contain a valid attachment as required for Task Module Continue Response.");
                 }
 
                 attachment = boundActivity.Attachments[0];
             }
             else
             {
-                throw new ArgumentException($"An attachment is required for Send Messaging Extension Query Link Response.");
+                throw new ArgumentException($"A valid card attachment is required for Task Module Continue Response.");
             }
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionQueryLinkResponse", attachment.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
-            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
+            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var height = Height?.GetValue(dc.State);
+            var width = Width?.GetValue(dc.State);
             
-            var response = new MessagingExtensionResponse
+            var completionBotId = CompletionBotId?.GetValue(dc.State);
+
+            var response = new TaskModuleResponse
             {
-                ComposeExtension = new MessagingExtensionResult
+                Task = new TaskModuleContinueResponse
                 {
-                    Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-                    AttachmentLayout = "list", // 'list', 'grid'  // TODO: make this configurable
-                    Attachments = new[] { extentionAttachment },
+                    Value = new TaskModuleTaskInfo
+                    {
+                        Title = title,
+                        Card = attachment,
+                        Height = height,
+                        Width = width,
+                        CompletionBotId = completionBotId,
+                    },
                 },
                 CacheInfo = GetCacheInfo(dc),
             };
+            var responseActivity = CreateInvokeResponseActivity(response);
 
-            var invokeResponse = CreateInvokeResponseActivity(response);
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var properties = new Dictionary<string, string>()
+            {
+                { "SendTaskModuleContinueResponse", responseActivity.ToString() },
+            };
+            TelemetryClient.TrackEvent("GeneratorResult", properties);
+
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
@@ -115,7 +122,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Activity?.ToString() ?? string.Empty}]";
+            if (Activity is ActivityTemplate at)
+            {
+                return $"{this.GetType().Name}({StringUtils.Ellipsis(at.Template.Trim(), 30)})";
+            }
+
+            return $"{this.GetType().Name}('{StringUtils.Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
     }
 }

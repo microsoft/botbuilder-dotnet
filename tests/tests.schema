@@ -488,6 +488,9 @@
       "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
     },
     {
+      "$ref": "#/definitions/Teams.SendTaskModuleUrlResponse"
+    },
+    {
       "$ref": "#/definitions/Testbot.JavascriptAction"
     },
     {
@@ -3695,6 +3698,30 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3800,30 +3827,6 @@
           "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
         },
         {
@@ -3858,6 +3861,9 @@
         },
         {
           "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleUrlResponse"
         },
         {
           "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -9968,12 +9974,12 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "user.participantInfo"
+            "dialog.participantInfo"
           ]
         },
         "meetingId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Meeting Id",
+          "title": "Meeting id",
           "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
           "examples": [
             "=turn.activity.channelData.meeting.id"
@@ -9981,7 +9987,7 @@
         },
         "participantId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Participant Id",
+          "title": "Participant id",
           "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
           "examples": [
             "=turn.activity.from.aadObjectId"
@@ -10020,7 +10026,7 @@
     "Teams.GetMember": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Get member",
-      "description": "Get teams member information.",
+      "description": "This works in one-on-one, group, and teams scoped conversations.",
       "type": "object",
       "required": [
         "$kind"
@@ -10043,7 +10049,7 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "user.memberInfo"
+            "dialog.memberInfo"
           ]
         },
         "memberId": {
@@ -10102,7 +10108,7 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "conversation.pagedMembers"
+            "dialog.pagedMembers"
           ]
         },
         "pageSize": {
@@ -10167,7 +10173,7 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "conversation.pagedMembers"
+            "dialog.pagedTeamMembers"
           ]
         },
         "pageSize": {
@@ -10238,7 +10244,7 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "conversation.teamChannels"
+            "dialog.teamChannels"
           ]
         },
         "teamId": {
@@ -10295,7 +10301,7 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "conversation.teamChannels"
+            "dialog.teamDetails"
           ]
         },
         "teamId": {
@@ -10328,7 +10334,7 @@
     },
     "Teams.GetTeamMember": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Get member",
+      "title": "Get team member",
       "description": "Get teams member information.",
       "type": "object",
       "required": [
@@ -10352,7 +10358,7 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "user.memberInfo"
+            "dialog.teamMemberInfo"
           ]
         },
         "memberId": {
@@ -10363,7 +10369,7 @@
         },
         "teamId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Member id",
+          "title": "Team id",
           "description": "Team Id or expression to a team id to use to get the member information. Default value is the current turn.activity.channelData.team.id.",
           "default": "=turn.activity.channelData.team.id"
         },
@@ -11865,7 +11871,7 @@
     "Teams.SendMessageToTeamsChannel": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send a message to a teams channel",
-      "description": "Create a thread in a teams channel, and send a message.",
+      "description": "The resulting ConversationReference and ActivityId can be stored for later use.",
       "type": "object",
       "required": [
         "$kind"
@@ -11885,23 +11891,23 @@
         },
         "conversationReferenceProperty": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Property",
+          "title": "Conversation reference property",
           "description": "Property path to put the newly created activity's Conversation Reference.",
           "examples": [
-            "conversation.channelThreadReference"
+            "dialog.threadReference"
           ]
         },
         "activityIdProperty": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Property",
+          "title": "Activity id property",
           "description": "Property path to put the newly created activity's id.",
           "examples": [
-            "conversation.channelThreadId"
+            "dialog.threadId"
           ]
         },
         "teamsChannelId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Fallback Url",
+          "title": "Teams channel id",
           "description": "Teams channel id to send a message to.",
           "default": "=turn.activity.channelData.channel.id"
         },
@@ -12213,6 +12219,101 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Teams.SendTaskModuleMessageResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendTaskModuleUrlResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send task module url response",
+      "description": "Send a url type continue response to a Task Module request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "title": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Title",
+          "description": "Title of the Task Module Response.",
+          "examples": [
+            "Bot Task Module"
+          ]
+        },
+        "height": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Height",
+          "description": "Height of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "width": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Width",
+          "description": "Width of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "url": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Url",
+          "description": "Url to use for the Task Module Response.",
+          "examples": [
+            "https://mysite.com",
+            "=user.surveySiteUrl"
+          ]
+        },
+        "fallbackUrl": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Fallback Url",
+          "description": "Fallback Url to use for the Task Module Response.",
+          "examples": [
+            "https://fallbacksite.com",
+            "=user.surveySiteFallbackUrl"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendTaskModuleUrlResponse"
         },
         "$designer": {
           "title": "Designer information",

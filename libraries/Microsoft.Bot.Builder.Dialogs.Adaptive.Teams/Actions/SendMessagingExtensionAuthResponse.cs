@@ -30,17 +30,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="SendMessagingExtensionAuthResponse"/> class.
         /// </summary>
-        /// <param name="title">Text template to use for creating auth window title.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionAuthResponse(string title = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionAuthResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            if (title != null)
-            {
-                Title = new TextTemplate(title);
-            }
         }
 
         /// <summary>
