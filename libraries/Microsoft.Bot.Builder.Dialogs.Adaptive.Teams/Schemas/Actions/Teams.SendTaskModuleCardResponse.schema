@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send task module continue response",
-    "description": "Send a continue response to a Task Module request.",
+    "title": "Send task module card response",
+    "description": "Send a card response to a Task Module request.",
     "type": "object",
     "properties": {
         "id": {
@@ -42,24 +42,6 @@
             "description": "Width of the Task Module Response.",
             "examples": [
                 "450"
-            ]
-        },
-        "url": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "Url",
-            "description": "Url to use for the Task Module Response.",
-            "examples": [
-                "https://mysite.com",
-                "=user.surveySiteUrl"
-            ]
-        },
-        "fallbackUrl": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "Fallback Url",
-            "description": "Fallback Url to use for the Task Module Response.",
-            "examples": [
-                "https://fallbacksite.com",
-                "=user.surveySiteFallbackUrl"
             ]
         },
         "activity": {
