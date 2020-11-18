@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
                 if (serverResponse == null)
                 {
-                    throw new Exception("Server response from streaming request is null");
+                    throw new InvalidOperationException("Server response from streaming request is null");
                 }
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)

@@ -344,7 +344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             if (value is Task)
             {
-                throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
+                throw new ArgumentException($"{path} = You can't pass an unresolved Task to SetValue");
             }
 
             if (value != null)
