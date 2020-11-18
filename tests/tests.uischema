@@ -867,21 +867,19 @@
       "subtitle": "Send a response to a query link request."
     }
   },
-  "Teams.SendTaskModuleContinueResponse": {
+  "Teams.SendTaskModuleCardResponse": {
     "form": {
-      "label": "Send task module continue response",
+      "label": "Send task module card response",
       "order": [
         "activity",
         "title",
         "height",
         "width",
-        "url",
-        "fallbackUrl",
         "cacheType",
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a continue response containing a card, or url."
+      "subtitle": "Send a continue response containing a card."
     }
   },
   "Teams.SendTaskModuleMessageResponse": {
@@ -901,15 +899,15 @@
       "label": "Send task module url response",
       "order": [
         "title",
-        "height",
-        "width",
         "url",
         "fallbackUrl",
+        "height",
+        "width",
         "cacheType",
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a continue response containing or url."
+      "subtitle": "Send a continue response containing a url."
     }
   }
 }

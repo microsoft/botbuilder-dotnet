@@ -482,7 +482,7 @@
       "$ref": "#/definitions/Teams.SendMessagingExtensionQueryLinkResponse"
     },
     {
-      "$ref": "#/definitions/Teams.SendTaskModuleContinueResponse"
+      "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
     },
     {
       "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
@@ -3698,30 +3698,6 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3827,6 +3803,30 @@
           "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
         },
         {
@@ -3857,7 +3857,7 @@
           "$ref": "#/definitions/Teams.SendMessagingExtensionQueryLinkResponse"
         },
         {
-          "$ref": "#/definitions/Teams.SendTaskModuleContinueResponse"
+          "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
         },
         {
           "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
@@ -12065,10 +12065,10 @@
         }
       }
     },
-    "Teams.SendTaskModuleContinueResponse": {
+    "Teams.SendTaskModuleCardResponse": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Send task module continue response",
-      "description": "Send a continue response to a Task Module request.",
+      "title": "Send task module card response",
+      "description": "Send a card response to a Task Module request.",
       "type": "object",
       "required": [
         "$kind"
@@ -12120,24 +12120,6 @@
             "450"
           ]
         },
-        "url": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Url",
-          "description": "Url to use for the Task Module Response.",
-          "examples": [
-            "https://mysite.com",
-            "=user.surveySiteUrl"
-          ]
-        },
-        "fallbackUrl": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Fallback Url",
-          "description": "Fallback Url to use for the Task Module Response.",
-          "examples": [
-            "https://fallbacksite.com",
-            "=user.surveySiteFallbackUrl"
-          ]
-        },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
           "title": "Activity",
@@ -12157,7 +12139,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendTaskModuleContinueResponse"
+          "const": "Teams.SendTaskModuleCardResponse"
         },
         "$designer": {
           "title": "Designer information",
