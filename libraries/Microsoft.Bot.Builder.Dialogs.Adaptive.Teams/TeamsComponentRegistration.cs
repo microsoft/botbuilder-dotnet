@@ -40,10 +40,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
 
             // Actions
-            yield return new DeclarativeType<GetMember>(GetMember.Kind);
             yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);
+            yield return new DeclarativeType<GetMember>(GetMember.Kind);
+            yield return new DeclarativeType<GetPagedMembers>(GetPagedMembers.Kind);
+            yield return new DeclarativeType<GetPagedTeamMembers>(GetPagedTeamMembers.Kind);
+            yield return new DeclarativeType<GetTeamChannels>(GetTeamChannels.Kind);
+            yield return new DeclarativeType<GetTeamDetails>(GetTeamDetails.Kind);
+            yield return new DeclarativeType<GetTeamMember>(GetTeamMember.Kind);
+            yield return new DeclarativeType<SendMessageToTeamsChannel>(SendMessageToTeamsChannel.Kind);
+
             yield return new DeclarativeType<SendTaskModuleMessageResponse>(SendTaskModuleMessageResponse.Kind);
-            yield return new DeclarativeType<SendTaskModuleContinueResponse>(SendTaskModuleContinueResponse.Kind);
+            yield return new DeclarativeType<SendTaskModuleUrlResponse>(SendTaskModuleUrlResponse.Kind);
+            yield return new DeclarativeType<SendTaskModuleCardResponse>(SendTaskModuleCardResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionAuthResponse>(SendMessagingExtensionAuthResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionConfigQuerySettingUrlResponse>(SendMessagingExtensionConfigQuerySettingUrlResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionMessageResponse>(SendMessagingExtensionMessageResponse.Kind);

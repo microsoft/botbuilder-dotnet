@@ -15,7 +15,7 @@
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
-                "conversation.pagedMembers"
+                "dialog.pagedMembers"
             ]
         },
         "pageSize": {

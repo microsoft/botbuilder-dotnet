@@ -35,13 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public SendMessagingExtensionActionResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-
-            //if (title != null)
-            //{
-            //    Title = new TextTemplate(title);
-            //}
         }
 
         /// <summary>

@@ -15,7 +15,7 @@
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
-                "conversation.teamChannels"
+                "dialog.teamDetails"
             ]
         },
         "teamId": {

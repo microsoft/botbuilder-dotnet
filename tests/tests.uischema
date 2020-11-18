@@ -780,19 +780,19 @@
   },
   "Teams.GetPagedMembers": {
     "form": {
-      "label": "Get paged member information.",
+      "label": "Get paged members",
       "order": [
         "property",
         "pageSize",
         "continuationToken",
         "*"
       ],
-      "subtitle": "Gets a pagined list of members of a one-on-one, group, or team conversation."
+      "subtitle": "Gets members of a one-on-one, group, or team conversation."
     }
   },
   "Teams.GetPagedTeamMembers": {
     "form": {
-      "label": "Get paged member information.",
+      "label": "Get paged team members",
       "order": [
         "property",
         "teamId",
@@ -800,7 +800,7 @@
         "continuationToken",
         "*"
       ],
-      "subtitle": "Gets a pagined list of members of a team conversation."
+      "subtitle": "Gets members for a team conversation."
     }
   },
   "Teams.OnMessagingExtensionFetchTask": {
@@ -844,7 +844,7 @@
   },
   "Teams.SendMessageToTeamsChannel": {
     "form": {
-      "label": "Send a message to a teams channel.",
+      "label": "Send a message to a teams channel",
       "order": [
         "activity",
         "teamsChannelId",
@@ -894,6 +894,22 @@
         "*"
       ],
       "subtitle": "Send a message response containing text only."
+    }
+  },
+  "Teams.SendTaskModuleUrlResponse": {
+    "form": {
+      "label": "Send task module url response",
+      "order": [
+        "title",
+        "height",
+        "width",
+        "url",
+        "fallbackUrl",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a continue response containing or url."
     }
   }
 }

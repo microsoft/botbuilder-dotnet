@@ -28,14 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="SendMessagingExtensionQueryResponse"/> class.
         /// </summary>
-        /// <param name="message">Text to create the message response.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionQueryResponse(string message = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionQueryResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.Message = message ?? string.Empty;
         }
 
         /// <summary>

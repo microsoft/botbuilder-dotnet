@@ -29,14 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="SendMessagingExtensionSelectItemResponse"/> class.
         /// </summary>
-        /// <param name="activity">Activity containing an attachment to use to create response.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionSelectItemResponse(Activity activity = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionSelectItemResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-            this.Activity = new StaticActivityTemplate(activity);
         }
 
         /// <summary>
