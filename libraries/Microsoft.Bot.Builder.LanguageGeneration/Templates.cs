@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var template = this.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
             {
-                throw new Exception(TemplateErrors.TemplateExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateExist(templateName));
             }
 
             ClearDiagnostics();
@@ -563,7 +563,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (startLine < 0 || startLine > stopLine || stopLine >= originList.Length)
             {
-                throw new Exception("index out of range.");
+                throw new ArgumentException("index out of range.");
             }
 
             var destList = new List<string>();
@@ -620,7 +620,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var errors = AllDiagnostics.Where(u => u.Severity == DiagnosticSeverity.Error);
                 if (errors.Any())
                 {
-                    throw new Exception(string.Join(_newLine, errors));
+                    throw new InvalidOperationException(string.Join(_newLine, errors));
                 }
             }
         }
