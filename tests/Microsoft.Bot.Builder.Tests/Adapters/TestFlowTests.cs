@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             const string exceptionDescription = "Description message";
             const string stringThatNotSubstring = "some string";
             var message = "Just a sample string".Replace(stringThatNotSubstring, string.Empty);
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
                     {
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
         {
             const string exceptionDescription = "Description message";
             const string message = "Just a sample string";
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await new TestFlow(new TestAdapter(), async (turnContext, cancellationToken) =>
                     {

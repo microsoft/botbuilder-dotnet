@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Handlers
                         }
                         catch (Exception exception)
                         {
-                            throw new Exception($"An exception occurred attempting to resolve an {nameof(IBot)} service via the dependency resolver. Please check the inner exception for more details.", exception);
+                            throw new InvalidOperationException($"An exception occurred attempting to resolve an {nameof(IBot)} service via the dependency resolver. Please check the inner exception for more details.", exception);
                         }
 
                         if (bot == null)
