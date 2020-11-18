@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("TeamsInfo.GetMeetingParticipantAsync() works only on the Teams channel.");
+                throw new InvalidOperationException("TeamsInfo.GetMeetingParticipantAsync() works only on the Teams channel.");
             }
 
             string meetingId = GetValueOrNull(dc, this.MeetingId);
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var (value, valueError) = stringExpression.TryGetValue(dc.State);
                 if (valueError != null)
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {stringExpression.ExpressionText}. Error: {valueError}");
+                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{stringExpression.ExpressionText}\". Error: {valueError}");
                 }
 
                 return value as string;
