@@ -78,7 +78,7 @@ namespace AdaptiveExpressions.Memory
         /// <param name="value">Value to set.</param>
         public void SetValue(string path, object value)
         {
-            throw new Exception($"Can't set value to {path}, stacked memory is read-only");
+            throw new InvalidOperationException($"Can't set value to {path}, stacked memory is read-only");
         }
 
         /// <summary>

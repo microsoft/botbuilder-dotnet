@@ -47,8 +47,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
         protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var input = dc.State.GetValue<string>(VALUE_PROPERTY);
-
+            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
+            if (!(input is string strInput))
+            {
+                return Task.FromResult(InputState.Invalid);
+            }
+            
             if (this.OutputFormat != null)
             {
                 var (outputValue, error) = this.OutputFormat.TryGetValue(dc.State);
@@ -57,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (!string.IsNullOrWhiteSpace(outputValue))
                     {
                         // if the result is null or empty string, ignore it.
-                        input = outputValue.ToString();
+                        strInput = outputValue.ToString();
                     }
                 }
                 else
@@ -66,8 +70,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            dc.State.SetValue(VALUE_PROPERTY, input);
-            return input.Length > 0 ? Task.FromResult(InputState.Valid) : Task.FromResult(InputState.Unrecognized);
+            dc.State.SetValue(VALUE_PROPERTY, strInput);
+            return strInput.Length > 0 ? Task.FromResult(InputState.Valid) : Task.FromResult(InputState.Unrecognized);
         }
     }
 }

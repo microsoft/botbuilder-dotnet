@@ -866,7 +866,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (token == ExceptionExpected)
                 {
-                    throw new Exception("Exception occurred during exchanging tokens");
+                    throw new InvalidOperationException("Exception occurred during exchanging tokens");
                 }
 
                 return Task.FromResult(new TokenResponse()

@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var templateTarget = new EvaluationTarget(templateName, memory);
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (_evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
             {
-                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             object result = null;
@@ -330,7 +330,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var parameters = TemplateMap[templateName].Parameters;
@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var memory = currentScope as CustomizedMemory;
             if (memory == null)
             {
-                throw new Exception(TemplateErrors.InvalidMemory);
+                throw new InvalidOperationException(TemplateErrors.InvalidMemory);
             }
 
             // inherit current memory's global scope
@@ -393,7 +393,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 errorMsg = ConcatErrorMsg(errorMsg, TemplateErrors.ErrorExpression(lineContent, templateName, errorPrefix));
             }
 
-            throw new Exception(ConcatErrorMsg(childErrorMsg, errorMsg));
+            throw new InvalidOperationException(ConcatErrorMsg(childErrorMsg, errorMsg));
         }
 
         private object VisitStructureValue(LGTemplateParser.KeyValueStructureLineContext context)
@@ -693,7 +693,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
-                throw new Exception(TemplateErrors.InvalidTemplateNameType);
+                throw new InvalidOperationException(TemplateErrors.InvalidTemplateNameType);
             }
 
             // Validate more if the name is string constant
@@ -720,7 +720,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count;
@@ -728,7 +728,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
             {
-                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                throw new ArgumentException(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 

@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                     return SectionType.QnaSection;
             }
 
-            throw new Exception("Cannot unmarshal type SectionType");
+            throw new InvalidOperationException("Cannot unmarshal type SectionType");
         }
 
         public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                     return;
             }
 
-            throw new Exception("Cannot marshal type EntitySectionType");
+            throw new InvalidOperationException("Cannot marshal type EntitySectionType");
         }
     }
 
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                     return TypeEnum.MachineLearned;
             }
 
-            throw new Exception("Cannot unmarshal type TypeEnum");
+            throw new InvalidOperationException("Cannot unmarshal type TypeEnum");
         }
 
         public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                     return;
             }
 
-            throw new Exception("Cannot marshal type TypeEnum");
+            throw new InvalidOperationException("Cannot marshal type TypeEnum");
         }
     }
 }

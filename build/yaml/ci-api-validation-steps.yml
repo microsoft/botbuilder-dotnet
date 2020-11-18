@@ -32,19 +32,25 @@ steps:
     useBaseline: false
 
 - powershell: |
-   $FileName = "$(Build.ArtifactStagingDirectory)\$(BotBuilderDll).$(ApiCompatVersion).CompatResults.txt"
-   $FileContent = @(Get-Content $FileName)
-    
-   $FileContent[0] = $FileContent[0] + " compared against [version $(ApiCompatVersion)](https://www.nuget.org/packages/$(BotBuilderDll)/$(ApiCompatVersion))"
-    
-   if ($FileContent.Length -eq 1) {
-   [system.io.file]::WriteAllText($fileName,$FileContent)
-   } else {
-   Set-Content $fileName $FileContent
-   }
-   
-   Write-Host "The updated line 1: `n$FileContent[0]"
+    $FileName = "$(Build.ArtifactStagingDirectory)\$(BotBuilderDll).$(ApiCompatVersion).CompatResults.txt"
+    if (Test-Path $FileName) {
+      $FileContent = @(Get-Content $FileName)
+
+      $FileContent[0] = $FileContent[0] + " compared against [version $(ApiCompatVersion)](https://www.nuget.org/packages/$(BotBuilderDll)/$(ApiCompatVersion))"
+        
+      if ($FileContent.Length -eq 1) {
+        [system.io.file]::WriteAllText($fileName,$FileContent)
+      } else {
+        Set-Content $fileName $FileContent
+      }
+
+      Write-Host "The updated line 1: `n$FileContent[0]"
+    } else {
+      $FileContent = The binary compatibility report for library '$(BotBuilderDll)' wasn't generated. This may have happened because the NuGet library '$(BotBuilderDll)' for version '$(ApiCompatVersion)' was unavailable or a connectivity issue.
+      New-Item -Path '$(Build.ArtifactStagingDirectory)' -Name '$(BotBuilderDll).$(ApiCompatVersion).CompatResults.txt' -ItemType "file" -Value $FileContent
+    }
   displayName: 'Insert nuget link into ApiCompat results file.'
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Compat Results artifact'

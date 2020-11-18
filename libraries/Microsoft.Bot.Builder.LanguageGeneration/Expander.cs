@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var templateTarget = new EvaluationTarget(templateName, memory);
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (_evaluationTargetStack.Any(e => e.GetId() == currentEvaluateId))
             {
-                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace
@@ -613,7 +613,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if ((children0.ReturnType & ReturnType.Object) == 0 && (children0.ReturnType & ReturnType.String) == 0)
             {
-                throw new Exception(TemplateErrors.InvalidTemplateNameType);
+                throw new InvalidOperationException(TemplateErrors.InvalidTemplateNameType);
             }
 
             // Validate more if the name is string constant
@@ -630,7 +630,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count;
@@ -638,7 +638,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (expectedArgsCount != actualArgsCount)
             {
-                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                throw new ArgumentException(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 
@@ -668,7 +668,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!this.TemplateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count;
@@ -676,7 +676,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (actualArgsCount != 0 && expectedArgsCount != actualArgsCount)
             {
-                throw new Exception(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
+                throw new ArgumentException(TemplateErrors.ArgumentMismatch(templateName, expectedArgsCount, actualArgsCount));
             }
         }
 

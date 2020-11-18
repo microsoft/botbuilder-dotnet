@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
             else
             {
-                throw new Exception("`EditActions` should only be used in the context of an adaptive dialog.");
+                throw new InvalidOperationException("`EditActions` should only be used in the context of an adaptive dialog.");
             }
         }
 
