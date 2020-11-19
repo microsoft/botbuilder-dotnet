@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (fallbackLocales.Count == 0)
             {
-                throw new Exception($"No supported language found for {locale}");
+                throw new ArgumentException($"No supported language found for {locale}");
             }
 
             foreach (var fallbackLocale in fallbackLocales)
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            throw new Exception($"No LG responses found for locale: {locale}");
+            throw new ArgumentException($"No LG responses found for locale: {locale}");
         }
 
         /// <summary>

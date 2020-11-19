@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             else
             {
                 // we have not found the goto id.
-                throw new Exception($"GotoAction: could not find an action of '{actionScopeResult.ActionId}'.");
+                throw new ArgumentException($"GotoAction: could not find an action of \"{actionScopeResult.ActionId}\".");
             }
         }
 

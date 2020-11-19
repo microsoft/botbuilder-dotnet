@@ -319,7 +319,7 @@
   },
   "Microsoft.LogAction": {
     "form": {
-      "helpLink": "https://aka.ms/bfc-debugging-bots",
+      "helpLink": "https://aka.ms/composer-telemetry",
       "label": "Log to console",
       "subtitle": "Log Action"
     }
@@ -399,6 +399,17 @@
         "*"
       ],
       "subtitle": "Cancel dialog event"
+    }
+  },
+  "Microsoft.OnChooseIntent": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "order": [
+        "condition",
+        "*"
+      ]
     }
   },
   "Microsoft.OnCondition": {
@@ -762,7 +773,7 @@
   },
   "Microsoft.TraceActivity": {
     "form": {
-      "helpLink": "https://aka.ms/bfc-debugging-bots",
+      "helpLink": "https://aka.ms/composer-telemetry",
       "label": "Emit a trace event",
       "subtitle": "Trace Activity"
     }

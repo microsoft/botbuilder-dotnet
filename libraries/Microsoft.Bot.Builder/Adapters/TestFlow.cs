@@ -234,12 +234,12 @@ namespace Microsoft.Bot.Builder.Adapters
                     {
                         if (description == null)
                         {
-                            throw new Exception(
+                            throw new InvalidOperationException(
                                 $"Expected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
                         }
                         else
                         {
-                            throw new Exception(
+                            throw new InvalidOperationException(
                                 $"{description}:\nExpected:{expected}\nReceived:{replyAsMessageActivity?.Text ?? "Not a Message Activity"}");
                         }
                     }
@@ -280,14 +280,14 @@ namespace Microsoft.Bot.Builder.Adapters
                     description = description ?? expected.AsMessageActivity()?.Text.Trim();
                     if (expected.Type != reply.Type)
                     {
-                        throw new Exception($"{description}: Type should match");
+                        throw new InvalidOperationException($"{description}: Type should match");
                     }
 
                     if (equalityComparer != null)
                     {
                         if (!equalityComparer.Equals(expected, reply))
                         {
-                            throw new Exception($"Expected:{expected}\nReceived:{reply}");
+                            throw new InvalidOperationException($"Expected:{expected}\nReceived:{reply}");
                         }
                     }
                     else
@@ -296,11 +296,11 @@ namespace Microsoft.Bot.Builder.Adapters
                         {
                             if (description == null)
                             {
-                                throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                                throw new InvalidOperationException($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
                             }
                             else
                             {
-                                throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                                throw new InvalidOperationException($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
                             }
                         }
                     }
@@ -365,7 +365,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         if (replyActivity != null)
                         {
                             // if we have a reply
-                            throw new Exception($"{replyActivity.ToString()} is repsonded when waiting for no reply:'{description}'");
+                            throw new InvalidOperationException($"{replyActivity.ToString()} is responded when waiting for no reply:'{description}'");
                         }
                     }
                     catch (TaskCanceledException)
@@ -530,7 +530,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         }
                     }
 
-                    throw new Exception(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
+                    throw new InvalidOperationException(description ?? $"Text \"{text}\" does not match one of candidates: {string.Join("\n", candidates)}");
                 },
                 description,
                 timeout);
