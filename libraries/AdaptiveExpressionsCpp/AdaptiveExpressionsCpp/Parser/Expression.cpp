@@ -128,7 +128,7 @@ Expression* Expression::getChildren()
 }
 */
 
-ValueErrorTuple Expression::TryEvaluate(void* state, void* options)
+ValueErrorTuple Expression::TryEvaluate(void* state, Options* options)
 {
     return m_evaluator->TryEvaluate(this, state, options);
 }

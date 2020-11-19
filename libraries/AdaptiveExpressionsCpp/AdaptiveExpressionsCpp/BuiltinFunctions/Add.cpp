@@ -11,8 +11,6 @@ AdaptiveExpressions_BuiltinFunctions::Add::Add() :
 {
 }
 
-
-
 ValueErrorTuple AdaptiveExpressions_BuiltinFunctions::Add::EvaluateOperator(std::vector<std::any> args)
 {
     std::any result;

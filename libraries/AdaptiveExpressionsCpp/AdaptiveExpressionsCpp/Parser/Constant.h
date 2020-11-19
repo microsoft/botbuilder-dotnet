@@ -24,6 +24,6 @@ class ConstantExpressionEvaluator : public ExpressionEvaluator
 public:
     ConstantExpressionEvaluator();
 
-    virtual ValueErrorTuple TryEvaluate(Expression* expression, void* state, void* options) override;
+    virtual ValueErrorTuple TryEvaluate(Expression* expression, void* state, Options* options) override;
     virtual void ValidateExpression(Expression* expression) override;
 };

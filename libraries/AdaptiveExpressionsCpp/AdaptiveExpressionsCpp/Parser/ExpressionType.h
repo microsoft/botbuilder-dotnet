@@ -35,9 +35,9 @@ public:
     const std::string Exists = "exists";
 
     // Logic
-    const std::string And = "&&";
-    const std::string Or = "||";
-    const std::string Not = "!";
+    static const std::string And;
+    static const std::string Or;
+    static const std::string Not;
 
     // String
     const std::string Concat = "concat";

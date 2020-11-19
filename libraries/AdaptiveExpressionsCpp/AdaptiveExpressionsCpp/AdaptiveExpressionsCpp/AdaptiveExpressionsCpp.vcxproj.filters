@@ -207,6 +207,12 @@
     <ClInclude Include="..\BuiltinFunctions\Subtract.h">
       <Filter>BuiltinFunctions</Filter>
     </ClInclude>
+    <ClInclude Include="..\BuiltinFunctions\And.h">
+      <Filter>BuiltinFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parser\Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\pch.cpp">
@@ -255,6 +261,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\BuiltinFunctions\Subtract.cpp">
+      <Filter>BuiltinFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BuiltinFunctions\And.cpp">
       <Filter>BuiltinFunctions</Filter>
     </ClCompile>
   </ItemGroup>

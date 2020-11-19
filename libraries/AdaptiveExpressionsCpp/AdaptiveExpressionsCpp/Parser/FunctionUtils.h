@@ -39,8 +39,9 @@ public:
 
     static bool isInteger(std::any value);
     static bool isNumber(std::any value);
+    static bool isLogicTrue(std::any value);
 
-    static ValueErrorTuple EvaluateChildren(Expression* expression, void* state, void* options, void* verify = nullptr);
+    static ValueErrorTuple EvaluateChildren(Expression* expression, void* state, Options* options, void* verify = nullptr);
 
     static std::any ResolveValue(std::any value);
 
