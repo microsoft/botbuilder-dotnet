@@ -40,7 +40,7 @@ private:
         antlrcpp::Any visitNumericAtom(ExpressionAntlrParser::NumericAtomContext* ctx) override;
 
     private:
-        Expression* MakeExpression(std::string functionType, size_t childrenCount, std::vector<Expression*> children);
+        Expression* MakeExpression(std::string functionType, std::vector<Expression*> children);
 
         const std::string escapeRegex = "\\[^\r\n]?";
         EvaluatorLookup m_lookupFunction;

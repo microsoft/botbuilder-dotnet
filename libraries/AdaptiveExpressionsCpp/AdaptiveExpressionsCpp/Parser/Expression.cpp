@@ -7,18 +7,17 @@ Expression::Expression()
 {
 }
 
-Expression::Expression(std::string type, size_t childrenCount, std::vector<Expression*> children)
+Expression::Expression(std::string type, std::vector<Expression*> children)
 {
     // m_evaluator = Functions[type]; // ? ? throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a custom function.");
     m_children = children;
-    m_childrenCount = childrenCount;
 }
 
-Expression::Expression(ExpressionEvaluator* evaluator) : Expression(evaluator, 0, std::vector<Expression*>())
+Expression::Expression(ExpressionEvaluator* evaluator) : Expression(evaluator, std::vector<Expression*>())
 {
 }
 
-Expression::Expression(ExpressionEvaluator* evaluator, size_t childrenCount, std::vector<Expression*> children)
+Expression::Expression(ExpressionEvaluator* evaluator, std::vector<Expression*> children)
 {
     if (evaluator == nullptr)
     {
@@ -27,7 +26,6 @@ Expression::Expression(ExpressionEvaluator* evaluator, size_t childrenCount, std
 
     m_evaluator = evaluator;
     m_children = children;
-    m_childrenCount = childrenCount;
 }
 
 std::string trimStart(const std::string& s, std::string chars)
@@ -75,9 +73,9 @@ Expression* Expression::Parse(std::string expression, EvaluatorLookup lookup)
     return parser->Parse(!(expression.empty()) ? trimStart(expression, "=") : std::string());
 }
 
-Expression* Expression::MakeExpression(ExpressionEvaluator* evaluator, size_t childrenCount, std::vector<Expression*> children)
+Expression* Expression::MakeExpression(ExpressionEvaluator* evaluator, std::vector<Expression*> children)
 {
-    auto expr = new Expression(evaluator, childrenCount, children);
+    auto expr = new Expression(evaluator, children);
     expr->Validate();
     return expr;
 }
@@ -109,7 +107,7 @@ ReturnType Expression::getReturnType()
 
 size_t Expression::getChildrenCount()
 {
-    return m_childrenCount;
+    return m_children.size();
 }
 
 Expression* Expression::getChildAt(size_t pos)

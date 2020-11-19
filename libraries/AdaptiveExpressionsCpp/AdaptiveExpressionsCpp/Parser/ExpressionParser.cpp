@@ -34,11 +34,11 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFile(ExpressionAntlr
         expressions.push_back((new Constant(0)));
         expressions.push_back(operand);
 
-        return MakeExpression(unaryOperationName, 2, expressions);
+        return MakeExpression(unaryOperationName, expressions);
     }
 
     // expressions.push_back(new Expression(operand));
-    return MakeExpression(unaryOperationName, 1, expressions);
+    return MakeExpression(unaryOperationName, expressions);
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitStringAtom(ExpressionAntlrParser::StringAtomContext* ctx)
@@ -69,10 +69,10 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitUnaryOpExp(Expressio
     if (unaryOperationName == ExpressionType::Subtract
         || unaryOperationName == ExpressionType::Add)
     {
-        return MakeExpression(unaryOperationName, 2, std::vector<Expression*>{new Constant(0), operand});
+        return MakeExpression(unaryOperationName, std::vector<Expression*>{new Constant(0), operand});
     }
 
-    return MakeExpression(unaryOperationName, 1, std::vector<Expression*>{operand});
+    return MakeExpression(unaryOperationName, std::vector<Expression*>{operand});
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitBinaryOpExp(ExpressionAntlrParser::BinaryOpExpContext* ctx)
@@ -87,12 +87,32 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitBinaryOpExp(Expressi
     children.push_back(leftExpression1);
     children.push_back(right.as<Expression*>());
 
-    return MakeExpression(binaryOperationName, 2, children);
+    return MakeExpression(binaryOperationName, children);
 }
 
-antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFuncInvokeExp(ExpressionAntlrParser::FuncInvokeExpContext* ctx)
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFuncInvokeExp(ExpressionAntlrParser::FuncInvokeExpContext* context)
 {
-    return antlrcpp::Any();
+    ExpressionAntlrParser::ArgsListContext* argContext = context->argsList();
+    std::vector<antlr4::tree::ParseTree*> argChildren = argContext->children;
+
+    std::vector<Expression*> childExpressions;
+    for (auto argChild : argChildren)
+    {
+        // TODO - in the C# version this part happens in a ProcessArgsList function that also checks for LambdaContexts
+        if (dynamic_cast<ExpressionAntlrParser::ExpressionContext*>(argChild))
+        {
+            auto childExpression = visit(argChild);
+            childExpressions.push_back(childExpression);
+        }
+    }
+
+    std::string functionName = context->primaryExpression()->getText();
+    if (context->NON() != nullptr)
+    {
+        functionName += context->NON()->getText();
+    }
+
+    return MakeExpression(functionName, childExpressions);
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitIdAtom(ExpressionAntlrParser::IdAtomContext* ctx)
@@ -129,8 +149,9 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitNumericAtom(Expressi
         int integer = std::stoi(numericString);
         return Expression::ConstantExpression(integer);
     }
-    catch (const std::bad_any_cast&) 
-    {}
+    catch (const std::bad_any_cast&)
+    {
+    }
 
     try
     {
@@ -144,19 +165,19 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitNumericAtom(Expressi
         double decimalValue = std::stod(numericString);
         return Expression::ConstantExpression(decimalValue);
     }
-    catch (const std::bad_any_cast&) 
+    catch (const std::bad_any_cast&)
     {
         // throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
     }
 
-    
+
     return Expression::ConstantExpression(0);
 }
 
 /*
 public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.StringAtomContext context)
 {
-    
+
     var text = context.GetText();
     if (text.StartsWith("'", StringComparison.Ordinal) && text.EndsWith("'", StringComparison.Ordinal))
     {
@@ -172,14 +193,14 @@ public override Expression VisitStringAtom([NotNull] ExpressionAntlrParser.Strin
     }
 
     return Expression.ConstantExpression(EvalEscape(text));
-    
+
     return nullptr;
 }
 */
 
-Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string functionType, size_t childrenCount, std::vector<Expression*> children)
+Expression* ExpressionParser::ExpressionTransformer::MakeExpression(std::string functionType, std::vector<Expression*> children)
 {
-    return Expression::MakeExpression(m_lookupFunction(functionType), childrenCount, children);
+    return Expression::MakeExpression(m_lookupFunction(functionType), children);
     // If lookup function fails, throw this: throw new SyntaxErrorException($"{functionType} does not have an evaluator, it's not a built-in function or a custom function.")
 }
 
@@ -191,7 +212,7 @@ EvaluatorLookup ExpressionParser::getEvaluatorLookup()
 /*
 Expression* ExpressionParser::Parse(std::string expression)
 {
-    
+
     if (expression.size() == 0)
     {
         return Expression::ConstantExpression(std::string());
@@ -200,7 +221,7 @@ Expression* ExpressionParser::Parse(std::string expression)
     {
         return new ExpressionTransformer(m_evaluatorLookup)->Transform(AntlrParse(expression));
     }
-    
+
 }
 */
 
@@ -212,6 +233,7 @@ ExpressionParser::ExpressionParser(EvaluatorLookup lookup)
 antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
 {
     /*
+    // The expressionDict is a cache i think
     if (expressionDict.TryGetValue(expression, out var expressionParseTree))
     {
         return expressionParseTree;
@@ -235,7 +257,7 @@ antlr4::tree::ParseTree* ExpressionParser::AntlrParse(std::string expression)
     }
 
     // expressionDict.TryAdd(expression, expressionContext);
-    
+
     return expressionContext;
 }
 
