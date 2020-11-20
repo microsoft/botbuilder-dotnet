@@ -235,6 +235,21 @@
     SuggestedActions = Add todo | View Todo | Remove Todo | Cancel | Help
 ]
 
+# InvokeResponseExample
+[ Activity
+  Type = invokeResponse
+  Value = ${json(InvokeResponseTemplate())}
+]
+
+# InvokeResponseTemplate
+- ```
+{
+    "status": 200,
+    "body": {
+        "test": true
+    }
+}
+```
 
 > --------------internal cardaction templates----------------------
 # cardActionTemplate(type, title, value)

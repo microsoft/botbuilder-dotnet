@@ -90,6 +90,12 @@ namespace Microsoft.Bot.Builder
             else if (type == nameof(Activity).ToLowerInvariant())
             {
                 activity = BuildActivity(lgJObj);
+
+                // InvokeResponse requires value to be a InvokeResponse typed object. 
+                if (activity.Type == ActivityTypesEx.InvokeResponse && activity.Value != null)
+                {
+                    activity.Value = JObject.FromObject(activity.Value).ToObject<InvokeResponse>();
+                }
             }
             else
             {
