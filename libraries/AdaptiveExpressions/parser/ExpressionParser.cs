@@ -181,22 +181,24 @@ namespace AdaptiveExpressions
 
             public override Expression VisitNumericAtom([NotNull] ExpressionAntlrParser.NumericAtomContext context)
             {
-                if (int.TryParse(context.GetText(), out var intValue))
+                var contextText = context.GetText();
+
+                if (int.TryParse(contextText, out var intValue))
                 {
                     return Expression.ConstantExpression(intValue);
                 }
 
-                if (long.TryParse(context.GetText(), out var longValue))
+                if (long.TryParse(contextText, out var longValue))
                 {
                     return Expression.ConstantExpression(longValue);
                 }
 
-                if (double.TryParse(context.GetText(), NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue))
+                if (double.TryParse(contextText, NumberStyles.Any, CultureInfo.InvariantCulture, out var doubleValue))
                 {
                     return Expression.ConstantExpression(doubleValue);
                 }
 
-                throw new Exception($"{context.GetText()} is not a number in expression '{context.GetText()}'");
+                throw new ArgumentException($"{contextText} is not a number in expression \"{contextText}\"");
             }
 
             public override Expression VisitParenthesisExp([NotNull] ExpressionAntlrParser.ParenthesisExpContext context) => Visit(context.expression());
@@ -220,7 +222,7 @@ namespace AdaptiveExpressions
                 }
                 else
                 {
-                    throw new Exception($"Invalid string {text}");
+                    throw new ArgumentException($"Invalid string {text}");
                 }
 
                 return Expression.ConstantExpression(EvalEscape(text));

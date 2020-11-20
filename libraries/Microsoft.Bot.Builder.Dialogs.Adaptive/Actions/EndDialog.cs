@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (error != null)
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {error}");
+                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{this.Value.ToString()}\". Error: {error}");
                 }
 
                 if (result != null)

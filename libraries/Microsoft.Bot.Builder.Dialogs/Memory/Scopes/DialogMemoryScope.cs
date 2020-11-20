@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 dc.ActiveDialog.State = (IDictionary<string, object>)memory;
             }
 
-            throw new Exception("Cannot set DialogMemoryScope. There is no active dialog dialog or parent dialog in the context");
+            throw new InvalidOperationException("Cannot set DialogMemoryScope. There is no active dialog or parent dialog in the context");
         }
     }
 }

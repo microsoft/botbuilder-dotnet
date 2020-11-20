@@ -76,18 +76,18 @@ namespace Microsoft.Bot.Streaming
         /// <returns>On success, a string populated with data read from the <see cref="ReceiveRequest"/> body.
         /// Otherwise null.
         /// </returns>
-        public static Task<string> ReadBodyAsStringAsync(this ReceiveRequest request)
+        public static async Task<string> ReadBodyAsStringAsync(this ReceiveRequest request)
         {
             var contentStream = request.Streams.FirstOrDefault();
 
             if (contentStream == null)
             {
-                return Task.FromResult(string.Empty);
+                return string.Empty;
             }
 
             using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
             {
-                return reader.ReadToEndAsync();
+                return await reader.ReadToEndAsync().ConfigureAwait(false);
             }
         }
     }

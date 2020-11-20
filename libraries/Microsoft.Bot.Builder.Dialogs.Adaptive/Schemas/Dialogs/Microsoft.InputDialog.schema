@@ -54,6 +54,8 @@
             "title": "Max turn count",
             "description": "Maximum number of re-prompt attempts to collect information.",
             "default": 3,
+            "minimum": 0,
+            "maximum": 2147483647,
             "examples": [
                 3,
                 "=settings.xyz"

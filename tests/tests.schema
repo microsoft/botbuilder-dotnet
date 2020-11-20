@@ -634,21 +634,6 @@
           "description": "Value that will be passed back to the parent dialog.",
           "default": "dialog.result"
         },
-        "dialogs": {
-          "type": "array",
-          "title": "Dialogs added to DialogSet.",
-          "dialog": {
-            "oneOf": [
-              {
-                "$kind": "Microsoft.IDialog",
-                "title": "Dialog",
-                "$ref": "#/definitions/Microsoft.IDialog"
-              }
-            ],
-            "title": "Dialog name",
-            "description": "Name of the dialog to call."
-          }
-        },
         "recognizer": {
           "$kind": "Microsoft.IRecognizer",
           "title": "Recognizer",
@@ -938,6 +923,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -1034,6 +1021,7 @@
           "oneOf": [
             {
               "$kind": "Microsoft.IDialog",
+              "pattern": "^(?!(=)).*",
               "title": "Dialog",
               "$ref": "#/definitions/Microsoft.IDialog"
             },
@@ -1681,6 +1669,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -2020,6 +2010,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -2435,6 +2427,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -3817,8 +3811,7 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string",
-          "pattern": "^(?!(=)).*"
+          "type": "string"
         }
       ]
     },
@@ -4335,6 +4328,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -4929,6 +4924,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -9558,6 +9555,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"

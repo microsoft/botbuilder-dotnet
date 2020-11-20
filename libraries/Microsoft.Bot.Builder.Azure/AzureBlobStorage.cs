@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Builder.Azure
                 when (ex.RequestInformation.HttpStatusCode == (int)HttpStatusCode.BadRequest
                 && ex.RequestInformation.ErrorCode == BlobErrorCodeStrings.InvalidBlockList)
                 {
-                    throw new Exception(
+                    throw new InvalidOperationException(
                         $"An error ocurred while trying to write an object. The underlying '{BlobErrorCodeStrings.InvalidBlockList}' error is commonly caused due to concurrently uploading an object larger than 128MB in size.",
                         ex);
                 }

@@ -324,6 +324,11 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="activity">The incoming activity to be processed by a <see cref="StreamingRequestHandler"/>.</param>
         private string GetAudienceFromCallerId(Activity activity)
         {
+            if (string.IsNullOrEmpty(activity.CallerId))
+            {
+                return null;
+            }
+
             switch (activity.CallerId)
             {
                 case CallerIdConstants.PublicAzureChannel:

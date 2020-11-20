@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var (val, valueError) = propValue.Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {propValue.Value.ToString()}. Error: {valueError}");
+                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{propValue.Value.ToString()}\". Error: {valueError}");
                 }
 
                 if (val != null)
