@@ -574,6 +574,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Fact]
         public async Task ProcessAsyncShouldSucceedOnBlockActions() => await TestFormBody("BlockActionsBody.txt");
 
+        [Fact]
+        public async Task ProcessAsyncShouldSucceedOnBlockActionsWithStringState() => await TestFormBody("BlockActionsWithStringState.txt");
+
         private static Mock<HttpResponse> GetHttpResponseMock()
         {
             var httpResponse = new Mock<HttpResponse>();
