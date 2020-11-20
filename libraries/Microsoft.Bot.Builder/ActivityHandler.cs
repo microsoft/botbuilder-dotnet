@@ -76,6 +76,9 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.Event:
                     return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.EndOfConversation:
+                    return OnEndOfConversationActivityAsync(new DelegatingTurnContext<IEndOfConversationActivity>(turnContext), cancellationToken);
+
                 default:
                     return OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
             }
