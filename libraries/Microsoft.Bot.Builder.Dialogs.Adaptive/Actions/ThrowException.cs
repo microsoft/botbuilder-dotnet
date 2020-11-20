@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 value = this.ErrorValue.GetValue(dc.State);
             }
 
-            throw new Exception(value?.ToString());
+            throw new InvalidOperationException(value?.ToString());
         }
 
         /// <summary>

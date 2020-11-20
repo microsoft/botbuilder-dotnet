@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
             if (bfAdapter == null)
             {
-                throw new Exception("GetActivityMembers() only works with BotFrameworkAdapter");
+                throw new InvalidOperationException("GetActivityMembers() only works with BotFrameworkAdapter");
             }
 
             string id = dc.Context.Activity.Id;
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var (value, valueError) = this.ActivityId.TryGetValue(dc.State);
                 if (valueError != null)
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {this.ActivityId}. Error: {valueError}");
+                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{this.ActivityId}\". Error: {valueError}");
                 }
 
                 id = value as string;

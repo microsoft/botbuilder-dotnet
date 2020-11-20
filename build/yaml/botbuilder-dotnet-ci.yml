@@ -71,6 +71,8 @@ stages:
 - stage: API_Compatibility_Validation
   condition: ne(variables['DisableApiCompatibityValidation'], 'true')
   dependsOn: Build
+  variables:
+    skipComponentGovernanceDetection: true # the task is already injected into the build jobs, so unnecessary here.
   jobs:
   - job: generate_multiconfig_var
     steps:

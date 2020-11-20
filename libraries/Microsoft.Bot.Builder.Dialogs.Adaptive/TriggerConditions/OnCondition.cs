@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Invalid constraint expression: {this.Condition}, {e.Message}");
+                    throw new InvalidOperationException($"Invalid constraint expression: {this.Condition}, {e.Message}");
                 }
             }
         }

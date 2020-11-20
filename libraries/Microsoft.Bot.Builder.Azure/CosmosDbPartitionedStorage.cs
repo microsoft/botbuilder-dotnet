@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Azure
                 }
                 else
                 {
-                    throw new Exception("etag empty");
+                    throw new ArgumentException("etag empty");
                 }
             }
         }

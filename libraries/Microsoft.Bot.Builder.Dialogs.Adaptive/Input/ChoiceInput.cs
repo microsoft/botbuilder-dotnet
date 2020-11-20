@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var (choices, error) = this.Choices.TryGetValue(dc.State);
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    throw new InvalidOperationException(error);
                 }
 
                 op.Choices = choices;
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var (choices, error) = this.Choices.TryGetValue(dc.State);
             if (error != null)
             {
-                throw new Exception(error);
+                throw new InvalidOperationException(error);
             }
 
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style.GetValue(dc.State), choiceOptions);

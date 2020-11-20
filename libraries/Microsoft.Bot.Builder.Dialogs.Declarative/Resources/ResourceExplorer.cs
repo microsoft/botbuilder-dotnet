@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     };
                 }
 
-                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}", err);
+                throw new InvalidOperationException($"{id} error: {err.Message}\n{err.InnerException?.Message}", err);
             }
         }
 
@@ -336,7 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
             if (result == null)
             {
-                throw new Exception($"Factory registration for name {kind} resulted in type {built.GetType()}, but expected assignable to {typeof(T)}");
+                throw new ArgumentException($"Factory registration for name {kind} resulted in type {built.GetType()}, but expected assignable to {typeof(T)}");
             }
 
             return result;

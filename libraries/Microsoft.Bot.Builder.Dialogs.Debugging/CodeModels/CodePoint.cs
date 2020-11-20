@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels
             var result = exp.TryEvaluate(DialogContext.State);
             if (!string.IsNullOrEmpty(result.error))
             {
-                throw new Exception(result.error);
+                throw new InvalidOperationException(result.error);
             }
 
             return result.value;

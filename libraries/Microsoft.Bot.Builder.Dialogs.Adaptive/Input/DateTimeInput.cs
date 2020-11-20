@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                     else
                     {
-                        throw new Exception($"OutputFormat Expression evaluation resulted in an error. Expression: {this.OutputFormat}. Error: {error}");
+                        throw new InvalidOperationException($"OutputFormat Expression evaluation resulted in an error. Expression: {this.OutputFormat}. Error: {error}");
                     }
                 }
             }

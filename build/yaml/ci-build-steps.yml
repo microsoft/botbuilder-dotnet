@@ -4,10 +4,8 @@ steps:
 
 # Variables ReleasePackageVersion and PreviewPackageVersion are consumed by projects in Microsoft.Bot.Builder.sln.
 # For the signed build, they should be settable at queue time. To set that up, define the variables in Azure on the Variables tab.
-- task: NuGetToolInstaller@0
-  displayName: 'Use NuGet 4.9.1'
-  inputs:
-    versionSpec: 4.9.1
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet '
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
