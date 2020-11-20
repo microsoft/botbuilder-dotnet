@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
-        public async Task TestOnEndOfConversationActivityType()
+        public async Task TestEndOfConversationActivity()
         {
             // Arrange
             var activity = new Activity
