@@ -305,7 +305,7 @@
       "$ref": "#/definitions/Microsoft.SwitchCondition"
     },
     {
-      "$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
+      "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
     },
     {
       "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
@@ -633,6 +633,16 @@
           "title": "Default result property",
           "description": "Value that will be passed back to the parent dialog.",
           "default": "dialog.result"
+        },
+        "dialogs": {
+          "type": "array",
+          "title": "Dialogs added to DialogSet",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "A dialog will be add to DialogSet",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
         },
         "recognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -1021,7 +1031,6 @@
           "oneOf": [
             {
               "$kind": "Microsoft.IDialog",
-              "pattern": "^(?!(=)).*",
               "title": "Dialog",
               "$ref": "#/definitions/Microsoft.IDialog"
             },
@@ -3784,7 +3793,7 @@
           "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
-          "$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
+          "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
         },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
@@ -3811,7 +3820,8 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?!(=)).*"
         }
       ]
     },
@@ -8253,7 +8263,7 @@
         }
       }
     },
-    "Microsoft.TelemetryTrackEvent": {
+    "Microsoft.TelemetryTrackEventAction": {
       "$role": "implements(Microsoft.IDialog)",
       "type": "object",
       "title": "Telemetry - track event",
@@ -8306,7 +8316,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.TelemetryTrackEvent"
+          "const": "Microsoft.TelemetryTrackEventAction"
         },
         "$designer": {
           "title": "Designer information",

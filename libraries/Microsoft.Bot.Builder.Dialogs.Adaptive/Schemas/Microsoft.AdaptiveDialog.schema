@@ -24,16 +24,11 @@
         },
         "dialogs": {
             "type": "array",
-            "title": "Dialogs added to DialogSet.",
-            "dialog": {
-                "oneOf": [
-                    {
-                        "$kind": "Microsoft.IDialog",
-                        "title": "Dialog"
-                    }
-                ],
-                "title": "Dialog name",
-                "description": "Name of the dialog to call."
+            "title": "Dialogs added to DialogSet",
+            "items": {
+                "$kind": "Microsoft.IDialog",
+                "title": "Dialog",
+                "description": "Dialogs will be added to DialogSet."
             }
         },
         "recognizer": {
