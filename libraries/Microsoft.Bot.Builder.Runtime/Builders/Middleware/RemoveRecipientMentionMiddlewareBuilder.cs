@@ -4,19 +4,33 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
 {
+    /// <summary>
+    /// Defines an implementation of <see cref="IMiddlewareBuilder"/> that returns an instance
+    /// of <see cref="RemoveRecipientMentionMiddlewareBuilder"/>.
+    /// </summary>
     [JsonObject]
     public class RemoveRecipientMentionMiddlewareBuilder : IMiddleware, IMiddlewareBuilder
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.RemoveRecipientMentionMiddleware";
 
+        /// <summary>
+        /// Builds an instance of type <see cref="RemoveRecipientMentionMiddlewareBuilder"/>.
+        /// </summary>
+        /// <param name="services">
+        /// Provider containing all services registered with the application's service collection.
+        /// </param>
+        /// <param name="configuration">Application configuration.</param>
+        /// <returns>An instance of type <see cref="RemoveRecipientMentionMiddlewareBuilder"/>.</returns>
         public IMiddleware Build(IServiceProvider services, IConfiguration configuration)
         {
             if (services == null)

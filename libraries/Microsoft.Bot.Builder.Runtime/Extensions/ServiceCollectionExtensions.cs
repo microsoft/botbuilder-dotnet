@@ -17,8 +17,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.Runtime.Extensions
 {
+    /// <summary>
+    /// Defines extension methods for <see cref="IServiceCollection"/>.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds bot runtime-related services to the application's service collection.
+        /// </summary>
+        /// <param name="services">The application's collection of registered services.</param>
+        /// <param name="configuration">The application configuration.</param>
         public static void AddBotCore(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
@@ -47,6 +55,23 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
                         .RegisterType<OnQnAMatch>(OnQnAMatch.Kind));
         }
 
+        /// <summary>
+        /// Adds bot runtime-related services to the application's service collection.
+        /// </summary>
+        /// <remarks>
+        /// For applications being developed utilizing the runtime, we expect that the configured
+        /// <see cref="ResourceExplorer"/> will utilize declarative assets from the local development environment's
+        /// file directories.
+        ///
+        /// However, as this would cause additional overhead for testing purposes, we expose this
+        /// function solely to test assemblies to enable providing an instance of <see cref="ResourceExplorer"/>
+        /// that loads resources using a custom in-memory provider.
+        /// </remarks>
+        /// <param name="services">The application's collection of registered services.</param>
+        /// <param name="configuration">The application configuration.</param>
+        /// <param name="resourceExplorerImplementationFactory">
+        /// Function used to build an instance of <see cref="ResourceExplorer"/> from registered services.
+        /// </param>
         internal static void AddBotCore(
             this IServiceCollection services,
             IConfiguration configuration,

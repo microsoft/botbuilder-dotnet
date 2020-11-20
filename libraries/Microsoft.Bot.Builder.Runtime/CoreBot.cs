@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -19,6 +18,9 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Runtime
 {
+    /// <summary>
+    /// Defines the bot runtime standard implementation of <see cref="ActivityHandler"/>.
+    /// </summary>
     public class CoreBot : ActivityHandler
     {
         private const string DefaultLocale = "en-US";
@@ -27,6 +29,11 @@ namespace Microsoft.Bot.Builder.Runtime
         private readonly DialogManager _dialogManager;
         private readonly UserState _userState;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CoreBot"/> class.
+        /// </summary>
+        /// <param name="services">Services registered with the application.</param>
+        /// <param name="options">Configured options for the <see cref="CoreBot"/> instance.</param>
         public CoreBot(IServiceProvider services, IOptions<CoreBotOptions> options)
         {
             this._conversationState = services.GetRequiredService<ConversationState>();
@@ -35,6 +42,31 @@ namespace Microsoft.Bot.Builder.Runtime
             this._dialogManager = CreateDialogManager(services, options);
         }
 
+        /// <summary>
+        /// Called by the adapter (for example, a <see cref="BotFrameworkAdapter"/>)
+        /// at runtime in order to process an inbound <see cref="Activity"/>.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// This method calls other methods in this class based on the type of the activity to
+        /// process, which allows a derived class to provide type-specific logic in a controlled way.
+        ///
+        /// In a derived class, override this method to add logic that applies to all activity types.
+        /// Add logic to apply before the type-specific logic before the call to the base class
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> method.
+        /// Add logic to apply after the type-specific logic after the call to the base class
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> method.
+        /// </remarks>
+        /// <seealso cref="ActivityHandler.OnMessageActivityAsync(ITurnContext{IMessageActivity}, CancellationToken)"/>
+        /// <seealso cref="ActivityHandler.OnConversationUpdateActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
+        /// <seealso cref="ActivityHandler.OnMessageReactionActivityAsync(ITurnContext{IMessageReactionActivity}, CancellationToken)"/>
+        /// <seealso cref="ActivityHandler.OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/>
+        /// <seealso cref="ActivityHandler.OnUnrecognizedActivityTypeAsync(ITurnContext, CancellationToken)"/>
+        /// <seealso cref="Activity.Type"/>
+        /// <seealso cref="ActivityTypes"/>
         public override async Task OnTurnAsync(
             ITurnContext turnContext,
             CancellationToken cancellationToken = default(CancellationToken))

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -18,8 +17,16 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Runtime
 {
+    /// <summary>
+    /// <see cref="ComponentRegistration"/> implementation for standard bot runtime components.
+    /// </summary>
     public class CoreBotComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
+        /// <summary>
+        /// Gets standard bot runtime <see cref="DeclarativeType"/> resources.
+        /// </summary>
+        /// <param name="resourceExplorer"><see cref="ResourceExplorer"/> with expected path to get all schema resources.</param>
+        /// <returns>Adaptive <see cref="DeclarativeType"/> resources.</returns>
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Middleware builders
@@ -71,6 +78,12 @@ namespace Microsoft.Bot.Builder.Runtime
                 ApplicationInsightsTelemetryProvider.Kind);
         }
 
+        /// <summary>
+        /// Gets standard bot runtime <see cref="JsonConverter"/> resources.
+        /// </summary>
+        /// <param name="resourceExplorer"><see cref="ResourceExplorer"/> to use to resolve references.</param>
+        /// <param name="sourceContext"><see cref="SourceContext"/> to build debugger source map.</param>
+        /// <returns>Adaptive <see cref="JsonConverter"/> resources.</returns>
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
             yield return new InterfaceConverter<IMiddlewareBuilder>(resourceExplorer, sourceContext);

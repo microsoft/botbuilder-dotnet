@@ -2,19 +2,34 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
 {
     // TODO #39: Change parent interface to ITranscriptStoreBuilder
+
+    /// <summary>
+    /// Defines an implementation of <see cref="ITranscriptLoggerBuilder"/> that returns an instance
+    /// of <see cref="MemoryTranscriptStore"/>.
+    /// </summary>
     [JsonObject]
     public class MemoryTranscriptStoreBuilder : ITranscriptLoggerBuilder
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.MemoryTranscriptStore";
 
+        /// <summary>
+        /// Builds an instance of type <see cref="MemoryTranscriptStore"/>.
+        /// </summary>
+        /// <param name="services">
+        /// Provider containing all services registered with the application's service collection.
+        /// </param>
+        /// <param name="configuration">Application configuration.</param>
+        /// <returns>An instance of type <see cref="MemoryTranscriptStore"/>.</returns>
         public ITranscriptLogger Build(IServiceProvider services, IConfiguration configuration)
         {
             if (services == null)

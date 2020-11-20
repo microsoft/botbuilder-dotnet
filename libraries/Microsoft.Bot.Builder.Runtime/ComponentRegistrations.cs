@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs;
@@ -10,8 +9,14 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 
 namespace Microsoft.Bot.Builder.Runtime
 {
+    /// <summary>
+    /// Defines the standard set of component registrations to be applied within the bot runtime.
+    /// </summary>
     internal static class ComponentRegistrations
     {
+        /// <summary>
+        /// Add standard component registrations to the bot runtime.
+        /// </summary>
         internal static void Add()
         {
             ComponentRegistration.Add(new DialogsComponentRegistration());

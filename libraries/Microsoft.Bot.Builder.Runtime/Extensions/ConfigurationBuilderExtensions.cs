@@ -17,6 +17,21 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
         private const string DevelopmentApplicationRoot = "../../../";
         private const string DialogFileExtension = ".dialog";
 
+        /// <summary>
+        /// Provides a collection of in-memory configuration values for the bot runtime to
+        /// the provided <see cref="IConfigurationBuilder"/>.
+        /// </summary>
+        /// <param name="builder">
+        /// The <see cref="IConfigurationBuilder"/> to supply with additional in-memory configuration settings.
+        /// </param>
+        /// <param name="applicationRoot">
+        /// The application root directory. When running in local development mode from Composer, this is determined
+        /// to be three directory levels above where the runtime application project is ejected, i.e. '../../..'.
+        /// </param>
+        /// <param name="isDevelopment">Indicates whether the application environment is set to 'Development'.</param>
+        /// <returns>
+        /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
+        /// </returns>
         public static IConfigurationBuilder AddBotCoreConfiguration(
             this IConfigurationBuilder builder,
             string applicationRoot,
