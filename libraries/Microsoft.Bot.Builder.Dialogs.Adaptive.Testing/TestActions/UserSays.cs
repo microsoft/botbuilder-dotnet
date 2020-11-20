@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         {
             if (Text == null)
             {
-                throw new Exception("You must define the Text property");
+                throw new InvalidOperationException("You must define the Text property");
             }
 
             var activity = adapter.MakeActivity(Text);

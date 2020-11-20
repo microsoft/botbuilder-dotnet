@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
             else
             {
-                throw new Exception("No inspector to use for setting properties");
+                throw new InvalidOperationException("No inspector to use for setting properties");
             }
         }
     }

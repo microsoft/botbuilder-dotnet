@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         {
             if (Name == null)
             {
-                throw new Exception("You must define the event name.");
+                throw new InvalidOperationException("You must define the event name.");
             }
 
             var eventActivity = adapter.MakeActivity();

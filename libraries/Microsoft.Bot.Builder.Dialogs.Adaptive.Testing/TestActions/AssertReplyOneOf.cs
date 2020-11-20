@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
 
             if (!found)
             {
-                throw new Exception(Description ?? $"Text {activity.Text} didn't match one of expected text: {string.Join("\n", Text)}");
+                throw new InvalidOperationException(Description ?? $"Text {activity.Text} didn't match one of expected text: {string.Join("\n", Text)}");
             }
 
             base.ValidateReply(activity);
