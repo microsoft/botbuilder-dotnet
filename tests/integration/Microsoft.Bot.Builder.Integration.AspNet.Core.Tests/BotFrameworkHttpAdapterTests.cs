@@ -198,6 +198,30 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Equal((int)HttpStatusCode.BadRequest, httpResponseMock.Object.StatusCode);
         }
 
+        [Fact]
+        public async Task AdapterWithAuthConfig_CanSend_BasicMessageActivity()
+        {
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
+
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+
+            var httpResponseMock = new Mock<HttpResponse>();
+
+            var botMock = new Mock<IBot>();
+            botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            // Act
+            var adapter = new BotFrameworkHttpAdapter(new SimpleCredentialProvider(), new AuthenticationConfiguration());
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
+
+            // Assert
+            botMock.Verify(m => m.OnTurnAsync(It.Is<TurnContext>(tc => true), It.Is<CancellationToken>(ct => true)), Times.Once());
+        }
+
         private static Stream CreateMessageActivityStream()
         {
             return CreateStream(new Activity
