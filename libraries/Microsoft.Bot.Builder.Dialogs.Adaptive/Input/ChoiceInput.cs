@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="callerLine">Optional, line number in source file.</param>
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -127,10 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
-            FoundChoice foundChoice = result as FoundChoice;
-            if (foundChoice != null)
+            if (result is FoundChoice foundChoice)
             {
                 // return value insted of FoundChoice object
                 return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     op = new ChoiceInputOptions();
                 }
 
-                var (choices, error) = this.Choices.TryGetValue(dc.State);
+                var (choices, error) = Choices.TryGetValue(dc.State);
                 if (error != null)
                 {
                     throw new InvalidOperationException(error);
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
-        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
@@ -182,8 +182,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var opt = this.RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
-                opt.Locale = GetCulture(dc);
+                var opt = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+                opt.Locale = DetermineCulture(dc, opt);
                 var results = ChoiceRecognizers.RecognizeChoices(input.ToString(), choices, opt);
                 if (results == null || results.Count == 0)
                 {
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 var foundChoice = results[0].Resolution;
-                switch (this.OutputFormat.GetValue(dc.State))
+                switch (OutputFormat.GetValue(dc.State))
                 {
                     case ChoiceOutputFormat.Value:
                     default:
@@ -213,36 +213,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="state">Dialog <see cref="InputState"/>.</param>
         /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Activity to send to the user.</returns>
-        protected override async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default)
         {
-            var locale = GetCulture(dc);
+            var locale = DetermineCulture(dc);
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var channelId = dc.Context.Activity.ChannelId;
-            var choicePrompt = new ChoicePrompt(this.Id);
-            var choiceOptions = this.ChoiceOptions?.GetValue(dc.State) ?? ChoiceInput.DefaultChoiceOptions[locale];
+            var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? DefaultChoiceOptions[locale];
 
-            var (choices, error) = this.Choices.TryGetValue(dc.State);
+            var (choices, error) = Choices.TryGetValue(dc.State);
             if (error != null)
             {
                 throw new InvalidOperationException(error);
             }
 
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style.GetValue(dc.State), choiceOptions);
+            return AppendChoices(prompt.AsMessageActivity(), channelId, choices, Style.GetValue(dc.State), choiceOptions);
         }
 
-        private string GetCulture(DialogContext dc)
+        private string DetermineCulture(DialogContext dc, FindChoicesOptions opt = null)
         {
-            if (!string.IsNullOrWhiteSpace(dc.Context.Activity.Locale))
+            var culture = PromptCultureModels.MapToNearestLanguage(dc.Context.Activity.Locale ?? opt?.Locale ?? DefaultLocale?.GetValue(dc.State));
+
+            if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
-                return dc.Context.Activity.Locale;
+                culture = English;
             }
 
-            if (this.DefaultLocale != null)
-            {
-                return this.DefaultLocale.GetValue(dc.State);
-            }
-
-            return English;
+            return culture;
         }
     }
 }
