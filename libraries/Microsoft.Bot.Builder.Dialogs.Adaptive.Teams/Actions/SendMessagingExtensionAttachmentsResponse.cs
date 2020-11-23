@@ -14,36 +14,35 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension info action response..
+    /// Send a messaging extension 'result' in response to a Teams Invoke with name of 'composeExtension/query'.
     /// </summary>
-    public class SendMessagingExtensionActionResponse : BaseSendTaskModuleContinueResponse
+    public class SendMessagingExtensionAttachmentsResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionActionResponse";
+        public const string Kind = "Teams.SendMessagingExtensionAttachmentsResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionActionResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendMessagingExtensionAttachmentsResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionActionResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionAttachmentsResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets template for the activity expression containing an Adaptive Card to send.
+        /// Gets or sets the Activity containing the Attachments to send.
         /// </summary>
         /// <value>
-        /// Template for the activity containing an Adaptive Card to send.
+        /// Activity with the Attachments to send in response to the Query.
         /// </value>
-        [JsonProperty("activity")]
-        public ITemplate<Activity> Activity { get; set; }
+        public ITemplate<Activity> Attachments { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -64,11 +63,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-
+            
             Activity activity = null;
-            if (Activity != null)
+            if (Attachments != null)
             {
-                activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+                activity = await Attachments.BindAsync(dc, dc.State).ConfigureAwait(false);
             }
 
             if (activity == null || activity.Attachments?.Any() == false)
@@ -76,42 +75,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
             }
 
-            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
-            var height = Height?.GetValue(dc.State);
-            var width = Width?.GetValue(dc.State);
-
-            var completionBotId = CompletionBotId?.GetValue(dc.State);
-
             var properties = new Dictionary<string, string>()
             {
-                { "SendMessagingExtensionActionResponse", activity.Attachments[0].ToString() },
-                { "title", title ?? string.Empty },
+                { "SendMessagingExtensionAttachmentsResponse", activity.ToString() },
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var response = new MessagingExtensionActionResponse
+            var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a));
+
+            var response = new MessagingExtensionResponse
             {
-                Task = new TaskModuleContinueResponse
+                ComposeExtension = new MessagingExtensionResult
                 {
-                    Value = new TaskModuleTaskInfo
-                    {
-                        Card = new Attachment
-                        {
-                            Content = activity.Attachments[0],
-                            ContentType = "application/vnd.microsoft.card.adaptive",
-                        },
-                        Height = height,
-                        Width = width,
-                        Title = title,
-                        CompletionBotId = completionBotId
-                    },
+                    Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
+
+                    AttachmentLayout = "list", // 'list', 'grid' // TODO: enum
+                    Attachments = attachments.ToList(),
                 },
+                CacheInfo = GetCacheInfo(dc),
             };
 
-            await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateInvokeResponseActivity(response);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            // Since a token was not retrieved above, end the turn.
-            return Dialog.EndOfTurn;
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -120,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{null ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.Attachments?.ToString() ?? string.Empty}]";
         }
     }
 }

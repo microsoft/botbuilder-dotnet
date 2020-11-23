@@ -3,43 +3,46 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'result' response when a Teams Invoke Activity is received with activity.name='composeExtension/queryLink'.
+    /// Send a messaging extension 'auth' message in response..
     /// </summary>
-    public class SendMessagingExtensionQueryLinkResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendMessagingExtensionBotMessagePreviewResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionQueryLinkResponse";
+        public const string Kind = "Teams.SendMessagingExtensionBotMessagePreviewResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionQueryLinkResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendMessagingExtensionBotMessagePreviewResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionQueryLinkResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMessagingExtensionBotMessagePreviewResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets template for the attachment template of a Thumbnail or Hero Card to send.
+        /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card with an Attachment to send.
         /// </summary>
         /// <value>
         /// Template for the activity.
@@ -74,31 +77,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
-                    throw new ArgumentException($"Invalid Activity. A attachment is required for Send Messaging Extension Query Link Response.");
+                    throw new ArgumentException($"Invalid Activity. The activity does not contain a valid attachment as required for Task Module Continue Response.");
                 }
 
                 attachment = boundActivity.Attachments[0];
             }
             else
             {
-                throw new ArgumentException($"An attachment is required for Send Messaging Extension Query Link Response.");
+                throw new ArgumentException($"A valid card attachment is required for Task Module Continue Response.");
             }
 
             var properties = new Dictionary<string, string>()
             {
-                { "SendMessagingExtensionQueryLinkResponse", attachment.ToString() },
+                { "SendMessagingExtensionBotMessagePreviewResponse", attachment.ToString() },
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
-            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
-            
-            var response = new MessagingExtensionResponse
+            var response = new MessagingExtensionActionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-                    AttachmentLayout = "list", // 'list', 'grid'  // TODO: make this configurable
-                    Attachments = new[] { extentionAttachment },
+                    Type = "botMessagePreview",
+                    ActivityPreview = MessageFactory.Attachment(new Attachment
+                    {
+                        Content = attachment,
+                        ContentType = "application/vnd.microsoft.card.adaptive",
+                    }) as Activity,
                 },
                 CacheInfo = GetCacheInfo(dc),
             };
@@ -115,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Activity?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{null ?? string.Empty}]";
         }
     }
 }
