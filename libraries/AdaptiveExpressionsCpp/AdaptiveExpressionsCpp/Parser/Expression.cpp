@@ -22,7 +22,7 @@ Expression::Expression(ExpressionEvaluator* evaluator, size_t childrenCount, std
 {
     if (evaluator == nullptr)
     {
-        // throw error throw new ArgumentNullException(nameof(evaluator));
+        throw std::invalid_argument("Null evaluator constructing Expression");
     }
 
     m_evaluator = evaluator;

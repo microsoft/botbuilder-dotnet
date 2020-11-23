@@ -9,7 +9,6 @@ class Constant : public Expression
 
 public:
     Constant(std::any value);
-   // ExpressionEvaluator* getEvaluator() override { return Expression::getEvaluator(); }
 
     static EvaluateExpressionLambda Evaluator();
 
@@ -18,4 +17,13 @@ public:
 
 private:
     std::any m_value;
+};
+
+class ConstantExpressionEvaluator : public ExpressionEvaluator
+{
+public:
+    ConstantExpressionEvaluator();
+
+    virtual ValueErrorTuple TryEvaluate(Expression* expression, void* state, void* options) override;
+    virtual void ValidateExpression(Expression* expression) override;
 };

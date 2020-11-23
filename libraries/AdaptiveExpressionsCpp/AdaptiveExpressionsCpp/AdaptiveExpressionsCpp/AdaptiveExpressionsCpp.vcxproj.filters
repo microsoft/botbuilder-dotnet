@@ -204,6 +204,9 @@
     <ClInclude Include="..\Parser\FunctionTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\BuiltinFunctions\Subtract.h">
+      <Filter>BuiltinFunctions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\pch.cpp">
@@ -247,6 +250,12 @@
     </ClCompile>
     <ClCompile Include="..\Parser\FunctionTable.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parser\ExpressionEvaluatorWithArgs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BuiltinFunctions\Subtract.cpp">
+      <Filter>BuiltinFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
