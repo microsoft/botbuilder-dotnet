@@ -3,11 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -15,36 +14,36 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'result' in response to a Teams Invoke with name of 'composeExtension/query'.
+    /// Send a messaging extension 'result' response when a Teams Invoke Activity is received with activity.name='composeExtension/queryLink'.
     /// </summary>
-    public class SendMessagingExtensionQueryResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendAppBasedLinkQueryResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionQueryResponse";
+        public const string Kind = "Teams.SendAppBasedLinkQueryResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionQueryResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendAppBasedLinkQueryResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionQueryResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendAppBasedLinkQueryResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets response message to send.
+        /// Gets or sets template for the attachment template of a Thumbnail or Hero Card to send.
         /// </summary>
         /// <value>
-        /// Message to send.
+        /// Template for the activity.
         /// </value>
-        [JsonProperty("message")]
-        public StringExpression Message { get; set; }
+        [JsonProperty("activity")]
+        public ITemplate<Activity> Activity { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -66,46 +65,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string message;
-            if (Message != null)
+            Attachment attachment = null;
+            if (Activity != null)
             {
-                var (value, valueError) = Message.TryGetValue(dc.State);
-                if (valueError != null)
+                var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+
+                if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {nameof(Message)}. Error: {valueError}");
+                    throw new ArgumentException($"Invalid Activity. A attachment is required for Send Messaging Extension Query Link Response.");
                 }
 
-                message = value as string;
+                attachment = boundActivity.Attachments[0];
             }
             else
             {
-                throw new InvalidOperationException("Missing Task Module Message Response value.");
-            }
-
-            if (!string.IsNullOrEmpty(message))
-            {
-                var languageGenerator = dc.Services.Get<LanguageGenerator>();
-                if (languageGenerator != null)
-                {
-                    var lgStringResult = await languageGenerator.GenerateAsync(dc, message, dc.State, cancellationToken).ConfigureAwait(false);
-                    message = lgStringResult.ToString();
-                }
+                throw new ArgumentException($"An attachment is required for Send Messaging Extension Query Link Response.");
             }
 
             var properties = new Dictionary<string, string>()
             {
-                { "SendMessagingExtensionQueryResponse", message },
+                { "SendMessagingExtensionQueryLinkResponse", attachment.ToString() },
             };
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
+            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
+            
             var response = new MessagingExtensionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
                     Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-
-                    AttachmentLayout = "list", // 'list', 'grid' // TODO: enum
-                    Attachments = null,
+                    AttachmentLayout = "list", // 'list', 'grid'  // TODO: make this configurable
+                    Attachments = new[] { extentionAttachment },
                 },
                 CacheInfo = GetCacheInfo(dc),
             };
@@ -122,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Message?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.Activity?.ToString() ?? string.Empty}]";
         }
     }
 }

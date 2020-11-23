@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -38,6 +39,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsTeamRenamed>(OnTeamsTeamRenamed.Kind);
             yield return new DeclarativeType<OnTeamsTeamRestored>(OnTeamsTeamRestored.Kind);
             yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
+            yield return new DeclarativeType<OnTeamsMessagingExtensionBotMessagePreviewEdit>(OnTeamsMessagingExtensionBotMessagePreviewEdit.Kind);
+            yield return new DeclarativeType<OnTeamsMessagingExtensionBotMessagePreviewSend>(OnTeamsMessagingExtensionBotMessagePreviewSend.Kind);
 
             // Actions
             yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);
@@ -55,8 +58,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<SendMessagingExtensionAuthResponse>(SendMessagingExtensionAuthResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionConfigQuerySettingUrlResponse>(SendMessagingExtensionConfigQuerySettingUrlResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionMessageResponse>(SendMessagingExtensionMessageResponse.Kind);
-            yield return new DeclarativeType<SendMessagingExtensionQueryLinkResponse>(SendMessagingExtensionQueryLinkResponse.Kind);
-            yield return new DeclarativeType<SendMessagingExtensionQueryResponse>(SendMessagingExtensionQueryResponse.Kind);
+            yield return new DeclarativeType<SendAppBasedLinkQueryResponse>(SendAppBasedLinkQueryResponse.Kind);
+            yield return new DeclarativeType<SendMessagingExtensionAttachmentsResponse>(SendMessagingExtensionAttachmentsResponse.Kind);
+            yield return new DeclarativeType<SendMessagingExtensionActionResponse>(SendMessagingExtensionActionResponse.Kind);
+            yield return new DeclarativeType<SendMessagingExtensionBotMessagePreviewResponse>(SendMessagingExtensionBotMessagePreviewResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionResultResponse>(SendMessagingExtensionResultResponse.Kind);
             yield return new DeclarativeType<SendMessagingExtensionSelectItemResponse>(SendMessagingExtensionSelectItemResponse.Kind);
         }
