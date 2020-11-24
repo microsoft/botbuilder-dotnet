@@ -59,7 +59,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            // TODO #40: Change to Microsoft.Bot.Builder.Azure.BlobsStorage
             services.AddSingleton<IStorage>(new AzureBlobStorage(
                 dataConnectionstring: this.ConnectionString?.GetConfigurationValue(configuration),
                 containerName: this.ContainerName?.GetConfigurationValue(configuration)));

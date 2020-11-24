@@ -10,8 +10,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
 {
-    // TODO #39: Change parent interface to ITranscriptStoreBuilder
-
     /// <summary>
     /// Defines an implementation of <see cref="ITranscriptLoggerBuilder"/> that returns an instance
     /// of <see cref="AzureBlobTranscriptStore"/>.
@@ -63,7 +61,6 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            // TODO #40: Change to Microsoft.Bot.Builder.Azure.BlobsTranscriptStore
             return new AzureBlobTranscriptStore(
                 dataConnectionstring: this.ConnectionString.GetConfigurationValue(configuration),
                 containerName: this.ContainerName.GetConfigurationValue(configuration));

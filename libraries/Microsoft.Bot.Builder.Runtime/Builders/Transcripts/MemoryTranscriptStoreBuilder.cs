@@ -7,8 +7,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
 {
-    // TODO #39: Change parent interface to ITranscriptStoreBuilder
-
     /// <summary>
     /// Defines an implementation of <see cref="ITranscriptLoggerBuilder"/> that returns an instance
     /// of <see cref="MemoryTranscriptStore"/>.
