@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
         /// </summary>
         /// <value>
-        /// The locale (en-us, nl-nl, etc) or expression which evluates to locale.
+        /// The locale (en-us, nl-nl, etc) or expression which evaluates to locale.
         /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; }

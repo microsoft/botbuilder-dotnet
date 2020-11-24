@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 if (!SupportedLocales.Contains(cultureCode))
                 {
                     var culturePrefix = cultureCode.Split('-').First();
-                    var fallbackLocales = SupportedLocales.Where(locale => locale.StartsWith(culturePrefix, StringComparison.Ordinal));
+                    var fallbackLocales = SupportedLocales.Where(locale => locale.StartsWith(culturePrefix, StringComparison.Ordinal)).ToList();
 
                     if (fallbackLocales.Any())
                     {

@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets list of choices to present to user.
         /// </summary>
         /// <value>
-        /// ChoiceSet or expression which evalutes to a ChoiceSet.
+        /// ChoiceSet or expression which evaluates to a ChoiceSet.
         /// </value>
         [JsonProperty("choices")]
         public ObjectExpression<ChoiceSet> Choices { get; set; }
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets choiceOptions controls display options for customizing language.
         /// </summary>
         /// <value>
-        /// ChoiceOptions or expression which evluates to ChoiceOptions.
+        /// ChoiceOptions or expression which evaluates to ChoiceOptions.
         /// </value>
         [JsonProperty("choiceOptions")]
         public ObjectExpression<ChoiceFactoryOptions> ChoiceOptions { get; set; }
@@ -116,10 +116,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// FindChoicesOptions or expression which evaluates to FindChoicesOptions.
         /// </value>
         [JsonProperty("recognizerOptions")]
-        public ObjectExpression<FindChoicesOptions> RecognizerOptions { get; set; } = null;
+        public ObjectExpression<FindChoicesOptions> RecognizerOptions { get; set; }
 
         /// <summary>
-        /// Replaces the result with the FoundChoice value if possible, then proceedes to <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/>.
+        /// Replaces the result with the FoundChoice value if possible, then proceeds to <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/>.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             if (result is FoundChoice foundChoice)
             {
-                // return value insted of FoundChoice object
+                // return value instead of FoundChoice object
                 return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
             }
 
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Called when input has been received, recognices choice.
+        /// Called when input has been received, recognizes choice.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
