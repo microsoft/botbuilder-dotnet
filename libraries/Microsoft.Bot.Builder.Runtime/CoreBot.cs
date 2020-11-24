@@ -19,9 +19,9 @@ using Microsoft.Extensions.Options;
 namespace Microsoft.Bot.Builder.Runtime
 {
     /// <summary>
-    /// Defines the bot runtime standard implementation of <see cref="ActivityHandler"/>.
+    /// Defines the bot runtime standard implementation of <see cref="IBot"/>.
     /// </summary>
-    public class CoreBot : ActivityHandler
+    public class CoreBot : IBot
     {
         private const string DefaultLocale = "en-US";
 
@@ -67,9 +67,7 @@ namespace Microsoft.Bot.Builder.Runtime
         /// <seealso cref="ActivityHandler.OnUnrecognizedActivityTypeAsync(ITurnContext, CancellationToken)"/>
         /// <seealso cref="Activity.Type"/>
         /// <seealso cref="ActivityTypes"/>
-        public override async Task OnTurnAsync(
-            ITurnContext turnContext,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             var rootDialog = (AdaptiveDialog)this._dialogManager.RootDialog;
             if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity &&
