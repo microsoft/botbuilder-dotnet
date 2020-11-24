@@ -10,9 +10,9 @@ FunctionTable::FunctionTable() : std::map<std::string, ExpressionEvaluator*>()
 void FunctionTable::PopulateStandardFunctions()
 {
     // Math aliases
-    this->insert(std::pair<std::string, ExpressionEvaluator*>("Add", new AdaptiveExpressions_BuiltinFunctions::Add()));
+    this->insert(std::pair<std::string, ExpressionEvaluator*>("add", new AdaptiveExpressions_BuiltinFunctions::Add()));
     this->insert(std::pair<std::string, ExpressionEvaluator*>("+", new AdaptiveExpressions_BuiltinFunctions::Add()));
 
-    this->insert(std::pair<std::string, ExpressionEvaluator*>("Subtract", new AdaptiveExpressions_BuiltinFunctions::Subtract()));
+    this->insert(std::pair<std::string, ExpressionEvaluator*>("subtract", new AdaptiveExpressions_BuiltinFunctions::Subtract()));
     this->insert(std::pair<std::string, ExpressionEvaluator*>("-", new AdaptiveExpressions_BuiltinFunctions::Subtract()));
 }

@@ -11,15 +11,15 @@ class Expression
 
 public:
     Expression();
-    Expression(std::string type, size_t childrenCount, std::vector<Expression*> children);
+    Expression(std::string type, std::vector<Expression*> children);
 
 
     Expression(ExpressionEvaluator* evaluator);
-    Expression(ExpressionEvaluator* evaluator, size_t childrenCount, std::vector<Expression*> children);
+    Expression(ExpressionEvaluator* evaluator, std::vector<Expression*> children);
     
     static Expression* ConstantExpression(std::any value);
     static Expression* Parse(std::string expression, EvaluatorLookup lookup = nullptr);
-    static Expression* MakeExpression(ExpressionEvaluator* evaluator, size_t childrenCount, std::vector<Expression*> children);
+    static Expression* MakeExpression(ExpressionEvaluator* evaluator, std::vector<Expression*> children);
     static ExpressionEvaluator* Lookup(std::string functionName);
 
     void Validate();
@@ -38,7 +38,6 @@ protected:
     ExpressionEvaluator* m_evaluator{};
     EvaluatorLookup m_evaluatorLookup{};
     std::vector<Expression*> m_children{};
-    size_t m_childrenCount{};
 };
 
 

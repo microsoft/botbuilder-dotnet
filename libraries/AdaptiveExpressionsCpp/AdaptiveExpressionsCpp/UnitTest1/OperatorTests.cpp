@@ -13,28 +13,37 @@ namespace OperatorTests
 	{
 	public:
 
-        TEST_METHOD(SimpleAddTest)
-		{
-            auto parsed = Expression::Parse("1 + 2");
+
+        void MathTest(std::string expression, int expectedValue)
+        {
+            auto parsed = Expression::Parse(expression);
 
             ValueErrorTuple valueAndError = parsed->TryEvaluate(nullptr);
 
             bool cast{};
-            Assert::AreEqual(3, FunctionUtils::castToType<int>(valueAndError.first, cast));
+            Assert::AreEqual(expectedValue, FunctionUtils::castToType<int>(valueAndError.first, cast));
 
             std::cout << "Error " << valueAndError.second << std::endl;
+        }
+
+        TEST_METHOD(AddOperatorTest)
+		{
+            MathTest("1 + 2", 3);
 		}
 
-        TEST_METHOD(SimpleSubtractTest)
+        TEST_METHOD(AddFunctionTest)
         {
-            auto parsed = Expression::Parse("5 - 3");
+            MathTest("add(1, 2, 3)", 6);
+        }
 
-            ValueErrorTuple valueAndError = parsed->TryEvaluate(nullptr);
+        TEST_METHOD(SubtractOperatorTest)
+        {
+            MathTest("5 - 3", 2);
+        }
 
-            bool cast{};
-            Assert::AreEqual(2, FunctionUtils::castToType<int>(valueAndError.first, cast));
-
-            std::cout << "Error " << valueAndError.second << std::endl;
+        TEST_METHOD(SubtractFunctionTest)
+        {
+            MathTest("subtract(20, 4)", 16);
         }
 	};
 }
