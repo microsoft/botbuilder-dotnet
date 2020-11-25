@@ -76,5 +76,25 @@ namespace OperatorTests
             LogicTest("true && false)", false);
             LogicTest("false && false)", false);
         }
+
+        TEST_METHOD(OrTest)
+        {
+            LogicTest("or(true, true)", true);
+            LogicTest("or(true, false)", true);
+            LogicTest("or(false, false)", false);
+
+            LogicTest("true || true)", true);
+            LogicTest("true || false)", true);
+            LogicTest("false || false)", false);
+        }
+
+        TEST_METHOD(NotTest)
+        {
+            LogicTest("not(true)", false);
+            LogicTest("not(false)", true);
+
+            LogicTest("!true", false);
+            LogicTest("!false", true);
+        }
     };
 }

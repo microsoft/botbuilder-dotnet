@@ -216,6 +216,12 @@
     <ClInclude Include="..\Code\ReturnType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\BuiltinFunctions\Or.h">
+      <Filter>BuiltinFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BuiltinFunctions\Not.h">
+      <Filter>BuiltinFunctions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\pch.cpp">
@@ -268,6 +274,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\FunctionUtils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BuiltinFunctions\Or.cpp">
+      <Filter>BuiltinFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BuiltinFunctions\Not.cpp">
+      <Filter>BuiltinFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

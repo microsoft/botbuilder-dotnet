@@ -4,194 +4,194 @@
 
 #include <string>
 
-static class ExpressionType
+ class ExpressionType
 {
 public:
 
     // Math
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    static const std::string Add;
-    static const std::string Subtract;
-    const std::string Multiply = "*";
-    const std::string Divide = "/";
-    const std::string Min = "min";
-    const std::string Max = "max";
-    const std::string Power = "^";
-    const std::string Mod = "%";
-    const std::string Average = "average";
-    const std::string Sum = "sum";
-    const std::string Range = "range";
-    const std::string Floor = "floor";
-    const std::string Ceiling = "ceiling";
-    const std::string Round = "round";
+     static const std::string Add;
+     static const std::string Subtract;
+     static const std::string Multiply;
+     static const std::string Divide;
+     static const std::string Min;
+     static const std::string Max;
+     static const std::string Power;
+     static const std::string Mod;
+     static const std::string Average;
+     static const std::string Sum;
+     static const std::string Range;
+     static const std::string Floor;
+     static const std::string Ceiling;
+     static const std::string Round;
 
     // Comparisons
-    const std::string LessThan = "<";
-    const std::string LessThanOrEqual = "<=";
-    const std::string Equal = "==";
-    const std::string NotEqual = "!=";
-    const std::string GreaterThan = ">";
-    const std::string GreaterThanOrEqual = ">=";
-    const std::string Exists = "exists";
+     static const std::string LessThan;
+     static const std::string LessThanOrEqual;
+     static const std::string Equal;
+     static const std::string NotEqual;
+     static const std::string GreaterThan;
+     static const std::string GreaterThanOrEqual;
+     static const std::string Exists;
 
     // Logic
-    static const std::string And;
-    static const std::string Or;
-    static const std::string Not;
+     static const std::string And;
+     static const std::string Or;
+     static const std::string Not;
 
     // String
-    const std::string Concat = "concat";
-    const std::string Length = "length";
-    const std::string Replace = "replace";
-    const std::string ReplaceIgnoreCase = "replaceIgnoreCase";
-    const std::string Split = "split";
-    const std::string Substring = "substring";
-    const std::string ToLower = "toLower";
-    const std::string ToUpper = "toUpper";
-    const std::string Trim = "trim";
-    const std::string EndsWith = "endsWith";
-    const std::string StartsWith = "startsWith";
-    const std::string CountWord = "countWord";
-    const std::string AddOrdinal = "addOrdinal";
-    const std::string NewGuid = "newGuid";
-    const std::string IndexOf = "indexOf";
-    const std::string LastIndexOf = "lastIndexOf";
-    const std::string EOL = "EOL";
-    const std::string SentenceCase = "sentenceCase";
-    const std::string TitleCase = "titleCase";
+     static const std::string Concat;
+     static const std::string Length;
+     static const std::string Replace;
+     static const std::string ReplaceIgnoreCase;
+     static const std::string Split;
+     static const std::string Substring;
+     static const std::string ToLower;
+     static const std::string ToUpper;
+     static const std::string Trim;
+     static const std::string EndsWith;
+     static const std::string StartsWith;
+     static const std::string CountWord;
+     static const std::string AddOrdinal;
+     static const std::string NewGuid;
+     static const std::string IndexOf;
+     static const std::string LastIndexOf;
+     static const std::string EOL;
+     static const std::string SentenceCase;
+     static const std::string TitleCase;
 
     // Collection
-    const std::string Count = "count";
-    const std::string Contains = "contains";
-    const std::string Empty = "empty";
-    const std::string Join = "join";
-    const std::string First = "first";
-    const std::string Last = "last";
-    const std::string Foreach = "foreach";
-    const std::string Select = "select";
-    const std::string Where = "where";
-    const std::string Union = "union";
-    const std::string Intersection = "intersection";
-    const std::string Skip = "skip";
-    const std::string Take = "take";
-    const std::string SubArray = "subArray";
-    const std::string SortBy = "sortBy";
-    const std::string SortByDescending = "sortByDescending";
-    const std::string IndicesAndValues = "indicesAndValues";
-    const std::string Flatten = "flatten";
-    const std::string Unique = "unique";
+     static const std::string Count;
+     static const std::string Contains;
+     static const std::string Empty;
+     static const std::string Join;
+     static const std::string First;
+     static const std::string Last;
+     static const std::string Foreach;
+     static const std::string Select;
+     static const std::string Where;
+     static const std::string Union;
+     static const std::string Intersection;
+     static const std::string Skip;
+     static const std::string Take;
+     static const std::string SubArray;
+     static const std::string SortBy;
+     static const std::string SortByDescending;
+     static const std::string IndicesAndValues;
+     static const std::string Flatten;
+     static const std::string Unique;
 
     // DateTime
-    const std::string AddDays = "addDays";
-    const std::string AddHours = "addHours";
-    const std::string AddMinutes = "addMinutes";
-    const std::string AddSeconds = "addSeconds";
-    const std::string DayOfMonth = "dayOfMonth";
-    const std::string DayOfWeek = "dayOfWeek";
-    const std::string DayOfYear = "dayOfYear";
-    const std::string Month = "month";
-    const std::string Date = "date";
-    const std::string Year = "year";
-    const std::string UtcNow = "utcNow";
-    const std::string FormatDateTime = "formatDateTime";
-    const std::string FormatEpoch = "formatEpoch";
-    const std::string FormatTicks = "formatTicks";
-    const std::string SubtractFromTime = "subtractFromTime";
-    const std::string DateReadBack = "dateReadBack";
-    const std::string GetTimeOfDay = "getTimeOfDay";
-    const std::string GetFutureTime = "getFutureTime";
-    const std::string GetPastTime = "getPastTime";
-    const std::string ConvertFromUtc = "convertFromUTC";
-    const std::string ConvertToUtc = "convertToUTC";
-    const std::string AddToTime = "addToTime";
-    const std::string StartOfDay = "startOfDay";
-    const std::string StartOfHour = "startOfHour";
-    const std::string StartOfMonth = "startOfMonth";
-    const std::string Ticks = "ticks";
-    const std::string TicksToDays = "ticksToDays";
-    const std::string TicksToHours = "ticksToHours";
-    const std::string TicksToMinutes = "ticksToMinutes";
-    const std::string DateTimeDiff = "dateTimeDiff";
+     static const std::string AddDays;
+     static const std::string AddHours;
+     static const std::string AddMinutes;
+     static const std::string AddSeconds;
+     static const std::string DayOfMonth;
+     static const std::string DayOfWeek;
+     static const std::string DayOfYear;
+     static const std::string Month;
+     static const std::string Date;
+     static const std::string Year;
+     static const std::string UtcNow;
+     static const std::string FormatDateTime;
+     static const std::string FormatEpoch;
+     static const std::string FormatTicks;
+     static const std::string SubtractFromTime;
+     static const std::string DateReadBack;
+     static const std::string GetTimeOfDay;
+     static const std::string GetFutureTime;
+     static const std::string GetPastTime;
+     static const std::string ConvertFromUtc;
+     static const std::string ConvertToUtc;
+     static const std::string AddToTime;
+     static const std::string StartOfDay;
+     static const std::string StartOfHour;
+     static const std::string StartOfMonth;
+     static const std::string Ticks;
+     static const std::string TicksToDays;
+     static const std::string TicksToHours;
+     static const std::string TicksToMinutes;
+     static const std::string DateTimeDiff;
 
     // Timex 
-    const std::string IsDefinite = "isDefinite";
-    const std::string IsTime = "isTime";
-    const std::string IsDuration = "isDuration";
-    const std::string IsDate = "isDate";
-    const std::string IsTimeRange = "isTimeRange";
-    const std::string IsDateRange = "isDateRange";
-    const std::string IsPresent = "isPresent";
-    const std::string GetNextViableDate = "getNextViableDate";
-    const std::string GetPreviousViableDate = "getPreviousViableDate";
-    const std::string GetNextViableTime = "getNextViableTime";
-    const std::string GetPreviousViableTime = "getPreviousViableTime";
+     static const std::string IsDefinite;
+     static const std::string IsTime;
+     static const std::string IsDuration;
+     static const std::string IsDate;
+     static const std::string IsTimeRange;
+     static const std::string IsDateRange;
+     static const std::string IsPresent;
+     static const std::string GetNextViableDate;
+     static const std::string GetPreviousViableDate;
+     static const std::string GetNextViableTime;
+     static const std::string GetPreviousViableTime;
 
     // Conversions
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
-    const std::string Float = "float";
+     static const std::string Float;
 #pragma warning restore CA1720 // Identifier contains type name
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
-    const std::string Int = "int";
+     static const std::string Int;
 #pragma warning restore CA1720 // Identifier contains type name
 #pragma warning disable CA1720 // Identifier contains type name (by design and can't change this because of backward compat)
-    const std::string String = "string";
+     static const std::string String;
 #pragma warning restore CA1720 // Identifier contains type name
-    const std::string JsonStringify = "jsonStringify";
-    const std::string Bool = "bool";
-    const std::string Binary = "binary";
-    const std::string Base64 = "base64";
-    const std::string Base64ToBinary = "base64ToBinary";
-    const std::string Base64ToString = "base64ToString";
-    const std::string DataUri = "dataUri";
-    const std::string DataUriToBinary = "dataUriToBinary";
-    const std::string DataUriToString = "dataUriToString";
-    const std::string UriComponent = "uriComponent";
-    const std::string UriComponentToString = "uriComponentToString";
-    const std::string Xml = "xml";
-    const std::string FormatNumber = "formatNumber";
+     static const std::string JsonStringify;
+     static const std::string Bool;
+     static const std::string Binary;
+     static const std::string Base64;
+     static const std::string Base64ToBinary;
+     static const std::string Base64ToString;
+     static const std::string DataUri;
+     static const std::string DataUriToBinary;
+     static const std::string DataUriToString;
+     static const std::string UriComponent;
+     static const std::string UriComponentToString;
+     static const std::string Xml;
+     static const std::string FormatNumber;
 
     // URI Parsing Functions
-    const std::string UriHost = "uriHost";
-    const std::string UriPath = "uriPath";
-    const std::string UriPathAndQuery = "uriPathAndQuery";
-    const std::string UriPort = "uriPort";
-    const std::string UriQuery = "uriQuery";
-    const std::string UriScheme = "uriScheme";
+     static const std::string UriHost;
+     static const std::string UriPath;
+     static const std::string UriPathAndQuery;
+     static const std::string UriPort;
+     static const std::string UriQuery;
+     static const std::string UriScheme;
 
     // Memory
-    const std::string Accessor = "Accessor";
-    const std::string Element = "Element";
-    const std::string CreateArray = "createArray";
+     static const std::string Accessor;
+     static const std::string Element;
+     static const std::string CreateArray;
 
     // Misc
-    static const std::string Constant;
-    const std::string Lambda = "Lambda";
-    const std::string If = "if";
-    const std::string Rand = "rand";
+     static const std::string Constant;
+     static const std::string Lambda;
+     static const std::string If;
+     static const std::string Rand;
 
     // Object manipulation and construction functions
-    const std::string Json = "json";
-    const std::string GetProperty = "getProperty";
-    const std::string AddProperty = "addProperty";
-    const std::string RemoveProperty = "removeProperty";
-    const std::string SetProperty = "setProperty";
-    const std::string Coalesce = "coalesce";
-    const std::string XPath = "xPath";
-    const std::string SetPathToValue = "setPathToValue";
-    const std::string JPath = "jPath";
-    const std::string Merge = "merge";
+     static const std::string Json;
+     static const std::string GetProperty;
+     static const std::string AddProperty;
+     static const std::string RemoveProperty;
+     static const std::string SetProperty;
+     static const std::string Coalesce;
+     static const std::string XPath;
+     static const std::string SetPathToValue;
+     static const std::string JPath;
+     static const std::string Merge;
 
     // Regular expression
-    const std::string IsMatch = "isMatch";
+     static const std::string IsMatch;
 
     //Type Checking
-    const std::string IsInteger = "isInteger";
-    const std::string IsFloat = "isFloat";
-    const std::string IsString = "isString";
-    const std::string IsArray = "isArray";
-    const std::string IsObject = "isObject";
-    const std::string IsBoolean = "isBoolean";
-    const std::string IsDateTime = "isDateTime";
+     static const std::string IsInteger;
+     static const std::string IsFloat;
+     static const std::string IsString;
+     static const std::string IsArray;
+     static const std::string IsObject;
+     static const std::string IsBoolean;
+     static const std::string IsDateTime;
 
     // trigger tree 
 
@@ -203,7 +203,7 @@ public:
     /// included with the rest of the expression.  This is a simple way to express this common relationship.  By generating
     /// both clauses then matching the expression can be more specific when the optional expression is true.
     /// </remarks>
-    const std::string Optional = "optional";
+     static const std::string Optional;
 
     /// <summary>
     /// Any predicate expression wrapped in this will be ignored for specialization.
@@ -213,6 +213,6 @@ public:
     /// For example, if you have a counter for how often a particular message is displayed, then that is part of the triggering condition, 
     /// but all such rules would be incomparable because they counter is per-rule. 
     /// </remarks>
-    const std::string Ignore = "ignore";
+     static const std::string Ignore;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 };
