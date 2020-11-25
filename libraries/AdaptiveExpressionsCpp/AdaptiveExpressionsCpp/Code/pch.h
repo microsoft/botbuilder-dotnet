@@ -13,8 +13,8 @@
 #include <any>
 #include <functional>
 #include <algorithm>
-#include "../Parser/ReturnType.h"
-#include "../Parser/Options.h"
+#include "../Code/ReturnType.h"
+#include "../Code/Options.h"
 
 class Expression;
 class Constant;
@@ -28,7 +28,7 @@ typedef void (*EvaluateExpressionValidatorFunction)(Expression*);
 typedef std::pair<std::any, std::string> ValueErrorTuple;
 typedef std::function<ValueErrorTuple (Expression*, void*, Options*)> EvaluateExpressionLambda;
 
-#include "../Parser/Expression.h"
-#include "../Parser/ExpressionEvaluator.h"
-#include "../Parser/ExpressionParser.h"
+#include "../Code/Expression.h"
+#include "../Code/ExpressionEvaluator.h"
+#include "../Code/ExpressionParser.h"
 

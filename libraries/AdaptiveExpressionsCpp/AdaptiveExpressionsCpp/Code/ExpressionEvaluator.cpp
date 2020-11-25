@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 #include "ExpressionEvaluator.h"
-#include "../Parser/FunctionUtils.h"
+#include "../Code/FunctionUtils.h"
 #include "../BuiltinFunctions/Subtract.h"
 
 ExpressionEvaluator::ExpressionEvaluator(std::string type, ReturnType returnType)

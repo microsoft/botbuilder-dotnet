@@ -16,14 +16,14 @@
     <Filter Include="antlr">
       <UniqueIdentifier>{908ea5d1-f4bf-4981-8c85-ed4f4aac3898}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Parser">
-      <UniqueIdentifier>{6b452ea6-7dda-448d-ad9a-45c2b52d790c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Memory">
       <UniqueIdentifier>{7bbe480c-a166-4c90-b20e-99ee4511aeee}</UniqueIdentifier>
     </Filter>
     <Filter Include="BuiltinFunctions">
       <UniqueIdentifier>{c217f0ba-d648-41f5-9183-4a17076be8df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GeneratedAntlrFiles">
+      <UniqueIdentifier>{2a61eeba-1e19-485a-8b9b-bb3ba0d0a915}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -162,47 +162,8 @@
     <ClInclude Include="..\Code\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionAntlrParser.h">
-      <Filter>Parser</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionAntlrParserVisitor.h">
-      <Filter>Parser</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionAntlrParserBaseVisitor.h">
-      <Filter>Parser</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionAntlrLexer.h">
-      <Filter>Parser</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\Expression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionEvaluator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\Constant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ReturnType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\BuiltinFunctions\Add.h">
       <Filter>BuiltinFunctions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\ExpressionFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\FunctionUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parser\FunctionTable.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\BuiltinFunctions\Subtract.h">
       <Filter>BuiltinFunctions</Filter>
@@ -210,7 +171,49 @@
     <ClInclude Include="..\BuiltinFunctions\And.h">
       <Filter>BuiltinFunctions</Filter>
     </ClInclude>
-    <ClInclude Include="..\Parser\Options.h">
+    <ClInclude Include="..\GeneratedAntlrFiles\ExpressionAntlrLexer.h">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GeneratedAntlrFiles\ExpressionAntlrParser.h">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GeneratedAntlrFiles\ExpressionAntlrParserBaseVisitor.h">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GeneratedAntlrFiles\ExpressionAntlrParserVisitor.h">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Constant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Expression.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ExpressionEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ExpressionEvaluatorWithArgs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ExpressionFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ExpressionParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ExpressionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\FunctionTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\FunctionUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\ReturnType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -218,47 +221,8 @@
     <ClCompile Include="..\Code\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionAntlrParser.cpp">
-      <Filter>Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionAntlrParserVisitor.cpp">
-      <Filter>Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionAntlrParserBaseVisitor.cpp">
-      <Filter>Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionAntlrLexer.cpp">
-      <Filter>Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\Expression.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\Constant.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionEvaluator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\BuiltinFunctions\Add.cpp">
       <Filter>BuiltinFunctions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\FunctionUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\FunctionTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Parser\ExpressionEvaluatorWithArgs.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\BuiltinFunctions\Subtract.cpp">
       <Filter>BuiltinFunctions</Filter>
@@ -266,14 +230,53 @@
     <ClCompile Include="..\BuiltinFunctions\And.cpp">
       <Filter>BuiltinFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="..\GeneratedAntlrFiles\ExpressionAntlrParser.cpp">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GeneratedAntlrFiles\ExpressionAntlrParserBaseVisitor.cpp">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GeneratedAntlrFiles\ExpressionAntlrParserVisitor.cpp">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GeneratedAntlrFiles\ExpressionAntlrLexer.cpp">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Constant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Expression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ExpressionEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ExpressionEvaluatorWithArgs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ExpressionFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ExpressionParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\ExpressionType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FunctionTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\FunctionUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Parser\ExpressionAntlrLexer.g4">
-      <Filter>Parser</Filter>
-    </None>
-    <None Include="..\Parser\ExpressionAntlrParser.g4">
-      <Filter>Parser</Filter>
-    </None>
     <None Include="cpp.hint" />
+    <None Include="..\GeneratedAntlrFiles\ExpressionAntlrLexer.g4">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </None>
+    <None Include="..\GeneratedAntlrFiles\ExpressionAntlrParser.g4">
+      <Filter>GeneratedAntlrFiles</Filter>
+    </None>
   </ItemGroup>
 </Project>

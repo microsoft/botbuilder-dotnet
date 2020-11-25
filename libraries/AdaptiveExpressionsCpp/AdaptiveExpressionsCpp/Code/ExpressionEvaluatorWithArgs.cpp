@@ -1,6 +1,6 @@
 #pragma once
-#include "../Parser/ExpressionEvaluatorWithArgs.h"
-#include "../Parser/FunctionUtils.h"
+#include "../Code/ExpressionEvaluatorWithArgs.h"
+#include "../Code/FunctionUtils.h"
 
 namespace AdaptiveExpressions_BuiltinFunctions
 {

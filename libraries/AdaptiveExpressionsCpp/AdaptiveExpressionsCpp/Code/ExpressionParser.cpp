@@ -6,8 +6,8 @@
 #include "ExpressionType.h"
 #include "Constant.h"
 
-#include "ExpressionAntlrLexer.h"
-#include "ExpressionAntlrParser.h"
+#include "../GeneratedAntlrFiles/ExpressionAntlrLexer.h"
+#include "../GeneratedAntlrFiles/ExpressionAntlrParser.h"
 
 #include <iostream>
 #include <string>
@@ -95,7 +95,7 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFuncInvokeExp(Expres
     ExpressionAntlrParser::ArgsListContext* argContext = context->argsList();
     std::vector<antlr4::tree::ParseTree*> argChildren = argContext->children;
 
-    // TODO - in the C# version this part happens in a ProcessArgsList function that also checks for LambdaContexts
+    // CPP_PORT_TODO - in the C# version this part happens in a ProcessArgsList function that also checks for LambdaContexts
     std::vector<Expression*> childExpressions;
     for (auto argChild : argChildren)
     {

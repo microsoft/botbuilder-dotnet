@@ -4,9 +4,9 @@
 #include <iostream>
 
 #include "../Code/pch.h"
-#include "ExpressionParser.h"
+#include "../Code/ExpressionParser.h"
 #include <any>
-#include "../Parser/FunctionUtils.h"
+#include "../Code/FunctionUtils.h"
 
 int main()
 {   
