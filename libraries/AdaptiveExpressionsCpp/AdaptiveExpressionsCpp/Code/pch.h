@@ -14,6 +14,7 @@
 #include <functional>
 #include <algorithm>
 #include "../Parser/ReturnType.h"
+#include "../Parser/Options.h"
 
 class Expression;
 class Constant;
@@ -25,7 +26,7 @@ typedef std::pair<std::string, std::string> (*EvaluateExpressionFunction)(Expres
 typedef void (*EvaluateExpressionValidatorFunction)(Expression*);
 
 typedef std::pair<std::any, std::string> ValueErrorTuple;
-typedef std::function<ValueErrorTuple (Expression*, void*, void*)> EvaluateExpressionLambda;
+typedef std::function<ValueErrorTuple (Expression*, void*, Options*)> EvaluateExpressionLambda;
 
 #include "../Parser/Expression.h"
 #include "../Parser/ExpressionEvaluator.h"

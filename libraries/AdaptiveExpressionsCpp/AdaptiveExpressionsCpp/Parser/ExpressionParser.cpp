@@ -95,12 +95,14 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFuncInvokeExp(Expres
     ExpressionAntlrParser::ArgsListContext* argContext = context->argsList();
     std::vector<antlr4::tree::ParseTree*> argChildren = argContext->children;
 
+    // TODO - in the C# version this part happens in a ProcessArgsList function that also checks for LambdaContexts
     std::vector<Expression*> childExpressions;
     for (auto argChild : argChildren)
     {
         // TODO - in the C# version this part happens in a ProcessArgsList function that also checks for LambdaContexts
         if (dynamic_cast<ExpressionAntlrParser::ExpressionContext*>(argChild))
         {
+            std::string text = argChild->getText();
             auto childExpression = visit(argChild);
             childExpressions.push_back(childExpression);
         }
@@ -115,9 +117,29 @@ antlrcpp::Any ExpressionParser::ExpressionTransformer::visitFuncInvokeExp(Expres
     return MakeExpression(functionName, childExpressions);
 }
 
-antlrcpp::Any ExpressionParser::ExpressionTransformer::visitIdAtom(ExpressionAntlrParser::IdAtomContext* ctx)
+antlrcpp::Any ExpressionParser::ExpressionTransformer::visitIdAtom(ExpressionAntlrParser::IdAtomContext* context)
 {
-    return antlrcpp::Any();
+    Expression* result;
+    auto symbol = context->getText();
+    //auto normalized = symbol->ToLowerInvariant(); //CPP_PORT_TODO - case insensitivity
+    if (symbol == "false")
+    {
+        result = Expression::ConstantExpression(false);
+    }
+    else if (symbol == "true")
+    {
+        result = Expression::ConstantExpression(true);
+    }
+    else if (symbol == "null")
+    {
+        result = Expression::ConstantExpression(nullptr);
+    }
+    else
+    {
+        //result = MakeExpression(ExpressionType::Accessor, Expression::ConstantExpression(symbol)); //CPP_PORT_TODO
+    }
+
+    return result;
 }
 
 antlrcpp::Any ExpressionParser::ExpressionTransformer::visitIndexAccessExp(ExpressionAntlrParser::IndexAccessExpContext* ctx)

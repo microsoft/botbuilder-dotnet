@@ -5,6 +5,7 @@
 #include <string>
 #include "ExpressionParser.h"
 #include "FunctionTable.h"
+#include "Options.h"
 
 class Expression
 {
@@ -25,7 +26,7 @@ public:
     void Validate();
     ExpressionEvaluator* getEvaluator();
 
-    ValueErrorTuple TryEvaluate(void* state, void* options = nullptr);
+    ValueErrorTuple TryEvaluate(void* state, Options* options = nullptr);
 
     static const FunctionTable* Functions;
 

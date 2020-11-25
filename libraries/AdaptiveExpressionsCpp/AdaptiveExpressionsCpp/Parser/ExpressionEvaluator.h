@@ -4,6 +4,7 @@
 
 #include "Expression.h"
 #include "ReturnType.h"
+#include "Options.h"
 
 class Expression;
 
@@ -14,7 +15,7 @@ public:
         std::string type,
         ReturnType returnType = ReturnType::Object);
 
-    virtual ValueErrorTuple TryEvaluate(Expression* expression, void* state, void* options) = 0;
+    virtual ValueErrorTuple TryEvaluate(Expression* expression, void* state, Options* options) = 0;
     virtual void ValidateExpression(Expression* expression) = 0;
 
     void setReturnType(ReturnType returnType);

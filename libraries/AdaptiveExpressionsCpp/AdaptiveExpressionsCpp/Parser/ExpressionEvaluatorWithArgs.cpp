@@ -4,13 +4,13 @@
 
 namespace AdaptiveExpressions_BuiltinFunctions
 {
-    ValueErrorTuple ExpressionEvaluatorWithArgs::TryEvaluate(Expression* expression, void* state, void* options)
+    ValueErrorTuple ExpressionEvaluatorWithArgs::TryEvaluate(Expression* expression, void* state, Options* options)
     {
         return ApplyWithError(expression, state, options);
     }
 
 
-    ValueErrorTuple ExpressionEvaluatorWithArgs::ApplyWithError(Expression* expression, void* state, void* options)
+    ValueErrorTuple ExpressionEvaluatorWithArgs::ApplyWithError(Expression* expression, void* state, Options* options)
     {
         std::any value;
         std::string error;

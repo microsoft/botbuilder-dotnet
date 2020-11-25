@@ -214,6 +214,7 @@
     <ClInclude Include="..\antlr4-runtime\Vocabulary.h" />
     <ClInclude Include="..\antlr4-runtime\WritableToken.h" />
     <ClInclude Include="..\BuiltinFunctions\Add.h" />
+    <ClInclude Include="..\BuiltinFunctions\And.h" />
     <ClInclude Include="..\BuiltinFunctions\Subtract.h" />
     <ClInclude Include="..\Code\pch.h" />
     <ClInclude Include="..\Parser\Constant.h" />
@@ -228,10 +229,12 @@
     <ClInclude Include="..\Parser\ExpressionType.h" />
     <ClInclude Include="..\Parser\FunctionTable.h" />
     <ClInclude Include="..\Parser\FunctionUtils.h" />
+    <ClInclude Include="..\Parser\Options.h" />
     <ClInclude Include="..\Parser\ReturnType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\BuiltinFunctions\Add.cpp" />
+    <ClCompile Include="..\BuiltinFunctions\And.cpp" />
     <ClCompile Include="..\BuiltinFunctions\Subtract.cpp" />
     <ClCompile Include="..\Code\pch.cpp" />
     <ClCompile Include="..\Parser\Constant.cpp" />

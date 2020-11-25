@@ -42,7 +42,7 @@ ConstantExpressionEvaluator::ConstantExpressionEvaluator() :
 {
 }
 
-ValueErrorTuple ConstantExpressionEvaluator::TryEvaluate(Expression* expression, void* state, void* options)
+ValueErrorTuple ConstantExpressionEvaluator::TryEvaluate(Expression* expression, void* state, Options* options)
 {
     Constant* constant = (Constant*)expression;
     return ValueErrorTuple(constant->getValue(), std::string());

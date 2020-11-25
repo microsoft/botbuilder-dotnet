@@ -52,7 +52,22 @@ bool FunctionUtils::isNumber(std::any value)
     return isInteger(value) || isFloat(value) || isDouble(value);
 }
 
-ValueErrorTuple FunctionUtils::EvaluateChildren(Expression* expression, void* state, void* options, void* verify)
+bool FunctionUtils::isLogicTrue(std::any value)
+{
+    bool result = true;
+    if (isOfType<bool>(value))
+    {
+        result = std::any_cast<bool>(value);;
+    }
+    else if (!value.has_value())
+    {
+        result = false;
+    }
+
+    return result;
+}
+
+ValueErrorTuple FunctionUtils::EvaluateChildren(Expression* expression, void* state, Options* options, void* verify)
 {
     std::vector<std::any> args;
     std::any value;
@@ -107,7 +122,7 @@ std::string FunctionUtils::VerifyNumberOrStringOrNull(std::any value, Expression
 
 EvaluateExpressionLambda FunctionUtils::ApplyWithError(std::function<ValueErrorTuple(std::vector<std::any>)> f, void* verify)
 {
-    return [&](Expression* expression, void* state, void* options)
+    return [&](Expression* expression, void* state, Options* options)
     {
         std::any value;
         std::string error;
