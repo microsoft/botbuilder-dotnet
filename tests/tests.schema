@@ -10445,6 +10445,9 @@
       "title": "OnTeamsAppBasedLinkQuery",
       "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
       "type": "object",
+      "hidden": [
+        "actions"
+      ],
       "required": [
         "$kind"
       ],
@@ -12202,9 +12205,9 @@
         "title": {
           "$ref": "#/definitions/stringExpression",
           "title": "Title",
-          "description": "Title of the Task Module Response.",
+          "description": "Title of the Action Response.",
           "examples": [
-            "Bot Task Module"
+            "Action Response"
           ]
         },
         "height": {

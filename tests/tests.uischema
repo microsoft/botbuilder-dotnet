@@ -907,6 +907,9 @@
   },
   "Teams.SendMessagingExtensionBotMessagePreviewResponse": {
     "form": {
+      "hidden": [
+        "actions"
+      ],
       "label": "Send a bot message preview response",
       "order": [
         "activity",
