@@ -3,23 +3,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'auth' message in response..
+    /// Send a messaging extension 'botMessagePreview' response.
     /// </summary>
     public class SendMessagingExtensionBotMessagePreviewResponse : BaseTeamsCacheInfoResponseDialog
     {
@@ -87,21 +82,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"A valid card attachment is required for Task Module Continue Response.");
             }
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionBotMessagePreviewResponse", attachment.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             var response = new MessagingExtensionActionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = "botMessagePreview",
+                    Type = MessagingExtensionResultResponseType.BotMessagePreview.ToString(),
                     ActivityPreview = MessageFactory.Attachment(new Attachment
                     {
                         Content = attachment,
-                        ContentType = "application/vnd.microsoft.card.adaptive",
+                        ContentType = attachment.ContentType,
                     }) as Activity,
                 },
                 CacheInfo = GetCacheInfo(dc),

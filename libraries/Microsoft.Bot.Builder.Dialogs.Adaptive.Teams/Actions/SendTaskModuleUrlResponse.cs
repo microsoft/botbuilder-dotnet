@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Missing Url for Task Module Continue Response.");
             }
 
-            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var title = Title?.GetValue(dc.State);
             var height = Height?.GetValue(dc.State);
             var width = Width?.GetValue(dc.State);
             
@@ -102,14 +102,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 },
                 CacheInfo = GetCacheInfo(dc),
             };
+
             var responseActivity = CreateInvokeResponseActivity(response);
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendTaskModuleContinueResponse", responseActivity.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);

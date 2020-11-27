@@ -842,6 +842,18 @@
       "subtitle": "Invoke activity.name='task/submit'"
     }
   },
+  "Teams.SendAppBasedLinkQueryResponse": {
+    "form": {
+      "label": "Send a query link response",
+      "order": [
+        "activity",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a response to a query link request."
+    }
+  },
   "Teams.SendMessageToTeamsChannel": {
     "form": {
       "label": "Send a message to a teams channel",
@@ -855,16 +867,78 @@
       "subtitle": "Create a thread and send a message to a teams channel."
     }
   },
-  "Teams.SendMessagingExtensionQueryLinkResponse": {
+  "Teams.SendMessagingExtensionActionResponse": {
     "form": {
-      "label": "Send a query link response",
+      "label": "Send a messaging extension action response",
+      "order": [
+        "activity",
+        "title",
+        "height",
+        "width",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send an action response containing a card for a messaging extension request."
+    }
+  },
+  "Teams.SendMessagingExtensionAttachmentsResponse": {
+    "form": {
+      "label": "Send messaging extensions attachments response",
+      "order": [
+        "attachments",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a response containing attachments to a messaging extension request."
+    }
+  },
+  "Teams.SendMessagingExtensionAuthResponse": {
+    "form": {
+      "label": "Messaging Extension auth response",
+      "order": [
+        "connectionName",
+        "resultProperty",
+        "*"
+      ],
+      "subtitle": "Send a response to a messaging extensin requiring auth."
+    }
+  },
+  "Teams.SendMessagingExtensionBotMessagePreviewResponse": {
+    "form": {
+      "label": "Send a bot message preview response",
       "order": [
         "activity",
         "cacheType",
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a response to a query link request."
+      "subtitle": "Send a bot message preview response to a messaging extension request."
+    }
+  },
+  "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse": {
+    "form": {
+      "label": "Send a configuration query setting response",
+      "order": [
+        "configUrl",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a response to a query setting configuration url request."
+    }
+  },
+  "Teams.SendMessagingExtensionMessageResponse": {
+    "form": {
+      "label": "Send messaging extension message response",
+      "order": [
+        "message",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a message response containing text only."
     }
   },
   "Teams.SendTaskModuleCardResponse": {

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions

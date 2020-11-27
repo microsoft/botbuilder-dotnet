@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Message to send.
         /// </value>
-        [JsonProperty("message")]
+        [JsonProperty("configUrl")]
         public StringExpression ConfigUrl { get; set; }
 
         /// <summary>
@@ -72,27 +71,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException($"{nameof(ConfigUrl)} is Required for a Messaging Extension Config Response");
             }
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendTaskModuleConfigResponse", configUrl },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             var response = new MessagingExtensionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = "config",
+                    Type = MessagingExtensionResultResponseType.Config.ToString(),
                     SuggestedActions = new MessagingExtensionSuggestedAction
                     {
                         Actions = new List<CardAction>
-                                {
-                                    new CardAction
-                                    {
-                                        Type = ActionTypes.OpenUrl,
-                                        Value = configUrl,
-                                    },
-                                },
+                        {
+                            new CardAction
+                            {
+                                Type = ActionTypes.OpenUrl,
+                                Value = configUrl,
+                            },
+                        },
                     },
                 },
                 CacheInfo = GetCacheInfo(dc)

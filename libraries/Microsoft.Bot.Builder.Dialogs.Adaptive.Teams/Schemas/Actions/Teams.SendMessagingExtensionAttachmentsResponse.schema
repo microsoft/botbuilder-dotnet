@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send messaging extension auth response",
-    "description": "If the user is signed in, the dialog will end setting the TokenResponse in the specified property.",
+    "title": "Send messaging extensions attachments response",
+    "description": "Send a response containing attachments to a messaging extension request.",
     "type": "object",
     "properties": {
         "id": {
@@ -20,19 +20,10 @@
             "title": "Cache duration",
             "description": "Optional duration in seconds of the result in the cache."
         },
-        "connectionName": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "OAuth connection name",
-            "description": "The OAuth Connection Name, that will be used to perform the Sign On.",
-            "default": "=settings.connectionName"
-        },
-        "resultProperty": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "Property",
-            "description": "Property to store the TokenResponse in once Sign In completes.",
-            "examples": [
-                "dialog.userName"
-            ]
+        "attachments": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Attachments",
+            "description": "Expession for Attachments template of Cards or Adaptive Cards to send. Minimum of one Attachment is required."
         },
         "disabled": {
             "$ref": "schema:#/definitions/booleanExpression",

@@ -4,6 +4,9 @@
     "title": "OnTeamsAppBasedLinkQuery",
     "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
     "type": "object",
+    "hidden": [
+        "actions"
+    ],
     "required": [
     ]
 }

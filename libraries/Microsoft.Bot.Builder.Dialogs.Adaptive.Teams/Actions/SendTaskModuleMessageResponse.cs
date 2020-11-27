@@ -91,12 +91,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "sendtaskmodulemssageresponse", message },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             var response = new TaskModuleResponse
             {
                 Task = new TaskModuleMessageResponse(message),

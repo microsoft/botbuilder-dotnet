@@ -4,11 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -75,21 +73,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var attachment = boundActivity.Attachments[0];
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionSelectItemResponse", attachment.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
 
             var response = new MessagingExtensionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = "result",
-                    AttachmentLayout = "list", // TODO: enum this
+                    Type = MessagingExtensionResultResponseType.Result.ToString(),
+                    AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.List.ToString(), // TODO: enum this
                     Attachments = new List<MessagingExtensionAttachment> { extentionAttachment }
                 },
                 CacheInfo = GetCacheInfo(dc),
@@ -97,7 +88,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var invokeResponse = CreateInvokeResponseActivity(response);
             ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
-
             return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 

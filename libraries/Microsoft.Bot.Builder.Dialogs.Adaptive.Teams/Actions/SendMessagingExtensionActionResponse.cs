@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -14,7 +13,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send a messaging extension info action response..
+    /// Send a messaging extension action response.
     /// </summary>
     public class SendMessagingExtensionActionResponse : BaseSendTaskModuleContinueResponse
     {
@@ -76,18 +75,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
             }
 
-            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var title = Title?.GetValue(dc.State);
             var height = Height?.GetValue(dc.State);
             var width = Width?.GetValue(dc.State);
-
             var completionBotId = CompletionBotId?.GetValue(dc.State);
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionActionResponse", activity.Attachments[0].ToString() },
-                { "title", title ?? string.Empty },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
 
             var response = new MessagingExtensionActionResponse
             {
@@ -95,11 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     Value = new TaskModuleTaskInfo
                     {
-                        Card = new Attachment
-                        {
-                            Content = activity.Attachments[0],
-                            ContentType = "application/vnd.microsoft.card.adaptive",
-                        },
+                        Card = activity.Attachments[0],
                         Height = height,
                         Width = width,
                         Title = title,
@@ -108,10 +95,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 },
             };
 
-            await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-
-            // Since a token was not retrieved above, end the turn.
-            return Dialog.EndOfTurn;
+            var invokeResponse = CreateInvokeResponseActivity(response);
+            var resourceResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(resourceResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
