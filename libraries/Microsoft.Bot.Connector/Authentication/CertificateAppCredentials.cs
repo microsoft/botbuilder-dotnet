@@ -2,18 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -24,6 +17,28 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private readonly ClientAssertionCertificate clientCertificate;
         private readonly bool sendX5c;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
+        /// </summary>
+        /// <param name="options">Options for this CertificateAppCredentials.</param>
+        public CertificateAppCredentials(CertificateAppCredentialsOptions options)
+             : base(options.ChannelAuthTenant, options.CustomHttpClient, options.Logger, oAuthScope: options.OauthScope)
+        {
+            if (options.ClientCertificate == null)
+            {
+                throw new ArgumentNullException(nameof(options), "ClientCertificate is required.");
+            }
+
+            if (string.IsNullOrEmpty(options.AppId))
+            {
+                throw new ArgumentNullException(nameof(options), "AppId is required.");
+            }
+
+            this.sendX5c = options.SendX5c;
+            this.clientCertificate = new ClientAssertionCertificate(options.AppId, options.ClientCertificate);
+            MicrosoftAppId = this.clientCertificate.ClientId;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.

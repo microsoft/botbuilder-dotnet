@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 }
                 else
                 {
-                    throw new Exception($"Invalid channel auth tenant: {value}");
+                    throw new ArgumentException($"Invalid channel auth tenant: {value}");
                 }
             }
         }

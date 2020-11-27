@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var index = dc.State.GetIntValue(Index.GetValue(dc.State));
 
             // Next item
-            if (++index < list.Count)
+            if (list != null && ++index < list.Count)
             {
                 // Persist index and value
                 dc.State.SetValue(Value.GetValue(dc.State), list[index]);
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
             else
             {
-                // End of list has been reached
+                // End of list has been reached, or the list is null
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }

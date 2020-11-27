@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         {
             if (Activity == null)
             {
-                throw new Exception("You must define one of Text or Activity properties");
+                throw new InvalidOperationException("You must define one of Text or Activity properties");
             }
 
             var activity = ObjectPath.Clone(Activity);

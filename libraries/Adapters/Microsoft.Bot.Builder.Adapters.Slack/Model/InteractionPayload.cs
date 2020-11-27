@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
         public string CallbackId { get; set; }
 
         [JsonProperty(PropertyName = "state")]
-        public string State { get; set; }
+        public object State { get; set; }
 
         [JsonProperty(PropertyName = "response_url")]
         public Uri ResponseUrl { get; set; }

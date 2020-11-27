@@ -782,7 +782,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
-            var exception = Assert.Throws<Exception>(() => templates.ExpandTemplate("StrictTrue"));
+            var exception = Assert.Throws<InvalidOperationException>(() => templates.ExpandTemplate("StrictTrue"));
             Assert.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating '-${variable_not_defined}'", exception.Message);
         }
 
@@ -957,7 +957,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(17, newTemplate.SourceRange.Range.End.Line);
 
             // add an exist template
-            var exception = Assert.Throws<Exception>(() => templates.AddTemplate("newtemplate", null, "- hi2 "));
+            var exception = Assert.Throws<ArgumentException>(() => templates.AddTemplate("newtemplate", null, "- hi2 "));
             Assert.Equal(TemplateErrors.TemplateExist("newtemplate"), exception.Message);
         }
 
@@ -1491,7 +1491,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello", "Hiya" };
             Assert.True(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
-            var exception = Assert.Throws<Exception>(() => templates.EvaluateText("${ErrrorTemplate()}"));
+            var exception = Assert.Throws<InvalidOperationException>(() => templates.EvaluateText("${ErrrorTemplate()}"));
             Assert.Contains("it's not a built-in function or a custom function", exception.Message);
         }
 

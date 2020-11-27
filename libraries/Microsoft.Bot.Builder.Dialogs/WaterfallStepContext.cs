@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Ensure next hasn't been called
             if (_nextCalled)
             {
-                throw new Exception($"WaterfallStepContext.NextAsync(): method already called for dialog and step '{_parentWaterfall.Id}[{Index}]'.");
+                throw new InvalidOperationException($"WaterfallStepContext.NextAsync(): method already called for dialog and step '{_parentWaterfall.Id}[{Index}]'.");
             }
 
             // Trigger next step

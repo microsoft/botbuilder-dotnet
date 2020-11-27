@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
             {
-                throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                throw new InvalidOperationException("OAuthInput.BeginDialog(): not supported by the current adapter");
             }
 
             var output = await adapter.GetUserTokenAsync(dc.Context, ConnectionName.GetValue(dc.State), null, cancellationToken).ConfigureAwait(false);

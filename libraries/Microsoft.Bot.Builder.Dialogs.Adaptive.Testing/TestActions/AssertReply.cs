@@ -58,21 +58,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 var error = $"{description}Text '{text}' didn't match expected text: '{Text}'";
                 if (text == null)
                 {
-                    throw new Exception(error);
+                    throw new InvalidOperationException(error);
                 }
                 else if (Exact)
                 {
                     // Normalize line endings to work on windows and mac
                     if (text.Replace("\r", string.Empty) != Text.Replace("\r", string.Empty))
                     {
-                        throw new Exception(error);
+                        throw new InvalidOperationException(error);
                     }
                 }
                 else
                 {
                     if (text.ToLowerInvariant().Trim().Contains(Text.ToLowerInvariant().Trim()) == false)
                     {
-                        throw new Exception(error);
+                        throw new InvalidOperationException(error);
                     }
                 }
             }

@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                 var (result, error) = Expression.Parse(assertion).TryEvaluate<bool>(activity);
                 if (result != true)
                 {
-                    throw new Exception($"{Description} {assertion}\n{JsonConvert.SerializeObject(activity, Formatting.Indented)}");
+                    throw new InvalidOperationException($"{Description} {assertion}\n{JsonConvert.SerializeObject(activity, Formatting.Indented)}");
                 }
             }
         }

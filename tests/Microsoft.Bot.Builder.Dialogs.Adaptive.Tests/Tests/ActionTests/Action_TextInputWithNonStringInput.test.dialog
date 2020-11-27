@@ -1,0 +1,51 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.firstName",
+                        "value": "lu"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.lastName",
+                        "value": "han"
+                    },
+                    {
+                        "$kind": "Microsoft.IfCondition",
+                        "condition": "(user.name == null)",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.TextInput",
+                                "property": "user.name",
+                                "prompt": "Hello, what is your name?",
+                                "unrecognizedPrompt": "How should I call you?",
+                                "invalidPrompt": "That does not soud like a name",
+                                "value": "=json(`{'foo': '$firstName','item': '$lastName'}`)"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "That does not soud like a name"
+        }
+    ]
+}
