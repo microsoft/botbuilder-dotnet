@@ -135,11 +135,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 teamsChannelId = dc.Context.Activity.TeamsGetChannelId();
             }
 
+            // TODO: this will NOT work with certificate app credentials
+
             // TeamsInfo.SendMessageToTeamsChannelAsync requires AppCredentials
-            var credentials = dc.Context.TurnState.Get<IConnectorClient>()?.Credentials as AppCredentials;
+            var credentials = dc.Context.TurnState.Get<IConnectorClient>()?.Credentials as MicrosoftAppCredentials;
             if (credentials == null)
             {
-                throw new InvalidOperationException($"Missing credentials as {nameof(AppCredentials)} in {nameof(IConnectorClient)} from TurnState");
+                throw new InvalidOperationException($"Missing credentials as {nameof(MicrosoftAppCredentials)} in {nameof(IConnectorClient)} from TurnState");
             }
 
             // The result comes back as a tuple, which is used to set the two properties (if present).
