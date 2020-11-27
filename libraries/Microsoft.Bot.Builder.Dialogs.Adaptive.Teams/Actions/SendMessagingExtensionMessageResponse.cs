@@ -2,12 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -44,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Message to send.
         /// </value>
         [JsonProperty("message")]
-        public ITemplate<string> Message { get; set; }
+        public StringExpression Message { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -66,19 +64,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string message = await Message.BindAsync(dc, dc.State, cancellationToken).ConfigureAwait(false);
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendTaskModuleMessageResponse", message },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
+            string message = Message.GetValue(dc.State);
 
             var response = new MessagingExtensionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = "message", //'result', 'auth', 'config', 'message', 'botMessagePreview'
+                    Type = MessagingExtensionResultResponseType.Message.ToString(),
                     Text = message,
                 },
                 CacheInfo = GetCacheInfo(dc)

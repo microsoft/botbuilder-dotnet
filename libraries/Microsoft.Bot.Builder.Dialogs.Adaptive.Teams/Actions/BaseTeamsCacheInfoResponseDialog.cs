@@ -64,6 +64,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             };
         }
 
+        protected Activity CreateMessagingExtensionInvokeResponseActivity(DialogContext dc, MessagingExtensionResult result)
+        {
+            switch (dc.Context.Activity.Name)
+            {
+                case "composeExtension/queryLink":
+                case "composeExtension/query":
+                case "composeExtension/selectItem":
+                case "composeExtension/querySettingUrl":
+                    return CreateInvokeResponseActivity(new MessagingExtensionResponse() { ComposeExtension = result, CacheInfo = GetCacheInfo(dc) });
+                case "composeExtension/submitAction":
+                case "composeExtension/fetchTask":
+                    return CreateInvokeResponseActivity(new MessagingExtensionActionResponse() { ComposeExtension = result, CacheInfo = GetCacheInfo(dc) });
+
+                default:
+                    throw new InvalidOperationException($"GetMessagingExtensionResponse Invalid Activity.Name: {dc.Context.Activity.Name}");
+
+                    //case "fileConsent/invoke":
+                    //    return await OnTeamsFileConsentAsync(turnContext, SafeCast<FileConsentCardResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+
+                    //case "actionableMessage/executeAction":
+                    //    await OnTeamsO365ConnectorCardActionAsync(turnContext, SafeCast<O365ConnectorCardActionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                    //    return CreateInvokeResponse();
+
+                    //case "composeExtension/setting":
+                    //    await OnTeamsMessagingExtensionConfigurationSettingAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
+                    //    return CreateInvokeResponse();
+
+                    //case "composeExtension/onCardButtonClicked":
+                    //    await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
+                    //    return CreateInvokeResponse();
+
+                    //case "task/fetch":
+                    //    return CreateInvokeResponse(await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                    //case "task/submit":
+                    //    return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                    //default:
+                    //    return await base.OnInvokeActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         /// <summary>
         /// Retrieve a Cache Info object from the CacheType and CacheDuration, if present.
         /// </summary>

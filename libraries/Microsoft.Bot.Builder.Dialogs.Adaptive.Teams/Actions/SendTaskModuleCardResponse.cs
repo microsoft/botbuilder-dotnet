@@ -30,8 +30,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
+        [JsonConstructor]
         public SendTaskModuleCardResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"A valid card attachment is required for Task Module Continue Response.");
             }
 
-            var title = Title == null ? string.Empty : await Title.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var title = Title?.GetValue(dc.State);
             var height = Height?.GetValue(dc.State);
             var width = Width?.GetValue(dc.State);
             
@@ -103,16 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 },
                 CacheInfo = GetCacheInfo(dc),
             };
+
             var responseActivity = CreateInvokeResponseActivity(response);
-
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendTaskModuleContinueResponse", responseActivity.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             ResourceResponse sendResponse = await dc.Context.SendActivityAsync(responseActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
-
             return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 

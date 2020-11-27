@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -51,18 +50,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the name of the OAuth connection.
         /// </summary>
-        /// <value>String or expression which evaluates to a string.</value>
+        /// <value>String or expression which evaluates to a connection string.</value>
         [JsonProperty("connectionName")]
         public StringExpression ConnectionName { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional expression for the Title the Task Module response.
+        /// Gets or sets an Title of the response.
         /// </summary>
         /// <value>
-        /// An string expression. 
+        /// An string or expression which evaluates to a string for the response title.
         /// </value>
         [JsonProperty("title")]
-        public ITemplate<string> Title { get; set; }
+        public StringExpression Title { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -95,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Messaging Extension Auth Response requires a Connection Name.");
             }
 
-            var title = await Title.BindAsync(dc, dc.State, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var title = Title.GetValue(dc.State);
             if (string.IsNullOrEmpty(title))
             {
                 throw new InvalidOperationException("Messaging Extension Auth Response requires a Title.");
@@ -116,15 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // There is no token, so the user has not signed in yet.
-
             var activity = await GetInvokeResponseWithSignInLinkAsync(dc, title, tokenProvider, connectionName, cancellationToken).ConfigureAwait(false);
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionAuthResponse", activity.ToString() },
-                { "title", title ?? string.Empty },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Since a token was not retrieved above, end the turn.
@@ -169,14 +160,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
             var signInLink = await tokenProvider.GetOauthSignInLinkAsync(dc.Context, connectionName, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            var response = new MessagingExtensionResponse
+            var result = new MessagingExtensionResult
             {
-                ComposeExtension = new MessagingExtensionResult
+                Type = MessagingExtensionResultResponseType.Auth.ToString(),
+                SuggestedActions = new MessagingExtensionSuggestedAction
                 {
-                    Type = "auth",
-                    SuggestedActions = new MessagingExtensionSuggestedAction
-                    {
-                        Actions = new List<CardAction>
+                    Actions = new List<CardAction>
                                 {
                                     new CardAction
                                     {
@@ -185,12 +174,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                                         Title = title,
                                     },
                                 },
-                    },
                 },
-                CacheInfo = GetCacheInfo(dc)
             };
 
-            return CreateInvokeResponseActivity(response);
+            return CreateMessagingExtensionInvokeResponseActivity(dc, result);
         }
     }
 }

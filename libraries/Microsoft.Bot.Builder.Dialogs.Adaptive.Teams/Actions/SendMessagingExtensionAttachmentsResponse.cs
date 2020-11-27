@@ -42,7 +42,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Activity with the Attachments to send in response to the Query.
         /// </value>
+        [JsonProperty("attachments")]
         public ITemplate<Activity> Attachments { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Attachment Layout type for the response ('grid' or 'list').
+        /// </summary>
+        /// <value>
+        /// The Attachment Layout type.
+        /// </value>
+        [JsonProperty("attachmentLayout")]
+        public MessagingExtensionAttachmentLayoutResponseType AttachmentLayout { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -75,30 +85,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
             }
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionAttachmentsResponse", activity.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a));
 
-            var response = new MessagingExtensionResponse
+            var result = new MessagingExtensionResult
             {
-                ComposeExtension = new MessagingExtensionResult
-                {
-                    Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-
-                    AttachmentLayout = "list", // 'list', 'grid' // TODO: enum
-                    Attachments = attachments.ToList(),
-                },
-                CacheInfo = GetCacheInfo(dc),
+                Type = MessagingExtensionResultResponseType.Result.ToString(),
+                AttachmentLayout = AttachmentLayout.ToString(),
+                Attachments = attachments.ToList(),
             };
 
-            var invokeResponse = CreateInvokeResponseActivity(response);
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateMessagingExtensionInvokeResponseActivity(dc, result);
+            ResourceResponse resourceResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(resourceResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

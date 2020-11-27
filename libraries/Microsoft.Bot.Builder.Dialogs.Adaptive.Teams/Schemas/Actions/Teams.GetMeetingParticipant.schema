@@ -36,7 +36,7 @@
         },
         "tenantId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Tenant Id",
+            "title": "Tenant id",
             "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
             "examples": [
                 "=turn.activity.channelData.tenant.id"

@@ -82,29 +82,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"An attachment is required for Send Messaging Extension Query Link Response.");
             }
 
-            var properties = new Dictionary<string, string>()
-            {
-                { "SendMessagingExtensionQueryLinkResponse", attachment.ToString() },
-            };
-            TelemetryClient.TrackEvent("GeneratorResult", properties);
-
             var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
-            
-            var response = new MessagingExtensionResponse
+
+            var result = new MessagingExtensionResult
             {
-                ComposeExtension = new MessagingExtensionResult
-                {
-                    Type = "result", //'result', 'auth', 'config', 'message', 'botMessagePreview'
-                    AttachmentLayout = "list", // 'list', 'grid'  // TODO: make this configurable
-                    Attachments = new[] { extentionAttachment },
-                },
-                CacheInfo = GetCacheInfo(dc),
+                Type = MessagingExtensionResultResponseType.Result.ToString(),
+                AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.List.ToString(), // 'list', 'grid'  // TODO: make this configurable
+                Attachments = new[] { extentionAttachment },
             };
 
-            var invokeResponse = CreateInvokeResponseActivity(response);
-            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateMessagingExtensionInvokeResponseActivity(dc, result);
+            ResourceResponse resourceResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return await dc.EndDialogAsync(resourceResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

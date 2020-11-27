@@ -12,16 +12,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public abstract class BaseSendTaskModuleContinueResponse : BaseTeamsCacheInfoResponseDialog
     {
         /// <summary>
-        /// Gets or sets the optional template or text to use to generate the title message to send.
+        /// Gets or sets the text or expression to use to generate the title of the response.
         /// </summary>
         /// <value>
-        /// Message to send.
+        /// Title of the response.
         /// </value>
         [JsonProperty("title")]
-        public ITemplate<string> Title { get; set; }
+        public StringExpression Title { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional expression for the height of the Task Module response.
+        /// Gets or sets an optional expression for the height of the response.
         /// </summary>
         /// <value>
         /// An integer expression. 
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public IntExpression Height { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional expression for the width of the Task Module response.
+        /// Gets or sets an optional expression for the width of the response.
         /// </summary>
         /// <value>
         /// An integer expression. 

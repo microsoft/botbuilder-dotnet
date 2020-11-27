@@ -46,11 +46,22 @@
     <None Remove="Schemas\Actions\Teams.GetTeamChannels.schema" />
     <None Remove="Schemas\Actions\Teams.GetTeamDetails.schema" />
     <None Remove="Schemas\Actions\Teams.GetTeamMember.schema" />
+    <None Remove="Schemas\Actions\Teams.SendAppBasedLinkQueryResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendAppBasedLinkQueryResponse.uischema" />
     <None Remove="Schemas\Actions\Teams.SendMessageToTeamsChannel.schema" />
     <None Remove="Schemas\Actions\Teams.SendMessageToTeamsChannel.uischema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionActionResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionActionResponse.uischema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAttachmentsResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAttachmentsResponse.uischema" />
     <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAuthResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionQueryLinkResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionQueryLinkResponse.uischema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAuthResponse.uischema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionBotMessagePreviewResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionBotMessagePreviewResponse.uischema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionConfigQuerySettingUrlResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionConfigQuerySettingUrlResponse.uischema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionMessageResponse.schema" />
+    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionMessageResponse.uischema" />
     <None Remove="Schemas\Actions\Teams.SendTaskModuleCardResponse.schema" />
     <None Remove="Schemas\Actions\Teams.SendTaskModuleCardResponse.uischema" />
     <None Remove="Schemas\Actions\Teams.SendTaskModuleMessageResponse.schema" />
@@ -66,6 +77,8 @@
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamDeleted.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamHardDeleted.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamRestored.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnTeamsMessagingExtensionBotMessagePreviewSend.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamUnarchived.schema" />
   </ItemGroup>
 
