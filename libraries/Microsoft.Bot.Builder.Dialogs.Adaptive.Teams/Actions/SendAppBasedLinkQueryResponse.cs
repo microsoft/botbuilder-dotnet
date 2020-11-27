@@ -65,30 +65,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            Attachment attachment = null;
+            Activity boundActivity = null;
             if (Activity != null)
             {
-                var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+                boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
                     throw new ArgumentException($"Invalid Activity. A attachment is required for Send Messaging Extension Query Link Response.");
                 }
-
-                attachment = boundActivity.Attachments[0];
             }
             else
             {
                 throw new ArgumentException($"An attachment is required for Send Messaging Extension Query Link Response.");
             }
 
-            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
+            var attachments = boundActivity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));
 
             var result = new MessagingExtensionResult
             {
-                Type = MessagingExtensionResultResponseType.Result.ToString(),
-                AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.List.ToString(), // 'list', 'grid'  // TODO: make this configurable
-                Attachments = new[] { extentionAttachment },
+                Type = MessagingExtensionResultResponseType.result.ToString(),
+                AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.list.ToString(), // 'list', 'grid'  // TODO: make this configurable
+                Attachments = attachments.ToList(),
             };
 
             var invokeResponse = CreateMessagingExtensionInvokeResponseActivity(dc, result);

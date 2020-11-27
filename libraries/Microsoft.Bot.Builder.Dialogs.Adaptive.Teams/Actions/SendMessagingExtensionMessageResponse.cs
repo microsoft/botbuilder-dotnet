@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = MessagingExtensionResultResponseType.Message.ToString(),
+                    Type = MessagingExtensionResultResponseType.message.ToString(),
                     Text = message,
                 },
                 CacheInfo = GetCacheInfo(dc)

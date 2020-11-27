@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var result = new MessagingExtensionResult
             {
-                Type = MessagingExtensionResultResponseType.Auth.ToString(),
+                Type = MessagingExtensionResultResponseType.auth.ToString(),
                 SuggestedActions = new MessagingExtensionSuggestedAction
                 {
                     Actions = new List<CardAction>

@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = MessagingExtensionResultResponseType.Config.ToString(),
+                    Type = MessagingExtensionResultResponseType.config.ToString(),
                     SuggestedActions = new MessagingExtensionSuggestedAction
                     {
                         Actions = new List<CardAction>

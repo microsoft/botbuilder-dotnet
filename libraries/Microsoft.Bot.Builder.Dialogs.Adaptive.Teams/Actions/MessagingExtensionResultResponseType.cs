@@ -15,26 +15,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Result response type.
         /// </summary>
-        Result,
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+        result,
 
         /// <summary>
         /// Auth response type.
         /// </summary>
-        Auth,
+        auth,
 
         /// <summary>
         /// Config response type.
         /// </summary>
-        Config,
+        config,
 
         /// <summary>
         /// Message response type.
         /// </summary>
-        Message,
+        message,
 
         /// <summary>
         /// BotMessagePreview response type.
         /// </summary>
-        BotMessagePreview
+        botMessagePreview
+#pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }

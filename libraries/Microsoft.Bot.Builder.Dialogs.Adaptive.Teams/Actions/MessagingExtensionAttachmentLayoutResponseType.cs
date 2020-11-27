@@ -15,11 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// List layout type.
         /// </summary>
-        List,
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+        list,
 
         /// <summary>
         /// Grid layout type.
         /// </summary>
-        Grid
+        grid
+#pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }

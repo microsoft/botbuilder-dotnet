@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = MessagingExtensionResultResponseType.BotMessagePreview.ToString(),
+                    Type = MessagingExtensionResultResponseType.botMessagePreview.ToString(),
                     ActivityPreview = MessageFactory.Attachment(new Attachment
                     {
                         Content = attachment,

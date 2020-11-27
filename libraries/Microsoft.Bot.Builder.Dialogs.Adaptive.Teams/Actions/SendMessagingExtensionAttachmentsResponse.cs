@@ -85,11 +85,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
             }
 
-            var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a));
+            var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));
 
             var result = new MessagingExtensionResult
             {
-                Type = MessagingExtensionResultResponseType.Result.ToString(),
+                Type = MessagingExtensionResultResponseType.result.ToString(),
                 AttachmentLayout = AttachmentLayout.ToString(),
                 Attachments = attachments.ToList(),
             };

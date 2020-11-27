@@ -73,14 +73,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var attachment = boundActivity.Attachments[0];
-            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment);
+            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment.Content);
 
             var response = new MessagingExtensionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
                 {
-                    Type = MessagingExtensionResultResponseType.Result.ToString(),
-                    AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.List.ToString(), // TODO: enum this
+                    Type = MessagingExtensionResultResponseType.result.ToString(),
+                    AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.list.ToString(), // TODO: enum this
                     Attachments = new List<MessagingExtensionAttachment> { extentionAttachment }
                 },
                 CacheInfo = GetCacheInfo(dc),
