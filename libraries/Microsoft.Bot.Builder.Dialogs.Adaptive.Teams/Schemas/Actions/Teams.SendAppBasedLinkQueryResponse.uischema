@@ -4,7 +4,7 @@
         "label": "Send a query link response",
         "subtitle": "Send a response to a query link request.",
         "order": [
-            "activity",
+            "card",
             "cacheType",
             "cacheDuration",
             "*"

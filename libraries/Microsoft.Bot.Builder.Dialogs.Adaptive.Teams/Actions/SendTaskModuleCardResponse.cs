@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card with an Attachment to send.
+        /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card to send.
         /// </summary>
         /// <value>
-        /// Template for the activity.
+        /// Template for the card.
         /// </value>
-        [JsonProperty("activity")]
-        public ITemplate<Activity> Activity { get; set; }
+        [JsonProperty("card")]
+        public ITemplate<Activity> Card { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             Attachment attachment = null;
-            if (Activity != null)
+            if (Card != null)
             {
-                var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+                var boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
@@ -115,12 +115,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            if (Activity is ActivityTemplate at)
+            if (Card is ActivityTemplate at)
             {
                 return $"{this.GetType().Name}({StringUtils.Ellipsis(at.Template.Trim(), 30)})";
             }
 
-            return $"{this.GetType().Name}('{StringUtils.Ellipsis(Activity?.ToString().Trim(), 30)}')";
+            return $"{this.GetType().Name}('{StringUtils.Ellipsis(Card?.ToString().Trim(), 30)}')";
         }
     }
 }

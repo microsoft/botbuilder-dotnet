@@ -1,10 +1,10 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
     "form": {
-        "label": "Send a messaging extension action response",
-        "subtitle": "Send an action response containing a card for a messaging extension request.",
+        "label": "Messaging extension action response",
+        "subtitle": "Send a response for a messaging extension request.",
         "order": [
-            "activity",
+            "card",
             "title",
             "height",
             "width",

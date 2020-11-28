@@ -4,13 +4,10 @@
         "label": "Send a bot message preview response",
         "subtitle": "Send a bot message preview response to a messaging extension request.",
         "order": [
-            "activity",
+            "card",
             "cacheType",
             "cacheDuration",
             "*"
-        ],
-        "hidden": [
-            "actions"
         ]
     }
 }

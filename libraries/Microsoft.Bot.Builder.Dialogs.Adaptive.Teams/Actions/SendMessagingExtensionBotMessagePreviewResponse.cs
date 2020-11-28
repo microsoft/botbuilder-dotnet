@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send a messaging extension 'botMessagePreview' response.
     /// </summary>
-    public class SendMessagingExtensionBotMessagePreviewResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendMessagingExtensionBotMessagePreviewResponse : BaseSendTaskModuleContinueResponse
     {
         /// <summary>
         /// Class identifier.
@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets template for the activity expression containing a Hero Card or Adaptive Card with an Attachment to send.
+        /// Gets or sets template for the expression containing a Hero Card or Adaptive Card to send.
         /// </summary>
         /// <value>
         /// Template for the activity.
         /// </value>
-        [JsonProperty("activity")]
-        public ITemplate<Activity> Activity { get; set; }
+        [JsonProperty("card")]
+        public ITemplate<Activity> Card { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             Attachment attachment = null;
-            if (Activity != null)
+            if (Card != null)
             {
-                var boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+                var boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     Type = MessagingExtensionResultResponseType.botMessagePreview.ToString(),
                     ActivityPreview = MessageFactory.Attachment(new Attachment
                     {
-                        Content = attachment,
+                        Content = attachment.Content,
                         ContentType = attachment.ContentType,
                     }) as Activity,
                 },

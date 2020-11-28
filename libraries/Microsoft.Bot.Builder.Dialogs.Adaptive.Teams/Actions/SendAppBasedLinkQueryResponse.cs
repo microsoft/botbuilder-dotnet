@@ -40,10 +40,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Gets or sets template for the attachment template of a Thumbnail or Hero Card to send.
         /// </summary>
         /// <value>
-        /// Template for the activity.
+        /// Template for the card.
         /// </value>
-        [JsonProperty("activity")]
-        public ITemplate<Activity> Activity { get; set; }
+        [JsonProperty("card")]
+        public ITemplate<Activity> Card { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             Activity boundActivity = null;
-            if (Activity != null)
+            if (Card != null)
             {
-                boundActivity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+                boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Activity?.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.Card?.ToString() ?? string.Empty}]";
         }
     }
 }

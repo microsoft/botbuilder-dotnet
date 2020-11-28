@@ -425,6 +425,12 @@
       "$ref": "#/definitions/Teams.OnFileConsent"
     },
     {
+      "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewEdit"
+    },
+    {
+      "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewSend"
+    },
+    {
       "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
     },
     {
@@ -471,12 +477,6 @@
     },
     {
       "$ref": "#/definitions/Teams.OnTeamUnarchived"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamsMessagingExtensionBotMessagePreviewSend"
     },
     {
       "$ref": "#/definitions/Teams.SendAppBasedLinkQueryResponse"
@@ -4015,10 +4015,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -4220,6 +4220,12 @@
           "$ref": "#/definitions/Teams.OnFileConsent"
         },
         {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewEdit"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewSend"
+        },
+        {
           "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
         },
         {
@@ -4263,12 +4269,6 @@
         },
         {
           "$ref": "#/definitions/Teams.OnTeamRestored"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamsMessagingExtensionBotMessagePreviewSend"
         },
         {
           "$ref": "#/definitions/Teams.OnTeamUnarchived"
@@ -10902,6 +10902,134 @@
         }
       }
     },
+    "Teams.OnMessagingExtensionBotMessagePreviewEdit": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On teams messaging extension preview edit submit action",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'edit'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnMessagingExtensionBotMessagePreviewEdit"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.OnMessagingExtensionBotMessagePreviewSend": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On teams messaging extension preview send submit action",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'send'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnMessagingExtensionBotMessagePreviewSend"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.OnMessagingExtensionCardButtonClicked": {
       "$role": [
         "implements(Microsoft.ITrigger)",
@@ -11927,134 +12055,6 @@
         }
       }
     },
-    "Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "On teams messaging extension preview edit submit action",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'edit'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamsMessagingExtensionBotMessagePreviewSend": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "On teams messaging extension preview send submit action",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'send'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamsMessagingExtensionBotMessagePreviewSend"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
     "Teams.SendAppBasedLinkQueryResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send query link response",
@@ -12086,9 +12086,9 @@
           "title": "Cache duration",
           "description": "Optional duration in seconds of the result in the cache."
         },
-        "activity": {
+        "card": {
           "$kind": "Microsoft.IActivityTemplate",
-          "title": "Activity",
+          "title": "Card",
           "description": "Expession for an Attachment template of Hero Card or Thumbnail Card to send. Attachment is required.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
@@ -12187,8 +12187,8 @@
     },
     "Teams.SendMessagingExtensionActionResponse": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Send messaging extension action response",
-      "description": "Send an action response containing a card for a messaging extension request.",
+      "title": "Messaging extension action response",
+      "description": "Send an task action response containing a card.",
       "type": "object",
       "required": [
         "$kind"
@@ -12240,9 +12240,9 @@
             "450"
           ]
         },
-        "activity": {
+        "card": {
           "$kind": "Microsoft.IActivityTemplate",
-          "title": "Activity",
+          "title": "Card",
           "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
@@ -12270,7 +12270,7 @@
     },
     "Teams.SendMessagingExtensionAttachmentsResponse": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Send messaging extensions attachments response",
+      "title": "Messaging extensions attachments response",
       "description": "Send a response containing attachments to a messaging extension request.",
       "type": "object",
       "required": [
@@ -12298,6 +12298,26 @@
           "type": "string",
           "title": "Cache duration",
           "description": "Optional duration in seconds of the result in the cache."
+        },
+        "attachmentLayout": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Attachment layout",
+          "description": "Defines the type of attachment layout. Either 'grid' or 'list'.",
+          "oneOf": [
+            {
+              "type": "string",
+              "title": "Layout type",
+              "description": "Layout type of 'grid' or 'list'.",
+              "enum": [
+                "list",
+                "grid"
+              ],
+              "default": "list"
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
         },
         "attachments": {
           "$kind": "Microsoft.IActivityTemplate",
@@ -12425,9 +12445,9 @@
           "title": "Cache duration",
           "description": "Optional duration in seconds of the result in the cache."
         },
-        "activity": {
+        "card": {
           "$kind": "Microsoft.IActivityTemplate",
-          "title": "Activity",
+          "title": "Card",
           "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
@@ -12631,9 +12651,9 @@
             "450"
           ]
         },
-        "activity": {
+        "card": {
           "$kind": "Microsoft.IActivityTemplate",
-          "title": "Activity",
+          "title": "Card",
           "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },

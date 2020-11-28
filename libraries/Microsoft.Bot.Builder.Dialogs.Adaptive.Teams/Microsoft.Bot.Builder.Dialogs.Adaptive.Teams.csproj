@@ -69,16 +69,27 @@
     <None Remove="Schemas\Actions\Teams.SendTaskModuleUrlResponse.schema" />
     <None Remove="Schemas\Actions\Teams.SendTaskModuleUrlResponse.uischema" />
     <None Remove="Schemas\TriggerConditions\Microsoft.OnInvokeActivity.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnAppBasedLinkQuery.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnCardAction.uischema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnChannelRestored.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewEdit.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewEdit.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewSend.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewSend.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionCardButtonClicked.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionConfigurationQuerySettingUrl.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionConfigurationSetting.uischema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionFetchTask.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionQuery.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionSelectItem.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionSubmitAction.uischema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnO365ConnectorCardAction.uischema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTaskModuleFetch.uischema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTaskModuleSubmit.uischema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamArchived.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamDeleted.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamHardDeleted.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamRestored.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamsMessagingExtensionBotMessagePreviewSend.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamUnarchived.schema" />
   </ItemGroup>
 

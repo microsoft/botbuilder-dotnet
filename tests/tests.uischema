@@ -829,6 +829,32 @@
       "subtitle": "Invoke activity with no activity.name"
     }
   },
+  "Teams.OnMessagingExtensionBotMessagePreviewEdit": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension preview edit submit action",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'edit'"
+    }
+  },
+  "Teams.OnMessagingExtensionBotMessagePreviewSend": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension preview send submit action",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
+    }
+  },
   "Teams.OnMessagingExtensionCardButtonClicked": {
     "form": {
       "hidden": [
@@ -959,37 +985,11 @@
       "subtitle": "Invoke activity.name='task/submit'"
     }
   },
-  "Teams.OnTeamsMessagingExtensionBotMessagePreviewEdit": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension preview edit submit action",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'edit'"
-    }
-  },
-  "Teams.OnTeamsMessagingExtensionBotMessagePreviewSend": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension preview send submit action",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
-    }
-  },
   "Teams.SendAppBasedLinkQueryResponse": {
     "form": {
       "label": "Send a query link response",
       "order": [
-        "activity",
+        "card",
         "cacheType",
         "cacheDuration",
         "*"
@@ -1012,9 +1012,9 @@
   },
   "Teams.SendMessagingExtensionActionResponse": {
     "form": {
-      "label": "Send a messaging extension action response",
+      "label": "Messaging extension action response",
       "order": [
-        "activity",
+        "card",
         "title",
         "height",
         "width",
@@ -1022,19 +1022,20 @@
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send an action response containing a card for a messaging extension request."
+      "subtitle": "Send a response for a messaging extension request."
     }
   },
   "Teams.SendMessagingExtensionAttachmentsResponse": {
     "form": {
-      "label": "Send messaging extensions attachments response",
+      "label": "Send messaging extensions attachment(s) response",
       "order": [
         "attachments",
+        "attachmentLayout",
         "cacheType",
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a response containing attachments to a messaging extension request."
+      "subtitle": "Send an invoke response containing one or more attachments to a messaging extension request."
     }
   },
   "Teams.SendMessagingExtensionAuthResponse": {
@@ -1050,12 +1051,9 @@
   },
   "Teams.SendMessagingExtensionBotMessagePreviewResponse": {
     "form": {
-      "hidden": [
-        "actions"
-      ],
       "label": "Send a bot message preview response",
       "order": [
-        "activity",
+        "card",
         "cacheType",
         "cacheDuration",
         "*"
@@ -1091,7 +1089,7 @@
     "form": {
       "label": "Send task module card response",
       "order": [
-        "activity",
+        "card",
         "title",
         "height",
         "width",

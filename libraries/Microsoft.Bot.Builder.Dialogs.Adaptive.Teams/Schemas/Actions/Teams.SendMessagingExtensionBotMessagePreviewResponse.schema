@@ -20,9 +20,9 @@
             "title": "Cache duration",
             "description": "Optional duration in seconds of the result in the cache."
         },
-        "activity": {
+        "card": {
             "$kind": "Microsoft.IActivityTemplate",
-            "title": "Activity",
+            "title": "Card",
             "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required."
         },
         "disabled": {

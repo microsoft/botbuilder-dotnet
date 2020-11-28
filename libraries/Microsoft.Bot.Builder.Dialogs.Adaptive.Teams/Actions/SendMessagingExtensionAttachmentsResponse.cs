@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The Attachment Layout type.
         /// </value>
         [JsonProperty("attachmentLayout")]
-        public MessagingExtensionAttachmentLayoutResponseType AttachmentLayout { get; set; }
+        public EnumExpression<MessagingExtensionAttachmentLayoutResponseType> AttachmentLayout { get; set; } = MessagingExtensionAttachmentLayoutResponseType.list;
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -85,12 +86,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
             }
 
+            var layout = AttachmentLayout.GetValue(dc.State);
             var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));
 
             var result = new MessagingExtensionResult
             {
                 Type = MessagingExtensionResultResponseType.result.ToString(),
-                AttachmentLayout = AttachmentLayout.ToString(),
+                AttachmentLayout = layout.ToString(),
                 Attachments = attachments.ToList(),
             };
 

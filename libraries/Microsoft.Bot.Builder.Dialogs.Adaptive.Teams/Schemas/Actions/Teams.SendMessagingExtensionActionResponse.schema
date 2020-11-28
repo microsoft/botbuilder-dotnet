@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send messaging extension action response",
-    "description": "Send an action response containing a card for a messaging extension request.",
+    "title": "Messaging extension action response",
+    "description": "Send an task action response containing a card.",
     "type": "object",
     "properties": {
         "id": {
@@ -44,9 +44,9 @@
                 "450"
             ]
         },
-        "activity": {
+        "card": {
             "$kind": "Microsoft.IActivityTemplate",
-            "title": "Activity",
+            "title": "Card",
             "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required."
         },
         "disabled": {

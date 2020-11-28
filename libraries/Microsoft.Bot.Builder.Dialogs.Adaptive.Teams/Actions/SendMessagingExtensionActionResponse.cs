@@ -36,13 +36,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets template for the activity expression containing an Adaptive Card to send.
+        /// Gets or sets template for the activity expression containing a Card to send.
         /// </summary>
         /// <value>
         /// Template for the activity containing an Adaptive Card to send.
         /// </value>
-        [JsonProperty("activity")]
-        public ITemplate<Activity> Activity { get; set; }
+        [JsonProperty("card")]
+        public ITemplate<Activity> Card { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
@@ -65,14 +65,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             Activity activity = null;
-            if (Activity != null)
+            if (Card != null)
             {
-                activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+                activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
             }
 
             if (activity == null || activity.Attachments?.Any() == false)
             {
-                throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
+                throw new InvalidOperationException("Missing Attachments in Messaging Extension Action Response.");
             }
 
             var title = Title?.GetValue(dc.State);

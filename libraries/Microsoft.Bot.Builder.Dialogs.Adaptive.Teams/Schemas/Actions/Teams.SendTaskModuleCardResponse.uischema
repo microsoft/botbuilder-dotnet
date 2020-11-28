@@ -4,7 +4,7 @@
         "label": "Send task module card response",
         "subtitle": "Send a continue response containing a card.",
         "order": [
-            "activity",
+            "card",
             "title",
             "height",
             "width",
