@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Request payload to be sent to the Bot Framework Token Service for Single Sign On.
@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Schema
     /// </summary>
     public partial class TokenExchangeRequest
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenExchangeRequest"/> class.
         /// </summary>
@@ -23,7 +22,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the TokenExchangeRequest class.
+        /// Initializes a new instance of the <see cref="TokenExchangeRequest"/> class.
         /// </summary>
         public TokenExchangeRequest(string uri = default(string), string token = default(string))
         {
@@ -31,11 +30,6 @@ namespace Microsoft.Bot.Schema
             Token = token;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets a URI string.
@@ -49,5 +43,9 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Message reaction object
+    /// Message reaction object.
     /// </summary>
     public partial class MessageReaction
     {
         /// <summary>
-        /// Initializes a new instance of the MessageReaction class.
+        /// Initializes a new instance of the <see cref="MessageReaction"/> class.
         /// </summary>
         public MessageReaction()
         {
@@ -20,10 +20,10 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageReaction class.
+        /// Initializes a new instance of the <see cref="MessageReaction"/> class.
         /// </summary>
         /// <param name="type">Message reaction type. Possible values include:
-        /// 'like', 'plusOne'</param>
+        /// 'like', 'plusOne'.</param>
         public MessageReaction(string type = default(string))
         {
             Type = type;
@@ -31,16 +31,15 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
         /// Gets or sets message reaction type. Possible values include:
-        /// 'like', 'plusOne'
+        /// 'like', 'plusOne'.
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
-
     }
 }

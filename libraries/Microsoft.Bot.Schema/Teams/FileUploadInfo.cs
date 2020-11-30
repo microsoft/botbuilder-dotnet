@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Information about the file to be uploaded.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class FileUploadInfo
     {
         /// <summary>
-        /// Initializes a new instance of the FileUploadInfo class.
+        /// Initializes a new instance of the <see cref="FileUploadInfo"/> class.
         /// </summary>
         public FileUploadInfo()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the FileUploadInfo class.
+        /// Initializes a new instance of the <see cref="FileUploadInfo"/> class.
         /// </summary>
         /// <param name="name">Name of the file.</param>
         /// <param name="uploadUrl">URL to an upload session that the bot can
@@ -38,11 +38,6 @@ namespace Microsoft.Bot.Schema.Teams
             FileType = fileType;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets name of the file.
@@ -75,5 +70,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "fileType")]
         public string FileType { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

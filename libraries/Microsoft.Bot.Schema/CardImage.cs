@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// An image on a card
+    /// An image on a card.
     /// </summary>
     public partial class CardImage
     {
@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the CardImage class.
         /// </summary>
         /// <param name="url">URL thumbnail image for major content
-        /// property</param>
+        /// property.</param>
         /// <param name="alt">Image description intended for screen
-        /// readers</param>
+        /// readers.</param>
         /// <param name="tap">Action assigned to specific Attachment</param>
         public CardImage(string url = default(string), string alt = default(string), CardAction tap = default(CardAction))
         {
@@ -36,27 +36,26 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets URL thumbnail image for major content property
+        /// Gets or sets URL thumbnail image for major content property.
         /// </summary>
         [JsonProperty(PropertyName = "url")]
         public string Url { get; set; }
 
         /// <summary>
-        /// Gets or sets image description intended for screen readers
+        /// Gets or sets image description intended for screen readers.
         /// </summary>
         [JsonProperty(PropertyName = "alt")]
         public string Alt { get; set; }
 
         /// <summary>
-        /// Gets or sets action assigned to specific Attachment
+        /// Gets or sets action assigned to specific Attachment.
         /// </summary>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
-
     }
 }

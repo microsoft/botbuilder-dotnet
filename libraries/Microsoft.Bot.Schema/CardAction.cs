@@ -3,11 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// A clickable action
+    /// A clickable action.
     /// </summary>
     public partial class CardAction
     {

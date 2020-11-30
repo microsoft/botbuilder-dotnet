@@ -1,21 +1,20 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card multiple choice input
+    /// O365 connector card multiple choice input.
     /// </summary>
     public partial class O365ConnectorCardMultichoiceInput : O365ConnectorCardInputBase
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardMultichoiceInput
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardMultichoiceInput"/> class.
         /// </summary>
         public O365ConnectorCardMultichoiceInput()
         {
@@ -23,22 +22,21 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardMultichoiceInput
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardMultichoiceInput"/> class.
         /// </summary>
         /// <param name="type">Input type name. Possible values include:
-        /// 'textInput', 'dateInput', 'multichoiceInput'</param>
+        /// 'textInput', 'dateInput', 'multichoiceInput'.</param>
         /// <param name="id">Input Id. It must be unique per entire O365
         /// connector card.</param>
         /// <param name="isRequired">Define if this input is a required field.
         /// Default value is false.</param>
         /// <param name="title">Input title that will be shown as the
-        /// placeholder</param>
-        /// <param name="value">Default value for this input field</param>
+        /// placeholder.</param>
+        /// <param name="value">Default value for this input field.</param>
         /// <param name="choices">Set of choices whose each item can be in any
         /// subtype of O365ConnectorCardMultichoiceInputChoice.</param>
         /// <param name="style">Choice item rendering style. Default value is
-        /// 'compact'. Possible values include: 'compact', 'expanded'</param>
+        /// 'compact'. Possible values include: 'compact', 'expanded'.</param>
         /// <param name="isMultiSelect">Define if this input field allows
         /// multiple selections. Default value is false.</param>
         public O365ConnectorCardMultichoiceInput(string type = default(string), string id = default(string), bool? isRequired = default(bool?), string title = default(string), string value = default(string), IList<O365ConnectorCardMultichoiceInputChoice> choices = default(IList<O365ConnectorCardMultichoiceInputChoice>), string style = default(string), bool? isMultiSelect = default(bool?))
@@ -51,11 +49,6 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets set of choices whose each item can be in any subtype
         /// of O365ConnectorCardMultichoiceInputChoice.
         /// </summary>
@@ -64,7 +57,7 @@ namespace Microsoft.Bot.Schema.Teams
 
         /// <summary>
         /// Gets or sets choice item rendering style. Default value is
-        /// 'compact'. Possible values include: 'compact', 'expanded'
+        /// 'compact'. Possible values include: 'compact', 'expanded'.
         /// </summary>
         [JsonProperty(PropertyName = "style")]
         public string Style { get; set; }
@@ -76,5 +69,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "isMultiSelect")]
         public bool? IsMultiSelect { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

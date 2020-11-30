@@ -1,19 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365O365 connector card multiple choice input item
+    /// O365O365 connector card multiple choice input item.
     /// </summary>
     public partial class O365ConnectorCardMultichoiceInputChoice
     {
         /// <summary>
-        /// Initializes a new instance of the
-        /// O365ConnectorCardMultichoiceInputChoice class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardMultichoiceInputChoice"/> class.
         /// </summary>
         public O365ConnectorCardMultichoiceInputChoice()
         {
@@ -21,8 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// O365ConnectorCardMultichoiceInputChoice class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardMultichoiceInputChoice"/> class.
         /// </summary>
         /// <param name="display">The text rendered on ActionCard.</param>
         /// <param name="value">The value received as results.</param>
@@ -32,11 +30,6 @@ namespace Microsoft.Bot.Schema.Teams
             Value = value;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the text rendered on ActionCard.
@@ -50,5 +43,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

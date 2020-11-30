@@ -1,19 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card action base
+    /// O365 connector card action base.
     /// </summary>
     public partial class O365ConnectorCardActionBase
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardActionBase
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardActionBase"/> class.
         /// </summary>
         public O365ConnectorCardActionBase()
         {
@@ -21,14 +20,13 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardActionBase
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardActionBase"/> class.
         /// </summary>
         /// <param name="type">Type of the action. Possible values include:
-        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'</param>
+        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.</param>
         /// <param name="name">Name of the action that will be used as button
-        /// title</param>
-        /// <param name="id">Action Id</param>
+        /// title.</param>
+        /// <param name="id">Action Id.</param>
         public O365ConnectorCardActionBase(string type = default(string), string name = default(string), string id = default(string))
         {
             Type = type;
@@ -38,28 +36,27 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets type of the action. Possible values include:
-        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'
+        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.
         /// </summary>
         [JsonProperty(PropertyName = "@type")]
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets name of the action that will be used as button title
+        /// Gets or sets name of the action that will be used as button title.
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets action Id
+        /// Gets or sets action Id.
         /// </summary>
         [JsonProperty(PropertyName = "@id")]
         public string Id { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

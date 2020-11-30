@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card HttpPOST action
+    /// O365 connector card HttpPOST action.
     /// </summary>
     public partial class O365ConnectorCardHttpPOST : O365ConnectorCardActionBase
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardHttpPOST class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardHttpPOST"/> class.
         /// </summary>
         public O365ConnectorCardHttpPOST()
         {
@@ -20,15 +20,15 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardHttpPOST class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardHttpPOST"/> class.
         /// </summary>
         /// <param name="type">Type of the action. Possible values include:
-        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'</param>
+        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.</param>
         /// <param name="name">Name of the action that will be used as button
-        /// title</param>
-        /// <param name="id">Action Id</param>
+        /// title.</param>
+        /// <param name="id">Action Id.</param>
         /// <param name="body">Content to be posted back to bots via
-        /// invoke</param>
+        /// invoke.</param>
         public O365ConnectorCardHttpPOST(string type = default(string), string name = default(string), string id = default(string), string body = default(string))
             : base(type, name, id)
         {
@@ -37,15 +37,14 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets content to be posted back to bots via invoke
+        /// Gets or sets content to be posted back to bots via invoke.
         /// </summary>
         [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

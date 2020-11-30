@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Metadata for a Task Module.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class TaskModuleTaskInfo
     {
         /// <summary>
-        /// Initializes a new instance of the TaskModuleTaskInfo class.
+        /// Initializes a new instance of the <see cref="TaskModuleTaskInfo"/> class.
         /// </summary>
         public TaskModuleTaskInfo()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the TaskModuleTaskInfo class.
+        /// Initializes a new instance of the <see cref="TaskModuleTaskInfo"/> class.
         /// </summary>
         /// <param name="title">Appears below the app name and to the right of
         /// the app icon.</param>
@@ -34,10 +34,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// task module. One of url or card is required.</param>
         /// <param name="card">The JSON for the Adaptive card to appear in the
         /// task module.</param>
-        /// <param name="fallbackUrl">If a client does not support the task
-        /// module feature, this URL is opened in a browser tab.</param>
-        /// <param name="completionBotId">If a client does not support the task
-        /// module feature, this URL is opened in a browser tab.</param>
+        /// <param name="fallbackUrl">The fallback URL. If a client does not support the task module feature, this URL is opened in a browser tab.</param>
+        /// <param name="completionBotId">If a client does not support the task module feature, this URL is opened in a browser tab.</param>
         public TaskModuleTaskInfo(string title = default(string), object height = default(object), object width = default(object), string url = default(string), Attachment card = default(Attachment), string fallbackUrl = default(string), string completionBotId = default(string))
         {
             Title = title;
@@ -49,11 +47,6 @@ namespace Microsoft.Bot.Schema.Teams
             CompletionBotId = completionBotId;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets appears below the app name and to the right of the app
@@ -104,5 +97,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "completionBotId")]
         public string CompletionBotId { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

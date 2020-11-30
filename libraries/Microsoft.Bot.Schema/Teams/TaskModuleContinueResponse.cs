@@ -11,16 +11,16 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class TaskModuleContinueResponse : TaskModuleResponseBase
     {
         /// <summary>
-        /// Initializes a new instance of the TaskModuleContinueResponse class.
+        /// Initializes a new instance of the <see cref="TaskModuleContinueResponse"/> class.
         /// </summary>
         public TaskModuleContinueResponse()
-            :base("continue")
+            : base("continue")
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the TaskModuleContinueResponse class.
+        /// Initializes a new instance of the <see cref="TaskModuleContinueResponse"/> class.
         /// </summary>
         /// <param name="value">The JSON for the Adaptive card to appear in the
         /// task module.</param>
@@ -32,16 +32,15 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets the JSON for the Adaptive card to appear in the task
         /// module.
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public TaskModuleTaskInfo Value { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Thing (entity type: "https://schema.org/Thing")
+    /// Thing (entity type: "https://schema.org/Thing").
     /// </summary>
     public partial class Thing
     {
         /// <summary>
-        /// Initializes a new instance of the Thing class.
+        /// Initializes a new instance of the <see cref="Thing"/> class.
         /// </summary>
         public Thing()
         {
@@ -20,10 +20,10 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the Thing class.
+        /// Initializes a new instance of the <see cref="Thing"/> class.
         /// </summary>
-        /// <param name="type">The type of the thing</param>
-        /// <param name="name">The name of the thing</param>
+        /// <param name="type">The type of the thing.</param>
+        /// <param name="name">The name of the thing.</param>
         public Thing(string type = default(string), string name = default(string))
         {
             Type = type;
@@ -32,21 +32,20 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets the type of the thing
+        /// Gets or sets the type of the thing.
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the thing
+        /// Gets or sets the name of the thing.
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
-
     }
 }

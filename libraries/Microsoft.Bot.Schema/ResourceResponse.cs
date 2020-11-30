@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// A response containing a resource ID
+    /// A response containing a resource ID.
     /// </summary>
     public partial class ResourceResponse
     {
         /// <summary>
-        /// Initializes a new instance of the ResourceResponse class.
+        /// Initializes a new instance of the <see cref="ResourceResponse"/> class.
         /// </summary>
         public ResourceResponse()
         {
@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the ResourceResponse class.
+        /// Initializes a new instance of the <see cref="ResourceResponse"/> class.
         /// </summary>
-        /// <param name="id">Id of the resource</param>
+        /// <param name="id">Id of the resource.</param>
         public ResourceResponse(string id = default(string))
         {
             Id = id;
@@ -30,15 +30,14 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets id of the resource
+        /// Gets or sets id of the resource.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
     }
 }

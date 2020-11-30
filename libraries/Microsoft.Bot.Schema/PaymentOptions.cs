@@ -7,13 +7,13 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Provides information about the options desired for the payment request
+    /// Provides information about the options desired for the payment request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
     public partial class PaymentOptions
     {
         /// <summary>
-        /// Initializes a new instance of the PaymentOptions class.
+        /// Initializes a new instance of the <see cref="PaymentOptions"/> class.
         /// </summary>
         public PaymentOptions()
         {
@@ -21,24 +21,24 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PaymentOptions class.
+        /// Initializes a new instance of the <see cref="PaymentOptions"/> class.
         /// </summary>
         /// <param name="requestPayerName">Indicates whether the user agent
         /// should collect and return the payer's name as part of the payment
-        /// request</param>
+        /// request.</param>
         /// <param name="requestPayerEmail">Indicates whether the user agent
         /// should collect and return the payer's email address as part of the
-        /// payment request</param>
+        /// payment request.</param>
         /// <param name="requestPayerPhone">Indicates whether the user agent
         /// should collect and return the payer's phone number as part of the
-        /// payment request</param>
+        /// payment request.</param>
         /// <param name="requestShipping">Indicates whether the user agent
         /// should collect and return a shipping address as part of the payment
-        /// request</param>
+        /// request.</param>
         /// <param name="shippingType">If requestShipping is set to true, then
         /// the shippingType field may be used to influence the way the user
         /// agent presents the user interface for gathering the shipping
-        /// address</param>
+        /// address.</param>
         public PaymentOptions(bool? requestPayerName = default(bool?), bool? requestPayerEmail = default(bool?), bool? requestPayerPhone = default(bool?), bool? requestShipping = default(bool?), string shippingType = default(string))
         {
             RequestPayerName = requestPayerName;
@@ -50,34 +50,34 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
         /// Gets or sets indicates whether the user agent should collect and
-        /// return the payer's name as part of the payment request
+        /// return the payer's name as part of the payment request.
         /// </summary>
         [JsonProperty(PropertyName = "requestPayerName")]
         public bool? RequestPayerName { get; set; }
 
         /// <summary>
         /// Gets or sets indicates whether the user agent should collect and
-        /// return the payer's email address as part of the payment request
+        /// return the payer's email address as part of the payment request.
         /// </summary>
         [JsonProperty(PropertyName = "requestPayerEmail")]
         public bool? RequestPayerEmail { get; set; }
 
         /// <summary>
         /// Gets or sets indicates whether the user agent should collect and
-        /// return the payer's phone number as part of the payment request
+        /// return the payer's phone number as part of the payment request.
         /// </summary>
         [JsonProperty(PropertyName = "requestPayerPhone")]
         public bool? RequestPayerPhone { get; set; }
 
         /// <summary>
         /// Gets or sets indicates whether the user agent should collect and
-        /// return a shipping address as part of the payment request
+        /// return a shipping address as part of the payment request.
         /// </summary>
         [JsonProperty(PropertyName = "requestShipping")]
         public bool? RequestShipping { get; set; }
@@ -85,10 +85,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets if requestShipping is set to true, then the
         /// shippingType field may be used to influence the way the user agent
-        /// presents the user interface for gathering the shipping address
+        /// presents the user interface for gathering the shipping address.
         /// </summary>
         [JsonProperty(PropertyName = "shippingType")]
         public string ShippingType { get; set; }
-
     }
 }

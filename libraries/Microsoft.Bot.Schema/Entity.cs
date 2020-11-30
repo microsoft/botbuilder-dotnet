@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Metadata object pertaining to an activity
+    /// Metadata object pertaining to an activity.
     /// </summary>
     public partial class Entity
     {
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the Entity class.
         /// </summary>
-        /// <param name="type">Type of this entity (RFC 3987 IRI)</param>
+        /// <param name="type">Type of this entity (RFC 3987 IRI).</param>
         public Entity(string type = default(string))
         {
             Type = type;
@@ -30,15 +30,14 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets type of this entity (RFC 3987 IRI)
+        /// Gets or sets type of this entity (RFC 3987 IRI).
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
-
     }
 }

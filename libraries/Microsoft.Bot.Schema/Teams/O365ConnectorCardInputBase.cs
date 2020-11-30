@@ -1,18 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card input for ActionCard action
+    /// O365 connector card input for ActionCard action.
     /// </summary>
     public partial class O365ConnectorCardInputBase
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardInputBase class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardInputBase"/> class.
         /// </summary>
         public O365ConnectorCardInputBase()
         {
@@ -20,17 +20,17 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardInputBase class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardInputBase"/> class.
         /// </summary>
         /// <param name="type">Input type name. Possible values include:
-        /// 'textInput', 'dateInput', 'multichoiceInput'</param>
+        /// 'textInput', 'dateInput', 'multichoiceInput'.</param>
         /// <param name="id">Input Id. It must be unique per entire O365
         /// connector card.</param>
         /// <param name="isRequired">Define if this input is a required field.
         /// Default value is false.</param>
         /// <param name="title">Input title that will be shown as the
-        /// placeholder</param>
-        /// <param name="value">Default value for this input field</param>
+        /// placeholder.</param>
+        /// <param name="value">Default value for this input field.</param>
         public O365ConnectorCardInputBase(string type = default(string), string id = default(string), bool? isRequired = default(bool?), string title = default(string), string value = default(string))
         {
             Type = type;
@@ -42,13 +42,8 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets input type name. Possible values include: 'textInput',
-        /// 'dateInput', 'multichoiceInput'
+        /// 'dateInput', 'multichoiceInput'.
         /// </summary>
         [JsonProperty(PropertyName = "@type")]
         public string Type { get; set; }
@@ -68,16 +63,20 @@ namespace Microsoft.Bot.Schema.Teams
         public bool? IsRequired { get; set; }
 
         /// <summary>
-        /// Gets or sets input title that will be shown as the placeholder
+        /// Gets or sets input title that will be shown as the placeholder.
         /// </summary>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets default value for this input field
+        /// Gets or sets default value for this input field.
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

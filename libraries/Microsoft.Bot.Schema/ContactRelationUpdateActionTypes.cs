@@ -3,13 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-
     /// <summary>
     /// Defines values for ContactRelationUpdateActionTypes.
     /// </summary>
     public static class ContactRelationUpdateActionTypes
     {
-
         /// <summary>
         /// The type value for adding a contact relation.
         /// </summary>

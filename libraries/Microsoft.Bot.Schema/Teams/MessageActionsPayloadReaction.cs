@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the reaction of a user to a message.
@@ -12,8 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayloadReaction
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadReaction
-        /// class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadReaction"/> class.
         /// </summary>
         public MessageActionsPayloadReaction()
         {
@@ -21,12 +20,11 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadReaction
-        /// class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadReaction"/> class.
         /// </summary>
         /// <param name="reactionType">The type of reaction given to the
         /// message. Possible values include: 'like', 'heart', 'laugh',
-        /// 'surprised', 'sad', 'angry'</param>
+        /// 'surprised', 'sad', 'angry'.</param>
         /// <param name="createdDateTime">Timestamp of when the user reacted to
         /// the message.</param>
         /// <param name="user">The user with which the reaction is
@@ -40,14 +38,9 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets the type of reaction given to the message. Possible
         /// values include: 'like', 'heart', 'laugh', 'surprised', 'sad',
-        /// 'angry'
+        /// 'angry'.
         /// </summary>
         [JsonProperty(PropertyName = "reactionType")]
         public string ReactionType { get; set; }
@@ -64,5 +57,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "user")]
         public MessageActionsPayloadFrom User { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

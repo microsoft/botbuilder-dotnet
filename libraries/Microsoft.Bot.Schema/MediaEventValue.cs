@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Supplementary parameter for media events
+    /// Supplementary parameter for media events.
     /// </summary>
     public partial class MediaEventValue
     {
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the MediaEventValue class.
         /// </summary>
         /// <param name="cardValue">Callback parameter specified in the Value
-        /// field of the MediaCard that originated this event</param>
+        /// field of the MediaCard that originated this event.</param>
         public MediaEventValue(object cardValue = default(object))
         {
             CardValue = cardValue;
@@ -31,16 +31,15 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
         /// Gets or sets callback parameter specified in the Value field of the
-        /// MediaCard that originated this event
+        /// MediaCard that originated this event.
         /// </summary>
         [JsonProperty(PropertyName = "cardValue")]
         public object CardValue { get; set; }
-
     }
 }

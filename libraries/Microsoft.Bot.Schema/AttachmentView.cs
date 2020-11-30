@@ -3,11 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Attachment View name and size
+    /// Attachment View name and size.
     /// </summary>
     public partial class AttachmentView
     {
@@ -22,8 +22,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the AttachmentView class.
         /// </summary>
-        /// <param name="viewId">Id of the attachment</param>
-        /// <param name="size">Size of the attachment</param>
+        /// <param name="viewId">Id of the attachment.</param>
+        /// <param name="size">Size of the attachment.</param>
         public AttachmentView(string viewId = default(string), int? size = default(int?))
         {
             ViewId = viewId;
@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Schema
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets id of the attachment
+        /// Gets or sets id of the attachment.
         /// </summary>
         [JsonProperty(PropertyName = "viewId")]
         public string ViewId { get; set; }
 
         /// <summary>
-        /// Gets or sets size of the attachment
+        /// Gets or sets size of the attachment.
         /// </summary>
         [JsonProperty(PropertyName = "size")]
         public int? Size { get; set; }

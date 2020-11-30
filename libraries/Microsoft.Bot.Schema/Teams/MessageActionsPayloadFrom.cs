@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents a user, application, or conversation type that either sent
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayloadFrom
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadFrom class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadFrom"/> class.
         /// </summary>
         public MessageActionsPayloadFrom()
         {
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadFrom class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadFrom"/> class.
         /// </summary>
         /// <param name="user">Represents details of the user.</param>
         /// <param name="application">Represents details of the app.</param>
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
@@ -57,6 +57,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "conversation")]
         public MessageActionsPayloadConversation Conversation { get; set; }
-
     }
 }

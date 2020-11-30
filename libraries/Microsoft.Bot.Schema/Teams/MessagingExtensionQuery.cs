@@ -3,18 +3,18 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Messaging extension query
+    /// Messaging extension query.
     /// </summary>
     public partial class MessagingExtensionQuery
     {
         /// <summary>
-        /// Initializes a new instance of the MessagingExtensionQuery class.
+        /// Initializes a new instance of the <see cref="MessagingExtensionQuery"/> class.
         /// </summary>
         public MessagingExtensionQuery()
         {
@@ -22,10 +22,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessagingExtensionQuery class.
+        /// Initializes a new instance of the <see cref="MessagingExtensionQuery"/> class.
         /// </summary>
-        /// <param name="commandId">Id of the command assigned by Bot</param>
-        /// <param name="parameters">Parameters for the query</param>
+        /// <param name="commandId">Id of the command assigned by Bot.</param>
+        /// <param name="parameters">Parameters for the query.</param>
         /// <param name="queryOptions">The query options.</param>
         /// <param name="state">State parameter passed back to the bot after authentication/configuration flow</param>
         public MessagingExtensionQuery(string commandId = default(string), IList<MessagingExtensionParameter> parameters = default(IList<MessagingExtensionParameter>), MessagingExtensionQueryOptions queryOptions = default(MessagingExtensionQueryOptions), string state = default(string))
@@ -38,18 +38,13 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets id of the command assigned by Bot
+        /// Gets or sets id of the command assigned by Bot.
         /// </summary>
         [JsonProperty(PropertyName = "commandId")]
         public string CommandId { get; set; }
 
         /// <summary>
-        /// Gets or sets parameters for the query
+        /// Gets or sets parameters for the query.
         /// </summary>
         [JsonProperty(PropertyName = "parameters")]
         public IList<MessagingExtensionParameter> Parameters { get; set; }
@@ -61,10 +56,14 @@ namespace Microsoft.Bot.Schema.Teams
 
         /// <summary>
         /// Gets or sets state parameter passed back to the bot after
-        /// authentication/configuration flow
+        /// authentication/configuration flow.
         /// </summary>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

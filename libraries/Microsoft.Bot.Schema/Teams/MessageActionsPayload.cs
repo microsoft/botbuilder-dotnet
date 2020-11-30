@@ -3,11 +3,11 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
-    using System.Collections;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the individual message within a chat or channel where a
@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayload
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayload class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayload"/> class.
         /// </summary>
         public MessageActionsPayload()
         {
@@ -24,13 +24,13 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayload class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayload"/> class.
         /// </summary>
         /// <param name="id">Unique id of the message.</param>
         /// <param name="replyToId">Id of the parent/root message of the
         /// thread.</param>
         /// <param name="messageType">Type of message - automatically set to
-        /// message. Possible values include: 'message'</param>
+        /// message. Possible values include: 'message'.</param>
         /// <param name="createdDateTime">Timestamp of when the message was
         /// created.</param>
         /// <param name="lastModifiedDateTime">Timestamp of when the message
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="summary">Summary text of the message that could be
         /// used for notifications.</param>
         /// <param name="importance">The importance of the message. Possible
-        /// values include: 'normal', 'high', 'urgent'</param>
+        /// values include: 'normal', 'high', 'urgent'.</param>
         /// <param name="locale">Locale of the message set by the
         /// client.</param>
         /// <param name="from">Sender of the message.</param>
@@ -76,11 +76,6 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets unique id of the message.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
@@ -94,7 +89,7 @@ namespace Microsoft.Bot.Schema.Teams
 
         /// <summary>
         /// Gets or sets type of message - automatically set to message.
-        /// Possible values include: 'message'
+        /// Possible values include: 'message'.
         /// </summary>
         [JsonProperty(PropertyName = "messageType")]
         public string MessageType { get; set; }
@@ -132,7 +127,7 @@ namespace Microsoft.Bot.Schema.Teams
 
         /// <summary>
         /// Gets or sets the importance of the message. Possible values
-        /// include: 'normal', 'high', 'urgent'
+        /// include: 'normal', 'high', 'urgent'.
         /// </summary>
         [JsonProperty(PropertyName = "importance")]
         public string Importance { get; set; }
@@ -186,5 +181,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "linkToMessage")]
         public Uri LinkToMessage { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults
+        /// </summary>
+        partial void CustomInit();
     }
 }

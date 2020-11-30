@@ -3,9 +3,6 @@
 
 namespace Microsoft.Bot.Connector
 {
-    using Microsoft.Rest;
-    using Microsoft.Bot.Schema;
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
@@ -14,6 +11,9 @@ namespace Microsoft.Bot.Connector
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema;
+    using Microsoft.Rest;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Conversations operations.
@@ -21,30 +21,31 @@ namespace Microsoft.Bot.Connector
     public partial class Conversations : IServiceOperations<ConnectorClient>, IConversations
     {
         /// <summary>
-        /// Initializes a new instance of the Conversations class.
+        /// Initializes a new instance of the <see cref="Conversations"/> class.
         /// </summary>
         /// <param name='client'>
         /// Reference to the service client.
         /// </param>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         public Conversations(ConnectorClient client)
         {
             if (client == null)
             {
-                throw new System.ArgumentNullException("client");
+                throw new System.ArgumentNullException(nameof(client));
             }
+
             Client = client;
         }
 
         /// <summary>
-        /// Gets a reference to the ConnectorClient
+        /// Gets a reference to the ConnectorClient.
         /// </summary>
         public ConnectorClient Client { get; private set; }
 
         /// <summary>
-        /// GetConversations
+        /// GetConversations.
         /// </summary>
         /// <remarks>
         /// List the Conversations in which this bot has participated.
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Connector
         /// array of ChannelAccounts that describe the members of the conversation.
         /// </remarks>
         /// <param name='continuationToken'>
-        /// skip or continuation token
+        /// skip or continuation token.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -69,10 +70,10 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
@@ -90,6 +91,7 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "GetConversations", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
@@ -98,18 +100,19 @@ namespace Microsoft.Bot.Connector
             {
                 _queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
             }
+
             if (_queryParameters.Count > 0)
             {
                 _url += "?" + string.Join("&", _queryParameters);
             }
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("GET");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -118,29 +121,34 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -150,7 +158,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -160,23 +168,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ConversationsResult>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -192,18 +205,22 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// CreateConversation
+        /// CreateConversation.
         /// </summary>
         /// <remarks>
         /// Create a new Conversation.
@@ -227,10 +244,10 @@ namespace Microsoft.Bot.Connector
         /// await connect.Conversations.SendToConversationAsync(resource.Id, new
         /// Activity() ... ) ;
         ///
-        /// ```
+        /// ``` .
         /// </remarks>
         /// <param name='parameters'>
-        /// Parameters to create the conversation from
+        /// Parameters to create the conversation from.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -239,26 +256,28 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<ConversationResourceResponse>> CreateConversationWithHttpMessagesAsync(ConversationParameters parameters, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (parameters == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "parameters");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -270,17 +289,18 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, ActivityEventNames.CreateConversation, tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("POST");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -289,35 +309,40 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
-            if(parameters != null)
+            if (parameters != null)
             {
                 _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, Client.SerializationSettings);
                 _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -327,7 +352,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -337,23 +362,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ConversationResourceResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -369,9 +399,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 201)
             {
@@ -387,9 +419,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 202)
             {
@@ -405,18 +439,22 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// SendToConversation
+        /// SendToConversation.
         /// </summary>
         /// <remarks>
         /// This method allows you to send an activity to the end of a conversation.
@@ -434,10 +472,10 @@ namespace Microsoft.Bot.Connector
         /// Use SendToConversation in all other cases.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activity'>
-        /// Activity to send
+        /// Activity to send.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -446,30 +484,33 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (activity == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activity");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -482,18 +523,19 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "SendToConversation", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("POST");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -502,35 +544,40 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
-            if(activity != null)
+            if (activity != null)
             {
                 _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
                 _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -540,7 +587,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -550,23 +597,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ResourceResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -582,9 +634,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 201)
             {
@@ -600,9 +654,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 202)
             {
@@ -618,18 +674,23 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// SendConversationHistory
+        /// SendConversationHistory.
         /// </summary>
         /// <remarks>
         /// This method allows you to upload the historic activities to the
@@ -641,10 +702,10 @@ namespace Microsoft.Bot.Connector
         /// the activities in the right order.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='transcript'>
-        /// Transcript of activities
+        /// Transcript of activities.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -653,30 +714,33 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<ResourceResponse>> SendConversationHistoryWithHttpMessagesAsync(string conversationId, Transcript transcript, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (transcript == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "transcript");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -689,18 +753,19 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "SendConversationHistory", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/history").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("POST");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -709,35 +774,40 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
-            if(transcript != null)
+            if (transcript != null)
             {
                 _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(transcript, Client.SerializationSettings);
                 _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -747,7 +817,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -757,23 +827,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ResourceResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -789,9 +864,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 201)
             {
@@ -807,9 +884,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 202)
             {
@@ -825,18 +904,22 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// UpdateActivity
+        /// UpdateActivity.
         /// </summary>
         /// <remarks>
         /// Edit an existing activity.
@@ -848,13 +931,13 @@ namespace Microsoft.Bot.Connector
         /// button.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId to update
+        /// activityId to update.
         /// </param>
         /// <param name='activity'>
-        /// replacement Activity
+        /// replacement Activity.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -863,34 +946,38 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (activityId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activityId");
             }
+
             if (activity == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activity");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -904,19 +991,20 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "UpdateActivity", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("PUT");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -925,35 +1013,40 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
-            if(activity != null)
+            if (activity != null)
             {
                 _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
                 _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -963,7 +1056,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -973,23 +1066,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ResourceResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -1005,9 +1103,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 201)
             {
@@ -1023,9 +1123,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 202)
             {
@@ -1041,18 +1143,22 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// ReplyToActivity
+        /// ReplyToActivity.
         /// </summary>
         /// <remarks>
         /// This method allows you to reply to an activity.
@@ -1070,13 +1176,13 @@ namespace Microsoft.Bot.Connector
         /// Use SendToConversation in all other cases.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId the reply is to (OPTIONAL)
+        /// activityId the reply is to (OPTIONAL).
         /// </param>
         /// <param name='activity'>
-        /// Activity to send
+        /// Activity to send.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1085,34 +1191,38 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (activityId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activityId");
             }
+
             if (activity == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activity");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -1126,19 +1236,20 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "ReplyToActivity", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("POST");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -1147,35 +1258,40 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
-            if(activity != null)
+            if (activity != null)
             {
                 _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
                 _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
                 _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
-           _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -1185,7 +1301,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -1195,23 +1311,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ResourceResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -1227,9 +1348,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 201)
             {
@@ -1245,9 +1368,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 202)
             {
@@ -1263,18 +1388,23 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// DeleteActivity
+        /// DeleteActivity.
         /// </summary>
         /// <remarks>
         /// Delete an existing activity.
@@ -1283,10 +1413,10 @@ namespace Microsoft.Bot.Connector
         /// this method will remove the specified activity.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId to delete
+        /// activityId to delete.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1295,27 +1425,30 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (activityId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activityId");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -1328,19 +1461,20 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "DeleteActivity", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("DELETE");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -1349,29 +1483,34 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -1381,7 +1520,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -1391,19 +1530,23 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse();
             _result.Request = _httpRequest;
@@ -1412,11 +1555,13 @@ namespace Microsoft.Bot.Connector
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// GetConversationMembers
+        /// GetConversationMembers.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of a conversation.
@@ -1425,7 +1570,7 @@ namespace Microsoft.Bot.Connector
         /// objects representing the members of the conversation.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1434,26 +1579,28 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<IList<ChannelAccount>>> GetConversationMembersWithHttpMessagesAsync(string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -1465,18 +1612,19 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "GetConversationMembers", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("GET");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -1485,189 +1633,34 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
-            // Set Credentials
-            if (Client.Credentials != null)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            }
-            // Send Request
-            if (_shouldTrace)
-            {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
-            }
-            cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
-            {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
-            }
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
-            cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
-            {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
-                try
-                {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
-                    {
-                        ex.Body = _errorBody;
-                    }
-                }
-                catch (JsonException)
-                {
-                    // Ignore the exception
-                }
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
-                {
-                    ServiceClientTracing.Error(_invocationId, ex);
-                }
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
-                {
-                    _httpResponse.Dispose();
-                }
-                throw ex;
-            }
-            // Create Result
-            var _result = new HttpOperationResponse<IList<ChannelAccount>>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
-            // Deserialize Response
-            if ((int)_statusCode == 200)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-            if (_shouldTrace)
-            {
-                ServiceClientTracing.Exit(_invocationId, _result);
-            }
-            return _result;
-        }
 
-        /// <summary>
-        /// GetConversationMember
-        /// </summary>
-        /// <remarks>
-        /// Retrieves a single member of a conversation by ID.
-        ///
-        /// This REST API takes a ConversationId and a UserId and returns a ChannelAccount
-        /// object for the members of the conversation.
-        /// </remarks>
-        /// <param name='userId'>
-        /// Conversation ID
-        /// </param>
-        /// <param name='conversationId'>
-        /// Conversation ID
-        /// </param>
-        /// <param name='customHeaders'>
-        /// Headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
-        /// </exception>
-        /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
-        /// </exception>
-        /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
-        /// </exception>
-        /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
-        /// </exception>
-        /// <return>
-        /// A response object containing the response body and response headers.
-        /// </return>
-        public async Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (conversationId == null)
-            {
-                throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
-            }
-            if (userId == null)
-            {
-                throw new ValidationException(ValidationRules.CannotBeNull, "userId");
-            }
-            // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
-            {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
-                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
-                tracingParameters.Add("userId", userId);
-                tracingParameters.Add("conversationId", conversationId);
-                tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetConversationMembers", tracingParameters);
-            }
-            // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{userId}").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{userId}", System.Uri.EscapeDataString(userId));
-            // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
-            // Set Headers
-            if (customHeaders != null)
-            {
-                foreach (var _header in customHeaders)
-                {
-                    if (_httpRequest.Headers.Contains(_header.Key))
-                    {
-                        _httpRequest.Headers.Remove(_header.Key);
-                    }
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
-                }
-            }
-            // Serialize Request
-            string _requestContent = null;
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -1687,23 +1680,209 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
+            // Create Result
+            var _result = new HttpOperationResponse<IList<ChannelAccount>>();
+            _result.Request = _httpRequest;
+            _result.Response = _httpResponse;
+
+            // Deserialize Response
+            if ((int)_statusCode == 200)
+            {
+                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(_responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    _httpRequest.Dispose();
+                    if (_httpResponse != null)
+                    {
+                        _httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                }
+            }
+
+            if (_shouldTrace)
+            {
+                ServiceClientTracing.Exit(_invocationId, _result);
+            }
+
+            return _result;
+        }
+
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
+        /// <summary>
+        /// GetConversationMember.
+        /// </summary>
+        /// <remarks>
+        /// Retrieves a single member of a conversation by ID.
+        ///
+        /// This REST API takes a ConversationId and a UserId and returns a ChannelAccount
+        /// object for the members of the conversation.
+        /// </remarks>
+        /// <param name='userId'>
+        /// Conversation ID.
+        /// </param>
+        /// <param name='conversationId'>
+        /// Conversation ID.
+        /// </param>
+        /// <param name='customHeaders'>
+        /// Headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="ErrorResponseException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="SerializationException">
+        /// Thrown when unable to deserialize the response.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when a required parameter is null.
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null.
+        /// </exception>
+        /// <return>
+        /// A response object containing the response body and response headers.
+        /// </return>
+        public async Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
+        {
+            if (conversationId == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
+            }
+
+            if (userId == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "userId");
+            }
+
+            // Tracing
+            bool _shouldTrace = ServiceClientTracing.IsEnabled;
+            string _invocationId = null;
+            if (_shouldTrace)
+            {
+                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("userId", userId);
+                tracingParameters.Add("conversationId", conversationId);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(_invocationId, this, "GetConversationMembers", tracingParameters);
+            }
+
+            // Construct URL
+            var _baseUrl = Client.BaseUri.AbsoluteUri;
+            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{userId}").ToString();
+            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            _url = _url.Replace("{userId}", System.Uri.EscapeDataString(userId));
+
+            // Create HTTP transport objects
+            var _httpRequest = new HttpRequestMessage();
+            HttpResponseMessage _httpResponse = null;
+            _httpRequest.Method = new HttpMethod("GET");
+            _httpRequest.RequestUri = new System.Uri(_url);
+
+            // Set Headers
+            if (customHeaders != null)
+            {
+                foreach (var _header in customHeaders)
+                {
+                    if (_httpRequest.Headers.Contains(_header.Key))
+                    {
+                        _httpRequest.Headers.Remove(_header.Key);
+                    }
+
+                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                }
+            }
+
+            // Serialize Request
+            string _requestContent = null;
+
+            // Set Credentials
+            if (Client.Credentials != null)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Send Request
+            if (_shouldTrace)
+            {
+                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+            if (_shouldTrace)
+            {
+                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+            }
+
+            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            cancellationToken.ThrowIfCancellationRequested();
+            string _responseContent = null;
+            if ((int)_statusCode != 200)
+            {
+                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                try
+                {
+                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    if (_errorBody != null)
+                    {
+                        ex.Body = _errorBody;
+                    }
+                }
+                catch (JsonException)
+                {
+                    // Ignore the exception
+                }
+
+                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
+                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
+                if (_shouldTrace)
+                {
+                    ServiceClientTracing.Error(_invocationId, ex);
+                }
+
+                _httpRequest.Dispose();
+                if (_httpResponse != null)
+                {
+                    _httpResponse.Dispose();
+                }
+
+                throw ex;
+            }
+
             // Create Result
             var _result = new HttpOperationResponse<ChannelAccount>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -1719,18 +1898,22 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// GetConversationPagedMembers
+        /// GetConversationPagedMembers.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of a conversation one page at a time.
@@ -1752,13 +1935,13 @@ namespace Microsoft.Bot.Connector
         /// may rarely return members from a previous request.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='pageSize'>
-        /// Suggested page size
+        /// Suggested page size.
         /// </param>
         /// <param name='continuationToken'>
-        /// Continuation Token
+        /// Continuation Token.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1767,26 +1950,28 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="HttpOperationException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<PagedMembersResult>> GetConversationPagedMembersWithHttpMessagesAsync(string conversationId, int? pageSize = default(int?), string continuationToken = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -1800,6 +1985,7 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "GetConversationPagedMembers", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/pagedmembers").ToString();
@@ -1809,22 +1995,24 @@ namespace Microsoft.Bot.Connector
             {
                 _queryParameters.Add(string.Format("pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
             }
+
             if (continuationToken != null)
             {
                 _queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
             }
+
             if (_queryParameters.Count > 0)
             {
                 _url += "?" + string.Join("&", _queryParameters);
             }
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("GET");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -1833,29 +2021,34 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -1865,26 +2058,32 @@ namespace Microsoft.Bot.Connector
                 if (_httpResponse.Content != null) {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
-                else {
+                else
+                {
                     _responseContent = string.Empty;
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<PagedMembersResult>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -1900,18 +2099,23 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// DeleteConversationMember
+        /// DeleteConversationMember.
         /// </summary>
         /// <remarks>
         /// Deletes a member from a conversation.
@@ -1922,10 +2126,10 @@ namespace Microsoft.Bot.Connector
         /// of the conversation, the conversation will also be deleted.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='memberId'>
-        /// ID of the member to delete from this conversation
+        /// ID of the member to delete from this conversation.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -1934,27 +2138,30 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse> DeleteConversationMemberWithHttpMessagesAsync(string conversationId, string memberId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (memberId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "memberId");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -1967,19 +2174,20 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "DeleteConversationMember", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{memberId}").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             _url = _url.Replace("{memberId}", System.Uri.EscapeDataString(memberId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("DELETE");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -1988,29 +2196,34 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -2020,7 +2233,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -2030,19 +2243,23 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse();
             _result.Request = _httpRequest;
@@ -2051,11 +2268,13 @@ namespace Microsoft.Bot.Connector
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// GetActivityMembers
+        /// GetActivityMembers.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of an activity.
@@ -2065,10 +2284,10 @@ namespace Microsoft.Bot.Connector
         /// activity in the conversation.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// Activity ID
+        /// Activity ID.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -2077,30 +2296,33 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<IList<ChannelAccount>>> GetActivityMembersWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (activityId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "activityId");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -2113,19 +2335,20 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "GetActivityMembers", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}/members").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("GET");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -2134,29 +2357,34 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
 
             // Serialize Request
             string _requestContent = null;
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -2166,7 +2394,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -2176,23 +2404,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<IList<ChannelAccount>>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -2208,18 +2441,22 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
 
+#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
-        /// UploadAttachment
+        /// UploadAttachment.
         /// </summary>
         /// <remarks>
         /// Upload an attachment directly into a channel's blob storage.
@@ -2231,10 +2468,10 @@ namespace Microsoft.Bot.Connector
         /// suitable for using with the attachments API.
         /// </remarks>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='attachmentUpload'>
-        /// Attachment data
+        /// Attachment data.
         /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
@@ -2243,30 +2480,33 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <exception cref="ErrorResponseException">
-        /// Thrown when the operation returned an invalid status code
+        /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="SerializationException">
-        /// Thrown when unable to deserialize the response
+        /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown when a required parameter is null
+        /// Thrown when a required parameter is null.
         /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
         public async Task<HttpOperationResponse<ResourceResponse>> UploadAttachmentWithHttpMessagesAsync(string conversationId, AttachmentData attachmentUpload, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "conversationId");
             }
+
             if (attachmentUpload == null)
             {
                 throw new ValidationException(ValidationRules.CannotBeNull, "attachmentUpload");
             }
+
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
             string _invocationId = null;
@@ -2279,18 +2519,19 @@ namespace Microsoft.Bot.Connector
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "UploadAttachment", tracingParameters);
             }
+
             // Construct URL
             var _baseUrl = Client.BaseUri.AbsoluteUri;
             var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/attachments").ToString();
             _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+
             // Create HTTP transport objects
             var _httpRequest = new HttpRequestMessage();
             HttpResponseMessage _httpResponse = null;
             _httpRequest.Method = new HttpMethod("POST");
             _httpRequest.RequestUri = new System.Uri(_url);
+
             // Set Headers
-
-
             if (customHeaders != null)
             {
                 foreach(var _header in customHeaders)
@@ -2299,6 +2540,7 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpRequest.Headers.Remove(_header.Key);
                     }
+
                     _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
                 }
             }
@@ -2309,25 +2551,29 @@ namespace Microsoft.Bot.Connector
             {
                 _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(attachmentUpload, Client.SerializationSettings);
                 _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
+
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             }
+
             // Send Request
             if (_shouldTrace)
             {
                 ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
             }
+
             cancellationToken.ThrowIfCancellationRequested();
             _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
             if (_shouldTrace)
             {
                 ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
             }
+
             HttpStatusCode _statusCode = _httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
             string _responseContent = null;
@@ -2337,7 +2583,7 @@ namespace Microsoft.Bot.Connector
                 try
                 {
                     _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody =  Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
+                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
                     if (_errorBody != null)
                     {
                         ex.Body = _errorBody;
@@ -2347,23 +2593,28 @@ namespace Microsoft.Bot.Connector
                 {
                     // Ignore the exception
                 }
+
                 ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
                 ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
                 if (_shouldTrace)
                 {
                     ServiceClientTracing.Error(_invocationId, ex);
                 }
+
                 _httpRequest.Dispose();
                 if (_httpResponse != null)
                 {
                     _httpResponse.Dispose();
                 }
+
                 throw ex;
             }
+
             // Create Result
             var _result = new HttpOperationResponse<ResourceResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+
             // Deserialize Response
             if ((int)_statusCode == 200)
             {
@@ -2379,9 +2630,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 201)
             {
@@ -2397,9 +2650,11 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             // Deserialize Response
             if ((int)_statusCode == 202)
             {
@@ -2415,13 +2670,16 @@ namespace Microsoft.Bot.Connector
                     {
                         _httpResponse.Dispose();
                     }
+
                     throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
                 }
             }
+
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
             }
+
             return _result;
         }
     }

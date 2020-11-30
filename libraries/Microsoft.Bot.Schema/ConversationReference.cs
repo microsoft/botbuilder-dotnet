@@ -3,11 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Globalization;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// An object relating to a particular point in a conversation
+    /// An object relating to a particular point in a conversation.
     /// </summary>
     public partial class ConversationReference
     {
@@ -23,14 +23,14 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the ConversationReference class.
         /// </summary>
         /// <param name="activityId">(Optional) ID of the activity to refer
-        /// to</param>
+        /// to.</param>
         /// <param name="user">(Optional) User participating in this
-        /// conversation</param>
-        /// <param name="bot">Bot participating in this conversation</param>
-        /// <param name="conversation">Conversation reference</param>
-        /// <param name="channelId">Channel ID</param>
+        /// conversation.</param>
+        /// <param name="bot">Bot participating in this conversation.</param>
+        /// <param name="conversation">Conversation reference.</param>
+        /// <param name="channelId">Channel ID.</param>
         /// <param name="serviceUrl">Service endpoint where operations
-        /// concerning the referenced conversation may be performed</param>
+        /// concerning the referenced conversation may be performed.</param>
         public ConversationReference(string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
                 : this(default(CultureInfo), activityId, user, bot, conversation, channelId, serviceUrl)
         { }
@@ -46,14 +46,14 @@ namespace Microsoft.Bot.Schema
         /// The locale name can also correspond to a valid BCP-47 language
         /// tag.</param>
         /// <param name="activityId">(Optional) ID of the activity to refer
-        /// to</param>
+        /// to.</param>
         /// <param name="user">(Optional) User participating in this
-        /// conversation</param>
-        /// <param name="bot">Bot participating in this conversation</param>
-        /// <param name="conversation">Conversation reference</param>
-        /// <param name="channelId">Channel ID</param>
+        /// conversation.</param>
+        /// <param name="bot">Bot participating in this conversation.</param>
+        /// <param name="conversation">Conversation reference.</param>
+        /// <param name="channelId">Channel ID.</param>
         /// <param name="serviceUrl">Service endpoint where operations
-        /// concerning the referenced conversation may be performed</param>
+        /// concerning the referenced conversation may be performed.</param>
         public ConversationReference(CultureInfo locale, string activityId = default(string), ChannelAccount user = default(ChannelAccount), ChannelAccount bot = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), string channelId = default(string), string serviceUrl = default(string))
         {
             ActivityId = activityId;
@@ -67,49 +67,49 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets (Optional) ID of the activity to refer to
+        /// Gets or sets (Optional) ID of the activity to refer to.
         /// </summary>
         [JsonProperty(PropertyName = "activityId")]
         public string ActivityId { get; set; }
 
         /// <summary>
-        /// Gets or sets (Optional) User participating in this conversation
+        /// Gets or sets (Optional) User participating in this conversation.
         /// </summary>
         [JsonProperty(PropertyName = "user")]
         public ChannelAccount User { get; set; }
 
         /// <summary>
-        /// Gets or sets (Optional) Bot participating in this conversation
+        /// Gets or sets (Optional) Bot participating in this conversation.
         /// </summary>
         [JsonProperty(PropertyName = "bot")]
         public ChannelAccount Bot { get; set; }
 
         /// <summary>
-        /// Gets or sets Reference to the conversation
+        /// Gets or sets Reference to the conversation.
         /// </summary>
         [JsonProperty(PropertyName = "conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>
-        /// Gets or sets ID of the channel in which the referenced conversation exists
+        /// Gets or sets ID of the channel in which the referenced conversation exists.
         /// </summary>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
         
         /// <summary>
-        /// Gets or sets (Optional) A BCP-47 locale name for the referenced conversation
+        /// Gets or sets (Optional) A BCP-47 locale name for the referenced conversation.
         /// </summary>
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
 
         /// <summary>
         /// Gets or sets (Optional) Service endpoint where operations concerning
-        /// the referenced conversation may be performed
+        /// the referenced conversation may be performed.
         /// </summary>
         [JsonProperty(PropertyName = "serviceUrl")]
         public string ServiceUrl { get; set; }    

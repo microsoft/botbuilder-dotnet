@@ -1,12 +1,12 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Page of members.
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Schema
     public partial class PagedMembersResult
     {
         /// <summary>
-        /// Initializes a new instance of the PagedMembersResult class.
+        /// Initializes a new instance of the <see cref="PagedMembersResult"/> class.
         /// </summary>
         public PagedMembersResult()
         {
@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PagedMembersResult class.
+        /// Initializes a new instance of the <see cref="PagedMembersResult"/> class.
         /// </summary>
-        /// <param name="continuationToken">Paging token</param>
+        /// <param name="continuationToken">Paging token.</param>
         /// <param name="members">The Channel Accounts.</param>
         public PagedMembersResult(string continuationToken = default(string), IList<ChannelAccount> members = default(IList<ChannelAccount>))
         {
@@ -34,12 +34,12 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets paging token
+        /// Gets or sets paging token.
         /// </summary>
         [JsonProperty(PropertyName = "continuationToken")]
         public string ContinuationToken { get; set; }
@@ -49,6 +49,5 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "members")]
         public IList<ChannelAccount> Members { get; set; }
-
     }
 }

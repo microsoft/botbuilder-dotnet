@@ -8,13 +8,13 @@ namespace Microsoft.Bot.Schema
 
     /// <summary>
     /// A PaymentResponse is returned when a user has selected a payment method
-    /// and approved a payment request
+    /// and approved a payment request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
     public partial class PaymentResponse
     {
         /// <summary>
-        /// Initializes a new instance of the PaymentResponse class.
+        /// Initializes a new instance of the <see cref="PaymentResponse"/> class.
         /// </summary>
         public PaymentResponse()
         {
@@ -22,30 +22,30 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PaymentResponse class.
+        /// Initializes a new instance of the <see cref="PaymentResponse"/> class.
         /// </summary>
         /// <param name="methodName">The payment method identifier for the
         /// payment method that the user selected to fulfil the
-        /// transaction</param>
+        /// transaction.</param>
         /// <param name="details">A JSON-serializable object that provides a
         /// payment method specific message used by the merchant to process the
-        /// transaction and determine successful fund transfer</param>
+        /// transaction and determine successful fund transfer.</param>
         /// <param name="shippingAddress">If the requestShipping flag was set
         /// to true in the PaymentOptions passed to the PaymentRequest
         /// constructor, then shippingAddress will be the full and final
-        /// shipping address chosen by the user</param>
+        /// shipping address chosen by the user.</param>
         /// <param name="shippingOption">If the requestShipping flag was set to
         /// true in the PaymentOptions passed to the PaymentRequest
         /// constructor, then shippingOption will be the id attribute of the
-        /// selected shipping option</param>
+        /// selected shipping option.</param>
         /// <param name="payerEmail">If the requestPayerEmail flag was set to
         /// true in the PaymentOptions passed to the PaymentRequest
         /// constructor, then payerEmail will be the email address chosen by
-        /// the user</param>
+        /// the user.</param>
         /// <param name="payerPhone">If the requestPayerPhone flag was set to
         /// true in the PaymentOptions passed to the PaymentRequest
         /// constructor, then payerPhone will be the phone number chosen by the
-        /// user</param>
+        /// user.</param>
         public PaymentResponse(string methodName = default(string), object details = default(object), PaymentAddress shippingAddress = default(PaymentAddress), string shippingOption = default(string), string payerEmail = default(string), string payerPhone = default(string))
         {
             MethodName = methodName;
@@ -58,13 +58,13 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the payment method identifier for the payment method
-        /// that the user selected to fulfil the transaction
+        /// that the user selected to fulfil the transaction.
         /// </summary>
         [JsonProperty(PropertyName = "methodName")]
         public string MethodName { get; set; }
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets a JSON-serializable object that provides a payment
         /// method specific message used by the merchant to process the
-        /// transaction and determine successful fund transfer
+        /// transaction and determine successful fund transfer.
         /// </summary>
         [JsonProperty(PropertyName = "details")]
         public object Details { get; set; }
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets if the requestShipping flag was set to true in the
         /// PaymentOptions passed to the PaymentRequest constructor, then
         /// shippingAddress will be the full and final shipping address chosen
-        /// by the user
+        /// by the user.
         /// </summary>
         [JsonProperty(PropertyName = "shippingAddress")]
         public PaymentAddress ShippingAddress { get; set; }
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets if the requestShipping flag was set to true in the
         /// PaymentOptions passed to the PaymentRequest constructor, then
         /// shippingOption will be the id attribute of the selected shipping
-        /// option
+        /// option.
         /// </summary>
         [JsonProperty(PropertyName = "shippingOption")]
         public string ShippingOption { get; set; }
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets if the requestPayerEmail flag was set to true in the
         /// PaymentOptions passed to the PaymentRequest constructor, then
-        /// payerEmail will be the email address chosen by the user
+        /// payerEmail will be the email address chosen by the user.
         /// </summary>
         [JsonProperty(PropertyName = "payerEmail")]
         public string PayerEmail { get; set; }
@@ -106,10 +106,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets if the requestPayerPhone flag was set to true in the
         /// PaymentOptions passed to the PaymentRequest constructor, then
-        /// payerPhone will be the phone number chosen by the user
+        /// payerPhone will be the phone number chosen by the user.
         /// </summary>
         [JsonProperty(PropertyName = "payerPhone")]
         public string PayerPhone { get; set; }
-
     }
 }

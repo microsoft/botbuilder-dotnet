@@ -1,21 +1,20 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card ActionCard action
+    /// O365 connector card ActionCard action.
     /// </summary>
     public partial class O365ConnectorCardActionCard : O365ConnectorCardActionBase
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardActionCard
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardActionCard"/> class.
         /// </summary>
         public O365ConnectorCardActionCard()
         {
@@ -23,17 +22,16 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardActionCard
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardActionCard"/> class.
         /// </summary>
         /// <param name="type">Type of the action. Possible values include:
-        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'</param>
+        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.</param>
         /// <param name="name">Name of the action that will be used as button
-        /// title</param>
-        /// <param name="id">Action Id</param>
+        /// title.</param>
+        /// <param name="id">Action Id.</param>
         /// <param name="inputs">Set of inputs contained in this ActionCard
         /// whose each item can be in any subtype of
-        /// O365ConnectorCardInputBase</param>
+        /// O365ConnectorCardInputBase.</param>
         /// <param name="actions">Set of actions contained in this ActionCard
         /// whose each item can be in any subtype of
         /// O365ConnectorCardActionBase except O365ConnectorCardActionCard, as
@@ -47,13 +45,8 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets set of inputs contained in this ActionCard whose each
-        /// item can be in any subtype of O365ConnectorCardInputBase
+        /// item can be in any subtype of O365ConnectorCardInputBase.
         /// </summary>
         [JsonProperty(PropertyName = "inputs")]
         public IList<O365ConnectorCardInputBase> Inputs { get; set; }
@@ -66,5 +59,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "actions")]
         public IList<O365ConnectorCardActionBase> Actions { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

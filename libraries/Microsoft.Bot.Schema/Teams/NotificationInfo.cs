@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Specifies if a notification is to be sent for the mentions.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class NotificationInfo
     {
         /// <summary>
-        /// Initializes a new instance of the NotificationInfo class.
+        /// Initializes a new instance of the <see cref="NotificationInfo"/> class.
         /// </summary>
         public NotificationInfo()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the NotificationInfo class.
+        /// Initializes a new instance of the <see cref="NotificationInfo"/> class.
         /// </summary>
         /// <param name="alert">true if notification is to be sent to the user,
         /// false otherwise.</param>
@@ -29,11 +29,6 @@ namespace Microsoft.Bot.Schema.Teams
             Alert = alert;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets true if notification is to be sent to the user, false
@@ -54,5 +49,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "externalResourceUrl")]
         public string ExternalResourceUrl { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

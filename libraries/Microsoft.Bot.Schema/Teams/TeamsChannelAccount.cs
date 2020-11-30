@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Teams channel account detailing user Azure Active Directory details.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class TeamsChannelAccount : ChannelAccount
     {
         /// <summary>
-        /// Initializes a new instance of the TeamsChannelAccount class.
+        /// Initializes a new instance of the <see cref="TeamsChannelAccount"/> class.
         /// </summary>
         public TeamsChannelAccount()
         {
@@ -20,10 +20,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the TeamsChannelAccount class.
+        /// Initializes a new instance of the <see cref="TeamsChannelAccount"/> class.
         /// </summary>
         /// <param name="id">Channel id for the user or bot on this channel.
-        /// (Example: joe@smith.com, or @joesmith or 123456)</param>
+        /// (Example: joe@smith.com, or @joesmith or 123456).</param>
         /// <param name="name">Display friendly name.</param>
         /// <param name="givenName">Given name part of the user name.</param>
         /// <param name="surname">Surname part of the user name.</param>
@@ -44,10 +44,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the TeamsChannelAccount class.
+        /// Initializes a new instance of the <see cref="TeamsChannelAccount"/> class.
         /// </summary>
         /// <param name="id">Channel id for the user or bot on this channel.
-        /// (Example: joe@smith.com, or @joesmith or 123456)</param>
+        /// (Example: joe@smith.com, or @joesmith or 123456).</param>
         /// <param name="name">Display friendly name.</param>
         /// <param name="givenName">Given name part of the user name.</param>
         /// <param name="surname">Surname part of the user name.</param>
@@ -57,11 +57,6 @@ namespace Microsoft.Bot.Schema.Teams
             : this(id, name, givenName, surname, email, userPrincipalName, string.Empty, string.Empty)
         {
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets given name part of the user name.
@@ -98,5 +93,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

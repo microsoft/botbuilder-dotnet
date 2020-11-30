@@ -1,19 +1,18 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card HttpPOST invoke query
+    /// O365 connector card HttpPOST invoke query.
     /// </summary>
     public partial class O365ConnectorCardActionQuery
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardActionQuery
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardActionQuery"/> class.
         /// </summary>
         public O365ConnectorCardActionQuery()
         {
@@ -21,11 +20,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardActionQuery
-        /// class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardActionQuery"/> class.
         /// </summary>
         /// <param name="body">The results of body string defined in
-        /// IO365ConnectorCardHttpPOST with substituted input values</param>
+        /// IO365ConnectorCardHttpPOST with substituted input values.</param>
         /// <param name="actionId">Action Id associated with the HttpPOST
         /// action button triggered, defined in
         /// O365ConnectorCardActionBase.</param>
@@ -37,13 +35,8 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets the results of body string defined in
-        /// IO365ConnectorCardHttpPOST with substituted input values
+        /// IO365ConnectorCardHttpPOST with substituted input values.
         /// </summary>
         [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
@@ -55,5 +48,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "actionId")]
         public string ActionId { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

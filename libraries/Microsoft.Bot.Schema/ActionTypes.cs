@@ -5,7 +5,6 @@ using System;
 
 namespace Microsoft.Bot.Schema
 {
-
     /// <summary>
     /// Defines values for ActionTypes.
     /// </summary>
@@ -70,6 +69,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// The type value for open app actions.
         /// </summary>
+#pragma warning disable SA1303 // Const field names should begin with upper-case letter (cannot change without breaking backward compatibility)
         public const string openApp = "openApp";
+#pragma warning restore SA1303 // Const field names should begin with upper-case letter
     }
 }

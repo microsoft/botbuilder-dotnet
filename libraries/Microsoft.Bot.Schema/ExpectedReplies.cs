@@ -3,11 +3,11 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Replies in response to <see cref="DeliveryModes.ExpectReplies"/>
+    /// Replies in response to <see cref="DeliveryModes.ExpectReplies"/>.
     /// </summary>
     public partial class ExpectedReplies
     {
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 

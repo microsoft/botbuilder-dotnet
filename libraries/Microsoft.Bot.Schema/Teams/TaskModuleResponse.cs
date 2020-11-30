@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Envelope for Task Module Response.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class TaskModuleResponse
     {
         /// <summary>
-        /// Initializes a new instance of the TaskModuleResponse class.
+        /// Initializes a new instance of the <see cref="TaskModuleResponse"/> class.
         /// </summary>
         public TaskModuleResponse()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the TaskModuleResponse class.
+        /// Initializes a new instance of the <see cref="TaskModuleResponse"/> class.
         /// </summary>
         /// <param name="task">The JSON for the Adaptive card to appear in the
         /// task module.</param>
@@ -29,11 +29,6 @@ namespace Microsoft.Bot.Schema.Teams
             Task = task;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the JSON for the Adaptive card to appear in the task
@@ -48,5 +43,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

@@ -7,13 +7,13 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Payload delivered when completing a payment request
+    /// Payload delivered when completing a payment request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
     public partial class PaymentRequestComplete
     {
         /// <summary>
-        /// Initializes a new instance of the PaymentRequestComplete class.
+        /// Initializes a new instance of the <see cref="PaymentRequestComplete"/> class.
         /// </summary>
         public PaymentRequestComplete()
         {
@@ -21,12 +21,12 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PaymentRequestComplete class.
+        /// Initializes a new instance of the <see cref="PaymentRequestComplete"/> class.
         /// </summary>
-        /// <param name="id">Payment request ID</param>
-        /// <param name="paymentRequest">Initial payment request</param>
+        /// <param name="id">Payment request ID.</param>
+        /// <param name="paymentRequest">Initial payment request.</param>
         /// <param name="paymentResponse">Corresponding payment
-        /// response</param>
+        /// response.</param>
         public PaymentRequestComplete(string id = default(string), PaymentRequest paymentRequest = default(PaymentRequest), PaymentResponse paymentResponse = default(PaymentResponse))
         {
             Id = id;
@@ -41,22 +41,21 @@ namespace Microsoft.Bot.Schema
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets payment request ID
+        /// Gets or sets payment request ID.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets initial payment request
+        /// Gets or sets initial payment request.
         /// </summary>
         [JsonProperty(PropertyName = "paymentRequest")]
         public PaymentRequest PaymentRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets corresponding payment response
+        /// Gets or sets corresponding payment response.
         /// </summary>
         [JsonProperty(PropertyName = "paymentResponse")]
         public PaymentResponse PaymentResponse { get; set; }
-
     }
 }

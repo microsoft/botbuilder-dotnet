@@ -3,17 +3,16 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Response of messaging extension action
+    /// Response of messaging extension action.
     /// </summary>
     public partial class MessagingExtensionActionResponse
     {
         /// <summary>
-        /// Initializes a new instance of the MessagingExtensionActionResponse
-        /// class.
+        /// Initializes a new instance of the <see cref="MessagingExtensionActionResponse"/> class.
         /// </summary>
         public MessagingExtensionActionResponse()
         {
@@ -21,8 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessagingExtensionActionResponse
-        /// class.
+        /// Initializes a new instance of the <see cref="MessagingExtensionActionResponse"/> class.
         /// </summary>
         /// <param name="task">The JSON for the Adaptive card to appear in the
         /// task module.</param>
@@ -33,11 +31,6 @@ namespace Microsoft.Bot.Schema.Teams
             ComposeExtension = composeExtension;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the JSON for the Adaptive card to appear in the task
@@ -57,5 +50,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

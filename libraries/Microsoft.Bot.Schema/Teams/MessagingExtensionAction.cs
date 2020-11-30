@@ -3,18 +3,18 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Messaging extension action
+    /// Messaging extension action.
     /// </summary>
     public partial class MessagingExtensionAction : TaskModuleRequest
     {
         /// <summary>
-        /// Initializes a new instance of the MessagingExtensionAction class.
+        /// Initializes a new instance of the <see cref="MessagingExtensionAction"/> class.
         /// </summary>
         public MessagingExtensionAction()
         {
@@ -22,18 +22,18 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessagingExtensionAction class.
+        /// Initializes a new instance of the <see cref="MessagingExtensionAction"/> class.
         /// </summary>
         /// <param name="data">User input data. Free payload with key-value
         /// pairs.</param>
         /// <param name="context">Current user context, i.e., the current
-        /// theme</param>
-        /// <param name="commandId">Id of the command assigned by Bot</param>
+        /// theme.</param>
+        /// <param name="commandId">Id of the command assigned by Bot.</param>
         /// <param name="commandContext">The context from which the command
         /// originates. Possible values include: 'message', 'compose',
-        /// 'commandbox'</param>
+        /// 'commandbox'.</param>
         /// <param name="botMessagePreviewAction">Bot message preview action
-        /// taken by user. Possible values include: 'edit', 'send'</param>
+        /// taken by user. Possible values include: 'edit', 'send'.</param>
         /// <param name="botActivityPreview">A collection of bot activities.</param>
         /// <param name="messagePayload">Message content sent as part of the
         /// command request.</param>
@@ -49,26 +49,21 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets id of the command assigned by Bot
+        /// Gets or sets id of the command assigned by Bot.
         /// </summary>
         [JsonProperty(PropertyName = "commandId")]
         public string CommandId { get; set; }
 
         /// <summary>
         /// Gets or sets the context from which the command originates.
-        /// Possible values include: 'message', 'compose', 'commandbox'
+        /// Possible values include: 'message', 'compose', 'commandbox'.
         /// </summary>
         [JsonProperty(PropertyName = "commandContext")]
         public string CommandContext { get; set; }
 
         /// <summary>
         /// Gets or sets bot message preview action taken by user. Possible
-        /// values include: 'edit', 'send'
+        /// values include: 'edit', 'send'.
         /// </summary>
         [JsonProperty(PropertyName = "botMessagePreviewAction")]
         public string BotMessagePreviewAction { get; set; }
@@ -89,5 +84,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

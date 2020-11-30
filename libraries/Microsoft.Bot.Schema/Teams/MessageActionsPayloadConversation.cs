@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents a team or channel entity.
@@ -12,8 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayloadConversation
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadConversation
-        /// class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadConversation"/> class.
         /// </summary>
         public MessageActionsPayloadConversation()
         {
@@ -21,12 +20,11 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadConversation
-        /// class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadConversation"/> class.
         /// </summary>
         /// <param name="conversationIdentityType">The type of conversation,
         /// whether a team or channel. Possible values include: 'team',
-        /// 'channel'</param>
+        /// 'channel'.</param>
         /// <param name="id">The id of the team or channel.</param>
         /// <param name="displayName">The plaintext display name of the team or
         /// channel entity.</param>
@@ -39,13 +37,8 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets the type of conversation, whether a team or channel.
-        /// Possible values include: 'team', 'channel'
+        /// Possible values include: 'team', 'channel'.
         /// </summary>
         [JsonProperty(PropertyName = "conversationIdentityType")]
         public string ConversationIdentityType { get; set; }
@@ -63,5 +56,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

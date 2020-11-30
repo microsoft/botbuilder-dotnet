@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// File info card.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class FileInfoCard
     {
         /// <summary>
-        /// Initializes a new instance of the FileInfoCard class.
+        /// Initializes a new instance of the <see cref="FileInfoCard"/> class.
         /// </summary>
         public FileInfoCard()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the FileInfoCard class.
+        /// Initializes a new instance of the <see cref="FileInfoCard"/> class.
         /// </summary>
         /// <param name="uniqueId">Unique Id for the file.</param>
         /// <param name="fileType">Type of file.</param>
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
@@ -55,6 +55,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "etag")]
         public object Etag { get; set; }
-
     }
 }

@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents the attachment in a message.
@@ -12,8 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayloadAttachment
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadAttachment
-        /// class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadAttachment"/> class.
         /// </summary>
         public MessageActionsPayloadAttachment()
         {
@@ -21,8 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadAttachment
-        /// class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadAttachment"/> class.
         /// </summary>
         /// <param name="id">The id of the attachment.</param>
         /// <param name="contentType">The type of the attachment.</param>
@@ -44,11 +42,6 @@ namespace Microsoft.Bot.Schema.Teams
             ThumbnailUrl = thumbnailUrl;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the id of the attachment.
@@ -88,5 +81,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "thumbnailUrl")]
         public string ThumbnailUrl { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

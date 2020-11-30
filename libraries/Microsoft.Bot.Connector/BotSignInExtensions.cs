@@ -3,9 +3,9 @@
 
 namespace Microsoft.Bot.Connector
 {
-    using Microsoft.Bot.Schema;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Extension methods for BotSignIn.
@@ -15,17 +15,11 @@ namespace Microsoft.Bot.Connector
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            /// <param name='state'>
-            /// </param>
-            /// <param name='codeChallenge'>
-            /// </param>
-            /// <param name='emulatorUrl'>
-            /// </param>
-            /// <param name='finalRedirect'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
+            /// <param name='state'>State.</param>
+            /// <param name='codeChallenge'>Code challenge.</param>
+            /// <param name='emulatorUrl'>Emulator URL.</param>
+            /// <param name='finalRedirect'>Final redirect.</param>
+            /// <param name='cancellationToken'>The cancellation token.</param>
             public static async Task<string> GetSignInUrlAsync(this IBotSignIn operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetSignInUrlWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
@@ -34,20 +28,12 @@ namespace Microsoft.Bot.Connector
                 }
             }
 
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='state'>
-            /// </param>
-            /// <param name='codeChallenge'>
-            /// </param>
-            /// <param name='emulatorUrl'>
-            /// </param>
-            /// <param name='finalRedirect'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
+            /// <param name='operations'>The operations group for this extension method.</param>
+            /// <param name='state'>State.</param>
+            /// <param name='codeChallenge'>Code challenge.</param>
+            /// <param name='emulatorUrl'>Emulator URL.</param>
+            /// <param name='finalRedirect'>Final redirect.</param>
+            /// <param name='cancellationToken'>The cancellation token.</param>
             public static async Task<SignInResource> GetSignInResourceAsync(this OAuthClient operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetSignInResourceWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
@@ -55,6 +41,5 @@ namespace Microsoft.Bot.Connector
                     return _result.Body;
                 }
             }
-
     }
 }

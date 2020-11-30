@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Plaintext/HTML representation of the content of the message.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayloadBody
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadBody class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadBody"/> class.
         /// </summary>
         public MessageActionsPayloadBody()
         {
@@ -20,10 +20,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadBody class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadBody"/> class.
         /// </summary>
         /// <param name="contentType">Type of the content. Possible values
-        /// include: 'html', 'text'</param>
+        /// include: 'html', 'text'.</param>
         /// <param name="content">The content of the body.</param>
         public MessageActionsPayloadBody(string contentType = default(string), string content = default(string))
         {
@@ -33,13 +33,13 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
         /// Gets or sets type of the content. Possible values include: 'html',
-        /// 'text'
+        /// 'text'.
         /// </summary>
         [JsonProperty(PropertyName = "contentType")]
         public string ContentType { get; set; }
@@ -49,6 +49,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "content")]
         public string Content { get; set; }
-
     }
 }

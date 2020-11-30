@@ -3,16 +3,16 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Describes a team
+    /// Describes a team.
     /// </summary>
     public partial class TeamInfo
     {
         /// <summary>
-        /// Initializes a new instance of the TeamInfo class.
+        /// Initializes a new instance of the <see cref="TeamInfo"/> class.
         /// </summary>
         public TeamInfo()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the TeamInfo class.
+        /// Initializes a new instance of the <see cref="TeamInfo"/> class.
         /// </summary>
         /// <param name="id">Unique identifier representing a team.</param>
         /// <param name="name">Name of team.</param>
@@ -32,12 +32,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets unique identifier representing a team
+        /// Gets or sets unique identifier representing a team.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
@@ -53,5 +48,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "aadGroupId")]
         public string AadGroupId { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

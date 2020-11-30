@@ -6,12 +6,12 @@ namespace Microsoft.Bot.Schema.Teams
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Channel data specific to messages received in Microsoft Teams
+    /// Channel data specific to messages received in Microsoft Teams.
     /// </summary>
     public partial class TeamsChannelData
     {
         /// <summary>
-        /// Initializes a new instance of the TeamsChannelData class.
+        /// Initializes a new instance of the <see cref="TeamsChannelData"/> class.
         /// </summary>
         public TeamsChannelData()
         {
@@ -19,17 +19,17 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the TeamsChannelData class.
+        /// Initializes a new instance of the <see cref="TeamsChannelData"/> class.
         /// </summary>
         /// <param name="channel">Information about the channel in which the
-        /// message was sent</param>
+        /// message was sent.</param>
         /// <param name="eventType">Type of event.</param>
         /// <param name="team">Information about the team in which the message
-        /// was sent</param>
+        /// was sent.</param>
         /// <param name="notification">Notification settings for the
-        /// message</param>
+        /// message.</param>
         /// <param name="tenant">Information about the tenant in which the
-        /// message was sent</param>
+        /// message was sent.</param>
         public TeamsChannelData(ChannelInfo channel = default(ChannelInfo), string eventType = default(string), TeamInfo team = default(TeamInfo), NotificationInfo notification = default(NotificationInfo), TenantInfo tenant = default(TenantInfo))
         {
             Channel = channel;
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 

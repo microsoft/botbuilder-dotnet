@@ -3,9 +3,9 @@
 
 namespace Microsoft.Bot.Schema
 {
+    using System.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using System.Linq;
 
     /// <summary>
     /// Response schema sent back from Bot Framework Token Service, in response to a request to get or exchange a token for a user.
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Schema
     public partial class TokenResponse
     {
         /// <summary>
-        /// Initializes a new instance of the TokenResponse class.
+        /// Initializes a new instance of the <see cref="TokenResponse"/> class.
         /// </summary>
         public TokenResponse()
         {
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the TokenResponse class.
+        /// Initializes a new instance of the <see cref="TokenResponse"/> class.
         /// </summary>
         public TokenResponse(string channelId = default(string), string connectionName = default(string), string token = default(string), string expiration = default(string))
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Schema
         public string Expiration { get; set; }
         
         /// <summary>
-        /// Extra propreties
+        /// Extra propreties.
         /// </summary>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public JObject Properties { get; set; } = new JObject();

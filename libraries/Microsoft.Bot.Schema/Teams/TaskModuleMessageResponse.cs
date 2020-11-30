@@ -11,16 +11,16 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class TaskModuleMessageResponse : TaskModuleResponseBase
     {
         /// <summary>
-        /// Initializes a new instance of the TaskModuleMessageResponse class.
+        /// Initializes a new instance of the <see cref="TaskModuleMessageResponse"/> class.
         /// </summary>
         public TaskModuleMessageResponse()
-            :base("message")
+            : base("message")
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the TaskModuleMessageResponse class.
+        /// Initializes a new instance of the <see cref="TaskModuleMessageResponse"/> class.
         /// </summary>
         /// <param name="value">Teams will display the value of value in a
         /// popup message box.</param>
@@ -32,16 +32,15 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets teams will display the value of value in a popup
         /// message box.
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

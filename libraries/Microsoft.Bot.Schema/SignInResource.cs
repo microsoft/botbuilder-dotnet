@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// A type containing information for single sign-on.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema
     public partial class SignInResource
     {
         /// <summary>
-        /// Initializes a new instance of the SignInUrlResponse class.
+        /// Initializes a new instance of the <see cref="SignInResource"/> class.
         /// </summary>
         public SignInResource()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the SignInUrlResponse class.
+        /// Initializes a new instance of the <see cref="SignInResource"/> class.
         /// </summary>
         public SignInResource(string signInLink = default(string), TokenExchangeResource tokenExchangeResource = default(TokenExchangeResource))
         {
@@ -30,21 +30,20 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// The sign-in link
+        /// The sign-in link.
         /// </summary>
         [JsonProperty(PropertyName = "signInLink")]
         public string SignInLink { get; set; }
 
         /// <summary>
-        /// Additional properties that cna be used for token exchange operations
+        /// Additional properties that cna be used for token exchange operations.
         /// </summary>
         [JsonProperty(PropertyName = "tokenExchangeResource")]
         public TokenExchangeResource TokenExchangeResource { get; set; }
-
     }
 }

@@ -1,12 +1,12 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Connector
 {
-    using Microsoft.Bot.Schema;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Extension methods for Attachments.
@@ -14,16 +14,16 @@ namespace Microsoft.Bot.Connector
     public static partial class AttachmentsExtensions
     {
             /// <summary>
-            /// GetAttachmentInfo
+            /// GetAttachmentInfo.
             /// </summary>
             /// <remarks>
-            /// Get AttachmentInfo structure describing the attachment views
+            /// Get AttachmentInfo structure describing the attachment views.
             /// </remarks>
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
             /// <param name='attachmentId'>
-            /// attachment id
+            /// attachment id.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
@@ -37,19 +37,19 @@ namespace Microsoft.Bot.Connector
             }
 
             /// <summary>
-            /// GetAttachment
+            /// GetAttachment.
             /// </summary>
             /// <remarks>
-            /// Get the named view as binary content
+            /// Get the named view as binary content.
             /// </remarks>
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
             /// <param name='attachmentId'>
-            /// attachment id
+            /// attachment id.
             /// </param>
             /// <param name='viewId'>
-            /// View id from attachmentInfo
+            /// View id from attachmentInfo.
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
@@ -60,6 +60,5 @@ namespace Microsoft.Bot.Connector
                 _result.Request.Dispose();
                 return _result.Body;
             }
-
     }
 }

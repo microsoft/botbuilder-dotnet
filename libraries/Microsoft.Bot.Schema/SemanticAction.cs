@@ -3,18 +3,18 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Represents a reference to a programmatic action
+    /// Represents a reference to a programmatic action.
     /// </summary>
     public partial class SemanticAction
     {
         /// <summary>
-        /// Initializes a new instance of the SemanticAction class.
+        /// Initializes a new instance of the <see cref="SemanticAction"/> class.
         /// </summary>
         public SemanticAction()
         {
@@ -22,10 +22,10 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the SemanticAction class.
+        /// Initializes a new instance of the <see cref="SemanticAction"/> class.
         /// </summary>
-        /// <param name="id">ID of this action</param>
-        /// <param name="entities">Entities associated with this action</param>
+        /// <param name="id">ID of this action.</param>
+        /// <param name="entities">Entities associated with this action.</param>
         public SemanticAction(string id = default(string), IDictionary<string, Entity> entities = default(IDictionary<string, Entity>))
         {
             Id = id;
@@ -34,18 +34,18 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets ID of this action
+        /// Gets or sets ID of this action.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
-        /// Gets or sets entities associated with this action
+        /// Gets or sets entities associated with this action.
         /// </summary>
         [JsonProperty(PropertyName = "entities")]
         public IDictionary<string, Entity> Entities { get; set; }

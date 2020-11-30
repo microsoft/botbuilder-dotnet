@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
@@ -27,14 +27,14 @@ namespace Microsoft.Bot.Schema
         public ErrorResponse Body { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the ErrorResponseException class.
+        /// Initializes a new instance of the <see cref="ErrorResponseException"/> class.
         /// </summary>
         public ErrorResponseException()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the ErrorResponseException class.
+        /// Initializes a new instance of the <see cref="ErrorResponseException"/> class.
         /// </summary>
         /// <param name="message">The exception message.</param>
         public ErrorResponseException(string message)
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the ErrorResponseException class.
+        /// Initializes a new instance of the <see cref="ErrorResponseException"/> class.
         /// </summary>
         /// <param name="message">The exception message.</param>
         /// <param name="innerException">Inner exception.</param>

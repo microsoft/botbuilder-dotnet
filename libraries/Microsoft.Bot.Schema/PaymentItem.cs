@@ -3,17 +3,17 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Indicates what the payment request is for and the value asked for
+    /// Indicates what the payment request is for and the value asked for.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
     public partial class PaymentItem
     {
         /// <summary>
-        /// Initializes a new instance of the PaymentItem class.
+        /// Initializes a new instance of the <see cref="PaymentItem"/> class.
         /// </summary>
         public PaymentItem()
         {
@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PaymentItem class.
+        /// Initializes a new instance of the <see cref="PaymentItem"/> class.
         /// </summary>
-        /// <param name="label">Human-readable description of the item</param>
-        /// <param name="amount">Monetary amount for the item</param>
+        /// <param name="label">Human-readable description of the item.</param>
+        /// <param name="amount">Monetary amount for the item.</param>
         /// <param name="pending">When set to true this flag means that the
         /// amount field is not final.</param>
         public PaymentItem(string label = default(string), PaymentCurrencyAmount amount = default(PaymentCurrencyAmount), bool? pending = default(bool?))
@@ -36,18 +36,18 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets human-readable description of the item
+        /// Gets or sets human-readable description of the item.
         /// </summary>
         [JsonProperty(PropertyName = "label")]
         public string Label { get; set; }
 
         /// <summary>
-        /// Gets or sets monetary amount for the item
+        /// Gets or sets monetary amount for the item.
         /// </summary>
         [JsonProperty(PropertyName = "amount")]
         public PaymentCurrencyAmount Amount { get; set; }
@@ -58,6 +58,5 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "pending")]
         public bool? Pending { get; set; }
-
     }
 }

@@ -3,11 +3,11 @@
 
 namespace Microsoft.Bot.Connector
 {
-    using Microsoft.Bot.Schema;
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Extension methods for Conversations.
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Connector
     public static partial class ConversationsExtensions
     {
         /// <summary>
-        /// GetConversations
+        /// GetConversations.
         /// </summary>
         /// <remarks>
         /// List the Conversations in which this bot has participated.
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='continuationToken'>
-        /// skip or continuation token
+        /// skip or continuation token.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// CreateConversation
+        /// CreateConversation.
         /// </summary>
         /// <remarks>
         /// Create a new Conversation.
@@ -72,13 +72,13 @@ namespace Microsoft.Bot.Connector
         /// await connect.Conversations.SendToConversationAsync(resource.Id, new
         /// Activity() ... ) ;
         ///
-        /// ```
+        /// ```  .
         /// </remarks>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters to create the conversation from
+        /// Parameters to create the conversation from.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// SendToConversation
+        /// SendToConversation.
         /// </summary>
         /// <remarks>
         /// This method allows you to send an activity to the end of a conversation.
@@ -113,10 +113,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activity'>
-        /// Activity to send
+        /// Activity to send.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// SendConversationHistory
+        /// SendConversationHistory.
         /// </summary>
         /// <remarks>
         /// This method allows you to upload the historic activities to the
@@ -145,10 +145,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='transcript'>
-        /// Transcript of activities
+        /// Transcript of activities.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// UpdateActivity
+        /// UpdateActivity.
         /// </summary>
         /// <remarks>
         /// Edit an existing activity.
@@ -177,13 +177,13 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId to update
+        /// activityId to update.
         /// </param>
         /// <param name='activity'>
-        /// replacement Activity
+        /// replacement Activity.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// ReplyToActivity
+        /// ReplyToActivity.
         /// </summary>
         /// <remarks>
         /// This method allows you to reply to an activity.
@@ -218,13 +218,13 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId the reply is to (OPTIONAL)
+        /// activityId the reply is to (OPTIONAL).
         /// </param>
         /// <param name='activity'>
-        /// Activity to send
+        /// Activity to send.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// DeleteActivity
+        /// DeleteActivity.
         /// </summary>
         /// <remarks>
         /// Delete an existing activity.
@@ -250,10 +250,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// activityId to delete
+        /// activityId to delete.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// GetConversationMembers
+        /// GetConversationMembers.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of a conversation.
@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// GetConversationPagedMembers
+        /// GetConversationPagedMembers.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of a conversation one page at a time.
@@ -315,13 +315,13 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='pageSize'>
-        /// Suggested page size
+        /// Suggested page size.
         /// </param>
         /// <param name='continuationToken'>
-        /// Continuation Token
+        /// Continuation Token.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// DeleteConversationMember
+        /// DeleteConversationMember.
         /// </summary>
         /// <remarks>
         /// Deletes a member from a conversation.
@@ -349,10 +349,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='memberId'>
-        /// ID of the member to delete from this conversation
+        /// ID of the member to delete from this conversation.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// GetActivityMembers
+        /// GetActivityMembers.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of an activity.
@@ -376,10 +376,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='activityId'>
-        /// Activity ID
+        /// Activity ID.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -393,7 +393,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// UploadAttachment
+        /// UploadAttachment.
         /// </summary>
         /// <remarks>
         /// Upload an attachment directly into a channel's blob storage.
@@ -408,10 +408,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='attachmentUpload'>
-        /// Attachment data
+        /// Attachment data.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -425,7 +425,7 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
-        /// GetConversationMember
+        /// GetConversationMember.
         /// </summary>
         /// <remarks>
         /// Enumerate the members of a conversation.
@@ -437,10 +437,10 @@ namespace Microsoft.Bot.Connector
         /// The operations group for this extension method.
         /// </param>
         /// <param name='conversationId'>
-        /// Conversation ID
+        /// Conversation ID.
         /// </param>
         /// <param name='userId'>
-        /// User ID
+        /// User ID.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
@@ -452,6 +452,5 @@ namespace Microsoft.Bot.Connector
                 return _result.Body;
             }
         }
-
     }
 }

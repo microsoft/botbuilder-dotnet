@@ -1,13 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// An HTTP API response
+    /// An HTTP API response.
     /// </summary>
     public partial class ErrorResponse
     {
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the ErrorResponse class.
         /// </summary>
-        /// <param name="error">Error message</param>
+        /// <param name="error">Error message.</param>
         public ErrorResponse(Error error = default(Error))
         {
             Error = error;
@@ -30,15 +30,14 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets error message
+        /// Gets or sets error message.
         /// </summary>
         [JsonProperty(PropertyName = "error")]
         public Error Error { get; set; }
-
     }
 }

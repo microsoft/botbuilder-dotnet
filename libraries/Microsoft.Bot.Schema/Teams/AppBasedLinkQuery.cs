@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Invoke request body type for app-based link query.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class AppBasedLinkQuery
     {
         /// <summary>
-        /// Initializes a new instance of the AppBasedLinkQuery class.
+        /// Initializes a new instance of the <see cref="AppBasedLinkQuery"/> class.
         /// </summary>
         public AppBasedLinkQuery()
         {
@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the AppBasedLinkQuery class.
+        /// Initializes a new instance of the  <see cref="AppBasedLinkQuery"/> class.
         /// </summary>
-        /// <param name="url">Url queried by user</param>
+        /// <param name="url">Url queried by user.</param>
         public AppBasedLinkQuery(string url = default(string))
         {
             Url = url;
@@ -30,12 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets url queried by user
+        /// Gets or sets url queried by user.
         /// </summary>
         [JsonProperty(PropertyName = "url")]
         public string Url { get; set; }
@@ -45,5 +40,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

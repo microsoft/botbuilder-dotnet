@@ -12,10 +12,12 @@ namespace Microsoft.Bot.Schema
         /// Semantic action is starting.
         /// </summary>
         public const string Start = "start";
+
         /// <summary>
         /// Semantic action is continuing.
         /// </summary>
         public const string Continue = "continue";
+
         /// <summary>
         /// Semantic action is done.
         /// </summary>

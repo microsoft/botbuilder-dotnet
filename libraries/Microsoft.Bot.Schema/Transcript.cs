@@ -1,20 +1,20 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Transcript
+    /// Transcript.
     /// </summary>
     public partial class Transcript
     {
         /// <summary>
-        /// Initializes a new instance of the Transcript class.
+        /// Initializes a new instance of the <see cref="Transcript"/> class.
         /// </summary>
         public Transcript()
         {
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the Transcript class.
+        /// Initializes a new instance of the <see cref="Transcript"/> class.
         /// </summary>
         /// <param name="activities">A collection of Activities that conforms
         /// to the Transcript schema.</param>
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
@@ -43,6 +43,5 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "activities")]
         public IList<Activity> Activities { get; set; }
-
     }
 }

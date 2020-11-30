@@ -1,20 +1,20 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// O365 connector card OpenUri action
+    /// O365 connector card OpenUri action.
     /// </summary>
     public partial class O365ConnectorCardOpenUri : O365ConnectorCardActionBase
     {
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardOpenUri class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardOpenUri"/> class.
         /// </summary>
         public O365ConnectorCardOpenUri()
         {
@@ -22,14 +22,14 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the O365ConnectorCardOpenUri class.
+        /// Initializes a new instance of the <see cref="O365ConnectorCardOpenUri"/> class.
         /// </summary>
         /// <param name="type">Type of the action. Possible values include:
-        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'</param>
+        /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.</param>
         /// <param name="name">Name of the action that will be used as button
-        /// title</param>
-        /// <param name="id">Action Id</param>
-        /// <param name="targets">Target os / urls</param>
+        /// title.</param>
+        /// <param name="id">Action Id.</param>
+        /// <param name="targets">Target os / urls.</param>
         public O365ConnectorCardOpenUri(string type = default(string), string name = default(string), string id = default(string), IList<O365ConnectorCardOpenUriTarget> targets = default(IList<O365ConnectorCardOpenUriTarget>))
             : base(type, name, id)
         {
@@ -38,15 +38,14 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// Gets or sets target os / urls
+        /// Gets or sets target os / urls.
         /// </summary>
         [JsonProperty(PropertyName = "targets")]
         public IList<O365ConnectorCardOpenUriTarget> Targets { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

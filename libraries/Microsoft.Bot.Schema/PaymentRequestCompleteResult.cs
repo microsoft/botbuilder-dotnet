@@ -7,13 +7,13 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Result from a completed payment request
+    /// Result from a completed payment request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
     public partial class PaymentRequestCompleteResult
     {
         /// <summary>
-        /// Initializes a new instance of the PaymentRequestCompleteResult
+        /// Initializes a new instance of the <see cref="PaymentRequestCompleteResult"/> class.
         /// class.
         /// </summary>
         public PaymentRequestCompleteResult()
@@ -22,11 +22,9 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PaymentRequestCompleteResult
-        /// class.
+        /// Initializes a new instance of the <see cref="PaymentRequestCompleteResult"/> class.
         /// </summary>
-        /// <param name="result">Result of the payment request
-        /// completion</param>
+        /// <param name="result">Result of the payment request completion.</param>
         public PaymentRequestCompleteResult(string result = default(string))
         {
             Result = result;
@@ -34,15 +32,14 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
 
         /// <summary>
-        /// Gets or sets result of the payment request completion
+        /// Gets or sets result of the payment request completion.
         /// </summary>
         [JsonProperty(PropertyName = "result")]
         public string Result { get; set; }
-
     }
 }

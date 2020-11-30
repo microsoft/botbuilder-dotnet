@@ -3,18 +3,18 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Address within a Payment Request
+    /// Address within a Payment Request.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
     public partial class PaymentAddress
     {
         /// <summary>
-        /// Initializes a new instance of the PaymentAddress class.
+        /// Initializes a new instance of the <see cref="PaymentAddress"/> class.
         /// </summary>
         public PaymentAddress()
         {
@@ -22,10 +22,10 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the PaymentAddress class.
+        /// Initializes a new instance of the <see cref="PaymentAddress"/> class.
         /// </summary>
         /// <param name="country">This is the CLDR (Common Locale Data
-        /// Repository) region code. For example, US, GB, CN, or JP</param>
+        /// Repository) region code. For example, US, GB, CN, or JP.</param>
         /// <param name="addressLine">This is the most specific part of the
         /// address. It can include, for example, a street name, a house
         /// number, apartment number, a rural delivery route, descriptive
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>
         /// Gets or sets this is the CLDR (Common Locale Data Repository)
-        /// region code. For example, US, GB, CN, or JP
+        /// region code. For example, US, GB, CN, or JP.
         /// </summary>
         [JsonProperty(PropertyName = "country")]
         public string Country { get; set; }
@@ -151,6 +151,5 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "phone")]
         public string Phone { get; set; }
-
     }
 }
