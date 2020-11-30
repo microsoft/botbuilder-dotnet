@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             if (this.Version != null)
             {
-                options.Version = this.Version?.GetValue(dialogContext);
+                options.Version = this.Version?.GetValue(dialogContext.State);
             }
 
             if (DynamicLists != null)
