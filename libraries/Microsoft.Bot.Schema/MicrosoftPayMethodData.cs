@@ -38,11 +38,6 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets microsoft Pay Merchant ID.
         /// </summary>
         [JsonProperty(PropertyName = "merchantId")]
@@ -60,5 +55,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "supportedTypes")]
         public IList<string> SupportedTypes { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

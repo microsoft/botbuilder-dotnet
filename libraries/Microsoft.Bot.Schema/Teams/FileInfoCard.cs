@@ -34,11 +34,6 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets unique Id for the file.
         /// </summary>
         [JsonProperty(PropertyName = "uniqueId")]
@@ -55,5 +50,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "etag")]
         public object Etag { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

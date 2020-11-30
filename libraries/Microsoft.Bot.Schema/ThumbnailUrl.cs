@@ -34,11 +34,6 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets URL pointing to the thumbnail to use for media content.
         /// </summary>
         [JsonProperty(PropertyName = "url")]
@@ -50,5 +45,9 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "alt")]
         public string Alt { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

@@ -69,6 +69,7 @@ namespace Microsoft.Bot.Schema.Teams
         public string BotMessagePreviewAction { get; set; }
 
         /// <summary>
+        /// Gets or sets the bot activity preview.
         /// </summary>
         [JsonProperty(PropertyName = "botActivityPreview")]
         public IList<Activity> BotActivityPreview { get; set; }

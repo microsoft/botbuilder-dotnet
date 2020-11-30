@@ -33,15 +33,15 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets a collection of Activities that conforms to the
         /// Transcript schema.
         /// </summary>
         [JsonProperty(PropertyName = "activities")]
         public IList<Activity> Activities { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

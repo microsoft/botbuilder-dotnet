@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="autoloop">Should the client loop playback at end of
         /// content (default:true).</param>
         /// <param name="autostart">Should the client automatically start
-        /// playback of media in this card (default:true)</param>
+        /// playback of media in this card (default:true).</param>
         /// <param name="aspect">Aspect ratio of thumbnail/media placeholder.
         /// Allowed values are "16:9" and "4:3".</param>
         /// <param name="duration">Describes the length of the media content
@@ -60,11 +60,6 @@ namespace Microsoft.Bot.Schema
             Value = value;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets title of this card.
@@ -144,5 +139,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

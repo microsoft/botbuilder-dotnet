@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Attachments.</param>
         /// <param name="suggestedActions">The message extension suggested actions.</param>
         /// <param name="text">(Only when type is message) Text.</param>
-        /// <param name="activityPreview">(Only when type is botMessagePreview) Message activity to preview</param>
+        /// <param name="activityPreview">(Only when type is botMessagePreview) Message activity to preview.</param>
         public MessagingExtensionResult(string attachmentLayout = default(string), string type = default(string), IList<MessagingExtensionAttachment> attachments = default(IList<MessagingExtensionAttachment>), MessagingExtensionSuggestedAction suggestedActions = default(MessagingExtensionSuggestedAction), string text = default(string), Activity activityPreview = default(Activity))
         {
             AttachmentLayout = attachmentLayout;

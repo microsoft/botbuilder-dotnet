@@ -11,17 +11,13 @@ namespace Microsoft.Bot.Schema
     /// </summary>
     public partial class AttachmentView
     {
-        /// <summary>
-        /// Initializes a new instance of the AttachmentView class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AttachmentView"/> class.</summary>
         public AttachmentView()
         {
             CustomInit();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the AttachmentView class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AttachmentView"/> class.</summary>
         /// <param name="viewId">Id of the attachment.</param>
         /// <param name="size">Size of the attachment.</param>
         public AttachmentView(string viewId = default(string), int? size = default(int?))
@@ -30,11 +26,6 @@ namespace Microsoft.Bot.Schema
             Size = size;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets id of the attachment.
@@ -48,5 +39,7 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "size")]
         public int? Size { get; set; }
 
+        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
+        partial void CustomInit();
     }
 }

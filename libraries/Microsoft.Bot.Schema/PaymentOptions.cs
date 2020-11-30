@@ -50,11 +50,6 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets indicates whether the user agent should collect and
         /// return the payer's name as part of the payment request.
         /// </summary>
@@ -89,5 +84,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "shippingType")]
         public string ShippingType { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

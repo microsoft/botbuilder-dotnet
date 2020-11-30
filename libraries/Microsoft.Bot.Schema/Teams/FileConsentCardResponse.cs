@@ -8,12 +8,12 @@ namespace Microsoft.Bot.Schema.Teams
 
     /// <summary>
     /// Represents the value of the invoke activity sent when the user acts on
-    /// a file consent card
+    /// a file consent card.
     /// </summary>
     public partial class FileConsentCardResponse
     {
         /// <summary>
-        /// Initializes a new instance of the FileConsentCardResponse class.
+        /// Initializes a new instance of the <see cref="FileConsentCardResponse"/> class.
         /// </summary>
         public FileConsentCardResponse()
         {
@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the FileConsentCardResponse class.
+        /// Initializes a new instance of the <see cref="FileConsentCardResponse"/> class.
         /// </summary>
         /// <param name="action">The action the user took. Possible values
-        /// include: 'accept', 'decline'</param>
+        /// include: 'accept', 'decline'.</param>
         /// <param name="context">The context associated with the
         /// action.</param>
         /// <param name="uploadInfo">If the user accepted the file, contains
@@ -38,13 +38,8 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets the action the user took. Possible values include:
-        /// 'accept', 'decline'
+        /// 'accept', 'decline'.
         /// </summary>
         [JsonProperty(PropertyName = "action")]
         public string Action { get; set; }
@@ -62,5 +57,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "uploadInfo")]
         public FileUploadInfo UploadInfo { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

@@ -22,6 +22,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the <see cref="SignInResource"/> class.
         /// </summary>
+        /// <param name="signInLink">Sign-in link.</param>
+        /// <param name="tokenExchangeResource">Token exchange resource.</param>
         public SignInResource(string signInLink = default(string), TokenExchangeResource tokenExchangeResource = default(TokenExchangeResource))
         {
             SignInLink = signInLink;
@@ -30,20 +32,20 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
-        /// The sign-in link.
+        /// Gets or sets the sign-in link.
         /// </summary>
         [JsonProperty(PropertyName = "signInLink")]
         public string SignInLink { get; set; }
 
         /// <summary>
-        /// Additional properties that cna be used for token exchange operations.
+        /// Gets or sets additional properties that cna be used for token exchange operations.
         /// </summary>
         [JsonProperty(PropertyName = "tokenExchangeResource")]
         public TokenExchangeResource TokenExchangeResource { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

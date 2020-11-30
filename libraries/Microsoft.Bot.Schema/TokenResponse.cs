@@ -33,26 +33,25 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
+        /// The channel ID.
         /// </summary>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
 
         /// <summary>
+        /// The connection name.
         /// </summary>
         [JsonProperty(PropertyName = "connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
+        /// The token.
         /// </summary>
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 
         /// <summary>
+        /// The expiration.
         /// </summary>
         [JsonProperty(PropertyName = "expiration")]
         public string Expiration { get; set; }
@@ -62,5 +61,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public JObject Properties { get; set; } = new JObject();
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

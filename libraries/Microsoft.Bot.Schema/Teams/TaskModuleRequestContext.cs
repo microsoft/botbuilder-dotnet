@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
+        /// Ges or sets the theme.
         /// </summary>
         [JsonProperty(PropertyName = "theme")]
         public string Theme { get; set; }

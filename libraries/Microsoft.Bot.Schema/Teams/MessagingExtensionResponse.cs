@@ -30,6 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
+        /// Gets or sets the compose extension.
         /// </summary>
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }

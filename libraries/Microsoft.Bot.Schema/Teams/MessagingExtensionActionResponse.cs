@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Schema.Teams
         public TaskModuleResponseBase Task { get; set; }
 
         /// <summary>
-        /// The compose extension result.
+        /// Gets or sets the compose extension result.
         /// </summary>
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }

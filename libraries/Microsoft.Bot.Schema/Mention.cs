@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema
     public partial class Mention
     {
         /// <summary>
-        /// Initializes a new instance of the Mention class.
+        /// Initializes a new instance of the <see cref="Mention"/> class.
         /// </summary>
         public Mention()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the Mention class.
+        /// Initializes a new instance of the <see cref="Mention"/> class.
         /// </summary>
         /// <param name="mentioned">The mentioned user.</param>
         /// <param name="text">Sub Text which represents the mention (can be
@@ -35,11 +35,6 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets the mentioned user.
         /// </summary>
         [JsonProperty(PropertyName = "mentioned")]
@@ -51,5 +46,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

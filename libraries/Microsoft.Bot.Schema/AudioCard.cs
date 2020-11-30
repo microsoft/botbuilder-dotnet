@@ -8,41 +8,31 @@ namespace Microsoft.Bot.Schema
     using System.Linq;
     using Newtonsoft.Json;
 
-    /// <summary>
-    /// Audio card.
-    /// </summary>
+    /// <summary>Audio card.</summary>
     public partial class AudioCard
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AudioCard"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AudioCard"/> class.</summary>
         public AudioCard()
         {
             CustomInit();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AudioCard"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="AudioCard"/> class.</summary>
         /// <param name="title">Title of this card.</param>
         /// <param name="subtitle">Subtitle of this card.</param>
         /// <param name="text">Text of this card.</param>
         /// <param name="image">Thumbnail placeholder.</param>
-        /// <param name="media">Media URLs for this card. When this field
-        /// contains more than one URL, each URL is an alternative format of
-        /// the same content.</param>
+        /// <param name="media">
+        /// Media URLs for this card. When this field contains more than one URL, each URL is an alternative format of the same content.
+        /// </param>
         /// <param name="buttons">Actions on this card.</param>
-        /// <param name="shareable">This content may be shared with others
-        /// (default:true).</param>
-        /// <param name="autoloop">Should the client loop playback at end of
-        /// content (default:true).</param>
-        /// <param name="autostart">Should the client automatically start
-        /// playback of media in this card (default:true).</param>
-        /// <param name="aspect">Aspect ratio of thumbnail/media placeholder.
-        /// Allowed values are "16:9" and "4:3".</param>
-        /// <param name="duration">Describes the length of the media content
-        /// without requiring a receiver to open the content. Formatted as an
-        /// ISO 8601 Duration field.</param>
+        /// <param name="shareable">This content may be shared with others (default:true).</param>
+        /// <param name="autoloop">Should the client loop playback at end of content (default:true).</param>
+        /// <param name="autostart">Should the client automatically start playback of media in this card (default:true).</param>
+        /// <param name="aspect">Aspect ratio of thumbnail/media placeholder. Allowed values are "16:9" and "4:3".</param>
+        /// <param name="duration">
+        /// Describes the length of the media content without requiring a receiver to open the content. Formatted as an ISO 8601 Duration field.
+        /// </param>
         /// <param name="value">Supplementary parameter for this card.</param>
         public AudioCard(string title = default(string), string subtitle = default(string), string text = default(string), ThumbnailUrl image = default(ThumbnailUrl), IList<MediaUrl> media = default(IList<MediaUrl>), IList<CardAction> buttons = default(IList<CardAction>), bool? shareable = default(bool?), bool? autoloop = default(bool?), bool? autostart = default(bool?), string aspect = default(string), object value = default(object), string duration = default(string))
         {
@@ -60,11 +50,6 @@ namespace Microsoft.Bot.Schema
             Value = value;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets title of this card.
@@ -144,5 +129,8 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
+
+        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
+        partial void CustomInit();
     }
 }

@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-
     /// <summary>
     /// Defines values for InstallationUpdateActionTypes.
     /// </summary>

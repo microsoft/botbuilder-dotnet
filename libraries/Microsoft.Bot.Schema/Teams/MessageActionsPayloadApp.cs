@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using Newtonsoft.Json;
     using System.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents an application entity.
@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Teams
     public partial class MessageActionsPayloadApp
     {
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadApp class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadApp"/> class.
         /// </summary>
         public MessageActionsPayloadApp()
         {
@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Initializes a new instance of the MessageActionsPayloadApp class.
+        /// Initializes a new instance of the <see cref="MessageActionsPayloadApp"/> class.
         /// </summary>
         /// <param name="applicationIdentityType">The type of application.
         /// Possible values include: 'aadApplication', 'bot', 'tenantBot',
-        /// 'office365Connector', 'webhook'</param>
+        /// 'office365Connector', 'webhook'.</param>
         /// <param name="id">The id of the application.</param>
         /// <param name="displayName">The plaintext display name of the
         /// application.</param>
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the type of application. Possible values include:
         /// 'aadApplication', 'bot', 'tenantBot', 'office365Connector',
-        /// 'webhook'
+        /// 'webhook'.
         /// </summary>
         [JsonProperty(PropertyName = "applicationIdentityType")]
         public string ApplicationIdentityType { get; set; }
@@ -60,6 +60,5 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
-
     }
 }

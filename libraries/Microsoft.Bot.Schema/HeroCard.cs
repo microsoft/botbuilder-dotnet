@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Schema
     public partial class HeroCard
     {
         /// <summary>
-        /// Initializes a new instance of the HeroCard class.
+        /// Initializes a new instance of the <see cref="HeroCard"/> class.
         /// </summary>
         public HeroCard()
         {
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the HeroCard class.
+        /// Initializes a new instance of the <see cref="HeroCard"/> class.
         /// </summary>
         /// <param name="title">Title of the card.</param>
         /// <param name="subtitle">Subtitle of the card.</param>
@@ -42,11 +42,6 @@ namespace Microsoft.Bot.Schema
             Tap = tap;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets title of the card.
@@ -84,5 +79,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

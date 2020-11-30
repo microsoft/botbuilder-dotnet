@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Schema
     public partial class Fact
     {
         /// <summary>
-        /// Initializes a new instance of the Fact class.
+        /// Initializes a new instance of the <see cref="Fact"/> class.
         /// </summary>
         public Fact()
         {
@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the Fact class.
+        /// Initializes a new instance of the <see cref="Fact"/> class.
         /// </summary>
         /// <param name="key">The key for this Fact.</param>
         /// <param name="value">The value for this Fact.</param>
@@ -33,11 +33,6 @@ namespace Microsoft.Bot.Schema
             Value = value;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets the key for this Fact.
@@ -51,5 +46,9 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

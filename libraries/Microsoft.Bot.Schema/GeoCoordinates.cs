@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema
     public partial class GeoCoordinates
     {
         /// <summary>
-        /// Initializes a new instance of the GeoCoordinates class.
+        /// Initializes a new instance of the <see cref="GeoCoordinates"/> class.
         /// </summary>
         public GeoCoordinates()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the GeoCoordinates class.
+        /// Initializes a new instance of the <see cref="GeoCoordinates"/> class.
         /// </summary>
         /// <param name="elevation">Elevation of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System).</param>
@@ -39,11 +39,6 @@ namespace Microsoft.Bot.Schema
             Name = name;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets elevation of the location [WGS
@@ -71,5 +66,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

@@ -24,6 +24,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenExchangeRequest"/> class.
         /// </summary>
+        /// <param name="uri">URI.</param>
+        /// <param name="token">Token.</param>
         public TokenExchangeRequest(string uri = default(string), string token = default(string))
         {
             Uri = uri;

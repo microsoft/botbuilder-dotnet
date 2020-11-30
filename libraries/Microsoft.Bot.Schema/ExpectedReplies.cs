@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema
     public partial class ExpectedReplies
     {
         /// <summary>
-        /// Initializes a new instance of the ExpectedReplies class.
+        /// Initializes a new instance of the <see cref="ExpectedReplies"/> class.
         /// </summary>
         public ExpectedReplies()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the ExpectedReplies class.
+        /// Initializes a new instance of the <see cref="ExpectedReplies"/> class.
         /// </summary>
         /// <param name="activities">A collection of Activities that conforms
         /// to the ExpectedReplies schema.</param>
@@ -31,16 +31,15 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
-
-        /// <summary>
         /// Gets or sets a collection of Activities that conforms to the
         /// ExpectedReplies schema.
         /// </summary>
         [JsonProperty(PropertyName = "activities")]
         public IList<Activity> Activities { get; set; }
 
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }

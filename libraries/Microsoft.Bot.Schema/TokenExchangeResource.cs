@@ -22,6 +22,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenExchangeResource"/> class.
         /// </summary>
+        /// <param name="id">ID.</param>
+        /// <param name="uri">URI.</param>
+        /// <param name="providerId">Identity provider ID.</param>
         public TokenExchangeResource(string id = default(string), string uri = default(string), string providerId = default(string))
         {
             Id = id;
@@ -31,19 +34,19 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// A unique identifier for this token exchange instance.
+        /// Gets or sets a unique identifier for this token exchange instance.
         /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
-        /// The application ID / resource identifier with which to exchange a token on behalf of.
+        /// Gets or sets the application ID / resource identifier with which to exchange a token on behalf of.
         /// </summary>
         [JsonProperty(PropertyName = "uri")]
         public string Uri { get; set; }
 
         /// <summary>
-        /// The identifier of the provider with which to attempt a token exchange
+        /// Gets or sets the identifier of the provider with which to attempt a token exchange
         /// A value of null or empty will default to Azure Active Directory.
         /// </summary>
         [JsonProperty(PropertyName = "providerId")]

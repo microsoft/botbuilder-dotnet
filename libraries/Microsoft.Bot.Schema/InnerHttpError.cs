@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema
     public partial class InnerHttpError
     {
         /// <summary>
-        /// Initializes a new instance of the InnerHttpError class.
+        /// Initializes a new instance of the <see cref="InnerHttpError"/> class.
         /// </summary>
         public InnerHttpError()
         {
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Initializes a new instance of the InnerHttpError class.
+        /// Initializes a new instance of the <see cref="InnerHttpError"/> class.
         /// </summary>
         /// <param name="statusCode">HttpStatusCode from failed request.</param>
         /// <param name="body">Body from failed request.</param>
@@ -30,11 +30,6 @@ namespace Microsoft.Bot.Schema
             Body = body;
             CustomInit();
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
 
         /// <summary>
         /// Gets or sets httpStatusCode from failed request.
@@ -47,5 +42,10 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "body")]
         public object Body { get; set; }
+
+        /// <summary>
+        /// An initialization method that performs custom operations like setting defaults.
+        /// </summary>
+        partial void CustomInit();
     }
 }
