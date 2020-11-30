@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "profile")]
         public string Profile { get; set; }
 
-
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>

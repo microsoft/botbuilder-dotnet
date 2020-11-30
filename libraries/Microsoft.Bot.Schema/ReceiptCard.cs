@@ -58,13 +58,17 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets array of Fact objects.
         /// </summary>
         [JsonProperty(PropertyName = "facts")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Fact> Facts { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets array of Receipt Items.
         /// </summary>
         [JsonProperty(PropertyName = "items")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ReceiptItem> Items { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this action will be activated when user taps on the
@@ -95,7 +99,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets set of actions applicable to the current card.
         /// </summary>
         [JsonProperty(PropertyName = "buttons")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

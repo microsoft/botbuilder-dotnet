@@ -81,7 +81,9 @@ namespace Microsoft.Bot.Schema
         /// office box number.
         /// </summary>
         [JsonProperty(PropertyName = "addressLine")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<string> AddressLine { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this is the top level administrative subdivision of

@@ -47,9 +47,12 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets parameters for the query.
         /// </summary>
         [JsonProperty(PropertyName = "parameters")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionParameter> Parameters { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
+        /// Gets or sets the query options.
         /// </summary>
         [JsonProperty(PropertyName = "queryOptions")]
         public MessagingExtensionQueryOptions QueryOptions { get; set; }

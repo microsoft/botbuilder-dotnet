@@ -48,13 +48,17 @@ namespace Microsoft.Bot.Schema
         /// "mastercard").
         /// </summary>
         [JsonProperty(PropertyName = "supportedNetworks")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedNetworks { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets supported payment types (e.g., "credit").
         /// </summary>
         [JsonProperty(PropertyName = "supportedTypes")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedTypes { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

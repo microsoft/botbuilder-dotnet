@@ -62,9 +62,12 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets (Only when type is result) Attachments.
         /// </summary>
         [JsonProperty(PropertyName = "attachments")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionAttachment> Attachments { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
+        /// Gets or sets the suggested actions.
         /// </summary>
         [JsonProperty(PropertyName = "suggestedActions")]
         public MessagingExtensionSuggestedAction SuggestedActions { get; set; }

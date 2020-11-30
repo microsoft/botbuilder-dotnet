@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Schema
         public PaymentResponse PaymentResponse { get; set; }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
     }

@@ -70,13 +70,17 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets set of sections for the current card.
         /// </summary>
         [JsonProperty(PropertyName = "sections")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardSection> Sections { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets set of actions for the current card.
         /// </summary>
         [JsonProperty(PropertyName = "potentialAction")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardActionBase> PotentialAction { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

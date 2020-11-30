@@ -43,7 +43,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets entities associated with this action.
         /// </summary>
         [JsonProperty(PropertyName = "entities")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IDictionary<string, Entity> Entities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets state of this action. Allowed values: `start`,

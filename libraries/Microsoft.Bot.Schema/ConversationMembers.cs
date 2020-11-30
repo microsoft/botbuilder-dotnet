@@ -35,7 +35,9 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>Gets or sets list of members in this conversation.</summary>
         [JsonProperty(PropertyName = "members")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
         partial void CustomInit();

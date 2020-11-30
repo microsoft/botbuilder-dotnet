@@ -47,7 +47,9 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>Gets or sets members to add to the conversation.</summary>
         [JsonProperty(PropertyName = "members")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>Gets or sets (Optional) Topic of the conversation (if supported by the channel).</summary>
         [JsonProperty(PropertyName = "topicName")]

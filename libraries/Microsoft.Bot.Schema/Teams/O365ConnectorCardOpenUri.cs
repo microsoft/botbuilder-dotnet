@@ -41,7 +41,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets target os / urls.
         /// </summary>
         [JsonProperty(PropertyName = "targets")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardOpenUriTarget> Targets { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

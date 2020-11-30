@@ -50,7 +50,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets contains a sequence of payment method identifiers.
         /// </summary>
         [JsonProperty(PropertyName = "supportedMethods")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedMethods { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this value overrides the total field in the
@@ -66,7 +68,9 @@ namespace Microsoft.Bot.Schema
         /// payment method identifiers in the supportedMethods field.
         /// </summary>
         [JsonProperty(PropertyName = "additionalDisplayItems")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentItem> AdditionalDisplayItems { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets a JSON-serializable object that provides optional

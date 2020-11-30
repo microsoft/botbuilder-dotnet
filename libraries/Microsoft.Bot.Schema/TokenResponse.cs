@@ -23,6 +23,10 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenResponse"/> class.
         /// </summary>
+        /// <param name="channelId">The channel ID.</param>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="expiration">The expiration.</param>
         public TokenResponse(string channelId = default(string), string connectionName = default(string), string token = default(string), string expiration = default(string))
         {
             ChannelId = channelId;
@@ -33,34 +37,36 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// The channel ID.
+        /// Gets or sets the channel ID.
         /// </summary>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
 
         /// <summary>
-        /// The connection name.
+        /// Gets or sets the connection name.
         /// </summary>
         [JsonProperty(PropertyName = "connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
-        /// The token.
+        /// Gets or sets the token.
         /// </summary>
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 
         /// <summary>
-        /// The expiration.
+        /// Gets or sets the expiration.
         /// </summary>
         [JsonProperty(PropertyName = "expiration")]
         public string Expiration { get; set; }
         
         /// <summary>
-        /// Extra propreties.
+        /// Gets or sets extra propreties.
         /// </summary>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

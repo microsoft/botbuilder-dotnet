@@ -46,8 +46,10 @@ namespace Microsoft.Bot.Schema
         /// this request.
         /// </summary>
         [JsonProperty(PropertyName = "settings")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IDictionary<string, object> Settings { get; set; }
-        
+#pragma warning restore CA2227 // Collection properties should be read only
+
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>

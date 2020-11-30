@@ -65,13 +65,17 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets array of images for the card.
         /// </summary>
         [JsonProperty(PropertyName = "images")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardImage> Images { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets set of actions applicable to the current card.
         /// </summary>
         [JsonProperty(PropertyName = "buttons")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this action will be activated when user taps on the

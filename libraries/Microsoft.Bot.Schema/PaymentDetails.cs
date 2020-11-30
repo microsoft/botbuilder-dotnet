@@ -54,21 +54,27 @@ namespace Microsoft.Bot.Schema
         /// user agent may display.
         /// </summary>
         [JsonProperty(PropertyName = "displayItems")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentItem> DisplayItems { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets a sequence containing the different shipping options
         /// for the user to choose from.
         /// </summary>
         [JsonProperty(PropertyName = "shippingOptions")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentShippingOption> ShippingOptions { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets contains modifiers for particular payment method
         /// identifiers.
         /// </summary>
         [JsonProperty(PropertyName = "modifiers")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentDetailsModifier> Modifiers { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets error description.

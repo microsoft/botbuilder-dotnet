@@ -72,7 +72,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the bot activity preview.
         /// </summary>
         [JsonProperty(PropertyName = "botActivityPreview")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Activity> BotActivityPreview { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets message content sent as part of the command request.

@@ -91,13 +91,17 @@ namespace Microsoft.Bot.Schema
         /// content.
         /// </summary>
         [JsonProperty(PropertyName = "media")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<MediaUrl> Media { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets actions on this card.
         /// </summary>
         [JsonProperty(PropertyName = "buttons")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<CardAction> Buttons { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets this content may be shared with others (default:true).

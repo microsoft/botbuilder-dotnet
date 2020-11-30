@@ -43,7 +43,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the Channel Accounts.
         /// </summary>
         [JsonProperty(PropertyName = "members")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

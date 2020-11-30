@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Preview.
+        /// Gets or sets the preview.
         /// </summary>
         [JsonProperty(PropertyName = "preview")]
         public Attachment Preview { get; set; }

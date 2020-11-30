@@ -52,7 +52,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets allowed payment methods for this request.
         /// </summary>
         [JsonProperty(PropertyName = "methodData")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentMethodData> MethodData { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets details for this request.

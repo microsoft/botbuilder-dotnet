@@ -57,7 +57,9 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets action to use to perform signin.
         /// </summary>
         [JsonProperty(PropertyName = "buttons")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

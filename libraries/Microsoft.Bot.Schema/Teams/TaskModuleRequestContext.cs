@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleRequestContext"/> class.
         /// </summary>
+        /// <param name="theme">The theme.</param>
         public TaskModuleRequestContext(string theme = default(string))
         {
             Theme = theme;
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Ges or sets the theme.
+        /// Gets or sets the theme.
         /// </summary>
         [JsonProperty(PropertyName = "theme")]
         public string Theme { get; set; }

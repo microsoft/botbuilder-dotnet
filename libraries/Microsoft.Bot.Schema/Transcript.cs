@@ -37,7 +37,9 @@ namespace Microsoft.Bot.Schema
         /// Transcript schema.
         /// </summary>
         [JsonProperty(PropertyName = "activities")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Activity> Activities { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

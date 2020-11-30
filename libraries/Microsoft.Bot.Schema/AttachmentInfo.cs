@@ -39,7 +39,9 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>Gets or sets attachment views.</summary>
         [JsonProperty(PropertyName = "views")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<AttachmentView> Views { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
         partial void CustomInit();
