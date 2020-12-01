@@ -235,28 +235,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// <returns>Normalized locale.</returns>
         public static string MapToNearestLanguage(string cultureCode)
         {
-            cultureCode = cultureCode.ToLowerInvariant();
-
-            if (SupportedLocales.All(o => o != cultureCode))
+            if (!string.IsNullOrWhiteSpace(cultureCode))
             {
-                // Handle cases like EnglishOthers with cultureCode "en-*"
-                var fallbackCultureCodes = SupportedLocales
-                    .Where(o => o.EndsWith("*", StringComparison.Ordinal) &&
-                                cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
+                cultureCode = cultureCode.ToLowerInvariant();
 
-                if (fallbackCultureCodes.Count == 1)
+                if (!SupportedLocales.Contains(cultureCode))
                 {
-                    return fallbackCultureCodes.First();
-                }
+                    var culturePrefix = cultureCode.Split('-').First();
+                    var fallbackLocales = SupportedLocales.Where(locale => locale.StartsWith(culturePrefix, StringComparison.Ordinal)).ToList();
 
-                // If there is no cultureCode like "-*", map only the prefix
-                // For example, "es-mx" will be mapped to "es-es"
-                fallbackCultureCodes = SupportedLocales
-                    .Where(o => cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
+                    if (fallbackLocales.Any())
+                    {
+                        // Handle cases like EnglishOthers with cultureCode "en-*"
+                        if (fallbackLocales.FirstOrDefault(locale => locale.EndsWith("*", StringComparison.Ordinal)) is string genericLocale)
+                        {
+                            return genericLocale;
+                        }
 
-                if (fallbackCultureCodes.Any())
-                {
-                    return fallbackCultureCodes.First();
+                        // If there is no cultureCode like "-*", map only the prefix
+                        // For example, "es-mx" will be mapped to "es-es"
+                        return fallbackLocales.First();
+                    }
                 }
             }
 

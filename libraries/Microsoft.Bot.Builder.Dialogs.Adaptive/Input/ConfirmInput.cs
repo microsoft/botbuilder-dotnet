@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
 using Newtonsoft.Json;
@@ -26,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.ConfirmInput";
 
-        private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> DefaultChoiceOptions = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(StringComparer.OrdinalIgnoreCase)
         {
             { Spanish, (new Choice("Sí"), new Choice("No"), new ChoiceFactoryOptions(", ", " o ", ", o ", true)) },
             { Dutch, (new Choice("Ja"), new Choice("Nee"), new ChoiceFactoryOptions(", ", " of ", ", of ", true)) },
@@ -45,14 +46,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="callerLine">Optional, line number in source file.</param>
         public ConfirmInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
         /// Gets or sets the DefaultLocale to use to parse confirmation choices if there is not one passed by the caller.
         /// </summary>
         /// <value>
-        /// The locale (en-us, nl-nl, etc) or expression which evluates to locale.
+        /// The locale (en-us, nl-nl, etc) or expression which evaluates to locale.
         /// </value>
         [JsonProperty("defaultLocale")]
         public StringExpression DefaultLocale { get; set; }
@@ -98,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Recognize utterance
-                var culture = GetCulture(dc);
+                var culture = DetermineCulture(dc);
                 var results = ChoiceRecognizer.RecognizeBoolean(input.ToString(), culture);
                 if (results.Count > 0)
                 {
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             }
                             else
                             {
-                                throw new InvalidOperationException($"OutputFormat Expression evaluation resulted in an error. Expression: {OutputFormat.ToString()}. Error: {error}");
+                                throw new InvalidOperationException($"OutputFormat Expression evaluation resulted in an error. Expression: {OutputFormat}. Error: {error}");
                             }
                         }
 
@@ -129,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 else
                 {
                     // First check whether the prompt was sent to the user with numbers - if it was we should recognize numbers
-                    var defaults = ChoiceDefaults[culture];
+                    var defaults = DefaultChoiceOptions[culture];
                     var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? defaults.Item3;
 
                     // This logic reflects the fact that IncludeNumbers is nullable and True is the default set in Inline style
@@ -165,29 +166,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             // Format prompt to send
             var channelId = dc.Context.Activity.ChannelId;
-            var culture = GetCulture(dc);
-            var defaults = ChoiceDefaults[culture];
+            var culture = DetermineCulture(dc);
+            var defaults = DefaultChoiceOptions[culture];
             var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? defaults.Item3;
             var confirmChoices = ConfirmChoices?.GetValue(dc.State) ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
 
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
-            var (style, error) = this.Style.TryGetValue(dc.State);
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
+            var (style, _) = Style.TryGetValue(dc.State);
+            return AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
         }
 
-        private string GetCulture(DialogContext dc)
+        private string DetermineCulture(DialogContext dc)
         {
-            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
+            var culture = PromptCultureModels.MapToNearestLanguage(dc.Context.Activity.Locale ?? DefaultLocale?.GetValue(dc.State));
+
+            if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
-                return dc.Context.Activity.Locale;
+                culture = English;
             }
 
-            if (this.DefaultLocale != null)
-            {
-                return this.DefaultLocale.GetValue(dc.State);
-            }
-
-            return English;
+            return culture;
         }
     }
 }
