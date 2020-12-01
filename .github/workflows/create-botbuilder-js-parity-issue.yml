@@ -1,0 +1,28 @@
+name: create-botbuilder-js-parity-issue.yml
+
+on:
+  pull_request:
+    branches:
+    - main
+    types: [closed]
+
+jobs:
+  triggerWorkflow:
+    name: create parity issue for botbuilder-js
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: joshgummersall/dispatch-workflow@main
+        if: github.event.pull_request.merged == true
+        with:
+          inputs: |
+            {
+              "prDescription": "${{ github.event.pull_request.body }}",
+              "prNumber": "${{ github.event.pull_request.number }}",
+              "prTitle": "${{ github.event.pull_request.title }}",
+              "sourceRepo": "${{ github.repository }}"
+            }
+          ref: main
+          repo: microsoft/botbuilder-js
+          token: "${{ secrets.BOTBUILDER_JS_ACCESS_TOKEN }}"
+          workflow: create-parity-issue.yml
