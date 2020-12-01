@@ -30,10 +30,12 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets conversation ID.</summary>
+        /// <value>The conversation ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>Gets or sets list of members in this conversation.</summary>
+        /// <value>The members in the conversation.</value>
         [JsonProperty(PropertyName = "members")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }

@@ -30,18 +30,22 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or 123456).</summary>
+        /// <value>The channel ID for the user or bot.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>Gets or sets display friendly name.</summary>
+        /// <value>The friendly display name.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>Gets or sets this account's object ID within Azure Active Directory (AAD).</summary>
+        /// <value>The account's object ID within Azure Active Directory.</value>
         [JsonProperty(PropertyName = "aadObjectId")]
         public string AadObjectId { get; set; }
 
         /// <summary>Gets or sets role of the entity behind the account (Example: User, Bot, etc.). Possible values include: 'user', 'bot'.</summary>
+        /// <value>The role of the entity behind the account.</value>
         [JsonProperty(PropertyName = "role")]
         public string Role { get; set; }
 

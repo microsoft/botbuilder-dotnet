@@ -28,14 +28,17 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets URL thumbnail image for major content property.</summary>
+        /// <value>The URL of the thumbnail.</value>
         [JsonProperty(PropertyName = "url")]
         public string Url { get; set; }
 
         /// <summary>Gets or sets image description intended for screen readers.</summary>
+        /// <value>The image description intended for screen readers.</value>
         [JsonProperty(PropertyName = "alt")]
         public string Alt { get; set; }
 
         /// <summary>Gets or sets action assigned to specific Attachment.</summary>
+        /// <value>The action assigned to the specific attachment.</value>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
 

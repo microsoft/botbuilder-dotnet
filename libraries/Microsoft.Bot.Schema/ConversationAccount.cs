@@ -36,30 +36,37 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary> Gets or sets indicates whether the conversation contains more than two participants at the time the activity was generated.</summary>
+        /// <value>Boolean indicating whether conversation has more thatn two participants.</value>
         [JsonProperty(PropertyName = "isGroup")]
         public bool? IsGroup { get; set; }
 
         /// <summary> Gets or sets indicates the type of the conversation in channels that distinguish between conversation types.</summary>
+        /// <value>The conversation type.</value>
         [JsonProperty(PropertyName = "conversationType")]
         public string ConversationType { get; set; }
 
         /// <summary>Gets or sets channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or 123456).</summary>
+        /// <value>The channel ID for the user or bot.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>Gets or sets display friendly name.</summary>
+        /// <value>The friendly display name.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>Gets or sets this account's object ID within Azure Active Directory (AAD).</summary>
+        /// <value>The account's object ID within Azure Active Directory.</value>
         [JsonProperty(PropertyName = "aadObjectId")]
         public string AadObjectId { get; set; }
 
         /// <summary>Gets or sets role of the entity behind the account (Example: User, Bot, etc.). Possible values include: 'user', 'bot'.</summary>
+        /// <value>The role of the entity behind the account.</value>
         [JsonProperty(PropertyName = "role")]
         public string Role { get; set; }
 
         /// <summary>Gets or sets this conversation's tenant ID.</summary>
+        /// <value>The tenant ID.</value>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
 
