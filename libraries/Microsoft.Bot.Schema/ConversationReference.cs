@@ -53,30 +53,37 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets (Optional) ID of the activity to refer to.</summary>
+        /// <value>The activity ID.</value>
         [JsonProperty(PropertyName = "activityId")]
         public string ActivityId { get; set; }
 
         /// <summary>Gets or sets (Optional) User participating in this conversation.</summary>
+        /// <value>The user participating in the conversation.</value>
         [JsonProperty(PropertyName = "user")]
         public ChannelAccount User { get; set; }
 
         /// <summary>Gets or sets (Optional) Bot participating in this conversation.</summary>
+        /// <value>The bot participating in the conversation.</value>
         [JsonProperty(PropertyName = "bot")]
         public ChannelAccount Bot { get; set; }
 
         /// <summary>Gets or sets Reference to the conversation.</summary>
+        /// <value>The conversation.</value>
         [JsonProperty(PropertyName = "conversation")]
         public ConversationAccount Conversation { get; set; }
 
         /// <summary>Gets or sets ID of the channel in which the referenced conversation exists.</summary>
+        /// <value>The channel ID.</value>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
         
         /// <summary>Gets or sets (Optional) A BCP-47 locale name for the referenced conversation.</summary>
+        /// <value>The locale of the conversation.</value>
         [JsonProperty(PropertyName = "locale")]
         public string Locale { get; set; }
 
         /// <summary>Gets or sets (Optional) Service endpoint where operations concerning the referenced conversation may be performed.</summary>
+        /// <value>The service URL.</value>
         [JsonProperty(PropertyName = "serviceUrl")]
         public string ServiceUrl { get; set; }
 

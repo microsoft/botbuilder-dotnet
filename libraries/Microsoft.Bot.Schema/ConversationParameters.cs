@@ -38,32 +38,39 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets isGroup.</summary>
+        /// <value>IsGroup boolean.</value>
         [JsonProperty(PropertyName = "isGroup")]
         public bool? IsGroup { get; set; }
 
         /// <summary>Gets or sets the bot address for this conversation.</summary>
+        /// <value>The bot address for this conversation.</value>
         [JsonProperty(PropertyName = "bot")]
         public ChannelAccount Bot { get; set; }
 
         /// <summary>Gets or sets members to add to the conversation.</summary>
+        /// <value>The members added to the conversation.</value>
         [JsonProperty(PropertyName = "members")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>Gets or sets (Optional) Topic of the conversation (if supported by the channel).</summary>
+        /// <value>The topic of the conversation.</value>
         [JsonProperty(PropertyName = "topicName")]
         public string TopicName { get; set; }
 
         /// <summary>Gets or sets (Optional) When creating a new conversation, use this activity as the initial message to the conversation.</summary>
+        /// <value>The activity.</value>
         [JsonProperty(PropertyName = "activity")]
         public Activity Activity { get; set; }
 
         /// <summary>Gets or sets channel specific payload for creating the conversation.</summary>
+        /// <value>The channel data.</value>
         [JsonProperty(PropertyName = "channelData")]
         public object ChannelData { get; set; }
 
         /// <summary>Gets or sets (Optional) The tenant ID in which the conversationshould be created.</summary>
+        /// <value>The tenant ID.</value>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
 
