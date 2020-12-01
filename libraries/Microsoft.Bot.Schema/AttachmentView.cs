@@ -30,12 +30,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets id of the attachment.
         /// </summary>
+        /// <value>The ID of the attachment.</value>
         [JsonProperty(PropertyName = "viewId")]
         public string ViewId { get; set; }
 
         /// <summary>
         /// Gets or sets size of the attachment.
         /// </summary>
+        /// <value>The size of the attachment.</value>
         [JsonProperty(PropertyName = "size")]
         public int? Size { get; set; }
 
