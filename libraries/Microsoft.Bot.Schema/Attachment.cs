@@ -37,32 +37,41 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets mimetype/Contenttype for the file.
         /// </summary>
+        /// <value>The content type.</value>
         [JsonProperty(PropertyName = "contentType")]
         public string ContentType { get; set; }
 
         /// <summary>
         /// Gets or sets content Url.
         /// </summary>
+        /// <value>The content URL.</value>
         [JsonProperty(PropertyName = "contentUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking compat).
         public string ContentUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets embedded content.
         /// </summary>
+        /// <value>The embedded content.</value>
         [JsonProperty(PropertyName = "content")]
         public object Content { get; set; }
 
         /// <summary>
         /// Gets or sets (OPTIONAL) The name of the attachment.
         /// </summary>
+        /// <value>The name of the attachment.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets (OPTIONAL) Thumbnail associated with attachment.
         /// </summary>
+        /// <value>The thumbnail URL associated with attachment.</value>
         [JsonProperty(PropertyName = "thumbnailUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking compat).
         public string ThumbnailUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
