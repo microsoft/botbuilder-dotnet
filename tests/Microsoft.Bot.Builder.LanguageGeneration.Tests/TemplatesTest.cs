@@ -1130,22 +1130,36 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("TemplateCache.lg"));
 
+            // Default cache policy
             var evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
-            Assert.NotNull(evaled);
-
             var resultList = evaled.ToString().Split(" ");
-            Assert.True(resultList.Length == 2);
-            Assert.True(resultList[0] == resultList[1]);
+            Assert.Equal(resultList[0], resultList[1]);
 
-            // may be has different values
-            evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
-
-            // global cache test
-            evaled = templates.Evaluate("globalCache", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
-
+            // with None cache override
+            // Notice, the expression is ${rand(1, 10000000)}, there still exist the probability of test failure
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.None });
             resultList = evaled.ToString().Split(" ");
-            Assert.True(resultList.Length == 2);
-            Assert.True(resultList[0] == resultList[1]);
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // with different parameters
+            evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // with None cache override
+            evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" }, new EvaluationOptions { CacheScope = LGCacheScope.None });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // nested template test, with default cache policy
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // with Global cache override
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
         }
 
         [Fact]
@@ -1474,6 +1488,52 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Null(templates5.LgOptions.StrictMode);
 
             Assert.Null(templates5.LgOptions.LineBreakStyle);
+        }
+
+        [Fact]
+        public void TestCacheScopeOption()
+        {
+            //Global cache test
+            var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/GlobalCache.lg"));
+            var evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            var resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // Global cache effects one evaluation life cycle
+            var evaled2 = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            Assert.NotEqual(evaled, evaled2);
+
+            // Global cache import none cache, the entrance option would override the options in children
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/GlobalCache_1.lg"));
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // locale cache test
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/LocalCache.lg"));
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // default cache test
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/DefaultCache.lg"));
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // None cache.
+            // Notice, the expression is ${rand(1, 10000000)}, there still exist the probability of test failure
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/NoneCache.lg"));
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // api override options in LG file
+            // use global cache to override the none cache.
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/NoneCache.lg"));
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
         }
 
         [Fact]
