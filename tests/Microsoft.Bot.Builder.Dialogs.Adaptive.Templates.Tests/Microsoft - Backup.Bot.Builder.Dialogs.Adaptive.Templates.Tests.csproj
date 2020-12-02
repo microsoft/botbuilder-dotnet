@@ -14,7 +14,6 @@
     <None Remove="Fallback\datetime.dialog" />
     <None Remove="Fallback\inject.dialog" />
     <None Remove="Fallback\locale.dialog" />
-    <None Remove="Fallback\manuallySetLocale.dialog"/>
     <None Remove="Fallback\test.dialog" />
     <None Remove="lg\inject.lg" />
   </ItemGroup>
@@ -48,9 +47,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Fallback\locale.dialog">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Fallback\manuallySetLocale.dialog">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="lg\inject.lg">
