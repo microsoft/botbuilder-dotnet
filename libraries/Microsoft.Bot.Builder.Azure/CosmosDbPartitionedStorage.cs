@@ -8,7 +8,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Bot.Builder.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -239,9 +238,9 @@ namespace Microsoft.Bot.Builder.Azure
                     // if Cosmos returns an error first.
                     // This way, the nesting limit is not imposed on the Bot Framework side
                     // and no exception will be thrown if the limit is eventually changed on the Cosmos side.
-                    if (GetNestingErrorMessage(json) is string message)
+                    if (IsNestingError(json, out var message))
                     {
-                        throw new BotStateException(message, ex);
+                        throw new InvalidOperationException(message, ex);
                     }
 
                     throw;
@@ -400,7 +399,7 @@ namespace Microsoft.Bot.Builder.Azure
             _container = containerResponse.Container;
         }
 
-        private string GetNestingErrorMessage(JObject json)
+        private bool IsNestingError(JObject json, out string errorMessage)
         {
             using var reader = new JTokenReader(json);
 
@@ -408,24 +407,26 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 if (reader.Depth > MaxDepthAllowed)
                 {
-                    var errorMessage = $"Maximum nesting depth of {MaxDepthAllowed} exceeded.";
+                    errorMessage = $"Maximum nesting depth of {MaxDepthAllowed} exceeded.";
 
                     if (IsInDialogState(json.SelectToken(reader.Path)))
                     {
                         errorMessage += " This is most likely caused by recursive component dialogs."
                             + " Try reworking your dialog code to make sure it does not keep dialogs on the stack that it's not using."
-                            + " For example, consider using ReplaceDialogAsync instead of BeginDialogAsync in some cases.";
+                            + " For example, consider using ReplaceDialogAsync instead of BeginDialogAsync.";
                     }
                     else
                     {
                         errorMessage += " Please check your data for signs of unintended recursion.";
                     }
 
-                    return errorMessage;
+                    return true;
                 }
             }
 
-            return null;
+            errorMessage = null;
+
+            return false;
         }
 
         private bool IsInDialogState(JToken jToken) => jToken

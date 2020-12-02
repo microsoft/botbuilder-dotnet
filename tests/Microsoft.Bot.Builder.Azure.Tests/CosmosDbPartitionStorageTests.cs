@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Exceptions;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -306,7 +305,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Should either not throw or throw a special exception
                 await TestNestAsync(128);
             }
-            catch (BotStateException ex)
+            catch (InvalidOperationException ex)
             {
                 // If the nesting limit is changed on the Cosmos side
                 // then this assertion won't be reached, which is okay
@@ -363,7 +362,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Should either not throw or throw a special exception
                 await TestDialogNestAsync(24);
             }
-            catch (BotStateException ex)
+            catch (InvalidOperationException ex)
             {
                 // If the nesting limit is changed on the Cosmos side
                 // then this assertion won't be reached, which is okay
