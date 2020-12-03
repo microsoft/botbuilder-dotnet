@@ -28,14 +28,19 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets ID of the Activity (if sent).</summary>
+        /// <value>The activity ID.</value>
         [JsonProperty(PropertyName = "activityId")]
         public string ActivityId { get; set; }
 
         /// <summary>Gets or sets service endpoint where operations concerning the conversation may be performed.</summary>
+        /// <value>The service URL.</value>
         [JsonProperty(PropertyName = "serviceUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string ServiceUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>Gets or sets id of the resource.</summary>
+        /// <value>The resource ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 

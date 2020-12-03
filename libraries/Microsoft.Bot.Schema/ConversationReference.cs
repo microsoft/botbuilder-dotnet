@@ -85,7 +85,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>Gets or sets (Optional) Service endpoint where operations concerning the referenced conversation may be performed.</summary>
         /// <value>The service URL.</value>
         [JsonProperty(PropertyName = "serviceUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string ServiceUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
         partial void CustomInit();
