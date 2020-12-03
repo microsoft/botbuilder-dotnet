@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets error message.
         /// </summary>
+        /// <value>The error.</value>
         [JsonProperty(PropertyName = "error")]
         public Error Error { get; set; }
 

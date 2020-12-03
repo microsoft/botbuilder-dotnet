@@ -32,14 +32,17 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>Gets or sets error code.</summary>
+        /// <value>The error code.</value>
         [JsonProperty(PropertyName = "code")]
         public string Code { get; set; }
 
         /// <summary>Gets or sets error message.</summary>
+        /// <value>The error message.</value>
         [JsonProperty(PropertyName = "message")]
         public string Message { get; set; }
 
         /// <summary>Gets or sets error from inner http call.</summary>
+        /// <value>The error from the inner HTTP call.</value>
         [JsonProperty(PropertyName = "innerHttpError")]
         public InnerHttpError InnerHttpError { get; set; }
 

@@ -30,7 +30,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>Gets or sets URL thumbnail image for major content property.</summary>
         /// <value>The URL of the thumbnail.</value>
         [JsonProperty(PropertyName = "url")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>Gets or sets image description intended for screen readers.</summary>
         /// <value>The image description intended for screen readers.</value>

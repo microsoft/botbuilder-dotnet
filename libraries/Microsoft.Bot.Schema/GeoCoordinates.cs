@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets elevation of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System).
         /// </summary>
+        /// <value>The elevation of the location.</value>
         [JsonProperty(PropertyName = "elevation")]
         public double? Elevation { get; set; }
 
@@ -51,6 +52,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets latitude of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System).
         /// </summary>
+        /// <value>The lattitude of the location.</value>
         [JsonProperty(PropertyName = "latitude")]
         public double? Latitude { get; set; }
 
@@ -58,12 +60,14 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets longitude of the location [WGS
         /// 84](https://en.wikipedia.org/wiki/World_Geodetic_System).
         /// </summary>
+        /// <value>The longitude of the location.</value>
         [JsonProperty(PropertyName = "longitude")]
         public double? Longitude { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing.
         /// </summary>
+        /// <value>The name of the location.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 

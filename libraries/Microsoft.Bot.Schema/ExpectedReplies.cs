@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets a collection of Activities that conforms to the
         /// ExpectedReplies schema.
         /// </summary>
+        /// <value>The collection of activities that conforms to the ExpectedREplies schema.</value>
         [JsonProperty(PropertyName = "activities")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<Activity> Activities { get; set; }

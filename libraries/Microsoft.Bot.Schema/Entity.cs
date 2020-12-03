@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets type of this entity (RFC 3987 IRI).
         /// </summary>
+        /// <value>The type of this entity.</value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 

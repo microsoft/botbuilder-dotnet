@@ -37,12 +37,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets the key for this Fact.
         /// </summary>
+        /// <value>The key for this fact.</value>
         [JsonProperty(PropertyName = "key")]
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the value for this Fact.
         /// </summary>
+        /// <value>The value for this Fact.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
