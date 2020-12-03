@@ -39,14 +39,14 @@ steps:
       $FileContent[0] = $FileContent[0] + " compared against [version $(ApiCompatVersion)](https://www.nuget.org/packages/$(BotBuilderDll)/$(ApiCompatVersion))"
         
       if ($FileContent.Length -eq 1) {
-        [system.io.file]::WriteAllText($fileName,$FileContent)
+        [system.io.file]::WriteAllText($FileName,$FileContent)
       } else {
-        Set-Content $fileName $FileContent
+        Set-Content $FileName $FileContent
       }
 
       Write-Host "The updated line 1: `n$FileContent[0]"
     } else {
-      $FileContent = The binary compatibility report for library '$(BotBuilderDll)' wasn't generated. This may have happened because the NuGet library '$(BotBuilderDll)' for version '$(ApiCompatVersion)' was unavailable or a connectivity issue.
+      $FileContent = "The binary compatibility report for library '$(BotBuilderDll)' wasn't generated. This may have happened because the NuGet library '$(BotBuilderDll)' for version '$(ApiCompatVersion)' was unavailable or a connectivity issue."
       New-Item -Path '$(Build.ArtifactStagingDirectory)' -Name '$(BotBuilderDll).$(ApiCompatVersion).CompatResults.txt' -ItemType "file" -Value $FileContent
     }
   displayName: 'Insert nuget link into ApiCompat results file.'

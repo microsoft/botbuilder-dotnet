@@ -52,6 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public void ShouldNotThrowWhenLocaleIsNull() => MapToNearestLanguage(null);
+
+        [Fact]
         public void ShouldReturnAllSupportedCultures()
         {
             var expected = new PromptCultureModel[]

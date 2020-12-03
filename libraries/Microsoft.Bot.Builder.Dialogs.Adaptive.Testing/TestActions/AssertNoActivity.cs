@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
         {
             if (adapter.ActiveQueue.Count > 0)
             {
-                throw new Exception($"{GetConditionDescription()}");
+                throw new ArgumentException($"{GetConditionDescription()}");
             }
 
             return Task.CompletedTask;

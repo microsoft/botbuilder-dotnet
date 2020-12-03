@@ -1,0 +1,65 @@
+name: create-botbuilder-js-parity-issue.yml
+
+on:
+  pull_request:
+    branches:
+    - main
+    types: [closed]
+
+jobs:
+  encode:
+    name: encode inputs
+    runs-on: ubuntu-latest
+
+    outputs:
+      pr-body: ${{ steps.pr-body.outputs.value }}
+      pr-number: ${{ steps.pr-number.outputs.value }}
+      pr-title: ${{ steps.pr-title.outputs.value }}
+      repository: ${{ steps.repository.outputs.value }}
+
+    steps:
+      - id: pr-body
+        if: github.event.pull_request.merged == true
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.event.pull_request.body }}
+
+      - id: pr-number
+        if: github.event.pull_request.merged == true
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.event.pull_request.number }}
+
+      - id: pr-title
+        if: github.event.pull_request.merged == true
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.event.pull_request.title }}
+
+      - id: repository
+        if: github.event.pull_request.merged == true
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.repository }}
+
+  dispatchWorkflow:
+    name: create parity issue for botbuilder-js
+    runs-on: ubuntu-latest
+    needs: encode
+
+    steps:
+      - uses: joshgummersall/dispatch-workflow@main
+        if: github.event.pull_request.merged == true
+        with:
+          encoded: "true"
+          inputs: |
+            {
+              "prDescription": "${{ needs.encode.outputs.pr-body }}",
+              "prNumber": "${{ needs.encode.outputs.pr-number }}",
+              "prTitle": "${{ needs.encode.outputs.pr-title }}",
+              "sourceRepo": "${{ needs.encode.outputs.repository }}"
+            }
+          ref: main
+          repo: microsoft/botbuilder-js
+          token: "${{ secrets.BOTBUILDER_JS_ACCESS_TOKEN }}"
+          workflow: create-parity-issue.yml
