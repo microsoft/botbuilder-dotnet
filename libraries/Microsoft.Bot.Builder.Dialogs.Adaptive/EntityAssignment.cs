@@ -62,6 +62,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public uint RaisedCount { get; set; } = 0;
 
         /// <summary>
+        /// Gets or sets the expected properties when assignment was made.
+        /// </summary>
+        /// <value>
+        /// Expected properties.
+        /// </value>
+        [JsonProperty("expectedProperties")]
+        public IReadOnlyCollection<string> ExpectedProperties { get; set; }
+
+        /// <summary>
         /// Gets the alternative entity assignments.
         /// </summary>
         /// <value>
@@ -77,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     yield return current;
                     current = current.Alternative;
-                } 
+                }
                 while (current != null);
             }
         }
