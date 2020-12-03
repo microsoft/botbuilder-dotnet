@@ -51,15 +51,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public string SnapshotPath { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity recognizers.
+        /// Gets or sets an external entity recognizer.
         /// </summary>
-        /// <value>
-        /// The entity recognizers.
-        /// </value>
-        [JsonProperty("entityRecognizers")]
-#pragma warning disable CA2227 // Collection properties should be read only (keeping this consistent with RegexRecognizer)
-        public List<EntityRecognizer> EntityRecognizers { get; set; } = new List<EntityRecognizer>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        /// <remarks>This recognizer is run before calling Orchestrator and the entities are merged with Orchestrator results.</remarks>
+        /// <value>Recognizer.</value>
+        [JsonProperty("externalEntityRecognizer")]
+        public Recognizer ExternalEntityRecognizer { get; set; }
 
         /// <summary>
         /// Gets or sets the disambiguation score threshold.
@@ -89,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 ModelPath = this.ModelPath,
                 SnapshotPath = this.SnapshotPath,
                 DisambiguationScoreThreshold = this.DisambiguationScoreThreshold,
-                EntityRecognizers = this.EntityRecognizers,
+                ExternalEntityRecognizer = this.ExternalEntityRecognizer,
             };
 
             var dc = new DialogContext(new DialogSet(), turnContext, new DialogState());
