@@ -37,25 +37,29 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Gets or sets text for signin request.
+        /// Gets or sets text for sign-in request.
         /// </summary>
+        /// <value>The text for sign-in request.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the registered connection.
         /// </summary>
+        /// <value>The connection name.</value>
         [JsonProperty(PropertyName = "connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
         /// Gets or sets the resource to try to perform token exchange with.
         /// </summary>
+        /// <value>The resource to try to perform token exchange with.</value>
         public TokenExchangeResource TokenExchangeResource { get; set; }
 
         /// <summary>
         /// Gets or sets action to use to perform signin.
         /// </summary>
+        /// <value>The actions used to perform sign-in.</value>
         [JsonProperty(PropertyName = "buttons")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Buttons { get; set; }

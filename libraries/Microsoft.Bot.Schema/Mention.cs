@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets the mentioned user.
         /// </summary>
+        /// <value>The mentioned user.</value>
         [JsonProperty(PropertyName = "mentioned")]
         public ChannelAccount Mentioned { get; set; }
 
@@ -44,6 +45,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets sub Text which represents the mention (can be null or
         /// empty).
         /// </summary>
+        /// <value>The sub text with represents the mention.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 

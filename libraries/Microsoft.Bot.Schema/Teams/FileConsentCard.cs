@@ -43,12 +43,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets file description.
         /// </summary>
+        /// <value>The file description.</value>
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets size of the file to be uploaded in Bytes.
         /// </summary>
+        /// <value>The size of the file to be uploaded in bytes.</value>
         [JsonProperty(PropertyName = "sizeInBytes")]
         public long? SizeInBytes { get; set; }
 
@@ -57,6 +59,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// upload. This is free flow schema and is sent back in Value field of
         /// Activity.
         /// </summary>
+        /// <value>The context to send back if user consented to upload.</value>
         [JsonProperty(PropertyName = "acceptContext")]
         public object AcceptContext { get; set; }
 
@@ -64,11 +67,12 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets context sent back to the Bot if user declined. This is
         /// free flow schema and is sent back in Value field of Activity.
         /// </summary>
+        /// <value>The context to send back to the Bot if user declined.</value>
         [JsonProperty(PropertyName = "declineContext")]
         public object DeclineContext { get; set; }
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults
+        /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
     }

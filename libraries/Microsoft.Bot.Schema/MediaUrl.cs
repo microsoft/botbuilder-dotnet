@@ -35,13 +35,17 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets url for the media.
         /// </summary>
+        /// <value>The URL for the media.</value>
         [JsonProperty(PropertyName = "url")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets optional profile hint to the client to differentiate
         /// multiple MediaUrl objects from each other.
         /// </summary>
+        /// <value>The profile hint.</value>
         [JsonProperty(PropertyName = "profile")]
         public string Profile { get; set; }
 

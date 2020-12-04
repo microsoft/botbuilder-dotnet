@@ -38,8 +38,9 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Gets or sets microsoft Pay Merchant ID.
+        /// Gets or sets Microsoft Pay Merchant ID.
         /// </summary>
+        /// <value>The Microsoft Pay Merchant ID.</value>
         [JsonProperty(PropertyName = "merchantId")]
         public string MerchantId { get; set; }
 
@@ -47,6 +48,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets supported payment networks (e.g., "visa" and
         /// "mastercard").
         /// </summary>
+        /// <value>The supported payment networks.</value>
         [JsonProperty(PropertyName = "supportedNetworks")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedNetworks { get; set; }
@@ -55,6 +57,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets supported payment types (e.g., "credit").
         /// </summary>
+        /// <value>The supported payment types.</value>
         [JsonProperty(PropertyName = "supportedTypes")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedTypes { get; set; }

@@ -37,18 +37,21 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets a currency identifier.
         /// </summary>
+        /// <value>The currency.</value>
         [JsonProperty(PropertyName = "currency")]
         public string Currency { get; set; }
 
         /// <summary>
         /// Gets or sets decimal monetary value.
         /// </summary>
+        /// <value>The decimal monetary value.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
         /// <summary>
         /// Gets or sets currency system.
         /// </summary>
+        /// <value>The currency system.</value>
         [JsonProperty(PropertyName = "currencySystem")]
         public string CurrencySystem { get; set; }
 

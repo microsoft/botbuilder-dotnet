@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets contains a sequence of payment method identifiers.
         /// </summary>
+        /// <value>The supported method identifiers.</value>
         [JsonProperty(PropertyName = "supportedMethods")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> SupportedMethods { get; set; }
@@ -59,6 +60,7 @@ namespace Microsoft.Bot.Schema
         /// PaymentDetails dictionary for the payment method identifiers in the
         /// supportedMethods field.
         /// </summary>
+        /// <value>The total.</value>
         [JsonProperty(PropertyName = "total")]
         public PaymentItem Total { get; set; }
 
@@ -67,6 +69,7 @@ namespace Microsoft.Bot.Schema
         /// the displayItems field in the PaymentDetails dictionary for the
         /// payment method identifiers in the supportedMethods field.
         /// </summary>
+        /// <value>The additional display items that are appended to the displayItems field in PaymentDetails.</value>
         [JsonProperty(PropertyName = "additionalDisplayItems")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentItem> AdditionalDisplayItems { get; set; }
@@ -76,6 +79,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets a JSON-serializable object that provides optional
         /// information that might be needed by the supported payment methods.
         /// </summary>
+        /// <value>The JSON-serializable object that provides optional information.</value>
         [JsonProperty(PropertyName = "data")]
         public object Data { get; set; }
 

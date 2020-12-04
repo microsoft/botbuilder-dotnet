@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets message reaction type. Possible values include:
         /// 'like', 'plusOne'.
         /// </summary>
+        /// <value>The message reaction type.</value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 

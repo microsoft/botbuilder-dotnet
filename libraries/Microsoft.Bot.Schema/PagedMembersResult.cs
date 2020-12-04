@@ -36,12 +36,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets paging token.
         /// </summary>
+        /// <value>The continuation token that can be used to get paged results.</value>
         [JsonProperty(PropertyName = "continuationToken")]
         public string ContinuationToken { get; set; }
 
         /// <summary>
         /// Gets or sets the Channel Accounts.
         /// </summary>
+        /// <value>The Channel Accounts.</value>
         [JsonProperty(PropertyName = "members")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<ChannelAccount> Members { get; set; }

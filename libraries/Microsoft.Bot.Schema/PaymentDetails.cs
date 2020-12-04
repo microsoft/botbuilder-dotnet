@@ -46,6 +46,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets contains the total amount of the payment request.
         /// </summary>
+        /// <value>The total amount of the payment request.</value>
         [JsonProperty(PropertyName = "total")]
         public PaymentItem Total { get; set; }
 
@@ -53,6 +54,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets contains line items for the payment request that the
         /// user agent may display.
         /// </summary>
+        /// <value>The items for the payment request.</value>
         [JsonProperty(PropertyName = "displayItems")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentItem> DisplayItems { get; set; }
@@ -62,6 +64,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets a sequence containing the different shipping options
         /// for the user to choose from.
         /// </summary>
+        /// <value>The the different shipping options for the user to choose from.</value>
         [JsonProperty(PropertyName = "shippingOptions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentShippingOption> ShippingOptions { get; set; }
@@ -71,6 +74,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets contains modifiers for particular payment method
         /// identifiers.
         /// </summary>
+        /// <value>The modifiers for a particular payment method.</value>
         [JsonProperty(PropertyName = "modifiers")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<PaymentDetailsModifier> Modifiers { get; set; }
@@ -79,6 +83,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets error description.
         /// </summary>
+        /// <value>The error description.</value>
         [JsonProperty(PropertyName = "error")]
         public string Error { get; set; }
 

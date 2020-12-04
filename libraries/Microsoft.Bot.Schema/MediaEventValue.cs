@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets callback parameter specified in the Value field of the
         /// MediaCard that originated this event.
         /// </summary>
+        /// <value>The callback parameter specifid in the Value field of the MediaCard that originated this event.</value>
         [JsonProperty(PropertyName = "cardValue")]
         public object CardValue { get; set; }
 

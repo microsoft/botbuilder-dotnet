@@ -36,12 +36,16 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets URL pointing to the thumbnail to use for media content.
         /// </summary>
+        /// <value>The URL pointing to the thumbnail to use for media content.</value>
         [JsonProperty(PropertyName = "url")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets HTML alt text to include on this thumbnail image.
         /// </summary>
+        /// <value>The HTML alt text to include on this thumbnail image.</value>
         [JsonProperty(PropertyName = "alt")]
         public string Alt { get; set; }
 

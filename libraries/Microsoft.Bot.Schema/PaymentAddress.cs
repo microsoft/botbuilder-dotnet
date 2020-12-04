@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets this is the CLDR (Common Locale Data Repository)
         /// region code. For example, US, GB, CN, or JP.
         /// </summary>
+        /// <value>The country by CLDR region code.</value>
         [JsonProperty(PropertyName = "country")]
         public string Country { get; set; }
 
@@ -80,6 +81,7 @@ namespace Microsoft.Bot.Schema
         /// number, a rural delivery route, descriptive instructions, or a post
         /// office box number.
         /// </summary>
+        /// <value>The most specific part of the address.</value>
         [JsonProperty(PropertyName = "addressLine")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat)
         public IList<string> AddressLine { get; set; }
@@ -90,12 +92,14 @@ namespace Microsoft.Bot.Schema
         /// the country. For example, this can be a state, a province, an
         /// oblast, or a prefecture.
         /// </summary>
+        /// <value>The region. This is the top level administrative subdivision of the country. (e.g. state, province, etc.)</value>
         [JsonProperty(PropertyName = "region")]
         public string Region { get; set; }
 
         /// <summary>
         /// Gets or sets this is the city/town portion of the address.
         /// </summary>
+        /// <value>The city or town.</value>
         [JsonProperty(PropertyName = "city")]
         public string City { get; set; }
 
@@ -104,6 +108,7 @@ namespace Microsoft.Bot.Schema
         /// city. For example, used for neighborhoods, boroughs, districts, or
         /// UK dependent localities.
         /// </summary>
+        /// <value>The dependent locality or sublocality within a city.</value>
         [JsonProperty(PropertyName = "dependentLocality")]
         public string DependentLocality { get; set; }
 
@@ -111,6 +116,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets this is the postal code or ZIP code, also known as PIN
         /// code in India.
         /// </summary>
+        /// <value>The postal code or ZIP code.</value>
         [JsonProperty(PropertyName = "postalCode")]
         public string PostalCode { get; set; }
 
@@ -118,6 +124,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets this is the sorting code as used in, for example,
         /// France.
         /// </summary>
+        /// <value>The sorting code.</value>
         [JsonProperty(PropertyName = "sortingCode")]
         public string SortingCode { get; set; }
 
@@ -126,6 +133,7 @@ namespace Microsoft.Bot.Schema
         /// used to determine the field separators and the order of fields when
         /// formatting the address for display.
         /// </summary>
+        /// <value>The BCP-47 language code for the address.</value>
         [JsonProperty(PropertyName = "languageCode")]
         public string LanguageCode { get; set; }
 
@@ -133,12 +141,14 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets this is the organization, firm, company, or
         /// institution at this address.
         /// </summary>
+        /// <value>The organization, firm, company, or institution at the address.</value>
         [JsonProperty(PropertyName = "organization")]
         public string Organization { get; set; }
 
         /// <summary>
         /// Gets or sets this is the name of the recipient or contact person.
         /// </summary>
+        /// <value>The recipient or contact person.</value>
         [JsonProperty(PropertyName = "recipient")]
         public string Recipient { get; set; }
 
@@ -146,6 +156,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets this is the phone number of the recipient or contact
         /// person.
         /// </summary>
+        /// <value>The phone number of the recipient or contact person.</value>
         [JsonProperty(PropertyName = "phone")]
         public string Phone { get; set; }
 

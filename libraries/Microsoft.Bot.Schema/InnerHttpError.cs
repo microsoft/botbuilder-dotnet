@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets httpStatusCode from failed request.
         /// </summary>
+        /// <value>The status code of the HTTP request.</value>
         [JsonProperty(PropertyName = "statusCode")]
         public int? StatusCode { get; set; }
 
         /// <summary>
         /// Gets or sets body from failed request.
         /// </summary>
+        /// <value>The body from failed request.</value>
         [JsonProperty(PropertyName = "body")]
         public object Body { get; set; }
 
