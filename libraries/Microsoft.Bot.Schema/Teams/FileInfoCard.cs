@@ -36,18 +36,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets unique Id for the file.
         /// </summary>
+        /// <value>The unique ID for the file.</value>
         [JsonProperty(PropertyName = "uniqueId")]
         public string UniqueId { get; set; }
 
         /// <summary>
         /// Gets or sets type of file.
         /// </summary>
+        /// <value>The type of file.</value>
         [JsonProperty(PropertyName = "fileType")]
         public string FileType { get; set; }
 
         /// <summary>
         /// Gets or sets eTag for the file.
         /// </summary>
+        /// <value>The eTag for the file.</value>
         [JsonProperty(PropertyName = "etag")]
         public object Etag { get; set; }
 
