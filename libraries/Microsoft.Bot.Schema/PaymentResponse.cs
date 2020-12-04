@@ -59,8 +59,9 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>
         /// Gets or sets the payment method identifier for the payment method
-        /// that the user selected to fulfil the transaction.
+        /// that the user selected to fulfill the transaction.
         /// </summary>
+        /// <value>The payment method identifier.</value>
         [JsonProperty(PropertyName = "methodName")]
         public string MethodName { get; set; }
 
@@ -69,6 +70,7 @@ namespace Microsoft.Bot.Schema
         /// method specific message used by the merchant to process the
         /// transaction and determine successful fund transfer.
         /// </summary>
+        /// <value>The JSON-serializable data object that provides additional information to process the transaction.</value>
         [JsonProperty(PropertyName = "details")]
         public object Details { get; set; }
 
@@ -78,6 +80,7 @@ namespace Microsoft.Bot.Schema
         /// shippingAddress will be the full and final shipping address chosen
         /// by the user.
         /// </summary>
+        /// <value>The final shipping address chosen by the user.</value>
         [JsonProperty(PropertyName = "shippingAddress")]
         public PaymentAddress ShippingAddress { get; set; }
 
@@ -87,6 +90,7 @@ namespace Microsoft.Bot.Schema
         /// shippingOption will be the id attribute of the selected shipping
         /// option.
         /// </summary>
+        /// <value>The shipping option ID.</value>
         [JsonProperty(PropertyName = "shippingOption")]
         public string ShippingOption { get; set; }
 
@@ -95,6 +99,7 @@ namespace Microsoft.Bot.Schema
         /// PaymentOptions passed to the PaymentRequest constructor, then
         /// payerEmail will be the email address chosen by the user.
         /// </summary>
+        /// <value>The payer email chosen by the user..</value>
         [JsonProperty(PropertyName = "payerEmail")]
         public string PayerEmail { get; set; }
 
@@ -103,6 +108,7 @@ namespace Microsoft.Bot.Schema
         /// PaymentOptions passed to the PaymentRequest constructor, then
         /// payerPhone will be the phone number chosen by the user.
         /// </summary>
+        /// <value>The payer phone number chosen by the user.</value>
         [JsonProperty(PropertyName = "payerPhone")]
         public string PayerPhone { get; set; }
 

@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets update payment details.
         /// </summary>
+        /// <value>The update payment details.</value>
         [JsonProperty(PropertyName = "details")]
         public PaymentDetails Details { get; set; }
 

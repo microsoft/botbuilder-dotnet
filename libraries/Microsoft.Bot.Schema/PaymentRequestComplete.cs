@@ -38,18 +38,21 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets payment request ID.
         /// </summary>
+        /// <value>The payment request ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets initial payment request.
         /// </summary>
+        /// <value>The initial payment request.</value>
         [JsonProperty(PropertyName = "paymentRequest")]
         public PaymentRequest PaymentRequest { get; set; }
 
         /// <summary>
         /// Gets or sets corresponding payment response.
         /// </summary>
+        /// <value>The payment reesponse.</value>
         [JsonProperty(PropertyName = "paymentResponse")]
         public PaymentResponse PaymentResponse { get; set; }
 

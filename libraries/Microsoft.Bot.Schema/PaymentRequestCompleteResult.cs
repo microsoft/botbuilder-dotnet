@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets result of the payment request completion.
         /// </summary>
+        /// <value>The result of the payment request completion.</value>
         [JsonProperty(PropertyName = "result")]
         public string Result { get; set; }
 
