@@ -42,18 +42,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// values include: 'like', 'heart', 'laugh', 'surprised', 'sad',
         /// 'angry'.
         /// </summary>
+        /// <value>The reaction type given to the message.</value>
         [JsonProperty(PropertyName = "reactionType")]
         public string ReactionType { get; set; }
 
         /// <summary>
         /// Gets or sets timestamp of when the user reacted to the message.
         /// </summary>
+        /// <value>The timestamp of when the user reacted to the message.</value>
         [JsonProperty(PropertyName = "createdDateTime")]
         public string CreatedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets the user with which the reaction is associated.
         /// </summary>
+        /// <value>The user with which the reaction is associated.</value>
         [JsonProperty(PropertyName = "user")]
         public MessageActionsPayloadFrom User { get; set; }
 

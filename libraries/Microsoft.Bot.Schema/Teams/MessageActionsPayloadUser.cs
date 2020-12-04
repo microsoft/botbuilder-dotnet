@@ -41,18 +41,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// include: 'aadUser', 'onPremiseAadUser', 'anonymousGuest',
         /// 'federatedUser'.
         /// </summary>
+        /// <value>The identity type of the user.</value>
         [JsonProperty(PropertyName = "userIdentityType")]
         public string UserIdentityType { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the user.
         /// </summary>
+        /// <value>The user ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the user.
         /// </summary>
+        /// <value>The plaintext display name of the user.</value>
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
 
