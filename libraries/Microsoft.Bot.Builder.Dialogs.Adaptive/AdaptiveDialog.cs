@@ -1582,8 +1582,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (candidate.Operation == AdaptiveEvents.ChooseEntity)
                 {
                     // Property has resolution so remove entity ambiguity
-                    existing.Dequeue(actionContext);
-                    candidate.Operation = DefaultOperation(candidate, askDefaultOp, defaultOp);
+                    var entityChoices = existing.Dequeue(actionContext);
+                    candidate.Operation = entityChoices.Operation;
+                    if (candidate.Entity.Value is JArray values && values.Count > 1)
+                    {
+                        // Resolve ambiguous response to one of the original choices
+                        var originalChoices = entityChoices.Entity.Value as JArray;
+                        var intersection = values.Intersect(originalChoices);
+                        if (intersection.Any())
+                        {
+                            candidate.Entity.Value = intersection;
+                        }
+                    }
                 }
                 else if (candidate.Operation == AdaptiveEvents.ChooseProperty)
                 {
