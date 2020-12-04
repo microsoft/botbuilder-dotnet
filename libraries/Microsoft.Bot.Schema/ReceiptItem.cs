@@ -45,8 +45,9 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Gets or sets title of the Card.
+        /// Gets or sets title of the card.
         /// </summary>
+        /// <value>The title of the card.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
@@ -54,6 +55,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets subtitle appears just below Title field, differs from
         /// Title in font styling only.
         /// </summary>
+        /// <value>The subtitle of the card.</value>
         [JsonProperty(PropertyName = "subtitle")]
         public string Subtitle { get; set; }
 
@@ -61,24 +63,28 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets text field appears just below subtitle, differs from
         /// Subtitle in font styling only.
         /// </summary>
+        /// <value>The text field of the card that appears just below the subtitle.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets image.
         /// </summary>
+        /// <value>The image.</value>
         [JsonProperty(PropertyName = "image")]
         public CardImage Image { get; set; }
 
         /// <summary>
         /// Gets or sets amount with currency.
         /// </summary>
+        /// <value>The price.</value>
         [JsonProperty(PropertyName = "price")]
         public string Price { get; set; }
 
         /// <summary>
         /// Gets or sets number of items of given kind.
         /// </summary>
+        /// <value>The number of items of a given kind.</value>
         [JsonProperty(PropertyName = "quantity")]
         public string Quantity { get; set; }
 
@@ -86,6 +92,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets this action will be activated when user taps on the
         /// Item bubble.
         /// </summary>
+        /// <value>The action that will activate when the user taps on the Item bubble.</value>
         [JsonProperty(PropertyName = "tap")]
         public CardAction Tap { get; set; }
 

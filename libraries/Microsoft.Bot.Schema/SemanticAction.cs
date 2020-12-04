@@ -36,12 +36,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets ID of this action.
         /// </summary>
+        /// <value>The ID of this action card.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets entities associated with this action.
         /// </summary>
+        /// <value>The entities associated with this action.</value>
         [JsonProperty(PropertyName = "entities")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IDictionary<string, Entity> Entities { get; set; }
@@ -51,6 +53,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets state of this action. Allowed values: `start`,
         /// `continue`, `done`.
         /// </summary>
+        /// <value>The state of this action.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
 

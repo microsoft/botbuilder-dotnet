@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets id of the resource.
         /// </summary>
+        /// <value>The ID of the resource.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
