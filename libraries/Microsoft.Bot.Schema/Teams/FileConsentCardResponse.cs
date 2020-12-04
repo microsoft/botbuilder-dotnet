@@ -41,12 +41,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the action the user took. Possible values include:
         /// 'accept', 'decline'.
         /// </summary>
+        /// <value>The action the user took.</value>
         [JsonProperty(PropertyName = "action")]
         public string Action { get; set; }
 
         /// <summary>
         /// Gets or sets the context associated with the action.
         /// </summary>
+        /// <value>The context associated with the action.</value>
         [JsonProperty(PropertyName = "context")]
         public object Context { get; set; }
 
@@ -54,6 +56,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets if the user accepted the file, contains information
         /// about the file to be uploaded.
         /// </summary>
+        /// <value>The information about the file to be uploaded.</value>
         [JsonProperty(PropertyName = "uploadInfo")]
         public FileUploadInfo UploadInfo { get; set; }
 

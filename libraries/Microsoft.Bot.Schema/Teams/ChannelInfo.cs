@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets unique identifier representing a channel.
         /// </summary>
+        /// <value>The channel ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets name of the channel.
         /// </summary>
+        /// <value>The channel name.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
