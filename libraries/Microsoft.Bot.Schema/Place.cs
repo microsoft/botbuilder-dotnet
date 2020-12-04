@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets address of the place (may be `string` or complex
         /// object of type `PostalAddress`).
         /// </summary>
+        /// <value>The address of the place.</value>
         [JsonProperty(PropertyName = "address")]
         public object Address { get; set; }
 
@@ -51,6 +52,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets geo coordinates of the place (may be complex object of
         /// type `GeoCoordinates` or `GeoShape`).
         /// </summary>
+        /// <value>The geo coordinates of the place.</value>
         [JsonProperty(PropertyName = "geo")]
         public object Geo { get; set; }
 
@@ -58,12 +60,14 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets map to the place (may be `string` (URL) or complex
         /// object of type `Map`).
         /// </summary>
+        /// <value>The map to the place.</value>
         [JsonProperty(PropertyName = "hasMap")]
         public object HasMap { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing.
         /// </summary>
+        /// <value>The name of the thing.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
