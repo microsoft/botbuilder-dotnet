@@ -10,6 +10,7 @@ jobs:
   encode:
     name: encode inputs
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
 
     outputs:
       pr-body: ${{ steps.pr-body.outputs.value }}
@@ -19,37 +20,39 @@ jobs:
 
     steps:
       - id: pr-body
-        if: github.event.pull_request.merged == true
         uses: joshgummersall/base64-encode@main
         with:
           value: ${{ github.event.pull_request.body }}
 
       - id: pr-number
-        if: github.event.pull_request.merged == true
         uses: joshgummersall/base64-encode@main
         with:
           value: ${{ github.event.pull_request.number }}
 
       - id: pr-title
-        if: github.event.pull_request.merged == true
         uses: joshgummersall/base64-encode@main
         with:
           value: ${{ github.event.pull_request.title }}
 
       - id: repository
-        if: github.event.pull_request.merged == true
         uses: joshgummersall/base64-encode@main
         with:
           value: ${{ github.repository }}
 
   dispatchWorkflow:
-    name: create parity issue for botbuilder-js
+    name: create parity issues
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     needs: encode
+
+    strategy:
+      matrix:
+        repo: [js, python, java]
 
     steps:
       - uses: joshgummersall/dispatch-workflow@main
-        if: github.event.pull_request.merged == true
+        if: |
+          contains(github.event.pull_request.labels.*.name, "Automation: No parity") == false || contains(github.event.pull_request.labels.*.name, format("Automation: parity with {0}", matrix.repo)) == true
         with:
           encoded: "true"
           inputs: |
@@ -60,6 +63,6 @@ jobs:
               "sourceRepo": "${{ needs.encode.outputs.repository }}"
             }
           ref: main
-          repo: microsoft/botbuilder-js
+          repo: microsoft/botbuilder-${{ matrix.repo }}
           token: "${{ secrets.BOTBUILDER_JS_ACCESS_TOKEN }}"
           workflow: create-parity-issue.yml
