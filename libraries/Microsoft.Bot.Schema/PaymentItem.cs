@@ -38,12 +38,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets human-readable description of the item.
         /// </summary>
+        /// <value>The human-readable label of the item.</value>
         [JsonProperty(PropertyName = "label")]
         public string Label { get; set; }
 
         /// <summary>
         /// Gets or sets monetary amount for the item.
         /// </summary>
+        /// <value>The amount for the item.</value>
         [JsonProperty(PropertyName = "amount")]
         public PaymentCurrencyAmount Amount { get; set; }
 
@@ -51,6 +53,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets when set to true this flag means that the amount field
         /// is not final.
         /// </summary>
+        /// <value>A boolean indicating that amount in field is pending (i.e. not final).</value>
         [JsonProperty(PropertyName = "pending")]
         public bool? Pending { get; set; }
 

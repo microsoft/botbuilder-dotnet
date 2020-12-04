@@ -53,6 +53,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets indicates whether the user agent should collect and
         /// return the payer's name as part of the payment request.
         /// </summary>
+        /// <value>Boolean indicating if user agent should collect and return payer's name.</value>
         [JsonProperty(PropertyName = "requestPayerName")]
         public bool? RequestPayerName { get; set; }
 
@@ -60,6 +61,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets indicates whether the user agent should collect and
         /// return the payer's email address as part of the payment request.
         /// </summary>
+        /// <value>Boolean indicating if user agent should collect and return payer's email address.</value>
         [JsonProperty(PropertyName = "requestPayerEmail")]
         public bool? RequestPayerEmail { get; set; }
 
@@ -67,6 +69,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets indicates whether the user agent should collect and
         /// return the payer's phone number as part of the payment request.
         /// </summary>
+        /// <value>Boolean indicating if user agent should collect and return payer's phone number.</value>
         [JsonProperty(PropertyName = "requestPayerPhone")]
         public bool? RequestPayerPhone { get; set; }
 
@@ -74,6 +77,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets indicates whether the user agent should collect and
         /// return a shipping address as part of the payment request.
         /// </summary>
+        /// <value>Boolean indicating if user agent should collect and return shipping address.</value>
         [JsonProperty(PropertyName = "requestShipping")]
         public bool? RequestShipping { get; set; }
 
@@ -82,6 +86,7 @@ namespace Microsoft.Bot.Schema
         /// shippingType field may be used to influence the way the user agent
         /// presents the user interface for gathering the shipping address.
         /// </summary>
+        /// <value>The shipping type.</value>
         [JsonProperty(PropertyName = "shippingType")]
         public string ShippingType { get; set; }
 
