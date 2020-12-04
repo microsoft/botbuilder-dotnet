@@ -41,18 +41,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// 'aadApplication', 'bot', 'tenantBot', 'office365Connector',
         /// 'webhook'.
         /// </summary>
+        /// <value>The type of application.</value>
         [JsonProperty(PropertyName = "applicationIdentityType")]
         public string ApplicationIdentityType { get; set; }
 
         /// <summary>
         /// Gets or sets the id of the application.
         /// </summary>
+        /// <value>The application ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the application.
         /// </summary>
+        /// <value>The plaintext display name of the application.</value>
         [JsonProperty(PropertyName = "displayName")]
         public string DisplayName { get; set; }
 

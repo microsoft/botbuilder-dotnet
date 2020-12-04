@@ -46,31 +46,38 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the id of the attachment.
         /// </summary>
+        /// <value>The attachment ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the attachment.
         /// </summary>
+        /// <value>The type of the attachment.</value>
         [JsonProperty(PropertyName = "contentType")]
         public string ContentType { get; set; }
 
         /// <summary>
-        /// Gets or sets the url of the attachment, in case of a external link.
+        /// Gets or sets the url of the attachment, in case of an external link.
         /// </summary>
+        /// <value>The URL of the attachment, in case of an external link.</value>
         [JsonProperty(PropertyName = "contentUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string ContentUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets the content of the attachment, in case of a code
         /// snippet, email, or file.
         /// </summary>
+        /// <value>The content of the attachment.</value>
         [JsonProperty(PropertyName = "content")]
         public object Content { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the attachment.
         /// </summary>
+        /// <value>The plaintext display name of the attachment.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
@@ -78,8 +85,11 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the url of a thumbnail image that might be embedded in
         /// the attachment, in case of a card.
         /// </summary>
+        /// <value>The URL of the thumbnail image that might be embedded in the attachment.</value>
         [JsonProperty(PropertyName = "thumbnailUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string ThumbnailUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
