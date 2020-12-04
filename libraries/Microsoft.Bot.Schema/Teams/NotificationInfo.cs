@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets true if notification is to be sent to the user, false
         /// otherwise.
         /// </summary>
+        /// <value>Boolean indicating if notification is sent to the user.</value>
         [JsonProperty(PropertyName = "alert")]
         public bool? Alert { get; set; }
 
@@ -41,12 +42,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the value indicating if a notification is to be shown to the user while in a meeting,
         /// false otherwise.
         /// </summary>
+        /// <value>Boolean indicating if a notification is to be shown to the user while in a meeting.</value>
         [JsonProperty(PropertyName = "alertInMeeting")]
         public bool? AlertInMeeting { get; set; }
 
         /// <summary>
-        /// Gets or sets the value of the notification's external resource url.
+        /// Gets or sets the value of the notification's external resource URL.
         /// </summary>
+        /// <value>The value of the notification's external resource URL.</value>
         [JsonProperty(PropertyName = "externalResourceUrl")]
         public string ExternalResourceUrl { get; set; }
 
