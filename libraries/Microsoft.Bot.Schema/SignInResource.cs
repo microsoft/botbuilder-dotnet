@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets the sign-in link.
         /// </summary>
+        /// <value>The sign-in link.</value>
         [JsonProperty(PropertyName = "signInLink")]
         public string SignInLink { get; set; }
 
         /// <summary>
-        /// Gets or sets additional properties that cna be used for token exchange operations.
+        /// Gets or sets additional properties that can be used for token exchange operations.
         /// </summary>
+        /// <value>The additional properties can be used for token exchange operations.</value>
         [JsonProperty(PropertyName = "tokenExchangeResource")]
         public TokenExchangeResource TokenExchangeResource { get; set; }
 

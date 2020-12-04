@@ -40,6 +40,7 @@ namespace Microsoft.Bot.Schema
         /// to.  These Ids are relative to the channelId and a subset of all
         /// recipients of the activity.
         /// </summary>
+        /// <value>The ID's of the recipients that the actions should be shown to.</value>
         [JsonProperty(PropertyName = "to")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<string> To { get; set; }
@@ -48,6 +49,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets actions that can be shown to the user.
         /// </summary>
+        /// <value>The actions that can be shown to the user.</value>
         [JsonProperty(PropertyName = "actions")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Actions { get; set; }
