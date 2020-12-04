@@ -41,6 +41,8 @@ variables:
   BuildConfiguration: 'debug'
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false -p:RunAnalyzersDuringBuild=false
   Parameters.solution: Microsoft.Bot.Builder.sln
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step  
+  skipComponentGovernanceDetection: true # Disables unnecessary Component Governanace Detection step 
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  FacebookTestBotAppId: define this in Azure
 #  FacebookTestBotAppSecret: define this in Azure
@@ -96,20 +98,40 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
 
-- task: AzureCLI@1
-  displayName: 'Create resources'
+- task: AzureCLI@2
+  displayName: 'Preexisting RG: create Azure resources. Runs in even builds.'
   inputs:
     azureSubscription: $(AzureSubscription)
+    scriptType: ps
     scriptLocation: inlineScript
     inlineScript: |
-     :: Comment out either Option 1 or Option 2 below. Ultimately, both templates should be exercised to ensure they continue to work.
+     Write-Host "`n***** Creating Azure resources using the preexisting-rg template *****";
+     Write-Host "This task runs for even-numbered builds. Build ID = $(Build.BuildId)";
+     Write-Host "************************************************************************";
+     Set-PSDebug -Trace 1;
+     az group create --location westus --name $(BotGroup);
      
-     :: Option 1: Use the "new-rg" template:
-     ::call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)"
+     # set up bot channels registration, app service, app service plan
+     az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(BotName)";
+     Set-PSDebug -Trace 0;
+  condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 0), endsWith(variables['Build.BuildId'], 2), endsWith(variables['Build.BuildId'], 4), endsWith(variables['Build.BuildId'], 6), endsWith(variables['Build.BuildId'], 8)))
+
+- task: AzureCLI@2
+  displayName: 'New RG: create Azure resources. Runs in odd builds.'
+  inputs:
+    azureSubscription: $(AzureSubscription)
+    scriptType: ps
+    scriptLocation: inlineScript
+    inlineScript: |
+     Write-Host "`n***** Creating Azure resources using the new-rg template *****";
+     Write-Host "This task runs for odd-numbered builds. Build ID = $(Build.BuildId)";
+     Write-Host "****************************************************************";
+     Set-PSDebug -Trace 1;
      
-     :: Option 2: Use the "preexisting-rg" template:
-     call az group create --location westus --name $(BotGroup)
-     call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)" --name "$(BotName)"
+     # set up resource group, bot channels registration, app service, app service plan
+     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" facebookVerifyToken="$(FacebookTestBotFacebookVerifyToken)" facebookAppSecret="$(FacebookTestBotFaceBookAppSecret)"  facebookAccessToken="$(FacebookTestBotFacebookAccessToken)";
+     Set-PSDebug -Trace 0;
+  condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
 
 - task: AzureCLI@1
   displayName: 'Deploy the bot'

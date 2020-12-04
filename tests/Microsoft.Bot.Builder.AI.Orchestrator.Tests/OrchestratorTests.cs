@@ -57,9 +57,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelPath = new StringExpression("fakePath"),
-                SnapshotPath = new StringExpression("fakePath")
+                SnapshotPath = new StringExpression("fakePath"),
+                ExternalEntityRecognizer = new NumberEntityRecognizer()
             };
-            recognizer.EntityRecognizers.Add(new NumberEntityRecognizer());
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
             var activity = MessageFactory.Text("12");

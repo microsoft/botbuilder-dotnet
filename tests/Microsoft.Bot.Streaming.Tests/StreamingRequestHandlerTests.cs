@@ -156,6 +156,28 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
+        public async void DoesNotThrowExceptionIfReceiveRequestHasNoActivity()
+        {
+            // Arrange
+            var handler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), Guid.NewGuid().ToString());
+            
+            var payload = new MemoryStream();
+            var fakeContentStreamId = Guid.NewGuid();
+            var fakeContentStream = new FakeContentStream(fakeContentStreamId, "application/json", payload);
+            var testRequest = new ReceiveRequest
+            {
+                Verb = "POST",
+            };
+            testRequest.Streams.Add(fakeContentStream);
+
+            // Act
+            var response = await handler.ProcessRequestAsync(testRequest);
+
+            // Assert
+            Assert.Equal(400, response.StatusCode);
+        }
+
+        [Fact]
         public async void RequestHandlerRemembersConversations()
         {
             // Arrange
@@ -302,7 +324,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Assert
             Assert.Matches(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
         }
-
+        
         public class FauxSock : WebSocket
         {
             public override WebSocketCloseStatus? CloseStatus => throw new NotImplementedException();

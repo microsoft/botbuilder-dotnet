@@ -80,6 +80,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public void TestInvokeResponse()
+        {
+            dynamic data = new JObject();
+            data.text = "textContent";
+            var lgResult = templates.Evaluate("InvokeResponseExample", data);
+            var activity = (Activity)ActivityFactory.FromObject(lgResult);
+            
+            Assert.Equal(ActivityTypesEx.InvokeResponse, activity.Type);
+            Assert.NotNull(activity.Value);
+            Assert.IsType<InvokeResponse>(activity.Value);
+            var invokeResponse = (InvokeResponse)activity.Value;
+            dynamic body = invokeResponse.Body;
+            Assert.Equal(200, invokeResponse.Status);
+            Assert.True((bool)body.test);
+        }
+
+        [Fact]
         public void TestExternalAdaptiveCardActivity()
         {
             dynamic data = new JObject();

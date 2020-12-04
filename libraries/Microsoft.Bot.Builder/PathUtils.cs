@@ -19,19 +19,19 @@ namespace Microsoft.Bot.Builder
         /// changing all `/` characters to `/`, and for Linux/Mac `\` to `/`.
         /// This allows author to use ../foo.lg or ..\foo.lg as equivalents for importing.
         /// </remarks>
-        /// <param name="ambigiousPath">authoredPath.</param>
+        /// <param name="ambiguousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
-        public static string NormalizePath(string ambigiousPath)
+        public static string NormalizePath(string ambiguousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Map Linux/Mac separator to Windows.
-                return ambigiousPath.Replace("/", "\\");
+                return ambiguousPath.Replace("/", "\\");
             }
             else
             {
                 // Map Windows separator to Linux/Mac.
-                return ambigiousPath.Replace("\\", "/");
+                return ambiguousPath.Replace("\\", "/");
             }
         }
     }
