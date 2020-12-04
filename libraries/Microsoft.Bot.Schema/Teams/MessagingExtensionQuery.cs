@@ -38,14 +38,16 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets id of the command assigned by Bot.
+        /// Gets or sets ID of the command assigned by Bot.
         /// </summary>
+        /// <value>The ID of the command assigned by the Bot.</value>
         [JsonProperty(PropertyName = "commandId")]
         public string CommandId { get; set; }
 
         /// <summary>
         /// Gets or sets parameters for the query.
         /// </summary>
+        /// <value>The parameters for the query.</value>
         [JsonProperty(PropertyName = "parameters")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionParameter> Parameters { get; set; }
@@ -54,6 +56,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the query options.
         /// </summary>
+        /// <value>The query options.</value>
         [JsonProperty(PropertyName = "queryOptions")]
         public MessagingExtensionQueryOptions QueryOptions { get; set; }
 
@@ -61,6 +64,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets state parameter passed back to the bot after
         /// authentication/configuration flow.
         /// </summary>
+        /// <value>The state parameter passed back to the bot after authentication/configuration flow.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
 

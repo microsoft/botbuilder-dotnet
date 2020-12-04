@@ -36,18 +36,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the JSON for the Adaptive card to appear in the task
         /// module.
         /// </summary>
+        /// <value>The JSON for the Adaptive card to appear in the task module.</value>
         [JsonProperty(PropertyName = "task")]
         public TaskModuleResponseBase Task { get; set; }
 
         /// <summary>
         /// Gets or sets the compose extension result.
         /// </summary>
+        /// <value>The compose extension result.</value>
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }
 
         /// <summary>
-        /// Gets or sets the CacheInfo for this MessagingExtensionActionResponse.
+        /// Gets or sets the <see cref="CacheInfo "/> for this <see cref="MessagingExtensionActionResponse"/>.
         /// </summary>
+        /// <value>The <see cref="CacheInfo "/> for this <see cref="MessagingExtensionActionResponse"/>.</value>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
 

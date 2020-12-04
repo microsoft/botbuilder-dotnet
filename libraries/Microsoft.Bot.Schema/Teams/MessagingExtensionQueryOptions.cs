@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets number of entities to skip.
         /// </summary>
+        /// <value>The number of entities to skip.</value>
         [JsonProperty(PropertyName = "skip")]
         public int? Skip { get; set; }
 
         /// <summary>
         /// Gets or sets number of entities to fetch.
         /// </summary>
+        /// <value>The number of entities to fetch.</value>
         [JsonProperty(PropertyName = "count")]
         public int? Count { get; set; }
 

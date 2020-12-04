@@ -48,6 +48,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets hint for how to deal with multiple attachments.
         /// Possible values include: 'list', 'grid'.
         /// </summary>
+        /// <value>The hint for how to deal with multiple attachments.</value>
         [JsonProperty(PropertyName = "attachmentLayout")]
         public string AttachmentLayout { get; set; }
 
@@ -55,12 +56,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the type of the result. Possible values include:
         /// 'result', 'auth', 'config', 'message', 'botMessagePreview'.
         /// </summary>
+        /// <value>The type of the result.</value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets (Only when type is result) Attachments.
         /// </summary>
+        /// <value>The attachments.</value>
         [JsonProperty(PropertyName = "attachments")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<MessagingExtensionAttachment> Attachments { get; set; }
@@ -69,12 +72,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the suggested actions.
         /// </summary>
+        /// <value>The suggested actions.</value>
         [JsonProperty(PropertyName = "suggestedActions")]
         public MessagingExtensionSuggestedAction SuggestedActions { get; set; }
 
         /// <summary>
         /// Gets or sets (Only when type is message) Text.
         /// </summary>
+        /// <value>The message text.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
@@ -82,6 +87,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets (Only when type is botMessagePreview) Message activity
         /// to preview.
         /// </summary>
+        /// <value>The message activity to preview.</value>
         [JsonProperty(PropertyName = "activityPreview")]
         public Activity ActivityPreview { get; set; }
 

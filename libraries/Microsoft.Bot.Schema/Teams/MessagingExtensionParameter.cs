@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets name of the parameter.
         /// </summary>
+        /// <value>The name of the parameter.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets value of the parameter.
         /// </summary>
+        /// <value>The value of the parameter.</value>
         [JsonProperty(PropertyName = "value")]
         public object Value { get; set; }
 

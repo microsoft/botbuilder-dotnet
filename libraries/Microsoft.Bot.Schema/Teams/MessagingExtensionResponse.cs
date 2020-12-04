@@ -32,13 +32,15 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the compose extension.
         /// </summary>
+        /// <value>The compose extension.</value>
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }
 
         /// <summary>
-        /// Gets or sets the CacheInfo for this MessagingExtensionResponse.
+        /// Gets or sets the <see cref="CacheInfo"/> for this <see cref="MessagingExtensionResponse"/>.
         /// module.
         /// </summary>
+        /// <value>The <see cref="CacheInfo"/> for this <see cref="MessagingExtensionResponse"/>.</value>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
 
