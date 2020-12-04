@@ -38,18 +38,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets represents details of the user.
         /// </summary>
+        /// <value>The user details.</value>
         [JsonProperty(PropertyName = "user")]
         public MessageActionsPayloadUser User { get; set; }
 
         /// <summary>
         /// Gets or sets represents details of the app.
         /// </summary>
+        /// <value>The application details.</value>
         [JsonProperty(PropertyName = "application")]
         public MessageActionsPayloadApp Application { get; set; }
 
         /// <summary>
         /// Gets or sets represents details of the converesation.
         /// </summary>
+        /// <value>The conversation details.</value>
         [JsonProperty(PropertyName = "conversation")]
         public MessageActionsPayloadConversation Conversation { get; set; }
 

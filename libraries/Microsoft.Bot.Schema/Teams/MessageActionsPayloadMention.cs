@@ -38,18 +38,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the id of the mentioned entity.
         /// </summary>
+        /// <value>The mentioned entity ID.</value>
         [JsonProperty(PropertyName = "id")]
         public int? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the plaintext display name of the mentioned entity.
         /// </summary>
+        /// <value>The plaintext display name of the mentioned entity.</value>
         [JsonProperty(PropertyName = "mentionText")]
         public string MentionText { get; set; }
 
         /// <summary>
         /// Gets or sets provides more details on the mentioned entity.
         /// </summary>
+        /// <value>Details of the mentioned entity.</value>
         [JsonProperty(PropertyName = "mentioned")]
         public MessageActionsPayloadFrom Mentioned { get; set; }
 
