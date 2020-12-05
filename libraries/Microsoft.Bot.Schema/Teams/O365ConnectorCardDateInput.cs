@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets include time input field. Default value  is false
         /// (date only).
         /// </summary>
+        /// <value>Boolean indicating whether to include time.</value>
         [JsonProperty(PropertyName = "includeTime")]
         public bool? IncludeTime { get; set; }
 

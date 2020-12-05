@@ -45,13 +45,15 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets input type name. Possible values include: 'textInput',
         /// 'dateInput', 'multichoiceInput'.
         /// </summary>
+        /// <value>The input type name.</value>
         [JsonProperty(PropertyName = "@type")]
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets input Id. It must be unique per entire O365 connector
+        /// Gets or sets input ID. It must be unique per entire O365 connector
         /// card.
         /// </summary>
+        /// <value>The input ID.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
@@ -59,18 +61,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets define if this input is a required field. Default
         /// value is false.
         /// </summary>
+        /// <value>Boolean indicating if this input is a required field.</value>
         [JsonProperty(PropertyName = "isRequired")]
         public bool? IsRequired { get; set; }
 
         /// <summary>
         /// Gets or sets input title that will be shown as the placeholder.
         /// </summary>
+        /// <value>The input title that will be shown as the placeholder.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets default value for this input field.
         /// </summary>
+        /// <value>The default value for this input field.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 

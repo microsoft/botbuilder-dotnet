@@ -38,13 +38,15 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the results of body string defined in
         /// IO365ConnectorCardHttpPOST with substituted input values.
         /// </summary>
+        /// <value>The body defined in IO365ConnectorCardHttpPost.</value>
         [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
 
         /// <summary>
-        /// Gets or sets action Id associated with the HttpPOST action button
+        /// Gets or sets action ID associated with the HttpPOST action button
         /// triggered, defined in O365ConnectorCardActionBase.
         /// </summary>
+        /// <value>The action ID associated with the HttpPOST action button triggered.</value>
         [JsonProperty(PropertyName = "actionId")]
         public string ActionId { get; set; }
 

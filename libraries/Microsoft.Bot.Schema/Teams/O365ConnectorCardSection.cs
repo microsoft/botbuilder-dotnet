@@ -57,36 +57,42 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets title of the section.
         /// </summary>
+        /// <value>The title of the section.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets text for the section.
         /// </summary>
+        /// <value>The text for the section.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
         /// <summary>
         /// Gets or sets activity title.
         /// </summary>
+        /// <value>The activity title.</value>
         [JsonProperty(PropertyName = "activityTitle")]
         public string ActivityTitle { get; set; }
 
         /// <summary>
         /// Gets or sets activity subtitle.
         /// </summary>
+        /// <value>The activity subtitle.</value>
         [JsonProperty(PropertyName = "activitySubtitle")]
         public string ActivitySubtitle { get; set; }
 
         /// <summary>
         /// Gets or sets activity text.
         /// </summary>
+        /// <value>The activity text.</value>
         [JsonProperty(PropertyName = "activityText")]
         public string ActivityText { get; set; }
 
         /// <summary>
         /// Gets or sets activity image.
         /// </summary>
+        /// <value>The activity image.</value>
         [JsonProperty(PropertyName = "activityImage")]
         public string ActivityImage { get; set; }
 
@@ -94,6 +100,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets describes how Activity image is rendered. Possible
         /// values include: 'avatar', 'article'.
         /// </summary>
+        /// <value>The activity image type.</value>
         [JsonProperty(PropertyName = "activityImageType")]
         public string ActivityImageType { get; set; }
 
@@ -101,12 +108,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets use markdown for all text contents. Default value is
         /// true.
         /// </summary>
+        /// <value>Boolean indicating whether markdown is used for all text contents.</value>
         [JsonProperty(PropertyName = "markdown")]
         public bool? Markdown { get; set; }
 
         /// <summary>
         /// Gets or sets set of facts for the current section.
         /// </summary>
+        /// <value>The facts for the current section.</value>
         [JsonProperty(PropertyName = "facts")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardFact> Facts { get; set; }
@@ -115,6 +124,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets set of images for the current section.
         /// </summary>
+        /// <value>The images for the current section.</value>
         [JsonProperty(PropertyName = "images")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardImage> Images { get; set; }
@@ -123,6 +133,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets set of actions for the current section.
         /// </summary>
+        /// <value>The actions for the current section.</value>
         [JsonProperty(PropertyName = "potentialAction")]
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<O365ConnectorCardActionBase> PotentialAction { get; set; }

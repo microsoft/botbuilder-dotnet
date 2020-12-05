@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets define if text input is allowed for multiple lines.
         /// Default value is false.
         /// </summary>
+        /// <value>Boolean indicating if multi-line input is allowed.</value>
         [JsonProperty(PropertyName = "isMultiline")]
         public bool? IsMultiline { get; set; }
 
@@ -54,6 +55,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets maximum length of text input. Default value is
         /// unlimited.
         /// </summary>
+        /// <value>The maximum length of text input.</value>
         [JsonProperty(PropertyName = "maxLength")]
         public double? MaxLength { get; set; }
 

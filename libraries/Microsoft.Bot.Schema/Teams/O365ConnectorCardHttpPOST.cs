@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets content to be posted back to bots via invoke.
         /// </summary>
+        /// <value>The content to be posted back to bots via invoke.</value>
         [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
 

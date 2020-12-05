@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets URL for the image.
         /// </summary>
+        /// <value>The URL for the image.</value>
         [JsonProperty(PropertyName = "image")]
         public string Image { get; set; }
 
         /// <summary>
         /// Gets or sets alternative text for the image.
         /// </summary>
+        /// <value>The alternative text for the image.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 

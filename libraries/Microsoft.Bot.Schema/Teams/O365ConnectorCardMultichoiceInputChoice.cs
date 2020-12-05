@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets the text rendered on ActionCard.
         /// </summary>
+        /// <value>The text rednered on ActionCard.</value>
         [JsonProperty(PropertyName = "display")]
         public string Display { get; set; }
 
         /// <summary>
         /// Gets or sets the value received as results.
         /// </summary>
+        /// <value>The value received as results.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
