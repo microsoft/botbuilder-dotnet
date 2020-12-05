@@ -34,12 +34,14 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets the type of the thing.
         /// </summary>
+        /// <value>The type of the thing.</value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the thing.
         /// </summary>
+        /// <value>The name of the thing.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 

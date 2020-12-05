@@ -40,7 +40,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The file download URL.</value>
         [JsonProperty(PropertyName = "downloadUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string DownloadUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets unique Id for the file.

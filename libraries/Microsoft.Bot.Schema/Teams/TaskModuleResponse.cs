@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the CacheInfo for this <see cref="TaskModuleResponse"/>.
         /// module.
         /// </summary>
-        /// <value>The CacheInfo for this <see cref="TaskModuleResponse"/></value>
+        /// <value>The CacheInfo for this <see cref="TaskModuleResponse"/>.</value>
         [JsonProperty(PropertyName = "cacheInfo")]
         public CacheInfo CacheInfo { get; set; }
 

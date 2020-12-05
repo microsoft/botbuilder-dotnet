@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets unique identifier representing a tenant.
         /// </summary>
+        /// <value>The ID representing a tenant.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 

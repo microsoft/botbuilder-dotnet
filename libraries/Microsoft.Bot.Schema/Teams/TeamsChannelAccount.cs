@@ -61,36 +61,42 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets given name part of the user name.
         /// </summary>
+        /// <value>The given name part of the user name.</value>
         [JsonProperty(PropertyName = "givenName")]
         public string GivenName { get; set; }
 
         /// <summary>
         /// Gets or sets surname part of the user name.
         /// </summary>
+        /// <value>The surname part of the user name.</value>
         [JsonProperty(PropertyName = "surname")]
         public string Surname { get; set; }
 
         /// <summary>
         /// Gets or sets email Id of the user.
         /// </summary>
+        /// <value>The email ID of the user.</value>
         [JsonProperty(PropertyName = "email")]
         public string Email { get; set; }
 
         /// <summary>
         /// Gets or sets unique user principal name.
         /// </summary>
+        /// <value>The unique user principal name.</value>
         [JsonProperty(PropertyName = "userPrincipalName")]
         public string UserPrincipalName { get; set; }
 
         /// <summary>
         /// Gets or sets the UserRole.
         /// </summary>
+        /// <value>The user role.</value>
         [JsonProperty(PropertyName = "userRole")]
         public string UserRole { get; set; }
 
         /// <summary>
         /// Gets or sets the TenantId.
         /// </summary>
+        /// <value>The tenant ID.</value>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
 

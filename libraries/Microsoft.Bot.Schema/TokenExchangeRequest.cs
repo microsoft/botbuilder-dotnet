@@ -36,12 +36,16 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets a URI string.
         /// </summary>
+        /// <value>The URI string.</value>
         [JsonProperty(PropertyName = "uri")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string Uri { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets a token string.
         /// </summary>
+        /// <value>The token.</value>
         [JsonProperty(PropertyName = "token")]
         public string Token { get; set; }
 

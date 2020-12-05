@@ -42,6 +42,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets the channelId of the token status pertains to.
         /// </summary>
+        /// <value>The channel ID.</value>
         [JsonProperty(PropertyName = "channelId")]
         public string ChannelId { get; set; }
 
@@ -49,12 +50,14 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the name of the connection the token status pertains
         /// to.
         /// </summary>
+        /// <value>The connection name.</value>
         [JsonProperty(PropertyName = "connectionName")]
         public string ConnectionName { get; set; }
 
         /// <summary>
         /// Gets or sets true if a token is stored for this ConnectionName.
         /// </summary>
+        /// <value>Boolean indicating if a token is stored for this ConnectionName.</value>
         [JsonProperty(PropertyName = "hasToken")]
         public bool? HasToken { get; set; }
 
@@ -62,6 +65,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the display name of the service provider for which
         /// this Token belongs to.
         /// </summary>
+        /// <value>The display name of the service provider for which this Token belongs to.</value>
         [JsonProperty(PropertyName = "serviceProviderDisplayName")]
         public string ServiceProviderDisplayName { get; set; }
 

@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets defines the snippet of text to highlight.
         /// </summary>
+        /// <value>The snippet of text to highlight.</value>
         [JsonProperty(PropertyName = "text")]
         public string Text { get; set; }
 
@@ -42,6 +43,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets occurrence of the text field within the referenced
         /// text, if multiple exist.
         /// </summary>
+        /// <value>The number of occurrences of the text field within the referenced text.</value>
         [JsonProperty(PropertyName = "occurrence")]
         public int? Occurrence { get; set; }
 

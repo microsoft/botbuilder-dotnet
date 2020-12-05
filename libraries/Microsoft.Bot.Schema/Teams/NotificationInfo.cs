@@ -51,7 +51,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <value>The value of the notification's external resource URL.</value>
         [JsonProperty(PropertyName = "externalResourceUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string ExternalResourceUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.

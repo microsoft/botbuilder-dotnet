@@ -44,12 +44,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets information about the channel in which the message was
         /// sent.
         /// </summary>
+        /// <value>The channel information.</value>
         [JsonProperty(PropertyName = "channel")]
         public ChannelInfo Channel { get; set; }
 
         /// <summary>
         /// Gets or sets type of event.
         /// </summary>
+        /// <value>The type of event.</value>
         [JsonProperty(PropertyName = "eventType")]
         public string EventType { get; set; }
 
@@ -57,12 +59,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets information about the team in which the message was
         /// sent.
         /// </summary>
+        /// <value>The information about the team.</value>
         [JsonProperty(PropertyName = "team")]
         public TeamInfo Team { get; set; }
 
         /// <summary>
         /// Gets or sets notification settings for the message.
         /// </summary>
+        /// <value>The notification settings for the user.</value>
         [JsonProperty(PropertyName = "notification")]
         public NotificationInfo Notification { get; set; }
 
@@ -70,6 +74,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets information about the tenant in which the message was
         /// sent.
         /// </summary>
+        /// <value>The information about the tenant.</value>
         [JsonProperty(PropertyName = "tenant")]
         public TenantInfo Tenant { get; set; }
 
@@ -77,6 +82,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets information about the meeting in which the message was
         /// sent.
         /// </summary>
+        /// <value>The information about the meeting.</value>
         [JsonProperty(PropertyName = "meeting")]
         public TeamsMeetingInfo Meeting { get; set; }
 

@@ -36,19 +36,24 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets a unique identifier for this token exchange instance.
         /// </summary>
+        /// <value>The ID for this token exchange instance.</value>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the application ID / resource identifier with which to exchange a token on behalf of.
         /// </summary>
+        /// <value>The URI.</value>
         [JsonProperty(PropertyName = "uri")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string Uri { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets the identifier of the provider with which to attempt a token exchange
         /// A value of null or empty will default to Azure Active Directory.
         /// </summary>
+        /// <value>The ID of the provider with which to attempt a tocken exchange.</value>
         [JsonProperty(PropertyName = "providerId")]
         public string ProviderId { get; set; }
 
