@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// web flow is finished with a state posted back to client via tab SDK
         /// microsoftTeams.authentication.notifySuccess(state).
         /// </summary>
+        /// <value>The state.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
 

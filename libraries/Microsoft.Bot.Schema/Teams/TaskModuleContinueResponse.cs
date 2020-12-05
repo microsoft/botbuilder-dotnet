@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the JSON for the Adaptive card to appear in the task
         /// module.
         /// </summary>
+        /// <value>The JSON for the adaptive card to appear in the task module.</value>
         [JsonProperty(PropertyName = "value")]
         public TaskModuleTaskInfo Value { get; set; }
 

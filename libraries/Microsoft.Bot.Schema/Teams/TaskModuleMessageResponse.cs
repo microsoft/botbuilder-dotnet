@@ -32,9 +32,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets teams will display the value of value in a popup
+        /// Gets or sets Teams will display the value of value in a popup
         /// message box.
         /// </summary>
+        /// <value>The value Teams will display in a pop-up message box.</value>
         [JsonProperty(PropertyName = "value")]
         public string Value { get; set; }
 
