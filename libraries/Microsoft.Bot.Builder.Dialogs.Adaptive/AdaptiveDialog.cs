@@ -1416,7 +1416,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (assignment.Property == null)
                 {
-                    assignment.ExpectedProperties = expected;
+                    assignment.ExpectedProperties = expected.ToList();
                 }
             }
 

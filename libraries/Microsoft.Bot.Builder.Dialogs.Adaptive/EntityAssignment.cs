@@ -68,7 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Expected properties.
         /// </value>
         [JsonProperty("expectedProperties")]
-        public IReadOnlyCollection<string> ExpectedProperties { get; set; }
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        public List<string> ExpectedProperties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only 
 
         /// <summary>
         /// Gets the alternative entity assignments.
