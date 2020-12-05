@@ -49,9 +49,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets appears below the app name and to the right of the app
+        /// Gets or sets the title that appears below the app name and to the right of the app
         /// icon.
         /// </summary>
+        /// <value>The title.</value>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 
@@ -59,6 +60,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets this can be a number, representing the task module's
         /// height in pixels, or a string, one of: small, medium, large.
         /// </summary>
+        /// <value>The task module's height.</value>
         [JsonProperty(PropertyName = "height")]
         public object Height { get; set; }
 
@@ -66,6 +68,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets this can be a number, representing the task module's
         /// width in pixels, or a string, one of: small, medium, large.
         /// </summary>
+        /// <value>The task module's width.</value>
         [JsonProperty(PropertyName = "width")]
         public object Width { get; set; }
 
@@ -73,13 +76,17 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets the URL of what is loaded as an iframe inside the task
         /// module. One of url or card is required.
         /// </summary>
+        /// <value>The URL of what is loaded as an iframe inside the task module.</value>
         [JsonProperty(PropertyName = "url")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string Url { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets the JSON for the Adaptive card to appear in the task
         /// module.
         /// </summary>
+        /// <value>The JSON for the Adaptive card to appear in the task module.</value>
         [JsonProperty(PropertyName = "card")]
         public Attachment Card { get; set; }
 
@@ -87,13 +94,17 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets if a client does not support the task module feature,
         /// this URL is opened in a browser tab.
         /// </summary>
+        /// <value>The fallback URL to open in a browser tab if the client does not support the task module feature.</value>
         [JsonProperty(PropertyName = "fallbackUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings
         public string FallbackUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets if a client does not support the task module feature,
         /// this URL is opened in a browser tab.
         /// </summary>
+        /// <value>The completion bot ID.</value>
         [JsonProperty(PropertyName = "completionBotId")]
         public string CompletionBotId { get; set; }
 

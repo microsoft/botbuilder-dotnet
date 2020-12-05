@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets choice of action options when responding to the
         /// task/submit message. Possible values include: 'message', 'continue'.
         /// </summary>
+        /// <value>The choice of action options when responding to the task/submit message.</value>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
 

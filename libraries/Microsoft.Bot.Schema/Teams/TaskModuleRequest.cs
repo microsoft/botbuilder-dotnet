@@ -35,12 +35,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets user input data. Free payload with key-value pairs.
         /// </summary>
+        /// <value>The user input data.</value>
         [JsonProperty(PropertyName = "data")]
         public object Data { get; set; }
 
         /// <summary>
         /// Gets or sets current user context, i.e., the current theme.
         /// </summary>
+        /// <value>The current user context.</value>
         [JsonProperty(PropertyName = "context")]
         public TaskModuleRequestContext Context { get; set; }
 
