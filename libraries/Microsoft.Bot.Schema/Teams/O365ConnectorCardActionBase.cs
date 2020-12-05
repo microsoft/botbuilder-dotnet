@@ -39,18 +39,21 @@ namespace Microsoft.Bot.Schema.Teams
         /// Gets or sets type of the action. Possible values include:
         /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.
         /// </summary>
+        /// <value>The type of the action.</value>
         [JsonProperty(PropertyName = "@type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets name of the action that will be used as button title.
         /// </summary>
+        /// <value>The name of the action that will be used as a button title.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets action Id.
+        /// Gets or sets action ID.
         /// </summary>
+        /// <value>The action ID.</value>
         [JsonProperty(PropertyName = "@id")]
         public string Id { get; set; }
 
