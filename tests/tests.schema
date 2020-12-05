@@ -7002,14 +7002,11 @@
           "description": "SnapShot file path.",
           "default": "=settings.orchestrator.shapshotpath"
         },
-        "entityRecognizers": {
-          "type": "array",
-          "title": "Entity recognizers",
-          "description": "Collection of entity recognizers to use.",
-          "items": {
-            "$kind": "Microsoft.IEntityRecognizer",
-            "$ref": "#/definitions/Microsoft.IEntityRecognizer"
-          }
+        "externalEntityRecognizer": {
+          "$kind": "Microsoft.IRecognizer",
+          "title": "External entity recognizer",
+          "description": "Entities recognized by this recognizer will be merged with Orchestrator results.",
+          "$ref": "#/definitions/Microsoft.IRecognizer"
         },
         "disambiguationScoreThreshold": {
           "$ref": "#/definitions/numberExpression",
