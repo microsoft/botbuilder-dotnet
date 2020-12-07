@@ -9,6 +9,8 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
@@ -193,10 +195,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             var convoState = new ConversationState(_storage);
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("waterfallTest"))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+            var dialogState = convoState.CreateProperty<DialogState>("dialogStateForWaterfallTest");
             var dialogs = new DialogSet(dialogState);
 
             dialogs.Add(new TextPrompt(nameof(TextPrompt), async (promptContext, cancellationToken) =>
@@ -240,14 +242,23 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                var dc = await dialogs.CreateContextAsync(turnContext);
-
-                await dc.ContinueDialogAsync();
-                if (!turnContext.Responded)
+                if (turnContext.Activity.Text == "reset")
                 {
-                    await dc.BeginDialogAsync(nameof(WaterfallDialog));
+                    await dialogState.DeleteAsync(turnContext);
+                }
+                else
+                {
+                    var dc = await dialogs.CreateContextAsync(turnContext);
+
+                    await dc.ContinueDialogAsync();
+
+                    if (!turnContext.Responded)
+                    {
+                        await dc.BeginDialogAsync(nameof(WaterfallDialog));
+                    }
                 }
             })
+                .Send("reset")
                 .Send("hello")
                 .AssertReply("step1")
                 .Send("hello")
@@ -262,6 +273,101 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 .AssertReply("You got it at the 4th try!")
                 .AssertReply("step3")
                 .StartTestAsync();
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [IgnoreOnNoEmulatorFact]
+        public async Task Should_Be_Aware_Of_Nesting_Limit()
+        {
+            async Task TestNestAsync(int depth)
+            {
+                // This creates nested data with both objects and arrays
+                static JToken CreateNestedData(int count, bool isArray = false)
+                    => count > 0
+                        ? (isArray
+                            ? new JArray { CreateNestedData(count - 1, false) } as JToken
+                            : new JObject { new JProperty("data", CreateNestedData(count - 1, true)) })
+                        : null;
+
+                var changes = new Dictionary<string, object>
+                {
+                    { "CONTEXTKEY", CreateNestedData(depth) },
+                };
+
+                await _storage.WriteAsync(changes);
+            }
+
+            // Should not throw
+            await TestNestAsync(127);
+
+            try
+            {
+                // Should either not throw or throw a special exception
+                await TestNestAsync(128);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // If the nesting limit is changed on the Cosmos side
+                // then this assertion won't be reached, which is okay
+                Assert.Contains("recursion", ex.Message);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [IgnoreOnNoEmulatorFact]
+        public async Task Should_Be_Aware_Of_Nesting_Limit_With_Dialogs()
+        {
+            async Task TestDialogNestAsync(int dialogDepth)
+            {
+                Dialog CreateNestedDialog(int depth) => new ComponentDialog(nameof(ComponentDialog))
+                    .AddDialog(depth > 0
+                        ? CreateNestedDialog(depth - 1)
+                        : new WaterfallDialog(
+                            nameof(WaterfallDialog),
+                            new List<WaterfallStep>
+                            {
+                                async (stepContext, ct) => Dialog.EndOfTurn
+                            }));
+
+                var dialog = CreateNestedDialog(dialogDepth);
+
+                var convoState = new ConversationState(_storage);
+
+                var adapter = new TestAdapter(TestAdapter.CreateConversation("nestingTest"))
+                    .Use(new AutoSaveStateMiddleware(convoState));
+
+                var dialogState = convoState.CreateProperty<DialogState>("dialogStateForNestingTest");
+
+                await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+                {
+                    if (turnContext.Activity.Text == "reset")
+                    {
+                        await dialogState.DeleteAsync(turnContext);
+                    }
+                    else
+                    {
+                        await dialog.RunAsync(turnContext, dialogState, cancellationToken);
+                    }
+                })
+                    .Send("reset")
+                    .Send("hello")
+                    .StartTestAsync();
+            }
+
+            // Should not throw
+            await TestDialogNestAsync(23);
+
+            try
+            {
+                // Should either not throw or throw a special exception
+                await TestDialogNestAsync(24);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // If the nesting limit is changed on the Cosmos side
+                // then this assertion won't be reached, which is okay
+                Assert.Contains("dialogs", ex.Message);
+            }
         }
     }
 }
