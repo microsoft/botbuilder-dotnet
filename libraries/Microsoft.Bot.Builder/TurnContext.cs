@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder
             get 
             { 
                 var valueObj = this.TurnState.Get<JObject>(Turn);
-                if (valueObj.TryGetValue(nameof(Locale), out var locale))
+                if (valueObj.TryGetValue(nameof(Locale).ToLowerInvariant(), out var locale))
                 {
                     return locale.ToString();
                 }
@@ -112,11 +112,11 @@ namespace Microsoft.Bot.Builder
                 var valueObj = this.TurnState.Get<JObject>(Turn);
                 if (valueObj != null)
                 {
-                    valueObj[nameof(Locale)] = value;
+                    valueObj[nameof(Locale).ToLowerInvariant()] = value;
                 }
                 else
                 {
-                    valueObj = new JObject(new JProperty(nameof(Locale), value));
+                    valueObj = new JObject(new JProperty(nameof(Locale).ToLowerInvariant(), value));
                     TurnState.Set(Turn, valueObj);
                 }
             }
