@@ -1140,6 +1140,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             ExpandEntityObject(entityObject, op, property, root, operations, properties, turn, text, entityToInfo);
                         }
                     }
+                    else if (isOp)
+                    {
+                        // Handle global operator with no children in model
+                        ExpandEntity(op, null, instance, root, op, property, turn, text, entityToInfo);
+                    }
                 }
             }
         }
@@ -1406,6 +1411,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
 
+            // Preserve expectedProperties if there is no property
+            foreach (var assignment in assignments)
+            {
+                if (assignment.Property == null)
+                {
+                    assignment.ExpectedProperties = expected.ToList();
+                }
+            }
+
             return assignments;
         }
 
@@ -1536,7 +1550,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 candidate.Operation == DefaultOperation(candidate, askDefaultOp, defaultOp) descending
                               select candidate).ToList();
             var usedEntities = new HashSet<EntityInfo>(from candidate in candidates select candidate.Entity);
-            var expectedChoices = new List<string>();
+            List<string> expectedChoices = null;
             var choices = new List<EntityAssignment>();
             while (candidates.Any())
             {
@@ -1568,8 +1582,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (candidate.Operation == AdaptiveEvents.ChooseEntity)
                 {
                     // Property has resolution so remove entity ambiguity
-                    existing.Dequeue(actionContext);
-                    candidate.Operation = DefaultOperation(candidate, askDefaultOp, defaultOp);
+                    var entityChoices = existing.Dequeue(actionContext);
+                    candidate.Operation = entityChoices.Operation;
+                    if (candidate.Entity.Value is JArray values && values.Count > 1)
+                    {
+                        // Resolve ambiguous response to one of the original choices
+                        var originalChoices = entityChoices.Entity.Value as JArray;
+                        var intersection = values.Intersect(originalChoices);
+                        if (intersection.Any())
+                        {
+                            candidate.Entity.Value = intersection;
+                        }
+                    }
                 }
                 else if (candidate.Operation == AdaptiveEvents.ChooseProperty)
                 {
@@ -1578,9 +1602,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments
+                        expectedChoices = new List<string>();
                         choice.IsExpected = true;
                         choice.Alternative = null;
-                        expectedChoices.Add(choice.Property);
+                        if (choice.Property != null)
+                        {
+                            expectedChoices.Add(choice.Property);
+                        }
+                        else if (choice.ExpectedProperties != null)
+                        {
+                            expectedChoices.AddRange(choice.ExpectedProperties);
+                        }
+
                         AddAssignment(choice, assignments);
                         choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
                         mapped = true;
@@ -1594,10 +1627,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
 
-            if (expectedChoices.Any())
+            if (expectedChoices != null)
             {
                 // When choosing between property assignments, make the assignments be expected.
-                actionContext.State.SetValue(DialogPath.ExpectedProperties, expectedChoices);
+                if (expectedChoices.Any())
+                {
+                    actionContext.State.SetValue(DialogPath.ExpectedProperties, expectedChoices);
+                }
 
                 // Add back in any non-overlapping choices that have not been resolved
                 while (choices.Any())
