@@ -22,34 +22,35 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.QnA" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.ApplicationInsights" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Azure" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Azure" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.ApplicationInsights.Core" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.ApplicationInsights.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Azure" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Azure" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />  
-
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Runtime.Plugins" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Runtime.Plugins" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.8" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
-    <ProjectReference Include="..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.csproj" />
+    <ProjectReference Include="..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.Luis\Microsoft.Bot.Builder.AI.Luis.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Runtime.Plugins\Microsoft.Bot.Builder.Runtime.Plugins.csproj" />
   </ItemGroup>
 
 </Project>
