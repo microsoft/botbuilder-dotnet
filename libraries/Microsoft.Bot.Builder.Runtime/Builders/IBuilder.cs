@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders
     /// configuration and registered services.
     /// </summary>
     /// <typeparam name="T">The type of the object to be returned by the builder.</typeparam>
-    public interface IBuilder<out T>
+    internal interface IBuilder<out T>
     {
         /// <summary>
         /// Builds an instance of type <typeparamref name="T"/>.

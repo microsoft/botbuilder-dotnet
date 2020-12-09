@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Runtime.Builders.Transcripts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
     /// Defines an interface used to register one or more services with the application's
     /// <see cref="IServiceCollection"/> utilizing provided application configuration via <see cref="IConfiguration"/>.
     /// </summary>
-    public interface IProvider
+    internal interface IProvider
     {
         /// <summary>
         /// Register services with the application's service collection.

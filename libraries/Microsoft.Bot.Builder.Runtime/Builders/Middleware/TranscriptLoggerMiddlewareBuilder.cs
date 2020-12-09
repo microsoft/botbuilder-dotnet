@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
     /// of <see cref="TranscriptLoggerMiddleware"/>.
     /// </summary>
     [JsonObject]
-    public class TranscriptLoggerMiddlewareBuilder : IMiddlewareBuilder
+    internal class TranscriptLoggerMiddlewareBuilder : IMiddlewareBuilder
     {
         /// <summary>
         /// Class identifier.

@@ -3,7 +3,7 @@
 
 using System;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -12,10 +12,10 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
 {
     /// <summary>
     /// Defines an implementation of <see cref="ITranscriptLoggerBuilder"/> that returns an instance
-    /// of <see cref="AzureBlobTranscriptStore"/>.
+    /// of <see cref="BlobsTranscriptStore"/>.
     /// </summary>
     [JsonObject]
-    public class BlobsTranscriptStoreBuilder : ITranscriptLoggerBuilder
+    internal class BlobsTranscriptStoreBuilder : ITranscriptLoggerBuilder
     {
         /// <summary>
         /// Class identifier.
@@ -42,13 +42,13 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
         public StringExpression ContainerName { get; set; }
 
         /// <summary>
-        /// Builds an instance of type <see cref="AzureBlobTranscriptStore"/>.
+        /// Builds an instance of type <see cref="BlobsTranscriptStore"/>.
         /// </summary>
         /// <param name="services">
         /// Provider containing all services registered with the application's service collection.
         /// </param>
         /// <param name="configuration">Application configuration.</param>
-        /// <returns>An instance of type <see cref="AzureBlobTranscriptStore"/>.</returns>
+        /// <returns>An instance of type <see cref="BlobsTranscriptStore"/>.</returns>
         public ITranscriptLogger Build(IServiceProvider services, IConfiguration configuration)
         {
             if (services == null)
@@ -61,8 +61,8 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            return new AzureBlobTranscriptStore(
-                dataConnectionstring: this.ConnectionString.GetConfigurationValue(configuration),
+            return new BlobsTranscriptStore(
+                dataConnectionString: this.ConnectionString.GetConfigurationValue(configuration),
                 containerName: this.ContainerName.GetConfigurationValue(configuration));
         }
     }

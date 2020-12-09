@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Runtime
     /// A <see cref="SkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store
     /// and retrieve <see cref="SkillConversationReference"/> instances.
     /// </summary>
-    public class SkillConversationIdFactory : SkillConversationIdFactoryBase
+    internal class SkillConversationIdFactory : SkillConversationIdFactoryBase
     {
         private readonly IStorage _storage;
 

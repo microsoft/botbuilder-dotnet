@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Credentials
     /// registering a <see cref="ICredentialProvider"/> and associated dependencies with the application's service
     /// collection.
     /// </summary>
-    public interface ICredentialProvider : IProvider
+    internal interface ICredentialProvider : IProvider
     {
     }
 }

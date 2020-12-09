@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Channel
     /// <see cref="SimpleChannelProvider"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class DeclarativeChannelProvider : IChannelProvider
+    internal class DeclarativeChannelProvider : IChannelProvider
     {
         /// <summary>
         /// Class identifier.

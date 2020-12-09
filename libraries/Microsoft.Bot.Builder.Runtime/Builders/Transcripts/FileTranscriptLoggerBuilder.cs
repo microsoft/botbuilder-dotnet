@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
     /// of <see cref="FileTranscriptLogger"/>.
     /// </summary>
     [JsonObject]
-    public class FileTranscriptLoggerBuilder : ITranscriptLoggerBuilder<FileTranscriptLogger>
+    internal class FileTranscriptLoggerBuilder : ITranscriptLoggerBuilder
     {
         /// <summary>
         /// Class identifier.
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
         /// </param>
         /// <param name="configuration">Application configuration.</param>
         /// <returns>An instance of type <see cref="FileTranscriptLogger"/>.</returns>
-        public FileTranscriptLogger Build(IServiceProvider services, IConfiguration configuration)
+        public ITranscriptLogger Build(IServiceProvider services, IConfiguration configuration)
         {
             if (services == null)
             {

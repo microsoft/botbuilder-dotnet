@@ -25,18 +25,17 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
     /// services using various <see cref="IProvider"/> objects as derived from the runtime definition.
     /// </summary>
     [JsonObject]
-    public class RuntimeConfigurationProvider : IProvider
+    internal class RuntimeConfigurationProvider : IProvider
     {
         /// <summary>
-        /// Gets the collection of <see cref="IAdapterProvider"/> instances to utilize for configuring
+        /// Gets or sets the <see cref="IAdapterProvider"/> instances to utilize for configuring
         /// adapter-related services.
         /// </summary>
         /// <value>
-        /// The collection of <see cref="IAdapterProvider"/> instances to utilize for configuring
-        /// adapter-related services.
+        /// The <see cref="IAdapterProvider"/> to utilize for configuring adapter-related services.
         /// </value>
-        [JsonProperty("adapters")]
-        public IList<IAdapterProvider> Adapters { get; } = new List<IAdapterProvider>();
+        [JsonProperty("adapter")]
+        public IAdapterProvider Adapter { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IChannelProvider"/> to utilize for configuring channel
@@ -111,9 +110,9 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var providers = new List<IProvider>(this.Adapters);
-            providers.AddRange(new IProvider[]
+            var providers = new List<IProvider>(new IProvider[]
             {
+                this.Adapter,
                 this.Channel,
                 this.Credentials,
                 this.Storage,

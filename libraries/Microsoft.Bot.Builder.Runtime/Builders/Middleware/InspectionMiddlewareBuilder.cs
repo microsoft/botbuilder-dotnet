@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
     /// of <see cref="InspectionMiddleware"/>.
     /// </summary>
     [JsonObject]
-    public class InspectionMiddlewareBuilder : IMiddlewareBuilder
+    internal class InspectionMiddlewareBuilder : IMiddlewareBuilder
     {
         /// <summary>
         /// Class identifier.

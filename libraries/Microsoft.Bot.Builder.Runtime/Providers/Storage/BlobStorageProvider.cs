@@ -3,7 +3,7 @@
 
 using System;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +13,10 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
 {
     /// <summary>
     /// Defines an implementation of <see cref="IStorageProvider"/> that registers
-    /// <see cref="AzureBlobStorage"/> with the application's service collection.
+    /// <see cref="BlobsStorage"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class BlobStorageProvider : IStorageProvider
+    internal class BlobStorageProvider : IStorageProvider
     {
         /// <summary>
         /// Class identifier.
@@ -59,8 +59,8 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            services.AddSingleton<IStorage>(new AzureBlobStorage(
-                dataConnectionstring: this.ConnectionString?.GetConfigurationValue(configuration),
+            services.AddSingleton<IStorage>(new BlobsStorage(
+                dataConnectionString: this.ConnectionString?.GetConfigurationValue(configuration),
                 containerName: this.ContainerName?.GetConfigurationValue(configuration)));
         }
     }

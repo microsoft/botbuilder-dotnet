@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
     /// of <see cref="RemoveRecipientMentionMiddlewareBuilder"/>.
     /// </summary>
     [JsonObject]
-    public class RemoveRecipientMentionMiddlewareBuilder : IMiddleware, IMiddlewareBuilder
+    internal class RemoveRecipientMentionMiddlewareBuilder : IMiddleware, IMiddlewareBuilder
     {
         /// <summary>
         /// Class identifier.

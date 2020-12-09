@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Runtime
     /// enabling evaluation of adaptive expressions defined within the runtime settings against the constructed
     /// application configuration object.
     /// </summary>
-    public class ConfigurationMemory : IMemory
+    internal class ConfigurationMemory : IMemory
     {
         private const string SupportedSeparator = ":";
 

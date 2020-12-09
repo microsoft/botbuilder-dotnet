@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Runtime.Builders.Transcripts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,7 +54,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Builders.Transcripts
             }.Build(services, configuration);
 
             Assert.NotNull(transcriptLogger);
-            Assert.IsType<AzureBlobTranscriptStore>(transcriptLogger);
+            Assert.IsType<BlobsTranscriptStore>(transcriptLogger);
         }
 
         [Theory]
@@ -72,20 +71,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Builders.Transcripts
                 () => new BlobsTranscriptStoreBuilder().Build(services, configuration));
         }
 
-        [Fact]
-        public void Build_Throws_ConnectionStringFormatInvalid()
-        {
-            IServiceProvider services = new ServiceCollection().BuildServiceProvider();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
-
-            Assert.Throws<FormatException>(
-                () => new BlobsTranscriptStoreBuilder
-                {
-                    ConnectionString = new StringExpression("InvalidConnectionString"),
-                    ContainerName = new StringExpression("container-name")
-                }.Build(services, configuration));
-        }
-
         [Theory]
         [InlineData((string)null)]
         [InlineData((string)"")]
@@ -95,7 +80,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Builders.Transcripts
             IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
 
             Assert.Throws<ArgumentNullException>(
-                "connectionString",
+                "dataConnectionString",
                 () => new BlobsTranscriptStoreBuilder
                 {
                     ConnectionString = new StringExpression(connectionString),

@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
     /// <summary>
     /// Defines options to be supplied to <see cref="CoreBotAdapter"/>.
     /// </summary>
-    public class CoreBotAdapterOptions
+    internal class CoreBotAdapterOptions
     {
         /// <summary>
         /// Gets the collection of <see cref="IMiddlewareBuilder"/> instances used to construct the
@@ -22,6 +22,13 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         /// </value>
         public IList<IMiddlewareBuilder> Middleware { get; } = new List<IMiddlewareBuilder>();
 
+        /// <summary>
+        /// Gets or sets the builder responsible for providing a handler for the OnTurnError event
+        /// within the adapter.
+        /// </summary>
+        /// <value>
+        /// The builder responsible for providing a handler for the OnTurnError event within the adapter.
+        /// </value>
         public IOnTurnErrorHandlerBuilder OnTurnError { get; set; } = new OnTurnErrorHandlerBuilder();
     }
 }

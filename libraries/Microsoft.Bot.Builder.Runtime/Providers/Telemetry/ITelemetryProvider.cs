@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Telemetry
     /// registering telemetry-related services and associated dependencies with the application's service
     /// collection.
     /// </summary>
-    public interface ITelemetryProvider : IProvider
+    internal interface ITelemetryProvider : IProvider
     {
     }
 }
