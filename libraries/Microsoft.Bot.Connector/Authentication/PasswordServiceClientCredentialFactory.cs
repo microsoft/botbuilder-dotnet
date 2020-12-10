@@ -102,6 +102,9 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
+        /// <summary>
+        /// TODO this is internal implementation does not need to reply on the public class.
+        /// </summary>
         private class PrivateCloudAppCredentials : MicrosoftAppCredentials
         {
             private readonly string _oauthEndpoint;

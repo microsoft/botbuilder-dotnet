@@ -9,7 +9,6 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -63,9 +62,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc/>
-        public override Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken);
+            return _inner.CreateConnectorFactory(claimsIdentity);
+        }
+
+        /// <inheritdoc/>
+        public override Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        {
+            return _inner.CreateUserTokenClientAsync(claimsIdentity, cancellationToken);
         }
     }
 }
