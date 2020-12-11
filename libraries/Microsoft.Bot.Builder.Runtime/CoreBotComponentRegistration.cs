@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Runtime
     /// <summary>
     /// <see cref="ComponentRegistration"/> implementation for standard bot runtime components.
     /// </summary>
-    public class CoreBotComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
+    internal class CoreBotComponentRegistration : ComponentRegistration, IComponentDeclarativeTypes
     {
         /// <summary>
         /// Gets standard bot runtime <see cref="DeclarativeType"/> resources.
@@ -93,7 +93,6 @@ namespace Microsoft.Bot.Builder.Runtime
         {
             yield return new InterfaceConverter<IMiddlewareBuilder>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<ITranscriptLoggerBuilder>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<ITranscriptStoreBuilder>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<IAdapterProvider>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<IChannelProvider>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<ICredentialProvider>(resourceExplorer, sourceContext);

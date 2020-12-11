@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Runtime.Providers.Storage;
 using Microsoft.Extensions.Configuration;

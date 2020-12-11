@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Runtime
     /// <summary>
     /// Defines the bot runtime standard implementation of <see cref="BotFrameworkHttpAdapter"/>.
     /// </summary>
-    public class CoreBotAdapter : BotFrameworkHttpAdapter
+    internal class CoreBotAdapter : BotFrameworkHttpAdapter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CoreBotAdapter"/> class.

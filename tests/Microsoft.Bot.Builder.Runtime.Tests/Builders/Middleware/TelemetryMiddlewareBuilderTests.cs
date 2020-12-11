@@ -5,14 +5,12 @@ using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Runtime.Builders.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using IMiddleware = Microsoft.Bot.Builder.IMiddleware;
 
 namespace Microsoft.Bot.Builder.Runtime.Tests.Builders.Middleware
 {

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
     /// of <see cref="TelemetryInitializerMiddleware"/>.
     /// </summary>
     [JsonObject]
-    public class TelemetryMiddlewareBuilder : IMiddlewareBuilder
+    internal class TelemetryMiddlewareBuilder : IMiddlewareBuilder
     {
         /// <summary>
         /// Class identifier.

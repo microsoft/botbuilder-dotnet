@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Adapter
     /// registering a <see cref="BotAdapter"/> and associated dependencies with the application's service
     /// collection.
     /// </summary>
-    public interface IAdapterProvider : IProvider
+    internal interface IAdapterProvider : IProvider
     {
     }
 }

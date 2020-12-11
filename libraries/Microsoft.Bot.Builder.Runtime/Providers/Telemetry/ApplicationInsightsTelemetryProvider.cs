@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Telemetry
     /// <see cref="BotTelemetryClient"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class ApplicationInsightsTelemetryProvider : ITelemetryProvider
+    internal class ApplicationInsightsTelemetryProvider : ITelemetryProvider
     {
         /// <summary>
         /// Class identifier.

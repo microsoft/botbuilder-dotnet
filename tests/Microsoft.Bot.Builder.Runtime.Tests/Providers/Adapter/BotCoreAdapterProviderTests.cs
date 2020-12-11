@@ -31,13 +31,29 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers.Adapter
                 {
                     new InspectionMiddlewareBuilder()
                 },
-                new OnTurnErrorHandlerBuilder()                
+                new OnTurnErrorHandlerBuilder()
             };
         }
 
         [Theory]
+        [MemberData(
+            nameof(ProviderTestDataGenerator.GetConfigureServicesArgumentNullExceptionData),
+            MemberType = typeof(ProviderTestDataGenerator))]
+        public void ConfigureServices_Throws_ArgumentNullException(
+            string paramName,
+            IServiceCollection services,
+            IConfiguration configuration)
+        {
+            Assert.Throws<ArgumentNullException>(
+                paramName,
+                () => new BotCoreAdapterProvider().ConfigureServices(services, configuration));
+        }
+
+        [Theory]
         [MemberData(nameof(GetConfigureServicesSucceedsData))]
-        public void ConfigureServices_Succeeds(IList<IMiddlewareBuilder> middleware, IOnTurnErrorHandlerBuilder onTurnError)
+        internal void ConfigureServices_Succeeds(
+            IList<IMiddlewareBuilder> middleware,
+            IOnTurnErrorHandlerBuilder onTurnError)
         {
             var services = new ServiceCollection();
             IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
@@ -86,20 +102,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers.Adapter
                 services,
                 provider,
                 ServiceLifetime.Singleton);
-        }
-
-        [Theory]
-        [MemberData(
-            nameof(ProviderTestDataGenerator.GetConfigureServicesArgumentNullExceptionData),
-            MemberType = typeof(ProviderTestDataGenerator))]
-        public void ConfigureServices_Throws_ArgumentNullException(
-            string paramName,
-            IServiceCollection services,
-            IConfiguration configuration)
-        {
-            Assert.Throws<ArgumentNullException>(
-                paramName,
-                () => new BotCoreAdapterProvider().ConfigureServices(services, configuration));
         }
     }
 }

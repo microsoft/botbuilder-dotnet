@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
     /// <see cref="CosmosDbPartitionedStorage"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class CosmosDbPartitionedStorageProvider : IStorageProvider
+    internal class CosmosDbPartitionedStorageProvider : IStorageProvider
     {
         /// <summary>
         /// Class identifier.
@@ -97,10 +97,10 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
         /// <see cref = "CompatibilityMode" /> must be set to 'false' to use a KeySuffix.
         /// When KeySuffix is used, keys will NOT be truncated but an exception will be thrown if
         /// the key length is longer than allowed by Cosmos DB.
-       /// </remarks>
-       /// <value>
-       /// String containing only valid CosmosDb key characters. (e.g. not: '\\', '?', '/', '#', '*').
-       /// </value>
+        /// </remarks>
+        /// <value>
+        /// String containing only valid CosmosDb key characters. (e.g. not: '\\', '?', '/', '#', '*').
+        /// </value>
         [JsonProperty("keySuffix")]
         public StringExpression KeySuffix { get; set; }
 

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Channel
     /// registering a <see cref="IChannelProvider"/> and associated dependencies with the application's service
     /// collection.
     /// </summary>
-    public interface IChannelProvider : IProvider
+    internal interface IChannelProvider : IProvider
     {
     }
 }

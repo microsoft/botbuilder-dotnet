@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Runtime.Builders.Middleware;
 using Microsoft.Bot.Builder.Runtime.Builders.Transcripts;
 using Microsoft.Extensions.Configuration;

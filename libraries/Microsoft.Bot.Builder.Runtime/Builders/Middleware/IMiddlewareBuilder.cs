@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
     /// Defines an interface for an implementation of <see cref="IBuilder{T}"/> that returns an
     /// instance whose type implements <see cref="IMiddleware" />.
     /// </summary>
-    public interface IMiddlewareBuilder : IBuilder<IMiddleware>
+    internal interface IMiddlewareBuilder : IBuilder<IMiddleware>
     {
     }
 }

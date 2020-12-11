@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
     /// <summary>
     /// Defines options to be supplied to <see cref="CoreBot"/>.
     /// </summary>
-    public class CoreBotOptions
+    internal class CoreBotOptions
     {
         /// <summary>
         /// Gets or sets the default locale to be utilized by the bot. Defaults to 'en-US'.

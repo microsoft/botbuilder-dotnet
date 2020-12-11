@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
     /// registering a <see cref="IStorage"/> and associated dependencies with the application's service
     /// collection.
     /// </summary>
-    public interface IStorageProvider : IProvider
+    internal interface IStorageProvider : IProvider
     {
     }
 }

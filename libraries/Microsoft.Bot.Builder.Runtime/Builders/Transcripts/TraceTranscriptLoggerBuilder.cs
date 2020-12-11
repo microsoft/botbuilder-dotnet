@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
     /// of <see cref="TraceTranscriptLogger"/>.
     /// </summary>
     [JsonObject]
-    public class TraceTranscriptLoggerBuilder : ITranscriptLoggerBuilder<TraceTranscriptLogger>
+    internal class TraceTranscriptLoggerBuilder : ITranscriptLoggerBuilder
     {
         /// <summary>
         /// Class identifier.
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
         /// </param>
         /// <param name="configuration">Application configuration.</param>
         /// <returns>An instance of type <see cref="TraceTranscriptLogger"/>.</returns>
-        public TraceTranscriptLogger Build(IServiceProvider services, IConfiguration configuration)
+        public ITranscriptLogger Build(IServiceProvider services, IConfiguration configuration)
         {
             if (services == null)
             {
