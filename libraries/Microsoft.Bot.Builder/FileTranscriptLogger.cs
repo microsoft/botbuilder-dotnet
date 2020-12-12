@@ -113,10 +113,11 @@ namespace Microsoft.Bot.Builder
                     }
                 }
 #pragma warning disable CA1031 // Do not catch general exception types (we ignore the exception and we retry)
-                catch (Exception)
+                catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
                     // try again
+                    Trace.TraceError($"Try {i + 1} - Failed to log activity because: {e.GetType()} : {e.Message}");
                 }
             }
         }
