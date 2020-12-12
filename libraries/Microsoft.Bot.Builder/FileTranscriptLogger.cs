@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -299,7 +300,8 @@ namespace Microsoft.Bot.Builder
             }
 
             var channelFolder = GetChannelFolder(channelId);
-            string transcriptFile = Path.Combine(channelFolder, conversationId + ".transcript");
+            var fileName = SanitizeFileName(conversationId);
+            var transcriptFile = Path.Combine(channelFolder, fileName + ".transcript");
             return transcriptFile;
         }
 
@@ -317,6 +319,18 @@ namespace Microsoft.Bot.Builder
             }
 
             return channelFolder;
+        }
+
+        private string SanitizeFileName(string fileName)
+        {
+            var sb = new StringBuilder(fileName);
+
+            foreach (var invalidFilNameChar in Path.GetInvalidFileNameChars())
+            {
+                sb.Replace(invalidFilNameChar.ToString(), string.Empty);
+            }
+
+            return sb.ToString();
         }
     }
 }
