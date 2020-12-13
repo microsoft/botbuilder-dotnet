@@ -287,6 +287,18 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        private static string SanitizeString(string str, char[] invalidChars)
+        {
+            var sb = new StringBuilder(str);
+
+            foreach (var invalidChar in invalidChars)
+            {
+                sb.Replace(invalidChar.ToString(), string.Empty);
+            }
+
+            return sb.ToString();
+        }
+
         private string GetTranscriptFile(string channelId, string conversationId)
         {
             if (channelId == null)
@@ -300,9 +312,10 @@ namespace Microsoft.Bot.Builder
             }
 
             var channelFolder = GetChannelFolder(channelId);
-            var fileName = SanitizeFileName(conversationId);
-            var transcriptFile = Path.Combine(channelFolder, fileName + ".transcript");
-            return transcriptFile;
+
+            var fileName = SanitizeString(conversationId, Path.GetInvalidFileNameChars());
+
+            return Path.Combine(channelFolder, fileName + ".transcript");
         }
 
         private string GetChannelFolder(string channelId)
@@ -312,25 +325,15 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(channelId);
             }
 
-            var channelFolder = Path.Combine(_folder, channelId);
+            var folderName = SanitizeString(channelId, Path.GetInvalidPathChars());
+
+            var channelFolder = Path.Combine(_folder, folderName);
             if (!Directory.Exists(channelFolder))
             {
                 Directory.CreateDirectory(channelFolder);
             }
 
             return channelFolder;
-        }
-
-        private string SanitizeFileName(string fileName)
-        {
-            var sb = new StringBuilder(fileName);
-
-            foreach (var invalidFilNameChar in Path.GetInvalidFileNameChars())
-            {
-                sb.Replace(invalidFilNameChar.ToString(), string.Empty);
-            }
-
-            return sb.ToString();
         }
     }
 }
