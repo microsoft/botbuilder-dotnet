@@ -20,9 +20,6 @@ Update `BotFrameworkHttpAdapter` implementation, to pass the base constructor an
 ```cs
     public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
-        //public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
-        //    : base(configuration, logger)
-        
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
             : base(configuration: configuration, credentialProvider: new ConfigurationCredentialProvider(configuration),
                   authConfig: new AuthenticationConfiguration() { ClaimsValidator = new NoSkillsClaimsValidator() }, logger: logger)
