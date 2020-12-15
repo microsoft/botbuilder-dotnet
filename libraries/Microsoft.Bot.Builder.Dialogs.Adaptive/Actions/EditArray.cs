@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Take,
 
             /// <summary>
-            /// Remove the item from the array, regardless of it's location
+            /// Remove the item from the array, regardless of it's location. Searches starting at the front of the array and stops when the first matching item is found.
             /// </summary>
             Remove,
 

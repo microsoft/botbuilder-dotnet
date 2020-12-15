@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Transcripts
     /// of <see cref="MemoryTranscriptStore"/>.
     /// </summary>
     [JsonObject]
-    public class MemoryTranscriptStoreBuilder : ITranscriptLoggerBuilder
+    internal class MemoryTranscriptStoreBuilder : ITranscriptLoggerBuilder
     {
         /// <summary>
         /// Class identifier.

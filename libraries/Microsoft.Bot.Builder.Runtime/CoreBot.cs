@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Runtime
     /// <summary>
     /// Defines the bot runtime standard implementation of <see cref="IBot"/>.
     /// </summary>
-    public class CoreBot : IBot
+    internal class CoreBot : IBot
     {
         private const string DefaultLocale = "en-US";
 

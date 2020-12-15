@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
     /// <summary>
     /// Defines extension methods for <see cref="ExpressionProperty{T}"/>.
     /// </summary>
-    public static class ExpressionPropertyExtensions
+    internal static class ExpressionPropertyExtensions
     {
         /// <summary>
         /// Computes a value by applying an <see cref="ExpressionProperty{T}"/> to <see cref="IConfiguration"/>.

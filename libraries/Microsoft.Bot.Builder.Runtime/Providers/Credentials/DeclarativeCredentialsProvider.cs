@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Credentials
     /// <see cref="SimpleCredentialProvider"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class DeclarativeCredentialsProvider : ICredentialProvider
+    internal class DeclarativeCredentialsProvider : ICredentialProvider
     {
         /// <summary>
         /// Class identifier.

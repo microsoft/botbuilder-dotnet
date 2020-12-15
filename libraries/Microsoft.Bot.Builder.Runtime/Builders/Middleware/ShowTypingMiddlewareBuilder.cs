@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Middleware
     /// of <see cref="ShowTypingMiddleware"/>.
     /// </summary>
     [JsonObject]
-    public class ShowTypingMiddlewareBuilder : IMiddlewareBuilder
+    internal class ShowTypingMiddlewareBuilder : IMiddlewareBuilder
     {
         /// <summary>
         /// Class identifier.

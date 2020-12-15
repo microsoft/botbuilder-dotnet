@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 {
                     new JsonResource(ResourceId, new RuntimeConfigurationProvider
                     {
-                        Adapters = { new BotCoreAdapterProvider() },
+                        Adapter = new BotCoreAdapterProvider(),
                         Credentials = new DeclarativeCredentialsProvider(),
                         RootDialog = "root.dialog",
                         Storage = new MemoryStorageProvider()

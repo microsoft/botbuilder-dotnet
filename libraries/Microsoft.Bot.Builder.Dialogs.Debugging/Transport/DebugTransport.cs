@@ -17,9 +17,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReaderWriterLock = Microsoft.Bot.Builder.Dialogs.Debugging.Base.ReaderWriterLock;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Transport
 {
-    internal abstract class DebugTransport : IDisposable
+    internal sealed class DebugTransport : IDebugTransport, IDisposable
     {
         private const string Prefix = @"Content-Length: ";
         private static readonly Encoding Encoding = Encoding.ASCII;
@@ -28,56 +28,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly SemaphoreSlim _readable = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _writable = new SemaphoreSlim(1, 1);
 
-        // To detect redundant calls to dispose
-        private bool _disposed;
-        private StreamReader _reader;
-        private StreamWriter _writer;
+        private StreamReader _reader = StreamReader.Null;
+        private StreamWriter _writer = StreamWriter.Null;
 
-        protected DebugTransport(ILogger logger)
+        private readonly ActiveObject _listener;
+        private readonly ILogger _logger;
+
+        public DebugTransport(int port, ILogger logger)
         {
-            Logger = logger ?? NullLogger.Instance;
+            _logger = logger ?? NullLogger.Instance;
+            var point = new IPEndPoint(IPAddress.Any, port);
+            _listener = new ActiveObject(token => ListenAsync(point, token));
         }
 
-        protected ILogger Logger { get; set; }
+        Func<CancellationToken, Task> IDebugTransport.Accept
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Disposes the object instance a releases any related objects owned by the class.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            _listener.Dispose();
+            _connected.Dispose();
+            _readable.Dispose();
+            _writable.Dispose();
+            _reader.Dispose();
+            _writer.Dispose();
         }
 
-        /// <summary>
-        /// Disposes objects used by the class.
-        /// </summary>
-        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
-        /// <remarks>
-        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
-        /// In other words, it is true when deterministically called and false when non-deterministically called.
-        /// </remarks>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                // Dispose managed objects owned by the class here.
-                _connected?.Dispose();
-                _readable?.Dispose();
-                _writable?.Dispose();
-                _reader?.Dispose();
-                _writer?.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        protected async Task ListenAsync(IPEndPoint point, CancellationToken cancellationToken)
+        public async Task ListenAsync(IPEndPoint point, CancellationToken cancellationToken)
         {
             var listener = new TcpListener(point);
             listener.Start();
@@ -113,7 +96,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                                             try
                                             {
-                                                await AcceptAsync(cancellationToken).ConfigureAwait(false);
+                                                IDebugTransport transport = this;
+                                                await transport.Accept(cancellationToken).ConfigureAwait(false);
                                             }
                                             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                                             {
@@ -132,15 +116,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     catch (Exception error)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
-                        Logger.LogError(error, error.Message);
+                        _logger.LogError(error, error.Message);
                     }
                 }
             }
         }
 
-        protected abstract Task AcceptAsync(CancellationToken cancellationToken);
-
-        protected async Task<JToken> ReadAsync(CancellationToken cancellationToken)
+        async Task<JToken> IDebugTransport.ReadAsync(CancellationToken cancellationToken)
         {
             var acquired = await _connected.TryEnterReadAsync(cancellationToken).ConfigureAwait(false);
 
@@ -182,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
                     var json = new string(buffer);
                     var token = JToken.Parse(json);
-                    Logger.LogTrace($"READ: {token.ToString(Formatting.None)}");
+                    _logger.LogTrace($"READ: {token.ToString(Formatting.None)}");
                     return token;
                 }
             }
@@ -192,7 +174,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        protected async Task SendAsync(JToken token, CancellationToken cancellationToken)
+        async Task IDebugTransport.SendAsync(JToken token, CancellationToken cancellationToken)
         {
             var acquired = await _connected.TryEnterReadAsync(cancellationToken).ConfigureAwait(false);
             if (!acquired)
@@ -205,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 using (await _writable.WithWaitAsync(cancellationToken).ConfigureAwait(false))
                 {
                     var json = token.ToString(Formatting.None);
-                    Logger.LogTrace($"SEND: {json}");
+                    _logger.LogTrace($"SEND: {json}");
                     var buffer = Encoding.GetBytes(json);
                     await _writer.WriteAsync(Prefix + buffer.Length).ConfigureAwait(false);
                     await _writer.WriteAsync("\r\n\r\n").ConfigureAwait(false);

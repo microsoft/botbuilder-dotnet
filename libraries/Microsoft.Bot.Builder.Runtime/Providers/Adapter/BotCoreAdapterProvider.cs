@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Adapter
     /// <see cref="CoreBotAdapter"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class BotCoreAdapterProvider : IAdapterProvider
+    internal class BotCoreAdapterProvider : IAdapterProvider
     {
         /// <summary>
         /// Class identifier.
@@ -66,6 +66,10 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Adapter
 
                 o.OnTurnError = this.OnTurnError;
             });
+
+            // In addition to registering the CoreBotAdapter as the implementation for the IBotFrameworkHttpAdapter,
+            // some classes depend upon the BotAdapter type. To support this, we ensure that the registered adapter
+            // is returned if BotAdapter is requested from the service provider.
 
             services.AddSingleton<IBotFrameworkHttpAdapter, CoreBotAdapter>();
             services.AddSingleton<BotAdapter>(

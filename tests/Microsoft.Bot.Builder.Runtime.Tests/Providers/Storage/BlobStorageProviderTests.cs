@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Runtime.Providers.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +57,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers.Storage
 
             IServiceProvider provider = services.BuildServiceProvider();
 
-            Assertions.AssertService<IStorage, AzureBlobStorage>(
+            Assertions.AssertService<IStorage, BlobsStorage>(
                 services,
                 provider,
                 ServiceLifetime.Singleton);
@@ -101,7 +100,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers.Storage
             IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
 
             Assert.Throws<ArgumentNullException>(
-                "connectionString",
+                "dataConnectionString",
                 () => new BlobStorageProvider
                 {
                     ConnectionString = new StringExpression(connectionString),
@@ -115,7 +114,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers.Storage
             var services = new ServiceCollection();
             IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
 
-            Assert.Throws<ArgumentException>(
+            Assert.Throws<ArgumentNullException>(
                 () => new BlobStorageProvider
                 {
                     ConnectionString = new StringExpression(ConnectionString),

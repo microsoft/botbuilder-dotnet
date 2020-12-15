@@ -23,7 +23,7 @@
             ]
         },
         "text": {
-            "$ref": "schema:#/definitions/stringExpression",
+            "$kind": "Microsoft.IActivityTemplate",
             "title": "Text",
             "description": "Information to log."
         },

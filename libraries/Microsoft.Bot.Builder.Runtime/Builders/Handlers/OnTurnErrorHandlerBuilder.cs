@@ -17,11 +17,22 @@ namespace Microsoft.Bot.Builder.Runtime.Builders.Handlers
     /// You can toggle whether to log the exception and send a trace activity with the stack trace, as well
     /// as provide LG templates for the logged exception message and the bot response to the user.
     /// </summary>
-    public class OnTurnErrorHandlerBuilder : IOnTurnErrorHandlerBuilder
+    internal class OnTurnErrorHandlerBuilder : IOnTurnErrorHandlerBuilder
     {
+        /// <summary>
+        /// Class identifier.
+        /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.OnTurnErrorHandler";
 
+        /// <summary>
+        /// Builds an instance of type <see cref="Func{ITurnContext, Exception, Task}"/>.
+        /// </summary>
+        /// <param name="services">
+        /// Provider containing all services registered with the application's service collection.
+        /// </param>
+        /// <param name="configuration">Application configuration.</param>
+        /// <returns>An instance of type <see cref="Func{ITurnContext, Exception, Task}"/>.</returns>
         public Func<ITurnContext, Exception, Task> Build(IServiceProvider services, IConfiguration configuration)
         {
             if (services == null)

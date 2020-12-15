@@ -35,12 +35,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Events
         }
 
         ExceptionBreakpointFilter[] IEvents.Filters =>
-            _stateByFilter.Select(kv => new ExceptionBreakpointFilter
+            _stateByFilter
+            .Select(kv => new ExceptionBreakpointFilter
             {
                 Label = kv.Key,
                 Filter = kv.Key,
                 Default = kv.Value
-            }).ToArray();
+            })
+
+            // ensure consistency for UI and trace oracle tests
+            .OrderBy(f => f.Filter)
+            .ToArray();
 
         bool IEvents.this[string filter]
         {

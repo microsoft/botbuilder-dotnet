@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers.Storage
     /// <see cref="MemoryStorage"/> with the application's service collection.
     /// </summary>
     [JsonObject]
-    public class MemoryStorageProvider : IStorageProvider
+    internal class MemoryStorageProvider : IStorageProvider
     {
         /// <summary>
         /// Class identifier.

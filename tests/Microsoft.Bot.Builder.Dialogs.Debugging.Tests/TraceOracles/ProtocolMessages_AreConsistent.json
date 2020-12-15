@@ -1,0 +1,449 @@
+[
+  {
+    "Token": {
+      "arguments": {
+        "clientID": null,
+        "clientName": null,
+        "adapterID": null,
+        "pathFormat": null,
+        "linesStartAt1": false,
+        "columnsStartAt1": false,
+        "supportsVariableType": false,
+        "supportsVariablePaging": false,
+        "supportsRunInTerminalRequest": false,
+        "locale": null
+      },
+      "command": "initialize",
+      "seq": 1,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
+      "body": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsSetVariable": true,
+        "supportsEvaluateForHovers": true,
+        "supportsFunctionBreakpoints": true,
+        "exceptionBreakpointFilters": [
+          {
+            "filter": "activityReceived",
+            "label": "activityReceived",
+            "default": true
+          },
+          {
+            "filter": "beginDialog",
+            "label": "beginDialog",
+            "default": true
+          },
+          {
+            "filter": "cancelDialog",
+            "label": "cancelDialog",
+            "default": true
+          },
+          {
+            "filter": "custom",
+            "label": "custom",
+            "default": true
+          },
+          {
+            "filter": "EndDialog",
+            "label": "EndDialog",
+            "default": false
+          },
+          {
+            "filter": "error",
+            "label": "error",
+            "default": true
+          },
+          {
+            "filter": "repromptDialog",
+            "label": "repromptDialog",
+            "default": true
+          },
+          {
+            "filter": "versionChanged",
+            "label": "versionChanged",
+            "default": true
+          }
+        ],
+        "supportTerminateDebuggee": true,
+        "supportsTerminateRequest": true
+      },
+      "request_seq": 1,
+      "success": true,
+      "message": null,
+      "command": "initialize",
+      "seq": 1,
+      "type": "response"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {},
+      "event": "initialized",
+      "seq": 2,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "arguments": {
+        "breakOnStart": true
+      },
+      "command": "attach",
+      "seq": 2,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
+      "body": {},
+      "request_seq": 2,
+      "success": true,
+      "message": null,
+      "command": "attach",
+      "seq": 3,
+      "type": "response"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "arguments": {},
+      "command": "configurationdone",
+      "seq": 3,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
+      "body": {},
+      "request_seq": 3,
+      "success": true,
+      "message": null,
+      "command": "configurationdone",
+      "seq": 4,
+      "type": "response"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "arguments": {},
+      "command": "threads",
+      "seq": 4,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
+      "body": {
+        "threads": []
+      },
+      "request_seq": 4,
+      "success": true,
+      "message": null,
+      "command": "threads",
+      "seq": 5,
+      "type": "response"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "one ==> Started         \r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 6,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "threadId": 1,
+        "reason": "started"
+      },
+      "event": "thread",
+      "seq": 7,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "'one' ==> beginDialog      ==> ProtocolMessages_AreConsistent \r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 8,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "one ==> Breakpoint       ==> ProtocolMessages_AreConsistent\r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 9,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "reason": "breakpoint",
+        "description": "one ==> Breakpoint       ==> ProtocolMessages_AreConsistent",
+        "threadId": 1,
+        "text": "one ==> Breakpoint       ==> ProtocolMessages_AreConsistent",
+        "preserveFocusHint": false,
+        "allThreadsStopped": false
+      },
+      "event": "stopped",
+      "seq": 10,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "arguments": {
+        "threadId": 1
+      },
+      "command": "next",
+      "seq": 5,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
+      "body": {},
+      "request_seq": 5,
+      "success": true,
+      "message": null,
+      "command": "next",
+      "seq": 11,
+      "type": "response"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "one ==> Next             ==> ProtocolMessages_AreConsistent\r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 12,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "threadId": 1,
+        "allThreadsContinued": false
+      },
+      "event": "continued",
+      "seq": 13,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "one ==> Exited          \r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 14,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "threadId": 1,
+        "reason": "exited"
+      },
+      "event": "thread",
+      "seq": 15,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "two ==> Started         \r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 16,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "threadId": 2,
+        "reason": "started"
+      },
+      "event": "thread",
+      "seq": 17,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "'two' ==> activityReceived ==> ProtocolMessages_AreConsistent \r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 18,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "two ==> Breakpoint       ==> ProtocolMessages_AreConsistent\r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 19,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "reason": "breakpoint",
+        "description": "two ==> Breakpoint       ==> ProtocolMessages_AreConsistent",
+        "threadId": 2,
+        "text": "two ==> Breakpoint       ==> ProtocolMessages_AreConsistent",
+        "preserveFocusHint": false,
+        "allThreadsStopped": false
+      },
+      "event": "stopped",
+      "seq": 20,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "arguments": {
+        "threadId": 2
+      },
+      "command": "next",
+      "seq": 6,
+      "type": "request"
+    },
+    "Client": true
+  },
+  {
+    "Token": {
+      "body": {},
+      "request_seq": 6,
+      "success": true,
+      "message": null,
+      "command": "next",
+      "seq": 21,
+      "type": "response"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "two ==> Next             ==> ProtocolMessages_AreConsistent\r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 22,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "threadId": 2,
+        "allThreadsContinued": false
+      },
+      "event": "continued",
+      "seq": 23,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "output": "two ==> Exited          \r\n",
+        "source": null,
+        "line": null,
+        "variablesReference": 0
+      },
+      "event": "output",
+      "seq": 24,
+      "type": "event"
+    },
+    "Client": false
+  },
+  {
+    "Token": {
+      "body": {
+        "threadId": 2,
+        "reason": "exited"
+      },
+      "event": "thread",
+      "seq": 25,
+      "type": "event"
+    },
+    "Client": false
+  }
+]
