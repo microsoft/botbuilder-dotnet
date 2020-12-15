@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Bot.Builder.Dialogs.Debugging.CodeModels;
+using Microsoft.Bot.Builder.Dialogs.Debugging.Transport;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return botAdapter.Use(
 #pragma warning disable CA2000 // Dispose objects before losing scope (excluding, the object ownership is transferred to the adapter and the adapter should dispose it)
                 new DialogDebugAdapter(
-                    port,
+                    new DebugTransport(port, logger),
                     DebugSupport.SourceMap,
                     DebugSupport.SourceMap as IBreakpoints,
                     terminate,
