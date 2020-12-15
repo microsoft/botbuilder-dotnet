@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var expectedRange = new SourceRange
                 {
                     StartPoint = new SourcePoint(0, 0),
-                    EndPoint = new SourcePoint(13, 1),
+                    EndPoint = new SourcePoint(14, 1),
                     Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
                 };
 
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var expectedRange = new SourceRange
                 {
                     StartPoint = new SourcePoint(1, 1),
-                    EndPoint = new SourcePoint(13, 1),
+                    EndPoint = new SourcePoint(14, 1),
                     Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
                 };
 
@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var expectedRange = new SourceRange
                 {
                     StartPoint = new SourcePoint(1, 1),
-                    EndPoint = new SourcePoint(13, 1),
+                    EndPoint = new SourcePoint(14, 1),
                     Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
                 };
 
