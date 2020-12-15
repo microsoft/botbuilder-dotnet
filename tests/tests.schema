@@ -4496,10 +4496,9 @@
           ]
         },
         "text": {
-          "$kind": "Microsoft.IActivityTemplate",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate",
           "title": "Text",
-          "description": "Information to log.",
-          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+          "description": "Information to log."
         },
         "label": {
           "$ref": "#/definitions/stringExpression",
