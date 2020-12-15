@@ -4496,7 +4496,7 @@
           ]
         },
         "text": {
-          "$ref": "#/definitions/Microsoft.IActivityTemplate",
+          "$ref": "#/definitions/stringExpression",
           "title": "Text",
           "description": "Information to log."
         },
