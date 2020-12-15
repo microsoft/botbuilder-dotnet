@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Runtime.Authentication;
 using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
 using Microsoft.Bot.Builder.Runtime.Providers.Storage;
@@ -126,13 +127,13 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
 
             ConfigureSkillServices(services);
             ConfigureBotStateServices(services);
-            ConfigureAuthenticationConfigurationServices(services);
+            ConfigureAuthenticationConfigurationServices(services, configuration);
             ConfigureCoreBotServices(services, configuration);
         }
 
-        private static void ConfigureAuthenticationConfigurationServices(IServiceCollection services)
+        private static void ConfigureAuthenticationConfigurationServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<AuthenticationConfiguration>();
+            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(configuration) });
         }
 
         private static void ConfigureBotStateServices(IServiceCollection services)
