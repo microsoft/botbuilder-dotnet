@@ -39,6 +39,11 @@ namespace Microsoft.Bot.Builder.Runtime.Authentication
         /// <returns>True if the validation is successful, false if not.</returns>
         public override Task ValidateClaimsAsync(IList<Claim> claims)
         {
+            if (claims == null)
+            {
+                throw new ArgumentNullException(nameof(claims));
+            }
+
             // If _allowedCallers contains an "*", allow all callers.
             if (SkillValidation.IsSkillClaim(claims) &&
                 !_allowedCallers.Contains("*"))

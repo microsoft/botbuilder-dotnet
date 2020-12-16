@@ -16,9 +16,9 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
 {
     public class AllowedCallersClaimsValidationTests
     {
-        private string version = "1.0";
+        private const string _version = "1.0";
 
-        private string audienceClaim = Guid.NewGuid().ToString();
+        private readonly string audienceClaim = Guid.NewGuid().ToString();
 
         public static IEnumerable<object[]> GetConfigureServicesSucceedsData()
         {
@@ -29,6 +29,13 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
             yield return new object[]
             {
                 (string)null,
+                (IConfiguration)TestDataGenerator.BuildConfigurationRoot()
+            };
+
+            // Null configuration with attempted caller
+            yield return new object[]
+            {
+                (string)primaryAppId,
                 (IConfiguration)TestDataGenerator.BuildConfigurationRoot()
             };
 
@@ -90,25 +97,37 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
         {
             var validator = new AllowedCallersClaimsValidator(configuration);
 
-            var allowedCallersList = configuration.GetSection(AllowedCallersClaimsValidator.DefaultAllowedCallersKey).Get<string[]>();
-
-            if (allowedCallersList != null)
+            if (allowedCallerClaimId != null)
             {
                 var claims = CreateCallerClaims(allowedCallerClaimId);
 
-                if (allowedCallersList.Contains(allowedCallerClaimId) || allowedCallersList.Contains("*"))
+                var allowedCallersList = configuration.GetSection(AllowedCallersClaimsValidator.DefaultAllowedCallersKey).Get<string[]>();
+
+                if (allowedCallersList != null)
                 {
-                    await validator.ValidateClaimsAsync(claims);
+                    if (allowedCallersList.Contains(allowedCallerClaimId) || allowedCallersList.Contains("*"))
+                    {
+                        await validator.ValidateClaimsAsync(claims);
+                    }
+                    else
+                    {
+                        await ValidateUnauthorizedAccessException(allowedCallerClaimId, validator, claims);
+                    }
                 }
                 else
                 {
-                    Exception ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => validator.ValidateClaimsAsync(claims));
-
-                    Assert.Equal(
-                        $"Received a request from a bot with an app ID of \"{allowedCallerClaimId}\". To enable requests from this caller," +
-                        $" add the app ID to your ${AllowedCallersClaimsValidator.DefaultAllowedCallersKey} configuration.", ex.Message);
+                    await ValidateUnauthorizedAccessException(allowedCallerClaimId, validator, claims);
                 }
             }
+        }
+
+        private static async Task ValidateUnauthorizedAccessException(string allowedCallerClaimId, AllowedCallersClaimsValidator validator, List<Claim> claims)
+        {
+            Exception ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => validator.ValidateClaimsAsync(claims));
+
+            Assert.Equal(
+                $"Received a request from a bot with an app ID of \"{allowedCallerClaimId}\". To enable requests from this caller," +
+                $" add the app ID to your ${AllowedCallersClaimsValidator.DefaultAllowedCallersKey} configuration.", ex.Message);
         }
 
         private List<Claim> CreateCallerClaims(string appId)
@@ -116,7 +135,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
             return new List<Claim>()
             {
                 new Claim(AuthenticationConstants.AppIdClaim, appId),
-                new Claim(AuthenticationConstants.VersionClaim, version),
+                new Claim(AuthenticationConstants.VersionClaim, _version),
                 new Claim(AuthenticationConstants.AudienceClaim, audienceClaim),
             };
         }
