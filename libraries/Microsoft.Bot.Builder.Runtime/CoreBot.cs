@@ -69,13 +69,6 @@ namespace Microsoft.Bot.Builder.Runtime
         /// <seealso cref="ActivityTypes"/>
         public virtual async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var rootDialog = (AdaptiveDialog)this._dialogManager.RootDialog;
-            if (turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity &&
-                SkillValidation.IsSkillClaim(claimIdentity.Claims))
-            {
-                rootDialog.AutoEndDialog = true;
-            }
-
             await this._dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             await this._conversationState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
             await this._userState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
