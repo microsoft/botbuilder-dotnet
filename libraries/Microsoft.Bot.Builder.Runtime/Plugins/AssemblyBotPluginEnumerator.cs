@@ -44,8 +44,31 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
 
             foreach (Type type in pluginAssembly.GetTypes())
             {
-                if (typeof(IBotPlugin).IsAssignableFrom(type) &&
-                    Activator.CreateInstance(type) is IBotPlugin plugin)
+                // Ensure that the type is non-nested, public and can be assigned to the IBotPlugin interface.
+
+                if (!typeof(IBotPlugin).IsAssignableFrom(type) ||
+                    !type.IsPublic ||
+                    type.IsNested)
+                {
+                    continue;
+                }
+
+                // Ensure that the type has a public, paramterless constructor.
+
+                ConstructorInfo constructor = type.GetConstructor(
+                    bindingAttr: BindingFlags.Instance | BindingFlags.Public,
+                    binder: null,
+                    types: Type.EmptyTypes,
+                    modifiers: null);
+
+                if (constructor == null)
+                {
+                    continue;
+                }
+
+                // Construct and return the plugin instance.
+
+                if (Activator.CreateInstance(type) is IBotPlugin plugin)
                 {
                     yield return plugin;
                 }
