@@ -13,9 +13,9 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
     /// </summary>
     public static class ConfigurationBuilderExtensions
     {
-        private const string AppSettingsRelativePath = @"settings/appsettings.json";
+        private const string AppSettingsRelativePath = @"appsettings.json";
         private const string ComposerDialogsDirectoryName = "ComposerDialogs";
-        private const string DevelopmentApplicationRoot = "../../../../../";
+        private const string DevelopmentApplicationRoot = "./";
         private const string DialogFileExtension = ".dialog";
 
         /// <summary>
