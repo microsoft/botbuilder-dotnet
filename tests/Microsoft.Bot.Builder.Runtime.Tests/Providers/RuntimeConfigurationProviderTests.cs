@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Providers;
 using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
 using Microsoft.Bot.Builder.Runtime.Providers.Channel;
@@ -22,6 +23,7 @@ using Microsoft.Bot.Builder.Runtime.Providers.Credentials;
 using Microsoft.Bot.Builder.Runtime.Providers.Storage;
 using Microsoft.Bot.Builder.Runtime.Providers.Telemetry;
 using Microsoft.Bot.Builder.Runtime.Settings;
+using Microsoft.Bot.Builder.Runtime.Tests.Plugins;
 using Microsoft.Bot.Builder.Runtime.Tests.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -69,6 +71,61 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers
                         { "rootDialog", ResourceId }
                     })
             };
+        }
+
+        [Fact]
+        public void ConfigureServices_Succeeds_Plugins()
+        {
+            var loadedPluginNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var plugins = new Dictionary<string, ICollection<IBotPlugin>>(StringComparer.OrdinalIgnoreCase)
+            {
+                {
+                    "TestPluginOne", new[]
+                    {
+                        new TestBotPlugin(loadAction: (context) => Assert.True(loadedPluginNames.Add("TestPluginOne")))
+                    }
+                },
+                {
+                    "TestPluginTwo", new[]
+                    {
+                        new TestBotPlugin(loadAction: (context) => Assert.True(loadedPluginNames.Add("TestPluginTwo")))
+                    }
+                }
+            };
+
+            var pluginEnumerator = new TestBotPluginEnumerator(plugins);
+            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+
+            var services = new ServiceCollection();
+
+            services.AddTransient<IConfiguration>(_ => configuration);
+#if NETCOREAPP2_1
+            services.AddTransient<IHostingEnvironment, HostingEnvironment>();
+#elif NETCOREAPP3_1
+            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
+#endif
+            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer(new[]
+            {
+                new JsonResource(ResourceId, data: BuildDialog())
+            }));
+
+            new RuntimeConfigurationProvider(pluginEnumerator)
+            {
+                Adapter = new BotCoreAdapterProvider(),
+                Credentials = new DeclarativeCredentialsProvider(),
+                RootDialog = new StringExpression(ResourceId),
+                Plugins =
+                {
+                    new BotPluginDefinition { Name = "TestPluginOne" },
+                    new BotPluginDefinition { Name = "TestPluginTwo" }
+                },
+                Storage = new MemoryStorageProvider()
+            }.ConfigureServices(services, configuration);
+
+            Assert.Equal(2, loadedPluginNames.Count);
+            Assert.Contains("TestPluginOne", loadedPluginNames);
+            Assert.Contains("TestPluginTwo", loadedPluginNames);
         }
 
         [Theory]
@@ -201,6 +258,14 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Providers
 
                     Assert.Equal(expected: ResourceId, actual: exception.ParamName);
                 });
+        }
+
+        [Fact]
+        public void Constructor_Throws_ArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(
+                "pluginEnumerator",
+                () => new RuntimeConfigurationProvider(pluginEnumerator: null));
         }
 
         [Theory]
