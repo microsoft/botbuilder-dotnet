@@ -71,7 +71,11 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     if (!_checkedContainers.Contains(containerName))
                     {
                         _checkedContainers.Add(containerName);
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+#pragma warning disable VSTHRD011 // Use AsyncLazy<T>
                         containerClient.CreateIfNotExistsAsync().Wait();
+#pragma warning restore VSTHRD011 // Use AsyncLazy<T>
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
                     }
 
                     return containerClient;

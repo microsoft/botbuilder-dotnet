@@ -75,7 +75,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     refDialogName = jToken.Value<string>();
 
                     // We can't do this asynchronously as the Json.NET interface is synchronous
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
                     jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
                 }
 
                 var kind = (string)jToken["$kind"];

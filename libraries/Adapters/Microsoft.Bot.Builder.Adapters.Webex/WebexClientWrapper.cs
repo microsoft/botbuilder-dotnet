@@ -147,8 +147,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var encoding = new ASCIIEncoding();
             var bytes = encoding.GetBytes(parsedContent);
 
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
             var newStream = http.GetRequestStream();
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
             newStream.Write(bytes, 0, bytes.Length);
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
             newStream.Close();
 
             var response = await http.GetResponseAsync().ConfigureAwait(false);

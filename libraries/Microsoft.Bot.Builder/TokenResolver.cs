@@ -59,7 +59,9 @@ namespace Microsoft.Bot.Builder
                 // Run the poll operations in the background.
                 // On retrieving a token from the token service the TokenResolver creates an Activity to route the token to the bot to continue the conversation.
                 // If these Tasks are awaited and the user doesn't complete the login flow, the bot may timeout in sending its response to the channel which can cause the streaming connection to disconnect.
+#pragma warning disable VSTHRD110 // Observe result of async calls
                 Task.WhenAll(pollTokenTasks.ToArray());
+#pragma warning restore VSTHRD110 // Observe result of async calls
             }
         }
 

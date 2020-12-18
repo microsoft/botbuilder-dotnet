@@ -24,7 +24,9 @@ namespace Microsoft.Bot.Connector
         /// <returns>ConversationResourceResponse.</returns>
         public static ConversationResourceResponse CreateDirectConversation(this IConversations operations, ChannelAccount bot, ChannelAccount user, Activity activity = null)
         {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return Task.Factory.StartNew(s => ((IConversations)s).CreateConversationAsync(GetDirectParameters(bot, user, activity)), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -58,7 +60,9 @@ namespace Microsoft.Bot.Connector
         /// <returns>ConversationResourceResponse.</returns>
         public static ConversationResourceResponse CreateDirectConversation(this IConversations operations, string botAddress, string userAddress, Activity activity = null)
         {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return Task.Factory.StartNew(s => ((IConversations)s).CreateConversationAsync(GetDirectParameters(botAddress, userAddress, activity)), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -94,7 +98,9 @@ namespace Microsoft.Bot.Connector
         /// <returns>ResourceResponse.</returns>
         public static ResourceResponse SendToConversation(this IConversations operations, Activity activity)
         {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return Task.Factory.StartNew(s => ((IConversations)s).SendToConversationAsync(activity.Conversation.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -127,7 +133,9 @@ namespace Microsoft.Bot.Connector
         /// <returns>ResourceResponse.</returns>
         public static ResourceResponse ReplyToActivity(this IConversations operations, Activity activity)
         {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return Task.Factory.StartNew(s => ((IConversations)s).ReplyToActivityAsync(activity.Conversation.Id, activity.ReplyToId, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -165,7 +173,9 @@ namespace Microsoft.Bot.Connector
         /// <returns>ResourceResponse.</returns>
         public static ResourceResponse UpdateActivity(this IConversations operations, Activity activity)
         {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return Task.Factory.StartNew(s => ((IConversations)s).UpdateActivityAsync(activity.Conversation.Id, activity.Id, activity), operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>

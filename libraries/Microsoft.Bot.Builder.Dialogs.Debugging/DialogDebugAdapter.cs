@@ -162,7 +162,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     try
                     {
                         // TODO: remove synchronous waits
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
                         UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
 
                         // while the stopped condition is true, atomically release the mutex
                         while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
@@ -177,7 +179,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         }
 
                         // TODO: remove synchronous waits
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
                         UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
 
                         // allow one step to progress since next was requested
                         if (run.Phase == Phase.Next)

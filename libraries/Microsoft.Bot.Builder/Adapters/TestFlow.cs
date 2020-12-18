@@ -85,7 +85,9 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <remarks>This methods sends the activities from the user to the bot and
         /// checks the responses from the bot based on the activities described in the
         /// current test flow.</remarks>
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
         public Task StartTestAsync() => _testTask;
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
         /// <summary>
         /// Adds a message activity from the user to the bot.
@@ -103,7 +105,9 @@ namespace Microsoft.Bot.Builder.Adapters
             return new TestFlow(
                 async () =>
                 {
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     await _adapter.SendTextToBotAsync(userSays, _callback, default(CancellationToken)).ConfigureAwait(false);
                 },
@@ -130,7 +134,9 @@ namespace Microsoft.Bot.Builder.Adapters
                     //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
                     //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions
                     //  could be thrown.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     var cu = Activity.CreateConversationUpdateActivity();
                     cu.MembersAdded.Add(this._adapter.Conversation.User);
@@ -156,7 +162,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     await _adapter.ProcessActivityAsync((Activity)userActivity, _callback, default(CancellationToken)).ConfigureAwait(false);
                 },
@@ -175,7 +183,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     await Task.Delay((int)ms).ConfigureAwait(false);
                 },
@@ -194,7 +204,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     await Task.Delay(timespan).ConfigureAwait(false);
                 },
@@ -326,7 +338,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     if (System.Diagnostics.Debugger.IsAttached)
                     {
@@ -355,7 +369,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await this._testTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
 
                     try
                     {

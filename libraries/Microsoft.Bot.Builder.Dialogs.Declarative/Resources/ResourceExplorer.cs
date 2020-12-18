@@ -180,7 +180,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>created type.</returns>
         public T LoadType<T>(Resource resource)
         {
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return LoadTypeAsync<T>(resource).GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -663,7 +665,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     cancelReloadToken = new CancellationTokenSource();
 #pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (this code looks problematic but excluding the rule for now, we need to analyze threading and re-entrance in more detail before trying to change it).
                     Task.Delay(1000, cancelReloadToken.Token)
+#pragma warning disable VSTHRD105 // Avoid method overloads that assume TaskScheduler.Current
                         .ContinueWith(t =>
+#pragma warning restore VSTHRD105 // Avoid method overloads that assume TaskScheduler.Current
                         {
                             if (t.IsCanceled)
                             {
@@ -673,7 +677,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                             var changed = changedResources.ToArray();
                             changedResources = new ConcurrentBag<Resource>();
                             this.OnChanged(changed);
+#pragma warning disable VSTHRD105 // Avoid method overloads that assume TaskScheduler.Current
+#pragma warning disable VSTHRD110 // Observe result of async calls
                         }).ContinueWith(t => t.Status);
+#pragma warning restore VSTHRD110 // Observe result of async calls
+#pragma warning restore VSTHRD105 // Avoid method overloads that assume TaskScheduler.Current
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
                 }
             }

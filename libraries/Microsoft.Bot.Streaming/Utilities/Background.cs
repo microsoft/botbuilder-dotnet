@@ -31,7 +31,9 @@ namespace Microsoft.Bot.Streaming.Utilities
         public static void Run(Func<CancellationToken, Task> task, IDictionary<string, object> properties = null)
 #pragma warning restore CA1801 // Review unused parameters
         {
+#pragma warning disable VSTHRD110 // Observe result of async calls
             Task.Run(() => TrackAsRequestAsync(() => task(CancellationToken.None)));
+#pragma warning restore VSTHRD110 // Observe result of async calls
         }
 
         /// <summary>
