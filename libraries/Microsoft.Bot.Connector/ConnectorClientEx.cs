@@ -209,9 +209,9 @@ namespace Microsoft.Bot.Connector
                     // .NETCoreAppVersion/v3.1
 
                     // from:
-                    // Microsoft Windows 10.0.19042
+                    // .NET Framework 4.8.4250.0
                     // to:
-                    // MicrosoftWindows/10.0.19042
+                    // .NETFramework/4.8.4250.0
 
                     var splitFramework = framework.Replace(",", string.Empty).Replace(" ", string.Empty).Split('=');
                     if (splitFramework.Length > 1)
