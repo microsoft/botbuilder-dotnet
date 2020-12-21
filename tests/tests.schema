@@ -2561,9 +2561,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "ActivityId",
           "description": "expression to an activityId to delete",
-          "examples": [
-            "=$lastActivity"
-          ]
+            "examples": [
+                "=turn.lastresult.id"
+            ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -3315,9 +3315,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
-          "examples": [
-            "$lastActivity"
-          ]
+            "examples": [
+                "turn.lastresult.id"
+            ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -9830,9 +9830,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "An string expression with the activity id to update.",
-          "examples": [
-            "=dialog.lastActivityId"
-          ]
+            "examples": [
+                "=turn.lastresult.id"
+            ]
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
