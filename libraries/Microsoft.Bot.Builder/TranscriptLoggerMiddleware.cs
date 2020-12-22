@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Builder
             {
                 turnContext.Activity.From ??= new ChannelAccount();
 
-                if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]))
+                if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]) && string.IsNullOrEmpty(turnContext.Activity.From.Role))
                 {
-                    turnContext.Activity.From.Properties["role"] = "user";
+                    turnContext.Activity.From.Role = RoleTypes.User;
                 }
 
                 // We should not log ContinueConversation events used by skills to initialize the middleware.
