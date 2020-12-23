@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Recognizer implementation which uses regex expressions to identify intents.
     /// </summary>
-    public class RegexRecognizer : Recognizer
+    public class RegexRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// Class identifier.
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             await dialogContext.Context.TraceActivityAsync(nameof(RegexRecognizer), JObject.FromObject(recognizerResult), "RecognizerResult", "Regex RecognizerResult", cancellationToken).ConfigureAwait(false);
 
-            this.TrackRecognizerResult(dialogContext, "RegexRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "RegexRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
             return recognizerResult;
         }
