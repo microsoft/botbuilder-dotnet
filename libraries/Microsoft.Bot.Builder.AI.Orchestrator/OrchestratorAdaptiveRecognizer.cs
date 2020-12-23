@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     /// <summary>
     /// Class that represents an adaptive Orchestrator recognizer.
     /// </summary>
-    public class OrchestratorAdaptiveRecognizer : Recognizer
+    public class OrchestratorAdaptiveRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// The Kind name for this recognizer.
@@ -217,7 +217,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             await dc.Context.TraceActivityAsync(nameof(OrchestratorAdaptiveRecognizer), JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition ", cancellationToken).ConfigureAwait(false);
-            TrackRecognizerResult(dc, nameof(OrchestratorAdaptiveRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dc, nameof(OrchestratorAdaptiveRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
 
             return recognizerResult;
         }
