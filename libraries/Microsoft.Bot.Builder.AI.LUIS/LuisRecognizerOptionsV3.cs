@@ -164,12 +164,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 var uri = BuildUri(options);
                 var content = BuildRequestBody(utterance, options);
-                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
-                using (var stringContent = new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json"))
+
+                using (var request = new HttpRequestMessage(HttpMethod.Post, uri.Uri))
                 {
-                    var response = await httpClient.PostAsync(uri.Uri, stringContent, cancellationToken).ConfigureAwait(false);
+                    request.Content = new StringContent(content.ToString(), Encoding.UTF8, "application/json");
+                    request.Headers.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
+
+                    var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
-                    httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
+
                     luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 }
 
