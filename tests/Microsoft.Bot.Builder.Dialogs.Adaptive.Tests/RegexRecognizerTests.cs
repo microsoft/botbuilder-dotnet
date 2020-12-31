@@ -200,6 +200,149 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             ValidateTelemetry(recognizer, telemetryClient, dc, customActivity, result, callCount: 4);
         }
 
+        [Fact]
+        public async Task RegexRecognizerTests_Intents_LogsTelemetry_WithLogPiiFalse()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new RegexRecognizer()
+            {
+                Intents = new List<IntentPattern>()
+                {
+                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
+                },
+                Entities = new EntityRecognizerSet()
+                {
+                    new AgeEntityRecognizer(),
+                    new ConfirmationEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
+                },
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false
+            };
+
+            // Test with DC
+            var dc = CreateContext(codeIntentMessageText);
+            var activity = dc.Context.Activity;
+            var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+            ValidateCodeIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
+
+            // Verify seed text is not exposed
+            dynamic entities = result.Entities;
+            Assert.Null(entities.text);
+            Assert.NotNull(entities.code);
+
+            dc = CreateContext(colorIntentMessageText);
+            activity = dc.Context.Activity;
+            result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+            ValidateColorIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 2);
+
+            dc = CreateContext(string.Empty);
+
+            // Test custom activity
+            var customActivity = Activity.CreateMessageActivity();
+            customActivity.Text = codeIntentMessageText;
+            customActivity.Locale = Culture.English;
+            result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
+            ValidateCodeIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, customActivity, result, callCount: 3);
+
+            customActivity.Text = colorIntentMessageText;
+            result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
+            ValidateColorIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, customActivity, result, callCount: 4);
+        }
+        
+        [Fact]
+        public async Task RegexRecognizerTests_Intents_LogsTelemetry_WithLogPiiFalseByDefault()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new RegexRecognizer()
+            {
+                Intents = new List<IntentPattern>()
+                {
+                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
+                },
+                Entities = new EntityRecognizerSet()
+                {
+                    new AgeEntityRecognizer(),
+                    new ConfirmationEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
+                },
+                TelemetryClient = telemetryClient.Object,
+            };
+
+            // Test with DC
+            var dc = CreateContext(codeIntentMessageText);
+            var activity = dc.Context.Activity;
+            var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+            ValidateCodeIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
+
+            // Verify seed text is not exposed
+            dynamic entities = result.Entities;
+            Assert.Null(entities.text);
+            Assert.NotNull(entities.code);
+
+            dc = CreateContext(colorIntentMessageText);
+            activity = dc.Context.Activity;
+            result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
+            ValidateColorIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 2);
+
+            dc = CreateContext(string.Empty);
+
+            // Test custom activity
+            var customActivity = Activity.CreateMessageActivity();
+            customActivity.Text = codeIntentMessageText;
+            customActivity.Locale = Culture.English;
+            result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
+            ValidateCodeIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, customActivity, result, callCount: 3);
+
+            customActivity.Text = colorIntentMessageText;
+            result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
+            ValidateColorIntent(result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, customActivity, result, callCount: 4);
+        }
+
         private static void ValidateColorIntent(RecognizerResult result)
         {
             Assert.Single(result.Intents);
