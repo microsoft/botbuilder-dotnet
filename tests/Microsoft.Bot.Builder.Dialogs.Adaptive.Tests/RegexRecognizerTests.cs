@@ -386,8 +386,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 client => client.TrackEvent(
                     "RegexRecognizerResult",
                     It.Is<Dictionary<string, string>>(invocation => HasCorrectTelemetryProperties((IDictionary<string, string>)telemetryProps, activity, (bool)logPersonalInfo)),
-                    It.IsAny<IDictionary<string, double>>()),
-                Times.Exactly(callCount));
+                    It.IsAny<IDictionary<string, double>>()));
         }
 
         private bool HasCorrectTelemetryProperties(IDictionary<string, string> telemetryProperties, IActivity activity, bool logPersonalInformation)
