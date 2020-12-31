@@ -419,10 +419,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                                 return false;
                             }
                         }
-                        else if (entry.Key == "Entities" && !expectedProps.ContainsKey(entry.Key))
+                        else if (entry.Key == "Entities")
                         {
-                            Console.WriteLine($"Returning false. entry.Value ({entry.Value}) and expectedProps doesn't contain such key.");
-                            return false;
+                            continue;
                         }
                         else
                         {
