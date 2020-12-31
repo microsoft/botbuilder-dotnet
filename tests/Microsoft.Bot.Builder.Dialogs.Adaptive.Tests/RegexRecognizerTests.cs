@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -418,6 +418,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                                 Console.WriteLine($"Returning false. IsPiiProperty but does not have CorrectPiiValue. entry {entry.Key}: {entry.Value}");
                                 return false;
                             }
+                        }
+                        else if (entry.Key == "Entities" && !expectedProps.ContainsKey(entry.Key))
+                        {
+                            Console.WriteLine($"Returning false. entry.Value ({entry.Value}) and expectedProps doesn't contain such key.");
+                            return false;
                         }
                         else
                         {
