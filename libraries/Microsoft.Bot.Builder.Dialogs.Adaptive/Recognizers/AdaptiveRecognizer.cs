@@ -5,14 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
@@ -68,9 +62,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dialogContext.State);
             
-            if (logPersonalInfo && !string.IsNullOrEmpty(dialogContext.Context.Activity.Text))
+            if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {
-                properties.Add("Text", dialogContext.Context.Activity.Text);
+                properties.Add("Text", recognizerResult.Text);
             }
 
             // Additional Properties can override "stock" properties.
