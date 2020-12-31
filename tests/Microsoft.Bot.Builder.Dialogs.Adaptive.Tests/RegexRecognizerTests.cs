@@ -393,7 +393,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
         private bool HasCorrectTelemetryProperties(IDictionary<string, string> telemetryProperties, IActivity activity, bool logPersonalInformation)
         {
-           Console.WriteLine("STARTING HasCorrectTelemetryProperties");
+            Console.WriteLine("STARTING HasCorrectTelemetryProperties");
             var expectedProps = GetExpectedProps(activity, logPersonalInformation);
 
             Console.WriteLine($"expectedProps.Count {expectedProps.Count}");
@@ -431,6 +431,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                     else
                     {
                         Console.WriteLine($"Telemetry logged a property that was unexpected {entry.Key}: {entry.Value}");
+
                         // Telemetry logged a property that was unexpected
                         return false;
                     }
