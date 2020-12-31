@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -392,23 +393,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
         private bool HasCorrectTelemetryProperties(IDictionary<string, string> telemetryProperties, IActivity activity, bool logPersonalInformation)
         {
+           Console.WriteLine("STARTING HasCorrectTelemetryProperties");
             var expectedProps = GetExpectedProps(activity, logPersonalInformation);
 
+            Console.WriteLine($"expectedProps.Count {expectedProps.Count}");
+            Console.WriteLine($"telemetryProperties.Count {telemetryProperties.Count}");
             if (expectedProps.Count == telemetryProperties.Count)
             {
                 foreach (var entry in telemetryProperties)
                 {
+                    Console.WriteLine($"entry.Key {entry.Key}, entry.Value {entry.Value}");
                     if (expectedProps.ContainsKey(entry.Key))
                     {
                         if (IsPiiProperty(entry.Key))
                         {
                             if (logPersonalInformation == false)
                             {
+                                Console.WriteLine($"Returning false. IsPiiProperty and log pii is false. entry {entry.Key}: {entry.Value}");
                                 return false;
                             }
 
                             if (!HasCorrectPiiValue(telemetryProperties))
                             {
+                                Console.WriteLine($"Returning false. IsPiiProperty but does not have CorrectPiiValue. entry {entry.Key}: {entry.Value}");
                                 return false;
                             }
                         }
@@ -416,12 +423,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         {
                             if (entry.Value != expectedProps[entry.Key])
                             {
+                                Console.WriteLine($"Returning false. entry.Value ({entry.Value}) != expectedProps[entry.Key] ({entry.Key})");
                                 return false;
                             }
                         }
                     } 
                     else
                     {
+                        Console.WriteLine($"Telemetry logged a property that was unexpected {entry.Key}: {entry.Value}");
                         // Telemetry logged a property that was unexpected
                         return false;
                     }
@@ -430,6 +439,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 return true;
             }
 
+            Console.WriteLine("Counts don't equal. Returning false. expectedProps.Count ({expectedProps.Count}), telemetryProperties.Count ({telemetryProperties.Count})");
             return false;
         }
 
