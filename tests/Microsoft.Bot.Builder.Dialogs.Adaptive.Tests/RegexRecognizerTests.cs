@@ -423,7 +423,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         {
                             if (entry.Value != expectedProps[entry.Key])
                             {
-                                Console.WriteLine($"Returning false. entry.Value ({entry.Value}) != expectedProps[entry.Key] ({entry.Key})");
+                                Console.WriteLine($"Returning false. entry.Value ({entry.Value}) != expectedProps[entry.Key] ({expectedProps[entry.Key]})");
                                 return false;
                             }
                         }
