@@ -11,5 +11,8 @@
                 ]
             }
         }
+    },
+    "policies": {
+        "actionPolicyType": "interactive"
     }
 }

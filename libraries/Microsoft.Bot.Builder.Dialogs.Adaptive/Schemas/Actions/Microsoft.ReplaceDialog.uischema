@@ -9,5 +9,8 @@
             "options",
             "*"
         ]
+    },
+    "policies": {
+        "actionPolicyType": "lastAction"
     }
 }

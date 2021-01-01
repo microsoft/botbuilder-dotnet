@@ -8,5 +8,8 @@
             "activity",
             "*"
         ]
+    },
+    "policies": {
+        "actionPolicyType": "interactive"
     }
 }

@@ -3,5 +3,8 @@
     "form": {
         "label": "Break out of loop",
         "subtitle": "Break out of loop"
+    },
+    "policies": {
+        "actionPolicyType": "lastAction"
     }
 }

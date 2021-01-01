@@ -226,5 +226,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ActivityTemplateConverter();
             yield return new StaticActivityTemplateConverter();
         }
+
+        /// <summary>
+        /// Gets Action Policies for all types.
+        /// </summary>
+        /// <param name="resourceExplorer"><see cref="ResourceExplorer"/> with expected path to get all schema resources.</param>
+        /// <returns>Adaptive <see cref="DeclarativeType"/> resources.</returns>
+#pragma warning disable CA1801 // Review unused parameters
+        public virtual IEnumerable<ActionPolicy> GetActionPolicies(ResourceExplorer resourceExplorer)
+#pragma warning restore CA1801 // Review unused parameters
+        {
+            // LastAction (dialog continues)
+            yield return new ActionPolicy(BreakLoop.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(ContinueLoop.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(GotoAction.Kind, ActionPolicyType.LastAction);
+
+            // LastAction (dialog ends)
+            yield return new ActionPolicy(CancelDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(CancelAllDialogs.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(EndDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(RepeatDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(ReplaceDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(ThrowException.Kind, ActionPolicyType.LastAction);
+
+            // Interactive (Input Dialogs)
+            yield return new ActionPolicy(Ask.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(AttachmentInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(ChoiceInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(ConfirmInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(DateTimeInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(NumberInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(OAuthInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(TextInput.Kind, ActionPolicyType.Interactive);
+
+            // TriggerNotInteractive (no intput dialogs)
+            yield return new ActionPolicy(OnEndOfConversationActivity.Kind, ActionPolicyType.TriggerNotInteractive);
+
+            //? yield return new ActionPolicy(OnBeginDialog.Kind, ActionPolicyType.TriggerNotInteractive);
+            //? yield return new ActionPolicy(OnConversationUpdateActivity.Kind, ActionPolicyType.TriggerNotInteractive);
+
+            //AllowedTrigger (Action only valid in n Triggers)
+
+            //TriggerRequiresAction (Trigger requries one of n actions)
+        }
     }
 }
