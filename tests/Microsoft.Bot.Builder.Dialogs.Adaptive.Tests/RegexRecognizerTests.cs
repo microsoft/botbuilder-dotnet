@@ -393,13 +393,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                                 return false;
                             }
                         }
-
-                        // else if (entry.Key == "Entities" && !(entry.Value.Contains("code") || entry.Value.Contains("color")))
                         else if (entry.Key == "Entities")
                         {
-                            // Console.WriteLine($"Returning false. entry.Key ({entry.Key}) does not contain color or code in value ({entry.Value})");
-                            // return false;
-                            continue;
+                            ValidateHasCorrectEntities(activity, entry);
                         }
                         else
                         {
@@ -424,6 +420,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             Console.WriteLine("Counts don't equal. Returning false. expectedProps.Count ({expectedProps.Count}), telemetryProperties.Count ({telemetryProperties.Count})");
             return false;
+        }
+
+        private bool ValidateHasCorrectEntities(IActivity activity, KeyValuePair<string, string> entry)
+        {
+            var text = activity.AsMessageActivity().Text;
+            var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
+
+            if (text == codeIntentMessageText && !actualEntity.ContainsKey("code"))
+            {
+                Console.WriteLine($"Returning false. text ({text}) contains code, but entity does not contain code.");
+                return false;
+            }
+
+            if (text == colorIntentMessageText && !actualEntity.ContainsKey("color"))
+            {
+                Console.WriteLine($"Returning false. text ({text}) contains code, but entity does not contain code.");
+                return false;
+            }
+
+            return true;
         }
 
         private Dictionary<string, string> GetExpectedProps(IActivity activity, bool logPersonalInformation)
