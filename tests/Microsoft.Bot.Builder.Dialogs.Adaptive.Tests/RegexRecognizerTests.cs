@@ -389,7 +389,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         }
                         else if (entry.Key == "Entities")
                         {
-                            ValidateHasCorrectEntities(activity, entry);
+                            var hasValidEntities = ValidateEntities(activity, entry);
+                            if (hasValidEntities == false)
+                            {
+                                return false;
+                            }
                         }
                         else
                         {
@@ -410,24 +414,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             }
 
             return false;
-        }
-
-        private bool ValidateHasCorrectEntities(IActivity activity, KeyValuePair<string, string> entry)
-        {
-            var text = activity.AsMessageActivity().Text;
-            var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
-
-            if (text == codeIntentMessageText && !actualEntity.ContainsKey("code"))
-            {
-                return false;
-            }
-
-            if (text == colorIntentMessageText && !actualEntity.ContainsKey("color"))
-            {
-                return false;
-            }
-
-            return true;
         }
 
         private Dictionary<string, string> GetExpectedProps(IActivity activity, bool logPersonalInformation)
@@ -484,6 +470,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         private bool HasCorrectPiiValue(IDictionary<string, string> telemetryProperties)
         {
             return telemetryProperties.ContainsKey("Text") && (telemetryProperties["Text"] == codeIntentMessageText || telemetryProperties["Text"] == colorIntentMessageText);
+        }
+
+        private bool ValidateEntities(IActivity activity, KeyValuePair<string, string> entry)
+        {
+            var text = activity.AsMessageActivity().Text;
+            var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
+
+            if (text == codeIntentMessageText && !actualEntity.ContainsKey("code"))
+            {
+                return false;
+            }
+
+            if (text == colorIntentMessageText && !actualEntity.ContainsKey("color"))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
