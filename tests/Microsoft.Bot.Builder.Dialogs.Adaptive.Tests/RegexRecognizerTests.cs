@@ -374,15 +374,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 {
                     if (expectedProps.ContainsKey(entry.Key))
                     {
-                        var areEqual = AreTelemetryPropertiesEqual(entry, telemetryProperties, logPersonalInformation, activity, expectedProps);
-                        if (areEqual == false)
+                        if (AreTelemetryPropertiesEqual(entry, telemetryProperties, logPersonalInformation, activity, expectedProps) == false)
                         {
                             return false;
                         }
                     } 
                     else
                     {
-                        // Telemetry logged a property that was unexpected
                         return false;
                     }
                 }
@@ -433,18 +431,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             }
             else if (entry.Key == "Entities")
             {
-                var hasValidEntities = ValidateEntities(activity, entry);
-                if (hasValidEntities == false)
-                {
-                    areEqual = false;
-                }
+                areEqual = HasValidEntities(activity, entry) ? true : false;
             }
             else
             {
-                if (entry.Value != expectedProps[entry.Key])
-                {
-                    areEqual = false;
-                }
+                areEqual = entry.Value == expectedProps[entry.Key] ? true : false;
             }
 
             return areEqual;
@@ -461,7 +452,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             return telemetryProperties.ContainsKey("Text") && (telemetryProperties["Text"] == codeIntentMessageText || telemetryProperties["Text"] == colorIntentMessageText);
         }
 
-        private bool ValidateEntities(IActivity activity, KeyValuePair<string, string> entry)
+        private bool HasValidEntities(IActivity activity, KeyValuePair<string, string> entry)
         {
             var text = activity.AsMessageActivity().Text;
             var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
