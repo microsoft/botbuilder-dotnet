@@ -393,10 +393,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                                 return false;
                             }
                         }
-                        else if (entry.Key == "Entities" && !(entry.Value.Contains("code") || entry.Value.Contains("color")))
+
+                        // else if (entry.Key == "Entities" && !(entry.Value.Contains("code") || entry.Value.Contains("color")))
+                        else if (entry.Key == "Entities")
                         {
-                            Console.WriteLine($"Returning false. entry.Key ({entry.Key}) does not contain color or code in value ({entry.Value})");
-                            return false;
+                            // Console.WriteLine($"Returning false. entry.Key ({entry.Key}) does not contain color or code in value ({entry.Value})");
+                            // return false;
+                            continue;
                         }
                         else
                         {
