@@ -423,34 +423,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             if (text == codeIntentMessageText)
             {
-                expectedProps = new Dictionary<string, string>()
-                {
-                   { "AlteredText", null },
-                   { "TopIntent", "codeIntent" },
-                   { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
-                   { "Intents", "{\"codeIntent\":{\"score\":1.0,\"pattern\":\"(?<code>[a-z][0-9])\"}}" },
-                   {
-                       "Entities",
-                       "{\r\n  \"code\": [\r\n    \"a1\",\r\n    \"b2\"\r\n  ],\r\n  \"$instance\": {\r\n    \"code\": [\r\n      {\r\n        \"startIndex\": 7,\r\n        \"endIndex\": 9,\r\n        \"score\": 1.0,\r\n        \"text\": \"a1\",\r\n        \"type\": \"code\",\r\n        \"resolution\": null\r\n      },\r\n      {\r\n        \"startIndex\": 10,\r\n        \"endIndex\": 12,\r\n        \"score\": 1.0,\r\n        \"text\": \"b2\",\r\n        \"type\": \"code\",\r\n        \"resolution\": null\r\n      }\r\n    ]\r\n  }\r\n}"
-                   },
-                   { "AdditionalProperties", null },
-                };
+                expectedProps = GetCodeIntentProperties();
             }
 
             if (text == colorIntentMessageText)
             {
-                expectedProps = new Dictionary<string, string>()
-                {
-                   { "AlteredText", null },
-                   { "TopIntent", "colorIntent" },
-                   { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
-                   { "Intents", "{\"colorIntent\":{\"score\":1.0,\"pattern\":\"(?i)(color|colour)\"}}" },
-                   {
-                       "Entities",
-                       "{\r\n  \"color\": [\r\n    \"red\",\r\n    \"orange\"\r\n  ],\r\n  \"$instance\": {\r\n    \"color\": [\r\n      {\r\n        \"startIndex\": 19,\r\n        \"endIndex\": 23,\r\n        \"score\": 1.0,\r\n        \"text\": \"red\",\r\n        \"type\": \"color\",\r\n        \"resolution\": null\r\n      },\r\n      {\r\n        \"startIndex\": 27,\r\n        \"endIndex\": 34,\r\n        \"score\": 1.0,\r\n        \"text\": \"orange\",\r\n        \"type\": \"color\",\r\n        \"resolution\": null\r\n      }\r\n    ]\r\n  }\r\n}"
-                   },
-                   { "AdditionalProperties", null },
-                };
+                expectedProps = GetColorIntentProperties();
             }
 
             if (logPersonalInformation == true)
@@ -474,20 +452,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
         private bool ValidateEntities(IActivity activity, KeyValuePair<string, string> entry)
         {
+            Console.Write($"ValidateEntities for entry {entry.Key}: {entry.Value}");
             var text = activity.AsMessageActivity().Text;
+            Console.Write($"text: {text}");
             var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
 
             if (text == codeIntentMessageText && !actualEntity.ContainsKey("code"))
             {
+                Console.WriteLine("codeIntent -- entity doesn't contain code key");
                 return false;
             }
 
             if (text == colorIntentMessageText && !actualEntity.ContainsKey("color"))
             {
+                Console.WriteLine("colorIntent -- doesn't contain color entity key");
                 return false;
             }
 
             return true;
+        }
+
+        private Dictionary<string, string> GetCodeIntentProperties()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "AlteredText", null },
+                { "TopIntent", "codeIntent" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
+                { "Intents", "{\"codeIntent\":{\"score\":1.0,\"pattern\":\"(?<code>[a-z][0-9])\"}}" },
+                {
+                    "Entities",
+                    "{\r\n  \"code\": [\r\n    \"a1\",\r\n    \"b2\"\r\n  ],\r\n  \"$instance\": {\r\n    \"code\": [\r\n      {\r\n        \"startIndex\": 7,\r\n        \"endIndex\": 9,\r\n        \"score\": 1.0,\r\n        \"text\": \"a1\",\r\n        \"type\": \"code\",\r\n        \"resolution\": null\r\n      },\r\n      {\r\n        \"startIndex\": 10,\r\n        \"endIndex\": 12,\r\n        \"score\": 1.0,\r\n        \"text\": \"b2\",\r\n        \"type\": \"code\",\r\n        \"resolution\": null\r\n      }\r\n    ]\r\n  }\r\n}"
+                },
+                { "AdditionalProperties", null },
+            };
+        }
+
+        private Dictionary<string, string> GetColorIntentProperties()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "AlteredText", null },
+                { "TopIntent", "colorIntent" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
+                { "Intents", "{\"colorIntent\":{\"score\":1.0,\"pattern\":\"(?i)(color|colour)\"}}" },
+                {
+                    "Entities",
+                    "{\r\n  \"color\": [\r\n    \"red\",\r\n    \"orange\"\r\n  ],\r\n  \"$instance\": {\r\n    \"color\": [\r\n      {\r\n        \"startIndex\": 19,\r\n        \"endIndex\": 23,\r\n        \"score\": 1.0,\r\n        \"text\": \"red\",\r\n        \"type\": \"color\",\r\n        \"resolution\": null\r\n      },\r\n      {\r\n        \"startIndex\": 27,\r\n        \"endIndex\": 34,\r\n        \"score\": 1.0,\r\n        \"text\": \"orange\",\r\n        \"type\": \"color\",\r\n        \"resolution\": null\r\n      }\r\n    ]\r\n  }\r\n}"
+                },
+                { "AdditionalProperties", null },
+            };
         }
     }
 }
