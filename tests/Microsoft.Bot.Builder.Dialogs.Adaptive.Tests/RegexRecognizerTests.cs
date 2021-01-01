@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -452,20 +451,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
         private bool ValidateEntities(IActivity activity, KeyValuePair<string, string> entry)
         {
-            Console.Write($"ValidateEntities for entry {entry.Key}: {entry.Value}");
             var text = activity.AsMessageActivity().Text;
-            Console.Write($"text: {text}");
             var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
 
             if (text == codeIntentMessageText && !actualEntity.ContainsKey("code"))
             {
-                Console.WriteLine("codeIntent -- entity doesn't contain code key");
                 return false;
             }
 
             if (text == colorIntentMessageText && !actualEntity.ContainsKey("color"))
             {
-                Console.WriteLine("colorIntent -- doesn't contain color entity key");
                 return false;
             }
 
