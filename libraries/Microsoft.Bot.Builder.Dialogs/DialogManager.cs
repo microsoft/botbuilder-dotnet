@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Class which runs the dialog system.
     /// </summary>
-    public class DialogManager
+    public class DialogManager : IBot
     {
         private const string LastAccess = "_lastAccess";
         private string _rootDialogId;
@@ -249,6 +249,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
 
             return new DialogManagerResult { TurnResult = turnResult };
+        }
+
+        /// <summary>
+        /// IBot OnTurnAsync => OnTurnAsync.
+        /// </summary>
+        /// <remarks>This allows the DialogManager to be used directly as an IBot implementation with adapters.</remarks>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>task.</returns>
+        async Task IBot.OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            await this.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

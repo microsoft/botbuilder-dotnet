@@ -78,6 +78,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task DialogManager_IBot()
+        {
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = (TestAdapter)new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(userState, convoState)
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            await new TestFlow((TestAdapter)adapter, (IBot)new DialogManager(new SimpleDialog()))
+                .Send("hi")
+                    .AssertReply("simple")
+            .StartTestAsync();
+        }
+
+        [Fact]
         public async Task DialogManager_AlternateProperty()
         {
             var firstConversationId = Guid.NewGuid().ToString();
@@ -247,7 +265,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         Actions = new List<Dialog> { new AdaptiveDialog("inner") }
                     }
-                } 
+                }
             };
 
             var storage = new MemoryStorage();
@@ -261,7 +279,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // The inner adaptive dialog should be registered on the DialogManager after OnTurn
             var dm = new DialogManager(root);
-            
+
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -283,8 +301,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<Dialog> 
-                        { 
+                        Actions = new List<Dialog>
+                        {
                             new AdaptiveDialog("inner")
                             {
                                 Triggers = new List<OnCondition>
@@ -294,13 +312,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                                         Actions = new List<Dialog>
                                         {
                                             new AdaptiveDialog("innerinner")
-                                            { 
+                                            {
                                                 Triggers = new List<OnCondition>()
-                                                { 
+                                                {
                                                     new OnBeginDialog()
-                                                    { 
+                                                    {
                                                         Actions = new List<Dialog>()
-                                                        { 
+                                                        {
                                                             new SendActivity("helloworld")
                                                         }
                                                     }
