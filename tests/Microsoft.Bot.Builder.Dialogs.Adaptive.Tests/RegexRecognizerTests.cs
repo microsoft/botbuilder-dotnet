@@ -374,32 +374,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 {
                     if (expectedProps.ContainsKey(entry.Key))
                     {
-                        if (IsPiiProperty(entry.Key))
+                        var areEqual = AreTelemetryPropertiesEqual(entry, telemetryProperties, logPersonalInformation, activity, expectedProps);
+                        if (areEqual == false)
                         {
-                            if (logPersonalInformation == false)
-                            {
-                                return false;
-                            }
-
-                            if (!HasCorrectPiiValue(telemetryProperties))
-                            {
-                                return false;
-                            }
-                        }
-                        else if (entry.Key == "Entities")
-                        {
-                            var hasValidEntities = ValidateEntities(activity, entry);
-                            if (hasValidEntities == false)
-                            {
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            if (entry.Value != expectedProps[entry.Key])
-                            {
-                                return false;
-                            }
+                            return false;
                         }
                     } 
                     else
@@ -436,6 +414,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             }
 
             return expectedProps;
+        }
+
+        private bool AreTelemetryPropertiesEqual(KeyValuePair<string, string> entry, IDictionary<string, string> telemetryProperties, bool logPersonalInformation, IActivity activity, IDictionary<string, string> expectedProps)
+        {
+            var areEqual = true;
+            if (IsPiiProperty(entry.Key))
+            {
+                if (logPersonalInformation == false)
+                {
+                    areEqual = false;
+                }
+
+                if (!HasCorrectPiiValue(telemetryProperties))
+                {
+                    areEqual = false;
+                }
+            }
+            else if (entry.Key == "Entities")
+            {
+                var hasValidEntities = ValidateEntities(activity, entry);
+                if (hasValidEntities == false)
+                {
+                    areEqual = false;
+                }
+            }
+            else
+            {
+                if (entry.Value != expectedProps[entry.Key])
+                {
+                    areEqual = false;
+                }
+            }
+
+            return areEqual;
         }
 
         private bool IsPiiProperty(string telemetryProperty)
