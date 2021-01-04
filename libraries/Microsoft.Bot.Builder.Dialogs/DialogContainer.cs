@@ -50,7 +50,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             set
             {
                 base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
-                Dialogs.TelemetryClient = base.TelemetryClient;
+
+                // Care! Dialogs.TelemetryClient assigment internally assigns the 
+                // TelemetryClient for each dialog which could lead to an eventual stack
+                // overflow in cyclical dialg structures. 
+                // Don't set the telemetry client if the candidate instance is the same as the currently set one.
+                if (Dialogs.TelemetryClient != value)
+                {
+                    Dialogs.TelemetryClient = base.TelemetryClient;
+                }
             }
         }
 

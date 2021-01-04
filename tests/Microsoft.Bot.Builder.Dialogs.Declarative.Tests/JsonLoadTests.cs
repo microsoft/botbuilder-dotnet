@@ -46,6 +46,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply("World")
                 .Send("World what?")
                 .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
             .StartTestAsync();
         }
 
