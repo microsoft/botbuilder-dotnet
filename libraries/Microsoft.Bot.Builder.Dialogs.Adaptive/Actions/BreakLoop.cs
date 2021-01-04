@@ -43,22 +43,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("disabled")]
         public BoolExpression Disabled { get; set; }
 
-        ///// <summary>
-        ///// Gets the Action Policies for this Action.
-        ///// <see cref="ActionPolicyType.LastAction"/>.
-        ///// </summary>
-        ///// <value>
-        ///// <see cref="ActionPolicy"/>s for this Action.
-        ///// </value>
-        //[JsonIgnore]
-        //public IEnumerable<ActionPolicy> ActionPolicies
-        //{ 
-        //    get 
-        //    {
-        //        yield return new ActionPolicy { ActionPolicyType = ActionPolicyType.LastAction };
-        //    } 
-        //}
-
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>

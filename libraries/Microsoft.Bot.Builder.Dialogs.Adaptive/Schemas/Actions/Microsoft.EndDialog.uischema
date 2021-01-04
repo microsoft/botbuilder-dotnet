@@ -4,8 +4,5 @@
         "label": "End this dialog",
         "subtitle": "End Dialog",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
-    },
-    "policies": {
-        "actionPolicyType": "lastAction"
     }
 }

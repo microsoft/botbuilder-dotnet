@@ -3,8 +3,5 @@
     "form": {
         "label": "Continue loop",
         "subtitle": "Continue loop"
-    },
-    "policies": {
-        "actionPolicyType": "lastAction"
     }
 }

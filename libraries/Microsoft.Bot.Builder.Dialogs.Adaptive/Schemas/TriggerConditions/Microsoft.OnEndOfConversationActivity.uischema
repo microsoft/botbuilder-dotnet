@@ -10,8 +10,5 @@
         ],
         "label": "Conversation ended",
         "subtitle": "EndOfConversation activity"
-    },
-    "policies": {
-        "actionPolicyType": "triggerNotInteractive"
     }
 }

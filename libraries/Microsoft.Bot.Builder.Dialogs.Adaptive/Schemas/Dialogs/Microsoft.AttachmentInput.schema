@@ -54,5 +54,10 @@
                 }
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "actionPolicyType": "interactive"
+        }
+    ]
 }

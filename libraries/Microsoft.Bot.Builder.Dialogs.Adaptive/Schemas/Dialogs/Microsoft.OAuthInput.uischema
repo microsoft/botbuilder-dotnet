@@ -8,8 +8,5 @@
             "connectionName",
             "*"
         ]
-    },
-    "policies": {
-        "actionPolicyType": "interactive"
     }
 }

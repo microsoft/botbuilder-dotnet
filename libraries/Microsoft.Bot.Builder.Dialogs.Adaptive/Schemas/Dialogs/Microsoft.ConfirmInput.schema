@@ -160,5 +160,10 @@
                 }
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "actionPolicyType": "interactive"
+        }
+    ]
 }

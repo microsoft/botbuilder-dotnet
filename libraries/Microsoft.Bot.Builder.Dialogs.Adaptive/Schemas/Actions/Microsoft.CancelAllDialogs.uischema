@@ -4,8 +4,5 @@
         "label": "Cancel all active dialogs",
         "subtitle": "Cancel All Dialogs",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
-    },
-    "policies": {
-        "actionPolicyType": "lastAction"
     }
 }

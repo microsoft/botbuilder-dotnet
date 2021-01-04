@@ -3,8 +3,5 @@
     "form": {
         "label": "Throw an exception",
         "subtitle": "Throw an exception"
-    },
-    "policies": {
-        "actionPolicyType": "lastAction"
     }
 }

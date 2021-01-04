@@ -4,8 +4,5 @@
         "label": "End turn",
         "subtitle": "End Turn",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
-    },
-    "policies": {
-        "actionPolicyType": "lastAction"
     }
 }
