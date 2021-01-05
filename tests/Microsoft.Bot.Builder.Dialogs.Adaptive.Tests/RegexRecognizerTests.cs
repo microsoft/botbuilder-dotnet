@@ -45,29 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                      new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
                      new IntentPattern("colorIntent", "(?i)(color|colour)"),
                 },
-                Entities = new EntityRecognizerSet()
-                {
-                    new AgeEntityRecognizer(),
-                    new ConfirmationEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-                }
+                Entities = CreateEntityRecognizerSet()
             };
 
             // test with DC
@@ -111,29 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                      new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
                      new IntentPattern("colorIntent", "(?i)(color|colour)"),
                 },
-                Entities = new EntityRecognizerSet()
-                {
-                    new AgeEntityRecognizer(),
-                    new ConfirmationEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-                },
+                Entities = CreateEntityRecognizerSet(),
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = true
             };
@@ -183,29 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                      new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
                      new IntentPattern("colorIntent", "(?i)(color|colour)"),
                 },
-                Entities = new EntityRecognizerSet()
-                {
-                    new AgeEntityRecognizer(),
-                    new ConfirmationEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-                },
+                Entities = CreateEntityRecognizerSet(),
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false
             };
@@ -255,29 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                      new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
                      new IntentPattern("colorIntent", "(?i)(color|colour)"),
                 },
-                Entities = new EntityRecognizerSet()
-                {
-                    new AgeEntityRecognizer(),
-                    new ConfirmationEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-                },
+                Entities = CreateEntityRecognizerSet(),
                 TelemetryClient = telemetryClient.Object,
             };
 
@@ -342,6 +254,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.Equal(2, entities.code.Count);
             Assert.Equal("a1", (string)entities.code[0]);
             Assert.Equal("b2", (string)entities.code[1]);
+        }
+
+        private static EntityRecognizerSet CreateEntityRecognizerSet()
+        {
+            return new EntityRecognizerSet()
+            {
+                new AgeEntityRecognizer(),
+                new ConfirmationEntityRecognizer(),
+                new CurrencyEntityRecognizer(),
+                new DateTimeEntityRecognizer(),
+                new DimensionEntityRecognizer(),
+                new EmailEntityRecognizer(),
+                new GuidEntityRecognizer(),
+                new HashtagEntityRecognizer(),
+                new IpEntityRecognizer(),
+                new MentionEntityRecognizer(),
+                new NumberEntityRecognizer(),
+                new NumberRangeEntityRecognizer(),
+                new OrdinalEntityRecognizer(),
+                new PercentageEntityRecognizer(),
+                new PhoneNumberEntityRecognizer(),
+                new TemperatureEntityRecognizer(),
+                new UrlEntityRecognizer(),
+                new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
+            };
         }
 
         private static DialogContext CreateContext(string text)
