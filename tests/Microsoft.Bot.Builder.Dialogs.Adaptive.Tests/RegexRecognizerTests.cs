@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,6 +19,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class RegexRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
+        private static readonly Lazy<RegexRecognizer> Recognizer = new Lazy<RegexRecognizer>(() =>
+        {
+            return new RegexRecognizer()
+            {
+                Intents = new List<IntentPattern>()
+                {
+                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
+                },
+                Entities = new EntityRecognizerSet()
+                {
+                    new AgeEntityRecognizer(),
+                    new ConfirmationEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
+                }
+            };
+        });
+        
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         private readonly string codeIntentMessageText = "intent a1 b2";
@@ -38,15 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         [Fact]
         public async Task RegexRecognizerTests_Intents()
         {
-            var recognizer = new RegexRecognizer()
-            {
-                Intents = new List<IntentPattern>()
-                {
-                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                },
-                Entities = CreateEntityRecognizerSet()
-            };
+            var recognizer = Recognizer.Value;
 
             // test with DC
             var dc = CreateContext(codeIntentMessageText);
@@ -82,17 +110,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task RegexRecognizerTests_Intents_LogsTelemetry_WithLogPiiTrue()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = new RegexRecognizer()
-            {
-                Intents = new List<IntentPattern>()
-                {
-                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                },
-                Entities = CreateEntityRecognizerSet(),
-                TelemetryClient = telemetryClient.Object,
-                LogPersonalInformation = true
-            };
+
+            var recognizer = Recognizer.Value;
+            recognizer.TelemetryClient = telemetryClient.Object;
+            recognizer.LogPersonalInformation = true;
 
             // Test with DC
             var dc = CreateContext(codeIntentMessageText);
@@ -132,17 +153,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task RegexRecognizerTests_Intents_LogsTelemetry_WithLogPiiFalse()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = new RegexRecognizer()
-            {
-                Intents = new List<IntentPattern>()
-                {
-                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                },
-                Entities = CreateEntityRecognizerSet(),
-                TelemetryClient = telemetryClient.Object,
-                LogPersonalInformation = false
-            };
+            var recognizer = Recognizer.Value;
+            recognizer.TelemetryClient = telemetryClient.Object;
+            recognizer.LogPersonalInformation = false;
 
             // Test with DC
             var dc = CreateContext(codeIntentMessageText);
@@ -182,16 +195,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task RegexRecognizerTests_Intents_LogsTelemetry_WithLogPiiFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = new RegexRecognizer()
-            {
-                Intents = new List<IntentPattern>()
-                {
-                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                },
-                Entities = CreateEntityRecognizerSet(),
-                TelemetryClient = telemetryClient.Object,
-            };
+            var recognizer = Recognizer.Value;
+            recognizer.TelemetryClient = telemetryClient.Object;
 
             // Test with DC
             var dc = CreateContext(codeIntentMessageText);
@@ -227,6 +232,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             ValidateTelemetry(recognizer, telemetryClient, dc, customActivity, result, callCount: 4);
         }
 
+        private static DialogContext CreateContext(string text)
+        {
+            var activity = Activity.CreateMessageActivity();
+            activity.Text = text;
+            return new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), (Activity)activity), new DialogState());
+        }
+
         private static void ValidateColorIntent(RecognizerResult result)
         {
             Assert.Single(result.Intents);
@@ -254,40 +266,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.Equal(2, entities.code.Count);
             Assert.Equal("a1", (string)entities.code[0]);
             Assert.Equal("b2", (string)entities.code[1]);
-        }
-
-        private static EntityRecognizerSet CreateEntityRecognizerSet()
-        {
-            return new EntityRecognizerSet()
-            {
-                new AgeEntityRecognizer(),
-                new ConfirmationEntityRecognizer(),
-                new CurrencyEntityRecognizer(),
-                new DateTimeEntityRecognizer(),
-                new DimensionEntityRecognizer(),
-                new EmailEntityRecognizer(),
-                new GuidEntityRecognizer(),
-                new HashtagEntityRecognizer(),
-                new IpEntityRecognizer(),
-                new MentionEntityRecognizer(),
-                new NumberEntityRecognizer(),
-                new NumberRangeEntityRecognizer(),
-                new OrdinalEntityRecognizer(),
-                new PercentageEntityRecognizer(),
-                new PhoneNumberEntityRecognizer(),
-                new TemperatureEntityRecognizer(),
-                new UrlEntityRecognizer(),
-                new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-            };
-        }
-
-        private static DialogContext CreateContext(string text)
-        {
-            var activity = Activity.CreateMessageActivity();
-            activity.Text = text;
-            return new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), (Activity)activity), new DialogState());
         }
 
         private void ValidateTelemetry(RegexRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)

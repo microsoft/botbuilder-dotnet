@@ -28,5 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
+
+        // [Fact]
+        // public async Task RecognizerSetTests_
     }
 }
