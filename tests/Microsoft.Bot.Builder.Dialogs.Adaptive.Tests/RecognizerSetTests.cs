@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
 using Microsoft.Bot.Schema;
 using Moq;
 using Xunit;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.ColorAndCodeUtils;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.RecognizerTelemetryUtils;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {

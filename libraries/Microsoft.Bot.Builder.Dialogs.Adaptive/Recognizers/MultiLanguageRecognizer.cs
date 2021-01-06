@@ -87,12 +87,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 if (this.Recognizers.TryGetValue(option, out var recognizer))
                 {
                     var result = await recognizer.RecognizeAsync(dialogContext, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                    this.TrackRecognizerResult(dialogContext, "MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+                    this.TrackRecognizerResult(dialogContext, "MultiLanguageRecognizerResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
                     return result;
                 }
             }
 
-            this.TrackRecognizerResult(dialogContext, "MultiLanguagesRecognizerResult", this.FillRecognizerResultTelemetryProperties(new RecognizerResult() { }, telemetryProperties, dialogContext), telemetryMetrics);
+            this.TrackRecognizerResult(dialogContext, "MultiLanguageRecognizerResult", this.FillRecognizerResultTelemetryProperties(new RecognizerResult() { }, telemetryProperties, dialogContext), telemetryMetrics);
             
             // nothing recognized
             return new RecognizerResult() { };

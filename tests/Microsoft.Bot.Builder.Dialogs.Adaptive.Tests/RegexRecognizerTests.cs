@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
@@ -9,14 +10,47 @@ using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Moq;
 using Xunit;
-using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.ColorAndCodeUtils;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.RecognizerTelemetryUtils;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class RegexRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
-        private static readonly Lazy<RegexRecognizer> Recognizer = new Lazy<RegexRecognizer>(() => CreateRecognizer());
+        private static readonly Lazy<RegexRecognizer> Recognizer = new Lazy<RegexRecognizer>(() =>
+        {
+            return new RegexRecognizer()
+            {
+                Intents = new List<IntentPattern>()
+                {
+                    new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                    new IntentPattern("colorIntent", "(?i)(color|colour)"),
+                },
+                Entities = new EntityRecognizerSet()
+                {
+                    new AgeEntityRecognizer(),
+                    new ConfirmationEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
+                }
+            };
+        });
         
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 

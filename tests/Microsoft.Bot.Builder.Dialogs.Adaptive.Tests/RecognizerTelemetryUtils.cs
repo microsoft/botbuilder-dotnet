@@ -11,11 +11,13 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    internal class ColorAndCodeUtils
+    internal class RecognizerTelemetryUtils
     {
         public static readonly string CodeIntentText = "intent a1 b2";
 
         public static readonly string ColorIntentText = "I would like color red and orange";
+
+        public static readonly string GreetingIntentTextEnUs = "howdy";
 
         public static async Task RecognizeIntentAndValidateTelemetry(string text, AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, int callCount)
         {
@@ -55,42 +57,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 ValidateColorIntent(result);
             }
 
+            if (text == GreetingIntentTextEnUs)
+            {
+                ValidateGreetingIntent(result);
+            }
+
             ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, callCount);
         }
 
-        public static RegexRecognizer CreateRecognizer()
+        public static void ValidateGreetingIntent(RecognizerResult result)
         {
-            return new RegexRecognizer()
-            {
-                Intents = new List<IntentPattern>()
-                {
-                    new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                    new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                },
-                Entities = new EntityRecognizerSet()
-                {
-                    new AgeEntityRecognizer(),
-                    new ConfirmationEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-                }
-            };
+            Assert.Single(result.Intents);
+            Assert.Equal("Greeting", result.Intents.Select(i => i.Key).First());
         }
 
         /// <summary>
@@ -191,6 +169,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 expectedProps = GetColorIntentProperties();
             }
 
+            if (text == GreetingIntentTextEnUs)
+            {
+                expectedProps = GetGreetingIntentProperties();
+            }
+
             if (logPersonalInformation == true)
             {
                 expectedProps.Add("Text", activity.AsMessageActivity().Text);
@@ -234,7 +217,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private static bool HasCorrectPiiValue(IDictionary<string, string> telemetryProperties)
         {
-            return telemetryProperties.ContainsKey("Text") && (telemetryProperties["Text"] == CodeIntentText || telemetryProperties["Text"] == ColorIntentText);
+            return telemetryProperties.ContainsKey("Text")
+                && (telemetryProperties["Text"] == CodeIntentText 
+                    || telemetryProperties["Text"] == ColorIntentText
+                    || telemetryProperties["Text"] == GreetingIntentTextEnUs);
         }
 
         private static bool HasValidEntities(IActivity activity, KeyValuePair<string, string> entry)
@@ -248,6 +234,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
 
             if (text == ColorIntentText && !actualEntity.ContainsKey("color"))
+            {
+                return false;
+            }
+
+            if (text == GreetingIntentTextEnUs && actualEntity.Count != 0)
             {
                 return false;
             }
@@ -284,6 +275,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     "{\r\n  \"color\": [\r\n    \"red\",\r\n    \"orange\"\r\n  ],\r\n  \"$instance\": {\r\n    \"color\": [\r\n      {\r\n        \"startIndex\": 19,\r\n        \"endIndex\": 23,\r\n        \"score\": 1.0,\r\n        \"text\": \"red\",\r\n        \"type\": \"color\",\r\n        \"resolution\": null\r\n      },\r\n      {\r\n        \"startIndex\": 27,\r\n        \"endIndex\": 34,\r\n        \"score\": 1.0,\r\n        \"text\": \"orange\",\r\n        \"type\": \"color\",\r\n        \"resolution\": null\r\n      }\r\n    ]\r\n  }\r\n}"
                 },
                 { "AdditionalProperties", null },
+            };
+        }
+
+        private static Dictionary<string, string> GetGreetingIntentProperties()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "AlteredText", null },
+                { "TopIntent", "Greeting" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
+                { "Intents", "{\"Greeting\":{\"score\":1.0,\"pattern\":\"(?i)howdy\"}}" },
+                { "Entities", "{}" },
+                { "AdditionalProperties", null }
             };
         }
     }
