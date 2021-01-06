@@ -100,11 +100,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
         
         [Fact]
-        public async Task RegexRecognizerTests_Intents_LogsTelemetry_WithLogPiiFalseByDefault()
+        public async Task RegexRecognizerTests_LogPii_FalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = Recognizer.Value;
             recognizer.TelemetryClient = telemetryClient.Object;
+            var dc = TestUtils.CreateContext("Salutations!");
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
+
+            Assert.Equal(false, logPersonalInformation);
 
             // Test with DC
             await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizer, telemetryClient, callCount: 1);

@@ -3,13 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text;
 using Moq;
 using Xunit;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.ColorAndCodeUtils;
@@ -85,26 +81,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizers = Recognizers.Value;
             recognizers.TelemetryClient = telemetryClient.Object;
+            recognizers.LogPersonalInformation = true;
 
-            var dc = TestUtils.CreateContext(CodeIntentText);
-            var activity = dc.Context.Activity;
-            var result = await recognizers.RecognizeAsync(dc, activity, CancellationToken.None);
-            ValidateCodeIntent(result);
-            ValidateTelemetry(recognizers, telemetryClient, dc, activity, result, callCount: 1);
-
-            dc = TestUtils.CreateContext(ColorIntentText);
-            activity = dc.Context.Activity;
-            result = await recognizers.RecognizeAsync(dc, activity, CancellationToken.None);
-            ValidateColorIntent(result);
-            ValidateTelemetry(recognizers, telemetryClient, dc, activity, result, callCount: 2);
+            await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizers, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry(ColorIntentText, recognizers, telemetryClient, callCount: 2);
 
             // Test custom activity
-            dc = TestUtils.CreateContext(string.Empty);
-            var customActivity = Activity.CreateMessageActivity();
-            customActivity.Text = CodeIntentText;
-            customActivity.Locale = Culture.English;
-            result = await recognizers.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
-            ValidateCodeIntent(result);
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(CodeIntentText, recognizers, telemetryClient, callCount: 3);
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(ColorIntentText, recognizers, telemetryClient, callCount: 4);
+        }
+        
+        [Fact]
+        public async Task RecognizerSetTests_Merge_LogsTelemetry_WhenLogPiiFalse()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizers = Recognizers.Value;
+            recognizers.TelemetryClient = telemetryClient.Object;
+            recognizers.LogPersonalInformation = false;
+
+            await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizers, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry(ColorIntentText, recognizers, telemetryClient, callCount: 2);
+
+            // Test custom activity
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(CodeIntentText, recognizers, telemetryClient, callCount: 3);
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(ColorIntentText, recognizers, telemetryClient, callCount: 4);
+        }
+
+        [Fact]
+        public async Task RecognizerSetTests_LogPii_FalseByDefault()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = Recognizers.Value;
+            recognizer.TelemetryClient = telemetryClient.Object;
+            var dc = TestUtils.CreateContext("Salutations!");
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
+
+            Assert.Equal(false, logPersonalInformation);
+
+            // Test with DC
+            await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizer, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry(ColorIntentText, recognizer, telemetryClient, callCount: 2);
+
+            // Test custom activity
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(CodeIntentText, recognizer, telemetryClient, callCount: 3);
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(ColorIntentText, recognizer, telemetryClient, callCount: 4);
         }
     }
 }

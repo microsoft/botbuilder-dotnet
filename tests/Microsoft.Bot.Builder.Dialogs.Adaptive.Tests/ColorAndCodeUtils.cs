@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 ValidateColorIntent(result);
             }
 
-            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount);
         }
         
         public static async Task RecognizeIntentAndValidateTelemetry_WithCustomActivity(string text, AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, int callCount)
@@ -42,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var customActivity = Activity.CreateMessageActivity();
             customActivity.Text = text;
             customActivity.Locale = Culture.English;
+            
             var result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
 
             if (text == CodeIntentText)
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 ValidateColorIntent(result);
             }
 
-            ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, result, callCount);
+            ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, callCount);
         }
 
         public static RegexRecognizer CreateRecognizer()
@@ -129,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal("b2", (string)entities.code[1]);
         }
 
-        public static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
+        public static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, int callCount)
         {
             var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
             var telemetryProps = telemetryClient.Invocations[callCount - 1].Arguments[1];
@@ -138,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             telemetryClient.Verify(
                 client => client.TrackEvent(
                     eventName,
-                    It.Is<Dictionary<string, string>>(invocation => HasCorrectTelemetryProperties((IDictionary<string, string>)telemetryProps, activity, (bool)logPersonalInfo)),
+                    It.Is<Dictionary<string, string>>(d => HasCorrectTelemetryProperties((IDictionary<string, string>)telemetryProps, activity, (bool)logPersonalInfo)),
                     null),
                 Times.Exactly(callCount));
         }
@@ -215,11 +216,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
             else if (entry.Key == "Entities")
             {
-                areEqual = HasValidEntities(activity, entry) ? true : false;
+                areEqual = HasValidEntities(activity, entry);
             }
             else
             {
-                areEqual = entry.Value == expectedProps[entry.Key] ? true : false;
+                areEqual = entry.Value == expectedProps[entry.Key];
             }
 
             return areEqual;
