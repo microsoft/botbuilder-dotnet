@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -366,6 +369,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.Equal(2, entities.color.Count);
             Assert.Equal("red", (string)entities.color[0]);
             Assert.Equal("Blue", (string)entities.color[1]);
+        }
+
+        [Fact]
+        public async Task TestTelemetry_DoesNotLogByDefault()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new EntityRecognizer()
+            {
+                TelemetryClient = telemetryClient.Object
+            };
+            var dialogContext = GetDialogContext(nameof(TestTelemetry_DoesNotLogByDefault), "gobble gobble");
+            var activity = dialogContext.Context.Activity;
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dialogContext.State);
+            
+            Assert.False(logPersonalInformation);
+
+            var result = await recognizer.RecognizeAsync(dialogContext, activity, CancellationToken.None);
+            Assert.NotNull(result);
+            Assert.Empty(result.Intents);
+            Assert.Empty(result.Entities);
+            Assert.Equal(0, telemetryClient.Invocations.Count);
         }
 
         private DialogContext GetDialogContext(string testName, string text, string locale = "en-us")
