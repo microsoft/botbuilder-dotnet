@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Recognizer implementation, intended to be a base class for adaptive recognizers.
     /// </summary>
-    public class AdaptiveRecognizer : Recognizer
+    public abstract class AdaptiveRecognizer : Recognizer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveRecognizer"/> class.
