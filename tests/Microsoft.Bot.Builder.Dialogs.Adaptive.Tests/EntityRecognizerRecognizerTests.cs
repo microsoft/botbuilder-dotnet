@@ -255,6 +255,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
+        public async Task TestChannelMentionEntityRecognizer_Telemetry_DoesNotLogByDefault()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new ChannelMentionEntityRecognizer()
+            {
+                TelemetryClient = telemetryClient.Object
+            };
+            var dialogContext = GetDialogContext(nameof(TestChannelMentionEntityRecognizer_Telemetry_DoesNotLogByDefault), "gobble gobble");
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dialogContext.State);
+            Assert.False(logPersonalInformation);
+
+            var result = await recognizer.RecognizeAsync(dialogContext, dialogContext.Context.Activity, CancellationToken.None);
+            Assert.NotNull(result);
+            Assert.Empty(result.Intents);
+            Assert.Empty(result.Entities);
+            Assert.Equal(0, telemetryClient.Invocations.Count);
+        }
+
+        [Fact]
         public void TestNumber()
         {
             var dialogContext = GetDialogContext(nameof(TestNumber), "This is a test of one, 2, three");
@@ -380,12 +399,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 TelemetryClient = telemetryClient.Object
             };
             var dialogContext = GetDialogContext(nameof(TestTelemetry_DoesNotLogByDefault), "gobble gobble");
-            var activity = dialogContext.Context.Activity;
+
             var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dialogContext.State);
-            
             Assert.False(logPersonalInformation);
 
-            var result = await recognizer.RecognizeAsync(dialogContext, activity, CancellationToken.None);
+            var result = await recognizer.RecognizeAsync(dialogContext, dialogContext.Context.Activity, CancellationToken.None);
             Assert.NotNull(result);
             Assert.Empty(result.Intents);
             Assert.Empty(result.Entities);
