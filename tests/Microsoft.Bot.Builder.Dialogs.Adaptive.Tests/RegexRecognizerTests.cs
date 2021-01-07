@@ -10,6 +10,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Moq;
 using Xunit;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.IntentValidations;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.RecognizerTelemetryUtils;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
@@ -142,9 +143,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 TelemetryClient = telemetryClient.Object
             };
             var dc = TestUtils.CreateContext("Salutations!");
-            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
 
-            Assert.Equal(false, logPersonalInformation);
+            Assert.False(logPersonalInformation);
 
             var result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             Assert.NotNull(result);

@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task RecognizerSetTests_LogPii_FalseByDefault()
+        public async Task RecognizerSetTests_LogPii_IsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizerSet = new RecognizerSet()
@@ -122,9 +122,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             };
 
             var dc = TestUtils.CreateContext("Salutations!");
-            var (logPersonalInformation, _) = recognizerSet.LogPersonalInformation.TryGetObject(dc.State);
+            var (logPersonalInformation, _) = recognizerSet.LogPersonalInformation.TryGetValue(dc.State);
 
-            Assert.Equal(false, logPersonalInformation);
+            Assert.False(logPersonalInformation);
 
             var result = await recognizerSet.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             Assert.NotNull(result);

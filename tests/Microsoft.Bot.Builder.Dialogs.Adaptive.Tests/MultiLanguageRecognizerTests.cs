@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
 using Moq;
 using Xunit;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.IntentValidations;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.RecognizerTelemetryUtils;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
         
         [Fact]
-        public async Task MultiLanguageRecognizerTest_Telemetry_DoesntLogPii_WhenFalse()
+        public async Task MultiLanguageRecognizerTest_Telemetry_DoesNotLogPii_WhenFalse()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = Recognizer.Value;
@@ -136,8 +137,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var activity = dc.Context.Activity;
             activity.Locale = "en-us";
 
-            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
-            Assert.Equal(false, logPersonalInformation);
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+            Assert.False(logPersonalInformation);
 
             var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
             ValidateGreetingIntent(result);

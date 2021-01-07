@@ -27,43 +27,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         Id = "x",
                         Intents = new List<IntentPattern>()
                         {
-                            new IntentPattern("x", CrossTrainText),
+                            new IntentPattern("DeferToRecognizer_y", CrossTrainText),
                             new IntentPattern("x", "x")
                         }
                     },
                     new RegexRecognizer()
                     {
-                        Id = "CodeRecognizer",
+                        Id = "y",
                         Intents = new List<IntentPattern>()
                         {
-                            new IntentPattern("DeferToRecognizer_x", CrossTrainText),
-                            new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                        },
-                        Entities = new EntityRecognizerSet()
-                        {
-                            new AgeEntityRecognizer(),
-                            new NumberEntityRecognizer(),
-                            new PercentageEntityRecognizer(),
-                            new PhoneNumberEntityRecognizer(),
-                            new TemperatureEntityRecognizer()
+                            new IntentPattern("y", CrossTrainText),
+                            new IntentPattern("y", "y")
                         }
                     },
                     new RegexRecognizer()
                     {
-                        Id = "ColorRecognizer",
+                        Id = "z",
                         Intents = new List<IntentPattern>()
                         {
-                            new IntentPattern("y", CrossTrainText),
-                            new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                        },
-                        Entities = new EntityRecognizerSet()
-                        {
-                            new UrlEntityRecognizer(),
-                            new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                            new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background)" },
-                            new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" }
+                            new IntentPattern("z", CrossTrainText),
+                            new IntentPattern("z", "z")
                         }
-                    }
+                    },
                 }
             };
         });
@@ -126,6 +111,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             recognizers.LogPersonalInformation = true;
 
             await RecognizeIntentAndValidateTelemetry(CrossTrainText, recognizers, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry("x", recognizers, telemetryClient, callCount: 2);
+        }
+
+        [Fact]
+        public async Task CrossTrainedRecognizerSetTests_Telemetry_DoesNotLogPii_WhenFalse()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizers = Recognizers.Value;
+            recognizers.TelemetryClient = telemetryClient.Object;
+            recognizers.LogPersonalInformation = false;
+
+            await RecognizeIntentAndValidateTelemetry(CrossTrainText, recognizers, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry("x", recognizers, telemetryClient, callCount: 2);
+        }
+
+        [Fact]
+        public async Task CrossTrainedRecognizerSetTests_LogPii_IsFalseByDefault()
+        {
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizers = Recognizers.Value;
+            recognizers.TelemetryClient = telemetryClient.Object;
+            var dc = TestUtils.CreateContext(CrossTrainText);
+
+            var (logPersonalInformation, _) = recognizers.LogPersonalInformation.TryGetValue(dc.State);
+            Assert.False(logPersonalInformation);
+
+            var result = await recognizers.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
+            Assert.NotNull(result);
+            Assert.Single(result.Intents);
         }
     }
 }
