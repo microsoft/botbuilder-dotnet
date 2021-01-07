@@ -19,22 +19,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public static readonly string GreetingIntentTextEnUs = "howdy";
 
+        public static readonly string CrossTrainText = "criss-cross applesauce";
+
         public static async Task RecognizeIntentAndValidateTelemetry(string text, AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, int callCount)
         {
             var dc = TestUtils.CreateContext(text);
             var activity = dc.Context.Activity;
             var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
 
-            if (text == CodeIntentText)
-            {
-                ValidateCodeIntent(result);
-            }
-            
-            if (text == ColorIntentText)
-            {
-                ValidateColorIntent(result);
-            }
-
+            ValidateIntent(text, result);
             ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount);
         }
         
@@ -47,6 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             
             var result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
 
+            ValidateIntent(text, result);
+            ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, callCount);
+        }
+
+        public static void ValidateIntent(string text, RecognizerResult result)
+        {
             if (text == CodeIntentText)
             {
                 ValidateCodeIntent(result);
@@ -62,31 +61,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 ValidateGreetingIntent(result);
             }
 
-            ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, callCount);
+            if (text == CrossTrainText)
+            {
+                // ValidateCrossTrainText
+            }
         }
 
-        public static void ValidateGreetingIntent(RecognizerResult result)
+        public static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, int callCount)
         {
-            Assert.Single(result.Intents);
-            Assert.Equal("Greeting", result.Intents.Select(i => i.Key).First());
-        }
+            var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
+            var telemetryProps = telemetryClient.Invocations[callCount - 1].Arguments[1];
+            var eventName = GetEventName(recognizer.GetType().Name);
 
-        /// <summary>
-        /// Validates the colorIntent utterance "I would like colors red and orange".
-        /// </summary>
-        /// <param name="result">The <see cref="RecognizerResult"/>.</param>
-        public static void ValidateColorIntent(RecognizerResult result)
-        {
-            Assert.Single(result.Intents);
-            Assert.Equal("colorIntent", result.Intents.Select(i => i.Key).First());
-
-            // entity assertions from capture group
-            dynamic entities = result.Entities;
-            Assert.NotNull(entities.color);
-            Assert.Null(entities.code);
-            Assert.Equal(2, entities.color.Count);
-            Assert.Equal("red", (string)entities.color[0]);
-            Assert.Equal("orange", (string)entities.color[1]);
+            telemetryClient.Verify(
+                client => client.TrackEvent(
+                    eventName,
+                    It.Is<Dictionary<string, string>>(d => HasCorrectTelemetryProperties((IDictionary<string, string>)telemetryProps, activity, (bool)logPersonalInfo)),
+                    null),
+                Times.Exactly(callCount));
         }
 
         /// <summary>
@@ -108,18 +100,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.Equal("b2", (string)entities.code[1]);
         }
 
-        public static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, int callCount)
+        /// <summary>
+        /// Validates the colorIntent utterance "I would like colors red and orange".
+        /// </summary>
+        /// <param name="result">The <see cref="RecognizerResult"/>.</param>
+        public static void ValidateColorIntent(RecognizerResult result)
         {
-            var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
-            var telemetryProps = telemetryClient.Invocations[callCount - 1].Arguments[1];
-            var eventName = GetEventName(recognizer.GetType().Name);
+            Assert.Single(result.Intents);
+            Assert.Equal("colorIntent", result.Intents.Select(i => i.Key).First());
 
-            telemetryClient.Verify(
-                client => client.TrackEvent(
-                    eventName,
-                    It.Is<Dictionary<string, string>>(d => HasCorrectTelemetryProperties((IDictionary<string, string>)telemetryProps, activity, (bool)logPersonalInfo)),
-                    null),
-                Times.Exactly(callCount));
+            // entity assertions from capture group
+            dynamic entities = result.Entities;
+            Assert.NotNull(entities.color);
+            Assert.Null(entities.code);
+            Assert.Equal(2, entities.color.Count);
+            Assert.Equal("red", (string)entities.color[0]);
+            Assert.Equal("orange", (string)entities.color[1]);
+        }
+
+        public static void ValidateGreetingIntent(RecognizerResult result)
+        {
+            Assert.Single(result.Intents);
+            Assert.Equal("Greeting", result.Intents.Select(i => i.Key).First());
         }
 
         private static string GetEventName(string recognizerName)
@@ -174,6 +176,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 expectedProps = GetGreetingIntentProperties();
             }
 
+            if (text == CrossTrainText)
+            {
+                expectedProps = GetChooseIntentProperties();
+            }
+
             if (logPersonalInformation == true)
             {
                 expectedProps.Add("Text", activity.AsMessageActivity().Text);
@@ -217,10 +224,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private static bool HasCorrectPiiValue(IDictionary<string, string> telemetryProperties)
         {
+            // TODO make stricter?
             return telemetryProperties.ContainsKey("Text")
-                && (telemetryProperties["Text"] == CodeIntentText 
+                && (telemetryProperties["Text"] == CodeIntentText
                     || telemetryProperties["Text"] == ColorIntentText
-                    || telemetryProperties["Text"] == GreetingIntentTextEnUs);
+                    || telemetryProperties["Text"] == GreetingIntentTextEnUs
+                    || telemetryProperties["Text"] == CrossTrainText);
         }
 
         private static bool HasValidEntities(IActivity activity, KeyValuePair<string, string> entry)
@@ -288,6 +297,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 { "Intents", "{\"Greeting\":{\"score\":1.0,\"pattern\":\"(?i)howdy\"}}" },
                 { "Entities", "{}" },
                 { "AdditionalProperties", null }
+            };
+        }
+
+        private static Dictionary<string, string> GetChooseIntentProperties()
+        {
+            return new Dictionary<string, string>()
+            {
+                { "AlteredText", null },
+                { "TopIntent", "ChooseIntent" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
+                { "Intents", "{\"ChooseIntent\":{\"score\":1.0}}" },
+                { "Entities", "{}" },
+                { "AdditionalProperties", "{\"candidates\":[{\"id\":\"x\",\"intent\":\"x\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"x\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"x\"}},{\"id\":\"ColorRecognizer\",\"intent\":\"y\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"y\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"ColorRecognizer\"}}]}" },
             };
         }
     }

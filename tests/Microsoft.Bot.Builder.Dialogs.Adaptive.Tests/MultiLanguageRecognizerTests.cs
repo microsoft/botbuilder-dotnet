@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,6 +16,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class MultiLanguageRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
+        private static readonly Lazy<MultiLanguageRecognizer> Recognizer = new Lazy<MultiLanguageRecognizer>(() =>
+        {
+            return new MultiLanguageRecognizer()
+            {
+                Recognizers = new ConcurrentDictionary<string, Recognizer>(
+                    new Dictionary<string, Recognizer>()
+                    {
+                        {
+                            "en-us",
+                            new RegexRecognizer()
+                            {
+                                Intents = new List<IntentPattern>()
+                                {
+                                    new IntentPattern("Greeting", "(?i)howdy"),
+                                    new IntentPattern("Goodbye", "(?i)bye")
+                                }
+                            }
+                        },
+                        {
+                            "en-gb",
+                            new RegexRecognizer()
+                            {
+                                Intents = new List<IntentPattern>()
+                                {
+                                    new IntentPattern("Greting", "(?i)hiya"),
+                                    new IntentPattern("Goodbye", "(?i)cheerio")
+                                }
+                            }
+                        },
+                        {
+                            "en",
+                            new RegexRecognizer()
+                            {
+                                Intents = new List<IntentPattern>()
+                                {
+                                    new IntentPattern("Greeting", "(?i)hello"),
+                                    new IntentPattern("Goodbye", "(?i)goodbye")
+                                }
+                            }
+                        }
+                    })
+            };
+        });
+        
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public MultiLanguageRecognizerTests(ResourceExplorerFixture resourceExplorerFixture)
@@ -62,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task MultiLanguageRecognizerTest_Telemetry_LogsPii_WhenTrue()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = CreateRecognizer();
+            var recognizer = Recognizer.Value;
             recognizer.TelemetryClient = telemetryClient.Object;
             recognizer.LogPersonalInformation = true;
 
@@ -73,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task MultiLanguageRecognizerTest_Telemetry_DoesntLogPii_WhenFalse()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = CreateRecognizer();
+            var recognizer = Recognizer.Value;
             recognizer.TelemetryClient = telemetryClient.Object;
             recognizer.LogPersonalInformation = false;
 
@@ -84,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task MultiLanguageRecognizerTest_LogPii_IsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = CreateRecognizer();
+            var recognizer = Recognizer.Value;
             recognizer.TelemetryClient = telemetryClient.Object;
             
             var dc = TestUtils.CreateContext(GreetingIntentTextEnUs);
@@ -96,50 +141,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
             var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
             ValidateGreetingIntent(result);
-        }
-
-        private static MultiLanguageRecognizer CreateRecognizer()
-        {
-            return new MultiLanguageRecognizer()
-            {
-                Recognizers = new ConcurrentDictionary<string, Recognizer>(
-                    new Dictionary<string, Recognizer>()
-                    {
-                        {
-                            "en-us",
-                            new RegexRecognizer()
-                            {
-                                Intents = new List<IntentPattern>()
-                                {
-                                    new IntentPattern("Greeting", "(?i)howdy"),
-                                    new IntentPattern("Goodbye", "(?i)bye")
-                                }
-                            }
-                        },
-                        {
-                            "en-gb",
-                            new RegexRecognizer()
-                            {
-                                Intents = new List<IntentPattern>()
-                                {
-                                    new IntentPattern("Greting", "(?i)hiya"),
-                                    new IntentPattern("Goodbye", "(?i)cheerio")
-                                }
-                            }
-                        },
-                        {
-                            "en",
-                            new RegexRecognizer()
-                            {
-                                Intents = new List<IntentPattern>()
-                                {
-                                    new IntentPattern("Greeting", "(?i)hello"),
-                                    new IntentPattern("Goodbye", "(?i)goodbye")
-                                }
-                            }
-                        }
-                    })
-            };
         }
     }
 }
