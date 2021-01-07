@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB Partitioned")]
-    public class CosmosDbPartitionStorageTests : StorageBaseTests, IDisposable, IClassFixture<CosmosDbPartitionStorageFixture>
+    public class CosmosDbPartitionStorageTests : StorageBaseTests, IAsyncLifetime, IClassFixture<CosmosDbPartitionStorageFixture>
     {
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
@@ -38,7 +38,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 });
         }
 
-        public async void Dispose()
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
         {
             _storage = null;
         }
