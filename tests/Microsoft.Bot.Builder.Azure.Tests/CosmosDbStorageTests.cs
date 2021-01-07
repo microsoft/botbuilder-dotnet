@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        public async Task InitializeAsync()
+        public async Task InitializeAsync() 
         {
             await Task.CompletedTask;
         }
