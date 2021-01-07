@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         internal static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, int callCount)
         {
             var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetObject(dc.State);
-            var telemetryProps = telemetryClient.Invocations[callCount - 1].Arguments[1] ?? throw new ArgumentOutOfRangeException("TelemetryClient was not invoked.");
+            var telemetryProps = telemetryClient.Invocations[callCount - 1].Arguments[1];
             var eventName = GetEventName(recognizer.GetType().Name);
 
             telemetryClient.Verify(
