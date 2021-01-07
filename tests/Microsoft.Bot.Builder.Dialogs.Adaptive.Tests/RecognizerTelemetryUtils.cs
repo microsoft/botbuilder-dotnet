@@ -130,33 +130,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             return true;
         }
 
-        //private static bool HasCorrectTelemetryProperties(IDictionary<string, string> telemetryProperties, IActivity activity, bool logPersonalInformation)
-        //{
-        //    var expectedProps = GetExpectedProps(activity, logPersonalInformation);
-
-        //    if (expectedProps.Count == telemetryProperties.Count)
-        //    {
-        //        foreach (var entry in telemetryProperties)
-        //        {
-        //            if (expectedProps.ContainsKey(entry.Key))
-        //            {
-        //                if (DoesExpectedEqualActual(entry, telemetryProperties, logPersonalInformation, activity, expectedProps) == false)
-        //                {
-        //                    return false;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return false;
-        //            }
-        //        }
-
-        //        return true;
-        //    }
-
-        //    return false;
-        //}
-
         private static Dictionary<string, string> GetExpectedProps(IActivity activity, bool logPersonalInformation)
         {
             var text = activity.AsMessageActivity().Text;
@@ -169,51 +142,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             return expectedProps;
         }
-
-        //private static bool DoesExpectedEqualActual(KeyValuePair<string, string> entry, IDictionary<string, string> telemetryProperties, bool logPersonalInformation, IActivity activity, IDictionary<string, string> expectedProps)
-        //{
-        //    var areEqual = true;
-        //    if (IsPiiProperty(entry.Key))
-        //    {
-        //        if (logPersonalInformation == false)
-        //        {
-        //            areEqual = false;
-        //        }
-
-        //        if (!HasCorrectPiiValue(telemetryProperties, activity))
-        //        {
-        //            areEqual = false;
-        //        }
-        //    }
-        //    else if (entry.Key == "Entities")
-        //    {
-        //        areEqual = HasValidEntities(activity, entry);
-        //    }
-        //    else
-        //    {
-        //        areEqual = entry.Value == expectedProps[entry.Key];
-        //    }
-
-        //    return areEqual;
-        //}
-
-        //private static bool IsPiiProperty(string telemetryProperty)
-        //{
-        //    // In the future, should consider also including AlteredText
-        //    return telemetryProperty == "Text";
-        //}
-
-        //private static bool HasCorrectPiiValue(IDictionary<string, string> telemetryProperties, IActivity activity)
-        //{
-        //    var userText = activity.AsMessageActivity().Text;
-
-        //    if (telemetryProperties.ContainsKey("Text"))
-        //    {
-        //        return telemetryProperties["Text"] == userText;
-        //    }
-
-        //    return false;
-        //}
 
         private static bool HasValidEntities(IActivity activity, KeyValuePair<string, string> entry)
         {
