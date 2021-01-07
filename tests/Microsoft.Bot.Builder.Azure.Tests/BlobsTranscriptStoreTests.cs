@@ -41,9 +41,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override ITranscriptStore TranscriptStore => new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, ContainerName);
 
-        public async Task InitializeAsync()
+        public Task InitializeAsync()
         {
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public async Task DisposeAsync()

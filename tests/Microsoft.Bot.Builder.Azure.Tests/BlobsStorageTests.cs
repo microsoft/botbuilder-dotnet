@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override string ContainerName => $"blobs{_testName.ToLower().Replace("_", string.Empty)}";
 
-        public async Task InitializeAsync()
+        public Task InitializeAsync()
         {
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public async Task DisposeAsync()
