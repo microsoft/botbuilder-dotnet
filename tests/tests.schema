@@ -2561,9 +2561,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "ActivityId",
           "description": "expression to an activityId to delete",
-          "examples": [
-            "=$lastActivity"
-          ]
+            "examples": [
+                "=turn.lastresult.id"
+            ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -3315,9 +3315,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
-          "examples": [
-            "$lastActivity"
-          ]
+            "examples": [
+                "turn.lastresult.id"
+            ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -7002,14 +7002,11 @@
           "description": "SnapShot file path.",
           "default": "=settings.orchestrator.shapshotpath"
         },
-        "entityRecognizers": {
-          "type": "array",
-          "title": "Entity recognizers",
-          "description": "Collection of entity recognizers to use.",
-          "items": {
-            "$kind": "Microsoft.IEntityRecognizer",
-            "$ref": "#/definitions/Microsoft.IEntityRecognizer"
-          }
+        "externalEntityRecognizer": {
+          "$kind": "Microsoft.IRecognizer",
+          "title": "External entity recognizer",
+          "description": "Entities recognized by this recognizer will be merged with Orchestrator results.",
+          "$ref": "#/definitions/Microsoft.IRecognizer"
         },
         "disambiguationScoreThreshold": {
           "$ref": "#/definitions/numberExpression",
@@ -9833,9 +9830,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "An string expression with the activity id to update.",
-          "examples": [
-            "=dialog.lastActivityId"
-          ]
+            "examples": [
+                "=turn.lastresult.id"
+            ]
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",

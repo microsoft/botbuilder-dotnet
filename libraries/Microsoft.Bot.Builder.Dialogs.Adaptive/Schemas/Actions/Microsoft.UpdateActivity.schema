@@ -24,7 +24,7 @@
             "title": "Activity Id",
             "description": "An string expression with the activity id to update.",
             "examples": [
-                "=dialog.lastActivityId"
+                "=turn.lastresult.id"
             ]
         },
         "activity": {
