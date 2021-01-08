@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/attachments/{attachmentId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/attachments/{attachmentId}").ToString();
             url = url.Replace("{attachmentId}", System.Uri.EscapeDataString(attachmentId));
 
             // Create HTTP transport objects
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/attachments/{attachmentId}/views/{viewId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/attachments/{attachmentId}/views/{viewId}").ToString();
             url = url.Replace("{attachmentId}", System.Uri.EscapeDataString(attachmentId));
             url = url.Replace("{viewId}", System.Uri.EscapeDataString(viewId));
 
