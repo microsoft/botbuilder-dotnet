@@ -94,6 +94,7 @@ steps:
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
     arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
     modifyOutputPath: false
+    verbosityRestore: 'diagnostic'
 
 - task: AzureCLI@2
   displayName: 'Preexisting RG: create Azure resources. Runs in even builds.'
