@@ -3,10 +3,10 @@
 
 namespace Microsoft.Bot.Connector.Teams
 {
-    using Microsoft.Bot.Schema.Teams;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Schema.Teams;
 
     /// <summary>
     /// Extension methods for TeamsOperations.
@@ -20,36 +20,38 @@ namespace Microsoft.Bot.Connector.Teams
         /// The operations group for this extension method.
         /// </param>
         /// <param name='teamId'>
-        /// Team Id
+        /// Team Id.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
+        /// <returns>The channel list for a given team.</returns>
         public static async Task<ConversationList> FetchChannelListAsync(this ITeamsOperations operations, string teamId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var _result = await operations.FetchChannelListWithHttpMessagesAsync(teamId, null, cancellationToken).ConfigureAwait(false))
+            using (var result = await operations.FetchChannelListWithHttpMessagesAsync(teamId, null, cancellationToken).ConfigureAwait(false))
             {
-                return _result.Body;
+                return result.Body;
             }
         }
 
         /// <summary>
-        /// Fetches details related to a team
+        /// Fetches details related to a team.
         /// </summary>
         /// <param name='operations'>
         /// The operations group for this extension method.
         /// </param>
         /// <param name='teamId'>
-        /// Team Id
+        /// Team Id.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
+        /// <returns>The details related to a team.</returns>
         public static async Task<TeamDetails> FetchTeamDetailsAsync(this ITeamsOperations operations, string teamId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var _result = await operations.FetchTeamDetailsWithHttpMessagesAsync(teamId, null, cancellationToken).ConfigureAwait(false))
+            using (var result = await operations.FetchTeamDetailsWithHttpMessagesAsync(teamId, null, cancellationToken).ConfigureAwait(false))
             {
-                return _result.Body;
+                return result.Body;
             }
         }
 
@@ -60,24 +62,25 @@ namespace Microsoft.Bot.Connector.Teams
         /// The operations group for this extension method.
         /// </param>
         /// <param name='meetingId'>
-        /// Team meeting Id
+        /// Team meeting Id.
         /// </param>
         /// <param name='participantId'>
-        /// Team meeting participant Id
+        /// Team meeting participant Id.
         /// </param>
         /// <param name='tenantId'>
-        /// Team meeting tenant Id
+        /// Team meeting tenant Id.
         /// </param>
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
+        /// <returns>The participant details related to a Teams meeting.</returns>
         public static async Task<TeamsMeetingParticipant> FetchParticipantAsync(this ITeamsOperations operations, string meetingId, string participantId, string tenantId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if(operations is TeamsOperations teamsOperations)
+            if (operations is TeamsOperations teamsOperations)
             {
-                using (var _result = await teamsOperations.FetchParticipantWithHttpMessagesAsync(meetingId, participantId, tenantId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await teamsOperations.FetchParticipantWithHttpMessagesAsync(meetingId, participantId, tenantId, null, cancellationToken).ConfigureAwait(false))
                 {
-                    return _result.Body;
+                    return result.Body;
                 }
             }
             else
