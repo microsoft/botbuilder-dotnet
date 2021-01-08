@@ -4,6 +4,7 @@
 namespace Microsoft.Bot.Connector.Teams
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -86,7 +87,7 @@ namespace Microsoft.Bot.Connector.Teams
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("teamId", teamId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -95,7 +96,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/teams/{teamId}/conversations").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/teams/{teamId}/conversations").ToString();
             url = url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
 
             return await GetResponseAsync<ConversationList>(url, shouldTrace, invocationId).ConfigureAwait(false);
@@ -142,7 +143,7 @@ namespace Microsoft.Bot.Connector.Teams
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("teamId", teamId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -151,7 +152,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/teams/{teamId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/teams/{teamId}").ToString();
             url = url.Replace("{teamId}", System.Uri.EscapeDataString(teamId));
 
             return await GetResponseAsync<TeamDetails>(url, shouldTrace, invocationId).ConfigureAwait(false);
@@ -194,7 +195,9 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
+#pragma warning disable CA1801 // Review unused parameters - cannot change without breaking backwards compat.
         public async Task<HttpOperationResponse<TeamsMeetingParticipant>> FetchParticipantWithHttpMessagesAsync(string meetingId, string participantId, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (meetingId == null)
@@ -217,7 +220,7 @@ namespace Microsoft.Bot.Connector.Teams
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("meetingId", meetingId);
                 tracingParameters.Add("participantId", participantId);
@@ -228,7 +231,7 @@ namespace Microsoft.Bot.Connector.Teams
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v1/meetings/{meetingId}/participants/{participantId}?tenantId={tenantId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}/participants/{participantId}?tenantId={tenantId}").ToString();
             url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
             url = url.Replace("{participantId}", System.Uri.EscapeDataString(participantId));
             url = url.Replace("{tenantId}", System.Uri.EscapeDataString(tenantId));

@@ -88,22 +88,22 @@ namespace Microsoft.Bot.Connector
             List<string> queryParameters = new List<string>();
             if (state != null)
             {
-                queryParameters.Add(string.Format("state={0}", System.Uri.EscapeDataString(state)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state)));
             }
 
             if (codeChallenge != null)
             {
-                queryParameters.Add(string.Format("code_challenge={0}", System.Uri.EscapeDataString(codeChallenge)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "code_challenge={0}", System.Uri.EscapeDataString(codeChallenge)));
             }
 
             if (emulatorUrl != null)
             {
-                queryParameters.Add(string.Format("emulatorUrl={0}", System.Uri.EscapeDataString(emulatorUrl)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "emulatorUrl={0}", System.Uri.EscapeDataString(emulatorUrl)));
             }
 
             if (finalRedirect != null)
             {
-                queryParameters.Add(string.Format("finalRedirect={0}", System.Uri.EscapeDataString(finalRedirect)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "finalRedirect={0}", System.Uri.EscapeDataString(finalRedirect)));
             }
 
             if (queryParameters.Count > 0)

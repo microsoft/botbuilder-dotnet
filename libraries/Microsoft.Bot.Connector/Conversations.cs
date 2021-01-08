@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Connector
             List<string> queryParameters = new List<string>();
             if (continuationToken != null)
             {
-                queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
             }
 
             if (queryParameters.Count > 0)
@@ -1990,12 +1990,12 @@ namespace Microsoft.Bot.Connector
             List<string> queryParameters = new List<string>();
             if (pageSize != null)
             {
-                queryParameters.Add(string.Format("pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
             }
 
             if (continuationToken != null)
             {
-                queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
             }
 
             if (queryParameters.Count > 0)

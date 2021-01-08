@@ -5,6 +5,7 @@ namespace Microsoft.Bot.Connector
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -329,7 +330,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("connectionName", connectionName);
@@ -341,21 +342,21 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = this.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "api/usertoken/exchange").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/usertoken/exchange").ToString();
             List<string> queryParameters = new List<string>();
             if (userId != null)
             {
-                queryParameters.Add(string.Format("userId={0}", System.Uri.EscapeDataString(userId)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "userId={0}", System.Uri.EscapeDataString(userId)));
             }
 
             if (connectionName != null)
             {
-                queryParameters.Add(string.Format("connectionName={0}", System.Uri.EscapeDataString(connectionName)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "connectionName={0}", System.Uri.EscapeDataString(connectionName)));
             }
 
             if (channelId != null)
             {
-                queryParameters.Add(string.Format("channelId={0}", System.Uri.EscapeDataString(channelId)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "channelId={0}", System.Uri.EscapeDataString(channelId)));
             }
 
             if (queryParameters.Count > 0)
@@ -547,7 +548,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("state", state);
                 tracingParameters.Add("codeChallenge", codeChallenge);
@@ -559,26 +560,26 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = this.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "api/botsignin/GetSignInResource").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/botsignin/GetSignInResource").ToString();
             List<string> queryParameters = new List<string>();
             if (state != null)
             {
-                queryParameters.Add(string.Format("state={0}", System.Uri.EscapeDataString(state)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "state={0}", System.Uri.EscapeDataString(state)));
             }
 
             if (codeChallenge != null)
             {
-                queryParameters.Add(string.Format("code_challenge={0}", System.Uri.EscapeDataString(codeChallenge)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "code_challenge={0}", System.Uri.EscapeDataString(codeChallenge)));
             }
 
             if (emulatorUrl != null)
             {
-                queryParameters.Add(string.Format("emulatorUrl={0}", System.Uri.EscapeDataString(emulatorUrl)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "emulatorUrl={0}", System.Uri.EscapeDataString(emulatorUrl)));
             }
 
             if (finalRedirect != null)
             {
-                queryParameters.Add(string.Format("finalRedirect={0}", System.Uri.EscapeDataString(finalRedirect)));
+                queryParameters.Add(string.Format(CultureInfo.InvariantCulture, "finalRedirect={0}", System.Uri.EscapeDataString(finalRedirect)));
             }
 
             if (queryParameters.Count > 0)
