@@ -4,6 +4,7 @@
 namespace Microsoft.Bot.Connector
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("continuationToken", continuationToken);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -92,7 +93,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations").ToString();
             List<string> queryParameters = new List<string>();
             if (continuationToken != null)
             {
@@ -281,7 +282,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("parameters", parameters);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -290,7 +291,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations").ToString();
 
             // Create HTTP transport objects
             var httpRequest = new HttpRequestMessage();
@@ -346,7 +347,7 @@ namespace Microsoft.Bot.Connector
             string responseContent = null;
             if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
                     responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -514,7 +515,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activity", activity);
@@ -524,7 +525,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
@@ -743,7 +744,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("transcript", transcript);
@@ -753,7 +754,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/history").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/history").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
@@ -980,7 +981,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
@@ -991,7 +992,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
@@ -1225,7 +1226,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
@@ -1236,7 +1237,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
@@ -1450,7 +1451,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
@@ -1460,7 +1461,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
@@ -1602,7 +1603,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -1611,7 +1612,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations/{conversationId}/members").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/members").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
@@ -1781,7 +1782,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("conversationId", conversationId);
@@ -1791,7 +1792,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations/{conversationId}/members/{userId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/members/{userId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{userId}", System.Uri.EscapeDataString(userId));
 
@@ -1973,7 +1974,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("pageSize", pageSize);
@@ -1984,7 +1985,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/pagedmembers").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/pagedmembers").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             List<string> queryParameters = new List<string>();
             if (pageSize != null)
@@ -2163,7 +2164,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("memberId", memberId);
@@ -2173,7 +2174,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations/{conversationId}/members/{memberId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/members/{memberId}").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{memberId}", System.Uri.EscapeDataString(memberId));
 
@@ -2324,7 +2325,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
@@ -2334,7 +2335,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}/members").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/activities/{activityId}/members").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
             url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
@@ -2508,7 +2509,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("attachmentUpload", attachmentUpload);
@@ -2518,7 +2519,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/conversations/{conversationId}/attachments").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/conversations/{conversationId}/attachments").ToString();
             url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects

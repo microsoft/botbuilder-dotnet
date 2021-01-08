@@ -3,10 +3,10 @@
 
 namespace Microsoft.Bot.Connector
 {
-    using System.Collections;
+    using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("attachmentId", attachmentId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/attachments/{attachmentId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/attachments/{attachmentId}").ToString();
             url = url.Replace("{attachmentId}", System.Uri.EscapeDataString(attachmentId));
 
             // Create HTTP transport objects
@@ -262,7 +262,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("attachmentId", attachmentId);
                 tracingParameters.Add("viewId", viewId);
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "v3/attachments/{attachmentId}/views/{viewId}").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.InvariantCulture) ? string.Empty : "/")), "v3/attachments/{attachmentId}/views/{viewId}").ToString();
             url = url.Replace("{attachmentId}", System.Uri.EscapeDataString(attachmentId));
             url = url.Replace("{viewId}", System.Uri.EscapeDataString(viewId));
 

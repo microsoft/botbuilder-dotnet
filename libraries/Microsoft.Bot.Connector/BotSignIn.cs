@@ -5,6 +5,7 @@ namespace Microsoft.Bot.Connector
 {
     using System.Collections;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("state", state);
                 tracingParameters.Add("codeChallenge", codeChallenge);
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "api/botsignin/GetSignInUrl").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "api/botsignin/GetSignInUrl").ToString();
             List<string> queryParameters = new List<string>();
             if (state != null)
             {
