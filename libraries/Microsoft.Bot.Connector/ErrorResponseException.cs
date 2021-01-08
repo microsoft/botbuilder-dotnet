@@ -12,21 +12,6 @@ namespace Microsoft.Bot.Schema
     public partial class ErrorResponseException : RestException
     {
         /// <summary>
-        /// Gets information about the associated HTTP request.
-        /// </summary>
-        public HttpRequestMessageWrapper Request { get; set; }
-
-        /// <summary>
-        /// Gets information about the associated HTTP response.
-        /// </summary>
-        public HttpResponseMessageWrapper Response { get; set; }
-
-        /// <summary>
-        /// Gets or sets the body object.
-        /// </summary>
-        public ErrorResponse Body { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ErrorResponseException"/> class.
         /// </summary>
         public ErrorResponseException()
@@ -51,5 +36,23 @@ namespace Microsoft.Bot.Schema
             : base(message, innerException)
         {
         }
+
+        /// <summary>
+        /// Gets or sets the information about the associated HTTP request.
+        /// </summary>
+        /// <value>Information about the associated HTTP requests.</value>
+        public HttpRequestMessageWrapper Request { get; set; }
+
+        /// <summary>
+        /// Gets or sets the information about the associated HTTP response.
+        /// </summary>
+        /// <value>Information about the associated HTTP response.</value>
+        public HttpResponseMessageWrapper Response { get; set; }
+
+        /// <summary>
+        /// Gets or sets the body object.
+        /// </summary>
+        /// <value>The body.</value>
+        public ErrorResponse Body { get; set; }
     }
 }
