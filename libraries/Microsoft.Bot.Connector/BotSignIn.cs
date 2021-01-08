@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = Client.BaseUri.AbsoluteUri;
-            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "api/botsignin/GetSignInUrl").ToString();
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "api/botsignin/GetSignInUrl").ToString();
             List<string> queryParameters = new List<string>();
             if (state != null)
             {
