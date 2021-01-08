@@ -292,33 +292,39 @@ namespace Microsoft.Bot.Connector
         }
         
         /// <summary>
-        /// The base URI of the service.
+        /// Gets or sets the base URI of the service.
         /// </summary>
+        /// <value>The has URI of the service.</value>
         public System.Uri BaseUri { get; set; }
 
         /// <summary>
-        /// Gets or sets json serialization settings.
+        /// Gets the JSON serialization settings.
         /// </summary>
+        /// <value>The JSON serialization settings.</value>
         public JsonSerializerSettings SerializationSettings { get; private set; }
 
         /// <summary>
-        /// Gets or sets json deserialization settings.
+        /// Gets the JSON deserialization settings.
         /// </summary>
+        /// <value>The JSON deserialization settings.</value>
         public JsonSerializerSettings DeserializationSettings { get; private set; }
 
         /// <summary>
-        /// Subscription credentials which uniquely identify client subscription.
+        /// Gets the subscription credentials which uniquely identify client subscription.
         /// </summary>
+        /// <value>The subscription credentials.</value>
         public ServiceClientCredentials Credentials { get; private set; }
 
         /// <summary>
         /// Gets the IAttachments.
         /// </summary>
+        /// <value>The IAttachments.</value>
         public virtual IAttachments Attachments { get; private set; }
 
         /// <summary>
         /// Gets the IConversations.
         /// </summary>
+        /// <value>The IConversations.</value>
         public virtual IConversations Conversations { get; private set; }
 
         /// <summary>

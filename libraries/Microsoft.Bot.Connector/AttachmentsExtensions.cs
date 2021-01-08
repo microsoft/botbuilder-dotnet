@@ -28,11 +28,12 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
+            /// <returns>The AttachmentInfo.</returns>
             public static async Task<AttachmentInfo> GetAttachmentInfoAsync(this IAttachments operations, string attachmentId, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetAttachmentInfoWithHttpMessagesAsync(attachmentId, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await operations.GetAttachmentInfoWithHttpMessagesAsync(attachmentId, null, cancellationToken).ConfigureAwait(false))
                 {
-                    return _result.Body;
+                    return result.Body;
                 }
             }
 
@@ -54,11 +55,12 @@ namespace Microsoft.Bot.Connector
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
+            /// <returns>The attachment as a Stream.</returns>
             public static async Task<Stream> GetAttachmentAsync(this IAttachments operations, string attachmentId, string viewId, CancellationToken cancellationToken = default(CancellationToken))
             {
-                var _result = await operations.GetAttachmentWithHttpMessagesAsync(attachmentId, viewId, null, cancellationToken).ConfigureAwait(false);
-                _result.Request.Dispose();
-                return _result.Body;
+                var result = await operations.GetAttachmentWithHttpMessagesAsync(attachmentId, viewId, null, cancellationToken).ConfigureAwait(false);
+                result.Request.Dispose();
+                return result.Body;
             }
     }
 }

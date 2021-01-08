@@ -12,33 +12,37 @@ namespace Microsoft.Bot.Connector
     /// </summary>
     public static partial class BotSignInExtensions
     {
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='state'>State.</param>
-            /// <param name='codeChallenge'>Code challenge.</param>
-            /// <param name='emulatorUrl'>Emulator URL.</param>
-            /// <param name='finalRedirect'>Final redirect.</param>
-            /// <param name='cancellationToken'>The cancellation token.</param>
-            public static async Task<string> GetSignInUrlAsync(this IBotSignIn operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>Get sign-in URL.</summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='state'>State.</param>
+        /// <param name='codeChallenge'>Code challenge.</param>
+        /// <param name='emulatorUrl'>Emulator URL.</param>
+        /// <param name='finalRedirect'>Final redirect.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>The sign-in URL.</returns>
+        public static async Task<string> GetSignInUrlAsync(this IBotSignIn operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetSignInUrlWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await operations.GetSignInUrlWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
                 {
-                    return _result.Body;
+                    return result.Body;
                 }
             }
 
-            /// <param name='operations'>The operations group for this extension method.</param>
-            /// <param name='state'>State.</param>
-            /// <param name='codeChallenge'>Code challenge.</param>
-            /// <param name='emulatorUrl'>Emulator URL.</param>
-            /// <param name='finalRedirect'>Final redirect.</param>
-            /// <param name='cancellationToken'>The cancellation token.</param>
-            public static async Task<SignInResource> GetSignInResourceAsync(this OAuthClient operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>Get sign-in resource with HTTP message.</summary>
+        /// <param name='operations'>The operations group for this extension method.</param>
+        /// <param name='state'>State.</param>
+        /// <param name='codeChallenge'>Code challenge.</param>
+        /// <param name='emulatorUrl'>Emulator URL.</param>
+        /// <param name='finalRedirect'>Final redirect.</param>
+        /// <param name='cancellationToken'>The cancellation token.</param>
+        /// <returns>The <see cref="SignInResource"/>.</returns>
+        public static async Task<SignInResource> GetSignInResourceAsync(this OAuthClient operations, string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetSignInResourceWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
+                using (var result = await operations.GetSignInResourceWithHttpMessagesAsync(state, codeChallenge, emulatorUrl, finalRedirect, null, cancellationToken).ConfigureAwait(false))
                 {
-                    return _result.Body;
+                    return result.Body;
                 }
             }
     }

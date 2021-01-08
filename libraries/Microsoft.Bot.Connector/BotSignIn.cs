@@ -42,9 +42,11 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets a reference to the OAuthClient.
         /// </summary>
+        /// <value>The OAuthClient.</value>
         public OAuthClient Client { get; private set; }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
+        /// <summary>Gets sign-in URL with HTTP message. </summary>
         /// <param name='state'>State.</param>
         /// <param name='codeChallenge'>Code challenge.</param>
         /// <param name='emulatorUrl'>Emulator URL.</param>
@@ -55,7 +57,7 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="SerializationException">Thrown when unable to deserialize the response.</exception>
         /// <exception cref="ValidationException">Thrown when a required parameter is null.</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when a required parameter is null.</exception>
-        /// <return>A response object containing the response body and response headers.</return>
+        /// <returns>A response object containing the response body and response headers.</returns>
         public async Task<HttpOperationResponse<string>> GetSignInUrlWithHttpMessagesAsync(string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -65,156 +67,156 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("state", state);
                 tracingParameters.Add("codeChallenge", codeChallenge);
                 tracingParameters.Add("emulatorUrl", emulatorUrl);
                 tracingParameters.Add("finalRedirect", finalRedirect);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetSignInUrl", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetSignInUrl", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "api/botsignin/GetSignInUrl").ToString();
-            List<string> _queryParameters = new List<string>();
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "api/botsignin/GetSignInUrl").ToString();
+            List<string> queryParameters = new List<string>();
             if (state != null)
             {
-                _queryParameters.Add(string.Format("state={0}", System.Uri.EscapeDataString(state)));
+                queryParameters.Add(string.Format("state={0}", System.Uri.EscapeDataString(state)));
             }
 
             if (codeChallenge != null)
             {
-                _queryParameters.Add(string.Format("code_challenge={0}", System.Uri.EscapeDataString(codeChallenge)));
+                queryParameters.Add(string.Format("code_challenge={0}", System.Uri.EscapeDataString(codeChallenge)));
             }
 
             if (emulatorUrl != null)
             {
-                _queryParameters.Add(string.Format("emulatorUrl={0}", System.Uri.EscapeDataString(emulatorUrl)));
+                queryParameters.Add(string.Format("emulatorUrl={0}", System.Uri.EscapeDataString(emulatorUrl)));
             }
 
             if (finalRedirect != null)
             {
-                _queryParameters.Add(string.Format("finalRedirect={0}", System.Uri.EscapeDataString(finalRedirect)));
+                queryParameters.Add(string.Format("finalRedirect={0}", System.Uri.EscapeDataString(finalRedirect)));
             }
 
-            if (_queryParameters.Count > 0)
+            if (queryParameters.Count > 0)
             {
-                _url += "?" + string.Join("&", _queryParameters);
+                url += "?" + string.Join("&", queryParameters);
             }
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
+            string responseContent = null;
+            if ((int)statusCode != 200)
             {
-                var ex = new HttpOperationException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
-                if (_httpResponse.Content != null)
+                var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
+                if (httpResponse.Content != null)
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    _responseContent = string.Empty;
+                    responseContent = string.Empty;
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
+                httpRequest.Dispose();
 
-                if (_httpResponse != null)
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<string>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<string>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
                     // MANUAL SWAGGER UPDATE
-                    _result.Body = _responseContent;
+                    result.Body = responseContent;
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
     }
 }
