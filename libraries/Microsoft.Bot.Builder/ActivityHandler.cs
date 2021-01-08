@@ -562,8 +562,10 @@ namespace Microsoft.Bot.Builder
             switch (turnContext.Activity.Action)
             {
                 case "add":
+                case "add-upgrade":
                     return OnInstallationUpdateAddAsync(turnContext, cancellationToken);
-                case "remove": 
+                case "remove":
+                case "remove-upgrade":
                     return OnInstallationUpdateRemoveAsync(turnContext, cancellationToken);
                 default: 
                     return Task.CompletedTask;
