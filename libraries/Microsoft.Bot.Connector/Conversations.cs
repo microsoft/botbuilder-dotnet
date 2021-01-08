@@ -3,10 +3,7 @@
 
 namespace Microsoft.Bot.Connector
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -42,6 +39,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Gets a reference to the ConnectorClient.
         /// </summary>
+        /// <value>The refernce to the ClientConnector.</value>
         public ConnectorClient Client { get; private set; }
 
         /// <summary>
@@ -75,93 +73,93 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="SerializationException">
         /// Thrown when unable to deserialize the response.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ConversationsResult>> GetConversationsWithHttpMessagesAsync(string continuationToken = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("continuationToken", continuationToken);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetConversations", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetConversations", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
-            List<string> _queryParameters = new List<string>();
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
+            List<string> queryParameters = new List<string>();
             if (continuationToken != null)
             {
-                _queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+                queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
             }
 
-            if (_queryParameters.Count > 0)
+            if (queryParameters.Count > 0)
             {
-                _url += "?" + string.Join("&", _queryParameters);
+                url += "?" + string.Join("&", queryParameters);
             }
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
+            string responseContent = null;
+            if ((int)statusCode != 200)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -169,53 +167,53 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ConversationsResult>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ConversationsResult>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationsResult>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationsResult>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -267,9 +265,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ConversationResourceResponse>> CreateConversationWithHttpMessagesAsync(ConversationParameters parameters, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -279,83 +277,83 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("parameters", parameters);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, ActivityEventNames.CreateConversation, tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, ActivityEventNames.CreateConversation, tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations").ToString();
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
             if (parameters != null)
             {
-                _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(parameters, Client.SerializationSettings);
+                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -363,93 +361,93 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ConversationResourceResponse>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ConversationResourceResponse>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-
-            // Deserialize Response
-            if ((int)_statusCode == 201)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
             // Deserialize Response
-            if ((int)_statusCode == 202)
+            if ((int)statusCode == 201)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            // Deserialize Response
+            if ((int)statusCode == 202)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ConversationResourceResponse>(responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
             }
 
-            return _result;
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -495,9 +493,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -512,85 +510,85 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activity", activity);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendToConversation", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "SendToConversation", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
             if (activity != null)
             {
-                _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -598,95 +596,94 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ResourceResponse>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ResourceResponse>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-
-            // Deserialize Response
-            if ((int)_statusCode == 201)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
             // Deserialize Response
-            if ((int)_statusCode == 202)
+            if ((int)statusCode == 201)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            // Deserialize Response
+            if ((int)statusCode == 202)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
             }
 
-            return _result;
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
         }
-
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
@@ -725,9 +722,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> SendConversationHistoryWithHttpMessagesAsync(string conversationId, Transcript transcript, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -742,85 +739,85 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("transcript", transcript);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "SendConversationHistory", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "SendConversationHistory", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/history").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/history").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
             if (transcript != null)
             {
-                _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(transcript, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(transcript, Client.SerializationSettings);
+                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -828,93 +825,93 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ResourceResponse>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ResourceResponse>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-
-            // Deserialize Response
-            if ((int)_statusCode == 201)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
             // Deserialize Response
-            if ((int)_statusCode == 202)
+            if ((int)statusCode == 201)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            // Deserialize Response
+            if ((int)statusCode == 202)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
             }
 
-            return _result;
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -957,9 +954,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -979,87 +976,87 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
                 tracingParameters.Add("activity", activity);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "UpdateActivity", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "UpdateActivity", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("PUT");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("PUT");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
             if (activity != null)
             {
-                _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -1067,93 +1064,93 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ResourceResponse>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ResourceResponse>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-
-            // Deserialize Response
-            if ((int)_statusCode == 201)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
             // Deserialize Response
-            if ((int)_statusCode == 202)
+            if ((int)statusCode == 201)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            // Deserialize Response
+            if ((int)statusCode == 202)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
             }
 
-            return _result;
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -1202,9 +1199,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -1224,87 +1221,87 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
                 tracingParameters.Add("activity", activity);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "ReplyToActivity", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "ReplyToActivity", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
             if (activity != null)
             {
-                _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(activity, Client.SerializationSettings);
+                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -1312,95 +1309,94 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ResourceResponse>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ResourceResponse>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-
-            // Deserialize Response
-            if ((int)_statusCode == 201)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
             // Deserialize Response
-            if ((int)_statusCode == 202)
+            if ((int)statusCode == 201)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            // Deserialize Response
+            if ((int)statusCode == 202)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
             }
 
-            return _result;
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
         }
-
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
@@ -1433,9 +1429,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -1450,80 +1446,80 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "DeleteActivity", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "DeleteActivity", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("DELETE");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("DELETE");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -1531,32 +1527,32 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
-            if (_shouldTrace)
+            var result = new HttpOperationResponse();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -1590,9 +1586,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<IList<ChannelAccount>>> GetConversationMembersWithHttpMessagesAsync(string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -1602,78 +1598,78 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetConversationMembers", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetConversationMembers", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
+            string responseContent = null;
+            if ((int)statusCode != 200)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -1681,53 +1677,53 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<IList<ChannelAccount>>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<IList<ChannelAccount>>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -1764,9 +1760,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -1781,80 +1777,80 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("userId", userId);
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetConversationMembers", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetConversationMembers", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{userId}").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{userId}", System.Uri.EscapeDataString(userId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{userId}").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            url = url.Replace("{userId}", System.Uri.EscapeDataString(userId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach (var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
+            string responseContent = null;
+            if ((int)statusCode != 200)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -1862,53 +1858,53 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ChannelAccount>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ChannelAccount>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ChannelAccount>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ChannelAccount>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -1961,9 +1957,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<PagedMembersResult>> GetConversationPagedMembersWithHttpMessagesAsync(string conversationId, int? pageSize = default(int?), string continuationToken = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -1973,145 +1969,145 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("pageSize", pageSize);
                 tracingParameters.Add("continuationToken", continuationToken);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetConversationPagedMembers", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetConversationPagedMembers", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/pagedmembers").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            List<string> _queryParameters = new List<string>();
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/pagedmembers").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            List<string> queryParameters = new List<string>();
             if (pageSize != null)
             {
-                _queryParameters.Add(string.Format("pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
+                queryParameters.Add(string.Format("pageSize={0}", System.Uri.EscapeDataString(Rest.Serialization.SafeJsonConvert.SerializeObject(pageSize, Client.SerializationSettings).Trim('"'))));
             }
 
             if (continuationToken != null)
             {
-                _queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
+                queryParameters.Add(string.Format("continuationToken={0}", System.Uri.EscapeDataString(continuationToken)));
             }
 
-            if (_queryParameters.Count > 0)
+            if (queryParameters.Count > 0)
             {
-                _url += "?" + string.Join("&", _queryParameters);
+                url += "?" + string.Join("&", queryParameters);
             }
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
+            string responseContent = null;
+            if ((int)statusCode != 200)
             {
-                var ex = new HttpOperationException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
-                if (_httpResponse.Content != null) {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var ex = new HttpOperationException($"Operation returned an invalid status code '{statusCode}'");
+                if (httpResponse.Content != null)
+                {
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    _responseContent = string.Empty;
+                    responseContent = string.Empty;
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<PagedMembersResult>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<PagedMembersResult>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<PagedMembersResult>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<PagedMembersResult>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
-
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
@@ -2146,9 +2142,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse> DeleteConversationMemberWithHttpMessagesAsync(string conversationId, string memberId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -2163,80 +2159,80 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("memberId", memberId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "DeleteConversationMember", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "DeleteConversationMember", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{memberId}").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{memberId}", System.Uri.EscapeDataString(memberId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/members/{memberId}").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            url = url.Replace("{memberId}", System.Uri.EscapeDataString(memberId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("DELETE");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("DELETE");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 204)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 204)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -2244,32 +2240,32 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
-            if (_shouldTrace)
+            var result = new HttpOperationResponse();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -2307,9 +2303,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<IList<ChannelAccount>>> GetActivityMembersWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -2324,80 +2320,80 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("activityId", activityId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "GetActivityMembers", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "GetActivityMembers", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}/members").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
-            _url = _url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/activities/{activityId}/members").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            url = url.Replace("{activityId}", System.Uri.EscapeDataString(activityId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("GET");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("GET");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
+            string requestContent = null;
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200)
+            string responseContent = null;
+            if ((int)statusCode != 200)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -2405,53 +2401,53 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<IList<ChannelAccount>>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<IList<ChannelAccount>>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<IList<ChannelAccount>>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                ServiceClientTracing.Exit(invocationId, result);
             }
 
-            return _result;
+            return result;
         }
 
 #pragma warning disable SA1625 // Element documentation should not be copied and pasted
@@ -2491,9 +2487,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
         /// </exception>
-        /// <return>
+        /// <returns>
         /// A response object containing the response body and response headers.
-        /// </return>
+        /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> UploadAttachmentWithHttpMessagesAsync(string conversationId, AttachmentData attachmentUpload, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
@@ -2508,85 +2504,85 @@ namespace Microsoft.Bot.Connector
             }
 
             // Tracing
-            bool _shouldTrace = ServiceClientTracing.IsEnabled;
-            string _invocationId = null;
-            if (_shouldTrace)
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
             {
-                _invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("conversationId", conversationId);
                 tracingParameters.Add("attachmentUpload", attachmentUpload);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(_invocationId, this, "UploadAttachment", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "UploadAttachment", tracingParameters);
             }
 
             // Construct URL
-            var _baseUrl = Client.BaseUri.AbsoluteUri;
-            var _url = new System.Uri(new System.Uri(_baseUrl + (_baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/attachments").ToString();
-            _url = _url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/") ? "" : "/")), "v3/conversations/{conversationId}/attachments").ToString();
+            url = url.Replace("{conversationId}", System.Uri.EscapeDataString(conversationId));
 
             // Create HTTP transport objects
-            var _httpRequest = new HttpRequestMessage();
-            HttpResponseMessage _httpResponse = null;
-            _httpRequest.Method = new HttpMethod("POST");
-            _httpRequest.RequestUri = new System.Uri(_url);
+            var httpRequest = new HttpRequestMessage();
+            HttpResponseMessage httpResponse = null;
+            httpRequest.Method = new HttpMethod("POST");
+            httpRequest.RequestUri = new System.Uri(url);
 
             // Set Headers
             if (customHeaders != null)
             {
-                foreach(var _header in customHeaders)
+                foreach (var header in customHeaders)
                 {
-                    if (_httpRequest.Headers.Contains(_header.Key))
+                    if (httpRequest.Headers.Contains(header.Key))
                     {
-                        _httpRequest.Headers.Remove(_header.Key);
+                        httpRequest.Headers.Remove(header.Key);
                     }
 
-                    _httpRequest.Headers.TryAddWithoutValidation(_header.Key, _header.Value);
+                    httpRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
             }
 
             // Serialize Request
-            string _requestContent = null;
-            if(attachmentUpload != null)
+            string requestContent = null;
+            if (attachmentUpload != null)
             {
-                _requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(attachmentUpload, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+                requestContent = Rest.Serialization.SafeJsonConvert.SerializeObject(attachmentUpload, Client.SerializationSettings);
+                httpRequest.Content = new StringContent(requestContent, System.Text.Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
             }
 
             // Set Credentials
             if (Client.Credentials != null)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await Client.Credentials.ProcessHttpRequestAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+                await Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
             }
 
             // Send Request
-            if (_shouldTrace)
+            if (shouldTrace)
             {
-                ServiceClientTracing.SendRequest(_invocationId, _httpRequest);
+                ServiceClientTracing.SendRequest(invocationId, httpRequest);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
-            _httpResponse = await Client.HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
-            if (_shouldTrace)
+            httpResponse = await Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+            if (shouldTrace)
             {
-                ServiceClientTracing.ReceiveResponse(_invocationId, _httpResponse);
+                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
             }
 
-            HttpStatusCode _statusCode = _httpResponse.StatusCode;
+            HttpStatusCode statusCode = httpResponse.StatusCode;
             cancellationToken.ThrowIfCancellationRequested();
-            string _responseContent = null;
-            if ((int)_statusCode != 200 && (int)_statusCode != 201 && (int)_statusCode != 202)
+            string responseContent = null;
+            if ((int)statusCode != 200 && (int)statusCode != 201 && (int)statusCode != 202)
             {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
+                var ex = new ErrorResponseException($"Operation returned an invalid status code '{statusCode}'");
                 try
                 {
-                    _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse _errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(_responseContent, Client.DeserializationSettings);
-                    if (_errorBody != null)
+                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, Client.DeserializationSettings);
+                    if (errorBody != null)
                     {
-                        ex.Body = _errorBody;
+                        ex.Body = errorBody;
                     }
                 }
                 catch (JsonException)
@@ -2594,93 +2590,93 @@ namespace Microsoft.Bot.Connector
                     // Ignore the exception
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(_httpRequest, _requestContent);
-                ex.Response = new HttpResponseMessageWrapper(_httpResponse, _responseContent);
-                if (_shouldTrace)
+                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(_invocationId, ex);
+                    ServiceClientTracing.Error(invocationId, ex);
                 }
 
-                _httpRequest.Dispose();
-                if (_httpResponse != null)
+                httpRequest.Dispose();
+                if (httpResponse != null)
                 {
-                    _httpResponse.Dispose();
+                    httpResponse.Dispose();
                 }
 
                 throw ex;
             }
 
             // Create Result
-            var _result = new HttpOperationResponse<ResourceResponse>();
-            _result.Request = _httpRequest;
-            _result.Response = _httpResponse;
+            var result = new HttpOperationResponse<ResourceResponse>();
+            result.Request = httpRequest;
+            result.Response = httpResponse;
 
             // Deserialize Response
-            if ((int)_statusCode == 200)
+            if ((int)statusCode == 200)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
-                }
-            }
-
-            // Deserialize Response
-            if ((int)_statusCode == 201)
-            {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                try
-                {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
-                }
-                catch (JsonException ex)
-                {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
-                    {
-                        _httpResponse.Dispose();
-                    }
-
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
             // Deserialize Response
-            if ((int)_statusCode == 202)
+            if ((int)statusCode == 201)
             {
-                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(_responseContent, Client.DeserializationSettings);
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
-                    _httpRequest.Dispose();
-                    if (_httpResponse != null)
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
                     {
-                        _httpResponse.Dispose();
+                        httpResponse.Dispose();
                     }
 
-                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
                 }
             }
 
-            if (_shouldTrace)
+            // Deserialize Response
+            if ((int)statusCode == 202)
             {
-                ServiceClientTracing.Exit(_invocationId, _result);
+                responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    result.Body = Rest.Serialization.SafeJsonConvert.DeserializeObject<ResourceResponse>(responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    httpRequest.Dispose();
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+
+                    throw new SerializationException("Unable to deserialize the response.", responseContent, ex);
+                }
             }
 
-            return _result;
+            if (shouldTrace)
+            {
+                ServiceClientTracing.Exit(invocationId, result);
+            }
+
+            return result;
         }
     }
 }
