@@ -62,6 +62,13 @@ steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'
 
+- powershell: |
+   # Create DateTimeTag for Resource Group
+   $DateTimeTag=Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
+   "##vso[task.setvariable variable=DateTimeTag]$DateTimeTag";
+  displayName: 'Create DateTimeTag for Resource Group'
+  # Get-Date on Azure DevOps returns a datetime relative to UTC-0, so "Z" is being used instead of the dynamic "K".
+
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet Publish TestBot'
   inputs:
