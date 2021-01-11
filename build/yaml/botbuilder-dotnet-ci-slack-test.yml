@@ -56,7 +56,7 @@ variables:
 #  SlackTestBotSlackBotToken: define this in Azure
 #  SlackTestBotSlackChannel: define this in Azure
 #  SlackTestBotSlackClientSigningSecret: define this in Azure
-    #  SlackTestBotSlackVerificationToken: define this in Azure
+#  SlackTestBotSlackVerificationToken: define this in Azure
 
 steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
@@ -82,7 +82,8 @@ steps:
      Write-Host "This task runs for even-numbered builds. Build ID = $(Build.BuildId)";
      Write-Host "************************************************************************";
      Set-PSDebug -Trace 1;
-     az group create --location westus --name $(BotGroup);
+     # TODO add --tags
+     az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)";
      
      # set up bot channels registration, app service, app service plan
      az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" --name "$(BotName)"
@@ -102,7 +103,8 @@ steps:
      Set-PSDebug -Trace 1;
      
      # set up resource group, bot channels registration, app service, app service plan
-     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)"
+     # TODO below add groupTags='
+     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" newAppServicePlanLocation="westus" slackVerificationToken="$(SlackVerificationToken)" slackBotToken="$(SlackBotToken)"  slackClientSigningSecret="$(SlackClientSigningSecret)" groupTags='{\"buildName\":\"$(Build.DefinitionName)\", \"cause\":\"automation\", \"date\":\"$(DateTimeTag)\", \"product\":\"$(Build.Repository.Name)\", \"sourceBranch\":\"$(Build.SourceBranch)\"}';
      Set-PSDebug -Trace 0;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
 
