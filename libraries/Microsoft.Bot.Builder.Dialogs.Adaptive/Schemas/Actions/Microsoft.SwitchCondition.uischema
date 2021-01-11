@@ -19,5 +19,13 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "SwitchConditionWidget",
+        "nowrap": true,
+        "judgement": {
+            "widget": "ActionCard",
+            "body": "=coalesce(action.condition, \"<condition>\")"
+        }
     }
 }
