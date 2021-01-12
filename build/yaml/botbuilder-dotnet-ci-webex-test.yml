@@ -113,11 +113,11 @@ steps:
      Write-Host "This task runs for even-numbered builds. Build ID = $(Build.BuildId)";
      Write-Host "************************************************************************";
      Set-PSDebug -Trace 1;
-     az group create --location westus --name $(BotGroup);
+     az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)";
      
      # set up bot channels registration, app service, app service plan
      az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" --name "$(BotName)"
-     Set-PSDebug -Trace 0 --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)";
+     Set-PSDebug -Trace 0 ;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 0), endsWith(variables['Build.BuildId'], 2), endsWith(variables['Build.BuildId'], 4), endsWith(variables['Build.BuildId'], 6), endsWith(variables['Build.BuildId'], 8)))
 
 - task: AzureCLI@2
