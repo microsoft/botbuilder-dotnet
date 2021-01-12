@@ -1,0 +1,23 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                      "$kind": "Microsoft.CancelAllDialogs"
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "ERROR: This would never be sent!"
+                    }
+              ]
+            }
+        ]
+    },
+    "script": []
+}

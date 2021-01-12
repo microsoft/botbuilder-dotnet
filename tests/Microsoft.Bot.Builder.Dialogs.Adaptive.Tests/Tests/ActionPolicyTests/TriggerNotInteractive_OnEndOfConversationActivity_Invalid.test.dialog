@@ -1,0 +1,26 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+          {
+            "$kind": "Microsoft.OnEndOfConversationActivity",
+            "actions": [
+              {
+                "$kind": "Microsoft.NumberInput",
+                "outputFormat": "=int(this.value)",
+                "property": "user.userProfile.Age",
+                "prompt": "Please enter your age.",
+                "unrecognizedPrompt": "This is invalid, since the conversatin has ended.",
+                "validations": [
+                  "this.value > 0 && this.value < 150"
+                ]
+              }
+            ]
+          }
+        ]
+    },
+    "script": []
+}

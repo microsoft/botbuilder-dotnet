@@ -1,0 +1,36 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+          {
+            "$kind": "Microsoft.OnEndOfConversationActivity",
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "test"
+              },
+              {
+                "$kind": "Microsoft.Foreach",
+                "itemsProperty": "dialog.todo",
+                "actions": [
+                  {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "dialog.foreach.index > 2",
+                    "actions": [
+                      {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "test"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+    },
+    "script": []
+}
