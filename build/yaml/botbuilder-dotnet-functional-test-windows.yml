@@ -102,7 +102,7 @@ steps:
      Set-PSDebug -Trace 1;
      
      # set up resource group, bot channels registration, app service, app service plan
-     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" groupTags='{\"buildName\":\"$(Build.DefinitionName)\",\"cause\":\"automation\",\"date\":\"$(DateTimeTag)\",\"product\":\"$(Build.Repository.Name)\",\"sourceBranch\":\"$(Build.SourceBranch)\"}';
+     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" groupTags="{\"buildName\":\"$(Build.DefinitionName)\",\"cause\":\"automation\",\"date\":\"$(DateTimeTag)\",\"product\":\"$(Build.Repository.Name)\",\"sourceBranch\":\"$(Build.SourceBranch)\"}";
      Set-PSDebug -Trace 0;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
 
@@ -115,7 +115,7 @@ steps:
      :: Comment out either Option 1 or Option 2 below. Ultimately, both templates should be exercised to ensure they continue to work.
      
      :: Option 1: Use the "new-rg" template:
-     call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" groupTags='{\"buildName\":\"$(Build.DefinitionName)\",\"cause\":\"automation\",\"date\":\"$(DateTimeTag)\",\"product\":\"$(Build.Repository.Name)\",\"sourceBranch\":\"$(Build.SourceBranch)\"}'
+     call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" groupTags="{\"buildName\":\"$(Build.DefinitionName)\",\"cause\":\"automation\",\"date\":\"$(DateTimeTag)\",\"product\":\"$(Build.Repository.Name)\",\"sourceBranch\":\"$(Build.SourceBranch)\"}";
      
      :: Option 2: Use the "preexisting-rg" template:
      ::call az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)"
