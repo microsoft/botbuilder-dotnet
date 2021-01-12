@@ -97,16 +97,7 @@
       "metadata": {
         "description": "The name of the webhook created for communicating with Webex."
       }
-    },
-    "groupTags": {
-      "type": "object",
-      "defaultValue": {
-          "cause": "automation"
-      },
-      "metadata": {
-        "description": "Populated with DevOps Pipeline values at runtime."
-      }
-  }
+    }
   },
     "variables": {
         "appServicePlanName": "[parameters('newAppServicePlanName')]",
@@ -122,8 +113,8 @@
             "type": "Microsoft.Resources/resourceGroups",
             "apiVersion": "2018-05-01",
             "location": "[parameters('groupLocation')]",
-            "properties": {},
-            "tags": "[parameters('groupTags')]"
+            "properties": {
+            }
         },
         {
             "type": "Microsoft.Resources/deployments",
