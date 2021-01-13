@@ -108,6 +108,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 return false;
                             }
                         }
+                        else if (property.Key == "TopIntentScore")
+                        {
+                            // noop
+                        }
                         else
                         {
                             if (property.Value != expected[property.Key])
