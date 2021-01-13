@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             {
                 { "AlteredText", null },
                 { "TopIntent", "mockLabel" },
-                { "TopIntentScore", "0.9" },
+                { "TopIntentScore", "0.90" },
                 { "Intents", "{\"mockLabel\":{\"score\":0.9}}" },
                 { "Entities", "{}" },
                 { "AdditionalProperties", "{\"result\":[{\"Label\":{\"Type\":0,\"Name\":\"mockLabel\",\"Span\":{\"Offset\":0,\"Length\":0}},\"Score\":0.9,\"ClosestText\":null}]}" }
