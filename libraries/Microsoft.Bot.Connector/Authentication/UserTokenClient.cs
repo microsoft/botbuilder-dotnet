@@ -98,6 +98,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>base64 encoded token exchange state.</returns>
         protected static string CreateTokenExchangeState(string appId, string connectionName, Activity activity)
         {
+            _ = appId ?? throw new ArgumentNullException(nameof(appId));
+            _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
+            _ = activity ?? throw new ArgumentNullException(nameof(activity));
+
             var tokenExchangeState = new TokenExchangeState
             {
                 ConnectionName = connectionName,

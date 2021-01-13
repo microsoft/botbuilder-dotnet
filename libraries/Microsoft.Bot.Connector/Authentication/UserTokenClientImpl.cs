@@ -14,13 +14,12 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
-    // TODO add appropriate arg checking on the methods - note some args can be null
-
     internal class UserTokenClientImpl : UserTokenClient
     {
         private readonly string _appId;
         private readonly OAuthClient _client;
         private readonly ILogger _logger;
+        private bool _disposed;
 
         public UserTokenClientImpl(
             string appId,
@@ -36,12 +35,28 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override async Task<TokenResponse> GetUserTokenAsync(string userId, string connectionName, string channelId, string magicCode, CancellationToken cancellationToken)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(GetUserTokenAsync));
+            }
+
+            _ = userId ?? throw new ArgumentNullException(nameof(userId));
+            _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
+
             _logger.LogInformation($"GetTokenAsync ConnectionName: {connectionName}");
             return await _client.UserToken.GetTokenAsync(userId, connectionName, channelId, magicCode, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<SignInResource> GetSignInResourceAsync(string connectionName, Activity activity, string finalRedirect, CancellationToken cancellationToken)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(GetSignInResourceAsync));
+            }
+
+            _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
+            _ = activity ?? throw new ArgumentNullException(nameof(activity));
+
             _logger.LogInformation($"GetSignInResourceAsync ConnectionName: {connectionName}");
             var state = CreateTokenExchangeState(_appId, connectionName, activity);
             return await _client.GetSignInResourceAsync(state, null, null, finalRedirect, cancellationToken).ConfigureAwait(false);
@@ -49,12 +64,28 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override async Task SignOutUserAsync(string userId, string connectionName, string channelId, CancellationToken cancellationToken)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SignOutUserAsync));
+            }
+
+            _ = userId ?? throw new ArgumentNullException(nameof(userId));
+            _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
+
             _logger.LogInformation($"SignOutAsync ConnectionName: {connectionName}");
             await _client.UserToken.SignOutAsync(userId, connectionName, channelId, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<TokenStatus[]> GetTokenStatusAsync(string userId, string channelId, string includeFilter, CancellationToken cancellationToken)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(GetTokenStatusAsync));
+            }
+
+            _ = userId ?? throw new ArgumentNullException(nameof(userId));
+            _ = channelId ?? throw new ArgumentNullException(nameof(channelId));
+
             _logger.LogInformation("GetTokenStatusAsync");
             var result = await _client.UserToken.GetTokenStatusAsync(userId, channelId, includeFilter, cancellationToken).ConfigureAwait(false);
             return result?.ToArray();
@@ -62,12 +93,28 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override async Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(string userId, string connectionName, string[] resourceUrls, string channelId, CancellationToken cancellationToken)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(GetAadTokensAsync));
+            }
+
+            _ = userId ?? throw new ArgumentNullException(nameof(userId));
+            _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
+
             _logger.LogInformation($"GetAadTokensAsync ConnectionName: {connectionName}");
             return (Dictionary<string, TokenResponse>)await _client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls() { ResourceUrls = resourceUrls?.ToList() }, channelId, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<TokenResponse> ExchangeTokenAsync(string userId, string connectionName, string channelId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(ExchangeTokenAsync));
+            }
+
+            _ = userId ?? throw new ArgumentNullException(nameof(userId));
+            _ = connectionName ?? throw new ArgumentNullException(nameof(connectionName));
+
             _logger.LogInformation($"ExchangeAsyncAsync ConnectionName: {connectionName}");
             var result = await _client.ExchangeAsyncAsync(userId, connectionName, channelId, exchangeRequest, cancellationToken).ConfigureAwait(false);
 
@@ -87,8 +134,14 @@ namespace Microsoft.Bot.Connector.Authentication
 
         protected override void Dispose(bool disposing)
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             _client.Dispose();
             base.Dispose(disposing);
+            _disposed = true;
         }
     }
 }
