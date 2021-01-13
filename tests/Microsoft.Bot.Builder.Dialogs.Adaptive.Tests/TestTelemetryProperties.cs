@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 { "AlteredText", null },
                 { "TopIntent", "codeIntent" },
-                { "TopIntentScore", "1.0" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
                 { "Intents", "{\"codeIntent\":{\"score\":1.0,\"pattern\":\"(?<code>[a-z][0-9])\"}}" },
                 {
                     "Entities",
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 { "AlteredText", null },
                 { "TopIntent", "colorIntent" },
-                { "TopIntentScore", "1.0" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
                 { "Intents", "{\"colorIntent\":{\"score\":1.0,\"pattern\":\"(?i)(color|colour)\"}}" },
                 {
                     "Entities",
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 { "AlteredText", null },
                 { "TopIntent", "Greeting" },
-                { "TopIntentScore", "1.0" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
                 { "Intents", "{\"Greeting\":{\"score\":1.0,\"pattern\":\"(?i)howdy\"}}" },
                 { "Entities", "{}" },
                 { "AdditionalProperties", null }
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 { "AlteredText", null },
                 { "TopIntent", "ChooseIntent" },
-                { "TopIntentScore", "1.0" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
                 { "Intents", "{\"ChooseIntent\":{\"score\":1.0}}" },
                 { "Entities", "{}" },
                 { "AdditionalProperties", "{\"candidates\":[{\"id\":\"y\",\"intent\":\"y\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"y\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"y\"}},{\"id\":\"z\",\"intent\":\"z\",\"score\":1.0,\"result\":{\"text\":\"criss-cross applesauce\",\"alteredText\":null,\"intents\":{\"z\":{\"score\":1.0,\"pattern\":\"criss-cross applesauce\"}},\"entities\":{},\"id\":\"z\"}}]}" },
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 { "AlteredText", null },
                 { "TopIntent", "x" },
-                { "TopIntentScore", "1.0" },
+                { "TopIntentScore", "Microsoft.Bot.Builder.IntentScore" },
                 { "Intents", "{\"x\":{\"score\":1.0,\"pattern\":\"x\"}}" },
                 { "Entities", "{}" },
                 { "AdditionalProperties", "{\"id\":\"x\"}" }
