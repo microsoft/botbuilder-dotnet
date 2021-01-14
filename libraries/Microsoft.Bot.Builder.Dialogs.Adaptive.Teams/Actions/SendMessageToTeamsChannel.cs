@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 teamsChannelId = dc.Context.Activity.TeamsGetChannelId();
             }
 
-            if (dc.Context.Adapter is not BotFrameworkAdapter)
+            if (!(dc.Context.Adapter is BotFrameworkAdapter))
             {
                 throw new InvalidOperationException($"TeamsInfo.SendMessageToTeamsChannel is not supported by the current adapter.");
             }

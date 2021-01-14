@@ -37,63 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Actions\Teams.GetMeetingParticipant.schema" />
-    <None Remove="Schemas\Actions\Teams.GetMember.schema" />
-    <None Remove="Schemas\Actions\Teams.GetPagedMembers.schema" />
-    <None Remove="Schemas\Actions\Teams.GetPagedMembers.uischema" />
-    <None Remove="Schemas\Actions\Teams.GetPagedTeamMembers.schema" />
-    <None Remove="Schemas\Actions\Teams.GetPagedTeamMembers.uischema" />
-    <None Remove="Schemas\Actions\Teams.GetTeamChannels.schema" />
-    <None Remove="Schemas\Actions\Teams.GetTeamDetails.schema" />
-    <None Remove="Schemas\Actions\Teams.GetTeamMember.schema" />
-    <None Remove="Schemas\Actions\Teams.SendAppBasedLinkQueryResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendAppBasedLinkQueryResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessageToTeamsChannel.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessageToTeamsChannel.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionActionResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionActionResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAttachmentsResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAttachmentsResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAuthResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionAuthResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionBotMessagePreviewResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionBotMessagePreviewResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionConfigQuerySettingUrlResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionConfigQuerySettingUrlResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionMessageResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendMessagingExtensionMessageResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendTaskModuleCardResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendTaskModuleCardResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendTaskModuleMessageResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendTaskModuleMessageResponse.uischema" />
-    <None Remove="Schemas\Actions\Teams.SendTaskModuleUrlResponse.schema" />
-    <None Remove="Schemas\Actions\Teams.SendTaskModuleUrlResponse.uischema" />
-    <None Remove="Schemas\TriggerConditions\Microsoft.OnInvokeActivity.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnAppBasedLinkQuery.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnCardAction.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnChannelRestored.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewEdit.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewEdit.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewSend.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionBotMessagePreviewSend.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionCardButtonClicked.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionConfigurationQuerySettingUrl.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionConfigurationSetting.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionFetchTask.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionQuery.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionSelectItem.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnMessagingExtensionSubmitAction.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnO365ConnectorCardAction.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTaskModuleFetch.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTaskModuleSubmit.uischema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamArchived.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamDeleted.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamHardDeleted.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamRestored.schema" />
-    <None Remove="Schemas\TriggerConditions\Teams.OnTeamUnarchived.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
   </ItemGroup>
