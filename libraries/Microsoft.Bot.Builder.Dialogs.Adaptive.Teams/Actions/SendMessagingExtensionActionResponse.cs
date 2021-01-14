@@ -70,9 +70,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
             }
 
-            if (activity == null || activity.Attachments?.Any() == false)
+            if (activity?.Attachments?.Any() != true)
             {
-                throw new InvalidOperationException("Missing Attachments in Messaging Extension Action Response.");
+                throw new InvalidOperationException("Missing attachments in Messaging Extension Action Response.");
             }
 
             var title = Title?.GetValue(dc.State);

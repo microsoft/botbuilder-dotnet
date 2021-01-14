@@ -72,12 +72,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
-                    throw new ArgumentException($"Invalid Activity. A attachment is required for Send Messaging Extension Query Link Response.");
+                    throw new ArgumentException($"Invalid activity. An attachment is required for Send Messaging Extension Link Query Response.");
                 }
             }
             else
             {
-                throw new ArgumentException($"An attachment is required for Send Messaging Extension Query Link Response.");
+                throw new ArgumentException($"An activity with attachments is required for Send Messaging Extension Link Query Response.");
             }
 
             var attachments = boundActivity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));

@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("TeamsInfo.GetPagedMembersAsync() works only on the Teams channel.");
+                throw new Exception("TeamsInfo.GetPagedMembers works only on the Teams channel.");
             }
 
             string continuationToken = null;

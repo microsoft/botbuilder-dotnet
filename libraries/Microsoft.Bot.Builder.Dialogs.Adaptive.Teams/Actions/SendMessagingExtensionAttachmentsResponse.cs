@@ -81,9 +81,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 activity = await Attachments.BindAsync(dc, dc.State).ConfigureAwait(false);
             }
 
-            if (activity == null || activity.Attachments?.Any() == false)
+            if (activity?.Attachments?.Any() != true)
             {
-                throw new InvalidOperationException("Missing Attachments in Messaging Extension Attachments Response.");
+                throw new InvalidOperationException("Missing attachments in Messaging Extension Attachments Response.");
             }
 
             var layout = AttachmentLayout.GetValue(dc.State);

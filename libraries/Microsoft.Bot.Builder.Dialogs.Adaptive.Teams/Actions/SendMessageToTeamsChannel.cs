@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("TeamsInfo.GetMember() works only on the Teams channel.");
+                throw new Exception("TeamsInfo.SendMessageToTeamsChannel works only on the Teams channel.");
             }
 
             IActivity activity = null;
@@ -133,6 +133,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (string.IsNullOrEmpty(teamsChannelId))
             {
                 teamsChannelId = dc.Context.Activity.TeamsGetChannelId();
+            }
+
+            if (dc.Context.Adapter is not BotFrameworkAdapter)
+            {
+                throw new InvalidOperationException($"TeamsInfo.SendMessageToTeamsChannel is not supported by the current adapter.");
             }
 
             // TODO: this will NOT work with certificate app credentials

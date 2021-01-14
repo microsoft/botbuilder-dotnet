@@ -65,10 +65,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string configUrl = ConfigUrl.GetValue(dc.State);
+            string configUrl = string.Empty;
+            if (ConfigUrl != null)
+            {
+                configUrl = ConfigUrl.GetValue(dc.State);
+            }
+
             if (string.IsNullOrEmpty(configUrl)) 
             { 
-                throw new InvalidOperationException($"{nameof(ConfigUrl)} is Required for a Messaging Extension Config Response");
+                throw new InvalidOperationException($"{nameof(ConfigUrl)} is required for a Messaging Extension Config Response.");
             }
 
             var response = new MessagingExtensionResponse

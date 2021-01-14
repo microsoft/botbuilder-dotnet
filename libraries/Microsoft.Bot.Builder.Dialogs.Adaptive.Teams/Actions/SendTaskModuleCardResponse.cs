@@ -72,14 +72,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
-                    throw new ArgumentException($"Invalid Activity. The activity does not contain a valid attachment as required for Task Module Continue Response.");
+                    throw new ArgumentException($"Invalid activity. The activity does not contain a valid attachment as required for Task Module Card Response.");
                 }
 
                 attachment = boundActivity.Attachments[0];
             }
             else
             {
-                throw new ArgumentException($"A valid card attachment is required for Task Module Continue Response.");
+                throw new ArgumentException($"A valid card is required for Task Module Card Response.");
             }
 
             var title = Title?.GetValue(dc.State);

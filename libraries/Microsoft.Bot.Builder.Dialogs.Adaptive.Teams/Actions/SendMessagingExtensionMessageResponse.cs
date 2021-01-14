@@ -64,7 +64,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string message = Message.GetValue(dc.State);
+            string message = string.Empty;
+            if (Message != null)
+            {
+                message = Message.GetValue(dc.State);
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new ArgumentException($"A message is required for {SendMessagingExtensionMessageResponse.Kind}.");
+            }
 
             var response = new MessagingExtensionResponse
             {

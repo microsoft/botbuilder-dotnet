@@ -88,13 +88,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var connectionName = ConnectionName.GetValue(dc.State);
+            string connectionName = string.Empty;
+            if (ConnectionName != null)
+            {
+                connectionName = ConnectionName.GetValue(dc.State);
+            }
+
             if (string.IsNullOrEmpty(connectionName))
             {
                 throw new InvalidOperationException("Messaging Extension Auth Response requires a Connection Name.");
             }
 
-            var title = Title.GetValue(dc.State);
+            string title = string.Empty;
+            if (Title != null)
+            {
+                title = Title.GetValue(dc.State);
+            }
+
             if (string.IsNullOrEmpty(title))
             {
                 throw new InvalidOperationException("Messaging Extension Auth Response requires a Title.");

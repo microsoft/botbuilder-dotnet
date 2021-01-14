@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("TeamsInfo.GetMember() works only on the Teams channel.");
+                throw new Exception("TeamsInfo.GetTeamMember works only on the Teams channel.");
             }
 
             string memberId = null;
