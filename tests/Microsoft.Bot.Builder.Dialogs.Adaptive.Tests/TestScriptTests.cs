@@ -140,6 +140,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task TestScriptTests_UserActivity()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task TestScriptTests_UserConversationUpdate()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
