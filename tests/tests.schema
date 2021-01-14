@@ -503,6 +503,9 @@
       "$ref": "#/definitions/Teams.SendMessagingExtensionMessageResponse"
     },
     {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionSelectItemResponse"
+    },
+    {
       "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
     },
     {
@@ -3693,7 +3696,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
         },
         {
           "$ref": "#/definitions/botframework.json/definitions/Activity",
@@ -3702,10 +3708,7 @@
           ]
         },
         {
-          "$ref": "#/definitions/Microsoft.ActivityTemplate"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+          "type": "string"
         }
       ]
     },
@@ -3715,40 +3718,19 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
+          "$ref": "#/definitions/CustomAction.dialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+          "$ref": "#/definitions/CustomAction2.dialog"
         },
         {
           "$ref": "#/definitions/Microsoft.AdaptiveDialog"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
           "$ref": "#/definitions/Microsoft.Ask"
         },
         {
           "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Microsoft.BeginDialog"
@@ -3766,10 +3748,19 @@
           "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ContinueConversationLater"
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueLoop"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
         },
         {
           "$ref": "#/definitions/Microsoft.DebugBreak"
@@ -3823,6 +3814,15 @@
           "$ref": "#/definitions/Microsoft.LogAction"
         },
         {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+        },
+        {
           "$ref": "#/definitions/Microsoft.RepeatDialog"
         },
         {
@@ -3845,6 +3845,12 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Microsoft.ThrowException"
@@ -3901,6 +3907,9 @@
           "$ref": "#/definitions/Teams.SendMessagingExtensionMessageResponse"
         },
         {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionSelectItemResponse"
+        },
+        {
           "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
         },
         {
@@ -3916,10 +3925,7 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "$ref": "#/definitions/CustomAction.dialog"
-        },
-        {
-          "$ref": "#/definitions/CustomAction2.dialog"
+          "type": "string"
         }
       ]
     },
@@ -3930,11 +3936,6 @@
       "type": "object",
       "oneOf": [
         {
-          "type": "string",
-          "title": "Reference to Microsoft.IEntityRecognizer",
-          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
-        },
-        {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
@@ -3987,6 +3988,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.IEntityRecognizer",
+          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
         }
       ]
     },
@@ -3996,13 +4002,13 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
         },
         {
           "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
+        },
+        {
+          "type": "string"
         }
       ]
     },
@@ -4011,30 +4017,6 @@
       "description": "Components which derive from Recognizer class",
       "$role": "interface",
       "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
-        },
         {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
@@ -4045,6 +4027,9 @@
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
           "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
         },
         {
@@ -4066,13 +4051,22 @@
           "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
           "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
@@ -4084,13 +4078,25 @@
           "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RecognizerSet"
+        },
+        {
           "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+          "type": "string"
         }
       ]
     },
@@ -4100,10 +4106,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.TextTemplate"
         },
         {
-          "$ref": "#/definitions/Microsoft.TextTemplate"
+          "type": "string"
         }
       ]
     },
@@ -4112,11 +4118,6 @@
       "title": "Microsoft Triggers",
       "description": "Components which derive from OnCondition class.",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITrigger",
-          "description": "Reference to Microsoft.ITrigger .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
@@ -4272,6 +4273,11 @@
         },
         {
           "$ref": "#/definitions/Teams.OnTeamUnarchived"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITrigger",
+          "description": "Reference to Microsoft.ITrigger .dialog file."
         }
       ]
     },
@@ -4280,11 +4286,6 @@
       "title": "Selectors",
       "description": "Components which derive from TriggerSelector class.",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITriggerSelector",
-          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.ConditionalSelector"
         },
@@ -4299,6 +4300,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITriggerSelector",
+          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
     },
@@ -9015,12 +9021,12 @@
       "$role": "interface",
       "oneOf": [
         {
+          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
+        },
+        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IHttpRequestMock",
           "description": "Reference to Microsoft.Test.IHttpRequestMock .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
         }
       ]
     },
@@ -9034,11 +9040,6 @@
       "description": "Components which derive from TestAction class",
       "$role": "interface",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.Test.ITestAction",
-          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
         },
@@ -9074,6 +9075,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserTyping"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ITestAction",
+          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
         }
       ]
     },
@@ -9083,12 +9089,12 @@
       "$role": "interface",
       "oneOf": [
         {
+          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
+        },
+        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IUserTokenMock",
           "description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
         }
       ]
     },
@@ -12246,6 +12252,11 @@
           "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
+        "completionBotId": {
+          "type": "string",
+          "title": "completionBotId",
+          "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
+        },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
           "title": "Disabled",
@@ -12383,6 +12394,11 @@
           "title": "OAuth connection name",
           "description": "The OAuth Connection Name, that will be used to perform the Sign On.",
           "default": "=settings.connectionName"
+        },
+        "title": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Title",
+          "description": "Title of the response for the Suggested Actions sent back."
         },
         "resultProperty": {
           "$ref": "#/definitions/stringExpression",
@@ -12596,6 +12612,65 @@
         }
       }
     },
+    "Teams.SendMessagingExtensionSelectItemResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a messaging extension response when an item is selected",
+      "description": "Query link requests have activity.name='composeExtension/queryLink'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "card": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Card",
+          "description": "Expression for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionSelectItemResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.SendTaskModuleCardResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send task module card response",
@@ -12656,6 +12731,11 @@
           "title": "Card",
           "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "completionBotId": {
+          "type": "string",
+          "title": "completionBotId",
+          "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -12812,6 +12892,11 @@
             "https://fallbacksite.com",
             "=user.surveySiteFallbackUrl"
           ]
+        },
+        "completionBotId": {
+          "type": "string",
+          "title": "completionBotId",
+          "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",

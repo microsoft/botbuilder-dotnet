@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../tests.schema",
+    "$schema": "../../../../botbuilder-dialogs-adaptive/tests/schema/test.schema",
     "$kind": "Microsoft.Test.Script",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
@@ -9,10 +9,7 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMessagingExtensionAttachmentsResponse",
-                        "card": {
-                            "type": "message"
-                        }
+                        "$kind": "Teams.SendMessagingExtensionAuthResponse"
                     }
                 ]
             },
@@ -32,13 +29,13 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
-                "text": "hi",
+                "text": "NoConnectionName",
                 "name": "composeExtension/queryLink"
             }
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Missing attachments in Messaging Extension Attachments Response."
+            "text": "Teams.SendMessagingExtensionAuthResponse: not supported by the current adapter."
         }
     ]
 }

@@ -26,7 +26,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "ConfigUrl is required for a Messaging Extension Config Response."
+            "text": "ConfigUrl is required for Teams.SendMessagingExtensionConfigQuerySettingUrlResponse."
         }
     ]
 }

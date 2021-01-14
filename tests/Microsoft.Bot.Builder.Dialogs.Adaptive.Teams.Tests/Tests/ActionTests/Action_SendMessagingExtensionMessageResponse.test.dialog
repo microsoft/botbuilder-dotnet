@@ -29,7 +29,7 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
           "assertions": [
             "type == 'invokeResponse'",
-            "conversation.id == 'Conversation1'",
+            "conversation.id == 'Action_SendMessagingExtensionMessageResponse'",
             "value.body.composeExtension.type == 'message'",
             "value.body.composeExtension.text == 'i want to send this to the user'"
           ]

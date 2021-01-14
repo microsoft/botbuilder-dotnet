@@ -48,7 +48,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Missing attachments in Messaging Extension Action Response."
+            "text": "Missing attachments in Teams.SendMessagingExtensionActionResponse."
         }
     ]
 }

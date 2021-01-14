@@ -49,6 +49,11 @@
             "title": "Card",
             "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required."
         },
+        "completionBotId": {
+            "type": "string",
+            "title": "completionBotId",
+            "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
+        },
         "disabled": {
             "$ref": "schema:#/definitions/booleanExpression",
             "title": "Disabled",

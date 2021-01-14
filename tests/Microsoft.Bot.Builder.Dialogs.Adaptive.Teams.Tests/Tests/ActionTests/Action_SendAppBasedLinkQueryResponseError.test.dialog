@@ -61,7 +61,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "An activity with attachments is required for Send Messaging Extension Link Query Response."
+            "text": "An activity with attachments is required for Teams.SendAppBasedLinkQueryResponse."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -73,7 +73,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Invalid activity. An attachment is required for Send Messaging Extension Link Query Response."
+            "text": "Invalid activity. An attachment is required for Teams.SendAppBasedLinkQueryResponse."
         }
     ]
 }

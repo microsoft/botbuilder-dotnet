@@ -37,7 +37,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "GetMeetingParticipant could not determine the participant id by expression value provided. participantId is required."
+            "text": "Teams.GetMeetingParticipant could not determine the participant id by expression value provided. participantId is required."
         }
     ]
 }

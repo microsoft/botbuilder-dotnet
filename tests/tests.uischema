@@ -1020,6 +1020,7 @@
         "width",
         "cacheType",
         "cacheDuration",
+        "completionBotId",
         "*"
       ],
       "subtitle": "Send a response for a messaging extension request."
@@ -1043,6 +1044,7 @@
       "label": "Messaging Extension auth response",
       "order": [
         "connectionName",
+        "title",
         "resultProperty",
         "*"
       ],
@@ -1085,6 +1087,18 @@
       "subtitle": "Send a message response containing text only."
     }
   },
+  "Teams.SendMessagingExtensionSelectItemResponse": {
+    "form": {
+      "label": "Send a card response on item selection",
+      "order": [
+        "card",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a messaging extension response when an item is selected"
+    }
+  },
   "Teams.SendTaskModuleCardResponse": {
     "form": {
       "label": "Send task module card response",
@@ -1095,6 +1109,7 @@
         "width",
         "cacheType",
         "cacheDuration",
+        "completionBotId",
         "*"
       ],
       "subtitle": "Send a continue response containing a card."
@@ -1123,6 +1138,7 @@
         "width",
         "cacheType",
         "cacheDuration",
+        "completionBotId",
         "*"
       ],
       "subtitle": "Send a continue response containing a url."

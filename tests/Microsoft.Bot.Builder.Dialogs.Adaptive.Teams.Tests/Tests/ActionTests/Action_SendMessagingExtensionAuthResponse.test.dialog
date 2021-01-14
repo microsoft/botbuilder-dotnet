@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Teams.SendMessagingExtensionAuthResponse",
-                        "connectionName": "test connection",
+                        "connectionName": "testConnection",
                         "title": "test title"
                     }
                 ]
@@ -30,11 +30,11 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
           "assertions": [
             "type == 'invokeResponse'",
-            "conversation.id == 'Conversation1'",
+            "conversation.id == 'Action_SendMessagingExtensionAuthResponse'",
             "value.body.composeExtension.type == 'auth'",
             "value.body.composeExtension.suggestedActions.actions[0].title == 'test title'",
             "value.body.composeExtension.suggestedActions.actions[0].type == 'openUrl'",
-            "value.body.composeExtension.suggestedActions.actions[0].value == 'https://fake.com/oauthsignin/test connection/msteams'"
+            "startsWith(value.body.composeExtension.suggestedActions.actions[0].value, 'https://fake.com/oauthsignin/testConnection')"
           ]
         }
     ]

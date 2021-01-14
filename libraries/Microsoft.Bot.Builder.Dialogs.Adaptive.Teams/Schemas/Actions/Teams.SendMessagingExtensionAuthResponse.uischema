@@ -5,6 +5,7 @@
         "subtitle": "Send a response to a messaging extensin requiring auth.",
         "order": [
             "connectionName",
+            "title",
             "resultProperty",
             "*"
         ]

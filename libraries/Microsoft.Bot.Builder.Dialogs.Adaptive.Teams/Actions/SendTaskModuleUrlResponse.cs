@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             string url = Url?.GetValue(dc.State);
             if (string.IsNullOrEmpty(url))
             {
-                throw new InvalidOperationException("Missing Url for Task Module Continue Response.");
+                throw new InvalidOperationException($"Missing Url for {Kind}.");
             }
 
             var title = Title?.GetValue(dc.State);

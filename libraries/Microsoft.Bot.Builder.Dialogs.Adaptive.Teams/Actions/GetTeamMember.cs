@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception("TeamsInfo.GetTeamMember works only on the Teams channel.");
+                throw new Exception($"{Kind} works only on the Teams channel.");
             }
 
             string memberId = null;
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(memberId))
             {
-                throw new InvalidOperationException($"Missing {nameof(MemberId)} in {nameof(GetTeamMember)}");
+                throw new InvalidOperationException($"Missing {nameof(MemberId)} in {Kind}.");
             }
 
             string teamId = null;

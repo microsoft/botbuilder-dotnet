@@ -10,11 +10,11 @@
                 "actions": [
                     {
                         "$kind": "Teams.GetTeamDetails",
-                        "property": "user.result"
+                        "property": "conversation.result"
                     },
                     {
                         "$kind": "Teams.GetTeamDetails",
-                        "property": "user.resultWithCustomProperties",
+                        "property": "conversation.resultWithCustomProperties",
                         "teamId": "customTeamId"
                     }
                 ]
@@ -40,12 +40,12 @@
         {
             "$kind": "Microsoft.Test.MemoryAssertions",
             "assertions": [
-                "user.result.aadGroupId == 'Team-aadGroupId'",
-                "user.result.id == '19:generalChannelIdgeneralChannelId@thread.skype'",
-                "user.result.name == 'TeamName'",
-                "user.resultWithCustomProperties.aadGroupId == 'Team-aadGroupId'",
-                "user.resultWithCustomProperties.id == '19:generalChannelIdgeneralChannelId@thread.skype'",
-                "user.resultWithCustomProperties.name == 'TeamName'"
+                "conversation.result.aadGroupId == 'Team-aadGroupId'",
+                "conversation.result.id == '19:generalChannelIdgeneralChannelId@thread.skype'",
+                "conversation.result.name == 'TeamName'",
+                "conversation.resultWithCustomProperties.aadGroupId == 'Team-aadGroupId'",
+                "conversation.resultWithCustomProperties.id == '19:generalChannelIdgeneralChannelId@thread.skype'",
+                "conversation.resultWithCustomProperties.name == 'TeamName'"
             ]
         }
     ]

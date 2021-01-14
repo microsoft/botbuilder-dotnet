@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Teams.SendMessageToTeamsChannel",
-                        "conversationReferenceProperty": "user.result",
+                        "conversationReferenceProperty": "conversation.result",
                         "activity": {
                             "type": "message",
                             "text": "This is a message to a Teams Channel"
@@ -18,7 +18,7 @@
                     },
                     {
                         "$kind": "Teams.SendMessageToTeamsChannel",
-                        "conversationReferenceProperty": "user.resultWithCustomProperties",
+                        "conversationReferenceProperty": "conversation.resultWithCustomProperties",
                         "activity": {
                             "type": "message",
                             "text": "This is a message to a Teams Channel with custom properties"
@@ -45,18 +45,18 @@
         {
             "$kind": "Microsoft.Test.MemoryAssertions",
             "assertions": [
-                "user.result.activityId == '0'",
-                "user.result.channelId == 'msteams'",
-                "user.result.conversation.conversationType == 'groupChat'",
-                "user.result.conversation.isGroup == true",
-                "user.result.conversation.name == 'group'",
-                "user.result.conversation.tenantId == 'tenantId-Guid'",
-                "user.resultWithCustomProperties.activityId == '0'",
-                "user.resultWithCustomProperties.channelId == 'msteams'",
-                "user.resultWithCustomProperties.conversation.conversationType == 'groupChat'",
-                "user.resultWithCustomProperties.conversation.isGroup == true",
-                "user.resultWithCustomProperties.conversation.name == 'group'",
-                "user.resultWithCustomProperties.conversation.tenantId == 'tenantId-Guid'"
+                "conversation.result.activityId == '0'",
+                "conversation.result.channelId == 'msteams'",
+                "conversation.result.conversation.conversationType == 'groupChat'",
+                "conversation.result.conversation.isGroup == true",
+                "conversation.result.conversation.name == 'group'",
+                "conversation.result.conversation.tenantId == 'tenantId-Guid'",
+                "conversation.resultWithCustomProperties.activityId == '0'",
+                "conversation.resultWithCustomProperties.channelId == 'msteams'",
+                "conversation.resultWithCustomProperties.conversation.conversationType == 'groupChat'",
+                "conversation.resultWithCustomProperties.conversation.isGroup == true",
+                "conversation.resultWithCustomProperties.conversation.name == 'group'",
+                "conversation.resultWithCustomProperties.conversation.tenantId == 'tenantId-Guid'"
             ]
         }
     ]

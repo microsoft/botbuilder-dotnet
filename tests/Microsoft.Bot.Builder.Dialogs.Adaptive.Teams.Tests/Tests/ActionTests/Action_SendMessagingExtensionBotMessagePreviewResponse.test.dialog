@@ -39,7 +39,7 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
           "assertions": [
             "type == 'invokeResponse'",
-            "conversation.id == 'Conversation1'",
+            "conversation.id == 'Action_SendMessagingExtensionBotMessagePreviewResponse'",
             "value.body.composeExtension.type == 'botMessagePreview'",
             "value.body.composeExtension.activityPreview.attachmentLayout == 'list'",
             "value.body.composeExtension.activityPreview.inputHint == 'acceptingInput'",

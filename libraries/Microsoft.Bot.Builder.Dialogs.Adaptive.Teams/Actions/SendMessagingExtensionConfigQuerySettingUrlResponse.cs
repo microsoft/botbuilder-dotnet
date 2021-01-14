@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(configUrl)) 
             { 
-                throw new InvalidOperationException($"{nameof(ConfigUrl)} is required for a Messaging Extension Config Response.");
+                throw new InvalidOperationException($"{nameof(ConfigUrl)} is required for {Kind}.");
             }
 
             var response = new MessagingExtensionResponse

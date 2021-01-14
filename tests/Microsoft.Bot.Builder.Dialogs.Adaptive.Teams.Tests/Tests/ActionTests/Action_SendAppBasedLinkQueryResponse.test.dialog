@@ -39,7 +39,7 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
           "assertions": [
             "type == 'invokeResponse'",
-            "conversation.id == 'Conversation1'",
+            "conversation.id == 'Action_SendAppBasedLinkQueryResponse'",
             "value.body.composeExtension.attachmentLayout == 'list'",
             "value.body.composeExtension.type == 'result'",
             "value.body.composeExtension.attachments[0].contentType == 'application/vnd.microsoft.card.thumbnail'",

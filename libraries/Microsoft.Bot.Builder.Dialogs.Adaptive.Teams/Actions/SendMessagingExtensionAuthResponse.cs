@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider tokenProvider))
             {
-                throw new InvalidOperationException("SendMessagingExtensionOauthResponse(): not supported by the current adapter");
+                throw new InvalidOperationException($"{Kind}: not supported by the current adapter");
             }
 
             if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(connectionName))
             {
-                throw new InvalidOperationException("Messaging Extension Auth Response requires a Connection Name.");
+                throw new InvalidOperationException($"{Kind} requires a Connection Name.");
             }
 
             string title = string.Empty;
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(title))
             {
-                throw new InvalidOperationException("Messaging Extension Auth Response requires a Title.");
+                throw new InvalidOperationException($"{Kind} requires a Title.");
             }
 
             var tokenResponse = await GetUserTokenAsync(dc, tokenProvider, connectionName, cancellationToken).ConfigureAwait(false);

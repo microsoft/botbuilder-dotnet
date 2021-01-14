@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (activity?.Attachments?.Any() != true)
             {
-                throw new InvalidOperationException("Missing attachments in Messaging Extension Attachments Response.");
+                throw new InvalidOperationException($"Missing attachments in {Kind}.");
             }
 
             var layout = AttachmentLayout.GetValue(dc.State);

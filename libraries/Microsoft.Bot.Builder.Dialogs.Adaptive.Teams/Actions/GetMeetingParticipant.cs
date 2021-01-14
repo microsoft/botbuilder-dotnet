@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new InvalidOperationException("TeamsInfo.GetMeetingParticipant works only on the Teams channel.");
+                throw new InvalidOperationException($"{Kind} works only on the Teams channel.");
             }
 
             string meetingId = GetValueOrNull(dc, this.MeetingId);
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 // TeamsInfo.GetMeetingParticipantAsync will default to retrieving the current meeting's participant
                 // if none is provided.  This could lead to unexpected results.  Therefore, GetMeetingParticipant action
                 // throws an exception if the expression provided somehow maps to an invalid result.
-                throw new InvalidOperationException($"GetMeetingParticipant could not determine the participant id by expression value provided. {nameof(participantId)} is required.");
+                throw new InvalidOperationException($"{Kind} could not determine the participant id by expression value provided. {nameof(participantId)} is required.");
             }
 
             var result = await TeamsInfo.GetMeetingParticipantAsync(dc.Context, meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false);

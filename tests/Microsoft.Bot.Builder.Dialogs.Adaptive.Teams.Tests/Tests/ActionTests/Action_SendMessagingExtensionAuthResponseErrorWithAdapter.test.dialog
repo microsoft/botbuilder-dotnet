@@ -44,10 +44,7 @@
                 "intent": "NoAttachments",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMessagingExtensionAuthResponse",
-                        "card": {
-                            "type": "message"
-                        }
+                        "$kind": "Teams.SendMessagingExtensionAuthResponse"
                     }
                 ]
             },
@@ -73,7 +70,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Messaging Extension Auth Response requires a Connection Name."
+            "text": "Teams.SendMessagingExtensionAuthResponse requires a Connection Name."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -85,7 +82,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Messaging Extension Auth Response requires a Title."
+            "text": "Teams.SendMessagingExtensionAuthResponse requires a Title."
         }
     ]
 }

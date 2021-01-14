@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Connector;
@@ -70,8 +69,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             var participantResult = GetParticipant().ToString();
             var uriToContent = new Dictionary<string, string>()
                 {
-                    { "/v3/conversations/Conversation1/members/member-id", participantResult },
-                    { "/v3/conversations/Conversation1/members/customMemberId", participantResult }
+                    { "/v3/conversations/Action_GetMember/members/member-id", participantResult },
+                    { "/v3/conversations/Action_GetMember/members/customMemberId", participantResult }
                 };
 
             var teamsMiddleware = GetTeamsMiddleware(uriToContent);
@@ -101,8 +100,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
 
             var uriToContent = new Dictionary<string, string>()
                 {
-                    { "/v3/conversations/Conversation1/pagedmembers", JObject.FromObject(threeMembers).ToString() },
-                    { "/v3/conversations/Conversation1/pagedmembers?pageSize=2&continuationToken=token", JObject.FromObject(twoMembers).ToString() }
+                    { "/v3/conversations/Action_GetPagedMembers/pagedmembers", JObject.FromObject(threeMembers).ToString() },
+                    { "/v3/conversations/Action_GetPagedMembers/pagedmembers?pageSize=2&continuationToken=token", JObject.FromObject(twoMembers).ToString() }
                 };
 
             var teamsMiddleware = GetTeamsMiddleware(uriToContent);
@@ -244,12 +243,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         //}
         
         [Fact]
-        public async Task Action_SendMessageToTeamsChannelAdapterError()
-        {
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
-        }
-        
-        [Fact]
         public async Task Action_SendMessageToTeamsChannelError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
@@ -274,7 +267,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionAttachmentResponseError()
+        public async Task Action_SendMessagingExtensionAttachmentsResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
@@ -417,7 +410,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
                     Id = $"29:User-Id-{count}",
                     Name = $"User Name-{count}",
                     AadObjectId = $"User-{count}-Object-Id",
-                    Surname = count.ToString(),
+                    Surname = $"Surname-{count}",
                     Email = $"User.{count}@microsoft.com",
                     UserPrincipalName = $"user{count}@microsoft.com",
                     TenantId = "tenant-id-1",
@@ -434,9 +427,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             {
                 id = "29:User-Id-0",
                 objectId = "User-0-Object-Id",
-                name = "getTeamsUser-0",
+                name = "User Name-0",
                 meeting = new { role = "Organizer" },
-                surname = "none",
+                surname = "Surname-0",
                 tenantId = "tenant-id-1",
                 userPrincipalName = "user0@microsoft.com",
                 user = new

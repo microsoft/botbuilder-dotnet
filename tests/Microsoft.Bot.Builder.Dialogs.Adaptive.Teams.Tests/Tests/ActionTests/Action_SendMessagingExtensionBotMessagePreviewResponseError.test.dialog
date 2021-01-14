@@ -61,7 +61,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "A valid card is required for Send Messaging Extension Bot Message Preview Response."
+            "text": "A valid card is required for Teams.SendMessagingExtensionBotMessagePreviewResponse."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -73,7 +73,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Invalid activity. The activity does not contain a valid attachment as required for Send Messaging Extension Bot Message Preview Response."
+            "text": "Invalid activity. The activity does not contain a valid attachment as required for Teams.SendMessagingExtensionBotMessagePreviewResponse."
         }
     ]
 }

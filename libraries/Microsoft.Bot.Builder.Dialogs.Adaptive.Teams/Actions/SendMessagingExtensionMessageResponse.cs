@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(message))
             {
-                throw new ArgumentException($"A message is required for {SendMessagingExtensionMessageResponse.Kind}.");
+                throw new ArgumentException($"A message is required for {Kind}.");
             }
 
             var response = new MessagingExtensionResponse

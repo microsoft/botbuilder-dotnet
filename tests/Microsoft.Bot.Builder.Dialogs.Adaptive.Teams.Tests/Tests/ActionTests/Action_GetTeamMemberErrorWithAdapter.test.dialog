@@ -37,7 +37,7 @@
         },
         {
           "$kind": "Microsoft.Test.AssertReply",
-          "text": "Missing MemberId in GetTeamMember"
+          "text": "Missing MemberId in Teams.GetTeamMember."
         }
     ]
 }

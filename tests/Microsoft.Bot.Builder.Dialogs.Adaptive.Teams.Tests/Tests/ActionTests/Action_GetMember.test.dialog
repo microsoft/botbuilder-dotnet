@@ -25,20 +25,20 @@
         {
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
-                "type": "message",
-                "text": "hi",
-                "from": {
-                  "id": "member-id"
-                },
-                "channelData": {
-                    "tenant": {
-                        "id": "tenant-id-1"
-                    },
-                    "meeting": {
-                        "id": "meeting-id-1"
-                    }
-                }
+              "type": "message",
+              "text": "hi",
+              "from": {
+                "id": "member-id"
+              },
+            "channelData": {
+              "tenant": {
+                "id": "tenant-id-1"
+              },
+              "meeting": {
+                "id": "meeting-id-1"
+              }
             }
+          }
         },
         {
             "$kind": "Microsoft.Test.MemoryAssertions",
@@ -46,17 +46,17 @@
                 "conversation.result.email == 'User.0@microsoft.com'",
                 "conversation.result.givenName == 'User'",
                 "conversation.result.id == '29:User-Id-0'",
-                "conversation.result.name == 'getTeamsUser-0'",
+                "conversation.result.name == 'User Name-0'",
                 "conversation.result.objectId == 'User-0-Object-Id'",
-                "conversation.result.surname == 'none'",
+                "conversation.result.surname == 'Surname-0'",
                 "conversation.result.tenantId == 'tenant-id-1'",
                 "conversation.result.userPrincipalName == 'user0@microsoft.com'",
                 "conversation.resultWithCustomProperties.email == 'User.0@microsoft.com'",
                 "conversation.resultWithCustomProperties.givenName == 'User'",
                 "conversation.resultWithCustomProperties.id == '29:User-Id-0'",
-                "conversation.resultWithCustomProperties.name == 'getTeamsUser-0'",
+                "conversation.resultWithCustomProperties.name == 'User Name-0'",
                 "conversation.resultWithCustomProperties.objectId == 'User-0-Object-Id'",
-                "conversation.resultWithCustomProperties.surname == 'none'",
+                "conversation.resultWithCustomProperties.surname == 'Surname-0'",
                 "conversation.resultWithCustomProperties.tenantId == 'tenant-id-1'",
                 "conversation.resultWithCustomProperties.userPrincipalName == 'user0@microsoft.com'"
             ]

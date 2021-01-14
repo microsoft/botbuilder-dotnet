@@ -72,14 +72,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
                 {
-                    throw new ArgumentException($"Invalid activity. The activity does not contain a valid attachment as required for Send Messaging Extension Bot Message Preview Response.");
+                    throw new ArgumentException($"Invalid activity. The activity does not contain a valid attachment as required for {Kind}.");
                 }
 
                 attachment = boundActivity.Attachments[0];
             }
             else
             {
-                throw new ArgumentException($"A valid card is required for Send Messaging Extension Bot Message Preview Response.");
+                throw new ArgumentException($"A valid card is required for {Kind}.");
             }
 
             var response = new MessagingExtensionActionResponse

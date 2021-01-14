@@ -36,7 +36,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "TeamsInfo.SendMessageToTeamsChannel works only on the Teams channel."
+            "text": "Teams.SendMessageToTeamsChannel works only on the Teams channel."
         }
     ]
 }

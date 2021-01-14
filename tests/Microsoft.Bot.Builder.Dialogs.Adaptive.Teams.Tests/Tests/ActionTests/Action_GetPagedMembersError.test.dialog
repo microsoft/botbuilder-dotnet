@@ -36,7 +36,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "TeamsInfo.GetPagedMembers works only on the Teams channel."
+            "text": "Teams.GetPagedMembers works only on the Teams channel."
         }
     ]
 }

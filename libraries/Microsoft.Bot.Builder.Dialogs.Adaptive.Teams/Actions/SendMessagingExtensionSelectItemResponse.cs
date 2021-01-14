@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
             {
-                throw new ArgumentException($"Invalid activity. A valid attachment is required for {SendMessagingExtensionSelectItemResponse.Kind}.");
+                throw new ArgumentException($"Invalid activity. A valid attachment is required for {Kind}.");
             }
 
             var attachment = boundActivity.Attachments[0];

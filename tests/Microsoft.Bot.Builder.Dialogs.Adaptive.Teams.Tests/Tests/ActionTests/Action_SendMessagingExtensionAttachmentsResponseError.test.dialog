@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Teams.SendMessagingExtensionAttachmentsResponse",
-                        "card": {
+                        "attachments": {
                             "type": "message"
                         }
                     }
@@ -38,7 +38,7 @@
         },
       {
         "$kind": "Microsoft.Test.AssertReply",
-        "text": "Missing attachments in Messaging Extension Attachments Response."
+        "text": "Missing attachments in Teams.SendMessagingExtensionAttachmentsResponse."
       }
     ]
 }

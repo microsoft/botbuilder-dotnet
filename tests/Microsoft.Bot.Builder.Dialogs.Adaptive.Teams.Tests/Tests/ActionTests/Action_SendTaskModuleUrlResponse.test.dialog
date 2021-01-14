@@ -10,7 +10,6 @@
                 "actions": [
                     {
                         "$kind": "Teams.SendTaskModuleUrlResponse",
-                        "property": "user.result",
                         "title": "some title",
                         "height": 1,
                         "width": 2,
@@ -35,7 +34,7 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
                 "type == 'invokeResponse'",
-                "conversation.id == 'Conversation1'",
+                "conversation.id == 'Action_SendTaskModuleUrlResponse'",
                 "value.body.task.value.completionBotId == 'someBotId'",
                 "value.body.task.value.height == 1",
                 "value.body.task.value.title == 'some title'",
