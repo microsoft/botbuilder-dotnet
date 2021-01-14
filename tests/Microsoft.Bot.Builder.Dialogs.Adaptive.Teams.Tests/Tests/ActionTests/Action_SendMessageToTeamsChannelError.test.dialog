@@ -9,12 +9,7 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMessageToTeamsChannel",
-                        "property": "$result"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${$result}"
+                        "$kind": "Teams.SendMessageToTeamsChannel"
                     }
                 ]
             },
