@@ -1,0 +1,52 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.GetTeamDetails",
+                        "property": "user.result"
+                    },
+                    {
+                        "$kind": "Teams.GetTeamDetails",
+                        "property": "user.resultWithCustomProperties",
+                        "teamId": "customTeamId"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "channelData": {
+                    "tenant": {
+                        "id": "tenant-id-1"
+                    },
+                    "team": {
+                        "id": "team-id-1"
+                    }
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "user.result.aadGroupId == 'Team-aadGroupId'",
+                "user.result.id == '19:generalChannelIdgeneralChannelId@thread.skype'",
+                "user.result.name == 'TeamName'",
+                "user.resultWithCustomProperties.aadGroupId == 'Team-aadGroupId'",
+                "user.resultWithCustomProperties.id == '19:generalChannelIdgeneralChannelId@thread.skype'",
+                "user.resultWithCustomProperties.name == 'TeamName'"
+            ]
+        }
+    ]
+}

@@ -10,7 +10,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${json(turn.activity)}"
+                        "activity": "${turn.activity.text}"
                     }
                 ]
             },
@@ -19,7 +19,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${json(turn.activity)}"
+                        "activity": "${turn.activity.text}"
                     }
                 ]
             },

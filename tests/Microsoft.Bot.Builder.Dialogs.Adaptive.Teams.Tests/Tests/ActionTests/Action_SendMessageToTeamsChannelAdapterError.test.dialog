@@ -9,7 +9,7 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.GetMeetingParticipant",
+                        "$kind": "Teams.SendMessageToTeamsChannel",
                         "property": "$result"
                     },
                     {
@@ -34,9 +34,9 @@
             "$kind": "Microsoft.Test.UserSays",
             "text": "hi"
         },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "TeamsInfo.GetMeetingParticipant works only on the Teams channel."
-        }
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "TeamsInfo.SendMessageToTeamsChannel is not supported by the current adapter."
+      }
     ]
 }

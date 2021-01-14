@@ -9,8 +9,9 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.GetMeetingParticipant",
-                        "property": "$result"
+                        "$kind": "Teams.GetTeamMember",
+                        "property": "$result",
+                        "memberId": "=turn.activity.channelData.doesNotExist"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -35,8 +36,8 @@
             "text": "hi"
         },
         {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "TeamsInfo.GetMeetingParticipant works only on the Teams channel."
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "Missing MemberId in GetTeamMember"
         }
     ]
 }

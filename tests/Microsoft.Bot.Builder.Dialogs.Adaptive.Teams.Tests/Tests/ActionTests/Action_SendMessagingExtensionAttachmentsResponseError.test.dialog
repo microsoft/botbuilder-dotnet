@@ -9,12 +9,10 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.GetMeetingParticipant",
-                        "property": "$result"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${$result}"
+                        "$kind": "Teams.SendMessagingExtensionAttachmentsResponse",
+                        "card": {
+                            "type": "message"
+                        }
                     }
                 ]
             },
@@ -31,12 +29,16 @@
     },
     "script": [
         {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "hi"
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "name": "composeExtension/queryLink"
+            }
         },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "TeamsInfo.GetMeetingParticipant works only on the Teams channel."
-        }
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "Missing attachments in Messaging Extension Attachments Response."
+      }
     ]
 }

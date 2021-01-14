@@ -10,7 +10,8 @@
                 "actions": [
                     {
                         "$kind": "Teams.GetMeetingParticipant",
-                        "property": "$result"
+                        "property": "$result",
+                        "participantId": "=turn.channelData.doesNotExist"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
@@ -36,7 +37,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "TeamsInfo.GetMeetingParticipant works only on the Teams channel."
+            "text": "GetMeetingParticipant could not determine the participant id by expression value provided. participantId is required."
         }
     ]
 }
