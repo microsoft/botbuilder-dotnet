@@ -512,6 +512,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 input = value;
             }
 
+            var state = InputState.Valid;
+
             // Fallback to using activity
             bool activityProcessed = dc.State.GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
@@ -530,13 +532,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         input = dc.Context.Activity.Value;
                     }
                 }
-            }
 
-            // Update "this.value" and perform additional recognition and validations
-            dc.State.SetValue(VALUE_PROPERTY, input);
-            if (input != null)
-            {
-                var state = await this.OnRecognizeInputAsync(dc, cancellationToken).ConfigureAwait(false);
+                // Update "this.value" and perform additional recognition and validations
+                // This input should be activity attachments or text or activity value
+                dc.State.SetValue(VALUE_PROPERTY, input);
+
+                // Perform recognition and validations
+                state = await this.OnRecognizeInputAsync(dc, cancellationToken).ConfigureAwait(false);
                 if (state == InputState.Valid)
                 {
                     foreach (var validation in this.Validations)
@@ -544,22 +546,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         var value = validation.GetValue(dc.State);
                         if (value == false)
                         {
-                            return InputState.Invalid;
+                            state = InputState.Invalid;
+                            break;
                         }
                     }
 
                     dc.State.SetValue(TurnPath.ActivityProcessed, true);
-                    return InputState.Valid;
-                }
-                else
-                {
-                    return state;
                 }
             }
             else
             {
-                return InputState.Missing;
+                // Update "this.value" with input from value
+                // This input can be any object rather than limited to string
+                // No need to perform recognition or validations for this input
+                dc.State.SetValue(VALUE_PROPERTY, input);
             }
+            
+            if (input == null)
+            {
+                state = InputState.Missing;
+            }
+
+            return state;
         }
 
         private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))

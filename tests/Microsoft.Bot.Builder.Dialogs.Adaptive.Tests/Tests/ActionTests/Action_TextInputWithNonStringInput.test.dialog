@@ -28,9 +28,13 @@
                                 "prompt": "Hello, what is your name?",
                                 "unrecognizedPrompt": "How should I call you?",
                                 "invalidPrompt": "That does not soud like a name",
-                                "value": "=json(`{'foo': '$firstName','item': '$lastName'}`)"
+                                "value": "=createArray(dialog.firstName, dialog.lastName)"
                             }
                         ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello ${concat(toUpper(user.name[0]),toUpper(user.name[1]))}, nice to meet you!"
                     }
                 ]
             }
@@ -45,7 +49,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "That does not soud like a name"
+            "text": "Hello LUHAN, nice to meet you!"
         }
     ]
 }
