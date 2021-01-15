@@ -344,6 +344,9 @@
       "$ref": "#/definitions/Microsoft.Test.SetProperties"
     },
     {
+      "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+    },
+    {
       "$ref": "#/definitions/Microsoft.Test.UserActivity"
     },
     {
@@ -8912,6 +8915,21 @@
       "description": "Components which derive from PropertyMock class",
       "$role": "interface"
     },
+    "Microsoft.Test.ISettingMock": {
+      "title": "Microsoft Test ISettingMock",
+      "description": "Components which derive from SettingMock class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ISettingMock",
+          "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
+        }
+      ]
+    },
     "Microsoft.Test.ITestAction": {
       "title": "Test action",
       "description": "Components which derive from TestAction class",
@@ -9076,6 +9094,15 @@
             "$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
           }
         },
+        "settingMocks": {
+          "type": "array",
+          "title": "Setting Mocks",
+          "description": "Mock data for setting.",
+          "items": {
+            "$kind": "Microsoft.Test.ISettingMock",
+            "$ref": "#/definitions/Microsoft.Test.ISettingMock"
+          }
+        },
         "script": {
           "type": "array",
           "title": "Test actions",
@@ -9164,6 +9191,65 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.Test.SetProperties"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.Test.SettingStringMock": {
+      "$role": "implements(Microsoft.Test.ISettingMock)",
+      "title": "Mock Settings",
+      "description": "Mock one or more settings with string value.",
+      "type": "object",
+      "required": [
+        "assignments",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "assignments": {
+          "type": "array",
+          "title": "Assignments",
+          "description": "Setting assignments as settings.property=value pairs. Assign the settings in sequence.",
+          "items": {
+            "type": "object",
+            "title": "Setting String Assignment",
+            "description": "Setting String Assignment (used in SettingStringMock).",
+            "properties": {
+              "property": {
+                "type": "string",
+                "title": "Property",
+                "description": "A property path without settings.",
+                "examples": [
+                  "connectionName"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "description": "Value string.",
+                "examples": [
+                  "Graph"
+                ]
+              }
+            }
+          }
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.SettingStringMock"
         },
         "$designer": {
           "title": "Designer information",
