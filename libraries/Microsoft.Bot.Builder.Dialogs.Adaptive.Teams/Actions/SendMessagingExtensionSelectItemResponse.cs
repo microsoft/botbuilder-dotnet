@@ -65,6 +65,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            if (Card == null)
+            {
+                throw new ArgumentException($"A valid card is required for {Kind}.");
+            }
+
             var boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
 
             if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())

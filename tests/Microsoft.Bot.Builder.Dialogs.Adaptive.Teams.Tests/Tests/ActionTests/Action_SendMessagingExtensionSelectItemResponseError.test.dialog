@@ -4,9 +4,32 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "NoCard",
+                    "pattern": "NoCard"
+                },
+                {
+                    "intent": "NoAttachments",
+                    "pattern": "NoAttachments"
+                }
+            ]
+        },
         "triggers": [
             {
-                "$kind": "Microsoft.OnUnknownIntent",
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoCard",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendMessagingExtensionSelectItemResponse"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoAttachments",
                 "actions": [
                     {
                         "$kind": "Teams.SendMessagingExtensionSelectItemResponse",
@@ -32,7 +55,19 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
-                "text": "hi",
+                "text": "NoCard",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "A valid card is required for Teams.SendMessagingExtensionSelectItemResponse."
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "NoAttachments",
                 "name": "composeExtension/queryLink"
             }
         },
