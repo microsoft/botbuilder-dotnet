@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
@@ -109,41 +110,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"{Kind} works only on the Teams channel.");
             }
 
-            string continuationToken = null;
-            if (ContinuationToken != null)
-            {
-                var (value, valueError) = ContinuationToken.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {ContinuationToken.ExpressionText}. Error: {valueError}");
-                }
-
-                continuationToken = value as string;
-            }
-            
-            string teamId = null;
-            if (TeamId != null)
-            {
-                var (value, valueError) = TeamId.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {TeamId.ExpressionText}. Error: {valueError}");
-                }
-
-                teamId = value as string;
-            }
-
-            int? pageSize = null;
-            if (PageSize != null)
-            {
-                var (value, valueError) = PageSize.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {PageSize.ExpressionText}. Error: {valueError}");
-                }
-
-                pageSize = value;
-            }
+            string continuationToken = ContinuationToken.GetValueOrNull(dc.State);
+            string teamId = TeamId.GetValueOrNull(dc.State);
+            int? pageSize = PageSize.GetValueOrNull(dc.State);
 
             var result = await TeamsInfo.GetPagedTeamMembersAsync(dc.Context, teamId, continuationToken, pageSize, cancellationToken: cancellationToken).ConfigureAwait(false);
 

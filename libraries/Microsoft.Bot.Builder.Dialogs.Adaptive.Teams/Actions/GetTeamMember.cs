@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
@@ -100,34 +101,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"{Kind} works only on the Teams channel.");
             }
 
-            string memberId = null;
-            if (MemberId != null)
-            {
-                var (value, valueError) = MemberId.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {MemberId.ExpressionText}. Error: {valueError}");
-                }
-
-                memberId = value as string;
-            }
-
+            string memberId = MemberId.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(memberId))
             {
                 throw new InvalidOperationException($"Missing {nameof(MemberId)} in {Kind}.");
             }
 
-            string teamId = null;
-            if (TeamId != null)
-            {
-                var (value, valueError) = TeamId.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {TeamId.ExpressionText}. Error: {valueError}");
-                }
-
-                teamId = value as string;
-            }
+            string teamId = TeamId.GetValueOrNull(dc.State);
 
             var result = await TeamsInfo.GetTeamMemberAsync(dc.Context, memberId, teamId, cancellationToken: cancellationToken).ConfigureAwait(false);
 

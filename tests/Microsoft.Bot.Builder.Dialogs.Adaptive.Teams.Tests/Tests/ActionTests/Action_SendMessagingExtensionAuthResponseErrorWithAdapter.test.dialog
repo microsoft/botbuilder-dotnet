@@ -69,8 +69,8 @@
             }
         },
         {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMessagingExtensionAuthResponse requires a Connection Name."
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "A valid ConnectionName is required for Teams.SendMessagingExtensionAuthResponse."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -81,8 +81,8 @@
             }
         },
         {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMessagingExtensionAuthResponse requires a Title."
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "A valid Title is required for Teams.SendMessagingExtensionAuthResponse."
         }
     ]
 }

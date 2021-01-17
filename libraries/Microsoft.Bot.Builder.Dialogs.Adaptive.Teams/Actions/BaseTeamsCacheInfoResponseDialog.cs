@@ -4,6 +4,7 @@
 using System;
 using System.Net;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -76,33 +77,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case "composeExtension/submitAction":
                 case "composeExtension/fetchTask":
                     return CreateInvokeResponseActivity(new MessagingExtensionActionResponse() { ComposeExtension = result, CacheInfo = GetCacheInfo(dc) });
-
                 default:
                     throw new InvalidOperationException($"GetMessagingExtensionResponse Invalid Activity.Name: {dc.Context.Activity.Name}");
-
-                    //case "fileConsent/invoke":
-                    //    return await OnTeamsFileConsentAsync(turnContext, SafeCast<FileConsentCardResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-
-                    //case "actionableMessage/executeAction":
-                    //    await OnTeamsO365ConnectorCardActionAsync(turnContext, SafeCast<O365ConnectorCardActionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                    //    return CreateInvokeResponse();
-
-                    //case "composeExtension/setting":
-                    //    await OnTeamsMessagingExtensionConfigurationSettingAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
-                    //    return CreateInvokeResponse();
-
-                    //case "composeExtension/onCardButtonClicked":
-                    //    await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
-                    //    return CreateInvokeResponse();
-
-                    //case "task/fetch":
-                    //    return CreateInvokeResponse(await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-
-                    //case "task/submit":
-                    //    return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-
-                    //default:
-                    //    return await base.OnInvokeActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -116,13 +92,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (CacheType != null && CacheDuration != null)
             {
-                var cacheType = CacheType.GetValue(dc.State);
-                var cacheDuration = CacheDuration.GetValue(dc.State);
-                if (cacheDuration > 0 && !string.IsNullOrEmpty(cacheType))
+                var cacheType = CacheType.GetValueOrNull(dc.State);
+                var cacheDuration = CacheDuration.GetValueOrNull(dc.State);
+                if (cacheDuration.HasValue && cacheDuration.Value > 0 && !string.IsNullOrEmpty(cacheType))
                 {
                     // Valid ranges for CacheDuration are 60 < > 2592000
-                    cacheDuration = Math.Min(Math.Max(60, cacheDuration), 2592000);
-                    return new CacheInfo(cacheType: cacheType, cacheDuration: cacheDuration);
+                    cacheDuration = Math.Min(Math.Max(60, cacheDuration.Value), 2592000);
+                    return new CacheInfo(cacheType: cacheType, cacheDuration: cacheDuration.Value);
                 }
             }
 

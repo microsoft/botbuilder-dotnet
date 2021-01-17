@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -32,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConstructor]
         public SendTaskModuleUrlResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -68,23 +69,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string url = Url?.GetValue(dc.State);
+            string url = Url.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(url))
             {
-                throw new InvalidOperationException($"Missing Url for {Kind}.");
+                throw new InvalidOperationException($"Missing {nameof(Url)} for {Kind}.");
             }
 
-            var title = Title?.GetValue(dc.State);
-            var height = Height?.GetValue(dc.State);
-            var width = Width?.GetValue(dc.State);
+            var title = Title.GetValueOrNull(dc.State);
+            var height = Height.GetValueOrNull(dc.State);
+            var width = Width.GetValueOrNull(dc.State);
             
-            var fallbackUrl = FallbackUrl?.GetValue(dc.State);
-            var completionBotId = CompletionBotId?.GetValue(dc.State);
+            var fallbackUrl = FallbackUrl.GetValueOrNull(dc.State);
+            var completionBotId = CompletionBotId.GetValueOrNull(dc.State);
 
             var response = new TaskModuleResponse
             {
@@ -115,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}('{this.Url?.ToString() ?? string.Empty},{this.Title?.ToString() ?? string.Empty}')";
+            return $"{GetType().Name}('{Url?.ToString() ?? string.Empty},{Title?.ToString() ?? string.Empty}')";
         }
     }
 }

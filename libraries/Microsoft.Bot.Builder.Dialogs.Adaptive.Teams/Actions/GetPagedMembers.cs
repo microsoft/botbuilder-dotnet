@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
@@ -13,7 +14,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Calls TeamsInfo.GetPagedMembers to retrieve a pagined list of members of
+    /// Calls TeamsInfo.GetPagedMembers to retrieve a paginated list of members of
     /// one-on-one, group, or team conversation and sets the result to a memory property.
     /// </summary>
     public class GetPagedMembers : Dialog
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public GetPagedMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -83,14 +84,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
             
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -100,35 +101,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"{Kind} works only on the Teams channel.");
             }
 
-            string continuationToken = null;
-            if (ContinuationToken != null)
-            {
-                var (value, valueError) = ContinuationToken.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {ContinuationToken.ExpressionText}. Error: {valueError}");
-                }
-
-                continuationToken = value as string;
-            }
-
-            int? pageSize = null;
-            if (PageSize != null)
-            {
-                var (value, valueError) = PageSize.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {PageSize.ExpressionText}. Error: {valueError}");
-                }
-
-                pageSize = value;
-            }
+            string continuationToken = ContinuationToken.GetValueOrNull(dc.State);
+            int? pageSize = PageSize.GetValueOrNull(dc.State);
 
             var result = await TeamsInfo.GetPagedMembersAsync(dc.Context, pageSize, continuationToken, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            if (this.Property != null)
+            if (Property != null)
             {
-                dc.State.SetValue(this.Property.GetValue(dc.State), result);
+                dc.State.SetValue(Property.GetValue(dc.State), result);
             }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -140,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.ContinuationToken?.ToString() ?? string.Empty},{this.PageSize?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{ContinuationToken?.ToString() ?? string.Empty},{PageSize?.ToString() ?? string.Empty},{Property?.ToString() ?? string.Empty}]";
         }
     }
 }

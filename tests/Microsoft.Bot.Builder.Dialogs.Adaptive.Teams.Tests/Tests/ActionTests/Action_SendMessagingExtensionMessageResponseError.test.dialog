@@ -26,7 +26,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "A message is required for Teams.SendMessagingExtensionMessageResponse."
+            "text": "A Message is required for Teams.SendMessagingExtensionMessageResponse."
         }
     ]
 }

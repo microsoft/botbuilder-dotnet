@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
@@ -118,18 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
             }
 
-            string teamsChannelId = null;
-            if (TeamsChannelId != null)
-            {
-                var (value, valueError) = TeamsChannelId.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {TeamsChannelId.ExpressionText}. Error: {valueError}");
-                }
-
-                teamsChannelId = value as string;
-            }
-
+            string teamsChannelId = TeamsChannelId.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(teamsChannelId))
             {
                 teamsChannelId = dc.Context.Activity.TeamsGetChannelId();

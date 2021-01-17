@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public SendMessagingExtensionConfigQuerySettingUrlResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -60,17 +61,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string configUrl = string.Empty;
-            if (ConfigUrl != null)
-            {
-                configUrl = ConfigUrl.GetValue(dc.State);
-            }
-
+            string configUrl = ConfigUrl.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(configUrl)) 
             { 
                 throw new InvalidOperationException($"{nameof(ConfigUrl)} is required for {Kind}.");
@@ -108,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.ConfigUrl?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{ConfigUrl?.ToString() ?? string.Empty}]";
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public SendMessagingExtensionSelectItemResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -70,14 +70,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"A valid card is required for {Kind}.");
             }
 
-            var boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
-
-            if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
+            var activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
+            if (activity?.Attachments?.Any() != true)
             {
-                throw new ArgumentException($"Invalid activity. A valid attachment is required for {Kind}.");
+                throw new InvalidOperationException($"Invalid activity. An attachment is required for {Kind}.");
             }
-
-            var attachment = boundActivity.Attachments[0];
+            
+            var attachment = activity.Attachments[0];
             var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment.Content);
 
             var response = new MessagingExtensionResponse
@@ -102,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Card?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{Card?.ToString() ?? string.Empty}]";
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConstructor]
         public SendTaskModuleCardResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -60,33 +61,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            Attachment attachment = null;
-            if (Card != null)
+            if (Card == null)
             {
-                var boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
-
-                if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
-                {
-                    throw new ArgumentException($"Invalid activity. The activity does not contain a valid attachment as required for {Kind}.");
-                }
-
-                attachment = boundActivity.Attachments[0];
+                throw new ArgumentException($"A valid {nameof(Card)} is required for {Kind}.");
             }
-            else
-            {
-                throw new ArgumentException($"A valid card is required for {Kind}.");
-            }
-
-            var title = Title?.GetValue(dc.State);
-            var height = Height?.GetValue(dc.State);
-            var width = Width?.GetValue(dc.State);
             
-            var completionBotId = CompletionBotId?.GetValue(dc.State);
+            var activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
+            if (activity?.Attachments?.Any() != true)
+            {
+                throw new InvalidOperationException($"Invalid activity. An attachment is required for {Kind}.");
+            }
+
+            Attachment attachment = activity.Attachments[0];
+            
+            var title = Title.GetValueOrNull(dc.State);
+            var height = Height.GetValueOrNull(dc.State);
+            var width = Width.GetValueOrNull(dc.State);
+            var completionBotId = CompletionBotId.GetValueOrNull(dc.State);
 
             var response = new TaskModuleResponse
             {
@@ -117,10 +113,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Card is ActivityTemplate at)
             {
-                return $"{this.GetType().Name}({StringUtils.Ellipsis(at.Template.Trim(), 30)})";
+                return $"{GetType().Name}({StringUtils.Ellipsis(at.Template.Trim(), 30)})";
             }
 
-            return $"{this.GetType().Name}('{StringUtils.Ellipsis(Card?.ToString().Trim(), 30)}')";
+            return $"{GetType().Name}('{StringUtils.Ellipsis(Card?.ToString().Trim(), 30)}')";
         }
     }
 }

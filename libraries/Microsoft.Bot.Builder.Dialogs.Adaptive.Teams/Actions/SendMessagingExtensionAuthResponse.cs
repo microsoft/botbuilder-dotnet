@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public SendMessagingExtensionAuthResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (options is CancellationToken)
             {
@@ -83,31 +84,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException($"{Kind}: not supported by the current adapter");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string connectionName = string.Empty;
-            if (ConnectionName != null)
-            {
-                connectionName = ConnectionName.GetValue(dc.State);
-            }
-
+            var connectionName = ConnectionName.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(connectionName))
             {
-                throw new InvalidOperationException($"{Kind} requires a Connection Name.");
+                throw new InvalidOperationException($"A valid {nameof(ConnectionName)} is required for {Kind}.");
             }
 
-            string title = string.Empty;
-            if (Title != null)
-            {
-                title = Title.GetValue(dc.State);
-            }
-
+            var title = Title.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(title))
             {
-                throw new InvalidOperationException($"{Kind} requires a Title.");
+                throw new InvalidOperationException($"A valid {nameof(Title)} is required for {Kind}.");
             }
 
             var tokenResponse = await GetUserTokenAsync(dc, tokenProvider, connectionName, cancellationToken).ConfigureAwait(false);
@@ -115,9 +106,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 // we have the token, so the user is already signed in.
                 // Similar to OAuthInput, just return the token in the property.
-                if (this.Property != null)
+                if (Property != null)
                 {
-                    dc.State.SetValue(this.Property.GetValue(dc.State), tokenResponse);
+                    dc.State.SetValue(Property.GetValue(dc.State), tokenResponse);
                 }
 
                 // End the dialog and return the token response
@@ -138,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Title?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{Title?.ToString() ?? string.Empty}]";
         }
 
         private static Task<TokenResponse> GetUserTokenAsync(DialogContext dc, IExtendedUserTokenProvider tokenProvider, string connectionName, CancellationToken cancellationToken)
@@ -153,8 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             string magicCode = null;
             if (!string.IsNullOrEmpty(state))
             {
-                int parsed = 0;
-                if (int.TryParse(state, out parsed))
+                if (int.TryParse(state, out var parsed))
                 {
                     magicCode = parsed.ToString(CultureInfo.InvariantCulture);
                 }

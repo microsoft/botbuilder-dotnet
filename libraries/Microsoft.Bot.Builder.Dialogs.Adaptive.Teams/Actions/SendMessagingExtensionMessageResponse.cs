@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -32,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public SendMessagingExtensionMessageResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -64,15 +65,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string message = string.Empty;
-            if (Message != null)
-            {
-                message = Message.GetValue(dc.State);
-            }
-
+            string message = Message.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(message))
             {
-                throw new ArgumentException($"A message is required for {Kind}.");
+                throw new ArgumentException($"A {nameof(Message)} is required for {Kind}.");
             }
 
             var response = new MessagingExtensionResponse

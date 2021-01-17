@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -75,10 +76,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException($"Missing attachments in {Kind}.");
             }
 
-            var title = Title?.GetValue(dc.State);
-            var height = Height?.GetValue(dc.State);
-            var width = Width?.GetValue(dc.State);
-            var completionBotId = CompletionBotId?.GetValue(dc.State);
+            var title = Title.GetValueOrNull(dc.State);
+            var height = Height.GetValueOrNull(dc.State);
+            var width = Width.GetValueOrNull(dc.State);
+            var completionBotId = CompletionBotId.GetValueOrNull(dc.State);
 
             var response = new MessagingExtensionActionResponse
             {

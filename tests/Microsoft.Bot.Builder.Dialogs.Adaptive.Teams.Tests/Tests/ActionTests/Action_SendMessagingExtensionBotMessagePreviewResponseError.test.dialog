@@ -61,7 +61,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "A valid card is required for Teams.SendMessagingExtensionBotMessagePreviewResponse."
+            "text": "A valid Card is required for Teams.SendMessagingExtensionBotMessagePreviewResponse."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -71,9 +71,9 @@
                 "name": "composeExtension/queryLink"
             }
         },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Invalid activity. The activity does not contain a valid attachment as required for Teams.SendMessagingExtensionBotMessagePreviewResponse."
-        }
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "Invalid activity. An attachment is required for Teams.SendMessagingExtensionBotMessagePreviewResponse."
+      }
     ]
 }

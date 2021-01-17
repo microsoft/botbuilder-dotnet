@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
@@ -108,9 +109,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException($"{Kind} works only on the Teams channel.");
             }
 
-            string meetingId = GetValueOrNull(dc, this.MeetingId);
-            string participantId = GetValueOrNull(dc, this.ParticipantId);
-            string tenantId = GetValueOrNull(dc, this.TenantId);
+            string meetingId = MeetingId.GetValueOrNull(dc.State);
+            string participantId = ParticipantId.GetValueOrNull(dc.State);
+            string tenantId = TenantId.GetValueOrNull(dc.State);
 
             if (participantId == null)
             {
@@ -137,22 +138,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{this.MeetingId?.ToString() ?? string.Empty},{this.ParticipantId?.ToString() ?? string.Empty},{this.TenantId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
-        }
-
-        private string GetValueOrNull(DialogContext dc, StringExpression stringExpression)
-        {
-            if (stringExpression != null)
-            {
-                var (value, valueError) = stringExpression.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{stringExpression.ExpressionText}\". Error: {valueError}");
-                }
-
-                return value as string;
-            }
-
-            return null;
         }
     }
 }

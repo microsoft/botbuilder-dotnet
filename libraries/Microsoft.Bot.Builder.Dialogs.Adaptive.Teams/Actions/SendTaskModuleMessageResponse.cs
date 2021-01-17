@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public SendTaskModuleMessageResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -60,35 +61,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string message;
-            if (Message != null)
+            string message = Message.GetValueOrNull(dc.State);
+            if (string.IsNullOrWhiteSpace(message))
             {
-                var (value, valueError) = Message.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {nameof(Message)}. Error: {valueError}");
-                }
-
-                message = value as string;
-            }
-            else
-            {
-                throw new InvalidOperationException("Missing Task Module Message Response value.");
-            }
-
-            if (!string.IsNullOrEmpty(message))
-            {
-                var languageGenerator = dc.Services.Get<LanguageGenerator>();
-                if (languageGenerator != null)
-                {
-                    var lgStringResult = await languageGenerator.GenerateAsync(dc, message, dc.State, cancellationToken).ConfigureAwait(false);
-                    message = lgStringResult.ToString();
-                }
+                throw new InvalidOperationException($"Missing {nameof(Message)} for {Kind}.");
             }
 
             var response = new TaskModuleResponse
@@ -109,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Message?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{Message?.ToString() ?? string.Empty}]";
         }
     }
 }

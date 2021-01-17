@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public SendAppBasedLinkQueryResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -60,27 +60,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State) == true)
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            Activity boundActivity = null;
-            if (Card != null)
-            {
-                boundActivity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
-
-                if (boundActivity.Attachments == null || !boundActivity.Attachments.Any())
-                {
-                    throw new ArgumentException($"Invalid activity. An attachment is required for {Kind}.");
-                }
-            }
-            else
+            if (Card == null)
             {
                 throw new ArgumentException($"An activity with attachments is required for {Kind}.");
             }
 
-            var attachments = boundActivity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));
+            Activity activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
+            if (activity?.Attachments?.Any() != true)
+            {
+                throw new InvalidOperationException($"Invalid activity. An attachment is required for {Kind}.");
+            }
+
+            var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));
 
             var result = new MessagingExtensionResult
             {
@@ -100,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.Card?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{Card?.ToString() ?? string.Empty}]";
         }
     }
 }

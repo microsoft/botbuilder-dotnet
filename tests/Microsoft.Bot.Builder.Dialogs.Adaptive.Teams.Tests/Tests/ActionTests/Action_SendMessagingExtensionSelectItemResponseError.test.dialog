@@ -73,7 +73,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Invalid activity. A valid attachment is required for Teams.SendMessagingExtensionSelectItemResponse."
+            "text": "Invalid activity. An attachment is required for Teams.SendMessagingExtensionSelectItemResponse."
         }
     ]
 }
