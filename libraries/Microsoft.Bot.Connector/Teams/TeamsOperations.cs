@@ -43,7 +43,6 @@ namespace Microsoft.Bot.Connector.Teams
         /// <value>The TeamsConnectorClient.</value>
         public TeamsConnectorClient Client { get; private set; }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// Fetches channel list for a given team.
         /// </summary>
@@ -66,7 +65,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -75,7 +74,6 @@ namespace Microsoft.Bot.Connector.Teams
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ConversationList>> FetchChannelListWithHttpMessagesAsync(string teamId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (teamId == null)
             {
@@ -102,7 +100,6 @@ namespace Microsoft.Bot.Connector.Teams
             return await GetResponseAsync<ConversationList>(url, shouldTrace, invocationId).ConfigureAwait(false);
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// Fetches details related to a team.
         /// </summary>
@@ -122,7 +119,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -131,7 +128,6 @@ namespace Microsoft.Bot.Connector.Teams
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<TeamDetails>> FetchTeamDetailsWithHttpMessagesAsync(string teamId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (teamId == null)
             {
@@ -158,7 +154,6 @@ namespace Microsoft.Bot.Connector.Teams
             return await GetResponseAsync<TeamDetails>(url, shouldTrace, invocationId).ConfigureAwait(false);
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// Fetches Teams meeting participant details.
         /// </summary>
@@ -187,7 +182,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -198,7 +193,6 @@ namespace Microsoft.Bot.Connector.Teams
 #pragma warning disable CA1801 // Review unused parameters - cannot change without breaking backwards compat.
         public async Task<HttpOperationResponse<TeamsMeetingParticipant>> FetchParticipantWithHttpMessagesAsync(string meetingId, string participantId, string tenantId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
 #pragma warning restore CA1801 // Review unused parameters
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (meetingId == null)
             {

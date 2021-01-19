@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Connector
         /// <value>The ClientConnector.</value>
         public ConnectorClient Client { get; private set; }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// GetAttachmentInfo.
         /// </summary>
@@ -68,14 +67,13 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<AttachmentInfo>> GetAttachmentInfoWithHttpMessagesAsync(string attachmentId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (attachmentId == null)
             {
@@ -212,7 +210,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// GetAttachment.
         /// </summary>
@@ -238,14 +235,13 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern of the data field.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">Thrown when a required parameter is null.</exception>
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<Stream>> GetAttachmentWithHttpMessagesAsync(string attachmentId, string viewId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (attachmentId == null)
             {

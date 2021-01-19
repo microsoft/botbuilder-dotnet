@@ -46,7 +46,6 @@ namespace Microsoft.Bot.Connector
         /// <value>The OAuthClient.</value>
         public OAuthClient Client { get; private set; }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>Gets sign-in URL with HTTP message. </summary>
         /// <param name='state'>State.</param>
         /// <param name='codeChallenge'>Code challenge.</param>
@@ -56,11 +55,10 @@ namespace Microsoft.Bot.Connector
         /// <param name='cancellationToken'>The cancellation token.</param>
         /// <exception cref="HttpOperationException">Thrown when the operation returned an invalid status code.</exception>
         /// <exception cref="SerializationException">Thrown when unable to deserialize the response.</exception>
-        /// <exception cref="ValidationException">Thrown when a required parameter is null.</exception>
+        /// <exception cref="ValidationException">Thrown when an input value does not match the expected data type, range or pattern of the data field.</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when a required parameter is null.</exception>
         /// <returns>A response object containing the response body and response headers.</returns>
         public async Task<HttpOperationResponse<string>> GetSignInUrlWithHttpMessagesAsync(string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (state == null)
             {

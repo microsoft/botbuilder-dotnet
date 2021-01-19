@@ -217,7 +217,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// CreateConversation.
         /// </summary>
@@ -261,7 +260,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -270,7 +269,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ConversationResourceResponse>> CreateConversationWithHttpMessagesAsync(ConversationParameters parameters, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (parameters == null)
             {
@@ -451,7 +449,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// SendToConversation.
         /// </summary>
@@ -489,7 +486,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -498,7 +495,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> SendToConversationWithHttpMessagesAsync(string conversationId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -686,7 +682,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// SendConversationHistory.
         /// </summary>
@@ -718,7 +713,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -727,7 +722,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> SendConversationHistoryWithHttpMessagesAsync(string conversationId, Transcript transcript, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -915,7 +909,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// UpdateActivity.
         /// </summary>
@@ -950,7 +943,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -959,7 +952,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> UpdateActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -1154,7 +1146,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// ReplyToActivity.
         /// </summary>
@@ -1195,7 +1186,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -1204,7 +1195,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> ReplyToActivityWithHttpMessagesAsync(string conversationId, string activityId, Activity activity, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -1399,7 +1389,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// DeleteActivity.
         /// </summary>
@@ -1425,7 +1414,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -1434,7 +1423,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse> DeleteActivityWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -1556,7 +1544,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// GetConversationMembers.
         /// </summary>
@@ -1582,7 +1569,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -1591,7 +1578,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<IList<ChannelAccount>>> GetConversationMembersWithHttpMessagesAsync(string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -1727,7 +1713,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// GetConversationMember.
         /// </summary>
@@ -1738,7 +1723,7 @@ namespace Microsoft.Bot.Connector
         /// object for the members of the conversation.
         /// </remarks>
         /// <param name='userId'>
-        /// Conversation ID.
+        /// User ID.
         /// </param>
         /// <param name='conversationId'>
         /// Conversation ID.
@@ -1756,7 +1741,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -1765,7 +1750,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -1908,7 +1892,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// GetConversationPagedMembers.
         /// </summary>
@@ -1953,7 +1936,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -1962,7 +1945,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<PagedMembersResult>> GetConversationPagedMembersWithHttpMessagesAsync(string conversationId, int? pageSize = default(int?), string continuationToken = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -2110,7 +2092,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// DeleteConversationMember.
         /// </summary>
@@ -2138,7 +2119,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when the operation returned an invalid status code.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -2147,7 +2128,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse> DeleteConversationMemberWithHttpMessagesAsync(string conversationId, string memberId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -2269,7 +2249,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// GetActivityMembers.
         /// </summary>
@@ -2299,7 +2278,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -2308,7 +2287,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<IList<ChannelAccount>>> GetActivityMembersWithHttpMessagesAsync(string conversationId, string activityId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {
@@ -2451,7 +2429,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>
         /// UploadAttachment.
         /// </summary>
@@ -2483,7 +2460,7 @@ namespace Microsoft.Bot.Connector
         /// Thrown when unable to deserialize the response.
         /// </exception>
         /// <exception cref="ValidationException">
-        /// Thrown when a required parameter is null.
+        /// Thrown when an input value does not match the expected data type, range or pattern.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null.
@@ -2492,7 +2469,6 @@ namespace Microsoft.Bot.Connector
         /// A response object containing the response body and response headers.
         /// </returns>
         public async Task<HttpOperationResponse<ResourceResponse>> UploadAttachmentWithHttpMessagesAsync(string conversationId, AttachmentData attachmentUpload, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (conversationId == null)
             {

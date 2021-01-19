@@ -33,7 +33,6 @@ namespace Microsoft.Bot.Connector
         /// <value> The OAuth client. </value>
         public OAuthClient Client { get; private set; }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary> Get token with HTTP message. </summary>
         /// <param name='userId'> User ID. </param>
         /// <param name='connectionName'> Connection name. </param>
@@ -44,10 +43,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="ErrorResponseException"> Thrown when the operation returned an invalid status code. </exception>
         /// <exception cref="SerializationException"> Thrown when unable to deserialize the response. </exception>
         /// <exception cref="ValidationException"> Thrown when a required parameter is null. </exception>
-        /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
+        /// <exception cref="System.ArgumentNullException"> Thrown when an input value does not match the expected data type, range or pattern. </exception>
         /// <returns> A response object containing the response body and response headers. </returns>
         public async Task<HttpOperationResponse<TokenResponse>> GetTokenWithHttpMessagesAsync(string userId, string connectionName, string channelId = default(string), string code = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (userId == null)
             {
@@ -235,7 +233,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary> Get AAD Tokens with HTTP messages. </summary>
         /// <param name='userId'> User ID. </param>
         /// <param name='connectionName'> Connection name. </param>
@@ -246,10 +243,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="ErrorResponseException"> Thrown when the operation returned an invalid status code. </exception>
         /// <exception cref="SerializationException"> Thrown when unable to deserialize the response. </exception>
         /// <exception cref="ValidationException"> Thrown when a required parameter is null. </exception>
-        /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
+        /// <exception cref="System.ArgumentNullException"> Thrown when an input value does not match the expected data type, range or pattern. </exception>
         /// <returns> A response object containing the response body and response headers. </returns>
         public async Task<HttpOperationResponse<IDictionary<string, TokenResponse>>> GetAadTokensWithHttpMessagesAsync(string userId, string connectionName, AadResourceUrls aadResourceUrls, string channelId = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (userId == null)
             {
@@ -423,7 +419,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>Sign out with HTTP message. </summary>
         /// <param name='userId'> User ID. </param>
         /// <param name='connectionName'> Connection name. </param>
@@ -433,10 +428,9 @@ namespace Microsoft.Bot.Connector
         /// <exception cref="ErrorResponseException"> Thrown when the operation returned an invalid status code. </exception>
         /// <exception cref="SerializationException"> Thrown when unable to deserialize the response. </exception>
         /// <exception cref="ValidationException"> Thrown when a required parameter is null. </exception>
-        /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
+        /// <exception cref="System.ArgumentNullException"> Thrown when an input value does not match the expected data type, range or pattern. </exception>
         /// <returns> A response object containing the response body and response headers. </returns>
         public async Task<HttpOperationResponse<object>> SignOutWithHttpMessagesAsync(string userId, string connectionName = default(string), string channelId = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (userId == null)
             {
@@ -593,7 +587,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary> Get Token Status with HTTP message. </summary>
         /// <param name='userId'> User ID. </param>
         /// <param name='channelId'> Channel ID. </param>
@@ -602,11 +595,10 @@ namespace Microsoft.Bot.Connector
         /// <param name='cancellationToken'> The cancellation token. </param>
         /// <exception cref="ErrorResponseException"> Thrown when the operation returned an invalid status code. </exception>
         /// <exception cref="SerializationException"> Thrown when unable to deserialize the response. </exception>
-        /// <exception cref="ValidationException"> Thrown when a required parameter is null. </exception>
+        /// <exception cref="ValidationException"> Thrown when an input value does not match the expected data type, range or pattern. </exception>
         /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
         /// <returns> A response object containing the response body and response headers. </returns>
         public async Task<HttpOperationResponse<IList<TokenStatus>>> GetTokenStatusWithHttpMessagesAsync(string userId, string channelId = default(string), string include = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (userId == null)
             {

@@ -288,7 +288,6 @@ namespace Microsoft.Bot.Connector
         /// <value> The <see cref="UserToken"/>. </value>
         public virtual IUserToken UserToken { get; private set; }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary>Exchange with HTTP message.</summary>
         /// <param name='userId'> User ID. </param>
         /// <param name='connectionName'> Connection name. </param>
@@ -298,12 +297,11 @@ namespace Microsoft.Bot.Connector
         /// <param name='cancellationToken'> The cancellation token. </param>
         /// <exception cref="ErrorResponseException"> Thrown when the operation returned an invalid status code. </exception>
         /// <exception cref="SerializationException"> Thrown when unable to deserialize the response. </exception>
-        /// <exception cref="ValidationException"> Thrown when a required parameter is null. </exception>
+        /// <exception cref="ValidationException"> Thrown when an input value does not match the expected data type, range or pattern. </exception>
         /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
         /// <return> A response object containing the response body and response headers. </return>
         /// <returns> A task that represents the work queued to execute.</returns>
         public async Task<HttpOperationResponse<object>> ExchangeAsyncWithHttpMessagesAsync(string userId, string connectionName, string channelId, TokenExchangeRequest exchangeRequest, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (userId == null)
             {
@@ -522,7 +520,6 @@ namespace Microsoft.Bot.Connector
             return result;
         }
 
-#pragma warning disable SA1625 // Element documentation should not be copied and pasted
         /// <summary> Get sign-in resource with HTTP message. </summary>
         /// <param name='state'> State. </param>
         /// <param name='codeChallenge'> Code challenge. </param>
@@ -532,11 +529,10 @@ namespace Microsoft.Bot.Connector
         /// <param name='cancellationToken'> The cancellation token. </param>
         /// <exception cref="HttpOperationException"> Thrown when the operation returned an invalid status code. </exception>
         /// <exception cref="SerializationException"> Thrown when unable to deserialize the response. </exception>
-        /// <exception cref="ValidationException"> Thrown when a required parameter is null. </exception>
+        /// <exception cref="ValidationException"> Thrown when an input value does not match the expected data type, range or pattern. </exception>
         /// <exception cref="System.ArgumentNullException"> Thrown when a required parameter is null. </exception>
         /// <returns> A response object containing the response body and response headers. </returns>
         public async Task<HttpOperationResponse<SignInResource>> GetSignInResourceWithHttpMessagesAsync(string state, string codeChallenge = default(string), string emulatorUrl = default(string), string finalRedirect = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
-#pragma warning restore SA1625 // Element documentation should not be copied and pasted
         {
             if (state == null)
             {
