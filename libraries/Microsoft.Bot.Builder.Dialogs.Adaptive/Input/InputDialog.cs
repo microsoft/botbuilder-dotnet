@@ -514,6 +514,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             var state = InputState.Valid;
 
+            // Update "this.value" with input from value
+            // This input can be any object rather than limited to string
+            // No need to perform recognition or validations for this input
+            dc.State.SetValue(VALUE_PROPERTY, input);
+
             // Fallback to using activity
             bool activityProcessed = dc.State.GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
@@ -534,37 +539,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 // Update "this.value" and perform additional recognition and validations
-                // This input should be activity attachments or text or activity value
+                // This input should be activity attachments or activity text or activity value
                 dc.State.SetValue(VALUE_PROPERTY, input);
 
                 // Perform recognition and validations
                 state = await this.OnRecognizeInputAsync(dc, cancellationToken).ConfigureAwait(false);
-                if (state == InputState.Valid)
-                {
-                    foreach (var validation in this.Validations)
-                    {
-                        var value = validation.GetValue(dc.State);
-                        if (value == false)
-                        {
-                            state = InputState.Invalid;
-                            break;
-                        }
-                    }
+            }
 
-                    dc.State.SetValue(TurnPath.ActivityProcessed, true);
-                }
-            }
-            else
-            {
-                // Update "this.value" with input from value
-                // This input can be any object rather than limited to string
-                // No need to perform recognition or validations for this input
-                dc.State.SetValue(VALUE_PROPERTY, input);
-            }
-            
             if (input == null)
             {
                 state = InputState.Missing;
+            }
+
+            if (state == InputState.Valid)
+            {
+                foreach (var validation in this.Validations)
+                {
+                    var value = validation.GetValue(dc.State);
+                    if (value == false)
+                    {
+                        return InputState.Invalid;
+                    }
+                }
+
+                dc.State.SetValue(TurnPath.ActivityProcessed, true);
             }
 
             return state;
