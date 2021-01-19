@@ -293,16 +293,18 @@ namespace Microsoft.Bot.Builder.Dialogs
                             dialog = dc.FindDialog(dc.ActiveDialog.Id);
                         }
 
-                        return await dc.BeginDialogAsync(dialog.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    }
-
-                    if (dialog == null)
-                    {
-                        throw new InvalidOperationException($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
+                        if (dialog == null)
+                        {
+                            throw new InvalidOperationException($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
+                        }
+                        else
+                        {
+                            return await dialog.BeginDialogAsync(dc, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     // Continue dialog execution
-                    return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
+                    return await dialog.ContinueDialogAsync(this, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -362,21 +364,28 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Lookup dialog
                     var dialog = this.FindDialog(ActiveDialog.Id);
-                    var dc = this;
-                    while (dialog == null && dc != null)
-                    {
-                        dc = dc.Parent;
-                        dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                    }
-
                     if (dialog == null)
                     {
-                        throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
-                    }
+                        var dc = this;
+                        while (dialog == null && dc != null)
+                        {
+                            dc = dc.Parent;
+                            dialog = dc.FindDialog(dc.ActiveDialog.Id);
+                        }
+
+                        if (dialog == null)
+                        {
+                            throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                        }
+                        else
+                        {
+                            return await dialog.BeginDialogAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+                    }                    
 
                     // Return result to previous dialog
                     await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
-                    return await dialog.ResumeDialogAsync(dc, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
