@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -285,6 +284,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Lookup dialog
                     var dialog = this.FindDialog(this.ActiveDialog.Id);
+                    if (dialog == null)
+                    {
+                        var dc = this;
+                        while (dialog == null && dc != null)
+                        {
+                            dc = dc.Parent;
+                            dialog = dc.FindDialog(dc.ActiveDialog.Id);
+                        }
+
+                        return await dc.BeginDialogAsync(dialog.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    }
 
                     if (dialog == null)
                     {
@@ -352,6 +362,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Lookup dialog
                     var dialog = this.FindDialog(ActiveDialog.Id);
+                    var dc = this;
+                    while (dialog == null && dc != null)
+                    {
+                        dc = dc.Parent;
+                        dialog = dc.FindDialog(dc.ActiveDialog.Id);
+                    }
+
                     if (dialog == null)
                     {
                         throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
@@ -359,7 +376,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     // Return result to previous dialog
                     await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
-                    return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return await dialog.ResumeDialogAsync(dc, DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -660,7 +677,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the current locale.</returns>
         public string GetLocale()
         {
-            return Context.TurnState.Get<JObject>("turn")["locale"]?.ToString();
+            return Context.TurnState.Get<string>("turn.locale");
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
