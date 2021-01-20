@@ -473,7 +473,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 msg = await this.Prompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            msg.InputHint = InputHints.ExpectingInput;
+            if (string.IsNullOrEmpty(msg?.InputHint))
+            {
+                msg.InputHint = InputHints.ExpectingInput;
+            }
 
             var properties = new Dictionary<string, string>()
             {
