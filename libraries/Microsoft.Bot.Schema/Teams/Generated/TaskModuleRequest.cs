@@ -63,6 +63,6 @@ namespace Microsoft.Bot.Schema.Teams
         /// Tab request context.
         /// </value>
         [JsonProperty(PropertyName = "tabContext")]
-        public TabEntityContext TabContext { get; set; }
+        public TabEntityContext TabEntityContext { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Tab context for this <see cref="TabSubmit"/>.
         /// </value>
         [JsonProperty(PropertyName = "tabContext")]
-        public TabEntityContext TabContext { get; set; }
+        public TabEntityContext TabEntityContext { get; set; }
 
         /// <summary>
         /// Gets or sets current user context, i.e., the current theme.
