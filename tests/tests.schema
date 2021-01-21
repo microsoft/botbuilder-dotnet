@@ -2561,9 +2561,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "ActivityId",
           "description": "expression to an activityId to delete",
-            "examples": [
-                "=turn.lastresult.id"
-            ]
+          "examples": [
+            "=turn.lastresult.id"
+          ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -3315,9 +3315,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
-            "examples": [
-                "turn.lastresult.id"
-            ]
+          "examples": [
+            "turn.lastresult.id"
+          ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -4496,9 +4496,10 @@
           ]
         },
         "text": {
-          "$ref": "#/definitions/stringExpression",
+          "$kind": "Microsoft.IActivityTemplate",
           "title": "Text",
-          "description": "Information to log."
+          "description": "Information to log.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
         "label": {
           "$ref": "#/definitions/stringExpression",
@@ -9798,7 +9799,7 @@
     },
     "Microsoft.UpdateActivity": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Send an activity",
+      "title": "Update an activity",
       "description": "Respond with an activity.",
       "type": "object",
       "required": [
@@ -9830,9 +9831,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "An string expression with the activity id to update.",
-            "examples": [
-                "=turn.lastresult.id"
-            ]
+          "examples": [
+            "=turn.lastresult.id"
+          ]
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
