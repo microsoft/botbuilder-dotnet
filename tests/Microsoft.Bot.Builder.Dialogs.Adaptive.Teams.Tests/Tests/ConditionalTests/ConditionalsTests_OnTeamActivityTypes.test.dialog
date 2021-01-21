@@ -183,6 +183,16 @@
                     }
                 ]
             },
+                        {
+                "$kind": "Teams.OnTabFetch",
+                "condition": "turn.activity.text == 'OnTabFetch'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTabFetch"
+                    }
+                ]
+            },
             {
                 "$kind": "Teams.OnTaskModuleSubmit",
                 "condition": "turn.activity.text == 'OnTaskModuleSubmit'",
@@ -190,6 +200,16 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "OnTaskModuleSubmit"
+                    }
+                ]
+            },
+            {
+                "$kind": "Teams.OnTabSubmit",
+                "condition": "turn.activity.text == 'OnTabSubmit'",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "OnTabSubmit"
                     }
                 ]
             },
@@ -460,6 +480,19 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "invoke",
+                "text": "OnTabFetch",
+                "value": {},
+                "name": "tab/fetch"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTabFetch"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
                 "text": "OnTaskModuleFetch",
                 "value": {},
                 "name": "task/fetch"
@@ -468,6 +501,19 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "OnTaskModuleFetch"
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "invoke",
+                "text": "OnTabSubmit",
+                "value": {},
+                "name": "tab/submit"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "OnTabSubmit"
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
