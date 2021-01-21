@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
     /// </summary>
     public static class ConfigurationBuilderExtensions
     {
-        private const string AppSettingsRelativePath = @"appsettings.json";
+        private const string AppSettingsFileName = @"appsettings.json";
         private const string ComposerDialogsDirectoryName = "ComposerDialogs";
         private const string DevelopmentApplicationRoot = "./";
         private const string DialogFileExtension = ".dialog";
@@ -37,6 +37,37 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             string applicationRoot,
             bool isDevelopment)
         {
+            return AddBotRuntimeConfiguration(
+                builder,
+                applicationRoot,
+                settingsDirectory: null,
+                isDevelopment: isDevelopment);
+        }
+
+        /// <summary>
+        /// Setup the provided <see cref="IConfigurationBuilder"/> with the required Runtime configuration.
+        /// </summary>
+        /// <param name="builder">
+        /// The <see cref="IConfigurationBuilder"/> to supply with additional in-memory configuration settings.
+        /// </param>
+        /// <param name="applicationRoot">
+        /// The application root directory. When running in local development mode from Composer, this is determined
+        /// to be three directory levels above where the runtime application project is ejected, i.e. '../../..'.
+        /// </param>
+        /// <param name="settingsDirectory">
+        /// The relative path to the directory containing the appsettings.json file to add as a configuration source.
+        /// If null is specified, appsettings.json will be located within the application root directory.
+        /// </param>
+        /// <param name="isDevelopment">Indicates whether the application environment is set to 'Development'.</param>
+        /// <returns>
+        /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
+        /// </returns>
+        public static IConfigurationBuilder AddBotRuntimeConfiguration(
+            this IConfigurationBuilder builder,
+            string applicationRoot,
+            string settingsDirectory,
+            bool isDevelopment)
+        {
             // Use Composer bot path adapter
             builder.AddBotRuntimeProperties(
                 applicationRoot: applicationRoot,
@@ -45,14 +76,13 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             IConfiguration configuration = builder.Build();
 
             string botRootPath = configuration.GetValue<string>(ConfigurationConstants.BotKey);
-            string configFilePath = Path.GetFullPath(Path.Combine(botRootPath, AppSettingsRelativePath));
+            string configFilePath = Path.GetFullPath(
+                Path.Combine(botRootPath, settingsDirectory, AppSettingsFileName));
 
             builder.AddJsonFile(configFilePath, optional: true, reloadOnChange: true);
 
             // Use Composer luis and qna settings extensions
             builder.AddComposerConfiguration();
-
-            builder.AddEnvironmentVariables();
 
             return builder;
         }
