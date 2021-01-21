@@ -406,11 +406,11 @@ namespace Microsoft.Bot.Builder.Teams
         /// Override this in a derived class to provide logic for when a tab is submitted.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
-        /// <param name="tabRequest">The tab submit invoke request value payload.</param>
+        /// <param name="tabSubmit">The tab submit invoke request value payload.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A Tab Response for the request.</returns>
-        protected virtual Task<TabResponse> OnTeamsTabSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TabSubmit tabRequest, CancellationToken cancellationToken)
+        protected virtual Task<TabResponse> OnTeamsTabSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TabSubmit tabSubmit, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
