@@ -579,7 +579,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(fromFile, StringComparison.Ordinal))
             {
-                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, FunctionUtils.ValidateUnaryString);
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -641,15 +641,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> FromFile()
        => (IReadOnlyList<object> args) =>
        {
+           // The first parameter is absolute/relative file path
+           // The second parameter is shouldEvaluate option.(default to true)
            var filePath = args[0].ToString().NormalizePath();
 
            var resourcePath = GetResourcePath(filePath);
            var stringContent = File.ReadAllText(resourcePath);
+           object result = stringContent;
+           var shouldEvaluate = true;
+           if (args.Count > 1 && args[1] is bool evaluate)
+           {
+               shouldEvaluate = evaluate;
+           }
 
-           var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
-           return newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+           if (shouldEvaluate)
+           {
+               var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
+               var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+               result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+           }
+
+           return result;
        };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.Boolean }, ReturnType.String);
+        }
 
         private string GetResourcePath(string filePath)
         {

@@ -1714,6 +1714,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("hi Alice", evaled.ToString());
         }
 
+        [Fact]
+        public void TestFileOperation()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+            var evaled = templates.Evaluate("FromFileWithoutEvaluation");
+            Assert.Equal("hi ${name}", evaled);
+
+            evaled = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaled);
+
+            evaled = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaled);
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }

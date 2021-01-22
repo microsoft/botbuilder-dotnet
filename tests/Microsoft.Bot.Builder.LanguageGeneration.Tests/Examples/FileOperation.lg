@@ -1,0 +1,8 @@
+﻿# FromFileWithoutEvaluation
+- ${fromFile('./TestFile.txt', false)}
+
+# FromFileWithEvaluation1
+- ${fromFile('./TestFile.txt', true)}
+
+# FromFileWithEvaluation2
+- ${fromFile('./TestFile.txt')}
