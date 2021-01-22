@@ -582,6 +582,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
             }
 
+            const string fromFileBinary = "fromFileBinary";
+
+            if (name.Equals(fromFileBinary, StringComparison.Ordinal))
+            {
+                return new ExpressionEvaluator(fromFileBinary, FunctionUtils.Apply(this.FromFileBinary()), ReturnType.Object, FunctionUtils.ValidateUnaryString);
+            }
+
             const string activityAttachment = "ActivityAttachment";
 
             if (name.Equals(activityAttachment, StringComparison.Ordinal))
@@ -636,6 +643,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 ["contenttype"] = args[1].ToString(),
                 ["content"] = args[0] as JObject
             };
+        };
+
+        private Func<IReadOnlyList<object>, object> FromFileBinary()
+        => (IReadOnlyList<object> args) =>
+        {
+            var filePath = args[0].ToString().NormalizePath();
+
+            var resourcePath = GetResourcePath(filePath);
+            return File.ReadAllBytes(resourcePath);
         };
 
         private Func<IReadOnlyList<object>, object> FromFile()

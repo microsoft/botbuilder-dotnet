@@ -53,6 +53,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             result = str;
                         }
+                        else if (args[0] is byte[] byteArr)
+                        {
+                            result = System.Text.Encoding.UTF8.GetString(byteArr);
+                        }
                         else
                         {
                             result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');

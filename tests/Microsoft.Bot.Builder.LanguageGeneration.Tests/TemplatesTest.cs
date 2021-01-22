@@ -1726,6 +1726,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
             Assert.Equal("hi Lucy", evaled);
+
+            evaled = templates.Evaluate("FromFileBinary1");
+            Assert.Equal("hi ${name}", evaled);
+
+            evaled = templates.Evaluate("FromFileBinary2", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaled);
         }
 
         public class LoopClass
