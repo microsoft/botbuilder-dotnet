@@ -46,6 +46,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
         }
 
+        internal enum FromFileFormats
+        {
+            /// <summary>
+            /// The text content would be evaluated.
+            /// </summary>
+            Evaluated,
+
+            /// <summary>
+            /// Get raw text content of the file.
+            /// </summary>
+            Raw,
+
+            /// <summary>
+            /// Get binary result from the file.
+            /// </summary>
+            Binary
+        }
+
         /// <summary>
         /// Gets templates.
         /// </summary>
@@ -582,13 +600,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
             }
 
-            const string fromFileBinary = "fromFileBinary";
-
-            if (name.Equals(fromFileBinary, StringComparison.Ordinal))
-            {
-                return new ExpressionEvaluator(fromFileBinary, FunctionUtils.Apply(this.FromFileBinary()), ReturnType.Object, FunctionUtils.ValidateUnaryString);
-            }
-
             const string activityAttachment = "ActivityAttachment";
 
             if (name.Equals(activityAttachment, StringComparison.Ordinal))
@@ -645,33 +656,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             };
         };
 
-        private Func<IReadOnlyList<object>, object> FromFileBinary()
-        => (IReadOnlyList<object> args) =>
-        {
-            var filePath = args[0].ToString().NormalizePath();
-
-            var resourcePath = GetResourcePath(filePath);
-            return File.ReadAllBytes(resourcePath);
-        };
-
         private Func<IReadOnlyList<object>, object> FromFile()
        => (IReadOnlyList<object> args) =>
        {
-           // The first parameter is absolute/relative file path
-           // The second parameter is shouldEvaluate option.(default to true)
            var filePath = args[0].ToString().NormalizePath();
-
            var resourcePath = GetResourcePath(filePath);
-           var stringContent = File.ReadAllText(resourcePath);
-           object result = stringContent;
-           var shouldEvaluate = true;
-           if (args.Count > 1 && args[1] is bool evaluate)
+           var format = FromFileFormats.Evaluated;
+           if (args.Count > 1)
            {
-               shouldEvaluate = evaluate;
+               foreach (FromFileFormats item in Enum.GetValues(typeof(FromFileFormats)))
+               {
+                   if (args[1].ToString().Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
+                   {
+                       format = item;
+                       break;
+                   }
+               }
            }
 
-           if (shouldEvaluate)
+           object result;
+           if (format == FromFileFormats.Binary)
            {
+               result = File.ReadAllBytes(resourcePath);
+           }
+           else if (format == FromFileFormats.Raw)
+           {
+               result = File.ReadAllText(resourcePath);
+           }
+           else
+           {
+               var stringContent = File.ReadAllText(resourcePath);
                var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
                var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
                result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
@@ -682,7 +696,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private void ValidateFromFile(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.Boolean }, ReturnType.String);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String);
         }
 
         private string GetResourcePath(string filePath)

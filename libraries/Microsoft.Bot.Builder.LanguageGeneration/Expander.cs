@@ -540,13 +540,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, ValidateFromFile);
             }
 
-            const string fromFileBinary = "fromFileBinary";
-
-            if (name.Equals(fromFileBinary, StringComparison.Ordinal))
-            {
-                return new ExpressionEvaluator(fromFileBinary, FunctionUtils.Apply(this.FromFileBinary()), ReturnType.Object, FunctionUtils.ValidateUnaryString);
-            }
-
             const string activityAttachment = "ActivityAttachment";
 
             if (name.Equals(activityAttachment, StringComparison.Ordinal))
@@ -698,44 +691,47 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             };
         };
 
-        private Func<IReadOnlyList<object>, object> FromFileBinary()
-        => (IReadOnlyList<object> args) =>
-        {
-            var filePath = args[0].ToString().NormalizePath();
-
-            var resourcePath = GetResourcePath(filePath);
-            return File.ReadAllBytes(resourcePath);
-        };
-
         private Func<IReadOnlyList<object>, object> FromFile()
-       => (IReadOnlyList<object> args) =>
-       {
-           // The first parameter is absolute/relative file path
-           // The second parameter is shouldEvaluate option.(default to true)
-           var filePath = args[0].ToString().NormalizePath();
+               => (IReadOnlyList<object> args) =>
+               {
+                   var filePath = args[0].ToString().NormalizePath();
+                   var resourcePath = GetResourcePath(filePath);
+                   var format = Evaluator.FromFileFormats.Evaluated;
+                   if (args.Count > 1)
+                   {
+                       foreach (Evaluator.FromFileFormats item in Enum.GetValues(typeof(Evaluator.FromFileFormats)))
+                       {
+                           if (args[1].ToString().Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
+                           {
+                               format = item;
+                               break;
+                           }
+                       }
+                   }
 
-           var resourcePath = GetResourcePath(filePath);
-           var stringContent = File.ReadAllText(resourcePath);
-           object result = stringContent;
-           var shouldEvaluate = true;
-           if (args.Count > 1 && args[1] is bool evaluate)
-           {
-               shouldEvaluate = evaluate;
-           }
+                   object result;
+                   if (format == Evaluator.FromFileFormats.Binary)
+                   {
+                       result = File.ReadAllBytes(resourcePath);
+                   }
+                   else if (format == Evaluator.FromFileFormats.Raw)
+                   {
+                       result = File.ReadAllText(resourcePath);
+                   }
+                   else
+                   {
+                       var stringContent = File.ReadAllText(resourcePath);
+                       var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
+                       var newTemplates = new Templates(templates: Templates, expressionParser: _expressionParser);
+                       result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+                   }
 
-           if (shouldEvaluate)
-           {
-               var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-               var newTemplates = new Templates(templates: Templates, expressionParser: _expressionParser);
-               result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
-           }
-
-           return result;
-       };
+                   return result;
+               };
 
         private void ValidateFromFile(Expression expression)
         {
-            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.Boolean }, ReturnType.String);
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String);
         }
 
         private string GetResourcePath(string filePath)
