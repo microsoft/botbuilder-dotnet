@@ -7,8 +7,5 @@
 # FromFileWithEvaluation2
 - ${fromFile('./TestFile.txt')}
 
-# FromFileBinary1
-- ${base64ToString(base64(fromFileBinary('./TestFile.txt')))}
-
-# FromFileBinary2
-- ${expandText(base64ToString(base64(fromFileBinary('./TestFile.txt'))))}
+# FromFileBinary
+- ${string(fromFileBinary('./TestFile.txt'))}
