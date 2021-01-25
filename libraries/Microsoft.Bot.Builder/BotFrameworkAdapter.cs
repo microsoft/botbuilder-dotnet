@@ -535,7 +535,7 @@ namespace Microsoft.Bot.Builder
 
                 Logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
-                if (activity.Type == ActivityTypesEx.Delay)
+                if (activity.Type == ActivityTypes.Delay)
                 {
                     // The Activity Schema doesn't have a delay type built in, so it's simulated
                     // here in the Bot. This matches the behavior in the Node connector.
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder
 
                     // No need to create a response. One will be created below.
                 }
-                else if (activity.Type == ActivityTypesEx.InvokeResponse)
+                else if (activity.Type == ActivityTypes.InvokeResponse)
                 {
                     turnContext.TurnState.Add(InvokeResponseKey, activity);
 

@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     activity.Timestamp = DateTime.UtcNow;
                 }
 
-                if (activity.Type == ActivityTypesEx.Delay)
+                if (activity.Type == ActivityTypes.Delay)
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here

@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder
 
                         // Ensure the TurnState has the InvokeResponseKey, since this activity
                         // is not being sent through the adapter, where it would be added to TurnState.
-                        if (activity.Type == ActivityTypesEx.InvokeResponse)
+                        if (activity.Type == ActivityTypes.InvokeResponse)
                         {
                             TurnState.Add(BotFrameworkAdapter.InvokeResponseKey, activity);
                         }

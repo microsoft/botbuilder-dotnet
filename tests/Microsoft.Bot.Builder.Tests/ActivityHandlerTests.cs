@@ -733,7 +733,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
             {
-                Activity = activities.FirstOrDefault(activity => activity.Type == ActivityTypesEx.InvokeResponse);
+                Activity = activities.FirstOrDefault(activity => activity.Type == ActivityTypes.InvokeResponse);
                 return Task.FromResult(new ResourceResponse[0]);
             }
         }
