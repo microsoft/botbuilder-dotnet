@@ -3,8 +3,8 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// An attachment within an activity.
@@ -63,6 +63,19 @@ namespace Microsoft.Bot.Schema
         /// <value>The name of the attachment.</value>
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined by the <see cref="Attachment"/> type but that
+        /// might appear in the REST JSON object.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
+        public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets (OPTIONAL) Thumbnail associated with attachment.
