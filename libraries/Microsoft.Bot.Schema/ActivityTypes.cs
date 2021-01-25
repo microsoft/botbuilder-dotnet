@@ -9,11 +9,6 @@ namespace Microsoft.Bot.Schema
     public static class ActivityTypes
     {
         /// <summary>
-        /// The type value for message activities.
-        /// </summary>
-        public const string Message = "message";
-
-        /// <summary>
         /// The type value for contact relation update activities.
         /// </summary>
         public const string ContactRelationUpdate = "contactRelationUpdate";
@@ -24,24 +19,21 @@ namespace Microsoft.Bot.Schema
         public const string ConversationUpdate = "conversationUpdate";
 
         /// <summary>
-        /// The type value for typing activities.
-        /// </summary>
-        public const string Typing = "typing";
-
-        /// <summary>
         /// The type value for end of conversation activities.
         /// </summary>
         public const string EndOfConversation = "endOfConversation";
-
+        
         /// <summary>
         /// The type value for event activities.
         /// </summary>
         public const string Event = "event";
 
         /// <summary>
-        /// The type value for invoke activities.
+        /// The type value for delay activities.
         /// </summary>
-        public const string Invoke = "invoke";
+        /// <remarks>As an outgoing activity type, causes the adapter to pause for <see cref="Activity.Value"/> milliseconds.
+        /// The activity's <see cref="Activity.Value"/> should be a <see cref="int"/>.</remarks>
+        public const string Delay = "delay";
 
         /// <summary>
         /// The type value for delete user data activities.
@@ -49,14 +41,9 @@ namespace Microsoft.Bot.Schema
         public const string DeleteUserData = "deleteUserData";
 
         /// <summary>
-        /// The type value for message update activities.
+        /// The type value for handoff activities.
         /// </summary>
-        public const string MessageUpdate = "messageUpdate";
-
-        /// <summary>
-        /// The type value for message delete activities.
-        /// </summary>
-        public const string MessageDelete = "messageDelete";
+        public const string Handoff = "handoff";
 
         /// <summary>
         /// The type value for installation update activities.
@@ -64,10 +51,40 @@ namespace Microsoft.Bot.Schema
         public const string InstallationUpdate = "installationUpdate";
 
         /// <summary>
+        /// The type value for invoke activities.
+        /// </summary>
+        public const string Invoke = "invoke";
+
+        /// <summary>
+        /// The type value for invoke response activities.
+        /// </summary>
+        /// <remarks>This is used for a return payload in response to an invoke activity.
+        /// Invoke activities communicate programmatic information from a client or channel to a bot, and
+        /// have a corresponding return payload for use within the channel. The meaning of an invoke activity
+        /// is defined by the <see cref="Activity.Name"/> field, which is meaningful within the scope of a channel.
+        /// </remarks>
+        public const string InvokeResponse = "invokeResponse";
+        
+        /// <summary>
+        /// The type value for message activities.
+        /// </summary>
+        public const string Message = "message";
+
+        /// <summary>
+        /// The type value for message delete activities.
+        /// </summary>
+        public const string MessageDelete = "messageDelete";
+
+        /// <summary>
         /// The type value for message reaction activities.
         /// </summary>
         public const string MessageReaction = "messageReaction";
 
+        /// <summary>
+        /// The type value for message update activities.
+        /// </summary>
+        public const string MessageUpdate = "messageUpdate";
+        
         /// <summary>
         /// The type value for suggestion activities.
         /// </summary>
@@ -79,25 +96,8 @@ namespace Microsoft.Bot.Schema
         public const string Trace = "trace";
 
         /// <summary>
-        /// The type value for handoff activities.
+        /// The type value for typing activities.
         /// </summary>
-        public const string Handoff = "handoff";
-
-        /// <summary>
-        /// The type value for delay activities.
-        /// </summary>
-        /// <remarks>As an outgoing activity type, causes the adapter to pause for <see cref="Activity.Value"/> milliseconds.
-        /// The activity's <see cref="Activity.Value"/> should be a <see cref="int"/>.</remarks>
-        public const string Delay = "delay";
-
-        /// <summary>
-        /// The type value for invoke response activities.
-        /// </summary>
-        /// <remarks>This is used for a return payload in response to an invoke activity.
-        /// Invoke activities communicate programmatic information from a client or channel to a bot, and
-        /// have a corresponding return payload for use within the channel. The meaning of an invoke activity
-        /// is defined by the <see cref="Activity.Name"/> field, which is meaningful within the scope of a channel.
-        /// </remarks>
-        public const string InvokeResponse = "invokeResponse";
+        public const string Typing = "typing";
     }
 }
