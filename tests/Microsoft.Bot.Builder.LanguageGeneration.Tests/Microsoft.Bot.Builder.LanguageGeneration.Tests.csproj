@@ -26,6 +26,10 @@
     <None Remove="Examples\EvaluationOptions\d3.lg" />
     <None Remove="Examples\EvaluationOptions\d4.lg" />
     <None Remove="Examples\EvaluationOptions\f4.lg" />
+    <None Remove="Examples\EvaluationOptions\GlobalCache.lg" />
+    <None Remove="Examples\EvaluationOptions\LocalCache.lg" />
+    <None Remove="Examples\EvaluationOptions\NoneCache.lg" />
+    <None Remove="Examples\EvaluationOptions\DefaultCache.lg" />
     <None Remove="Examples\EvaluationOptions\StrictModeTrue.lg" />
     <None Remove="Examples\import\import3.lg" />
     <None Remove="Examples\Event.lg" />
@@ -173,6 +177,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EvaluationOptions\f4.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\GlobalCache.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\GlobalCache_1.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\LocalCache.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\NoneCache.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\EvaluationOptions\DefaultCache.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\EvaluationOptions\StrictModeTrue.lg">

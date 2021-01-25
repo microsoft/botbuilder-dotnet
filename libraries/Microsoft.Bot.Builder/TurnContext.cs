@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -20,7 +21,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
-        private const string TurnLocale = "turn.locale";
+        private const string Turn = "turn";
 
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
@@ -93,8 +94,32 @@ namespace Microsoft.Bot.Builder
         /// <value>The string of locale on this context object.</value>
         public string Locale
         {
-            get => this.TurnState.Get<string>(TurnLocale);
-            set { this.TurnState.Set(TurnLocale, value); }
+            get 
+            { 
+                var valueObj = this.TurnState.Get<JObject>(Turn);
+                if (valueObj.TryGetValue(nameof(Locale).ToLowerInvariant(), out var locale))
+                {
+                    return locale.ToString();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            set
+            {
+                var valueObj = this.TurnState.Get<JObject>(Turn);
+                if (valueObj != null)
+                {
+                    valueObj[nameof(Locale).ToLowerInvariant()] = value;
+                }
+                else
+                {
+                    valueObj = new JObject(new JProperty(nameof(Locale).ToLowerInvariant(), value));
+                    TurnState.Set(Turn, valueObj);
+                }
+            }
         }
 
         /// <summary>

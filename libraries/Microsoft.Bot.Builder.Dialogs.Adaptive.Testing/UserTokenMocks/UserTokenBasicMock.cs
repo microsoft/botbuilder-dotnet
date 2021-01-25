@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks
 {
     /// <summary>
-    /// Mock UserToken with juse user id and token.
+    /// Mock UserToken with just user id and token.
     /// </summary>
     public class UserTokenBasicMock : UserTokenMock
     {

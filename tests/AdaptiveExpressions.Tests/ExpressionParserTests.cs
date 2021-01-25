@@ -885,6 +885,7 @@ namespace AdaptiveExpressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time')", "2018-01-01T18:00:00.0000000"),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D', 'en-US')", "Monday, January 1, 2018"),

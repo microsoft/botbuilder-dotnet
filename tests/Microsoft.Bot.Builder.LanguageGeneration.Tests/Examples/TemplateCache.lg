@@ -1,19 +1,14 @@
 ﻿﻿# templateWithSameParams(param)
-- ${listTemplate1(param)} ${listTemplate1(param)}
+- ${random(param)} ${random(param)}
 
 # templateWithDifferentParams(param1, param2)
-- ${listTemplate1(param1)} ${listTemplate1(param2)}
+- ${random(param1)} ${random(param2)}
 
-# listTemplate1(param)
-- item1
-- item2
-- item3
-- item4
-- item5
+# random(param)
+- ${rand(1, 10000000)}
 
-
-# globalCache(param)
-- ${subTemplate(param)} ${listTemplate1(param)}
+# nestedTemplate(param)
+- ${subTemplate(param)} ${random(param)}
 
 # subTemplate(param)
-- ${listTemplate1(param)}
+- ${random(param)}

@@ -66,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     return buttonCnt <= 99;
 
                 case Connector.Channels.Slack:
+                case Connector.Channels.Telegram:
                 case Connector.Channels.Emulator:
                 case Connector.Channels.Directline:
                 case Connector.Channels.DirectlineSpeech:

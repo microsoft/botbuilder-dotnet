@@ -344,6 +344,9 @@
       "$ref": "#/definitions/Microsoft.Test.SetProperties"
     },
     {
+      "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+    },
+    {
       "$ref": "#/definitions/Microsoft.Test.UserActivity"
     },
     {
@@ -2621,9 +2624,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "ActivityId",
           "description": "expression to an activityId to delete",
-          "examples": [
-            "=$lastActivity"
-          ]
+            "examples": [
+                "=turn.lastresult.id"
+            ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -3375,9 +3378,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
-          "examples": [
-            "$lastActivity"
-          ]
+            "examples": [
+                "turn.lastresult.id"
+            ]
         },
         "disabled": {
           "$ref": "#/definitions/booleanExpression",
@@ -7122,14 +7125,11 @@
           "description": "SnapShot file path.",
           "default": "=settings.orchestrator.shapshotpath"
         },
-        "entityRecognizers": {
-          "type": "array",
-          "title": "Entity recognizers",
-          "description": "Collection of entity recognizers to use.",
-          "items": {
-            "$kind": "Microsoft.IEntityRecognizer",
-            "$ref": "#/definitions/Microsoft.IEntityRecognizer"
-          }
+        "externalEntityRecognizer": {
+          "$kind": "Microsoft.IRecognizer",
+          "title": "External entity recognizer",
+          "description": "Entities recognized by this recognizer will be merged with Orchestrator results.",
+          "$ref": "#/definitions/Microsoft.IRecognizer"
         },
         "disambiguationScoreThreshold": {
           "$ref": "#/definitions/numberExpression",
@@ -9035,6 +9035,21 @@
       "description": "Components which derive from PropertyMock class",
       "$role": "interface"
     },
+    "Microsoft.Test.ISettingMock": {
+      "title": "Microsoft Test ISettingMock",
+      "description": "Components which derive from SettingMock class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ISettingMock",
+          "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
+        }
+      ]
+    },
     "Microsoft.Test.ITestAction": {
       "title": "Test action",
       "description": "Components which derive from TestAction class",
@@ -9199,6 +9214,15 @@
             "$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
           }
         },
+        "settingMocks": {
+          "type": "array",
+          "title": "Setting Mocks",
+          "description": "Mock data for setting.",
+          "items": {
+            "$kind": "Microsoft.Test.ISettingMock",
+            "$ref": "#/definitions/Microsoft.Test.ISettingMock"
+          }
+        },
         "script": {
           "type": "array",
           "title": "Test actions",
@@ -9287,6 +9311,65 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.Test.SetProperties"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.Test.SettingStringMock": {
+      "$role": "implements(Microsoft.Test.ISettingMock)",
+      "title": "Mock Settings",
+      "description": "Mock one or more settings with string value.",
+      "type": "object",
+      "required": [
+        "assignments",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "assignments": {
+          "type": "array",
+          "title": "Assignments",
+          "description": "Setting assignments as settings.property=value pairs. Assign the settings in sequence.",
+          "items": {
+            "type": "object",
+            "title": "Setting String Assignment",
+            "description": "Setting String Assignment (used in SettingStringMock).",
+            "properties": {
+              "property": {
+                "type": "string",
+                "title": "Property",
+                "description": "A property path without settings.",
+                "examples": [
+                  "connectionName"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "description": "Value string.",
+                "examples": [
+                  "Graph"
+                ]
+              }
+            }
+          }
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.SettingStringMock"
         },
         "$designer": {
           "title": "Designer information",
@@ -9953,9 +10036,9 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Activity Id",
           "description": "An string expression with the activity id to update.",
-          "examples": [
-            "=dialog.lastActivityId"
-          ]
+            "examples": [
+                "=turn.lastresult.id"
+            ]
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",

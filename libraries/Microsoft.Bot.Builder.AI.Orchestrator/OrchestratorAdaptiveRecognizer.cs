@@ -96,15 +96,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public StringExpression SnapshotPath { get; set; } = "=settings.orchestrator.snapshotPath";
 
         /// <summary>
-        /// Gets or sets the entity recognizers.
+        /// Gets or sets an external entity recognizer.
         /// </summary>
-        /// <value>
-        /// The entity recognizers.
-        /// </value>
-        [JsonProperty("entityRecognizers")]
-#pragma warning disable CA2227 // Collection properties should be read only (keeping this consistent with RegexRecognizer)
-        public List<EntityRecognizer> EntityRecognizers { get; set; } = new List<EntityRecognizer>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        /// <remarks>This recognizer is run before calling Orchestrator and the entities are merged with Orchestrator results.</remarks>
+        /// <value>Recognizer.</value>
+        [JsonProperty("externalEntityRecognizer")]
+        public Recognizer ExternalEntityRecognizer { get; set; }
 
         /// <summary>
         /// Gets or sets the disambiguation score threshold.
@@ -155,10 +152,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 return recognizerResult;
             }
 
-            if (EntityRecognizers.Count != 0)
+            if (ExternalEntityRecognizer != null)
             {
-                // Run entity recognition
-                await RecognizeEntitiesAsync(dc, activity, recognizerResult).ConfigureAwait(false);
+                // Run external recognition
+                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                recognizerResult.Entities = externalResults.Entities;
             }
 
             // Score with orchestrator
@@ -222,73 +220,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             TrackRecognizerResult(dc, nameof(OrchestratorAdaptiveRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
 
             return recognizerResult;
-        }
-
-        private async Task RecognizeEntitiesAsync(DialogContext dialogContext, Schema.Activity activity, RecognizerResult recognizerResult)
-        {
-            var text = activity.Text ?? string.Empty;
-            var entityPool = new List<Entity>();
-            if (EntityRecognizers != null)
-            {
-                // add entities from regexrecgonizer to the entities pool
-                var textEntity = new TextEntity(text);
-                textEntity.Properties["start"] = 0;
-                textEntity.Properties["end"] = text.Length;
-                textEntity.Properties["score"] = 1.0;
-
-                entityPool.Add(textEntity);
-
-                // process entities using EntityRecognizerSet
-                var entitySet = new EntityRecognizerSet(EntityRecognizers);
-                var newEntities = await entitySet.RecognizeEntitiesAsync(dialogContext, activity, entityPool).ConfigureAwait(false);
-                if (newEntities.Any())
-                {
-                    entityPool.AddRange(newEntities);
-                }
-
-                entityPool.Remove(textEntity);
-            }
-
-            // map entityPool of Entity objects => RecognizerResult entity format
-            recognizerResult.Entities = new JObject();
-
-            foreach (var entityResult in entityPool)
-            {
-                // add value
-                JToken values;
-                if (!recognizerResult.Entities.TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out values))
-                {
-                    values = new JArray();
-                    recognizerResult.Entities[entityResult.Type] = values;
-                }
-
-                // The Entity type names are not consistent, map everything to camelcase so we can process them cleaner.
-                var entity = JObject.FromObject(entityResult);
-                ((JArray)values).Add(entity.GetValue("text", StringComparison.InvariantCulture));
-
-                // get/create $instance
-                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out JToken instanceRoot))
-                {
-                    instanceRoot = new JObject();
-                    recognizerResult.Entities["$instance"] = instanceRoot;
-                }
-
-                // add instanceData
-                if (!((JObject)instanceRoot).TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out JToken instanceData))
-                {
-                    instanceData = new JArray();
-                    instanceRoot[entityResult.Type] = instanceData;
-                }
-
-                var instance = new JObject();
-                instance.Add("startIndex", entity.GetValue("start", StringComparison.InvariantCulture));
-                instance.Add("endIndex", entity.GetValue("end", StringComparison.InvariantCulture));
-                instance.Add("score", (double)1.0);
-                instance.Add("text", entity.GetValue("text", StringComparison.InvariantCulture));
-                instance.Add("type", entity.GetValue("type", StringComparison.InvariantCulture));
-                instance.Add("resolution", entity.GetValue("resolution", StringComparison.InvariantCulture));
-                ((JArray)instanceData).Add(instance);
-            }
         }
 
         private void InitializeModel()
