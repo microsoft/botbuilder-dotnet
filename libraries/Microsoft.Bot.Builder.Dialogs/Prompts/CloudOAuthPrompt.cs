@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
@@ -15,20 +14,20 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// This is replacement for the OauthPrompt that replies on the UserTokenClient it finds in the TurnState.
     /// </summary>
-    public class SignInPrompt : Dialog
+    internal class CloudOAuthPrompt : Dialog
     {
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
 
-        private readonly SignInPromptSettings _settings;
+        private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignInPrompt"/> class.
+        /// Initializes a new instance of the <see cref="CloudOAuthPrompt"/> class.
         /// </summary>
         /// <param name="settings">Additional OAuth settings to use with this instance of the prompt.</param>
         /// <param name="validator">A custom validator that can be used against Message activities.</param>
-        public SignInPrompt(SignInPromptSettings settings, PromptValidator<TokenResponse> validator)
+        public CloudOAuthPrompt(OAuthPromptSettings settings, PromptValidator<TokenResponse> validator)
         {
             _settings = settings;
             _validator = validator;

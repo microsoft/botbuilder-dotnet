@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="prompt">A message activity for the prompt.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task.</returns>
-        public static async Task SendOAuthCardAsync(UserTokenClient userTokenClient, SignInPromptSettings settings, ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken)
+        public static async Task SendOAuthCardAsync(UserTokenClient userTokenClient, OAuthPromptSettings settings, ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken)
         {
             // Ensure prompt initialized
             prompt ??= Activity.CreateMessageActivity();
