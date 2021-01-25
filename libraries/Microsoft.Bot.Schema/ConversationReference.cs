@@ -3,6 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
+    using System;
     using System.Globalization;
     using Newtonsoft.Json;
 
@@ -89,6 +90,26 @@ namespace Microsoft.Bot.Schema
         public string ServiceUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
 
+        /// <summary>
+        /// Creates <see cref="Activity"/> from conversation reference as it is posted to bot.
+        /// </summary>
+        /// <returns>Continuation activity.</returns>
+        public Activity GetContinuationActivity()
+        {
+            return new Activity(ActivityTypes.Event)
+            {
+                Name = ActivityEventNames.ContinueConversation,
+                Id = Guid.NewGuid().ToString(),
+                ChannelId = ChannelId,
+                Locale = Locale,
+                ServiceUrl = ServiceUrl,
+                Conversation = Conversation,
+                Recipient = Bot,
+                From = User,
+                RelatesTo = this
+            };
+        }
+        
         /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
         partial void CustomInit();
     }
