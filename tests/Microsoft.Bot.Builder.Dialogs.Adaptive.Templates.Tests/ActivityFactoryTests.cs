@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var lgResult = templates.Evaluate("InvokeResponseExample", data);
             var activity = (Activity)ActivityFactory.FromObject(lgResult);
             
-            Assert.Equal(ActivityTypes.InvokeResponse, activity.Type);
+            Assert.Equal(ActivityTypesEx.InvokeResponse, activity.Type);
             Assert.NotNull(activity.Value);
             Assert.IsType<InvokeResponse>(activity.Value);
             var invokeResponse = (InvokeResponse)activity.Value;

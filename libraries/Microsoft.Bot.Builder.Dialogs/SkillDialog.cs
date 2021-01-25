@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        if (activityFromSkill.Type == ActivityTypes.InvokeResponse)
+                        if (activityFromSkill.Type == ActivityTypesEx.InvokeResponse)
                         {
                             // An invoke respones has already been sent.  This is a bug in the skill.  Multiple invoke responses
                             // are not possible.

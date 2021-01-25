@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
             {
                 return new Activity
                 {
-                    Type = ActivityTypes.InvokeResponse,
+                    Type = ActivityTypesEx.InvokeResponse,
                     Value = new InvokeResponse
                     {
                         Status = 200,

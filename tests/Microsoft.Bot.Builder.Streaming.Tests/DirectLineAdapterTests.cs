@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             {
                 return new Activity
                 {
-                    Type = ActivityTypes.InvokeResponse,
+                    Type = ActivityTypesEx.InvokeResponse,
                     Value = new InvokeResponse
                     {
                         Status = 200,

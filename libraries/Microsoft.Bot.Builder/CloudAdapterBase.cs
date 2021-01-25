@@ -73,12 +73,12 @@ namespace Microsoft.Bot.Builder
 
                 _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
 
-                if (activity.Type == ActivityTypes.Delay)
+                if (activity.Type == ActivityTypesEx.Delay)
                 {
                     var delayMs = (int)activity.Value;
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
                 }
-                else if (activity.Type == ActivityTypes.InvokeResponse)
+                else if (activity.Type == ActivityTypesEx.InvokeResponse)
                 {
                     turnContext.TurnState.Add(InvokeResponseKey, activity);
                 }

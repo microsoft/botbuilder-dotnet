@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 return new Activity
                 {
-                    Type = ActivityTypes.InvokeResponse,
+                    Type = ActivityTypesEx.InvokeResponse,
                     Value = new InvokeResponse
                     {
                         Status = 200,
