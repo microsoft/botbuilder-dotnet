@@ -162,8 +162,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="disposing">Boolean value that indicates if freeing resources should be performed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            // _disposed = true;
-            _disposed = false;
+            _disposed = true;
         }
     }
 }
