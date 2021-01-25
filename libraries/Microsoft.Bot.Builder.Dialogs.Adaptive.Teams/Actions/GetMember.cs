@@ -82,14 +82,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
             
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new Exception($"{Kind} works only on the Teams channel.");
+                throw new InvalidOperationException($"{Kind} works only on the Teams channel.");
             }
 
             string memberId = MemberId.GetValueOrNull(dc.State);

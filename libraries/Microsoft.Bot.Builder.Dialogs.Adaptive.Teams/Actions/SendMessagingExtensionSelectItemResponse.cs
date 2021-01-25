@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
             
             var attachment = activity.Attachments[0];
-            var extentionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment.Content);
+            var extensionAttachment = new MessagingExtensionAttachment(attachment.ContentType, null, attachment.Content);
 
             var response = new MessagingExtensionResponse
             {
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     Type = MessagingExtensionResultResponseType.result.ToString(),
                     AttachmentLayout = MessagingExtensionAttachmentLayoutResponseType.list.ToString(), // TODO: enum this
-                    Attachments = new List<MessagingExtensionAttachment> { extentionAttachment }
+                    Attachments = new List<MessagingExtensionAttachment> { extensionAttachment }
                 },
                 CacheInfo = GetCacheInfo(dc),
             };

@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <returns>A string representing the compute Id.</returns>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{null ?? string.Empty}]";
+            return $"{GetType().Name}[{Card?.ToString() ?? string.Empty}]";
         }
     }
 }

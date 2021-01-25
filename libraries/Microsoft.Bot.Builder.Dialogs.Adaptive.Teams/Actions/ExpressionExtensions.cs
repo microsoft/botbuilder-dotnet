@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
                 var (value, valueError) = expression.TryGetValue(state);
                 if (valueError != null)
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {expression.ExpressionText}. Error: {valueError}");
+                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: {expression.ExpressionText}. Error: {valueError}");
                 }
 
                 return value;
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
                 var (value, valueError) = expression.TryGetValue(state);
                 if (valueError != null)
                 {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {expression.ExpressionText}. Error: {valueError}");
+                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: {expression.ExpressionText}. Error: {valueError}");
                 }
 
                 return value as string;
