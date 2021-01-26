@@ -9,12 +9,11 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// A clickable action.
     /// </summary>
-    public partial class CardAction
+    public class CardAction
     {
         /// <summary>Initializes a new instance of the <see cref="CardAction"/> class.</summary>
         public CardAction()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="CardAction"/> class.</summary>
@@ -37,7 +36,6 @@ namespace Microsoft.Bot.Schema
             DisplayText = displayText;
             Value = value;
             ChannelData = channelData;
-            CustomInit();
         }
 
         /// <summary>
@@ -99,8 +97,5 @@ namespace Microsoft.Bot.Schema
         {
             return new CardAction(title: input, value: input);
         }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

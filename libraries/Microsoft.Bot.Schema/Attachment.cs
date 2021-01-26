@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Schema
         /// <summary> Initializes a new instance of the <see cref="Attachment"/> class. </summary>
         public Attachment()
         {
-        //     CustomInit();
         }
 
         /// <summary> Initializes a new instance of the <see cref="Attachment"/> class. </summary>
@@ -31,8 +30,6 @@ namespace Microsoft.Bot.Schema
             Content = content;
             Name = name;
             ThumbnailUrl = thumbnailUrl;
-
-        //     CustomInit();
         }
 
         /// <summary>
@@ -86,10 +83,5 @@ namespace Microsoft.Bot.Schema
 #pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking compat).
         public string ThumbnailUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
-
-        // /// <summary>
-        // /// An initialization method that performs custom operations like setting defaults.
-        // /// </summary>
-        // partial void CustomInit();
     }
 }
