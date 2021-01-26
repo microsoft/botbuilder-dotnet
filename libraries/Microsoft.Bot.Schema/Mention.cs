@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Mention information (entity type: "mention").
     /// </summary>
-    public partial class Mention : Entity
+    public class Mention : Entity
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Mention"/> class.
@@ -52,9 +52,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
-
-        partial void CustomInit()
+        private void CustomInit()
         {
             Type = "mention";
         }

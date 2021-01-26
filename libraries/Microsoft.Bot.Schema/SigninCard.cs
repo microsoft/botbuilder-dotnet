@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -18,7 +16,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         public SigninCard()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -30,7 +27,6 @@ namespace Microsoft.Bot.Schema
         {
             Text = text;
             Buttons = buttons;
-            CustomInit();
         }
 
         /// <summary>
@@ -72,10 +68,5 @@ namespace Microsoft.Bot.Schema
                 },
             };
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

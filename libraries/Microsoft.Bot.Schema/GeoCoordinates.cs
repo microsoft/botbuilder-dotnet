@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// GeoCoordinates (entity type: "https://schema.org/GeoCoordinates").
     /// </summary>
-    public partial class GeoCoordinates : Entity
+    public class GeoCoordinates : Entity
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GeoCoordinates"/> class.
@@ -74,9 +74,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
-
-        partial void CustomInit()
+        private void CustomInit()
         {
             Type = "GeoCoordinates";
         }

@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         public MicrosoftPayMethodData()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -41,7 +40,6 @@ namespace Microsoft.Bot.Schema
             MerchantId = merchantId;
             SupportedNetworks = supportedNetworks;
             SupportedTypes = supportedTypes;
-            CustomInit();
         }
 
         /// <summary>
@@ -104,10 +102,5 @@ namespace Microsoft.Bot.Schema
                 Data = this,
             };
         }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

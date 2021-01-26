@@ -11,14 +11,13 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// SuggestedActions that can be performed.
     /// </summary>
-    public partial class SuggestedActions
+    public class SuggestedActions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SuggestedActions"/> class.
         /// </summary>
         public SuggestedActions()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -32,7 +31,6 @@ namespace Microsoft.Bot.Schema
         {
             To = to;
             Actions = actions;
-            CustomInit();
         }
 
         /// <summary>
@@ -67,10 +65,5 @@ namespace Microsoft.Bot.Schema
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Actions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

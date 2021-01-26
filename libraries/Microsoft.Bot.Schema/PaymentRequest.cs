@@ -28,7 +28,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         public PaymentRequest()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -49,7 +48,6 @@ namespace Microsoft.Bot.Schema
             Details = details;
             Options = options;
             Expires = expires;
-            CustomInit();
         }
 
         /// <summary>
@@ -90,10 +88,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The expiration for the request in ISO 8601 duration format (.e.g 'P1D').</value>
         [JsonProperty(PropertyName = "expires")]
         public string Expires { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }
