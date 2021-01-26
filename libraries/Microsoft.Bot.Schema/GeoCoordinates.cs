@@ -75,5 +75,10 @@ namespace Microsoft.Bot.Schema
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
+
+        partial void CustomInit()
+        {
+            Type = "GeoCoordinates";
+        }
     }
 }

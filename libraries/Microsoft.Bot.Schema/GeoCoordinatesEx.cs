@@ -8,9 +8,6 @@ namespace Microsoft.Bot.Schema
     /// </summary>
     public partial class GeoCoordinates : Entity
     {
-        partial void CustomInit()
-        {
-            Type = "GeoCoordinates";
-        }
+
     }
 }
