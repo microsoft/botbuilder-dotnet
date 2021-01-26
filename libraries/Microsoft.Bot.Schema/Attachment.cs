@@ -9,12 +9,12 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// An attachment within an activity.
     /// </summary>
-    public partial class Attachment
+    public class Attachment
     {
         /// <summary> Initializes a new instance of the <see cref="Attachment"/> class. </summary>
         public Attachment()
         {
-            CustomInit();
+        //     CustomInit();
         }
 
         /// <summary> Initializes a new instance of the <see cref="Attachment"/> class. </summary>
@@ -31,7 +31,8 @@ namespace Microsoft.Bot.Schema
             Content = content;
             Name = name;
             ThumbnailUrl = thumbnailUrl;
-            CustomInit();
+
+        //     CustomInit();
         }
 
         /// <summary>
@@ -86,9 +87,9 @@ namespace Microsoft.Bot.Schema
         public string ThumbnailUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
 
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
+        // /// <summary>
+        // /// An initialization method that performs custom operations like setting defaults.
+        // /// </summary>
+        // partial void CustomInit();
     }
 }
