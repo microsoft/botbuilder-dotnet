@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Newtonsoft.Json;
@@ -33,6 +33,19 @@ namespace Microsoft.Bot.Schema
             To = to;
             Actions = actions;
             CustomInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SuggestedActions"/> class.
+        /// </summary>
+        /// <param name="to">Ids of the recipients that the actions should be
+        /// shown to. These Ids are relative to the channelId and a subset of
+        /// all recipients of the activity.</param>
+        /// <param name="actions">Actions that can be shown to the user.</param>
+        /// <exception cref="ArgumentNullException">ArgumentNullException.</exception>
+        public SuggestedActions(IEnumerable<string> to, IEnumerable<CardAction> actions)
+            : this(to.ToArray(), actions.ToArray())
+        {
         }
 
         /// <summary>
