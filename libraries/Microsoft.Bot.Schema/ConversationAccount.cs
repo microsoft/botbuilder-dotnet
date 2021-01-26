@@ -7,12 +7,11 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json.Linq;
 
     /// <summary>Conversation account represents the identity of the conversation within a channel.</summary>
-    public partial class ConversationAccount
+    public class ConversationAccount
     {
         /// <summary>Initializes a new instance of the <see cref="ConversationAccount"/> class.</summary>
         public ConversationAccount()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="ConversationAccount"/> class.</summary>
@@ -32,7 +31,6 @@ namespace Microsoft.Bot.Schema
             AadObjectId = aadObjectId;
             Role = role;
             TenantId = tenantId;
-            CustomInit();
         }
 
         /// <summary> Gets or sets indicates whether the conversation contains more than two participants at the time the activity was generated.</summary>
@@ -82,8 +80,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The tenant ID.</value>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }
