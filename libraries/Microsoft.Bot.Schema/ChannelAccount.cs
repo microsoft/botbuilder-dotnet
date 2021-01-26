@@ -12,7 +12,6 @@ namespace Microsoft.Bot.Schema
         /// <summary>Initializes a new instance of the <see cref="ChannelAccount"/> class.</summary>
         public ChannelAccount()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="ChannelAccount"/> class.</summary>
@@ -26,7 +25,6 @@ namespace Microsoft.Bot.Schema
             Name = name;
             AadObjectId = aadObjectId;
             Role = role;
-            CustomInit();
         }
 
         /// <summary>Gets or sets channel id for the user or bot on this channel (Example: joe@smith.com, or @joesmith or 123456).</summary>
@@ -61,8 +59,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The role of the entity behind the account.</value>
         [JsonProperty(PropertyName = "role")]
         public string Role { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }
