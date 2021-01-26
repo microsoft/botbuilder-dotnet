@@ -7,7 +7,7 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json.Linq;
 
     /// <summary>Channel account information needed to route a message.</summary>
-    public partial class ChannelAccount
+    public class ChannelAccount
     {
         /// <summary>Initializes a new instance of the <see cref="ChannelAccount"/> class.</summary>
         public ChannelAccount()

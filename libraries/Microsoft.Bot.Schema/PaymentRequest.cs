@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Schema
     /// A request to make a payment.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentRequest
+    public class PaymentRequest
     {
         /// <summary>
         /// Action type for Payment action.

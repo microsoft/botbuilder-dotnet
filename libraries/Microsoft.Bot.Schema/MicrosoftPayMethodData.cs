@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Schema
     /// W3C Payment Method Data for Microsoft Pay.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class MicrosoftPayMethodData
+    public class MicrosoftPayMethodData
     {
         /// <summary>
         /// The pay method name.
