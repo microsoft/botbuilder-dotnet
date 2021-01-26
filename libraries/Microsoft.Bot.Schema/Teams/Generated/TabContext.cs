@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Schema.Teams
     using Newtonsoft.Json;
     
     /// <summary>
-    /// Current tab reqeust context, i.e., the current theme.
+    /// Current tab request context, i.e., the current theme.
     /// </summary>
     public partial class TabContext
     {
