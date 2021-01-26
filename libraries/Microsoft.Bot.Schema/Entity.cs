@@ -4,19 +4,17 @@
 namespace Microsoft.Bot.Schema
 {
     using System;
-    using System.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Metadata object pertaining to an activity.
     /// </summary>
-    public partial class Entity
+    public class Entity
     {
         /// <summary>Initializes a new instance of the <see cref="Entity"/> class.</summary>
         public Entity()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="Entity"/> class.</summary>
@@ -24,7 +22,6 @@ namespace Microsoft.Bot.Schema
         public Entity(string type = default(string))
         {
             Type = type;
-            CustomInit();
         }
 
         /// <summary>
@@ -117,10 +114,5 @@ namespace Microsoft.Bot.Schema
         {
             return base.GetHashCode();
         }
-        
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

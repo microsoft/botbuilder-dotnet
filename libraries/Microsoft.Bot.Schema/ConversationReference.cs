@@ -8,12 +8,11 @@ namespace Microsoft.Bot.Schema
     using Newtonsoft.Json;
 
     /// <summary>An object relating to a particular point in a conversation.</summary>
-    public partial class ConversationReference
+    public class ConversationReference
     {
         /// <summary>Initializes a new instance of the <see cref="ConversationReference"/> class.</summary>
         public ConversationReference()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="ConversationReference"/> class.</summary>
@@ -50,7 +49,6 @@ namespace Microsoft.Bot.Schema
             ChannelId = channelId;
             Locale = locale?.ToString();
             ServiceUrl = serviceUrl;
-            CustomInit();
         }
 
         /// <summary>Gets or sets (Optional) ID of the activity to refer to.</summary>
@@ -109,8 +107,5 @@ namespace Microsoft.Bot.Schema
                 RelatesTo = this
             };
         }
-        
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }
