@@ -14,6 +14,16 @@ namespace Microsoft.Bot.Schema
     public partial class PaymentRequest
     {
         /// <summary>
+        /// Action type for Payment action.
+        /// </summary>
+        public const string PaymentActionType = "payment";
+
+        /// <summary>
+        /// Content-type for Payment card.
+        /// </summary>
+        public const string PaymentContentType = "application/vnd.microsoft.card.payment";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PaymentRequest"/> class.
         /// </summary>
         public PaymentRequest()

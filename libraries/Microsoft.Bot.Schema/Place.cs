@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Place (entity type: "https://schema.org/Place").
     /// </summary>
-    public partial class Place
+    public partial class Place : Entity
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Place"/> class.
@@ -75,5 +75,10 @@ namespace Microsoft.Bot.Schema
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
+
+        partial void CustomInit()
+        {
+            Type = "Place";
+        }
     }
 }
