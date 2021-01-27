@@ -47,6 +47,15 @@ namespace Microsoft.Bot.Schema.Teams
         public TaskModuleRequestContext Context { get; set; }
 
         /// <summary>
+        /// Gets or sets current tab request context.
+        /// </summary>
+        /// <value>
+        /// Tab request context.
+        /// </value>
+        [JsonProperty(PropertyName = "tabContext")]
+        public TabEntityContext TabEntityContext { get; set; }
+
+        /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();
