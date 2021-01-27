@@ -11,7 +11,7 @@ using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
     /// Calls TeamsInfo.GetTeamMember to retrieve the list of members in a teams

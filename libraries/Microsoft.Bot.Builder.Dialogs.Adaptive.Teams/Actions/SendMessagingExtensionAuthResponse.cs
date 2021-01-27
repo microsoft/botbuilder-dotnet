@@ -14,7 +14,7 @@ using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
     /// Send a messaging extension 'auth' response.

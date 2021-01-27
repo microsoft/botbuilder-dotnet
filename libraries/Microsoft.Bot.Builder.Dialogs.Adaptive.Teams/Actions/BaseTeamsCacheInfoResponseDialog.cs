@@ -4,12 +4,11 @@
 using System;
 using System.Net;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
     /// Base dialog for Teams Invoke Responses having a CacheInfo property.

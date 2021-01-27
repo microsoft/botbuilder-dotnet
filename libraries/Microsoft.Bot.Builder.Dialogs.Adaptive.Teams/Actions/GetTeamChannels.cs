@@ -12,7 +12,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
     /// Calls TeamsInfo.GetTeamChannels to retrieve a list of channels in a
