@@ -8,7 +8,6 @@ using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Runtime.Authentication;
 using Microsoft.Bot.Builder.Runtime.Extensions;
-using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
 using Microsoft.Bot.Builder.Runtime.Providers.Storage;
 using Microsoft.Bot.Builder.Runtime.Providers.Telemetry;
@@ -30,26 +29,12 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
     [JsonObject]
     internal class RuntimeConfigurationProvider : IProvider
     {
-        private readonly IBotPluginEnumerator _pluginEnumerator;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeConfigurationProvider"/> class.
         /// </summary>
         [JsonConstructor]
         public RuntimeConfigurationProvider()
-            : this(new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default))
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RuntimeConfigurationProvider"/> class.
-        /// </summary>
-        /// <param name="pluginEnumerator">
-        /// Enumerates available plugins from the provided bot plugin definition information.
-        /// </param>
-        public RuntimeConfigurationProvider(IBotPluginEnumerator pluginEnumerator)
-        {
-            this._pluginEnumerator = pluginEnumerator ?? throw new ArgumentNullException(nameof(pluginEnumerator));
         }
 
         /// <summary>
@@ -90,15 +75,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
         /// </value>
         [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; }
-
-        /// <summary>
-        /// Gets the collection of bot plugins to be loaded.
-        /// </summary>
-        /// <value>
-        /// The collection of bot plugins to be loaded.
-        /// </value>
-        [JsonProperty("plugins")]
-        public IList<BotPluginDefinition> Plugins { get; } = new List<BotPluginDefinition>();
 
         /// <summary>
         /// Gets or sets the resource identifier of the dialog to serve as the root dialog of the bot.
@@ -142,11 +118,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
-            }
-
-            foreach (BotPluginDefinition plugin in this.Plugins)
-            {
-                plugin.Load(this._pluginEnumerator, services, configuration);
             }
 
             var providers = new List<IProvider>(new IProvider[]
