@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var expectedRange = new SourceRange
                 {
                     StartPoint = new SourcePoint(0, 0),
-                    EndPoint = new SourcePoint(13, 1),
+                    EndPoint = new SourcePoint(14, 1),
                     Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
                 };
 
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var expectedRange = new SourceRange
                 {
                     StartPoint = new SourcePoint(1, 1),
-                    EndPoint = new SourcePoint(13, 1),
+                    EndPoint = new SourcePoint(14, 1),
                     Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
                 };
 
@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 var expectedRange = new SourceRange
                 {
                     StartPoint = new SourcePoint(1, 1),
-                    EndPoint = new SourcePoint(13, 1),
+                    EndPoint = new SourcePoint(14, 1),
                     Path = Path.Join(Path.Join(path, resourcesFolder), resourceId)
                 };
 
@@ -325,6 +325,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // Verify that the correct id was set
                 Assert.Equal("explicit-id", dialog.Id);
+            }
+        }
+
+        [Fact]
+        public async Task ResourceExplorer_LoadType_VerifyAdaptiveDialogIdAssigned()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
+            const string resourceId = "test.dialog";
+
+            using (var explorer = new ResourceExplorer())
+            {
+                explorer.AddResourceProvider(new FolderResourceProvider(explorer, path));
+
+                // Load file using resource explorer
+                var resource = explorer.GetResource(resourceId);
+                var dialog = await explorer.LoadTypeAsync<AdaptiveDialog>(resource).ConfigureAwait(false);
+
+                // Verify that the correct id was assigned
+                Assert.Equal(resourceId, dialog.Id);
             }
         }
 

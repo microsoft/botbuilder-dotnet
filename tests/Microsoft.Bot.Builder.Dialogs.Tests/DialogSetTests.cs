@@ -139,6 +139,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task DialogSet_AddTelemetrySet_OnCyclicalDialogStructures()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
+
+            var component1 = new ComponentDialog("component1");
+            var component2 = new ComponentDialog("component2");
+
+            component1.Dialogs.Add(component2);
+            component2.Dialogs.Add(component1);
+
+            // Without the check in DialogSet setter, this test throws StackOverflowException.
+            component1.Dialogs.TelemetryClient = new MyBotTelemetryClient();
+            await Task.CompletedTask;
+        }
+
+        [Fact]
         public async Task DialogSet_HeterogeneousLoggers()
         {
             var convoState = new ConversationState(new MemoryStorage());
