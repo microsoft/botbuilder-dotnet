@@ -385,7 +385,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Only continue recursive registration if we have not seen and registered 
                     // the current dialog.
-                    if (!Dialogs.GetDialogs().Any(d => d.Id == inner.Id))
+                    if (!Dialogs.GetDialogs().Any(d => d.Id.Equals(inner.Id, StringComparison.Ordinal)))
                     {
                         RegisterContainerDialogs(inner);
                     }

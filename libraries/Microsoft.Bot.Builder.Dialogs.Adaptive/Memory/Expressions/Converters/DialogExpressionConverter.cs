@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// </summary>
     public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter, IObservableJsonConverter
     {
-        private readonly Dictionary<string, DialogExpression> cache = new Dictionary<string, DialogExpression>();
+        private readonly Dictionary<string, DialogExpression> cache = new Dictionary<string, DialogExpression>(StringComparer.OrdinalIgnoreCase);
         private readonly InterfaceConverter<Dialog> converter;
         private readonly ResourceExplorer resourceExplorer;
 
