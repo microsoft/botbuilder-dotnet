@@ -11,14 +11,20 @@ namespace Microsoft.Bot.Schema
     /// W3C Payment Method Data for Microsoft Pay.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class MicrosoftPayMethodData
+    public class MicrosoftPayMethodData
     {
+        /// <summary>
+        /// The pay method name.
+        /// </summary>
+        public const string MethodName = "https://pay.microsoft.com/microsoftpay";
+
+        private const string TestModeValue = "TEST";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MicrosoftPayMethodData"/> class.
         /// </summary>
         public MicrosoftPayMethodData()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -34,7 +40,19 @@ namespace Microsoft.Bot.Schema
             MerchantId = merchantId;
             SupportedNetworks = supportedNetworks;
             SupportedTypes = supportedTypes;
-            CustomInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftPayMethodData"/> class.
+        /// </summary>
+        /// <param name="merchantId">merchant Id.</param>
+        /// <param name="supportedNetworks">supported networks.</param>
+        /// <param name="supportedTypes">supported types.</param>
+        /// <param name="testMode">test mode.</param>
+        public MicrosoftPayMethodData(string merchantId = default(string), IList<string> supportedNetworks = default(IList<string>), IList<string> supportedTypes = default(IList<string>), bool testMode = false)
+            : this(merchantId, supportedNetworks, supportedTypes)
+        {
+            Mode = testMode ? TestModeValue : null;
         }
 
         /// <summary>
@@ -43,6 +61,15 @@ namespace Microsoft.Bot.Schema
         /// <value>The Microsoft Pay Merchant ID.</value>
         [JsonProperty(PropertyName = "merchantId")]
         public string MerchantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets payment method mode.
+        /// </summary>
+        /// <value>
+        /// Payment method mode.
+        /// </value>
+        [JsonProperty(PropertyName = "mode", NullValueHandling = NullValueHandling.Ignore)]
+        public string Mode { get; set; }
 
         /// <summary>
         /// Gets or sets supported payment networks (e.g., "visa" and
@@ -64,8 +91,16 @@ namespace Microsoft.Bot.Schema
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
+        /// Get Microsoft Pay method data.
         /// </summary>
-        partial void CustomInit();
+        /// <returns>Payment method data.</returns>
+        public PaymentMethodData ToPaymentMethodData()
+        {
+            return new PaymentMethodData
+            {
+                SupportedMethods = new List<string> { MethodName },
+                Data = this,
+            };
+        }
     }
 }
