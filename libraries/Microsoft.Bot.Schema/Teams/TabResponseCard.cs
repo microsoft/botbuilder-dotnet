@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections.Generic;
     using Newtonsoft.Json;
     
     /// <summary>

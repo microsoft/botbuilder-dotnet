@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the <see cref="TaskModuleCardResponse"/> class.
         /// </summary>
         /// <param name="value">The JSON for the Adaptive cards to appear in the tab.</param>
-        public TaskModuleCardResponse(TabResponse value = default(TabResponse))
+        public TaskModuleCardResponse(TabResponse value)
             : base("continue")
         {
             Value = value;
