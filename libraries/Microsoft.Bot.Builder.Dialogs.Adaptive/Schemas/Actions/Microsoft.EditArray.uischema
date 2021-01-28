@@ -16,5 +16,19 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "=coalesce(action.changeType, \"?\")",
+            "resource": "=coalesce(action.itemsProperty, \"?\")"
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Result"
+        },
+        "hideFooter": "=!action.resultProperty"
     }
 }

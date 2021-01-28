@@ -8,5 +8,20 @@
             "connectionName",
             "*"
         ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "Connection",
+            "resource": "=coalesce(action.connectionName, \"?\")",
+            "singleline": true
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.property",
+            "description": "= Token property"
+        },
+        "hideFooter": "=!action.property"
     }
 }

@@ -4,5 +4,13 @@
         "label": "Emit a custom event",
         "subtitle": "Emit Event",
         "helpLink": "https://aka.ms/bfc-custom-events"
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "PropertyDescription",
+            "property": "=coalesce(action.eventName, \"?\")",
+            "description": "(Event)"
+        }
     }
 }
