@@ -1,0 +1,6 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "title": "Microsoft Test ISettingMock",
+    "description": "Components which derive from SettingMock class",
+    "$role": "interface"
+}

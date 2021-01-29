@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -20,11 +21,13 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
-        private const string TurnLocale = "turn.locale";
+        private const string Turn = "turn";
 
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
+
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TurnContext"/> class.
@@ -93,8 +96,32 @@ namespace Microsoft.Bot.Builder
         /// <value>The string of locale on this context object.</value>
         public string Locale
         {
-            get => this.TurnState.Get<string>(TurnLocale);
-            set { this.TurnState.Set(TurnLocale, value); }
+            get 
+            { 
+                var valueObj = this.TurnState.Get<JObject>(Turn);
+                if (valueObj.TryGetValue(nameof(Locale).ToLowerInvariant(), out var locale))
+                {
+                    return locale.ToString();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            set
+            {
+                var valueObj = this.TurnState.Get<JObject>(Turn);
+                if (valueObj != null)
+                {
+                    valueObj[nameof(Locale).ToLowerInvariant()] = value;
+                }
+                else
+                {
+                    valueObj = new JObject(new JProperty(nameof(Locale).ToLowerInvariant(), value));
+                    TurnState.Set(Turn, valueObj);
+                }
+            }
         }
 
         /// <summary>
@@ -134,6 +161,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(OnSendActivities));
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -155,6 +187,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(OnUpdateActivity));
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -177,6 +214,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(OnDeleteActivity));
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -211,6 +253,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public async Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SendActivityAsync));
+            }
+
             if (string.IsNullOrWhiteSpace(textReplyToSend))
             {
                 throw new ArgumentNullException(nameof(textReplyToSend));
@@ -243,6 +290,11 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.</remarks>
         public async Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SendActivityAsync));
+            }
+
             BotAssert.ActivityNotNull(activity);
 
             ResourceResponse[] responses = await SendActivitiesAsync(new[] { activity }, cancellationToken).ConfigureAwait(false);
@@ -269,6 +321,11 @@ namespace Microsoft.Bot.Builder
         /// the receiving channel assigned to the activities.</remarks>
         public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SendActivitiesAsync));
+            }
+
             if (activities == null)
             {
                 throw new ArgumentNullException(nameof(activities));
@@ -386,6 +443,11 @@ namespace Microsoft.Bot.Builder
         /// of the activity to replace.</para></remarks>
         public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(UpdateActivityAsync));
+            }
+
             BotAssert.ActivityNotNull(activity);
 
             var conversationReference = Activity.GetConversationReference();
@@ -409,6 +471,11 @@ namespace Microsoft.Bot.Builder
         /// The HTTP operation failed and the response contained additional information.</exception>
         public async Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(DeleteActivityAsync));
+            }
+
             if (string.IsNullOrWhiteSpace(activityId))
             {
                 throw new ArgumentNullException(nameof(activityId));
@@ -437,6 +504,11 @@ namespace Microsoft.Bot.Builder
         /// indicates the activity in the conversation to delete.</remarks>
         public async Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(DeleteActivityAsync));
+            }
+
             if (conversationReference == null)
             {
                 throw new ArgumentNullException(nameof(conversationReference));
@@ -465,10 +537,17 @@ namespace Microsoft.Bot.Builder
         /// <param name="disposing">Boolean value that determines whether to free resources or not.</param>
         protected virtual void Dispose(bool disposing)
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             if (disposing)
             {
-                // Dispose any disposable objects owned by the class here.
+                TurnState.Dispose();
             }
+
+            _disposed = true;
         }
 
         private async Task<ResourceResponse> UpdateActivityInternalAsync(
