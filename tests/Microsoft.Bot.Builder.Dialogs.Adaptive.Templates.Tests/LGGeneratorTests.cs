@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var context = GetDialogContext(string.Empty);
             var lg = new TemplateEngineLanguageGenerator();
-            await Assert.ThrowsAsync<Exception>(() => lg.GenerateAsync(context, "${tesdfdfsst()}", null));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => lg.GenerateAsync(context, "${tesdfdfsst()}", null));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("from c.en.lg", result);
 
             // there is no 'greeting' template in b.en-us.lg, no more fallback to b.lg
-            var ex = await Assert.ThrowsAsync<Exception>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () => await generator.GenerateAsync(GetDialogContext(), "${greeting()}", null));
             Assert.Contains("greeting does not have an evaluator", ex.Message);
 
             resource = resourceExplorer.GetResource("a.lg") as FileResource;
@@ -438,6 +438,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             await CreateFlow(async (turnContext, cancellationToken) =>
             {
                 (turnContext as TurnContext).Locale = "de-DE";
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hola")
+            .AssertReply("1,122")
+            .AssertReply("1,1235")
+            .AssertReply("Samstag, 6. Januar 2018")
+            .AssertReply("3,14159")
+            .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task TestManuallySetLocale()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration("test.lg");
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("manuallySetLocale.dialog");
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                (turnContext as TurnContext).Locale = "en-US";
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hola")

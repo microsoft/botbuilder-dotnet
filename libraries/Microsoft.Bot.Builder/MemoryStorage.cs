@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder
                                 &&
                            newStoreItem.ETag != oldStateETag)
                         {
-                            throw new Exception($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
+                            throw new ArgumentException($"Etag conflict.\r\n\r\nOriginal: {newStoreItem.ETag}\r\nCurrent: {oldStateETag}");
                         }
 
                         newState["eTag"] = (_eTag++).ToString(CultureInfo.InvariantCulture);

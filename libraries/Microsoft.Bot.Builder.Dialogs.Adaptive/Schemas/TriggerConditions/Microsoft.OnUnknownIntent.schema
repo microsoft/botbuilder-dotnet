@@ -5,6 +5,5 @@
     "description": "Action to perform when user input is unrecognized or if none of the 'on intent recognition' triggers match recognized intent.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

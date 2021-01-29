@@ -83,7 +83,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "System.Exception: This is an exception message."
+            "text": "System.InvalidOperationException: This is an exception message."
         },
         {
             "$kind": "Microsoft.Test.UserSays",

@@ -62,6 +62,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public uint RaisedCount { get; set; } = 0;
 
         /// <summary>
+        /// Gets or sets the expected properties when assignment was made.
+        /// </summary>
+        /// <value>
+        /// Expected properties.
+        /// </value>
+        [JsonProperty("expectedProperties")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        public List<string> ExpectedProperties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only 
+
+        /// <summary>
         /// Gets the alternative entity assignments.
         /// </summary>
         /// <value>
@@ -77,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     yield return current;
                     current = current.Alternative;
-                } 
+                }
                 while (current != null);
             }
         }

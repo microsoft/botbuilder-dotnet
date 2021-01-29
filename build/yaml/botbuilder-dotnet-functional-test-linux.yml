@@ -37,6 +37,8 @@ variables:
   BuildPlatform: 'any cpu'
   BuildConfiguration: 'Release'
   Parameters.solution: Microsoft.Bot.Builder.sln
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
+  skipComponentGovernanceDetection: true # Disables unnecessary Component Governanace Detection step 
   SolutionDir: $(System.DefaultWorkingDirectory) # Consumed in dotnet publish by Directory.Build.props and a few test projects.
 #  AzureDeploymentPassword: define this in Azure
 #  AzureDeploymentUser: define this in Azure
@@ -50,6 +52,12 @@ variables:
 steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet publish test bot'
@@ -57,7 +65,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false'
+    arguments: '-r linux-x64 --configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     zipAfterPublish: false
     modifyOutputPath: false
 

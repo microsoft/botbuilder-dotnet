@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 return lastMessage;
             }
 
-            throw new Exception("Echo message not found");
+            throw new InvalidOperationException("Echo message not found");
         }
 
         private Dictionary<string, string> GetParameters(string message)

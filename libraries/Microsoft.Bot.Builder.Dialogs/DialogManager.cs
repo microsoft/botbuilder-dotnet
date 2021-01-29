@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -23,7 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string LastAccess = "_lastAccess";
         private string _rootDialogId;
         private readonly string _dialogStateProperty;
-        private readonly object _lock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogManager"/> class.
@@ -70,7 +70,34 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// Root dialog to use to start conversation.
         /// </value>
-        public Dialog RootDialog { get; set; }
+        public Dialog RootDialog
+        {
+            get
+            {
+                if (_rootDialogId != null)
+                {
+                    return Dialogs.Find(_rootDialogId);
+                }
+
+                return null;
+            }
+
+            set
+            {
+                Dialogs = new DialogSet();
+                if (value != null)
+                {
+                    _rootDialogId = value.Id;
+                    Dialogs.TelemetryClient = value.TelemetryClient;
+                    Dialogs.Add(value);
+                    RegisterContainerDialogs(RootDialog, registerRoot: false);
+                }
+                else
+                {
+                    _rootDialogId = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets global dialogs that you want to have be callable.
@@ -103,21 +130,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>result of the running the logic against the activity.</returns>
         public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default)
         {
-            // Lazy initialize rootdialog so it can refer to assets like LG function templates
-            if (_rootDialogId == null)
-            {
-                lock (_lock)
-                {
-                    if (_rootDialogId == null)
-                    {
-                        _rootDialogId = RootDialog.Id;
-                        Dialogs.TelemetryClient = RootDialog.TelemetryClient;
-                        Dialogs.Add(RootDialog);
-                        RegisterContainerDialogs(RootDialog, registerRoot: false);
-                    }
-                }
-            }
-
             var botStateSet = new BotStateSet();
 
             // Preload TurnState with DM TurnState.
@@ -371,7 +383,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 foreach (var inner in container.Dialogs.GetDialogs())
                 {
-                    RegisterContainerDialogs(inner);
+                    // Only continue recursive registration if we have not seen and registered 
+                    // the current dialog.
+                    if (!Dialogs.GetDialogs().Any(d => d.Id.Equals(inner.Id, StringComparison.Ordinal)))
+                    {
+                        RegisterContainerDialogs(inner);
+                    }
                 }
             }
         }

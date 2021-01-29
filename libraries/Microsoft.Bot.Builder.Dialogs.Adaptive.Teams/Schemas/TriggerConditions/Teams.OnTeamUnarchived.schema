@@ -5,6 +5,5 @@
     "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamUnarchived'.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

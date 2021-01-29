@@ -5,6 +5,5 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with name='composeExtension/querySettingUrl'.",
     "type": "object",
     "required": [
-        "actions"
     ]
 }

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -187,7 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var dialog = FindDialog(dialogId);
                 if (dialog == null)
                 {
-                    throw new Exception(
+                    throw new ArgumentException(
                         $"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found." +
                         " The dialog must be included in the current or parent DialogSet." +
                         " For example, if subclassing a ComponentDialog you can call AddDialog() within your constructor.");
@@ -287,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     if (dialog == null)
                     {
-                        throw new Exception($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
+                        throw new InvalidOperationException($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
                     }
 
                     // Continue dialog execution
@@ -353,7 +354,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var dialog = this.FindDialog(ActiveDialog.Id);
                     if (dialog == null)
                     {
-                        throw new Exception($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                        throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
                     }
 
                     // Return result to previous dialog
@@ -540,7 +541,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         var dialog = this.FindDialog(ActiveDialog.Id);
                         if (dialog == null)
                         {
-                            throw new Exception($"DialogSet.RepromptDialogAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
+                            throw new InvalidOperationException($"DialogSet.RepromptDialogAsync(): Can't find A dialog with an id of '{ActiveDialog.Id}'.");
                         }
 
                         // Ask dialog to re-prompt if supported
@@ -659,7 +660,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the current locale.</returns>
         public string GetLocale()
         {
-            return Context.TurnState.Get<string>("turn.locale");
+            return Context.TurnState.Get<JObject>("turn")["locale"]?.ToString();
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -45,3 +45,35 @@ b: 2},
 {d: 4, 
 e: 5})
 )}
+
+#crtObj1
+- ${{
+a: 1, c
+:3,
+b:2
+}}
+
+#crtObj2
+- ${{
+    key:"value"
+}}
+
+#crtObj3
+- ${{
+    key1:{key2:"value"},
+    key3:"value2"
+}}
+
+#crtArr1
+- ${[
+1,2,
+3,
+4]}
+
+#crtArr2
+- ${
+[
+1,2,
+3,
+4]}
+

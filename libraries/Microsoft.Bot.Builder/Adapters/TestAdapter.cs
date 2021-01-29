@@ -188,10 +188,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 activity.LocalTimestamp = DateTimeOffset.Now;
             }
 
-            using (var context = CreateTurnContext(activity))
-            {
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
-            }
+            // note here Dispose is NOT called on the TurnContext because we want to use it later in the test code
+            var context = CreateTurnContext(activity);
+            await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -866,7 +865,7 @@ namespace Microsoft.Bot.Builder.Adapters
             {
                 if (token == ExceptionExpected)
                 {
-                    throw new Exception("Exception occurred during exchanging tokens");
+                    throw new InvalidOperationException("Exception occurred during exchanging tokens");
                 }
 
                 return Task.FromResult(new TokenResponse()

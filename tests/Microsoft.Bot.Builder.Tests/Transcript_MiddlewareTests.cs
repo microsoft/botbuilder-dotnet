@@ -174,11 +174,20 @@ namespace Microsoft.Bot.Builder.Tests
                     Type = ActivityTypes.Message,
                     RelatesTo = context.Activity.RelatesTo
                 };
+                var activityWithEmptyId = new Activity
+                {
+                    Id = string.Empty,
+                    Text = "My Id is empty.",
+                    Type = ActivityTypes.Message,
+                    RelatesTo = context.Activity.RelatesTo
+                };
 
                 await context.SendActivityAsync(activityWithId);
                 await context.SendActivityAsync(activityWithId);
 
                 await context.SendActivityAsync(activityWithNullId);
+
+                await context.SendActivityAsync(activityWithEmptyId);
             })
                  .Send("inbound message to TestFlow")
                     .AssertReply("I am an activity with an Id.")
@@ -186,20 +195,23 @@ namespace Microsoft.Bot.Builder.Tests
                    .AssertReply((activity) => Assert.Equal("TestActivityWithId", activity.Id))
                  .Send("3rd inbound message to TestFlow")
                    .AssertReply("My Id is null.")
+                 .Send("4rd inbound message to TestFlow")
+                   .AssertReply("My Id is empty.")
                  .StartTestAsync();
 
             await Task.Delay(100);
 
             var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.Equal(12, pagedResult.Items.Length);
+            Assert.Equal(20, pagedResult.Items.Length);
             Assert.Equal("inbound message to TestFlow", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.NotNull(pagedResult.Items[1].AsMessageActivity());
             Assert.Equal("I am an activity with an Id.", pagedResult.Items[1].AsMessageActivity().Text);
-            Assert.Equal("2nd inbound message to TestFlow", pagedResult.Items[4].AsMessageActivity().Text);
-            Assert.Equal("TestActivityWithId", pagedResult.Items[5].Id);
-            Assert.Equal("3rd inbound message to TestFlow", pagedResult.Items[8].AsMessageActivity().Text);
-            Assert.Equal("My Id is null.", pagedResult.Items[11].AsMessageActivity().Text);
-            Assert.Contains("g_", pagedResult.Items[11].AsMessageActivity().Id);
+            Assert.Equal("My Id is empty.", pagedResult.Items[4].AsMessageActivity().Text);
+            Assert.Equal("2nd inbound message to TestFlow", pagedResult.Items[5].AsMessageActivity().Text);
+            Assert.Equal("TestActivityWithId", pagedResult.Items[6].Id);
+            Assert.Equal("3rd inbound message to TestFlow", pagedResult.Items[10].AsMessageActivity().Text);
+            Assert.Equal("My Id is null.", pagedResult.Items[13].AsMessageActivity().Text);
+            Assert.Contains("g_", pagedResult.Items[13].AsMessageActivity().Id);
             foreach (var activity in pagedResult.Items)
             {
                 Assert.True(activity.Timestamp > default(DateTimeOffset));

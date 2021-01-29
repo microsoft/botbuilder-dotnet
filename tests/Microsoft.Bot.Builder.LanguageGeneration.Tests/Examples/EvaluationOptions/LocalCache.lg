@@ -1,0 +1,3 @@
+﻿> !# @cacheScope = locale
+
+[import](../TemplateCache.lg)

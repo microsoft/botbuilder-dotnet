@@ -2,6 +2,8 @@ pool:
   vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
 
 variables:
+  runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
+  skipComponentGovernanceDetection: true # Disables unnecessary Component Governanace Detection step 
   TriggeredReason: $[ coalesce( variables['TriggeringBuildReason'], variables['Build.Reason'] ) ]
   # NextBuild: define in Azure '[experimental]Dummy-build2'
   # PipelinesPersonalAccessToken: define in Azure 

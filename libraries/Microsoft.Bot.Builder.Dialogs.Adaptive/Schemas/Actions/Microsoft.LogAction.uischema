@@ -3,6 +3,6 @@
     "form": {
         "label": "Log to console",
         "subtitle": "Log Action",
-        "helpLink": "https://aka.ms/bfc-debugging-bots"
+        "helpLink": "https://aka.ms/composer-telemetry"
     }
 }

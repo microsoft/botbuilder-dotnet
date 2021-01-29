@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.TestActions
                             var (val, error) = Expression.Parse(assertion).TryEvaluate<bool>(dc.State);
                             if (error != null || !val)
                             {
-                                throw new Exception($"{Description} {assertion} failed");
+                                throw new InvalidOperationException($"{Description} {assertion} failed");
                             }
                         }
                     }).ConfigureAwait(false);

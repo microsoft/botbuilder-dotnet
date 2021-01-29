@@ -165,13 +165,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal static JObject ExtractEntityMetadata(EntityModel entity, string utterance)
         {
-            var start = (int)entity.StartIndex;
-            var end = (int)entity.EndIndex + 1;
+            var start = entity.StartIndex;
+            var end = entity.EndIndex + 1;
             dynamic obj = JObject.FromObject(new
             {
                 startIndex = start,
                 endIndex = end,
-                text = entity.Entity.Length == end - start ? entity.Entity : utterance.Substring(start, end - start),
+                text = GetEntityText(entity, utterance, start, end),
                 type = entity.Type,
             });
 
@@ -191,6 +191,27 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
 
             return obj;
+        }
+
+        internal static string GetEntityText(EntityModel entity, string utterance, int start, int end)
+        {
+            string result;
+            var entitySize = end - start;
+
+            if (entity.Entity.Length == entitySize)
+            {
+                result = entity.Entity;
+            }
+            else if (utterance.Length <= entitySize)
+            {
+                result = utterance;
+            }
+            else
+            {
+                result = utterance.Substring(start, entitySize);
+            }
+
+            return result;
         }
 
         internal static string ExtractNormalizedEntityName(EntityModel entity)

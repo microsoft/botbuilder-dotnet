@@ -58,14 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             return $"{this.GetType().Name}[{this.Condition}]";
         }
 
-        /// <summary>
-        /// Gets this activity's representing expresion.
-        /// </summary>
-        /// <returns>An <see cref="Expression"/> representing the activity.</returns>
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // add constraints for activity type
-            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.type == '{this.Type}'"), base.GetExpression());
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.type == '{this.Type}'"), base.CreateExpression());
         }
     }
 }

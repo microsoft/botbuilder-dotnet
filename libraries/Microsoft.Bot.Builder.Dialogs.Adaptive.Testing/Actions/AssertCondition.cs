@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions
             if ((bool)result == false)
             {
                 var desc = Description?.GetValue(dc.State) ?? Condition.ToString();
-                throw new Exception(desc);
+                throw new InvalidOperationException(desc);
             }
 
             return await dc.EndDialogAsync().ConfigureAwait(false);

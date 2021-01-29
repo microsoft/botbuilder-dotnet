@@ -30,17 +30,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public OnContinueConversation(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(actions, condition, callerPath, callerLine)
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        /// <summary>
-        /// Gets the expression for this rule.
-        /// </summary>
-        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public override Expression GetExpression()
+        /// <inheritdoc/>
+        protected override Expression CreateExpression()
         {
             // add constraints for activity type
-            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.name == 'ContinueConversation'"), base.GetExpression());
+            return Expression.AndExpression(Expression.Parse($"{TurnPath.Activity}.name == 'ContinueConversation'"), base.CreateExpression());
         }
     }
 }

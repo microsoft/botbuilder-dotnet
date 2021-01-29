@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Builder
             {
                 turnContext.Activity.From ??= new ChannelAccount();
 
-                if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]))
+                if (string.IsNullOrEmpty((string)turnContext.Activity.From.Properties["role"]) && string.IsNullOrEmpty(turnContext.Activity.From.Role))
                 {
-                    turnContext.Activity.From.Properties["role"] = "user";
+                    turnContext.Activity.From.Role = RoleTypes.User;
                 }
 
                 // We should not log ContinueConversation events used by skills to initialize the middleware.
@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activity), "Cannot check or add Id on a null Activity.");
             }
 
-            if (activity.Id == null)
+            if (string.IsNullOrEmpty(activity.Id))
             {
                 var generatedId = $"g_{Guid.NewGuid()}";
                 activity.Id = generatedId;

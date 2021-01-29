@@ -40,6 +40,8 @@
     <None Remove="Schemas\Actions\Teams.GetMeetingParticipant.schema" />
     <None Remove="Schemas\TriggerConditions\Microsoft.OnInvokeActivity.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnChannelRestored.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnTabFetch.schema" />
+    <None Remove="Schemas\TriggerConditions\Teams.OnTabSubmit.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamArchived.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamDeleted.schema" />
     <None Remove="Schemas\TriggerConditions\Teams.OnTeamHardDeleted.schema" />

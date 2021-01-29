@@ -131,6 +131,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaledMultilineResult = templates.Evaluate("evalMultiLineObj");
             Assert.Equal("{\"a\":1,\"b\":2,\"c\":{\"d\":4,\"e\":5}}", evaledMultilineResult);
+
+            evaledObj = templates.Evaluate("crtObj1");
+            Assert.Equal(evaledObj, JObject.Parse(json));
+
+            evaledObj = templates.Evaluate("crtObj2");
+            Assert.Equal(evaledObj, JObject.Parse("{'a': \"value\"}"));
+
+            evaledObj = templates.Evaluate("crtObj3");
+            var objJson = "{\"key1\":{\"key2\":\"value\"}, \"key3\":\"value2\"}";
+            Assert.Equal(evaledObj, JObject.Parse(objJson));
+
+            evaledArray = templates.Evaluate("crtArr1");
+            Assert.Equal(evaledArray, actualArr);
+
+            evaledArray = templates.Evaluate("crtArr2");
+            Assert.Equal(evaledArray, actualArr);
         }
 
         [Fact]
@@ -766,7 +782,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/StrictModeTrue.lg"));
 
-            var exception = Assert.Throws<Exception>(() => templates.ExpandTemplate("StrictTrue"));
+            var exception = Assert.Throws<InvalidOperationException>(() => templates.ExpandTemplate("StrictTrue"));
             Assert.Contains("'variable_not_defined' evaluated to null. [StrictTrue]  Error occurred when evaluating '-${variable_not_defined}'", exception.Message);
         }
 
@@ -941,7 +957,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal(17, newTemplate.SourceRange.Range.End.Line);
 
             // add an exist template
-            var exception = Assert.Throws<Exception>(() => templates.AddTemplate("newtemplate", null, "- hi2 "));
+            var exception = Assert.Throws<ArgumentException>(() => templates.AddTemplate("newtemplate", null, "- hi2 "));
             Assert.Equal(TemplateErrors.TemplateExist("newtemplate"), exception.Message);
         }
 
@@ -1114,22 +1130,36 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("TemplateCache.lg"));
 
+            // Default cache policy
             var evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
-            Assert.NotNull(evaled);
-
             var resultList = evaled.ToString().Split(" ");
-            Assert.True(resultList.Length == 2);
-            Assert.True(resultList[0] == resultList[1]);
+            Assert.Equal(resultList[0], resultList[1]);
 
-            // may be has different values
-            evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
-
-            // global cache test
-            evaled = templates.Evaluate("globalCache", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
-
+            // with None cache override
+            // Notice, the expression is ${rand(1, 10000000)}, there still exist the probability of test failure
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.None });
             resultList = evaled.ToString().Split(" ");
-            Assert.True(resultList.Length == 2);
-            Assert.True(resultList[0] == resultList[1]);
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // with different parameters
+            evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // with None cache override
+            evaled = templates.Evaluate("templateWithDifferentParams", new { param1 = "ms", param2 = "newms" }, new EvaluationOptions { CacheScope = LGCacheScope.None });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // nested template test, with default cache policy
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // with Global cache override
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
         }
 
         [Fact]
@@ -1461,6 +1491,52 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestCacheScopeOption()
+        {
+            //Global cache test
+            var templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/GlobalCache.lg"));
+            var evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            var resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // Global cache effects one evaluation life cycle
+            var evaled2 = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            Assert.NotEqual(evaled, evaled2);
+
+            // Global cache import none cache, the entrance option would override the options in children
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/GlobalCache_1.lg"));
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // locale cache test
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/LocalCache.lg"));
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // default cache test
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/DefaultCache.lg"));
+            evaled = templates.Evaluate("templateWithSameParams", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+
+            // None cache.
+            // Notice, the expression is ${rand(1, 10000000)}, there still exist the probability of test failure
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/NoneCache.lg"));
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" });
+            resultList = evaled.ToString().Split(" ");
+            Assert.NotEqual(resultList[0], resultList[1]);
+
+            // api override options in LG file
+            // use global cache to override the none cache.
+            templates = Templates.ParseFile(GetExampleFilePath("EvaluationOptions/NoneCache.lg"));
+            evaled = templates.Evaluate("nestedTemplate", new { param = "ms" }, new EvaluationOptions { CacheScope = LGCacheScope.Global });
+            resultList = evaled.ToString().Split(" ");
+            Assert.Equal(resultList[0], resultList[1]);
+        }
+
+        [Fact]
         public void TestInlineEvaluate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
@@ -1475,7 +1551,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello", "Hiya" };
             Assert.True(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
 
-            var exception = Assert.Throws<Exception>(() => templates.EvaluateText("${ErrrorTemplate()}"));
+            var exception = Assert.Throws<InvalidOperationException>(() => templates.EvaluateText("${ErrrorTemplate()}"));
             Assert.Contains("it's not a built-in function or a custom function", exception.Message);
         }
 

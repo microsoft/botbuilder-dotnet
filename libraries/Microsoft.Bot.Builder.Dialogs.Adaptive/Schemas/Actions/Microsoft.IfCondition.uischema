@@ -8,5 +8,13 @@
             "elseActions"
         ],
         "helpLink": "https://aka.ms/bfc-controlling-conversation-flow"
+    },
+    "flow": {
+        "widget": "IfConditionWidget",
+        "nowrap": true,
+        "judgement": {
+            "widget": "ActionCard",
+            "body": "=coalesce(action.condition, \"<condition>\")"
+        }
     }
 }

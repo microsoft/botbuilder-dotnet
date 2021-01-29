@@ -305,7 +305,7 @@
       "$ref": "#/definitions/Microsoft.SwitchCondition"
     },
     {
-      "$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
+      "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
     },
     {
       "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
@@ -342,6 +342,9 @@
     },
     {
       "$ref": "#/definitions/Microsoft.Test.SetProperties"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
     },
     {
       "$ref": "#/definitions/Microsoft.Test.UserActivity"
@@ -429,6 +432,12 @@
     },
     {
       "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
+    },
+    {
+      "$ref": "#/definitions/Teams.OnTabFetch"
+    },
+    {
+      "$ref": "#/definitions/Teams.OnTabSubmit"
     },
     {
       "$ref": "#/definitions/Teams.OnTaskModuleFetch"
@@ -774,12 +783,9 @@
           "description": "Optional id for the dialog"
         },
         "disabled": {
-          "$ref": "#/definitions/stringExpression",
+          "$ref": "#/definitions/booleanExpression",
           "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "user.age > 3"
-          ]
+          "description": "Optional condition which if true will disable this action."
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
@@ -926,6 +932,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -1670,6 +1678,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -2009,6 +2019,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -2424,6 +2436,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -2557,7 +2571,7 @@
           "title": "ActivityId",
           "description": "expression to an activityId to delete",
           "examples": [
-            "=$lastActivity"
+            "=turn.lastresult.id"
           ]
         },
         "disabled": {
@@ -3132,7 +3146,6 @@
       "type": "object",
       "required": [
         "itemsProperty",
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -3206,7 +3219,6 @@
       "type": "object",
       "required": [
         "itemsProperty",
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -3313,7 +3325,7 @@
           "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
           "examples": [
-            "$lastActivity"
+            "turn.lastresult.id"
           ]
         },
         "disabled": {
@@ -3633,10 +3645,7 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.ActivityTemplate"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+          "type": "string"
         },
         {
           "$ref": "#/definitions/botframework.json/definitions/Activity",
@@ -3645,7 +3654,10 @@
           ]
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
         }
       ]
     },
@@ -3655,19 +3667,16 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/CustomAction.dialog"
+          "type": "string"
         },
         {
-          "$ref": "#/definitions/CustomAction2.dialog"
+          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
         },
         {
           "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
+          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
           "$ref": "#/definitions/Microsoft.BeginDialog"
@@ -3685,19 +3694,10 @@
           "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ContinueConversationLater"
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueLoop"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
         },
         {
           "$ref": "#/definitions/Microsoft.DebugBreak"
@@ -3751,15 +3751,6 @@
           "$ref": "#/definitions/Microsoft.LogAction"
         },
         {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
-        },
-        {
           "$ref": "#/definitions/Microsoft.RepeatDialog"
         },
         {
@@ -3781,13 +3772,7 @@
           "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
-          "$ref": "#/definitions/Microsoft.TelemetryTrackEvent"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
+          "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
         },
         {
           "$ref": "#/definitions/Microsoft.ThrowException"
@@ -3799,6 +3784,30 @@
           "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
         },
         {
@@ -3808,7 +3817,10 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/CustomAction.dialog"
+        },
+        {
+          "$ref": "#/definitions/CustomAction2.dialog"
         }
       ]
     },
@@ -3819,6 +3831,11 @@
       "type": "object",
       "oneOf": [
         {
+          "type": "string",
+          "title": "Reference to Microsoft.IEntityRecognizer",
+          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
+        },
+        {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
@@ -3871,11 +3888,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.IEntityRecognizer",
-          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
         }
       ]
     },
@@ -3885,13 +3897,13 @@
       "$role": "interface",
       "oneOf": [
         {
+          "type": "string"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
         },
         {
           "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
-        },
-        {
-          "type": "string"
         }
       ]
     },
@@ -3900,6 +3912,30 @@
       "description": "Components which derive from Recognizer class",
       "$role": "interface",
       "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
         {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
@@ -3910,9 +3946,6 @@
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
           "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
         },
         {
@@ -3934,22 +3967,13 @@
           "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-        },
-        {
           "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
@@ -3961,25 +3985,13 @@
           "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
           "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string"
         }
       ]
     },
@@ -3989,10 +4001,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.TextTemplate"
+          "type": "string"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.TextTemplate"
         }
       ]
     },
@@ -4001,6 +4013,11 @@
       "title": "Microsoft Triggers",
       "description": "Components which derive from OnCondition class.",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITrigger",
+          "description": "Reference to Microsoft.ITrigger .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
@@ -4128,6 +4145,12 @@
           "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
         },
         {
+          "$ref": "#/definitions/Teams.OnTabFetch"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnTabSubmit"
+        },
+        {
           "$ref": "#/definitions/Teams.OnTaskModuleFetch"
         },
         {
@@ -4150,11 +4173,6 @@
         },
         {
           "$ref": "#/definitions/Teams.OnTeamUnarchived"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITrigger",
-          "description": "Reference to Microsoft.ITrigger .dialog file."
         }
       ]
     },
@@ -4163,6 +4181,11 @@
       "title": "Selectors",
       "description": "Components which derive from TriggerSelector class.",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITriggerSelector",
+          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.ConditionalSelector"
         },
@@ -4177,11 +4200,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TrueSelector"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITriggerSelector",
-          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
     },
@@ -4192,7 +4210,6 @@
       "type": "object",
       "required": [
         "condition",
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -4326,6 +4343,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -4492,9 +4511,10 @@
           ]
         },
         "text": {
-          "$ref": "#/definitions/stringExpression",
+          "$kind": "Microsoft.IActivityTemplate",
           "title": "Text",
-          "description": "Information to log."
+          "description": "Information to log.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
         "label": {
           "$ref": "#/definitions/stringExpression",
@@ -4920,6 +4940,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -5159,7 +5181,6 @@
       "type": "object",
       "required": [
         "type",
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5229,7 +5250,6 @@
       "description": "Actions to take when an entity should be assigned to a property.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5309,7 +5329,6 @@
       "description": "Actions to perform when this dialog begins.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5374,7 +5393,6 @@
       "description": "Actions to perform on cancel dialog event.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5439,7 +5457,6 @@
       "description": "Actions to be performed when an entity value needs to be resolved.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5510,11 +5527,10 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "On ambigious intent",
-      "description": "Actions to perform on when an intent is ambigious.",
+      "title": "On ambiguous intent",
+      "description": "Actions to perform on when an intent is ambiguous.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5589,7 +5605,6 @@
       "description": "Actions to take when there are multiple possible mappings of entities to properties.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5676,7 +5691,6 @@
       "description": "Actions to perform when specified condition is true.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5741,7 +5755,6 @@
       "description": "Actions to perform when a conversation is started up again from a ContinueConversationLater action.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5806,7 +5819,6 @@
       "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -5871,7 +5883,6 @@
       "description": "Actions to perform when a specific dialog event occurs.",
       "type": "object",
       "required": [
-        "actions",
         "event",
         "$kind"
       ],
@@ -5942,7 +5953,6 @@
       "description": "Actions to take when there are no more actions in the current dialog.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6007,7 +6017,6 @@
       "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6072,7 +6081,6 @@
       "description": "Action to perform when an 'Error' dialog event occurs.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6137,7 +6145,6 @@
       "description": "Actions to perform on receipt of an activity with type 'Event'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6202,7 +6209,6 @@
       "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6267,7 +6273,6 @@
       "description": "Actions to perform on receipt of an activity with type 'InstallationUpdate'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6332,7 +6337,6 @@
       "description": "Actions to perform when specified intent is recognized.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6412,7 +6416,6 @@
       "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6477,7 +6480,6 @@
       "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6542,7 +6544,6 @@
       "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6607,7 +6608,6 @@
       "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6672,7 +6672,6 @@
       "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6737,7 +6736,6 @@
       "description": "Actions to perform on when an match from QnAMaker is found.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6802,7 +6800,6 @@
       "description": "Actions to perform when 'RepromptDialog' event occurs.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6867,7 +6864,6 @@
       "description": "Actions to perform on receipt of an activity with type 'Typing'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6932,7 +6928,6 @@
       "description": "Action to perform when user input is unrecognized or if none of the 'on intent recognition' triggers match recognized intent.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -7023,14 +7018,11 @@
           "description": "SnapShot file path.",
           "default": "=settings.orchestrator.shapshotpath"
         },
-        "entityRecognizers": {
-          "type": "array",
-          "title": "Entity recognizers",
-          "description": "Collection of entity recognizers to use.",
-          "items": {
-            "$kind": "Microsoft.IEntityRecognizer",
-            "$ref": "#/definitions/Microsoft.IEntityRecognizer"
-          }
+        "externalEntityRecognizer": {
+          "$kind": "Microsoft.IRecognizer",
+          "title": "External entity recognizer",
+          "description": "Entities recognized by this recognizer will be merged with Orchestrator results.",
+          "$ref": "#/definitions/Microsoft.IRecognizer"
         },
         "disambiguationScoreThreshold": {
           "$ref": "#/definitions/numberExpression",
@@ -7916,12 +7908,9 @@
           "description": "Optional id for the dialog"
         },
         "disabled": {
-          "$ref": "#/definitions/stringExpression",
+          "$ref": "#/definitions/booleanExpression",
           "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "user.age > 3"
-          ]
+          "description": "Optional condition which if true will disable this action."
         },
         "activity": {
           "$kind": "Microsoft.IActivityTemplate",
@@ -8224,8 +8213,7 @@
             "title": "Case",
             "description": "Case and actions.",
             "required": [
-              "value",
-              "actions"
+              "value"
             ],
             "properties": {
               "value": {
@@ -8278,7 +8266,7 @@
         }
       }
     },
-    "Microsoft.TelemetryTrackEvent": {
+    "Microsoft.TelemetryTrackEventAction": {
       "$role": "implements(Microsoft.IDialog)",
       "type": "object",
       "title": "Telemetry - track event",
@@ -8331,7 +8319,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.TelemetryTrackEvent"
+          "const": "Microsoft.TelemetryTrackEventAction"
         },
         "$designer": {
           "title": "Designer information",
@@ -8926,12 +8914,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IHttpRequestMock",
           "description": "Reference to Microsoft.Test.IHttpRequestMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
         }
       ]
     },
@@ -8940,11 +8928,31 @@
       "description": "Components which derive from PropertyMock class",
       "$role": "interface"
     },
+    "Microsoft.Test.ISettingMock": {
+      "title": "Microsoft Test ISettingMock",
+      "description": "Components which derive from SettingMock class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ISettingMock",
+          "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+        }
+      ]
+    },
     "Microsoft.Test.ITestAction": {
       "title": "Test action",
       "description": "Components which derive from TestAction class",
       "$role": "interface",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ITestAction",
+          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
         },
@@ -8980,11 +8988,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserTyping"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.Test.ITestAction",
-          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
         }
       ]
     },
@@ -8994,12 +8997,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IUserTokenMock",
           "description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
         }
       ]
     },
@@ -9104,6 +9107,15 @@
             "$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
           }
         },
+        "settingMocks": {
+          "type": "array",
+          "title": "Setting Mocks",
+          "description": "Mock data for setting.",
+          "items": {
+            "$kind": "Microsoft.Test.ISettingMock",
+            "$ref": "#/definitions/Microsoft.Test.ISettingMock"
+          }
+        },
         "script": {
           "type": "array",
           "title": "Test actions",
@@ -9192,6 +9204,65 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.Test.SetProperties"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.Test.SettingStringMock": {
+      "$role": "implements(Microsoft.Test.ISettingMock)",
+      "title": "Mock Settings",
+      "description": "Mock one or more settings with string value.",
+      "type": "object",
+      "required": [
+        "assignments",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "assignments": {
+          "type": "array",
+          "title": "Assignments",
+          "description": "Setting assignments as settings.property=value pairs. Assign the settings in sequence.",
+          "items": {
+            "type": "object",
+            "title": "Setting String Assignment",
+            "description": "Setting String Assignment (used in SettingStringMock).",
+            "properties": {
+              "property": {
+                "type": "string",
+                "title": "Property",
+                "description": "A property path without settings.",
+                "examples": [
+                  "connectionName"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "description": "Value string.",
+                "examples": [
+                  "Graph"
+                ]
+              }
+            }
+          }
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.SettingStringMock"
         },
         "$designer": {
           "title": "Designer information",
@@ -9580,6 +9651,8 @@
           "title": "Max turn count",
           "description": "Maximum number of re-prompt attempts to collect information.",
           "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
           "examples": [
             3,
             "=settings.xyz"
@@ -9824,7 +9897,7 @@
     },
     "Microsoft.UpdateActivity": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Send an activity",
+      "title": "Update an activity",
       "description": "Respond with an activity.",
       "type": "object",
       "required": [
@@ -9857,7 +9930,7 @@
           "title": "Activity Id",
           "description": "An string expression with the activity id to update.",
           "examples": [
-            "=dialog.lastActivityId"
+            "=turn.lastresult.id"
           ]
         },
         "activity": {
@@ -9997,7 +10070,6 @@
       "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10062,7 +10134,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10127,7 +10198,6 @@
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10192,7 +10262,6 @@
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelDeleted'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10257,7 +10326,6 @@
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRenamed'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10322,7 +10390,6 @@
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRestored'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10387,7 +10454,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name == 'fileConsent/invoke'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10452,7 +10518,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10517,7 +10582,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with name='composeExtension/querySettingUrl'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10582,7 +10646,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/setting'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10712,7 +10775,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/query'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10777,7 +10839,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10842,7 +10903,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10907,7 +10967,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -10963,6 +11022,134 @@
         }
       }
     },
+    "Teams.OnTabFetch": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Teams Tab Fetch",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='tab/fetch'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnTabFetch"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.OnTabSubmit": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Teams Tab Submit",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='tab/submit'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnTabSubmit"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.OnTaskModuleFetch": {
       "$role": [
         "implements(Microsoft.ITrigger)",
@@ -10972,7 +11159,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/fetch'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11037,7 +11223,6 @@
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/submit'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11102,7 +11287,6 @@
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamArchived'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11167,7 +11351,6 @@
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamDeleted'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11232,7 +11415,6 @@
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamHardDeleted'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11297,7 +11479,6 @@
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRenamed'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11362,7 +11543,6 @@
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRestored'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,
@@ -11427,7 +11607,6 @@
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamUnarchived'.",
       "type": "object",
       "required": [
-        "actions",
         "$kind"
       ],
       "additionalProperties": false,

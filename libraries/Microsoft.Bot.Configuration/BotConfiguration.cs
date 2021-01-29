@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Configuration
             }
             else if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
             {
-                throw new Exception($"service with {newService.Id} is already connected");
+                throw new InvalidOperationException($"service with {newService.Id} is already connected");
             }
 
             this.Services.Add(newService);
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Configuration
             var service = this.FindServiceByNameOrId(nameOrId);
             if (service == null)
             {
-                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+                throw new ArgumentException($"a service with id or name of[{nameOrId}] was not found");
             }
 
             this.Services.Remove(service);
@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Configuration
             var service = this.FindServiceByNameOrId<T>(nameOrId);
             if (service == null)
             {
-                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+                throw new ArgumentException($"a service with id or name of[{nameOrId}] was not found");
             }
 
             this.Services.Remove(service);
@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Configuration
         {
             if (secret?.Length == null)
             {
-                throw new Exception("You are attempting to perform an operation which needs access to the secret and --secret is missing");
+                throw new InvalidOperationException("You are attempting to perform an operation which needs access to the secret and --secret is missing");
             }
 
             try
@@ -464,7 +464,7 @@ namespace Microsoft.Bot.Configuration
             }
             catch
             {
-                throw new Exception("You are attempting to perform an operation which needs access to the secret and --secret is incorrect.");
+                throw new InvalidOperationException("You are attempting to perform an operation which needs access to the secret and --secret is incorrect.");
             }
         }
 

@@ -53,12 +53,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             if (!_templateMap.ContainsKey(templateName))
             {
-                throw new Exception(TemplateErrors.TemplateNotExist(templateName));
+                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
             if (_evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new Exception($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
             }
 
             // Using a stack to track the evaluation trace

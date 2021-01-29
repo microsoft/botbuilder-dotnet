@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly string _strictModeKey = "@strict";
         private readonly string _replaceNullKey = "@replaceNull";
         private readonly string _lineBreakKey = "@lineBreakStyle";
+        private readonly string _cacheScope = "@cacheScope";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
@@ -97,20 +98,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var index = option.IndexOf('=');
                         var key = option.Substring(0, index).Trim();
                         var value = option.Substring(index + 1).Trim();
-                        if (key == _strictModeKey)
+                        if (key.Equals(_strictModeKey, StringComparison.OrdinalIgnoreCase))
                         {
                             if (value.ToLowerInvariant() == "true")
                             {
                                 StrictMode = true;
                             }
                         }
-                        else if (key == _replaceNullKey)
+                        else if (key.Equals(_replaceNullKey, StringComparison.OrdinalIgnoreCase))
                         {
                             NullSubstitution = (path) => NullKeyReplaceStrRegex.Replace(value, $"{path}");
                         }
-                        else if (key == _lineBreakKey)
+                        else if (key.Equals(_lineBreakKey, StringComparison.OrdinalIgnoreCase))
                         {
                             LineBreakStyle = value.ToLowerInvariant() == LGLineBreakStyle.Markdown.ToString().ToLowerInvariant() ? LGLineBreakStyle.Markdown : LGLineBreakStyle.Default;
+                        }
+                        else if (key.Equals(_cacheScope, StringComparison.OrdinalIgnoreCase))
+                        {
+                            foreach (LGCacheScope item in Enum.GetValues(typeof(LGCacheScope)))
+                            {
+                                if (value.Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
+                                {
+                                    CacheScope = item;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

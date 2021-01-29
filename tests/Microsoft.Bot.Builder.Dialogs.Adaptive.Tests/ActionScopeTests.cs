@@ -2,7 +2,12 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -15,6 +20,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public ActionScopeTests(ResourceExplorerFixture resourceExplorerFixture)
         {
             _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ActionScopeTests));
+        }
+
+        [Fact]
+        public void ActionScope_NullActions()
+        {
+            ActionScope ac = new ActionScope();
+            Assert.NotNull(ac.Actions);
+            Assert.Empty(ac.Actions);
+
+            ac = new ActionScope() { Actions = null };
+            Assert.NotNull(ac.Actions);
+            Assert.Empty(ac.Actions);
+
+            ac.Actions = new List<Dialog>() { new DebugBreak() };
+            Assert.NotNull(ac.Actions);
+            Assert.NotEmpty(ac.Actions);
         }
 
         [Fact]

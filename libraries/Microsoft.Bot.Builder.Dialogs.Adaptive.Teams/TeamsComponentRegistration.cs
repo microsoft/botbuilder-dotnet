@@ -38,6 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsTeamRenamed>(OnTeamsTeamRenamed.Kind);
             yield return new DeclarativeType<OnTeamsTeamRestored>(OnTeamsTeamRestored.Kind);
             yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
+            yield return new DeclarativeType<OnTeamsTabFetch>(OnTeamsTabFetch.Kind);
+            yield return new DeclarativeType<OnTeamsTabSubmit>(OnTeamsTabSubmit.Kind);
 
             // Actions
             yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);

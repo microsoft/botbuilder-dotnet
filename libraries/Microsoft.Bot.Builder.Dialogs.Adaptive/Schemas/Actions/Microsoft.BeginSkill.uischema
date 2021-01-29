@@ -11,5 +11,26 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "colors": {
+            "theme": "#004578",
+            "color": "#FFFFFF",
+            "icon": "#FFFFFF"
+        },
+        "icon": "Library",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "Host",
+            "resource": "=coalesce(action.skillEndpoint, \"?\")",
+            "singleline": true
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Result"
+        },
+        "hideFooter": "=!action.resultProperty"
     }
 }
