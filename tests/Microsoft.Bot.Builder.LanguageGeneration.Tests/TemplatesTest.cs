@@ -1718,17 +1718,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestFileOperation()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
-            var evaled = templates.Evaluate("FromFileWithoutEvaluation");
-            Assert.Equal("hi ${name}", evaled);
+            var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            Assert.Equal("hi ${name}", evaluated);
 
-            evaled = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
-            Assert.Equal("hi Lucy", evaled);
+            evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
 
-            evaled = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
-            Assert.Equal("hi Lucy", evaled);
+            evaluated = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
 
-            evaled = templates.Evaluate("FromFileBinary");
-            Assert.Equal("hi ${name}", evaled);
+            evaluated = templates.Evaluate("FromFileBinary");
+            Assert.Equal("hi ${name}", evaluated);
         }
 
         public class LoopClass

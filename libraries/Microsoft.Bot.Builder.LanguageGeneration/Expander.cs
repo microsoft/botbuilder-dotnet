@@ -696,10 +696,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                {
                    var filePath = args[0].ToString().NormalizePath();
                    var resourcePath = GetResourcePath(filePath);
-                   var format = Evaluator.FromFileFormats.Evaluated;
+                   var format = Evaluator.FileFormat.Evaluated;
                    if (args.Count > 1)
                    {
-                       foreach (Evaluator.FromFileFormats item in Enum.GetValues(typeof(Evaluator.FromFileFormats)))
+                       foreach (Evaluator.FileFormat item in Enum.GetValues(typeof(Evaluator.FileFormat)))
                        {
                            if (args[1].ToString().Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
                            {
@@ -710,11 +710,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    }
 
                    object result;
-                   if (format == Evaluator.FromFileFormats.Binary)
+                   if (format == Evaluator.FileFormat.Binary)
                    {
                        result = File.ReadAllBytes(resourcePath);
                    }
-                   else if (format == Evaluator.FromFileFormats.Raw)
+                   else if (format == Evaluator.FileFormat.Raw)
                    {
                        result = File.ReadAllText(resourcePath);
                    }

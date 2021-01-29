@@ -46,10 +46,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
         }
 
-        internal enum FromFileFormats
+        internal enum FileFormat
         {
             /// <summary>
-            /// The text content would be evaluated.
+            /// Get the evaluated result from the <see cref="FileFormat.Raw"/> Result.
             /// </summary>
             Evaluated,
 
@@ -597,7 +597,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(fromFile, StringComparison.Ordinal))
             {
-                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, this.ValidateFromFile);
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(FromFile()), ReturnType.String, ValidateFromFile);
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -661,10 +661,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
        {
            var filePath = args[0].ToString().NormalizePath();
            var resourcePath = GetResourcePath(filePath);
-           var format = FromFileFormats.Evaluated;
+           var format = FileFormat.Evaluated;
            if (args.Count > 1)
            {
-               foreach (FromFileFormats item in Enum.GetValues(typeof(FromFileFormats)))
+               foreach (FileFormat item in Enum.GetValues(typeof(FileFormat)))
                {
                    if (args[1].ToString().Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
                    {
@@ -675,11 +675,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            }
 
            object result;
-           if (format == FromFileFormats.Binary)
+           if (format == FileFormat.Binary)
            {
                result = File.ReadAllBytes(resourcePath);
            }
-           else if (format == FromFileFormats.Raw)
+           else if (format == FileFormat.Raw)
            {
                result = File.ReadAllText(resourcePath);
            }
