@@ -127,100 +127,85 @@ namespace Microsoft.Bot.Builder
             await connectorClient.Conversations.DeleteActivityAsync(reference.Conversation.Id, reference.ActivityId, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Sends a proactive message from the bot to a conversation.
-        /// </summary>
-        /// <param name="botAppId">The application ID of the bot. This is the appId returned by Portal registration, and is
-        /// generally found in the "MicrosoftAppId" parameter in appSettings.json.</param>
-        /// <param name="reference">A reference to the conversation to continue.</param>
-        /// <param name="callback">The method to call for the resulting bot turn.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <inheritdoc/>
         public override Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(botAppId))
-            {
-                throw new ArgumentNullException(nameof(botAppId));
-            }
-
             _ = reference ?? throw new ArgumentNullException(nameof(reference));
-            _ = callback ?? throw new ArgumentNullException(nameof(callback));
 
-            // Hand craft Claims Identity.
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
-            });
-
-            return ProcessProactiveAsync(claimsIdentity, reference, null, callback, cancellationToken);
+            return ProcessProactiveAsync(CreateClaimsIdentity(botAppId), reference.GetContinuationActivity(), null, callback, cancellationToken);
         }
 
-        /// <summary>
-        /// Sends a proactive message from the bot to a conversation.
-        /// </summary>
-        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
-        /// <param name="reference">A reference to the conversation to continue.</param>
-        /// <param name="callback">The method to call for the resulting bot turn.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <inheritdoc/>
         public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
             _ = reference ?? throw new ArgumentNullException(nameof(reference));
-            _ = callback ?? throw new ArgumentNullException(nameof(callback));
 
-            return ProcessProactiveAsync(claimsIdentity, reference, null, callback, cancellationToken);
+            return ProcessProactiveAsync(claimsIdentity, reference.GetContinuationActivity(), null, callback, cancellationToken);
         }
 
-        /// <summary>
-        /// Sends a proactive message from the bot to a conversation.
-        /// </summary>
-        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
-        /// <param name="reference">A reference to the conversation to continue.</param>
-        /// <param name="audience">The target audience for the connector.</param>
-        /// <param name="callback">The method to call for the resulting bot turn.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <inheritdoc/>
         public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
             _ = reference ?? throw new ArgumentNullException(nameof(reference));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
 
-            if (string.IsNullOrWhiteSpace(audience))
-            {
-                throw new ArgumentNullException($"{nameof(audience)} cannot be null or white space.");
-            }
+            return ProcessProactiveAsync(claimsIdentity, reference.GetContinuationActivity(), audience, callback, cancellationToken);
+        }
 
-            return ProcessProactiveAsync(claimsIdentity, reference, audience, callback, cancellationToken);
+        /// <inheritdoc/>
+        public override Task ContinueConversationAsync(string botAppId, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
+            _ = callback ?? throw new ArgumentNullException(nameof(callback));
+
+            return ProcessProactiveAsync(CreateClaimsIdentity(botAppId), continuationActivity, null, callback, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
+            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
+            _ = callback ?? throw new ArgumentNullException(nameof(callback));
+
+            return ProcessProactiveAsync(claimsIdentity, continuationActivity, null, callback, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
+            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
+            _ = callback ?? throw new ArgumentNullException(nameof(callback));
+
+            return ProcessProactiveAsync(claimsIdentity, continuationActivity, audience, callback, cancellationToken);
         }
 
         /// <summary>
         /// The implementation for continue conversation.
         /// </summary>
         /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
-        /// <param name="reference">A <see cref="ConversationReference"/> for the conversation.</param>
+        /// <param name="continuationActivity">The continuation <see cref="Activity"/> used to create the <see cref="ITurnContext" />.</param>
         /// <param name="audience">The audience for the call.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        protected async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        protected async Task ProcessProactiveAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {reference.Conversation.Id}");
+            _logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {continuationActivity.Conversation.Id}");
 
             // Create the connector factory and  the inbound request, extracting parameters and then create a connector for outbound requests.
             var connectorFactory = _botFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
 
             // Create the connector client to use for outbound requests.
-            using (var connectorClient = await connectorFactory.CreateAsync(reference.ServiceUrl, audience, cancellationToken).ConfigureAwait(false))
-            
+            using (var connectorClient = await connectorFactory.CreateAsync(continuationActivity.ServiceUrl, audience, cancellationToken).ConfigureAwait(false))
+
             // Create a UserTokenClient instance for the application to use. (For example, in the OAuthPrompt.) 
             using (var userTokenClient = await _botFrameworkAuthentication.CreateUserTokenClientAsync(claimsIdentity, cancellationToken).ConfigureAwait(false))
-            
+
             // Create a turn context and run the pipeline.
-            using (var context = CreateTurnContext(reference.GetContinuationActivity(), claimsIdentity, audience, connectorClient, userTokenClient, callback, connectorFactory))
+            using (var context = CreateTurnContext(continuationActivity, claimsIdentity, audience, connectorClient, userTokenClient, callback, connectorFactory))
             {
                 // Run the pipeline.
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
@@ -273,6 +258,22 @@ namespace Microsoft.Bot.Builder
             turnContext.TurnState.Set(OAuthScopeKey, oauthScope); // in non-skills scenarios the oauth scope value here will be null, so use Set
 
             return turnContext;
+        }
+
+        private ClaimsIdentity CreateClaimsIdentity(string botAppId)
+        {
+            if (string.IsNullOrWhiteSpace(botAppId))
+            {
+                throw new ArgumentNullException(nameof(botAppId));
+            }
+
+            // Hand craft Claims Identity.
+            return new ClaimsIdentity(new List<Claim>
+            {
+                // Adding claims for both Emulator and Channel.
+                new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+            });
         }
 
         private InvokeResponse ProcessTurnResults(TurnContext turnContext)
