@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public const string ResultProperty = "result";
 
         private const float UnknownIntentFilterScore = 0.4F;
-        private static BotFramework.Orchestrator.Orchestrator orchestrator = null;
+        private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
         private string _modelPath;
         private string _snapshotPath;
         private ILabelResolver _resolver = null;
@@ -234,32 +235,34 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 throw new ArgumentNullException($"Missing `ShapshotPath` information.");
             }
 
-            if (orchestrator == null && _resolver == null)
+            if (_resolver != null)
             {
-                var fullModelPath = Path.GetFullPath(PathUtils.NormalizePath(_modelPath));
+                return;
+            }
 
+            var fullModelPath = Path.GetFullPath(PathUtils.NormalizePath(_modelPath));
+
+            var orchestrator = orchestratorMap.GetOrAdd(fullModelPath, path =>
+            {
                 // Create Orchestrator
                 try
                 {
-                    orchestrator = new BotFramework.Orchestrator.Orchestrator(fullModelPath);
+                    return new BotFramework.Orchestrator.Orchestrator(path);
                 }
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException("Failed to find or load Model", ex);
                 }
-            }
+            });
 
-            if (_resolver == null)
-            {
-                var fullSnapShotPath = Path.GetFullPath(PathUtils.NormalizePath(_snapshotPath));
+            var fullSnapShotPath = Path.GetFullPath(PathUtils.NormalizePath(_snapshotPath));
 
-                // Load the snapshot
-                string content = File.ReadAllText(fullSnapShotPath);
-                byte[] snapShotByteArray = Encoding.UTF8.GetBytes(content);
+            // Load the snapshot
+            string content = File.ReadAllText(fullSnapShotPath);
+            byte[] snapShotByteArray = Encoding.UTF8.GetBytes(content);
 
-                // Create label resolver
-                _resolver = orchestrator.CreateLabelResolver(snapShotByteArray);
-            }
+            // Create label resolver
+            _resolver = orchestrator.CreateLabelResolver(snapShotByteArray);
         }
     }
 }
