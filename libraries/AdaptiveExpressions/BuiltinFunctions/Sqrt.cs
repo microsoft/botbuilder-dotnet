@@ -29,7 +29,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             var originalNumber = Convert.ToDouble(args[0], CultureInfo.InvariantCulture);
                             if (originalNumber < 0)
                             {
-                                error = "Do not support square root extraction of negative numbers currently.";
+                                error = "Do not support square root extraction of negative numbers.";
                             }
                             else
                             {
