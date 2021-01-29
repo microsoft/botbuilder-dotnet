@@ -56,9 +56,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Assert.Equal(RoleTypes.Skill, sentActivity.Recipient.Role);
 
                 // Create mock response.
+                var body = (expectedResponseBodyJson != null) ? JsonConvert.DeserializeObject(expectedResponseBodyJson) : null;
                 var response = new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = expectedResponseBodyJson == null ? null : new StringContent(expectedResponseBodyJson)
+                    Content = new StringContent(JsonConvert.SerializeObject(new InvokeResponse()
+                    {
+                        Status = (int)HttpStatusCode.OK,
+                        Body = body
+                    }))
                 };
                 return Task.FromResult(response);
             });
@@ -142,7 +147,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 // Create mock response.
                 var response = new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new StringContent(JObject.FromObject(new TestContentBody("someId", "theProp")).ToString())
+                    Content = new StringContent(JObject.FromObject(new InvokeResponse<TestContentBody>()
+                    {
+                        Status = (int)HttpStatusCode.OK,
+                        Body = new TestContentBody("someId", "theProp")
+                    }).ToString())
                 };
                 return Task.FromResult(response);
             });
@@ -155,14 +164,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.IsType<InvokeResponse<TestContentBody>>(result);
             Assert.NotNull(result.Body);
 
-            var typedContent = JsonConvert.DeserializeObject<TestContentBody>(JsonConvert.SerializeObject(result.Body));
-            Assert.Equal("someId", typedContent.Id);
-            Assert.Equal("theProp", typedContent.SomeProp);
+            Assert.Equal("someId", result.Body.Id);
+            Assert.Equal("theProp", result.Body.SomeProp);
         }
 
         [Fact]
         public async Task PostActivityUsingInvokeResponseToSelf()
-        {      
+        {
             var activity = new Activity { Conversation = new ConversationAccount(id: Guid.NewGuid().ToString()) };
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
@@ -178,7 +186,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 };
                 return Task.FromResult(response);
             });
-            
+
             var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync(string.Empty, new Uri("https://skillbot.com/api/messages"), activity);
 
@@ -189,7 +197,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
         [Fact]
         public async Task PostActivityUsingInvokeResponseOfTToSelf()
-        {      
+        {
             var activity = new Activity { Conversation = new ConversationAccount(id: Guid.NewGuid().ToString()) };
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
@@ -201,11 +209,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 // Create mock response.
                 var response = new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    Content = new StringContent(JObject.FromObject(new TestContentBody("someId", "theProp")).ToString())
-                };
+                    Content = new StringContent(JObject.FromObject(new InvokeResponse<TestContentBody>()
+                    {
+                        Status = (int)HttpStatusCode.OK,
+                        Body = new TestContentBody("someId", "theProp")
+                    }).ToString())
+                }; 
                 return Task.FromResult(response);
             });
-            
+
             var client = new BotFrameworkHttpClient(httpClient, new Mock<ICredentialProvider>().Object);
             var result = await client.PostActivityAsync<TestContentBody>(string.Empty, new Uri("https://skillbot.com/api/messages"), activity);
 
