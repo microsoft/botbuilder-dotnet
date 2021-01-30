@@ -29,13 +29,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
         /// <param name="botFrameworkAuthentication">The cloud environment used for validating and creating tokens.</param>
-        /// <param name="httpClient">The HttpClient implementation this adapter should use.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public CloudAdapter(
             BotFrameworkAuthentication botFrameworkAuthentication,
-            HttpClient httpClient = null,
             ILogger logger = null)
-            : base(botFrameworkAuthentication, httpClient, logger)
+            : base(botFrameworkAuthentication, logger)
         {
         }
 
@@ -47,7 +45,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
         public CloudAdapter(
             HttpClient httpClient = null,
             ILogger logger = null)
-            : this(new ConfigurationBotFrameworkAuthentication(), httpClient, logger)
+            : this(new ConfigurationBotFrameworkAuthentication(httpClient: httpClient, logger: logger), logger)
         {
         }
 

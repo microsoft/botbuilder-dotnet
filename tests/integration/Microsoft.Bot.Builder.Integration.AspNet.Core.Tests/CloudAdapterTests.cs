@@ -352,6 +352,38 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.True(bot.BotCallbackHandler != null);
         }
 
+        [Fact]
+        public async Task CloudAdapterContinueConversation()
+        {
+            var claimIdentity = new ClaimsIdentity();
+
+            var authenticateRequestResult = new AuthenticateRequestResult
+            {
+                ClaimsIdentity = claimIdentity,
+                ConnectorFactory = new TestConnectorFactory(),
+                Scope = "scope",
+                CallerId = "callerId"
+            };
+
+            var userTokenClient = new TestUserTokenClient("appId");
+
+            var cloudEnvironmentMock = new Mock<BotFrameworkAuthentication>();
+            cloudEnvironmentMock.Setup(ce => ce.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(authenticateRequestResult));
+            cloudEnvironmentMock.Setup(ce => ce.CreateConnectorFactory(It.IsAny<ClaimsIdentity>())).Returns(new TestConnectorFactory());
+            cloudEnvironmentMock.Setup(ce => ce.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<UserTokenClient>(userTokenClient));
+
+            var bot = new ConnectorFactoryBot();
+
+            // Act
+            var adapter = new CloudAdapter(cloudEnvironmentMock.Object);
+
+            var continuationActivity = new Activity { Type = ActivityTypes.Event };
+
+            BotCallbackHandler callback = (t, c) => { return Task.CompletedTask; };
+
+            await adapter.ContinueConversationAsync("botAppId", continuationActivity, callback, CancellationToken.None);
+        }
+
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)
         {
             return CreateStream(new Activity
