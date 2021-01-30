@@ -321,11 +321,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var httpResponseMock = new Mock<HttpResponse>();
 
-            var claimIdentity = new ClaimsIdentity();
+            var claimsIdentity = new ClaimsIdentity();
 
             var authenticateRequestResult = new AuthenticateRequestResult
             {
-                ClaimsIdentity = claimIdentity,
+                ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
                 Scope = "scope",
                 CallerId = "callerId"
@@ -346,7 +346,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             // Assert
             Assert.Equal("scope", bot.Authorization.Parameter);
-            Assert.Equal(claimIdentity, bot.Identity);
+            Assert.Equal(claimsIdentity, bot.Identity);
             Assert.Equal(userTokenClient, bot.UserTokenClient);
             Assert.True(bot.ConnectorClient != null);
             Assert.True(bot.BotCallbackHandler != null);
@@ -355,11 +355,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         [Fact]
         public async Task CloudAdapterContinueConversation()
         {
-            var claimIdentity = new ClaimsIdentity();
+            // Arrange
+            var claimsIdentity = new ClaimsIdentity();
 
             var authenticateRequestResult = new AuthenticateRequestResult
             {
-                ClaimsIdentity = claimIdentity,
+                ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
                 Scope = "scope",
                 CallerId = "callerId"
@@ -374,14 +375,66 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var bot = new ConnectorFactoryBot();
 
+            var expectedServiceUrl = "http://serviceUrl";
+
+            var conversationAccount = new ConversationAccount { Id = "conversation Id" };
+            var continuationActivity = new Activity { Type = ActivityTypes.Event, ServiceUrl = expectedServiceUrl, Conversation = conversationAccount };
+            var conversationReference = new ConversationReference { ServiceUrl = expectedServiceUrl, Conversation = conversationAccount };
+
+            var actualServiceUrl1 = string.Empty;
+            var actualServiceUrl2 = string.Empty;
+            var actualServiceUrl3 = string.Empty;
+            var actualServiceUrl4 = string.Empty;
+            var actualServiceUrl5 = string.Empty;
+            var actualServiceUrl6 = string.Empty;
+
+            BotCallbackHandler callback1 = (t, c) =>
+            {
+                actualServiceUrl1 = t.Activity.ServiceUrl;
+                return Task.CompletedTask;
+            };
+            BotCallbackHandler callback2 = (t, c) =>
+            {
+                actualServiceUrl2 = t.Activity.ServiceUrl;
+                return Task.CompletedTask;
+            };
+            BotCallbackHandler callback3 = (t, c) =>
+            {
+                actualServiceUrl3 = t.Activity.ServiceUrl;
+                return Task.CompletedTask;
+            };
+            BotCallbackHandler callback4 = (t, c) =>
+            {
+                actualServiceUrl4 = t.Activity.ServiceUrl;
+                return Task.CompletedTask;
+            };
+            BotCallbackHandler callback5 = (t, c) =>
+            {
+                actualServiceUrl5 = t.Activity.ServiceUrl;
+                return Task.CompletedTask;
+            };
+            BotCallbackHandler callback6 = (t, c) =>
+            {
+                actualServiceUrl6 = t.Activity.ServiceUrl;
+                return Task.CompletedTask;
+            };
+
             // Act
             var adapter = new CloudAdapter(cloudEnvironmentMock.Object);
+            await adapter.ContinueConversationAsync("botAppId", continuationActivity, callback1, CancellationToken.None);
+            await adapter.ContinueConversationAsync(claimsIdentity, continuationActivity, callback2, CancellationToken.None);
+            await adapter.ContinueConversationAsync(claimsIdentity, continuationActivity, "audience", callback3, CancellationToken.None);
+            await adapter.ContinueConversationAsync("botAppId", conversationReference, callback4, CancellationToken.None);
+            await adapter.ContinueConversationAsync(claimsIdentity, conversationReference, callback5, CancellationToken.None);
+            await adapter.ContinueConversationAsync(claimsIdentity, conversationReference, "audience", callback6, CancellationToken.None);
 
-            var continuationActivity = new Activity { Type = ActivityTypes.Event };
-
-            BotCallbackHandler callback = (t, c) => { return Task.CompletedTask; };
-
-            await adapter.ContinueConversationAsync("botAppId", continuationActivity, callback, CancellationToken.None);
+            // Assert
+            Assert.Equal(expectedServiceUrl, actualServiceUrl1);
+            Assert.Equal(expectedServiceUrl, actualServiceUrl2);
+            Assert.Equal(expectedServiceUrl, actualServiceUrl3);
+            Assert.Equal(expectedServiceUrl, actualServiceUrl4);
+            Assert.Equal(expectedServiceUrl, actualServiceUrl5);
+            Assert.Equal(expectedServiceUrl, actualServiceUrl6);
         }
 
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)

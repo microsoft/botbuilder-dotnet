@@ -156,8 +156,8 @@ namespace Microsoft.Bot.Builder
         /// <inheritdoc/>
         public override Task ContinueConversationAsync(string botAppId, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
-            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
+            ValidateCointinuationActivity(continuationActivity);
 
             return ProcessProactiveAsync(CreateClaimsIdentity(botAppId), continuationActivity, null, callback, cancellationToken);
         }
@@ -166,8 +166,8 @@ namespace Microsoft.Bot.Builder
         public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
-            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
+            ValidateCointinuationActivity(continuationActivity);
 
             return ProcessProactiveAsync(claimsIdentity, continuationActivity, null, callback, cancellationToken);
         }
@@ -176,8 +176,8 @@ namespace Microsoft.Bot.Builder
         public override Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
-            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
+            ValidateCointinuationActivity(continuationActivity);
 
             return ProcessProactiveAsync(claimsIdentity, continuationActivity, audience, callback, cancellationToken);
         }
@@ -274,6 +274,13 @@ namespace Microsoft.Bot.Builder
                 new Claim(AuthenticationConstants.AudienceClaim, botAppId),
                 new Claim(AuthenticationConstants.AppIdClaim, botAppId),
             });
+        }
+
+        private void ValidateCointinuationActivity(Activity continuationActivity)
+        {
+            _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
+            _ = continuationActivity.Conversation ?? throw new ArgumentException("The continuation Activity should contain a Conversation value.");
+            _ = continuationActivity.ServiceUrl ?? throw new ArgumentException("The continuation Activity should contain a ServiceUrl value.");
         }
 
         private InvokeResponse ProcessTurnResults(TurnContext turnContext)

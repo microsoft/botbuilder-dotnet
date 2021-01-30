@@ -434,14 +434,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the prompt.</remarks>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            if (dc.Context.TurnState.ContainsKey(typeof(UserTokenClient).FullName))
-            {
-                return await new CloudOAuthPrompt(_settings, _validator).BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
-            }
-
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (dc.Context.TurnState.ContainsKey(typeof(UserTokenClient).FullName))
+            {
+                return await new CloudOAuthPrompt(_settings, _validator).BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             }
 
             if (options is CancellationToken)
@@ -512,14 +512,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// user's reply as valid input for the prompt.</para></remarks>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            if (dc.Context.TurnState.ContainsKey(typeof(UserTokenClient).FullName))
-            {
-                return await new CloudOAuthPrompt(_settings, _validator).ContinueDialogAsync(dc, cancellationToken).ConfigureAwait(false);
-            }
-
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (dc.Context.TurnState.ContainsKey(typeof(UserTokenClient).FullName))
+            {
+                return await new CloudOAuthPrompt(_settings, _validator).ContinueDialogAsync(dc, cancellationToken).ConfigureAwait(false);
             }
 
             // Check for timeout
