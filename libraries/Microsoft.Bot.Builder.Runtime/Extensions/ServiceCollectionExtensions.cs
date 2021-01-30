@@ -2,9 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Runtime.Providers;
+using Microsoft.Bot.Builder.Runtime.Skills;
+using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -87,6 +92,10 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
 
             services.AddSingleton<ResourceExplorer>(resourceExplorerImplementationFactory);
 
+            ConfigureAuthentication(services, configuration);
+            ConfigureSkills(services);
+            ConfigureState(services);
+
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
                 ResourceExplorer resourceExplorer =
@@ -99,6 +108,26 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
 
                 runtimeConfigurationProvider.ConfigureServices(services, configuration);
             }
+        }
+
+        private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(configuration) });
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+            services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
+        }
+
+        private static void ConfigureSkills(IServiceCollection services)
+        {
+            services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+            services.AddHttpClient<BotFrameworkClient, SkillHttpClient>();
+            services.AddSingleton<ChannelServiceHandler, SkillHandler>();
+        }
+
+        private static void ConfigureState(IServiceCollection services)
+        {
+            services.AddSingleton<UserState>();
+            services.AddSingleton<ConversationState>();
         }
     }
 }

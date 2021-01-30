@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Runtime.Loader;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
-using Microsoft.Bot.Builder.Runtime.Authentication;
 using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
@@ -18,8 +17,6 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using IChannelProvider = Microsoft.Bot.Builder.Runtime.Providers.Channel.IChannelProvider;
-using ICredentialProvider = Microsoft.Bot.Builder.Runtime.Providers.Credentials.ICredentialProvider;
 
 namespace Microsoft.Bot.Builder.Runtime.Providers
 {
@@ -152,8 +149,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
             var providers = new List<IProvider>(new IProvider[]
             {
                 this.Adapter,
-                this.Channel,
-                this.Credentials,
                 this.Storage,
                 this.Telemetry
             });
@@ -163,28 +158,7 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
                 provider?.ConfigureServices(services, configuration);
             }
 
-            ConfigureSkillServices(services);
-            ConfigureBotStateServices(services);
-            ConfigureAuthenticationConfigurationServices(services, configuration);
             ConfigureCoreBotServices(services, configuration);
-        }
-
-        private static void ConfigureAuthenticationConfigurationServices(IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(configuration) });
-        }
-
-        private static void ConfigureBotStateServices(IServiceCollection services)
-        {
-            services.AddSingleton<UserState>();
-            services.AddSingleton<ConversationState>();
-        }
-
-        private static void ConfigureSkillServices(IServiceCollection services)
-        {
-            services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
-            services.AddHttpClient<BotFrameworkClient, SkillHttpClient>();
-            services.AddSingleton<ChannelServiceHandler, SkillHandler>();
         }
 
         private void ConfigureCoreBotServices(IServiceCollection services, IConfiguration configuration)

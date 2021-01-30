@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Runtime.Authentication
+namespace Microsoft.Bot.Builder.Runtime.Skills
 {
     public class AllowedCallersClaimsValidator : ClaimsValidator
     {

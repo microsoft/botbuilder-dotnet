@@ -10,8 +10,6 @@ using Microsoft.Bot.Builder.Runtime.Builders.Handlers;
 using Microsoft.Bot.Builder.Runtime.Builders.Middleware;
 using Microsoft.Bot.Builder.Runtime.Builders.Transcripts;
 using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
-using Microsoft.Bot.Builder.Runtime.Providers.Channel;
-using Microsoft.Bot.Builder.Runtime.Providers.Credentials;
 using Microsoft.Bot.Builder.Runtime.Providers.Storage;
 using Microsoft.Bot.Builder.Runtime.Providers.Telemetry;
 using Newtonsoft.Json;
@@ -62,14 +60,6 @@ namespace Microsoft.Bot.Builder.Runtime
             yield return new DeclarativeType<BotCoreAdapterProvider>(
                 BotCoreAdapterProvider.Kind);
 
-            // Channel providers
-            yield return new DeclarativeType<DeclarativeChannelProvider>(
-                DeclarativeChannelProvider.Kind);
-
-            // Credentials providers
-            yield return new DeclarativeType<DeclarativeCredentialsProvider>(
-                DeclarativeCredentialsProvider.Kind);
-
             // Storage providers
             yield return new DeclarativeType<BlobStorageProvider>(
                 BlobStorageProvider.Kind);
@@ -94,8 +84,6 @@ namespace Microsoft.Bot.Builder.Runtime
             yield return new InterfaceConverter<IMiddlewareBuilder>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<ITranscriptLoggerBuilder>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<IAdapterProvider>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<IChannelProvider>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<ICredentialProvider>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<IStorageProvider>(resourceExplorer, sourceContext);
             yield return new InterfaceConverter<ITelemetryProvider>(resourceExplorer, sourceContext);
         }

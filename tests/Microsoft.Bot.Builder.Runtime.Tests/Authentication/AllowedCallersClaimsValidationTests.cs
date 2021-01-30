@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Runtime.Authentication;
+using Microsoft.Bot.Builder.Runtime.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;

@@ -1,367 +1,363 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+﻿//// Copyright (c) Microsoft Corporation. All rights reserved.
+//// Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using AdaptiveExpressions.Properties;
-using Microsoft.AspNetCore.Hosting;
-#if NETCOREAPP2_1
-using Microsoft.AspNetCore.Hosting.Internal;
-#endif
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Runtime.Plugins;
-using Microsoft.Bot.Builder.Runtime.Providers;
-using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
-using Microsoft.Bot.Builder.Runtime.Providers.Channel;
-using Microsoft.Bot.Builder.Runtime.Providers.Credentials;
-using Microsoft.Bot.Builder.Runtime.Providers.Storage;
-using Microsoft.Bot.Builder.Runtime.Providers.Telemetry;
-using Microsoft.Bot.Builder.Runtime.Settings;
-using Microsoft.Bot.Builder.Runtime.Tests.Plugins;
-using Microsoft.Bot.Builder.Runtime.Tests.Resources;
-using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
-using Xunit;
-using IChannelProvider = Microsoft.Bot.Builder.Runtime.Providers.Channel.IChannelProvider;
-using ICredentialProvider = Microsoft.Bot.Builder.Runtime.Providers.Credentials.ICredentialProvider;
+//using System;
+//using System.Collections.Generic;
+//using AdaptiveExpressions.Properties;
+//using Microsoft.AspNetCore.Hosting;
+//#if NETCOREAPP2_1
+//using Microsoft.AspNetCore.Hosting.Internal;
+//#endif
+//using Microsoft.Bot.Builder.Dialogs;
+//using Microsoft.Bot.Builder.Dialogs.Adaptive;
+//using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+//using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+//using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+//using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+//using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+//using Microsoft.Bot.Builder.Runtime.Plugins;
+//using Microsoft.Bot.Builder.Runtime.Providers;
+//using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
+//using Microsoft.Bot.Builder.Runtime.Providers.Storage;
+//using Microsoft.Bot.Builder.Runtime.Providers.Telemetry;
+//using Microsoft.Bot.Builder.Runtime.Settings;
+//using Microsoft.Bot.Builder.Runtime.Tests.Plugins;
+//using Microsoft.Bot.Builder.Runtime.Tests.Resources;
+//using Microsoft.Bot.Builder.Skills;
+//using Microsoft.Bot.Connector.Authentication;
+//using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.DependencyInjection;
+//using Newtonsoft.Json.Linq;
+//using Xunit;
 
-namespace Microsoft.Bot.Builder.Runtime.Tests.Providers
-{
-    [Collection("ComponentRegistrations")]
-    public class RuntimeConfigurationProviderTests
-    {
-        private const string DialogId = "TestRoot";
-        private const string ResourceId = "root.dialog";
+//namespace Microsoft.Bot.Builder.Runtime.Tests.Providers
+//{
+//    [Collection("ComponentRegistrations")]
+//    public class RuntimeConfigurationProviderTests
+//    {
+//        private const string DialogId = "TestRoot";
+//        private const string ResourceId = "root.dialog";
 
-        public static IEnumerable<object[]> GetConfigureServicesSucceedsData()
-        {
-            yield return new object[]
-            {
-                new BotCoreAdapterProvider(),
-                (IChannelProvider)null,
-                new DeclarativeCredentialsProvider(),
-                (string)null,
-                new StringExpression(ResourceId),
-                new MemoryStorageProvider(),
-                (ITelemetryProvider)null,
-                TestDataGenerator.BuildConfigurationRoot()
-            };
+//        public static IEnumerable<object[]> GetConfigureServicesSucceedsData()
+//        {
+//            yield return new object[]
+//            {
+//                new BotCoreAdapterProvider(),
+//                (IChannelProvider)null,
+//                new DeclarativeCredentialsProvider(),
+//                (string)null,
+//                new StringExpression(ResourceId),
+//                new MemoryStorageProvider(),
+//                (ITelemetryProvider)null,
+//                TestDataGenerator.BuildConfigurationRoot()
+//            };
 
-            yield return new object[]
-            {
-                new BotCoreAdapterProvider(),
-                new DeclarativeChannelProvider(),
-                new DeclarativeCredentialsProvider(),
-                "en-CA",
-                new StringExpression("=rootDialog"),
-                new MemoryStorageProvider(),
-                new ApplicationInsightsTelemetryProvider(),
-                TestDataGenerator.BuildConfigurationRoot(
-                    new JObject
-                    {
-                        { "rootDialog", ResourceId }
-                    })
-            };
-        }
+//            yield return new object[]
+//            {
+//                new BotCoreAdapterProvider(),
+//                new DeclarativeChannelProvider(),
+//                new DeclarativeCredentialsProvider(),
+//                "en-CA",
+//                new StringExpression("=rootDialog"),
+//                new MemoryStorageProvider(),
+//                new ApplicationInsightsTelemetryProvider(),
+//                TestDataGenerator.BuildConfigurationRoot(
+//                    new JObject
+//                    {
+//                        { "rootDialog", ResourceId }
+//                    })
+//            };
+//        }
 
-        [Fact]
-        public void ConfigureServices_Succeeds_Plugins()
-        {
-            var loadedPluginNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+//        [Fact]
+//        public void ConfigureServices_Succeeds_Plugins()
+//        {
+//            var loadedPluginNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            var plugins = new Dictionary<string, ICollection<IBotPlugin>>(StringComparer.OrdinalIgnoreCase)
-            {
-                {
-                    "TestPluginOne", new[]
-                    {
-                        new TestBotPlugin(loadAction: (context) => Assert.True(loadedPluginNames.Add("TestPluginOne")))
-                    }
-                },
-                {
-                    "TestPluginTwo", new[]
-                    {
-                        new TestBotPlugin(loadAction: (context) => Assert.True(loadedPluginNames.Add("TestPluginTwo")))
-                    }
-                }
-            };
+//            var plugins = new Dictionary<string, ICollection<IBotPlugin>>(StringComparer.OrdinalIgnoreCase)
+//            {
+//                {
+//                    "TestPluginOne", new[]
+//                    {
+//                        new TestBotPlugin(loadAction: (context) => Assert.True(loadedPluginNames.Add("TestPluginOne")))
+//                    }
+//                },
+//                {
+//                    "TestPluginTwo", new[]
+//                    {
+//                        new TestBotPlugin(loadAction: (context) => Assert.True(loadedPluginNames.Add("TestPluginTwo")))
+//                    }
+//                }
+//            };
 
-            var pluginEnumerator = new TestBotPluginEnumerator(plugins);
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+//            var pluginEnumerator = new TestBotPluginEnumerator(plugins);
+//            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
 
-            var services = new ServiceCollection();
+//            var services = new ServiceCollection();
 
-            services.AddTransient<IConfiguration>(_ => configuration);
-#if NETCOREAPP2_1
-            services.AddTransient<IHostingEnvironment, HostingEnvironment>();
-#elif NETCOREAPP3_1
-            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
-#endif
-            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer(new[]
-            {
-                new JsonResource(ResourceId, data: BuildDialog())
-            }));
+//            services.AddTransient<IConfiguration>(_ => configuration);
+//#if NETCOREAPP2_1
+//            services.AddTransient<IHostingEnvironment, HostingEnvironment>();
+//#elif NETCOREAPP3_1
+//            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
+//#endif
+//            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer(new[]
+//            {
+//                new JsonResource(ResourceId, data: BuildDialog())
+//            }));
 
-            new RuntimeConfigurationProvider(pluginEnumerator)
-            {
-                Adapter = new BotCoreAdapterProvider(),
-                Credentials = new DeclarativeCredentialsProvider(),
-                RootDialog = new StringExpression(ResourceId),
-                Plugins =
-                {
-                    new BotPluginDefinition { Name = "TestPluginOne" },
-                    new BotPluginDefinition { Name = "TestPluginTwo" }
-                },
-                Storage = new MemoryStorageProvider()
-            }.ConfigureServices(services, configuration);
+//            new RuntimeConfigurationProvider(pluginEnumerator)
+//            {
+//                Adapter = new BotCoreAdapterProvider(),
+//                Credentials = new DeclarativeCredentialsProvider(),
+//                RootDialog = new StringExpression(ResourceId),
+//                Plugins =
+//                {
+//                    new BotPluginDefinition { Name = "TestPluginOne" },
+//                    new BotPluginDefinition { Name = "TestPluginTwo" }
+//                },
+//                Storage = new MemoryStorageProvider()
+//            }.ConfigureServices(services, configuration);
 
-            Assert.Equal(2, loadedPluginNames.Count);
-            Assert.Contains("TestPluginOne", loadedPluginNames);
-            Assert.Contains("TestPluginTwo", loadedPluginNames);
-        }
+//            Assert.Equal(2, loadedPluginNames.Count);
+//            Assert.Contains("TestPluginOne", loadedPluginNames);
+//            Assert.Contains("TestPluginTwo", loadedPluginNames);
+//        }
 
-        [Theory]
-        [MemberData(
-            nameof(ProviderTestDataGenerator.GetConfigureServicesArgumentNullExceptionData),
-            MemberType = typeof(ProviderTestDataGenerator))]
-        public void ConfigureServices_Throws_ArgumentNullException(
-            string paramName,
-            IServiceCollection services,
-            IConfiguration configuration)
-        {
-            Assert.Throws<ArgumentNullException>(
-                paramName,
-                () => new RuntimeConfigurationProvider().ConfigureServices(services, configuration));
-        }
+//        [Theory]
+//        [MemberData(
+//            nameof(ProviderTestDataGenerator.GetConfigureServicesArgumentNullExceptionData),
+//            MemberType = typeof(ProviderTestDataGenerator))]
+//        public void ConfigureServices_Throws_ArgumentNullException(
+//            string paramName,
+//            IServiceCollection services,
+//            IConfiguration configuration)
+//        {
+//            Assert.Throws<ArgumentNullException>(
+//                paramName,
+//                () => new RuntimeConfigurationProvider().ConfigureServices(services, configuration));
+//        }
 
-        [Fact]
-        public void ConfigureServices_Throws_ResourceExplorerRequired()
-        {
-            var services = new ServiceCollection();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+//        [Fact]
+//        public void ConfigureServices_Throws_ResourceExplorerRequired()
+//        {
+//            var services = new ServiceCollection();
+//            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
 
-            services.AddTransient<IConfiguration>(_ => configuration);
+//            services.AddTransient<IConfiguration>(_ => configuration);
 
-            new RuntimeConfigurationProvider
-            {
-                Adapter = new BotCoreAdapterProvider(),
-                Credentials = new DeclarativeCredentialsProvider(),
-                Storage = new MemoryStorageProvider()
-            }.ConfigureServices(services, configuration);
+//            new RuntimeConfigurationProvider
+//            {
+//                Adapter = new BotCoreAdapterProvider(),
+//                Credentials = new DeclarativeCredentialsProvider(),
+//                Storage = new MemoryStorageProvider()
+//            }.ConfigureServices(services, configuration);
 
-            IServiceProvider provider = services.BuildServiceProvider();
+//            IServiceProvider provider = services.BuildServiceProvider();
 
-            Assertions.AssertService<AuthenticationConfiguration>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<AuthenticationConfiguration>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<ConversationState>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<ConversationState>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<UserState>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<UserState>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<SkillConversationIdFactoryBase, SkillConversationIdFactory>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<SkillConversationIdFactoryBase, SkillConversationIdFactory>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertOptions<CoreBotOptions>(
-                provider,
-                assert: (options) =>
-                {
-                    Assert.Null(options.DefaultLocale);
-                    Assert.Null(options.RootDialog);
-                });
+//            Assertions.AssertOptions<CoreBotOptions>(
+//                provider,
+//                assert: (options) =>
+//                {
+//                    Assert.Null(options.DefaultLocale);
+//                    Assert.Null(options.RootDialog);
+//                });
 
-            Assertions.AssertServiceThrows<IBot, CoreBot, InvalidOperationException>(
-                services,
-                provider,
-                ServiceLifetime.Singleton,
-                assert: (exception) =>
-                {
-                    Assert.Equal(
-                        expected: $"No service for type '{typeof(ResourceExplorer).FullName}' has been registered.",
-                        actual: exception.Message);
-                });
-        }
+//            Assertions.AssertServiceThrows<IBot, CoreBot, InvalidOperationException>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton,
+//                assert: (exception) =>
+//                {
+//                    Assert.Equal(
+//                        expected: $"No service for type '{typeof(ResourceExplorer).FullName}' has been registered.",
+//                        actual: exception.Message);
+//                });
+//        }
 
-        [Fact]
-        public void ConfigureServices_Throws_RootDialogNotFound()
-        {
-            var services = new ServiceCollection();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
-            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer());
+//        [Fact]
+//        public void ConfigureServices_Throws_RootDialogNotFound()
+//        {
+//            var services = new ServiceCollection();
+//            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+//            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer());
 
-            services.AddTransient<IConfiguration>(_ => configuration);
+//            services.AddTransient<IConfiguration>(_ => configuration);
 
-            new RuntimeConfigurationProvider
-            {
-                Adapter = new BotCoreAdapterProvider(),
-                Credentials = new DeclarativeCredentialsProvider(),
-                RootDialog = ResourceId,
-                Storage = new MemoryStorageProvider()
-            }.ConfigureServices(services, configuration);
+//            new RuntimeConfigurationProvider
+//            {
+//                Adapter = new BotCoreAdapterProvider(),
+//                Credentials = new DeclarativeCredentialsProvider(),
+//                RootDialog = ResourceId,
+//                Storage = new MemoryStorageProvider()
+//            }.ConfigureServices(services, configuration);
 
-            IServiceProvider provider = services.BuildServiceProvider();
+//            IServiceProvider provider = services.BuildServiceProvider();
 
-            Assertions.AssertService<AuthenticationConfiguration>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<AuthenticationConfiguration>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<ConversationState>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<ConversationState>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<UserState>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<UserState>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<SkillConversationIdFactoryBase, SkillConversationIdFactory>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<SkillConversationIdFactoryBase, SkillConversationIdFactory>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertOptions<CoreBotOptions>(
-                provider,
-                assert: (options) =>
-                {
-                    Assert.Null(options.DefaultLocale);
-                    Assert.Equal(expected: ResourceId, actual: options.RootDialog);
-                });
+//            Assertions.AssertOptions<CoreBotOptions>(
+//                provider,
+//                assert: (options) =>
+//                {
+//                    Assert.Null(options.DefaultLocale);
+//                    Assert.Equal(expected: ResourceId, actual: options.RootDialog);
+//                });
 
-            Assertions.AssertServiceThrows<IBot, CoreBot, ArgumentException>(
-                services,
-                provider,
-                ServiceLifetime.Singleton,
-                assert: (exception) =>
-                {
-                    Assert.StartsWith(
-                        expectedStartString: $"Could not find resource '{ResourceId}'",
-                        actualString: exception.Message);
+//            Assertions.AssertServiceThrows<IBot, CoreBot, ArgumentException>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton,
+//                assert: (exception) =>
+//                {
+//                    Assert.StartsWith(
+//                        expectedStartString: $"Could not find resource '{ResourceId}'",
+//                        actualString: exception.Message);
 
-                    Assert.Equal(expected: ResourceId, actual: exception.ParamName);
-                });
-        }
+//                    Assert.Equal(expected: ResourceId, actual: exception.ParamName);
+//                });
+//        }
 
-        [Fact]
-        public void Constructor_Throws_ArgumentNullException()
-        {
-            Assert.Throws<ArgumentNullException>(
-                "pluginEnumerator",
-                () => new RuntimeConfigurationProvider(pluginEnumerator: null));
-        }
+//        [Fact]
+//        public void Constructor_Throws_ArgumentNullException()
+//        {
+//            Assert.Throws<ArgumentNullException>(
+//                "pluginEnumerator",
+//                () => new RuntimeConfigurationProvider(pluginEnumerator: null));
+//        }
 
-        [Theory]
-        [MemberData(nameof(GetConfigureServicesSucceedsData))]
-        internal void ConfigureServices_Succeeds(
-            IAdapterProvider adapter,
-            IChannelProvider channel,
-            ICredentialProvider credential,
-            string defaultLocale,
-            StringExpression rootDialog,
-            IStorageProvider storage,
-            ITelemetryProvider telemetry,
-            IConfiguration configuration)
-        {
-            var services = new ServiceCollection();
+//        [Theory]
+//        [MemberData(nameof(GetConfigureServicesSucceedsData))]
+//        internal void ConfigureServices_Succeeds(
+//            IAdapterProvider adapter,
+//            IChannelProvider channel,
+//            ICredentialProvider credential,
+//            string defaultLocale,
+//            StringExpression rootDialog,
+//            IStorageProvider storage,
+//            ITelemetryProvider telemetry,
+//            IConfiguration configuration)
+//        {
+//            var services = new ServiceCollection();
 
-            services.AddTransient<IConfiguration>(_ => configuration);
-#if NETCOREAPP2_1
-            services.AddTransient<IHostingEnvironment, HostingEnvironment>();
-#elif NETCOREAPP3_1
-            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
-#endif
-            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer(new[]
-            {
-                new JsonResource(ResourceId, data: BuildDialog())
-            }));
+//            services.AddTransient<IConfiguration>(_ => configuration);
+//#if NETCOREAPP2_1
+//            services.AddTransient<IHostingEnvironment, HostingEnvironment>();
+//#elif NETCOREAPP3_1
+//            services.AddTransient<IHostingEnvironment, TestHostingEnvironment>();
+//#endif
+//            services.AddTransient<ResourceExplorer>(_ => TestDataGenerator.BuildMemoryResourceExplorer(new[]
+//            {
+//                new JsonResource(ResourceId, data: BuildDialog())
+//            }));
 
-            var runtimeConfigurationProvider = new RuntimeConfigurationProvider
-            {
-                Adapter = adapter,
-                Channel = channel,
-                Credentials = credential,
-                DefaultLocale = defaultLocale,
-                RootDialog = rootDialog,
-                Storage = storage,
-                Telemetry = telemetry
-            };
+//            var runtimeConfigurationProvider = new RuntimeConfigurationProvider
+//            {
+//                Adapter = adapter,
+//                Channel = channel,
+//                Credentials = credential,
+//                DefaultLocale = defaultLocale,
+//                RootDialog = rootDialog,
+//                Storage = storage,
+//                Telemetry = telemetry
+//            };
 
-            runtimeConfigurationProvider.ConfigureServices(services, configuration);
+//            runtimeConfigurationProvider.ConfigureServices(services, configuration);
 
-            IServiceProvider provider = services.BuildServiceProvider();
+//            IServiceProvider provider = services.BuildServiceProvider();
 
-            Assertions.AssertService<AuthenticationConfiguration>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<AuthenticationConfiguration>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<ConversationState>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<ConversationState>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<UserState>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<UserState>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<SkillConversationIdFactoryBase, SkillConversationIdFactory>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<SkillConversationIdFactoryBase, SkillConversationIdFactory>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertOptions<CoreBotOptions>(
-                provider,
-                assert: (options) =>
-                {
-                    Assert.Equal(expected: defaultLocale, actual: options.DefaultLocale);
-                    Assert.Equal(expected: ResourceId, actual: options.RootDialog);
-                });
+//            Assertions.AssertOptions<CoreBotOptions>(
+//                provider,
+//                assert: (options) =>
+//                {
+//                    Assert.Equal(expected: defaultLocale, actual: options.DefaultLocale);
+//                    Assert.Equal(expected: ResourceId, actual: options.RootDialog);
+//                });
 
-            Assertions.AssertService<IBot, CoreBot>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
+//            Assertions.AssertService<IBot, CoreBot>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
 
-            Assertions.AssertService<ChannelServiceHandler, SkillHandler>(
-                services,
-                provider,
-                ServiceLifetime.Singleton);
-        }
+//            Assertions.AssertService<ChannelServiceHandler, SkillHandler>(
+//                services,
+//                provider,
+//                ServiceLifetime.Singleton);
+//        }
 
-        private static AdaptiveDialog BuildDialog(string dialogId = null)
-        {
-            return new AdaptiveDialog(dialogId ?? DialogId)
-            {
-                Generator = new TemplateEngineLanguageGenerator(),
-                Recognizer = new RegexRecognizer(),
-                Triggers =
-                {
-                    new OnUnknownIntent(
-                        actions: new List<Dialog>
-                        {
-                            new SendActivity("Hello World!")
-                        })
-                }
-            };
-        }
-    }
-}
+//        private static AdaptiveDialog BuildDialog(string dialogId = null)
+//        {
+//            return new AdaptiveDialog(dialogId ?? DialogId)
+//            {
+//                Generator = new TemplateEngineLanguageGenerator(),
+//                Recognizer = new RegexRecognizer(),
+//                Triggers =
+//                {
+//                    new OnUnknownIntent(
+//                        actions: new List<Dialog>
+//                        {
+//                            new SendActivity("Hello World!")
+//                        })
+//                }
+//            };
+//        }
+//    }
+//}
