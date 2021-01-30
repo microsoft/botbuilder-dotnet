@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.Loader;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Providers;
 using Microsoft.Bot.Builder.Runtime.Settings;
 using Microsoft.Bot.Builder.Runtime.Skills;
@@ -13,6 +15,7 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Runtime.Extensions
 {
@@ -93,12 +96,13 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
 
             services.AddSingleton<ResourceExplorer>(resourceExplorerImplementationFactory);
 
+            services.AddOptions()
+                .Configure<RuntimeOptions>(configuration);
+
             ConfigureAuthentication(services, configuration);
             ConfigureSkills(services);
             ConfigureState(services);
-
-            services.AddOptions()
-                .Configure<RuntimeOptions>(configuration);
+            ConfigurePlugins(services, configuration);
 
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
@@ -132,6 +136,20 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
         {
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();
+        }
+
+        private static void ConfigurePlugins(IServiceCollection services, IConfiguration configuration)
+        {
+            using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
+            {
+                var runtimeOptions = serviceScope.ServiceProvider.GetRequiredService<IOptions<RuntimeOptions>>().Value;
+                var pluginEnumenator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
+
+                foreach (BotPluginDefinition plugin in runtimeOptions.Plugins)
+                {
+                    plugin.Load(pluginEnumenator, services, configuration);
+                }
+            }
         }
     }
 }

@@ -27,26 +27,12 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
     [JsonObject]
     internal class RuntimeConfigurationProvider : IProvider
     {
-        private readonly IBotPluginEnumerator _pluginEnumerator;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RuntimeConfigurationProvider"/> class.
         /// </summary>
         [JsonConstructor]
         public RuntimeConfigurationProvider()
-            : this(new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default))
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RuntimeConfigurationProvider"/> class.
-        /// </summary>
-        /// <param name="pluginEnumerator">
-        /// Enumerates available plugins from the provided bot plugin definition information.
-        /// </param>
-        public RuntimeConfigurationProvider(IBotPluginEnumerator pluginEnumerator)
-        {
-            this._pluginEnumerator = pluginEnumerator ?? throw new ArgumentNullException(nameof(pluginEnumerator));
         }
 
         /// <summary>
@@ -60,26 +46,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
         public IAdapterProvider Adapter { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IChannelProvider"/> to utilize for configuring channel
-        /// provider-related services.
-        /// </summary>
-        /// <value>
-        /// The <see cref="IChannelProvider"/> to utilize for configuring channel provider-related services.
-        /// </value>
-        [JsonProperty("channel")]
-        public IChannelProvider Channel { get; set; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="ICredentialProvider"/> to utilize for configuring credential
-        /// provider-related services.
-        /// </summary>
-        /// <value>
-        /// The <see cref="ICredentialProvider"/> to utilize for configuring credential provider-related services.
-        /// </value>
-        [JsonProperty("credentials")]
-        public ICredentialProvider Credentials { get; set; }
-
-        /// <summary>
         /// Gets or sets the default locale to utilize. Defaults to 'en-US'.
         /// </summary>
         /// <value>
@@ -87,15 +53,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
         /// </value>
         [JsonProperty("defaultLocale")]
         public string DefaultLocale { get; set; }
-
-        /// <summary>
-        /// Gets the collection of bot plugins to be loaded.
-        /// </summary>
-        /// <value>
-        /// The collection of bot plugins to be loaded.
-        /// </value>
-        [JsonProperty("plugins")]
-        public IList<BotPluginDefinition> Plugins { get; } = new List<BotPluginDefinition>();
 
         /// <summary>
         /// Gets or sets the resource identifier of the dialog to serve as the root dialog of the bot.
@@ -139,11 +96,6 @@ namespace Microsoft.Bot.Builder.Runtime.Providers
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
-            }
-
-            foreach (BotPluginDefinition plugin in this.Plugins)
-            {
-                plugin.Load(this._pluginEnumerator, services, configuration);
             }
 
             var providers = new List<IProvider>(new IProvider[]
