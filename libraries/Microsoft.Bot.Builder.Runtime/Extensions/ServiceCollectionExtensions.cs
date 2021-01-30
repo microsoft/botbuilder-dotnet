@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Runtime.Providers;
+using Microsoft.Bot.Builder.Runtime.Settings;
 using Microsoft.Bot.Builder.Runtime.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -95,6 +96,9 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             ConfigureAuthentication(services, configuration);
             ConfigureSkills(services);
             ConfigureState(services);
+
+            services.AddOptions()
+                .Configure<RuntimeOptions>(configuration);
 
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
