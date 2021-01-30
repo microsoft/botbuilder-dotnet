@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -74,5 +75,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </value>
         [JsonProperty("connectionName")]
         public string ConnectionName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default delivery mode to use for communication with the skill.
+        /// </summary>
+        /// <remarks>
+        /// This value will be used for activities that do not explicitly set deliveryMode.
+        /// </remarks>
+        /// <value>
+        /// A deliveryMode constant [normal|expectReplies].
+        /// </value>
+        [JsonProperty("deliveryMode")]
+        public string DeliveryMode { get; set; } = DeliveryModes.Normal;
     }
 }

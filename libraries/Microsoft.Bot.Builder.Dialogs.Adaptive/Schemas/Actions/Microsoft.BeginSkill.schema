@@ -76,6 +76,27 @@
             "title": "Activity",
             "description": "The activity to send to the skill."
         },
+        "deliveryMode": {
+            "title": "Delivery mode",
+            "description": "Delivery Mode to use to communicate with skill.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Delivery Modes",
+                    "description": "Delivery Modes.",
+                    "default": "expectReplies",
+                    "enum": [
+                        "normal",
+                        "expectReplies",
+                        "notification",
+                        "ephemeral"
+                    ]
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
         "allowInterruptions": {
             "$ref": "schema:#/definitions/booleanExpression",
             "title": "Allow interruptions",

@@ -1175,6 +1175,27 @@
           "description": "The activity to send to the skill.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
+        "deliveryMode": {
+          "title": "Delivery mode",
+          "description": "Delivery Mode to use to communicate with skill.",
+          "oneOf": [
+            {
+              "type": "string",
+              "title": "Delivery Modes",
+              "description": "Delivery Modes.",
+              "default": "expectReplies",
+              "enum": [
+                "normal",
+                "expectReplies",
+                "notification",
+                "ephemeral"
+              ]
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
+        },
         "allowInterruptions": {
           "$ref": "#/definitions/booleanExpression",
           "title": "Allow interruptions",

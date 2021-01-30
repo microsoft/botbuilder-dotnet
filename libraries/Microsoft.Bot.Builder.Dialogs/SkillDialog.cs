@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </remarks>
     public class SkillDialog : Dialog
     {
-        private const string DeliverModeStateKey = "deliverymode";
         private const string SkillConversationIdStateKey = "Microsoft.Bot.Builder.Dialogs.SkillDialog.SkillConversationId";
 
         /// <summary>
@@ -60,9 +59,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Apply conversation reference and common properties from incoming activity before sending.
             skillActivity.ApplyConversationReference(dc.Context.Activity.GetConversationReference(), true);
-
-            // Store delivery mode and connection name in dialog state for later use.
-            dc.ActiveDialog.State[DeliverModeStateKey] = dialogArgs.Activity.DeliveryMode;
 
             // Create the conversationId and store it in the dialog context state so we can use it later
             var skillConversationId = await CreateSkillConversationIdAsync(dc.Context, dc.Context.Activity, cancellationToken).ConfigureAwait(false);
@@ -104,8 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Create deep clone of the original activity to avoid altering it before forwarding it.
             var skillActivity = ObjectPath.Clone(dc.Context.Activity);
-
-            skillActivity.DeliveryMode = dc.ActiveDialog.State[DeliverModeStateKey] as string;
 
             var skillConversationId = (string)dc.ActiveDialog.State[SkillConversationIdStateKey];
 
@@ -233,6 +227,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Force ExpectReplies for invoke activities so we can get the replies right away and send them back to the channel if needed.
                 // This makes sure that the dialog will receive the Invoke response from the skill and any other activities sent, including EoC.
                 activity.DeliveryMode = DeliveryModes.ExpectReplies;
+            }
+            else if (activity.DeliveryMode == null)
+            {
+                // if there is not an explicit activity.delivery mode then we use the dialogoptions.deliverymode.
+                activity.DeliveryMode = this.DialogOptions.DeliveryMode;
             }
 
             // Always save state before forwarding

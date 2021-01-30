@@ -381,11 +381,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // Use Memory for conversation state
             var conversationState = new ConversationState(new MemoryStorage());
             var dialogOptions = CreateSkillDialogOptions(conversationState, mockSkillClient);
+            dialogOptions.DeliveryMode = DeliveryModes.ExpectReplies;
 
             // Create the SkillDialogInstance and the activity to send.
             var sut = new SkillDialog(dialogOptions);
             var activityToSend = (Activity)Activity.CreateMessageActivity();
-            activityToSend.DeliveryMode = DeliveryModes.ExpectReplies;
             activityToSend.Text = Guid.NewGuid().ToString();
             var client = new DialogTestClient(Channels.Test, sut, new BeginSkillDialogOptions { Activity = activityToSend }, conversationState: conversationState);
 
