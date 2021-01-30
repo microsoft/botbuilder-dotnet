@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// Action which schedules the current conversation to be continued at a later time..
     /// </summary>
     /// <remarks>
-    /// This action works by writing an EventActivity(Name=ContinueConversation) to an StorageQueue with same routing information 
+    /// This action works by writing an EventActivity(Name=ContinueConversation) to a StorageQueue with same routing information 
     /// as the current conversation reference, and with a visibility policy to make it visible at a future point in time. 
     /// 
     /// The queue needs a process (such as a webjob/azure function) pulling activites from the StorageQueue and processing them by 

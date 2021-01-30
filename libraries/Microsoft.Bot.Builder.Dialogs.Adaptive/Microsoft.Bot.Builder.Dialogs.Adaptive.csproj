@@ -39,11 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Actions\Microsoft.ContinueConversation.schema" />
-    <None Remove="Schemas\Actions\Microsoft.GetConversationReference.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />

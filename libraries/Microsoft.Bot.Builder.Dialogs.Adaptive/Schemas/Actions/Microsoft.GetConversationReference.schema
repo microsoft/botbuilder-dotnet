@@ -1,8 +1,8 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Get ConversationReference for current activity context.",
-    "description": "Gets the ConversationReference from current context and stores in property so it can be used to with ContinueConversation action.",
+    "title": "Get ConversationReference",
+    "description": "Gets the ConversationReference from current context and stores it in property so it can be used to with ContinueConversation action.",
     "type": "object",
     "properties": {
         "id": {

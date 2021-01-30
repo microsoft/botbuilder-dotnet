@@ -34,10 +34,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
+        /// Gets or sets an optional expression which if true will disable this action.
         /// </summary>
         /// <example>
-        /// "user.age > 18".
+        /// "user.age = 18".
         /// </example>
         /// <value>
         /// A boolean expression. 

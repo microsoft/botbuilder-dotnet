@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// Action which continues a conversation using a Conversation reference.
     /// </summary>
     /// <remarks>
-    /// This action works by writing an EventActivity(Name=ContinueConversation) to an StorageQueue stamped with the 
+    /// This action works by writing an EventActivity(Name=ContinueConversation) to a StorageQueue stamped with the 
     /// routing information from the provided ConversationReference. 
     /// 
     /// The queue needs a process (such as a webjob/azure function) pulling activites from the StorageQueue and processing them by 
@@ -40,13 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
+        [JsonConstructor]
         public ContinueConversation([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets an optional expression which if is true will disable this action.
+        /// Gets or sets an optional expression which if true will disable this action.
         /// </summary>
         /// <value>
         /// A boolean expression. 
