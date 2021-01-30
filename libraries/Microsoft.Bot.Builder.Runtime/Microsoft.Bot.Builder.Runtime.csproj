@@ -53,7 +53,6 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Runtime.Plugins\Microsoft.Bot.Builder.Runtime.Plugins.csproj" />
   </ItemGroup>
 
 </Project>
