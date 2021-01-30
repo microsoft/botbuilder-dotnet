@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
     /// <summary>
     /// Provides an interface for retrieving a collection of bot plugins from a given source.
     /// </summary>
-    public interface IBotPluginEnumerator
+    internal interface IBotPluginEnumerator
     {
         /// <summary>
         /// Get available bot plugins.

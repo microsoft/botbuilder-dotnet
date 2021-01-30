@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
     /// Represents the definition of a plugin that can be loaded into the bot runtime.
     /// </summary>
     [JsonObject]
-    public class BotPluginDefinition
+    internal class BotPluginDefinition
     {
         /// <summary>
         /// Gets or sets the name of the assembly containing the plugin entry point.

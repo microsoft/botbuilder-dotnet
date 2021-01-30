@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
         [MemberData(nameof(GetLoadArgumentNullExceptionData))]
         public void Load_Throws_ArgumentNullException(
             string paramName,
-            IBotPluginEnumerator pluginEnumerator,
+            TestBotPluginEnumerator pluginEnumerator,
             IServiceCollection services,
             IConfiguration configuration)
         {
