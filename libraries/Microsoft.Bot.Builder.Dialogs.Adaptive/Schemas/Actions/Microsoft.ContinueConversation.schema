@@ -1,11 +1,11 @@
 ﻿{
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Continue conversation later (Queue)",
-    "description": "Continue conversation at later time (via StorageQueue implementation).",
+    "title": "Continue conversation (Queue)",
+    "description": "Continue a specific conversation (via StorageQueue implementation).",
     "type": "object",
     "required": [
-        "date"
+        "conversationReference"
     ],
     "properties": {
         "id": {
@@ -21,12 +21,25 @@
                 "user.age > 3"
             ]
         },
-        "date": {
-            "$ref": "schema:#/definitions/stringExpression",
-            "title": "Date",
-            "description": "Date in the future as a ISO string when the conversation should continue.",
+        "conversationReference": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "Conversation Reference",
+            "description": "A conversation reference. (NOTE: Minimum required values or channelId, conversation).",
             "examples": [
-                "=addHours(utcNow(), 1)"
+                {
+                    "channelId": "skype",
+                    "serviceUrl": "http://smba.skype.com",
+                    "conversation": {
+                        "id": "11111"
+                    },
+                    "bot": {
+                        "id": "22222"
+                    },
+                    "user": {
+                        "id": "33333"
+                    },
+                    "locale": "en-us"
+                }
             ]
         },
         "value": {
