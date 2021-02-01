@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // replace the connector client with one that points at the parent bot as it would have been set to the service with the arrival of the EventActivity
                 var connectorFactory = dc.Context.TurnState.Get<ConnectorFactory>() ?? throw new InvalidOperationException("The ConnectorFactory is not supported by the current adapter.");
 
-                // note the connectorFactory will give us connector clients tighted to this particular identity - but for different endpoints and audiences
+                // note the connectorFactory will give us connector clients tied to this particular identity - but for different endpoints and audiences
                 var connectorClient = await connectorFactory.CreateAsync(callerInfo.CallerServiceUrl, callerInfo.Scope, cancellationToken).ConfigureAwait(false);
                 dc.Context.TurnState.Get<IConnectorClient>().Dispose();
                 dc.Context.TurnState.Set(connectorClient);
