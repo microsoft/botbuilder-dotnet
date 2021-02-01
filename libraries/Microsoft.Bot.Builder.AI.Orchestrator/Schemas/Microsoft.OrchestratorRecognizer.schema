@@ -14,13 +14,13 @@
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Base Model",
             "description": "Base model folder path.",
-            "default": "=settings.orchestrator.modelfolder"
+            "default": "=settings.orchestrator.modelFolder"
         },
         "snapshotFile": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Snapshot File",
-            "description": "Full path to snapshot file.",
-            "default": "=settings.orchestrator.shapshotfile"
+            "description": "Snapshot file.",
+            "default": "=settings.orchestrator.snapshotFile"
         },
         "externalEntityRecognizer": {
             "$kind": "Microsoft.IRecognizer",
