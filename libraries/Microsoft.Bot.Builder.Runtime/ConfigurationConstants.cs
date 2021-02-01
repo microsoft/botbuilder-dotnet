@@ -14,11 +14,6 @@ namespace Microsoft.Bot.Builder.Runtime
         public const string ApplicationRootKey = "applicationRoot";
 
         /// <summary>
-        /// The configuration key mapping to the value representing the bot root path.
-        /// </summary>
-        public const string BotKey = "bot";
-
-        /// <summary>
         /// The configuration key mapping to the value representing the default resource identifier
         /// of the dialog to be utilized as the root dialog of the bot.
         /// </summary>
