@@ -16,9 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     internal class CloudOAuthPrompt : Dialog
     {
-        private const string PersistedOptions = "options";
-        private const string PersistedState = "state";
-
         private readonly OAuthPromptSettings _settings;
         private readonly PromptValidator<TokenResponse> _validator;
 
@@ -106,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 else
                 {
                     // If this was a message Activity we can use the retry prompt
-                    var promptOptions = dc.ActiveDialog.State[PersistedOptions].CastTo<PromptOptions>();
+                    var promptOptions = dc.ActiveDialog.State[OAuthHelper.PersistedOptions].CastTo<PromptOptions>();
                     if (!dc.Context.Responded && promptOptions?.RetryPrompt != null)
                     {
                         await dc.Context.SendActivityAsync(promptOptions.RetryPrompt, cancellationToken).ConfigureAwait(false);
@@ -122,12 +119,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (validator != null)
             {
                 // Increment attempt count.
-                var promptState = dc.ActiveDialog.State[PersistedState].CastTo<IDictionary<string, object>>();
+                var promptState = dc.ActiveDialog.State[OAuthHelper.PersistedState].CastTo<IDictionary<string, object>>();
                 promptState["AttemptCount"] = Convert.ToInt32(promptState["AttemptCount"], CultureInfo.InvariantCulture) + 1;
 
                 // Call the custom validator.
                 var recognized = new PromptRecognizerResult<TokenResponse> { Succeeded = tokenResponse != null, Value = tokenResponse };
-                var promptOptions = dc.ActiveDialog.State[PersistedOptions].CastTo<PromptOptions>();
+                var promptOptions = dc.ActiveDialog.State[OAuthHelper.PersistedOptions].CastTo<PromptOptions>();
                 var promptContext = new PromptValidatorContext<TokenResponse>(dc.Context, recognized, promptState, promptOptions);
                 return await validator(promptContext, cancellationToken).ConfigureAwait(false);
             }

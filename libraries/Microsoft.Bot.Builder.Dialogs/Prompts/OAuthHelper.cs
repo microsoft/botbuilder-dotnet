@@ -21,8 +21,16 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public static class OAuthHelper
     {
-        private const string PersistedOptions = "options";
-        private const string PersistedState = "state";
+        /// <summary>
+        /// The name of the options in the persisted state.
+        /// </summary>
+        public const string PersistedOptions = "options";
+
+        /// <summary>
+        /// The name of the prompt state in the persisted state.
+        /// </summary>
+        public const string PersistedState = "state";
+
         private const string PersistedExpires = "expires";
         private const string PersistedCaller = "caller";
 
@@ -320,13 +328,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static async Task<TokenResponse> OnContinueTokenExchangeAsync(UserTokenClient userTokenClient, string connectionName, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var tokenExchangeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>();
+            var tokenExchangeInvokeRequest = ((JObject)turnContext.Activity.Value)?.ToObject<TokenExchangeInvokeRequest>();
 
             HttpStatusCode httpStatusCode;
             TokenExchangeInvokeResponse tokenExchangeInvokeResponse;
             TokenResponse tokenResponse;
 
-            if (tokenExchangeRequest == null)
+            if (tokenExchangeInvokeRequest == null)
             {
                 httpStatusCode = HttpStatusCode.BadRequest;
                 tokenExchangeInvokeResponse = new TokenExchangeInvokeResponse
@@ -336,14 +344,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 };
                 tokenResponse = null;
             }
-            else if (tokenExchangeRequest.ConnectionName != connectionName)
+            else if (tokenExchangeInvokeRequest.ConnectionName != connectionName)
             {
                 httpStatusCode = HttpStatusCode.BadRequest;
                 tokenExchangeInvokeResponse = new TokenExchangeInvokeResponse
                 {
-                    Id = tokenExchangeRequest.Id,
+                    Id = tokenExchangeInvokeRequest.Id,
                     ConnectionName = connectionName,
-                    FailureDetail = $"The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName {tokenExchangeRequest.ConnectionName} that does not match the ConnectionName {connectionName} expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
+                    FailureDetail = $"The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName {tokenExchangeInvokeRequest.ConnectionName} that does not match the ConnectionName {connectionName} expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
                 };
                 tokenResponse = null;
             }
@@ -353,13 +361,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 var userId = turnContext.Activity.From.Id;
                 var channelId = turnContext.Activity.ChannelId;
-                var tokenExchangeResponse = await userTokenClient.ExchangeTokenAsync(userId, connectionName, channelId, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
+                var tokenExchangeResponse = await userTokenClient.ExchangeTokenAsync(userId, connectionName, channelId, new TokenExchangeRequest { Token = tokenExchangeInvokeRequest.Token }, cancellationToken).ConfigureAwait(false);
                 if (tokenExchangeResponse == null || string.IsNullOrEmpty(tokenExchangeResponse.Token))
                 {
                     httpStatusCode = HttpStatusCode.PreconditionFailed;
                     tokenExchangeInvokeResponse = new TokenExchangeInvokeResponse
                     {
-                        Id = tokenExchangeRequest.Id,
+                        Id = tokenExchangeInvokeRequest.Id,
                         ConnectionName = connectionName,
                         FailureDetail = "The bot is unable to exchange token. Proceed with regular login.",
                     };
@@ -370,7 +378,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     httpStatusCode = HttpStatusCode.OK;
                     tokenExchangeInvokeResponse = new TokenExchangeInvokeResponse
                     {
-                        Id = tokenExchangeRequest.Id,
+                        Id = tokenExchangeInvokeRequest.Id,
                         ConnectionName = connectionName,
                     };
                     tokenResponse = new TokenResponse
