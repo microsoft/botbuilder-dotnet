@@ -1227,6 +1227,28 @@
       "subtitle": "Trace Activity"
     }
   },
+  "Microsoft.UpdateActivity": {
+    "flow": {
+      "body": {
+        "field": "activity",
+        "widget": "LgWidget"
+      },
+      "header": {
+        "colors": {
+          "icon": "#656565",
+          "theme": "#D7D7D7"
+        },
+        "icon": "MessageBot",
+        "title": "Update activity",
+        "widget": "ActionHeader"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "label": "Update an activity",
+      "subtitle": "Update Activity"
+    }
+  },
   "Teams.GetPagedMembers": {
     "form": {
       "label": "Get paged members",
