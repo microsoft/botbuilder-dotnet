@@ -14,8 +14,6 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
     public static class ConfigurationBuilderExtensions
     {
         private const string AppSettingsFileName = @"appsettings.json";
-        private const string ComposerDialogsDirectoryName = "ComposerDialogs";
-        private const string DevelopmentApplicationRoot = "./";
         private const string DialogFileExtension = ".dialog";
 
         /// <summary>
@@ -28,20 +26,12 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
         /// The application root directory. When running in local development mode from Composer, this is determined
         /// to be three directory levels above where the runtime application project is ejected, i.e. '../../..'.
         /// </param>
-        /// <param name="isDevelopment">Indicates whether the application environment is set to 'Development'.</param>
         /// <returns>
         /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
         /// </returns>
-        public static IConfigurationBuilder AddBotRuntimeConfiguration(
-            this IConfigurationBuilder builder,
-            string applicationRoot,
-            bool isDevelopment)
+        public static IConfigurationBuilder AddBotRuntimeConfiguration(this IConfigurationBuilder builder, string applicationRoot)
         {
-            return AddBotRuntimeConfiguration(
-                builder,
-                applicationRoot,
-                settingsDirectory: null,
-                isDevelopment: isDevelopment);
+            return AddBotRuntimeConfiguration(builder, applicationRoot, settingsDirectory: null);
         }
 
         /// <summary>
@@ -58,26 +48,22 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
         /// The relative path to the directory containing the appsettings.json file to add as a configuration source.
         /// If null is specified, appsettings.json will be located within the application root directory.
         /// </param>
-        /// <param name="isDevelopment">Indicates whether the application environment is set to 'Development'.</param>
         /// <returns>
         /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
         /// </returns>
         public static IConfigurationBuilder AddBotRuntimeConfiguration(
             this IConfigurationBuilder builder,
             string applicationRoot,
-            string settingsDirectory,
-            bool isDevelopment)
+            string settingsDirectory)
         {
             // Use Composer bot path adapter
-            builder.AddBotRuntimeProperties(
-                applicationRoot: applicationRoot,
-                isDevelopment: isDevelopment);
+            AddBotRuntimeProperties(builder, applicationRoot);
 
             IConfiguration configuration = builder.Build();
 
-            string botRootPath = configuration.GetValue<string>(ConfigurationConstants.BotKey);
+            string applicationRootPath = configuration.GetValue<string>(ConfigurationConstants.ApplicationRootKey);
             string configFilePath = Path.GetFullPath(
-                Path.Combine(botRootPath, settingsDirectory, AppSettingsFileName));
+                Path.Combine(applicationRootPath, settingsDirectory, AppSettingsFileName));
 
             builder.AddJsonFile(configFilePath, optional: true, reloadOnChange: true);
 
@@ -98,27 +84,12 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
         /// The application root directory. When running in local development mode from Composer, this is determined
         /// to be three directory levels above where the runtime application project is ejected, i.e. '../../..'.
         /// </param>
-        /// <param name="isDevelopment">Indicates whether the application environment is set to 'Development'.</param>
-        /// <returns>
-        /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
-        /// </returns>
-        private static IConfigurationBuilder AddBotRuntimeProperties(
-            this IConfigurationBuilder builder,
-            string applicationRoot,
-            bool isDevelopment = true)
+        private static void AddBotRuntimeProperties(IConfigurationBuilder builder, string applicationRoot)
         {
             if (string.IsNullOrEmpty(applicationRoot))
             {
                 throw new ArgumentNullException(nameof(applicationRoot));
             }
-
-            applicationRoot = isDevelopment
-                ? Path.GetFullPath(Path.Combine(applicationRoot, DevelopmentApplicationRoot))
-                : applicationRoot;
-
-            string botRoot = isDevelopment
-                ? applicationRoot
-                : Path.Combine(applicationRoot, ComposerDialogsDirectoryName);
 
             var settings = new Dictionary<string, string>
             {
@@ -127,17 +98,12 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
                     applicationRoot
                 },
                 {
-                    ConfigurationConstants.BotKey,
-                    botRoot
-                },
-                {
                     ConfigurationConstants.DefaultRootDialogKey,
-                    GetDefaultRootDialog(botRoot)
+                    GetDefaultRootDialog(applicationRoot)
                 }
             };
 
             builder.AddInMemoryCollection(settings);
-            return builder;
         }
 
         /// <summary>
@@ -188,6 +154,13 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             if (qnaSettingsFile.Exists)
             {
                 builder.AddJsonFile(qnaSettingsFile.FullName, optional: false, reloadOnChange: true);
+            }
+
+            string orchestratorSettingsPath = Path.GetFullPath(Path.Combine(botRoot, "generated", "orchestrator.settings.json"));
+            var orchestratorSettingsFile = new FileInfo(orchestratorSettingsPath);
+            if (orchestratorSettingsFile.Exists)
+            {
+                builder.AddJsonFile(orchestratorSettingsFile.FullName, optional: false, reloadOnChange: true);
             }
 
             return builder;
