@@ -1,0 +1,75 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Test AssertReply",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "test",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "conversation.activity",
+            "value": "=turn.activity"
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserActivity",
+      "activity": {
+        "text": "some text"
+      }
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "conversation.activity.channelId == 'test'",
+        "conversation.activity.serviceUrl == 'https://test.com'",
+        "conversation.activity.conversation.id == 'TestScriptTests_UserActivity'",
+        "conversation.activity.conversation.isGroup == false",
+        "conversation.activity.conversation.name == 'TestScriptTests_UserActivity'",
+        "conversation.activity.from.id == 'user1'",
+        "conversation.activity.from.name == 'User1'",
+        "conversation.activity.recipient.id == 'bot'",
+        "conversation.activity.recipient.name == 'Bot'",
+        "conversation.activity.locale == 'en-us'"
+      ]
+    },
+    {
+      "$kind": "Microsoft.Test.UserActivity",
+      "activity": {
+        "text": "some text",
+        "from": {
+          "id": "from id",
+          "name": "from name"
+        }
+      }
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "conversation.activity.from.id == 'from id'",
+        "conversation.activity.from.name == 'from name'"
+      ]
+    },
+    {
+      "$kind": "Microsoft.Test.UserActivity",
+      "activity": {
+        "text": "some text"
+      },
+      "user": "user id"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "conversation.activity.from.id == 'user id'",
+        "conversation.activity.from.name == 'user id'"
+      ]
+    }
+  ]
+}

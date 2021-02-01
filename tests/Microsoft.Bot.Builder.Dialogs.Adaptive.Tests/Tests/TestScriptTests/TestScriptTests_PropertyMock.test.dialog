@@ -5,15 +5,24 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "triggers": [
-            {
-                "$kind": "Microsoft.OnBeginDialog",
-                "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "hi"
-                    }
-                ]
-            }
+          {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "hi"
+              }
+            ]
+          },
+          {
+            "$kind": "Microsoft.OnError",
+            "actions": [
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${turn.dialogEvent.value.message}"
+              }
+            ]
+          }
         ]
     },
     "script": [

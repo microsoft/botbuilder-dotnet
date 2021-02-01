@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -18,7 +16,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         public SigninCard()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -30,7 +27,6 @@ namespace Microsoft.Bot.Schema
         {
             Text = text;
             Buttons = buttons;
-            CustomInit();
         }
 
         /// <summary>
@@ -50,8 +46,27 @@ namespace Microsoft.Bot.Schema
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
+        /// Creates a <see cref="SigninCard"/>.
         /// </summary>
-        partial void CustomInit();
+        /// <param name="text"> The <see cref="Text"/>text.</param>
+        /// <param name="buttonLabel"> The signin button label.</param>
+        /// <param name="url"> The sigin url.</param>
+        /// <returns> The created sigin card.</returns>
+        public static SigninCard Create(string text, string buttonLabel, string url)
+        {
+            return new SigninCard
+            {
+                Text = text,
+                Buttons = new List<CardAction>
+                {
+                    new CardAction
+                    {
+                       Title = buttonLabel,
+                       Type = ActionTypes.Signin,
+                       Value = url,
+                    },
+                },
+            };
+        }
     }
 }

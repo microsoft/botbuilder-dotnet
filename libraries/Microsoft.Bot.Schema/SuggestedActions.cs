@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Newtonsoft.Json;
@@ -11,14 +11,13 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// SuggestedActions that can be performed.
     /// </summary>
-    public partial class SuggestedActions
+    public class SuggestedActions
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SuggestedActions"/> class.
         /// </summary>
         public SuggestedActions()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -32,7 +31,19 @@ namespace Microsoft.Bot.Schema
         {
             To = to;
             Actions = actions;
-            CustomInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SuggestedActions"/> class.
+        /// </summary>
+        /// <param name="to">Ids of the recipients that the actions should be
+        /// shown to. These Ids are relative to the channelId and a subset of
+        /// all recipients of the activity.</param>
+        /// <param name="actions">Actions that can be shown to the user.</param>
+        /// <exception cref="ArgumentNullException">ArgumentNullException.</exception>
+        public SuggestedActions(IEnumerable<string> to, IEnumerable<CardAction> actions)
+            : this(to.ToArray(), actions.ToArray())
+        {
         }
 
         /// <summary>
@@ -54,10 +65,5 @@ namespace Microsoft.Bot.Schema
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking compat).
         public IList<CardAction> Actions { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

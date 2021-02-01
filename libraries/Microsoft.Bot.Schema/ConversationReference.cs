@@ -3,16 +3,16 @@
 
 namespace Microsoft.Bot.Schema
 {
+    using System;
     using System.Globalization;
     using Newtonsoft.Json;
 
     /// <summary>An object relating to a particular point in a conversation.</summary>
-    public partial class ConversationReference
+    public class ConversationReference
     {
         /// <summary>Initializes a new instance of the <see cref="ConversationReference"/> class.</summary>
         public ConversationReference()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="ConversationReference"/> class.</summary>
@@ -49,7 +49,6 @@ namespace Microsoft.Bot.Schema
             ChannelId = channelId;
             Locale = locale?.ToString();
             ServiceUrl = serviceUrl;
-            CustomInit();
         }
 
         /// <summary>Gets or sets (Optional) ID of the activity to refer to.</summary>
@@ -89,7 +88,24 @@ namespace Microsoft.Bot.Schema
         public string ServiceUrl { get; set; }
 #pragma warning restore CA1056 // Uri properties should not be strings
 
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        /// <summary>
+        /// Creates <see cref="Activity"/> from conversation reference as it is posted to bot.
+        /// </summary>
+        /// <returns>Continuation activity.</returns>
+        public Activity GetContinuationActivity()
+        {
+            return new Activity(ActivityTypes.Event)
+            {
+                Name = ActivityEventNames.ContinueConversation,
+                Id = Guid.NewGuid().ToString(),
+                ChannelId = ChannelId,
+                Locale = Locale,
+                ServiceUrl = ServiceUrl,
+                Conversation = Conversation,
+                Recipient = Bot,
+                From = User,
+                RelatesTo = this
+            };
+        }
     }
 }

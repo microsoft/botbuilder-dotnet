@@ -803,6 +803,11 @@ namespace AdaptiveExpressions.Tests
             Test("round(3.51)", 4),
             Test("round(3.55, 1)", 3.6),
             Test("round(3.12134, 3)", 3.121),
+            Test("abs(3.12134)", 3.12134),
+            Test("abs(-3.12134)", 3.12134),
+            Test("abs(0)", 0),
+            Test("sqrt(9)", 3),
+            Test("sqrt(0)", 0),
             #endregion
 
             #region  Date and time function test

@@ -95,6 +95,12 @@ steps:
    $content.FacebookAccessToken = "$(FacebookTestBotFacebookAccessToken)";
    $content | ConvertTo-Json | Set-Content $file;
   displayName: 'Set values in appsettings.json file.'
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish testbot'
@@ -102,7 +108,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     modifyOutputPath: false
 
 - task: AzureCLI@2

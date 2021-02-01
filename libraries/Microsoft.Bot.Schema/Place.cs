@@ -3,13 +3,12 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Place (entity type: "https://schema.org/Place").
     /// </summary>
-    public partial class Place
+    public class Place : Entity
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Place"/> class.
@@ -74,6 +73,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
-        partial void CustomInit();
+        private void CustomInit()
+        {
+            Type = "Place";
+        }
     }
 }

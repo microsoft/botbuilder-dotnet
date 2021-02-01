@@ -3,16 +3,15 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>Conversation account represents the identity of the conversation within a channel.</summary>
-    public partial class ConversationAccount
+    public class ConversationAccount
     {
         /// <summary>Initializes a new instance of the <see cref="ConversationAccount"/> class.</summary>
         public ConversationAccount()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="ConversationAccount"/> class.</summary>
@@ -32,7 +31,6 @@ namespace Microsoft.Bot.Schema
             AadObjectId = aadObjectId;
             Role = role;
             TenantId = tenantId;
-            CustomInit();
         }
 
         /// <summary> Gets or sets indicates whether the conversation contains more than two participants at the time the activity was generated.</summary>
@@ -59,6 +57,19 @@ namespace Microsoft.Bot.Schema
         /// <value>The account's object ID within Azure Active Directory.</value>
         [JsonProperty(PropertyName = "aadObjectId")]
         public string AadObjectId { get; set; }
+        
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined by the <see cref="ConversationAccount"/> type but that
+        /// might appear in the REST JSON object.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+        /// <remarks>With this, properties not represented in the defined type are not dropped when
+        /// the JSON object is deserialized, but are instead stored in this property. Such properties
+        /// will be written to a JSON object when the instance is serialized.</remarks>
+        [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+        public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>Gets or sets role of the entity behind the account (Example: User, Bot, etc.). Possible values include: 'user', 'bot'.</summary>
         /// <value>The role of the entity behind the account.</value>
@@ -69,8 +80,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The tenant ID.</value>
         [JsonProperty(PropertyName = "tenantId")]
         public string TenantId { get; set; }
-
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
     }
 }

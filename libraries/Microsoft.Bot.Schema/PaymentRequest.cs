@@ -11,14 +11,23 @@ namespace Microsoft.Bot.Schema
     /// A request to make a payment.
     /// </summary>
     [Obsolete("Bot Framework no longer supports payments.")]
-    public partial class PaymentRequest
+    public class PaymentRequest
     {
+        /// <summary>
+        /// Action type for Payment action.
+        /// </summary>
+        public const string PaymentActionType = "payment";
+
+        /// <summary>
+        /// Content-type for Payment card.
+        /// </summary>
+        public const string PaymentContentType = "application/vnd.microsoft.card.payment";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PaymentRequest"/> class.
         /// </summary>
         public PaymentRequest()
         {
-            CustomInit();
         }
 
         /// <summary>
@@ -39,7 +48,6 @@ namespace Microsoft.Bot.Schema
             Details = details;
             Options = options;
             Expires = expires;
-            CustomInit();
         }
 
         /// <summary>
@@ -80,10 +88,5 @@ namespace Microsoft.Bot.Schema
         /// <value>The expiration for the request in ISO 8601 duration format (.e.g 'P1D').</value>
         [JsonProperty(PropertyName = "expires")]
         public string Expires { get; set; }
-
-        /// <summary>
-        /// An initialization method that performs custom operations like setting defaults.
-        /// </summary>
-        partial void CustomInit();
     }
 }

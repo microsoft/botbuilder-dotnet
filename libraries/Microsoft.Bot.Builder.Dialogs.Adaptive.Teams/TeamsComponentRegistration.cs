@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<OnTeamsTeamUnarchived>(OnTeamsTeamUnarchived.Kind);
             yield return new DeclarativeType<OnTeamsMessagingExtensionBotMessagePreviewEdit>(OnTeamsMessagingExtensionBotMessagePreviewEdit.Kind);
             yield return new DeclarativeType<OnTeamsMessagingExtensionBotMessagePreviewSend>(OnTeamsMessagingExtensionBotMessagePreviewSend.Kind);
+            yield return new DeclarativeType<OnTeamsTabFetch>(OnTeamsTabFetch.Kind);
+            yield return new DeclarativeType<OnTeamsTabSubmit>(OnTeamsTabSubmit.Kind);
 
             // Actions
             yield return new DeclarativeType<GetMeetingParticipant>(GetMeetingParticipant.Kind);

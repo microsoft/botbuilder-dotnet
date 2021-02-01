@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
     /// </summary>
     public class DialogExpressionConverter : JsonConverter<DialogExpression>, IObservableConverter, IObservableJsonConverter
     {
+        private readonly Dictionary<string, DialogExpression> cache = new Dictionary<string, DialogExpression>(StringComparer.OrdinalIgnoreCase);
         private readonly InterfaceConverter<Dialog> converter;
         private readonly ResourceExplorer resourceExplorer;
 
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 var id = (string)reader.Value;
                 if (id.StartsWith("=", StringComparison.Ordinal))
                 {
-                    result = new DialogExpression(id);
+                    result = UpdateOrCreateExpression(id);
                 }
                 else
                 {
@@ -68,7 +69,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                     {
                         using (var jsonTextReader = new JsonTextReader(new StringReader($"\"{id}\"")))
                         {
-                            result = new DialogExpression((Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer));
+                            var dialog = (Dialog)converter.ReadJson(jsonTextReader, objectType, existingValue, serializer);
+                            result = UpdateOrCreateExpression(id, dialog);
                         }
                     }
                     catch (InvalidOperationException)
@@ -79,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                     catch (Exception)
 #pragma warning restore CA1031 // Do not catch general exception types
                     {
-                        result = new DialogExpression($"='{id}'");
+                        result = UpdateOrCreateExpression($"='{id}'");
                     }
                 }
             }
@@ -87,7 +89,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             {
                 using (var jTokenReader = new JTokenReader(jToken))
                 {
-                    result = new DialogExpression((Dialog)this.converter.ReadJson(jTokenReader, objectType, existingValue, serializer));
+                    var dialog = (Dialog)this.converter.ReadJson(jTokenReader, objectType, existingValue, serializer);
+                    result = UpdateOrCreateExpression(dialog?.Id, dialog);
                 }
             }
 
@@ -138,6 +141,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
             }
 
             this.converter.RegisterObserver(observer);
+        }
+
+        private DialogExpression UpdateOrCreateExpression(string id, Dialog dialog = null)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException("Expected non-empty dialog id in expression.", nameof(id));
+            }
+
+            if (cache.ContainsKey(id))
+            {
+                cache[id].SetValue(dialog);
+                return cache[id];
+            }
+            else
+            {
+                var result = new DialogExpression((Dialog)dialog);
+                cache.Add(id, result);
+                return result;
+            }
         }
     }
 }

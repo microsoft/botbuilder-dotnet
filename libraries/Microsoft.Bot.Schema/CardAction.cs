@@ -9,12 +9,11 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// A clickable action.
     /// </summary>
-    public partial class CardAction
+    public class CardAction
     {
         /// <summary>Initializes a new instance of the <see cref="CardAction"/> class.</summary>
         public CardAction()
         {
-            CustomInit();
         }
 
         /// <summary>Initializes a new instance of the <see cref="CardAction"/> class.</summary>
@@ -37,7 +36,6 @@ namespace Microsoft.Bot.Schema
             DisplayText = displayText;
             Value = value;
             ChannelData = channelData;
-            CustomInit();
         }
 
         /// <summary>
@@ -83,7 +81,21 @@ namespace Microsoft.Bot.Schema
         [JsonProperty(PropertyName = "imageAltText")]
         public string ImageAltText { get; set; }
 
-        /// <summary>An initialization method that performs custom operations like setting defaults.</summary>
-        partial void CustomInit();
+        /// <summary>
+        /// Implicit conversion of string to CardAction to simplify creation of
+        /// CardActions with string values.
+        /// </summary>
+        /// <param name="input">input.</param>
+        public static implicit operator CardAction(string input) => new CardAction(title: input, value: input);
+
+        /// <summary>
+        /// Creates a <see cref="CardAction"/> from the given input.
+        /// </summary>
+        /// <param name="input">Represents the title and value for the <see cref="CardAction"/>.</param>
+        /// <returns>A new <see cref="CardAction"/> instance.</returns>
+        public static CardAction FromString(string input)
+        {
+            return new CardAction(title: input, value: input);
+        }
     }
 }
