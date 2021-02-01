@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                     {
                         var content = response.Content != null ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
-                        var invokeResponse = JsonConvert.DeserializeObject<InvokeResponse<T>>(content ?? "{}");
+                        var invokeResponse = string.IsNullOrEmpty(content) ? new InvokeResponse<T>() : JsonConvert.DeserializeObject<InvokeResponse<T>>(content);
                         invokeResponse.Status = (int)response.StatusCode;
                         return invokeResponse;
                     }
