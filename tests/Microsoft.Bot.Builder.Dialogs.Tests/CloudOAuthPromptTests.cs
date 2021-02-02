@@ -78,7 +78,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // The Activity for the turn. 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -160,7 +159,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // The Activity for the turn. 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -253,7 +251,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // The Activity for the turn. 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -337,8 +334,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
 
-            // The Activity for the turn. 
-            var authHeader = string.Empty;
+            // The Activity for the turn.
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -418,7 +414,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // The Activity for the turn. 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -493,7 +488,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     0,
                     new DialogInstance
                     {
-                        Id = "OAuthPrompt", 
+                        Id = "OAuthPrompt",
                         State = new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddHours(8) }, { "caller", null }, }
                     });
 
@@ -510,7 +505,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 { "expiration", new JValue("expiration") },
             };
 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
@@ -592,7 +586,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // The Activity for the turn. 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Invoke,
@@ -683,7 +676,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 { "token", tokenExchangeRequestToken },
             };
 
-            var authHeader = string.Empty;
             var activity = new Activity
             {
                 Type = ActivityTypes.Invoke,
@@ -707,6 +699,75 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var tokenExchangeInvokeResponse = (TokenExchangeInvokeResponse)invokeResponse.Body;
             Assert.Equal(tokenExchangeInvokeRequestId, tokenExchangeInvokeResponse.Id);
             Assert.Equal(connectionName, tokenExchangeInvokeResponse.ConnectionName);
+        }
+
+        [Fact]
+        public async Task OAuthPromptSignOutUser()
+        {
+            // Arrange
+            var userId = "user-id";
+            var connectionName = "connection-name";
+            var channelId = "channel-id";
+
+            // Arrange the Adapter.
+            var mockConnectorFactory = new Mock<ConnectorFactory>();
+            mockConnectorFactory.Setup(
+                x => x.CreateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ConnectorClient(new Uri("http://tempuri/")));
+
+            var mockUserTokenClient = new Mock<UserTokenClient>();
+            mockUserTokenClient.Setup(
+                x => x.SignOutUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
+
+            var authenticateRequestResult = new AuthenticateRequestResult
+            {
+                CallerId = "callerId",
+                ClaimsIdentity = new ClaimsIdentity(),
+                ConnectorFactory = mockConnectorFactory.Object,
+            };
+
+            var mockBotFrameworkAuthentication = new Mock<BotFrameworkAuthentication>();
+            mockBotFrameworkAuthentication.Setup(
+                x => x.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authenticateRequestResult);
+            mockBotFrameworkAuthentication.Setup(
+                x => x.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(mockUserTokenClient.Object);
+
+            var adapter = new TestCloudAdapter(mockBotFrameworkAuthentication.Object);
+
+            // Add the OAuthPrompt.
+            var oauthPromptSettings = new OAuthPromptSettings
+            {
+                Text = "Please sign in",
+                ConnectionName = connectionName,
+                Title = "Sign in",
+            };
+
+            // The on-turn callback.
+            BotCallbackHandler callback = async (turnContext, cancellationToken) =>
+            {
+                var oauthPrompt = new OAuthPrompt("OAuthPrompt", oauthPromptSettings);
+                await oauthPrompt.SignOutUserAsync(turnContext, cancellationToken);
+            };
+
+            // The Activity for the turn.
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Name = SignInConstants.TokenExchangeOperationName,
+                From = new ChannelAccount { Id = userId },
+                Conversation = new ConversationAccount { Id = "conversation-id" },
+                ChannelId = channelId,
+                Text = "logout",
+            };
+
+            // Act
+            var invokeResponse = await adapter.ProcessAsync(string.Empty, activity, callback);
+
+            // Assert
+            mockUserTokenClient.Verify(
+                x => x.SignOutUserAsync(It.Is<string>(s => s == userId), It.Is<string>(s => s == connectionName), It.Is<string>(s => s == channelId), It.IsAny<CancellationToken>()), Times.Once());
         }
     }
 }
