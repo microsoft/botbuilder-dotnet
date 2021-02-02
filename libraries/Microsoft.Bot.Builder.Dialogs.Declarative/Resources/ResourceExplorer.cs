@@ -484,7 +484,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
                 var (token, range) = SourceScope.ReadTokenRange(readerJson, sourceContext);
 
-                AutoAssignId(resource, token, sourceContext);
+                AutoAssignId(resource, token, sourceContext, range);
                 range.Path = resource.FullName ?? resource.Id;
                 return (token, range);
             }
@@ -679,13 +679,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-        private void AutoAssignId(Resource resource, JToken jToken, SourceContext sourceContext)
+        private void AutoAssignId(Resource resource, JToken jToken, SourceContext sourceContext, SourceRange range)
         {
             if (sourceContext is ResourceSourceContext resourceSourceContext)
             {
-                if (jToken is JObject jObj && !jObj.ContainsKey("id") && !resourceSourceContext.DefaultIdMap.ContainsKey(jToken))
+                if (jToken is JObject jObj && !jObj.ContainsKey("id"))
                 {
-                    resourceSourceContext.DefaultIdMap.Add(jToken, resource.Id);
+                    jObj["id"] = resource.Id;
+                    range.EndPoint.LineIndex += 1;
+
+                    if (!resourceSourceContext.DefaultIdMap.ContainsKey(jToken))
+                    {
+                        resourceSourceContext.DefaultIdMap.Add(jToken, resource.Id);
+                    }
                 }
             }
         }

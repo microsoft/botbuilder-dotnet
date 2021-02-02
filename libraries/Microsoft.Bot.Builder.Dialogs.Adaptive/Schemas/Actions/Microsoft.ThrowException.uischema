@@ -3,5 +3,13 @@
     "form": {
         "label": "Throw an exception",
         "subtitle": "Throw an exception"
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "PropertyDescription",
+            "property": "=coalesce(action.errorValue, \"?\")",
+            "description": "= ErrorValue"
+        }
     }
 }

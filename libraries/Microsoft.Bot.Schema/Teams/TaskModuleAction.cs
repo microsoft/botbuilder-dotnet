@@ -16,20 +16,28 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="title">Button title.</param>
         /// <param name="value">Free hidden value binding with button. The value will be sent out with "task/fetch" invoke event.</param>
-        public TaskModuleAction(string title, object value)
+        public TaskModuleAction(string title, object value = null)
             : base("invoke", title)
         {
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
-            serializerSettings.NullValueHandling = NullValueHandling.Ignore;
-
             JToken data;
-            if (value is string)
+            if (value == null)
             {
-                data = JObject.Parse(value as string);
+                data = new JObject();
             }
             else
             {
-                data = JObject.FromObject(value, JsonSerializer.Create(serializerSettings));
+                if (value is string)
+                {
+                    data = JObject.Parse(value as string);
+                }
+                else
+                {
+                    data = JObject.FromObject(value, JsonSerializer.Create(new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        Formatting = Formatting.None
+                    }));
+                }
             }
 
             data["type"] = "task/fetch";

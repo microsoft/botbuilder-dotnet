@@ -9,5 +9,12 @@
             "options",
             "*"
         ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "DialogRef",
+            "dialog": "=action.dialog"
+        }
     }
 }

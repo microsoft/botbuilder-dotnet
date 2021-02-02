@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Schema
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Represents a point in a bot's logic, to help with bot debugging.

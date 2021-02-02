@@ -1,0 +1,56 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendTaskModuleCardResponse",
+                        "title": "some title",
+                        "height": 1,
+                        "width": 2,
+                        "completionBotId": "someBotId",
+                        "card": {
+                            "type": "message",
+                            "attachments": [
+                                {
+                                    "contentType": "application/vnd.microsoft.card.thumbnail",
+                                    "content": {
+                                        "title": "card-title"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+          "assertions": [
+            "type == 'invokeResponse'",
+            "conversation.id == 'Action_SendTaskModuleCardResponse'",
+            "value.body.task.value.completionBotId == 'someBotId'",
+            "value.body.task.value.height == 1",
+            "value.body.task.value.title == 'some title'",
+            "value.body.task.value.width == 2",
+            "value.body.task.value.card.contentType == 'application/vnd.microsoft.card.thumbnail'",
+            "value.body.task.value.card.content.title == 'card-title'"
+          ]
+        }
+    ]
+}

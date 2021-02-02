@@ -1,0 +1,13 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send a card response on item selection",
+        "subtitle": "Send a messaging extension response when an item is selected",
+        "order": [
+            "card",
+            "cacheType",
+            "cacheDuration",
+            "*"
+        ]
+    }
+}

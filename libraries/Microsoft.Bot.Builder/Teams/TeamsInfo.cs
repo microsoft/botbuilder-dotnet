@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets a pagined list of members of one-on-one, group, or team conversation.
+        /// Gets a paginated list of members of one-on-one, group, or team conversation.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="pageSize"> Suggested number of entries on a page. </param>
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the list of members in a teams scoped conversation.
+        /// Gets the member of a teams scoped conversation.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
         /// <param name="userId"> user id. </param>
