@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -285,27 +285,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Lookup dialog
                     var dialog = this.FindDialog(this.ActiveDialog.Id);
+
                     if (dialog == null)
                     {
-                        var dc = this;
-                        while (dialog == null && dc != null)
-                        {
-                            dc = dc.Parent;
-                            dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                        }
-
-                        if (dialog == null)
-                        {
-                            throw new InvalidOperationException($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
-                        }
-                        else
-                        {
-                            return await dialog.BeginDialogAsync(dc, cancellationToken).ConfigureAwait(false);
-                        }
+                        throw new InvalidOperationException($"Failed to continue dialog. A dialog with id {this.ActiveDialog.Id} could not be found.");
                     }
 
                     // Continue dialog execution
-                    return await dialog.ContinueDialogAsync(this, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -367,22 +354,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var dialog = this.FindDialog(ActiveDialog.Id);
                     if (dialog == null)
                     {
-                        var dc = this;
-                        while (dialog == null && dc != null)
-                        {
-                            dc = dc.Parent;
-                            dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                        }
-
-                        if (dialog == null)
-                        {
-                            throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
-                        }
-                        else
-                        {
-                            return await dialog.BeginDialogAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
-                    }                    
+                        throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                    }
 
                     // Return result to previous dialog
                     await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
