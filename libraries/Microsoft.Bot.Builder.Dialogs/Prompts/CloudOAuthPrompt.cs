@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="validator">A custom validator that can be used against Message activities.</param>
         public CloudOAuthPrompt(OAuthPromptSettings settings, PromptValidator<TokenResponse> validator)
         {
-            _settings = settings;
+            _settings = settings ?? throw new ArgumentNullException(settings);
             _validator = validator;
         }
 
