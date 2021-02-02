@@ -1442,7 +1442,7 @@ namespace AdaptiveExpressions.Tests
         }
 
         [Fact]
-        public void TestCustomFunction()
+        public void TestNumericEvaluator()
         {
             var functionName = "Math.sum";
             Expression.Functions.Add(
