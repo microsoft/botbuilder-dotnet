@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="settings">Additional OAuth settings to use with this instance of the prompt.</param>
         /// <param name="validator">A custom validator that can be used against Message activities.</param>
-        public CloudOAuthPrompt(OAuthPromptSettings settings, PromptValidator<TokenResponse> validator)
+        public CloudOAuthPrompt(OAuthPromptSettings settings, PromptValidator<TokenResponse> validator = null)
         {
             _settings = settings ?? throw new ArgumentNullException(settings);
             _validator = validator;
