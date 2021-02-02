@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -24,21 +25,23 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _loginEndpoint;
         private readonly string _callerId;
         private readonly string _channelService;
+        private readonly string _oauthEndpoint;
         private readonly ServiceClientCredentialsFactory _credentialFactory;
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
-        protected BuiltinBotFrameworkAuthentication(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        protected BuiltinBotFrameworkAuthentication(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, string oauthEndpoint, ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
             _callerId = callerId;
             _channelService = channelService;
+            _oauthEndpoint = oauthEndpoint;
             _credentialFactory = credentialFactory;
             _authConfiguration = authConfiguration;
             _httpClient = httpClient;
-            _logger = logger;
+            _logger = logger ?? NullLogger.Instance;
         }
 
         public static string GetAppId(ClaimsIdentity claimsIdentity)
@@ -63,22 +66,23 @@ namespace Microsoft.Bot.Connector.Authentication
             
             var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, cancellationToken).ConfigureAwait(false);
 
-            var appId = GetAppId(claimsIdentity);
+            var connectorFactory = new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialFactory, _httpClient, _logger);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
-
-            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
+            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Scope = scope, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
 
-        public override async Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            var scope = audience ?? _toChannelFromBotOAuthScope;
+            return new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialFactory, _httpClient, _logger);
+        }
 
+        public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        {
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
+            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
 
-            return new ProactiveCredentialsResult { Credentials = credentials, Scope = scope };
+            return new UserTokenClientImpl(appId, credentials, _oauthEndpoint, _httpClient, _logger);
         }
 
         private IChannelProvider GetChannelProvider()
