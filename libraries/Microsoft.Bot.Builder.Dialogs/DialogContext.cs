@@ -1,4 +1,5 @@
 ﻿﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+
 // Licensed under the MIT License.
 
 using System;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -352,9 +354,40 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Lookup dialog
                     var dialog = this.FindDialog(ActiveDialog.Id);
+                    if (ActiveDialog.Id.StartsWith("ActionScope[IfCondition", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        dialog = null;
+                    }
+
                     if (dialog == null)
                     {
-                        throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                        var rootDialog = this.DialogManager.RootDialog;
+                        DialogContext dc = this;
+                        while (dc.ActiveDialog.Id != rootDialog.Id)
+                        {
+                            dc = dc.Parent;
+                        }
+
+                        var newDc = new DialogContext(dc.Dialogs, dc.Context, new DialogState());
+
+                        var instance = new DialogInstance
+                        {
+                            Id = rootDialog.Id,
+                            State = new Dictionary<string, object>(),
+                        };
+
+                        newDc.Stack.Insert(0, instance);
+
+                        try
+                        {
+                            return await rootDialog.BeginDialogAsync(newDc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+#pragma warning disable CS0168 // Variable is declared but never used
+                        catch (Exception err)
+#pragma warning restore CS0168 // Variable is declared but never used
+                        {
+                            throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                        }                         
                     }
 
                     // Return result to previous dialog
