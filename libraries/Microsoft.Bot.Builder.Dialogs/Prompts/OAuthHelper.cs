@@ -182,10 +182,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Check whether the persisted timout has now expired. This is used in the Continue function.
+        /// Check whether the persisted timeout has now expired. This is used in the Continue function.
         /// </summary>
         /// <param name="dc">The DialogContext.</param>
-        /// <returns>Boolean indicating whether the timout has expired.</returns>
+        /// <returns>Boolean indicating whether the timeout has expired.</returns>
         public static bool HasTimeoutExpired(DialogContext dc)
         {
             var state = dc.ActiveDialog.State;

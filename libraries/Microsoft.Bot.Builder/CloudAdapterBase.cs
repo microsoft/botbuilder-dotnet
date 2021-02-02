@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder
         public override Task ContinueConversationAsync(string botAppId, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
-            ValidateCointinuationActivity(continuationActivity);
+            ValidateContinuationActivity(continuationActivity);
 
             return ProcessProactiveAsync(CreateClaimsIdentity(botAppId), continuationActivity, null, callback, cancellationToken);
         }
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder
         {
             _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
-            ValidateCointinuationActivity(continuationActivity);
+            ValidateContinuationActivity(continuationActivity);
 
             return ProcessProactiveAsync(claimsIdentity, continuationActivity, null, callback, cancellationToken);
         }
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder
         {
             _ = claimsIdentity ?? throw new ArgumentNullException(nameof(claimsIdentity));
             _ = callback ?? throw new ArgumentNullException(nameof(callback));
-            ValidateCointinuationActivity(continuationActivity);
+            ValidateContinuationActivity(continuationActivity);
 
             return ProcessProactiveAsync(claimsIdentity, continuationActivity, audience, callback, cancellationToken);
         }
@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder
             });
         }
 
-        private void ValidateCointinuationActivity(Activity continuationActivity)
+        private void ValidateContinuationActivity(Activity continuationActivity)
         {
             _ = continuationActivity ?? throw new ArgumentNullException(nameof(continuationActivity));
             _ = continuationActivity.Conversation ?? throw new ArgumentException("The continuation Activity should contain a Conversation value.");

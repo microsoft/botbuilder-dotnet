@@ -620,6 +620,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (userTokenClient != null)
             {
                 await userTokenClient.SignOutUserAsync(turnContext.Activity.From.Id, _settings.ConnectionName, turnContext.Activity.ChannelId, cancellationToken).ConfigureAwait(false);
+                return;
             }
 
             if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))

@@ -46,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var tokenResponse = await userTokenClient.GetUserTokenAsync(dc.Context.Activity.From.Id, _settings.ConnectionName, dc.Context.Activity.ChannelId, null, cancellationToken).ConfigureAwait(false);
             if (tokenResponse != null)
             {
+                // We already have a token, no need to show a prompt.
                 return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -116,11 +117,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static async Task<bool> CheckValidatorAsync(DialogContext dc, PromptValidator<TokenResponse> validator, TokenResponse tokenResponse, CancellationToken cancellationToken)
         {
+            const string AttemptCount = "AttemptCount";
+
             if (validator != null)
             {
                 // Increment attempt count.
                 var promptState = dc.ActiveDialog.State[OAuthHelper.PersistedState].CastTo<IDictionary<string, object>>();
-                promptState["AttemptCount"] = Convert.ToInt32(promptState["AttemptCount"], CultureInfo.InvariantCulture) + 1;
+                promptState[AttemptCount] = Convert.ToInt32(promptState[AttemptCount], CultureInfo.InvariantCulture) + 1;
 
                 // Call the custom validator.
                 var recognized = new PromptRecognizerResult<TokenResponse> { Succeeded = tokenResponse != null, Value = tokenResponse };

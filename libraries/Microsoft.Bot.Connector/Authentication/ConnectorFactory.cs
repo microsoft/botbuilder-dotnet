@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// A factory method used to create <see cref="IConnectorClient"/> instances.
         /// </summary>
         /// <param name="serviceUrl">The url for the client.</param>
-        /// <param name="audience">The audience for the credentails the client will use.</param>
+        /// <param name="audience">The audience for the credentials the client will use.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A Task of <see cref="IConnectorClient"/>.</returns>
         public abstract Task<IConnectorClient> CreateAsync(string serviceUrl, string audience, CancellationToken cancellationToken);

@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override async Task<IConnectorClient> CreateAsync(string serviceUrl, string audience, CancellationToken cancellationToken)
         {
-            // Use the Credentials Factory to create credentails specific to this particular cloud environment.
+            // Use the credentials factory to create credentails specific to this particular cloud environment.
             var credentials = await _credentialFactory.CreateCredentialsAsync(_appId, audience ?? _toChannelFromBotOAuthScope, _loginEndpoint, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
             // A new connector client for making calls against this serviceUrl using credentials derived from the current appId and the specified audience.
