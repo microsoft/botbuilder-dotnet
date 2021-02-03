@@ -1,0 +1,91 @@
+{
+    "$kind": "Microsoft.AdaptiveDialog",
+    "defaultResultProperty": "dialog.result",
+    "autoEndDialog": false,
+    "triggers": [
+        {"$kind": "Microsoft.OnBeginDialog",
+            "actions": [{
+                "$kind": "Microsoft.SendActivity",
+                "activity": "Welcome to Switch Language Test!"
+            }]
+        },
+        {
+            "$kind": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "$designer": {
+                        "id": "003038"
+                    },
+                    "activity": "${SendActivity_003038()}"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "$designer": {
+                "id": "ptAZgj",
+                "name": "English"
+            },
+            "intent": "English",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "$designer": {
+                        "id": "A64Qwv"
+                    },
+                    "property": "turn.locale",
+                    "value": "en-us"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "$designer": {
+                        "id": "HFemAd"
+                    },
+                    "activity": "${SendActivity_HFemAd()}"
+                }
+            ]
+        },
+        {
+            "$kind": "Microsoft.OnIntent",
+            "$designer": {
+                "id": "g2laRy",
+                "name": "Spanish"
+            },
+            "intent": "Spanish",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "$designer": {
+                        "id": "A64Qwv"
+                    },
+                    "property": "turn.locale",
+                    "value": "es-ar"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "$designer": {
+                        "id": "Eyc6Tf"
+                    },
+                    "activity": "${SendActivity_Eyc6Tf()}"
+                }
+            ]
+        }
+    ],
+    "generator": "common.lg",
+    "$schema": "https://raw.githubusercontent.com/microsoft/BotFramework-Composer/stable/Composer/packages/server/schemas/sdk.schema",
+    "id": "EchoBot-2",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "English",
+                "pattern": "english"
+            },
+            {
+                "intent": "Spanish",
+                "pattern": "spanish"
+            }
+        ]
+    }
+}

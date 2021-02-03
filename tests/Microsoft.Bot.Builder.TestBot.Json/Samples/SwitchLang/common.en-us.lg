@@ -1,0 +1,23 @@
+# WelcomeUser
+- Welcome to the EchoBot sample
+
+# SendActivity_Welcome
+- ${WelcomeUser()}
+
+# SendActivity_003038
+- You said '${turn.activity.text}'
+
+# SendActivity_4PZq8B()
+- 
+# SendActivity_HFemAd()
+- switching to english
+# SendActivity_NBGv2e()
+- 
+# SendActivity_mpv30x()
+- 
+# SendActivity_5ncSjI()
+- 
+# SendActivity_lGCwKn()
+- In PreLoad: DEBUG: Turn: ${turn.locale} Conv: ${conversation.locale} Activity: ${turn.activity.locale}
+# SendActivity_Eyc6Tf()
+- switching to spanish
