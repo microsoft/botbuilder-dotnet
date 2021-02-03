@@ -40,10 +40,6 @@ namespace Microsoft.Bot.Connector
         {
             var result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(bot, user, activity), null, cancellationToken).ConfigureAwait(false);
             var res = result.Body;
-            if (res.ServiceUrl != null)
-            {
-                MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
-            }
 
             return res;
         }
@@ -74,10 +70,6 @@ namespace Microsoft.Bot.Connector
         {
             var result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(botAddress, userAddress, activity), null, cancellationToken).ConfigureAwait(false);
             var res = result.Body;
-            if (res.ServiceUrl != null)
-            {
-                MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
-            }
 
             return res;
         }
