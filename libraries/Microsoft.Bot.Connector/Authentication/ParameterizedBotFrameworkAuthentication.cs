@@ -132,7 +132,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Validate the header and extract claims.
             var claimsIdentity = await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, credentialFactory, activity.ChannelId, authConfiguration, activity.ServiceUrl, httpClient, cancellationToken).ConfigureAwait(false);
-            AppCredentials.TrustServiceUrl(activity.ServiceUrl);
             return claimsIdentity;
         }
 
