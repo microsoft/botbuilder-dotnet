@@ -273,6 +273,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task DialogManager_ContainerRegistration_OnCyclicalDialogStructures()
+        {
+            var root = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>
+                {
+                    new OnBeginDialog()
+                }
+            };
+
+            (root.Triggers.Single() as OnBeginDialog).Actions = new List<Dialog> { new EndTurn(), root };
+
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter();
+            adapter
+                .UseStorage(storage)
+                .UseBotState(userState, convoState);
+
+            // The inner adaptive dialog should be registered on the DialogManager after OnTurn.
+            var dm = new DialogManager(root);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                // First OnTurn invocation will trigger registration of dependencies.
+                // If registration is not protected against cyclical dialog structures, 
+                // this call will throw StackOverflowException.
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+                .SendConversationUpdate()
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task DialogManager_ContainerRegistration_DoubleNesting()
         {
             // Create the following dialog tree

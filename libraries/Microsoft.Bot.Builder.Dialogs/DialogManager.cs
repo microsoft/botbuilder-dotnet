@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -382,7 +383,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 foreach (var inner in container.Dialogs.GetDialogs())
                 {
-                    RegisterContainerDialogs(inner);
+                    // Only continue recursive registration if we have not seen and registered 
+                    // the current dialog.
+                    if (!Dialogs.GetDialogs().Any(d => d.Id.Equals(inner.Id, StringComparison.Ordinal)))
+                    {
+                        RegisterContainerDialogs(inner);
+                    }
                 }
             }
         }

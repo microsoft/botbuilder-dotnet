@@ -15,5 +15,12 @@
                 }
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ListOverview",
+            "items": "=foreach(action.assignments, x => concat(coalesce(x.property, \"?\"), \" : \", coalesce(x.value, \"?\")))"
+        }
     }
 }

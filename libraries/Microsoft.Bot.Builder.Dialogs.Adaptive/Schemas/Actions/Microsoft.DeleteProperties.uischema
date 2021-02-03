@@ -11,5 +11,12 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ListOverview",
+            "items": "=action.properties"
+        }
     }
 }

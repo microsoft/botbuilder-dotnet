@@ -46,6 +46,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply("World")
                 .Send("World what?")
                 .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+            .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task JsonDialogLoad_CycleDetection_AdaptiveDialogType()
+        {
+            await BuildTestFlow<AdaptiveDialog>(@"Root.dialog", nameof(JsonDialogLoad_CycleDetection))
+                .SendConversationUpdate()
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
+                .Send("Hello what?")
+                .AssertReply("World")
+                .Send("World what?")
+                .AssertReply("Hello")
             .StartTestAsync();
         }
 
@@ -450,8 +479,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private TestFlow BuildTestFlow(string resourceName, string testName, bool sendTrace = false)
         {
+            return BuildTestFlow<Dialog>(resourceName, testName, sendTrace);
+        }
+
+        private TestFlow BuildTestFlow<T>(string resourceName, string testName, bool sendTrace = false)
+            where T : Dialog
+        {
             var adapter = InitializeAdapter(testName, sendTrace);
-            var dialog = _resourceExplorer.LoadType<Dialog>(resourceName);
+            var dialog = _resourceExplorer.LoadType<T>(resourceName);
             return GetTestFlow(dialog, adapter);
         }
 

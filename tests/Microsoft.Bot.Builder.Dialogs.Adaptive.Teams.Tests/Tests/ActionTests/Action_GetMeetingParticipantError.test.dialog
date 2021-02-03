@@ -6,15 +6,15 @@
         "id": "planningTest",
         "triggers": [
             {
-                "$kind": "Microsoft.OnBeginDialog",
+                "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
                         "$kind": "Teams.GetMeetingParticipant",
-                        "property": "$user.participant"
+                        "property": "$result"
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${user.participant}"
+                        "activity": "${$result}"
                     }
                 ]
             },
@@ -23,7 +23,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "error"
+                        "activity": "${turn.dialogEvent.value.message}"
                     }
                 ]
             }
@@ -36,7 +36,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "error"
+            "text": "Teams.GetMeetingParticipant works only on the Teams channel."
         }
     ]
 }

@@ -92,6 +92,12 @@ steps:
       Write-Host "##vso[task.complete result=Failed;]DONE"
     }
   displayName: Validate variables
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
@@ -99,7 +105,7 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     modifyOutputPath: false
     verbosityPack: 'Diagnostic'
     verbosityRestore: 'Diagnostic'

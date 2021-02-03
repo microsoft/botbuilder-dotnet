@@ -15,12 +15,12 @@
             "title": "Property",
             "description": "Property (named location to store information).",
             "examples": [
-                "user.participantInfo"
+                "dialog.participantInfo"
             ]
         },
         "meetingId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Meeting Id",
+            "title": "Meeting id",
             "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
             "examples": [
                 "=turn.activity.channelData.meeting.id"
@@ -28,7 +28,7 @@
         },
         "participantId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Participant Id",
+            "title": "Participant id",
             "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
             "examples": [
                 "=turn.activity.from.aadObjectId"
@@ -36,7 +36,7 @@
         },
         "tenantId": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Tenant Id",
+            "title": "Tenant id",
             "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
             "examples": [
                 "=turn.activity.channelData.tenant.id"
