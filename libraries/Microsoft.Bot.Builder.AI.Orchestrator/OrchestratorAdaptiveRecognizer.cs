@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             if (_snapshotFile == null)
             {
-                throw new ArgumentNullException($"Missing `ShapshotFile` information.");
+                throw new ArgumentNullException($"Missing `SnapshotFile` information.");
             }
 
             if (_resolver != null)
@@ -255,10 +255,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 }
             });
 
-            var fullSnapShotPath = Path.GetFullPath(PathUtils.NormalizePath(_snapshotFile));
+            var fullSnapShotFile = Path.GetFullPath(PathUtils.NormalizePath(_snapshotFile));
 
             // Load the snapshot
-            string content = File.ReadAllText(fullSnapShotPath);
+            string content = File.ReadAllText(fullSnapShotFile);
             byte[] snapShotByteArray = Encoding.UTF8.GetBytes(content);
 
             // Create label resolver
