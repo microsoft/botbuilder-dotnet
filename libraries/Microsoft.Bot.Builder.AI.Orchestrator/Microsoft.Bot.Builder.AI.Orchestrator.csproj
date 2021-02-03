@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <!-- TODO: Change TargetFramework to netstandard2.0 once Orchestrator supports it -->
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.AI.Orchestrator</PackageId>
     <Description>This library implements .NET support for Orchestrator</Description>
     <Summary>This library implements .NET support for Orchestrator</Summary>
