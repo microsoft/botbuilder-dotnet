@@ -354,33 +354,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     // Lookup dialog
                     var dialog = this.FindDialog(ActiveDialog.Id);
-                    if (ActiveDialog.Id.StartsWith("ActionScope[IfCondition", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        dialog = null;
-                    }
-
                     if (dialog == null)
                     {
                         var rootDialog = this.DialogManager.RootDialog;
-                        DialogContext dc = this;
-                        while (dc.ActiveDialog.Id != rootDialog.Id)
-                        {
-                            dc = dc.Parent;
-                        }
-
-                        var newDc = new DialogContext(dc.Dialogs, dc.Context, new DialogState());
-
-                        var instance = new DialogInstance
-                        {
-                            Id = rootDialog.Id,
-                            State = new Dictionary<string, object>(),
-                        };
-
-                        newDc.Stack.Insert(0, instance);
 
                         try
                         {
-                            return await rootDialog.BeginDialogAsync(newDc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            return await this.ReplaceDialogAsync(rootDialog.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 #pragma warning disable CS0168 // Variable is declared but never used
                         catch (Exception err)
