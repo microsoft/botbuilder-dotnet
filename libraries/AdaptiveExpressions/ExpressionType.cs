@@ -83,6 +83,8 @@ namespace AdaptiveExpressions
         public const string Flatten = "flatten";
         public const string Unique = "unique";
         public const string Reverse = "reverse";
+        public const string Any = "any";
+        public const string All = "all";
 
         // DateTime
         public const string AddDays = "addDays";
