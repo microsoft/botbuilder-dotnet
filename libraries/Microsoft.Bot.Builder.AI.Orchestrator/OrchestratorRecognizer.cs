@@ -38,8 +38,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <value>
         /// Model path.
         /// </value>
-        [JsonProperty("modelPath")]
-        public string ModelPath { get; set; }
+        [JsonProperty("modelFolder")]
+        public string ModelFolder { get; set; }
 
         /// <summary>
         /// Gets or sets the full path to Orchestrator snapshot file to use.
@@ -47,8 +47,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <value>
         /// Snapshot path.
         /// </value>
-        [JsonProperty("snapshotPath")]
-        public string SnapshotPath { get; set; }
+        [JsonProperty("snapshotFile")]
+        public string SnapshotFile { get; set; }
 
         /// <summary>
         /// Gets or sets an external entity recognizer.
@@ -83,8 +83,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 Id = this.Id,
                 DetectAmbiguousIntents = this.DetectAmbiguousIntents,
-                ModelPath = this.ModelPath,
-                SnapshotPath = this.SnapshotPath,
+                ModelFolder = this.ModelFolder,
+                SnapshotFile = this.SnapshotFile,
                 DisambiguationScoreThreshold = this.DisambiguationScoreThreshold,
                 ExternalEntityRecognizer = this.ExternalEntityRecognizer,
             };
