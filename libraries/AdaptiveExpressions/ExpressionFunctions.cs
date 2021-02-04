@@ -30,6 +30,7 @@ namespace AdaptiveExpressions
         {
             var functions = new List<ExpressionEvaluator>
             {
+                new BuiltinFunctions.Abs(),
                 new BuiltinFunctions.Accessor(),
                 new BuiltinFunctions.Add(),
                 new BuiltinFunctions.AddDays(),
@@ -147,6 +148,7 @@ namespace AdaptiveExpressions
                 new BuiltinFunctions.SortBy(),
                 new BuiltinFunctions.SortByDescending(),
                 new BuiltinFunctions.Split(),
+                new BuiltinFunctions.Sqrt(),
                 new BuiltinFunctions.StartOfDay(),
                 new BuiltinFunctions.StartOfHour(),
                 new BuiltinFunctions.StartOfMonth(),

@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Microsoft.Bot.Builder.Azure.Blobs;
 using Newtonsoft.Json;
@@ -12,7 +13,7 @@ using Xunit.Sdk;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
-    public class BlobsStorageTests : BlobStorageBaseTests, IDisposable
+    public class BlobsStorageTests : BlobStorageBaseTests, IAsyncLifetime
     {
         private readonly string _testName;
 
@@ -34,7 +35,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override string ContainerName => $"blobs{_testName.ToLower().Replace("_", string.Empty)}";
 
-        public async void Dispose()
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {

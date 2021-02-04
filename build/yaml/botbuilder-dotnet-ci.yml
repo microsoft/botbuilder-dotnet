@@ -27,6 +27,7 @@ variables:
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
 #  DotNetCoverallsToken: define this in Azure
 #  GitHubCommentApiKey: define this in Azure
+#  ApiCompatExcludeClasses: (optional) define this in Azure
 #  DisableApiCompatibityValidation: (optional) define this in Azure
 
 # The following 2 stages run multi-configuration, multi-agent parallel jobs.
@@ -130,7 +131,7 @@ stages:
     - template: ci-api-validation-steps.yml
 
   - job: post_results_to_gitHub
-    dependsOn: generate_multiconfig_var
+    dependsOn: check_api_for
     condition: ne(dependencies.generate_multiconfig_var.outputs['generate_var.MULTICONFIG'], '{}')
     variables:
       BuildConfiguration: Release-Windows

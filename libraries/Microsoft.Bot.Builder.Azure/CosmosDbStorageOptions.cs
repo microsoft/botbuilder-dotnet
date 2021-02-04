@@ -67,22 +67,22 @@ namespace Microsoft.Bot.Builder.Azure
         public Action<ConnectionPolicy> ConnectionPolicyConfigurator { get; set; } = (options) => { };
 
         /// <summary>
-        /// Gets or sets the CosmosDB <see cref="Microsoft.Azure.Documents.Client.RequestOptions"/> that
+        /// Gets or sets the CosmosDB <see href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/> that
         /// are passed when the document collection is created. Null is the default.
         /// </summary>
         /// <value>
         /// The set of options passed into
-        /// <see cref="Microsoft.Azure.Documents.Client.DocumentClient.CreateDocumentCollectionIfNotExistsAsync(string, DocumentCollection, RequestOptions)"/>.
+        /// <see href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.idocumentclient.createdocumentcollectionifnotexistsasync?view=azure-dotnet"/>.
         /// </value>
         public RequestOptions DocumentCollectionRequestOptions { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the CosmosDB <see cref="Microsoft.Azure.Documents.Client.RequestOptions"/> that
+        /// Gets or sets the CosmosDB <see href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/> that
         /// are passed when the database is created. Null is the default.
         /// </summary>
         /// <value>
         /// The set of options passed into
-        /// <see cref="Microsoft.Azure.Documents.Client.DocumentClient.CreateDatabaseIfNotExistsAsync(Database, RequestOptions)"/>.
+        /// <see href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.client.requestoptions?view=azure-dotnet"/>.
         /// </value>
         public RequestOptions DatabaseCreationRequestOptions { get; set; } = null;
     }

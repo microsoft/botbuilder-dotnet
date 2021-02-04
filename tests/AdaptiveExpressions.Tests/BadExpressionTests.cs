@@ -195,6 +195,11 @@ namespace AdaptiveExpressions.Tests
             Test("round(1.2, 16)"), // the 2nd parameter should not greater than 15
             Test("round(1.2, 2, 3)"), // should have one or two number parameters
             Test("round(1.2, 21232123123123123)"), // the second parameter should be a 32-bit signed integer
+            Test("abs()"), // should have one parameters
+            Test("abs(hello)"), // should have one number parameters
+            Test("sqrt()"), // should have one parameters
+            Test("sqrt(hello)"), // should have one number parameters
+            Test("sqrt(-1)"), // should have one non-nagitive number parameters
             #endregion
             
             #region Date and time function test

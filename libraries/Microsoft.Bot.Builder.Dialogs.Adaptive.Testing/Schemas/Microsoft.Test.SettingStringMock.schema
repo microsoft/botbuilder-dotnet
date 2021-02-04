@@ -1,0 +1,40 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.Test.ISettingMock)",
+    "title": "Mock Settings",
+    "description": "Mock one or more settings with string value.",
+    "type": "object",
+    "required": [
+        "assignments"
+    ],
+    "properties": {
+        "assignments": {
+            "type": "array",
+            "title": "Assignments",
+            "description": "Setting assignments as settings.property=value pairs. Assign the settings in sequence.",
+            "items": {
+                "type": "object",
+                "title": "Setting String Assignment",
+                "description": "Setting String Assignment (used in SettingStringMock).",
+                "properties": {
+                    "property": {
+                        "type": "string",
+                        "title": "Property",
+                        "description": "A property path without settings.",
+                        "examples": [
+                            "connectionName"
+                        ]
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value",
+                        "description": "Value string.",
+                        "examples": [
+                            "Graph"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

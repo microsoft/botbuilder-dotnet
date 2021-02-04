@@ -17,5 +17,18 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "DialogRef",
+            "dialog": "=action.dialog"
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Return value"
+        },
+        "hideFooter": "=!action.resultProperty"
     }
 }

@@ -20,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Functions;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -112,8 +113,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<DeleteActivity>(DeleteActivity.Kind);
             yield return new DeclarativeType<GetActivityMembers>(GetActivityMembers.Kind);
             yield return new DeclarativeType<GetConversationMembers>(GetConversationMembers.Kind);
+            yield return new DeclarativeType<GetConversationReference>(GetConversationReference.Kind);
             yield return new DeclarativeType<SignOutUser>(SignOutUser.Kind);
             yield return new DeclarativeType<TelemetryTrackEventAction>(TelemetryTrackEventAction.Kind);
+            yield return new DeclarativeType<ContinueConversation>(ContinueConversation.Kind);
+            yield return new DeclarativeType<ContinueConversationLater>(ContinueConversationLater.Kind);
 
             // Inputs
             yield return new DeclarativeType<AttachmentInput>(AttachmentInput.Kind);
@@ -211,6 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ObjectExpressionConverter<ChoiceSet>();
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
             yield return new ObjectExpressionConverter<FindChoicesOptions>();
+            yield return new ObjectExpressionConverter<ConversationReference>();
 
             yield return new ArrayExpressionConverter<string>();
             yield return new ArrayExpressionConverter<Choice>();
