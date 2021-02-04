@@ -40,7 +40,7 @@
             "$designer": {
               "id": "A64Qwv"
             },
-            "property": "conversation.locale",
+            "property": "turn.locale",
             "value": "en-us"
           },
           {
@@ -62,7 +62,7 @@
         "actions": [
           {
             "$kind": "Microsoft.SetProperty",
-            "property": "conversation.locale",
+            "property": "turn.locale",
             "value": "es-ar"
           },
           {
@@ -128,7 +128,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "Hola! Has dicho 'como estas'."
+      "text": "You said 'como estas'"
     },
     {
       "$kind": "Microsoft.Test.UserSays",
