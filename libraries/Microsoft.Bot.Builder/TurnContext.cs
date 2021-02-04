@@ -21,8 +21,6 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
-        private const string Turn = "turn";
-
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
@@ -89,40 +87,6 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <value>The services registered on this context object.</value>
         public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
-
-        /// <summary>
-        /// Gets or sets the locale on this context object.
-        /// </summary>
-        /// <value>The string of locale on this context object.</value>
-        public string Locale
-        {
-            get 
-            { 
-                var valueObj = this.TurnState.Get<JObject>(Turn);
-                if (valueObj.TryGetValue(nameof(Locale).ToLowerInvariant(), out var locale))
-                {
-                    return locale.ToString();
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            set
-            {
-                var valueObj = this.TurnState.Get<JObject>(Turn);
-                if (valueObj != null)
-                {
-                    valueObj[nameof(Locale).ToLowerInvariant()] = value;
-                }
-                else
-                {
-                    valueObj = new JObject(new JProperty(nameof(Locale).ToLowerInvariant(), value));
-                    TurnState.Set(Turn, valueObj);
-                }
-            }
-        }
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing

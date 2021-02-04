@@ -8,7 +8,7 @@
             "actions": [
                 {
                     "$kind": "Microsoft.SetProperty",
-                    "property": "turn.locale",
+                    "property": "conversation.locale",
                     "value": "de-DE"
                 },
                 {

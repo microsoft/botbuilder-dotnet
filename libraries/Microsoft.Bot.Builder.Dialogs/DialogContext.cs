@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     [System.Diagnostics.DebuggerDisplay("{GetType().Name}[{ActiveDialog?.Id}]")]
     public class DialogContext
     {
+        private readonly string _conversationState = "conversation.locale";
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class from the turn context.
         /// </summary>
@@ -660,7 +662,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the current locale.</returns>
         public string GetLocale()
         {
-            return Context.TurnState.Get<JObject>("turn")["locale"]?.ToString();
+            return State[_conversationState]?.ToString();
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

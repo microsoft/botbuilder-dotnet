@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
-            var targetLocale = dialogContext.GetLocale()?.ToLowerInvariant() ?? string.Empty;
+            var targetLocale = dialogContext.GetLocale() ?? dialogContext.Context.Activity.Locale ?? string.Empty;
 
             // priority 
             // 1. local policy

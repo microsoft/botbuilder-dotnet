@@ -29,14 +29,14 @@
             },
             "intent": "English",
             "actions": [
-                {
-                    "$kind": "Microsoft.SetProperty",
-                    "$designer": {
-                        "id": "A64Qwv"
-                    },
-                    "property": "turn.locale",
-                    "value": "en-us"
+              {
+                "$kind": "Microsoft.SetProperty",
+                "$designer": {
+                  "id": "A64Qwv"
                 },
+                "property": "conversation.locale",
+                "value": "en-us"
+              },
                 {
                     "$kind": "Microsoft.SendActivity",
                     "$designer": {
@@ -59,7 +59,7 @@
                     "$designer": {
                         "id": "A64Qwv"
                     },
-                    "property": "turn.locale",
+                    "property": "conversation.locale",
                     "value": "es-ar"
                 },
                 {

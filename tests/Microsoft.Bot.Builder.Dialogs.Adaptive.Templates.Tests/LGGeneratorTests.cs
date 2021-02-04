@@ -428,27 +428,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public async Task TestLocaleInExpression()
-        {
-            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
-            DialogManager dm = new DialogManager()
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("test.lg");
-            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("locale.dialog");
-            await CreateFlow(async (turnContext, cancellationToken) =>
-            {
-                (turnContext as TurnContext).Locale = "de-DE";
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            })
-            .Send("hola")
-            .AssertReply("1,122")
-            .AssertReply("1,1235")
-            .AssertReply("Samstag, 6. Januar 2018")
-            .AssertReply("3,14159")
-            .StartTestAsync();
-        }
-
-        [Fact]
         public async Task TestManuallySetLocale()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
@@ -458,7 +437,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("manuallySetLocale.dialog");
             await CreateFlow(async (turnContext, cancellationToken) =>
             {
-                (turnContext as TurnContext).Locale = "en-US";
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hola")

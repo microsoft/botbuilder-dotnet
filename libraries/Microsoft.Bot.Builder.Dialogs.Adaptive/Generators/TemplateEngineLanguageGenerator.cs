@@ -122,7 +122,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             EventHandler onEvent = (s, e) => RunSync(() => HandlerLGEventAsync(dialogContext, s, e, cancellationToken));
 
-            var lgOpt = new EvaluationOptions() { Locale = dialogContext.GetLocale(), OnEvent = onEvent };
+            var locale = dialogContext.GetLocale() ?? dialogContext.Context.Activity.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
+
+            var lgOpt = new EvaluationOptions() { Locale = locale, OnEvent = onEvent };
 
             try
             {
