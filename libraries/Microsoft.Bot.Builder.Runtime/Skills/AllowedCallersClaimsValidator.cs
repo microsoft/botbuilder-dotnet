@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
@@ -12,24 +13,11 @@ namespace Microsoft.Bot.Builder.Runtime.Skills
 {
     public class AllowedCallersClaimsValidator : ClaimsValidator
     {
-        public const string DefaultAllowedCallersKey = "skillConfiguration:allowedCallers";
+        private readonly IEnumerable<string> _allowedCallers;
 
-        private readonly List<string> _allowedCallers = new List<string>();
-
-        public AllowedCallersClaimsValidator(IConfiguration configuration)
+        public AllowedCallersClaimsValidator(IEnumerable<string> allowedCallers)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            // AllowedCallers is the setting in the appsettings.json file
-            // that consists of the list of consumer bot application ids that are allowed to access the skill.
-            var allowedCallersList = configuration.GetSection(DefaultAllowedCallersKey).Get<string[]>();
-            if (allowedCallersList != null)
-            {
-                _allowedCallers = new List<string>(allowedCallersList);
-            }
+            _allowedCallers = allowedCallers ?? Enumerable.Empty<string>();
         }
 
         /// <summary>
@@ -53,7 +41,7 @@ namespace Microsoft.Bot.Builder.Runtime.Skills
                 if (!_allowedCallers.Contains(applicationId))
                 {
                     throw new UnauthorizedAccessException(
-                        $"Received a request from a bot with an app ID of \"{applicationId}\". To enable requests from this caller, add the app ID to your ${DefaultAllowedCallersKey} configuration.");
+                        $"Received a request from a bot with an app ID of \"{applicationId}\". To enable requests from this caller, add the app ID to your \"${ConfigurationConstants.RuntimeSettingsKey}:skill:allowedCallers\" configuration.");
                 }
             }
 

@@ -74,12 +74,13 @@ namespace Microsoft.Bot.Builder.Runtime
             await this._userState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
-        private static DialogManager CreateDialogManager(IServiceProvider services, IOptions<CoreBotOptions> options)
+        private DialogManager CreateDialogManager(IServiceProvider services, IOptions<CoreBotOptions> options)
         {
             var resourceExplorer = services.GetRequiredService<ResourceExplorer>();
             var telemetryClient = services.GetService<IBotTelemetryClient>();
 
-            Resource rootDialogResource = resourceExplorer.GetResource(options.Value.RootDialog);
+            //options.Value.RootDialog);
+            Resource rootDialogResource = resourceExplorer.GetResource("echobot-0.dialog"); 
             var rootDialog = resourceExplorer.LoadType<AdaptiveDialog>(rootDialogResource);
 
             var dialogManager = new DialogManager(rootDialog)
@@ -94,6 +95,8 @@ namespace Microsoft.Bot.Builder.Runtime
 
             dialogManager.InitialTurnState.Set(services.GetRequiredService<BotFrameworkClient>());
             dialogManager.InitialTurnState.Set(services.GetRequiredService<SkillConversationIdFactoryBase>());
+            dialogManager.InitialTurnState.Set(_userState);
+            dialogManager.InitialTurnState.Set(_conversationState);
 
             return dialogManager;
         }

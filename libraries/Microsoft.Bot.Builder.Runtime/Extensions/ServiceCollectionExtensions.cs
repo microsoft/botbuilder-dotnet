@@ -2,19 +2,31 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.Linq;
 using System.Runtime.Loader;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.ApplicationInsights;
+using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Runtime.Plugins;
-using Microsoft.Bot.Builder.Runtime.Providers;
 using Microsoft.Bot.Builder.Runtime.Settings;
 using Microsoft.Bot.Builder.Runtime.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Runtime.Extensions
@@ -44,110 +56,219 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             // Component registrations must be added before the resource explorer is instantiated to ensure
             // that all types are correctly registered. Any types that are registered after the resource explorer
             // is instantiated will not be picked up otherwise.
-
             ComponentRegistrations.Add();
 
+            // System configuration
             string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
+            string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocale).Value;
+            string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
 
-            services.AddBotRuntime(
-                configuration,
-                resourceExplorerImplementationFactory: (serviceProvider) =>
-                    new ResourceExplorer()
-                        .AddFolder(applicationRoot)
-                        .RegisterType<OnQnAMatch>(OnQnAMatch.Kind));
-        }
-
-        /// <summary>
-        /// Adds bot runtime-related services to the application's service collection.
-        /// </summary>
-        /// <remarks>
-        /// For applications being developed utilizing the runtime, we expect that the configured
-        /// <see cref="ResourceExplorer"/> will utilize declarative assets from the local development environment's
-        /// file directories.
-        ///
-        /// However, as this would cause additional overhead for testing purposes, we expose this
-        /// function solely to test assemblies to enable providing an instance of <see cref="ResourceExplorer"/>
-        /// that loads resources using a custom in-memory provider.
-        /// </remarks>
-        /// <param name="services">The application's collection of registered services.</param>
-        /// <param name="configuration">The application configuration.</param>
-        /// <param name="resourceExplorerImplementationFactory">
-        /// Function used to build an instance of <see cref="ResourceExplorer"/> from registered services.
-        /// </param>
-        internal static void AddBotRuntime(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            Func<IServiceProvider, ResourceExplorer> resourceExplorerImplementationFactory)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            if (resourceExplorerImplementationFactory == null)
-            {
-                throw new ArgumentNullException(nameof(resourceExplorerImplementationFactory));
-            }
-
-            services.AddSingleton<ResourceExplorer>(resourceExplorerImplementationFactory);
+            // Runtime configuration
+            var runtimeSettings = configuration.GetSection(ConfigurationConstants.RuntimeSettingsKey).Get<RuntimeSettings>();
 
             services.AddOptions()
-                .Configure<RuntimeOptions>(configuration);
+                .Configure<CoreBotOptions>(o =>
+                {
+                    o.DefaultLocale = defaultLocale;
+                    o.RootDialog = rootDialog;
+                });
 
-            ConfigureAuthentication(services, configuration);
-            ConfigureSkills(services);
-            ConfigureState(services);
-            ConfigurePlugins(services, configuration);
+            services.AddSingleton(configuration);
 
-            using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
-            {
-                ResourceExplorer resourceExplorer =
-                    serviceScope.ServiceProvider.GetRequiredService<ResourceExplorer>();
+            // ResourceExplorer
+            services.TryAddSingleton<ResourceExplorer>(serviceProvider =>
+                new ResourceExplorer()
+                    .AddFolder(applicationRoot)
+                    .RegisterType<OnQnAMatch>(OnQnAMatch.Kind));
 
-                Resource runtimeConfigurationResource =
-                    resourceExplorer.GetResource(id: "runtime.json");
-                var runtimeConfigurationProvider =
-                    resourceExplorer.LoadType<RuntimeConfigurationProvider>(runtimeConfigurationResource);
-
-                runtimeConfigurationProvider.ConfigureServices(services, configuration);
-            }
+            // Bot
+            services.AddSingleton<IBot, CoreBot>();
+            
+            // Runtime
+            services.AddBotRuntimeSkills(runtimeSettings.Skills);
+            services.AddBotRuntimeStorage(configuration, runtimeSettings.Resources);
+            services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
+            services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
+            services.AddBotRuntimePlugins(configuration, runtimeSettings);
+            services.AddBotRuntimeAdapters(configuration, runtimeSettings);
         }
 
-        private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
+        internal static void AddBotRuntimeSkills(this IServiceCollection services, SkillSettings skillSettings)
         {
-            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(configuration) });
-            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
-            services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
-        }
-
-        private static void ConfigureSkills(IServiceCollection services)
-        {
+            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(skillSettings?.AllowedCallers) });
             services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
             services.AddHttpClient<BotFrameworkClient, SkillHttpClient>();
             services.AddSingleton<ChannelServiceHandler, SkillHandler>();
         }
 
-        private static void ConfigureState(IServiceCollection services)
+        internal static void AddBotRuntimeStorage(this IServiceCollection services, IConfiguration configuration, ResourcesSettings runtimeResources = null)
         {
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();
+
+            // Cosmosdb
+            if (runtimeResources?.Storage == typeof(CosmosDbPartitionedStorage).Name)
+            {
+                var cosmosDbOptions = configuration?.GetSection(typeof(CosmosDbPartitionedStorage).Name).Get<CosmosDbPartitionedStorageOptions>();
+                services.AddSingleton<IStorage>(sp => new CosmosDbPartitionedStorage(cosmosDbOptions));
+            }
+
+            // Blob
+            else if (runtimeResources?.Storage == typeof(BlobsStorage).Name)
+            {
+                var blobOptions = configuration?.GetSection(typeof(BlobsStorage).Name).Get<BlobsStorageSettings>();
+                services.AddSingleton<IStorage>(sp => new BlobsStorage(blobOptions?.ConnectionString, blobOptions?.ContainerName));
+            }
+
+            // Default
+            else
+            {
+                // If no storage is configured, default to memory storage
+                services.AddSingleton<IStorage, MemoryStorage>();
+            }
         }
 
-        private static void ConfigurePlugins(IServiceCollection services, IConfiguration configuration)
+        internal static void AddBotRuntimePlugins(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
         {
+            var serviceFilter = new AdapterServiceFilter(services, runtimeSettings?.Resources);
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
-                var runtimeOptions = serviceScope.ServiceProvider.GetRequiredService<IOptions<RuntimeOptions>>().Value;
                 var pluginEnumenator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
 
-                foreach (BotPluginDefinition plugin in runtimeOptions.Plugins)
+                // Iterate through configured plugins and load each one
+                foreach (BotPluginDefinition plugin in runtimeSettings.Plugins ?? Enumerable.Empty<BotPluginDefinition>())
                 {
-                    plugin.Load(pluginEnumenator, services, configuration);
+                    plugin.Load(pluginEnumenator, services, configuration, serviceFilter.OnAddServiceDescriptor);
+                }
+            }
+        }
+
+        internal static void AddBotRuntimeAdapters(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
+        {
+            const string defaultRoute = "messages";
+
+            // CoreAdapter registration
+            services.AddSingleton<CoreBotAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetService<CoreBotAdapter>());
+            services.AddSingleton<BotAdapter>(sp => sp.GetService<CoreBotAdapter>());
+            
+            // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
+            services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
+
+            // CoreAdapter dependencies registration
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+            services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
+
+            using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
+            {
+                // Configure CoreAdapter features
+                ConfigureFeatures(serviceScope, configuration, serviceScope.ServiceProvider.GetService<CoreBotAdapter>(), runtimeSettings.Features);
+
+                // Configure other registered adapters
+                var registeredAdapters = serviceScope.ServiceProvider.GetServices<BotAdapter>();
+
+                foreach (var adapter in registeredAdapters)
+                {
+                    ConfigureFeatures(serviceScope, configuration, adapter, runtimeSettings.Features);
+                }
+            }
+        }
+
+        internal static void AddBotRuntimeTelemetry(this IServiceCollection services, TelemetrySettings telemetrySettings)
+        {
+            if (string.IsNullOrEmpty(telemetrySettings?.InstrumentationKey))
+            {
+                services.AddSingleton<IBotTelemetryClient, NullBotTelemetryClient>();
+            }
+            else
+            {
+                services.AddApplicationInsightsTelemetry(telemetrySettings.InstrumentationKey);
+                services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
+
+                services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+                services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
+                services.AddSingleton<ITelemetryInitializer, TelemetryBotIdInitializer>();
+
+                services.AddSingleton<IMiddleware>(sp =>
+                {
+                    var botTelemetryClient = sp.GetService<IBotTelemetryClient>();
+                    var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+
+                    return new TelemetryInitializerMiddleware(
+                       httpContextAccessor: httpContextAccessor,
+                       telemetryLoggerMiddleware: new TelemetryLoggerMiddleware(
+                           telemetryClient: botTelemetryClient,
+                           logPersonalInformation: telemetrySettings.LogPersonalInformation),
+                       logActivityTelemetry: telemetrySettings.LogActivities);
+                });
+            }
+        }
+
+        internal static void AddBotRuntimeTranscriptLogging(this IServiceCollection services, IConfiguration configuration, FeatureSettings featureSettings)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            const string blobTranscriptSection = "blobTranscript";
+
+            // Trace Trascript
+            if (featureSettings.TraceTranscript)
+            {
+                services.AddSingleton<IMiddleware>(sp => new TranscriptLoggerMiddleware(new TraceTranscriptLogger()));
+            }
+
+            // Blob transcript
+            if (featureSettings.BlobTranscript)
+            {
+                var blobOptions = configuration.GetSection(blobTranscriptSection).Get<BlobsStorageSettings>();
+
+                if (blobOptions != null)
+                {
+                    var transcriptStore = new BlobsTranscriptStore(blobOptions.ConnectionString, blobOptions.ContainerName);
+                    services.AddSingleton<IMiddleware>(sp => new TranscriptLoggerMiddleware(transcriptStore));
+                }
+                else
+                {
+                    throw new ConfigurationException("Blob transcript is enabled but no blob transcript store configuration was found.");
+                }
+            }
+        }
+
+        private static void ConfigureFeatures(IServiceScope serviceScope, IConfiguration configuration, BotAdapter adapter, FeatureSettings featureSettings)
+        {
+            var conversationState = serviceScope.ServiceProvider.GetService<ConversationState>();
+            var userState = serviceScope.ServiceProvider.GetService<UserState>();
+
+            adapter
+                .UseStorage(serviceScope.ServiceProvider.GetService<IStorage>())
+                .UseBotState(userState, conversationState)
+                .Use(new RegisterClassMiddleware<IConfiguration>(configuration));
+
+            var middlewares = serviceScope.ServiceProvider.GetServices<IMiddleware>();
+
+            foreach (var middleware in middlewares)
+            {
+                adapter.Use(middleware);
+            }
+
+            if (adapter is CoreBotAdapter)
+            {
+                if (featureSettings.UseInspection)
+                {
+                    var storage = serviceScope.ServiceProvider.GetService<IStorage>();
+                    adapter.Use(new InspectionMiddleware(new InspectionState(storage)));
+                }
+
+                if (featureSettings.RemoveRecipientMentions)
+                {
+                    adapter.Use(new NormalizeMentionsMiddleware());
+                }
+
+                if (featureSettings.ShowTyping)
+                {
+                    adapter.Use(new ShowTypingMiddleware());
                 }
             }
         }

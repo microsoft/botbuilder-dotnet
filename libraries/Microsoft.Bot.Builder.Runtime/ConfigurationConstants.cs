@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Builder.Runtime
     /// <summary>
     /// Defines configuration-related constants.
     /// </summary>
-    public static class ConfigurationConstants
+    internal static class ConfigurationConstants
     {
         /// <summary>
         /// The configuration key mapping to the value representing the application root path.
@@ -22,6 +22,16 @@ namespace Microsoft.Bot.Builder.Runtime
         /// The configuration key mapping to the value representing the default resource identifier
         /// of the dialog to be utilized as the root dialog of the bot.
         /// </summary>
-        public const string DefaultRootDialogKey = "defaultRootDialog";
+        public const string RootDialogKey = "defaultRootDialog";
+
+        /// <summary>
+        /// Default configuration location for runtime settings.
+        /// </summary>
+        public const string RuntimeSettingsKey = "runtimeSettings";
+
+        /// <summary>
+        /// The configuration key mapping to the value representing the default locale.
+        /// </summary>
+        public const string DefaultLocale = "defaultLocale";
     }
 }

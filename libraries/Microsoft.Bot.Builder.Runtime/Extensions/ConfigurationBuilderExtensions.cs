@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             string settingsDirectory,
             bool isDevelopment)
         {
-            // Use Composer bot path adapter
+            // Add in-memory properties for the bot runtime that depend on the environment and application root
             builder.AddBotRuntimeProperties(
                 applicationRoot: applicationRoot,
                 isDevelopment: isDevelopment);
@@ -122,18 +122,9 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
 
             var settings = new Dictionary<string, string>
             {
-                {
-                    ConfigurationConstants.ApplicationRootKey,
-                    applicationRoot
-                },
-                {
-                    ConfigurationConstants.BotKey,
-                    botRoot
-                },
-                {
-                    ConfigurationConstants.DefaultRootDialogKey,
-                    GetDefaultRootDialog(botRoot)
-                }
+                { ConfigurationConstants.ApplicationRootKey, applicationRoot },
+                { ConfigurationConstants.BotKey, botRoot },
+                { ConfigurationConstants.RootDialogKey, GetDefaultRootDialog(botRoot) }
             };
 
             builder.AddInMemoryCollection(settings);

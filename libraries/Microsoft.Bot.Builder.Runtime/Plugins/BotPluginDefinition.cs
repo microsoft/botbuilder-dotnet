@@ -45,10 +45,13 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
         /// <param name="pluginEnumerator">Enumerates available plugins from the definition information.</param>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">Application configuration.</param>
+        /// <param name="serviceFilter">Optional filter to decide whether a specific <see cref="ServiceDescriptor"/> should be consumed or discarded. 
+        /// This is relevant for optional security checks and features such as configurable adapters.</param>
         public void Load(
             IBotPluginEnumerator pluginEnumerator,
             IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            Func<ServiceDescriptor, bool> serviceFilter = null)
         {
             if (pluginEnumerator == null)
             {
@@ -71,7 +74,14 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
             {
                 var context = new BotPluginLoadContext(pluginConfiguration);
                 plugin.Load(context);
-                services.AddRange(context.Services);
+
+                foreach (var service in context.Services)
+                {
+                    if (serviceFilter == null || serviceFilter(service))
+                    {
+                        services.Add(service);
+                    }
+                }
             }
         }
 
@@ -79,7 +89,7 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
         {
             if (string.IsNullOrEmpty(this.SettingsPrefix))
             {
-                return EmptyConfiguration;
+                return configuration;
             }
 
             IConfigurationSection section = configuration.GetSection(this.SettingsPrefix);

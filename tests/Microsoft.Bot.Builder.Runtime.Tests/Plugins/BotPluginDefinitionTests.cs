@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Xunit;
-using IChannelProvider = Microsoft.Bot.Connector.Authentication.IChannelProvider;
 
 namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
 {

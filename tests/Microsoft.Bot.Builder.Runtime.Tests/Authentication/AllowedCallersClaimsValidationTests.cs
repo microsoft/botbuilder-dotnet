@@ -28,84 +28,67 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
             // Null allowed callers
             yield return new object[]
             {
-                (string)null,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot()
+                null,
+                null
             };
 
             // Null configuration with attempted caller
             yield return new object[]
             {
-                (string)primaryAppId,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot()
+                primaryAppId,
+                null
             };
 
             // Empty allowed callers array
             yield return new object[]
             {
                 (string)null,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot(new JObject
-                {
-                    { AllowedCallersClaimsValidator.DefaultAllowedCallersKey, JToken.FromObject(new string[0]) }
-                })
+                new string[0]
             };
 
             // Allow any caller
             yield return new object[]
             {
                 primaryAppId,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot(new JObject
-                {
-                    { AllowedCallersClaimsValidator.DefaultAllowedCallersKey, JToken.FromObject(new string[] { "*" }) }
-                })
+                new string[] { "*" }
             };
 
             // Specify allowed caller
             yield return new object[]
             {
                 primaryAppId,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot(new JObject
-                {
-                    { AllowedCallersClaimsValidator.DefaultAllowedCallersKey, JToken.FromObject(new string[] { $"{primaryAppId}" }) }
-                })
+                new string[] { $"{primaryAppId}" }
             };
 
             // Specify multiple callers
             yield return new object[]
             {
                 primaryAppId,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot(new JObject
-                {
-                    { AllowedCallersClaimsValidator.DefaultAllowedCallersKey, JToken.FromObject(new string[] { $"{primaryAppId}", $"{secondaryAppId}" }) }
-                })
+                new string[] { $"{primaryAppId}", $"{secondaryAppId}" }
             };
 
             // Blocked caller throws exception
             yield return new object[]
             {
                 primaryAppId,
-                (IConfiguration)TestDataGenerator.BuildConfigurationRoot(new JObject
-                {
-                    { AllowedCallersClaimsValidator.DefaultAllowedCallersKey, JToken.FromObject(new string[] { $"{secondaryAppId}" }) }
-                })
+                new string[] { $"{secondaryAppId}" }
             };
         }
 
         [Theory]
         [MemberData(nameof(GetConfigureServicesSucceedsData))]
 
-        public async Task AcceptAllowedCallersArray(string allowedCallerClaimId, IConfiguration configuration)
+        public async Task AcceptAllowedCallersArray(string allowedCallerClaimId, IEnumerable<string> allowList)
         {
-            var validator = new AllowedCallersClaimsValidator(configuration);
+            var validator = new AllowedCallersClaimsValidator(allowList);
 
             if (allowedCallerClaimId != null)
             {
                 var claims = CreateCallerClaims(allowedCallerClaimId);
 
-                var allowedCallersList = configuration.GetSection(AllowedCallersClaimsValidator.DefaultAllowedCallersKey).Get<string[]>();
-
-                if (allowedCallersList != null)
+                if (allowList != null)
                 {
-                    if (allowedCallersList.Contains(allowedCallerClaimId) || allowedCallersList.Contains("*"))
+                    if (allowList.Contains(allowedCallerClaimId) || allowList.Contains("*"))
                     {
                         await validator.ValidateClaimsAsync(claims);
                     }
@@ -125,9 +108,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
         {
             Exception ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => validator.ValidateClaimsAsync(claims));
 
-            Assert.Equal(
-                $"Received a request from a bot with an app ID of \"{allowedCallerClaimId}\". To enable requests from this caller," +
-                $" add the app ID to your ${AllowedCallersClaimsValidator.DefaultAllowedCallersKey} configuration.", ex.Message);
+            Assert.Contains(allowedCallerClaimId, ex.Message);
         }
 
         private List<Claim> CreateCallerClaims(string appId)

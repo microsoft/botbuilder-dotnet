@@ -2,16 +2,13 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Runtime.Builders.Handlers;
-using Microsoft.Bot.Builder.Runtime.Builders.Middleware;
-using Microsoft.Bot.Builder.Runtime.Builders.Transcripts;
-using Microsoft.Bot.Builder.Runtime.Providers.Adapter;
-using Microsoft.Bot.Builder.Runtime.Providers.Storage;
-using Microsoft.Bot.Builder.Runtime.Providers.Telemetry;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Runtime
@@ -29,48 +26,10 @@ namespace Microsoft.Bot.Builder.Runtime
         public IEnumerable<DeclarativeType> GetDeclarativeTypes(ResourceExplorer resourceExplorer)
         {
             // Middleware builders
-            yield return new DeclarativeType<InspectionMiddlewareBuilder>(
-                InspectionMiddlewareBuilder.Kind);
-            yield return new DeclarativeType<ShowTypingMiddlewareBuilder>(
-                ShowTypingMiddlewareBuilder.Kind);
-            yield return new DeclarativeType<TelemetryMiddlewareBuilder>(
-                TelemetryMiddlewareBuilder.Kind);
-            yield return new DeclarativeType<TranscriptLoggerMiddlewareBuilder>(
-                TranscriptLoggerMiddlewareBuilder.Kind);
-            yield return new DeclarativeType<RemoveRecipientMentionMiddlewareBuilder>(
-                RemoveRecipientMentionMiddlewareBuilder.Kind);
-
-            // OnTurnError handler providers
-            yield return new DeclarativeType<OnTurnErrorHandlerBuilder>(
-                OnTurnErrorHandlerBuilder.Kind);
-
-            // Transcript Logger builders
-            yield return new DeclarativeType<FileTranscriptLoggerBuilder>(
-                FileTranscriptLoggerBuilder.Kind);
-            yield return new DeclarativeType<TraceTranscriptLoggerBuilder>(
-                TraceTranscriptLoggerBuilder.Kind);
-
-            // Transcript Store builders
-            yield return new DeclarativeType<BlobsTranscriptStoreBuilder>(
-                BlobsTranscriptStoreBuilder.Kind);
-            yield return new DeclarativeType<MemoryTranscriptStoreBuilder>(
-                MemoryTranscriptStoreBuilder.Kind);
-
-            // Adapter providers
-            yield return new DeclarativeType<BotCoreAdapterProvider>(
-                BotCoreAdapterProvider.Kind);
-
-            // Storage providers
-            yield return new DeclarativeType<BlobStorageProvider>(
-                BlobStorageProvider.Kind);
-            yield return new DeclarativeType<CosmosDbPartitionedStorageProvider>(
-                CosmosDbPartitionedStorageProvider.Kind);
-            yield return new DeclarativeType<MemoryStorageProvider>(
-                MemoryStorageProvider.Kind);
-
-            // Telemetry providers
-            yield return new DeclarativeType<ApplicationInsightsTelemetryProvider>(
-                ApplicationInsightsTelemetryProvider.Kind);
+            yield return new DeclarativeType<BlobsStorage>(
+                BlobsStorage.Kind);
+            yield return new DeclarativeType<CosmosDbPartitionedStorage>(
+                CosmosDbPartitionedStorage.Kind);
         }
 
         /// <summary>
@@ -81,11 +40,8 @@ namespace Microsoft.Bot.Builder.Runtime
         /// <returns>Adaptive <see cref="JsonConverter"/> resources.</returns>
         public IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
         {
-            yield return new InterfaceConverter<IMiddlewareBuilder>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<ITranscriptLoggerBuilder>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<IAdapterProvider>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<IStorageProvider>(resourceExplorer, sourceContext);
-            yield return new InterfaceConverter<ITelemetryProvider>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<IBotFrameworkHttpAdapter>(resourceExplorer, sourceContext);
+            yield return new InterfaceConverter<IStorage>(resourceExplorer, sourceContext);
         }
     }
 }
