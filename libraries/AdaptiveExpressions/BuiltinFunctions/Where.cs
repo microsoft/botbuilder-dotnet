@@ -33,7 +33,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 var list = FunctionUtils.ConvertToList(instance);
                 if (list == null)
                 {
-                    error = $"{expression.Children[0]} is not a collection or structure object to run where";
+                    error = $"{expression.Children[0]} is not a collection or structure object to run Where";
                 }
                 else
                 {

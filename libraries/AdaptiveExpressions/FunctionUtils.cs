@@ -994,7 +994,7 @@ namespace AdaptiveExpressions
                 var list = ConvertToList(instance);
                 if (list == null)
                 {
-                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
+                    error = $"{expression.Children[0]} is not a collection or structure object to run Foreach";
                 }
                 else
                 {
@@ -1077,7 +1077,7 @@ namespace AdaptiveExpressions
         {
             if (expression.Children.Length != 3)
             {
-                throw new ArgumentException($"lambda expression expects 3 parameters, found {expression.Children.Length}");
+                throw new ArgumentException($"Lambda expression expects 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
