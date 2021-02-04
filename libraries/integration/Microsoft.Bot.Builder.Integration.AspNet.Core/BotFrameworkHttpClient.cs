@@ -210,19 +210,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
         }
 
-        private static T GetBodyContent<T>(string content)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(content);
-            }
-            catch (JsonException)
-            {
-                // This will only happen when the skill didn't return valid json in the content (e.g. when the status code is 500 or there's a bug in the skill)
-                return default;
-            }
-        }
-
         private async Task<InvokeResponse<T>> SecurePostActivityAsync<T>(Uri toUrl, Activity activity, string token, CancellationToken cancellationToken)
         {
             using (var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json"))
@@ -240,11 +227,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                     {
                         var content = response.Content != null ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
-                        return new InvokeResponse<T>
-                        {
-                            Status = (int)response.StatusCode,
-                            Body = content?.Length > 0 ? GetBodyContent<T>(content) : default
-                        };
+                        var invokeResponse = string.IsNullOrEmpty(content) ? new InvokeResponse<T>() : JsonConvert.DeserializeObject<InvokeResponse<T>>(content);
+                        invokeResponse.Status = (int)response.StatusCode;
+                        return invokeResponse;
                     }
                 }
             }
