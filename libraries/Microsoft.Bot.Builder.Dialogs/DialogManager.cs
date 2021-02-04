@@ -355,10 +355,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (ShouldSendEndOfConversationToParent(turnContext, turnResult))
             {
                 // Send End of conversation at the end.
+                var code = turnResult.Status == DialogTurnStatus.Complete ? EndOfConversationCodes.CompletedSuccessfully : EndOfConversationCodes.UserCancelled;
                 var activity = new Activity(ActivityTypes.EndOfConversation)
                 {
                     Value = turnResult.Result,
-                    Locale = turnContext.Activity.Locale
+                    Locale = turnContext.Activity.Locale,
+                    Code = code
                 };
                 await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
