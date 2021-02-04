@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private void ValidatePolicy(List<string> parentKinds, ActionPolicy policy, List<Dialog> dialogs, Dialog dialog = null)
         {
-            switch (policy.ActionPolicyType)
+            switch (policy.Type)
             {
                 case ActionPolicyType.LastAction:
                     // This dialog must be the last in the list
@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     foreach (var parentKind in parentKinds)
                     {
                         var parentPolicy = ActionPolicies.FirstOrDefault(p => p.Kind == parentKind);
-                        if (parentPolicy != null && parentPolicy.ActionPolicyType == ActionPolicyType.TriggerNotInteractive)
+                        if (parentPolicy != null && parentPolicy.Type == ActionPolicyType.TriggerNotInteractive)
                         {
                             throw new ActionPolicyException(policy, dialog);
                         }
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         foreach (var childKind in childKinds)
                         {
                             var childPolicy = ActionPolicies.FirstOrDefault(p => p.Kind == childKind);
-                            if (childPolicy != null && childPolicy.ActionPolicyType == ActionPolicyType.Interactive)
+                            if (childPolicy != null && childPolicy.Type == ActionPolicyType.Interactive)
                             {
                                 // Interactive action found below TriggerNotInteractive trigger
                                 throw new ActionPolicyException(policy, dialog);
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     throw new ActionPolicyException(policy, dialog);
 
                 default:
-                    throw new InvalidOperationException($"Invalid ActionPolicy.ActionPolicyType: {policy.ActionPolicyType}");
+                    throw new InvalidOperationException($"Invalid ActionPolicy.ActionPolicyType: {policy.Type}");
             }
         }
 
@@ -235,13 +235,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                 // TriggerNotInteractive (no intput dialogs)
                 yield return new ActionPolicy(OnEndOfConversationActivity.Kind, ActionPolicyType.TriggerNotInteractive);
-
-                //? yield return new ActionPolicy(OnBeginDialog.Kind, ActionPolicyType.TriggerNotInteractive);
-                //? yield return new ActionPolicy(OnConversationUpdateActivity.Kind, ActionPolicyType.TriggerNotInteractive);
-
-                //AllowedTrigger (Action only valid in n Triggers)
-
-                //TriggerRequiresAction (Trigger requries one of n actions)
             }
         }
     }

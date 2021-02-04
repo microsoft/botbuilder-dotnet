@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ex = Assert.Throws<ActionPolicyException>(() => RunActionPolicyValidator());
 
-            Assert.Equal(ActionPolicyType.LastAction, ex.ActionPolicy.ActionPolicyType);
+            Assert.Equal(ActionPolicyType.LastAction, ex.ActionPolicy.Type);
             Assert.Equal(BreakLoop.Kind, ex.ActionPolicy.Kind);
         }
 
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ex = Assert.Throws<ActionPolicyException>(() => RunActionPolicyValidator());
 
-            Assert.Equal(ActionPolicyType.LastAction, ex.ActionPolicy.ActionPolicyType);
+            Assert.Equal(ActionPolicyType.LastAction, ex.ActionPolicy.Type);
             Assert.Equal(CancelAllDialogs.Kind, ex.ActionPolicy.Kind);
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ex = Assert.Throws<ActionPolicyException>(() => RunActionPolicyValidator());
 
-            Assert.Equal(ActionPolicyType.TriggerNotInteractive, ex.ActionPolicy.ActionPolicyType);
+            Assert.Equal(ActionPolicyType.TriggerNotInteractive, ex.ActionPolicy.Type);
             Assert.Equal(OnEndOfConversationActivity.Kind, ex.ActionPolicy.Kind);
         }
 
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ex = Assert.Throws<ActionPolicyException>(() => RunActionPolicyValidator());
 
-            Assert.Equal(ActionPolicyType.AllowedTrigger, ex.ActionPolicy.ActionPolicyType);
+            Assert.Equal(ActionPolicyType.AllowedTrigger, ex.ActionPolicy.Type);
             Assert.Equal(OnEndOfConversationActivity.Kind, ex.ActionPolicy.Kind);
         }
 

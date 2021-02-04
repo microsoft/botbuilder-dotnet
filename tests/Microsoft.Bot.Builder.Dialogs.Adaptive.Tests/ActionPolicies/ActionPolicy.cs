@@ -18,11 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// Initializes a new instance of the <see cref="ActionPolicy"/> class.
         /// </summary>
         /// <param name="kind">Action or Trigger $kind to which the aciton policy applies.</param>
-        /// <param name="actionPolicyType">The <see cref="ActionPolicyType"/> of this action policy.</param>
+        /// <param name="actionPolicyType">The <see cref="Type"/> of this action policy.</param>
         /// <param name="actions">(Optional) action(s) for this policy.</param>
         public ActionPolicy(string kind, ActionPolicyType actionPolicyType, IEnumerable<string> actions = null)
         {
-            ActionPolicyType = actionPolicyType;
+            Type = actionPolicyType;
             Actions = actions;
             Kind = kind;
         }
@@ -41,10 +41,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// <value>
         /// ActionPolicyType value.
         /// </value>
-        public ActionPolicyType ActionPolicyType { get; }
+        public ActionPolicyType Type { get; }
 
         /// <summary>
-        /// Gets actions for this action policy. See <see cref="ActionPolicyType"/> for
+        /// Gets actions for this action policy. See <see cref="Type"/> for
         /// a description of what the actions represent.
         /// </summary>
         /// <value>

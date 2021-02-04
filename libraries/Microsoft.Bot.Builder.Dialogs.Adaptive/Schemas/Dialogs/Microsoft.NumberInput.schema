@@ -41,7 +41,7 @@
     },
     "policies": [
         {
-            "actionPolicyType": "interactive"
+            "type": "interactive"
         }
     ]
 }

@@ -38,7 +38,7 @@
     },
     "policies": [
         {
-            "actionPolicyType": "lastAction"
+            "type": "lastAction"
         }
     ]
 }
