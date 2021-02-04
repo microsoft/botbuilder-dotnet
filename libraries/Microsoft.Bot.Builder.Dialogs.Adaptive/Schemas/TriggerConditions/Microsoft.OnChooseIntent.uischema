@@ -12,5 +12,5 @@
     "trigger": {
 		"label": "Duplicated intents recognized",
 		"order": 6
-	}
+    }
 }

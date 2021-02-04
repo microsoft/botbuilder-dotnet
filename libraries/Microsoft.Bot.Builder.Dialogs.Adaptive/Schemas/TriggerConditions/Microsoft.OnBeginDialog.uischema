@@ -19,5 +19,5 @@
 			"prompt": "Which event?",
 			"placeholder": "Select an event type"
 		}
-	}
+    }
 }

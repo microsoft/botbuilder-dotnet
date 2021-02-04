@@ -16,5 +16,5 @@
     "trigger": {
 		"label": "Intent recognized",
 		"order": 1
-	}
+    }
 }

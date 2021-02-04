@@ -15,5 +15,5 @@
 		"label": "Error occurred (Error event)",
 		"order": 4.3,
 		"submenu": "Dialog events"
-	}
+    }
 }

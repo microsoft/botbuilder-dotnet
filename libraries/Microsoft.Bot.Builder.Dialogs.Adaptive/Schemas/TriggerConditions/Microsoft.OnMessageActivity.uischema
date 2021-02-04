@@ -15,5 +15,5 @@
 		"label": "Message received (Message received activity)",
 		"order": 5.81,
 		"submenu": "Activities"
-	}
+    }
 }

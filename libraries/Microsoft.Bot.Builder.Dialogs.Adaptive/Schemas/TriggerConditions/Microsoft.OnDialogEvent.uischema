@@ -14,5 +14,5 @@
     "trigger": {
 		"label": "Custom events",
 		"order": 7
-	}
+    }
 }

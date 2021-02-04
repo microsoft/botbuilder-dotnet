@@ -14,5 +14,5 @@
     "trigger": {
 		"label": "Unknown intent",
 		"order": 3
-	}
+    }
 }

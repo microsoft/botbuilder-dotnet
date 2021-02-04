@@ -15,5 +15,5 @@
 		"label": "Handover to human (Handoff activity)",
 		"order": 5.5,
 		"submenu": "Activities"
-	}
+    }
 }

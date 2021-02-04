@@ -15,5 +15,5 @@
 		"label": "Conversation ended (EndOfConversation activity)",
 		"order": 5.3,
 		"submenu": "Activities"
-	}
+    }
 }
