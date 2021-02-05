@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             
             // Runtime
             services.AddBotRuntimeSkills(runtimeSettings.Skills);
-            services.AddBotRuntimeStorage(configuration, runtimeSettings.Resources);
+            services.AddBotRuntimeStorage(configuration, runtimeSettings);
             services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
             services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
             services.AddBotRuntimePlugins(configuration, runtimeSettings);
@@ -97,20 +97,20 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             services.AddSingleton<ChannelServiceHandler, SkillHandler>();
         }
 
-        internal static void AddBotRuntimeStorage(this IServiceCollection services, IConfiguration configuration, ResourcesSettings runtimeResources = null)
+        internal static void AddBotRuntimeStorage(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
         {
             services.AddSingleton<UserState>();
             services.AddSingleton<ConversationState>();
 
             // Cosmosdb
-            if (runtimeResources?.Storage == typeof(CosmosDbPartitionedStorage).Name)
+            if (runtimeSettings?.Storage == typeof(CosmosDbPartitionedStorage).Name)
             {
                 var cosmosDbOptions = configuration?.GetSection(typeof(CosmosDbPartitionedStorage).Name).Get<CosmosDbPartitionedStorageOptions>();
                 services.AddSingleton<IStorage>(sp => new CosmosDbPartitionedStorage(cosmosDbOptions));
             }
 
             // Blob
-            else if (runtimeResources?.Storage == typeof(BlobsStorage).Name)
+            else if (runtimeSettings?.Storage == typeof(BlobsStorage).Name)
             {
                 var blobOptions = configuration?.GetSection(typeof(BlobsStorage).Name).Get<BlobsStorageSettings>();
                 services.AddSingleton<IStorage>(sp => new BlobsStorage(blobOptions?.ConnectionString, blobOptions?.ContainerName));

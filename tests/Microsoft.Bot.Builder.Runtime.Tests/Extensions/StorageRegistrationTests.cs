@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             yield return new object[]
             {
                 new Dictionary<string, string>(),
-                new ResourcesSettings(),
+                new RuntimeSettings(),
                 typeof(MemoryStorage)
             };
             yield return new object[]
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:cosmosDbEndpoint", "cosmosDbEndpoint" },
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:databaseId", "databaseId" },
                 },
-                new ResourcesSettings() { Storage = typeof(CosmosDbPartitionedStorage).Name },
+                new RuntimeSettings() { Storage = typeof(CosmosDbPartitionedStorage).Name },
                 typeof(CosmosDbPartitionedStorage)
             };
             yield return new object[]
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                     { $"{typeof(BlobsStorage).Name}:connectionString", "UseDevelopmentStorage=true" },
                     { $"{typeof(BlobsStorage).Name}:containerName", "containerName" },
                 },
-                new ResourcesSettings() { Storage = typeof(BlobsStorage).Name },
+                new RuntimeSettings() { Storage = typeof(BlobsStorage).Name },
                 typeof(BlobsStorage)
             };
         }
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:cosmosDbEndpoint", "cosmosDbEndpoint" },
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:databaseId", "databaseId" },
                 },
-                new ResourcesSettings() { Storage = typeof(CosmosDbPartitionedStorage).Name },
+                new RuntimeSettings() { Storage = typeof(CosmosDbPartitionedStorage).Name },
                 typeof(ArgumentException)
             };
             yield return new object[]
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                     { $"{typeof(BlobsStorage).Name}:connectionString", "badformat" },
                     { $"{typeof(BlobsStorage).Name}:containerName", "containerName" },
                 },
-                new ResourcesSettings() { Storage = typeof(BlobsStorage).Name },
+                new RuntimeSettings() { Storage = typeof(BlobsStorage).Name },
                 typeof(FormatException)
             };
             yield return new object[]
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 {
                     { $"{typeof(BlobsStorage).Name}:containerName", "containerName" },
                 },
-                new ResourcesSettings() { Storage = typeof(BlobsStorage).Name },
+                new RuntimeSettings() { Storage = typeof(BlobsStorage).Name },
                 typeof(ArgumentNullException)
             };
         }
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Setup
             IServiceCollection services = new ServiceCollection();
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
-            var resourcesSettings = settings as ResourcesSettings;
+            var resourcesSettings = settings as RuntimeSettings;
 
             // Test
             services.AddBotRuntimeStorage(configuration, resourcesSettings);
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Setup
             IServiceCollection services = new ServiceCollection();
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
-            var resourcesSettings = settings as ResourcesSettings;
+            var resourcesSettings = settings as RuntimeSettings;
 
             // Test
             services.AddBotRuntimeStorage(configuration, resourcesSettings);

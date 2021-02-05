@@ -45,13 +45,10 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 },
 
                 // Adapters
-                Resources = new ResourcesSettings()
+                Adapters = new[]
                 {
-                    Adapters = new[] 
-                    { 
-                        new AdapterSettings() { Name = typeof(ContosoAdapter).FullName, Route = "contoso", Enabled = true },
-                        new AdapterSettings() { Name = typeof(AdventureWorksAdapter).FullName, Route = "adventureworks", Enabled = true },
-                    }
+                    new AdapterSettings() { Name = typeof(ContosoAdapter).FullName, Route = "contoso", Enabled = true },
+                    new AdapterSettings() { Name = typeof(AdventureWorksAdapter).FullName, Route = "adventureworks", Enabled = true },
                 }
             };
 

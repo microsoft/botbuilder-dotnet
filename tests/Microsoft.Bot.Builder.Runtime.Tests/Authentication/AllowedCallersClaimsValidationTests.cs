@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Authentication
         [Theory]
         [MemberData(nameof(GetConfigureServicesSucceedsData))]
 
-        public async Task AcceptAllowedCallersArray(string allowedCallerClaimId, IEnumerable<string> allowList)
+        public async Task AcceptAllowedCallersArray(string allowedCallerClaimId, IList<string> allowList)
         {
             var validator = new AllowedCallersClaimsValidator(allowList);
 

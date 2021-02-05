@@ -20,14 +20,6 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         public FeatureSettings Features { get; set; }
 
         /// <summary>
-        /// Gets or sets the settings for runtime resources, such as adapters and storage.
-        /// </summary>
-        /// <value>
-        /// The settings for runtime resources, such as adapters and storage.
-        /// </value>
-        public ResourcesSettings Resources { get; set; }
-
-        /// <summary>
         /// Gets or sets the telemetry settings for the runtime.
         /// </summary>
         /// <value>
@@ -50,5 +42,21 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         /// The list of plugins registered for the runtime.
         /// </value>
         public IList<BotPluginDefinition> Plugins { get; set; } = new List<BotPluginDefinition>();
+
+        /// <summary>
+        /// Gets or sets the list of adapters to expose in the runtime.
+        /// </summary>
+        /// <value>
+        /// The list of adapters to expose in the runtime.
+        /// </value>
+        public IList<AdapterSettings> Adapters { get; set; } = new List<AdapterSettings>();
+
+        /// <summary>
+        /// Gets or sets the name of the storage to use.
+        /// </summary>
+        /// <value>
+        /// The name of the storage to use.
+        /// </value>
+        public string Storage { get; set; }
     }
 }
