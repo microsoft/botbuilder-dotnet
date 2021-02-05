@@ -108,5 +108,10 @@
     },
     "required": [
         "connectionName"
+    ],
+    "policies": [
+        {
+            "type": "interactive"
+        }
     ]
 }

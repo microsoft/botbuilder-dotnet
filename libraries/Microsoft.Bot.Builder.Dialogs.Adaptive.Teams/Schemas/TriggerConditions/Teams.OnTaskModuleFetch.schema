@@ -5,5 +5,18 @@
     "description": "Actions triggered when a Teams Invoke Activity is received with activity.name='task/fetch'.",
     "type": "object",
     "required": [
+    ],
+    "policies": [
+        {
+            "type": "triggerNotInteractive"
+        },
+        {
+            "type": "triggerRequiresAction",
+            "kinds": [
+                "Teams.SendTaskModuleCardResponse",
+                "Teams.SendTaskModuleMessageResponse",
+                "Teams.SendTaskModuleUrlResponse"
+            ]
+        }
     ]
 }
