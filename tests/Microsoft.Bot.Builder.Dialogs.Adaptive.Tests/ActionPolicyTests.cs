@@ -51,15 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public void TriggerNotInteractive_OnTest()
-        {
-            var ex = Assert.Throws<ActionPolicyException>(() => RunActionPolicyValidator());
-
-            Assert.Equal(ActionPolicyType.AllowedTrigger, ex.ActionPolicy.Type);
-            Assert.Equal(OnEndOfConversationActivity.Kind, ex.ActionPolicy.Kind);
-        }
-
-        [Fact]
         public void OnEndOfConversationActivity_Valid()
         {
             // No exception for valid trigger validation
