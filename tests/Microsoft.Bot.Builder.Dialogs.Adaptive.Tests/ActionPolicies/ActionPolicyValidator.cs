@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     break;
                 case ActionPolicyType.AllowedTrigger:
                     // ensure somewhere up the chain the specific trigger type is found
-                    if (parentKinds.Any(pk => policy.Actions.Contains(pk)))
+                    if (parentKinds.Any(pk => policy.Kinds.Contains(pk)))
                     {
                         return;
                     }
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         var childDialog = childActions[0];
                         var childKinds = _resources.GetKindsForType(childDialog.GetType());
-                        if (policy.Actions.Any(policyAction => childKinds.Contains(policyAction)))
+                        if (policy.Kinds.Any(policyAction => childKinds.Contains(policyAction)))
                         {
                             // found the action required
                             return;

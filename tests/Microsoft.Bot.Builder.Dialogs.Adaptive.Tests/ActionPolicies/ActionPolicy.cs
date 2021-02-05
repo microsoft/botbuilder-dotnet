@@ -19,11 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// </summary>
         /// <param name="kind">Action or Trigger $kind to which the aciton policy applies.</param>
         /// <param name="actionPolicyType">The <see cref="Type"/> of this action policy.</param>
-        /// <param name="actions">(Optional) action(s) for this policy.</param>
-        public ActionPolicy(string kind, ActionPolicyType actionPolicyType, IEnumerable<string> actions = null)
+        /// <param name="kinds">(Optional) kind(s) for this policy.</param>
+        public ActionPolicy(string kind, ActionPolicyType actionPolicyType, IEnumerable<string> kinds = null)
         {
             Type = actionPolicyType;
-            Actions = actions;
+            Kinds = kinds;
             Kind = kind;
         }
 
@@ -44,12 +44,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public ActionPolicyType Type { get; }
 
         /// <summary>
-        /// Gets actions for this action policy. See <see cref="Type"/> for
-        /// a description of what the actions represent.
+        /// Gets related $kinds for this policy. See <see cref="Type"/> for
+        /// a description of what the kinds represent.
         /// </summary>
         /// <value>
-        /// Collection of actions for this policy.
+        /// String collection of kinds for this policy.
         /// </value>
-        public IEnumerable<string> Actions { get; }
+        public IEnumerable<string> Kinds { get; }
     }
 }

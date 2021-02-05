@@ -8,5 +8,17 @@
         "actions"
     ],
     "required": [
+    ],
+    "policies": [
+        {
+            "type": "triggerNotInteractive"
+        },
+        {
+            "type": "triggerRequiresAction",
+            "kinds": [
+                "Teams.SendAppBasedLinkQueryResponse",
+                "Teams.SendMessagingExtensionAuthResponse"
+            ]
+        }
     ]
 }
