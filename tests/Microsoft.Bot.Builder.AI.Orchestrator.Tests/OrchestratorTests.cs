@@ -45,108 +45,108 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
         }
-        
-        //[Fact]
-        //public async Task TestIntentRecognize_Telemetry_LogsPii_WhenTrue()
-        //{
-        //    var mockResult = new Result
-        //    {
-        //        Score = 0.9,
-        //        Label = new Label { Name = "mockLabel" }
-        //    };
 
-        //    var mockScore = new List<Result> { mockResult };
-        //    var mockResolver = new MockResolver(mockScore);
-        //    var telemetryClient = new Mock<IBotTelemetryClient>();
-        //    var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
-        //    {
-        //        ModelPath = new StringExpression("fakePath"),
-        //        SnapshotPath = new StringExpression("fakePath"),
-        //        TelemetryClient = telemetryClient.Object,
-        //        LogPersonalInformation = true
-        //    };
+        [Fact]
+        public async Task TestIntentRecognize_Telemetry_LogsPii_WhenTrue()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.9,
+                Label = new Label { Name = "mockLabel" }
+            };
 
-        //    var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
-        //    var activity = MessageFactory.Text("hi");
-        //    var context = new TurnContext(adapter, activity);
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelPath = new StringExpression("fakePath"),
+                SnapshotPath = new StringExpression("fakePath"),
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = true
+            };
 
-        //    var dc = new DialogContext(new DialogSet(), context, new DialogState());
-        //    var result = await recognizer.RecognizeAsync(dc, activity, default);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
 
-        //    Assert.Equal(1, result.Intents.Count);
-        //    Assert.True(result.Intents.ContainsKey("mockLabel"));
-        //    Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-        //    ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
-        //}
-        
-        //[Fact]
-        //public async Task TestIntentRecognize_Telemetry_DoesNotLogPii_WhenFalse()
-        //{
-        //    var mockResult = new Result
-        //    {
-        //        Score = 0.9,
-        //        Label = new Label { Name = "mockLabel" }
-        //    };
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
 
-        //    var mockScore = new List<Result> { mockResult };
-        //    var mockResolver = new MockResolver(mockScore);
-        //    var telemetryClient = new Mock<IBotTelemetryClient>();
-        //    var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
-        //    {
-        //        ModelPath = new StringExpression("fakePath"),
-        //        SnapshotPath = new StringExpression("fakePath"),
-        //        TelemetryClient = telemetryClient.Object,
-        //        LogPersonalInformation = false
-        //    };
+            Assert.Equal(1, result.Intents.Count);
+            Assert.True(result.Intents.ContainsKey("mockLabel"));
+            Assert.Equal(0.9, result.Intents["mockLabel"].Score);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
+        }
 
-        //    var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
-        //    var activity = MessageFactory.Text("hi");
-        //    var context = new TurnContext(adapter, activity);
+        [Fact]
+        public async Task TestIntentRecognize_Telemetry_DoesNotLogPii_WhenFalse()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.9,
+                Label = new Label { Name = "mockLabel" }
+            };
 
-        //    var dc = new DialogContext(new DialogSet(), context, new DialogState());
-        //    var result = await recognizer.RecognizeAsync(dc, activity, default);
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelPath = new StringExpression("fakePath"),
+                SnapshotPath = new StringExpression("fakePath"),
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false
+            };
 
-        //    Assert.Equal(1, result.Intents.Count);
-        //    Assert.True(result.Intents.ContainsKey("mockLabel"));
-        //    Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-        //    ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
-        //}
-        
-        //[Fact]
-        //public async Task TestIntentRecognize_LogPii_IsFalseByDefault()
-        //{
-        //    var mockResult = new Result
-        //    {
-        //        Score = 0.9,
-        //        Label = new Label { Name = "mockLabel" }
-        //    };
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
 
-        //    var mockScore = new List<Result> { mockResult };
-        //    var mockResolver = new MockResolver(mockScore);
-        //    var telemetryClient = new Mock<IBotTelemetryClient>();
-        //    var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
-        //    {
-        //        ModelPath = new StringExpression("fakePath"),
-        //        SnapshotPath = new StringExpression("fakePath"),
-        //        TelemetryClient = telemetryClient.Object,
-        //        LogPersonalInformation = false
-        //    };
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
 
-        //    var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
-        //    var activity = MessageFactory.Text("hi");
-        //    var context = new TurnContext(adapter, activity);
+            Assert.Equal(1, result.Intents.Count);
+            Assert.True(result.Intents.ContainsKey("mockLabel"));
+            Assert.Equal(0.9, result.Intents["mockLabel"].Score);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
+        }
 
-        //    var dc = new DialogContext(new DialogSet(), context, new DialogState());
-        //    var result = await recognizer.RecognizeAsync(dc, activity, default);
-        //    var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
-            
-        //    // Should be false by default, when not specified by user.
-        //    Assert.False(logPersonalInfo);
-        //    Assert.Equal(1, result.Intents.Count);
-        //    Assert.True(result.Intents.ContainsKey("mockLabel"));
-        //    Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-        //    ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
-        //}
+        [Fact]
+        public async Task TestIntentRecognize_LogPii_IsFalseByDefault()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.9,
+                Label = new Label { Name = "mockLabel" }
+            };
+
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelPath = new StringExpression("fakePath"),
+                SnapshotPath = new StringExpression("fakePath"),
+                TelemetryClient = telemetryClient.Object,
+                LogPersonalInformation = false
+            };
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
+
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
+            var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+
+            // Should be false by default, when not specified by user.
+            Assert.False(logPersonalInfo);
+            Assert.Equal(1, result.Intents.Count);
+            Assert.True(result.Intents.ContainsKey("mockLabel"));
+            Assert.Equal(0.9, result.Intents["mockLabel"].Score);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
+        }
 
         [Fact]
         public async Task TestEntityRecognize()
