@@ -807,6 +807,11 @@
       "title": "Send activity to ask a question",
       "description": "This is an action which sends an activity to the user when a response is expected",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -880,6 +885,11 @@
       ],
       "title": "Attachment input dialog",
       "description": "Collect information - Ask for a file or image.",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "type": "object",
       "required": [
         "$kind"
@@ -1273,6 +1283,11 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -1313,6 +1328,11 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -1373,6 +1393,11 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -1468,6 +1493,11 @@
       "title": "Choice input dialog",
       "description": "Collect information - Pick from a list of choices",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -1863,6 +1893,11 @@
       "title": "Confirm input dialog",
       "description": "Collect information - Ask for confirmation (yes or no).",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -2318,6 +2353,11 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -2478,6 +2518,11 @@
         "description": "Default locale.",
         "default": "en-us"
       },
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -3154,6 +3199,11 @@
       "title": "End dialog",
       "description": "End this dialog.",
       "type": "object",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -3595,6 +3645,11 @@
       "required": [
         "actionId",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -4162,13 +4217,13 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
-        },
-        {
           "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -5092,6 +5147,11 @@
       "title": "Number input dialog",
       "description": "Collect information - Ask for a number.",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -5298,6 +5358,11 @@
       "required": [
         "connectionName",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "interactive"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -6271,6 +6336,11 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -7241,8 +7311,8 @@
       "description": "Orchestrator recognizer.",
       "type": "object",
       "required": [
-        "model",
-        "shapShot",
+        "modelFolder",
+        "snapshotFile",
         "$kind"
       ],
       "additionalProperties": false,
@@ -7258,17 +7328,17 @@
           "title": "Id",
           "description": "Optional unique id using with RecognizerSet."
         },
-        "modelPath": {
+        "modelFolder": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Model",
-          "description": "NLR model file path.",
-          "default": "=settings.orchestrator.modelpath"
+          "title": "Base Model",
+          "description": "Base model folder path.",
+          "default": "=settings.orchestrator.modelFolder"
         },
-        "snapshotPath": {
+        "snapshotFile": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint key",
-          "description": "SnapShot file path.",
-          "default": "=settings.orchestrator.shapshotpath"
+          "title": "Snapshot File",
+          "description": "Snapshot file.",
+          "default": "=settings.orchestrator.snapshotFile"
         },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -7953,6 +8023,11 @@
       "type": "object",
       "title": "Repeat dialog",
       "description": "Repeat current dialog.",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -8020,6 +8095,11 @@
       "type": "object",
       "title": "Replace dialog",
       "description": "Replace current dialog with another dialog.",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -9807,6 +9887,11 @@
       "type": "object",
       "title": "Text input dialog",
       "description": "Collection information - Ask for a word or sentence.",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -10012,6 +10097,11 @@
       "required": [
         "errorValue",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10699,6 +10789,18 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendAppBasedLinkQueryResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11339,6 +11441,18 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11402,6 +11516,15 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive",
+          "kinds": [
+            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -11467,6 +11590,18 @@
       "required": [
         "actions",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionActionResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -11659,6 +11794,17 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionActionResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -11915,6 +12061,19 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendTaskModuleCardResponse",
+            "Teams.SendTaskModuleMessageResponse",
+            "Teams.SendTaskModuleUrlResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -12422,6 +12581,14 @@
       "title": "Send query link response",
       "description": "Query link requests have activity.name='composeExtension/queryLink'.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnAppBasedLinkQuery"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -12552,6 +12719,15 @@
       "title": "Messaging extension action response",
       "description": "Send an task action response containing a card.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnMessagingExtensionFetchTask",
+            "Teams.OnMessagingExtensionSubmitAction"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -12850,6 +13026,14 @@
       "title": "Send query link response",
       "description": "Query link requests have activity.name='composeExtension/queryLink'.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13032,6 +13216,15 @@
       "title": "Send task module card response",
       "description": "Send a card response to a Task Module request.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13120,6 +13313,15 @@
       "title": "Send task module message response",
       "description": "Send a message response to a Task Module request.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13181,6 +13383,15 @@
       "title": "Send task module url response",
       "description": "Send a url type continue response to a Task Module request.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
