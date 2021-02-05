@@ -8,5 +8,20 @@
             "activity",
             "*"
         ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "LgWidget",
+            "field": "activity"
+        },
+        "header": {
+            "widget": "ActionHeader",
+            "icon": "MessageBot",
+            "colors": {
+                "theme": "#EEEAF4",
+                "icon": "#5C2E91"
+            }
+        }
     }
 }

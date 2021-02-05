@@ -1,0 +1,63 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test mock setting",
+    "settingMocks": [
+        "settingsbase.mock",
+        "settings.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "hi"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "settings.file == 'set settings.file'",
+                "settings.fileoverwrite == 'overwrite settings.fileoverwrite'",
+                "settings.base == 'base'",
+                "settings.baseoverwrite == 'overwrite settings.base'",
+                "settings.selfoverwrite == 'overwrite settings.selfoverwrite'",
+                "settings.object.value == 'within object value'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Tested it works."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "settings.file == 'set settings.file'",
+                "settings.fileoverwrite == 'overwrite settings.fileoverwrite'",
+                "settings.base == 'base'",
+                "settings.baseoverwrite == 'overwrite settings.base'",
+                "settings.selfoverwrite == 'overwrite settings.selfoverwrite'",
+                "settings.object.value == 'within object value'"
+            ]
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Tested it persists accross turns."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "hi"
+        }
+    ]
+}

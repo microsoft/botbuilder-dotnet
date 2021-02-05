@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
             if (bfAdapter == null)
             {
-                throw new InvalidOperationException("GetActivityMembers() only works with BotFrameworkAdapter");
+                throw new InvalidOperationException("GetConversationMembersAsync() only works with BotFrameworkAdapter");
             }
 
             var result = await bfAdapter.GetConversationMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);

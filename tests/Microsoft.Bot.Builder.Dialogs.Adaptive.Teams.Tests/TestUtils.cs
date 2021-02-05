@@ -5,15 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
@@ -30,13 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             return Directory.EnumerateFiles(testFolder, "*.test.dialog", SearchOption.AllDirectories).Select(s => new object[] { Path.GetFileName(s) }).ToArray();
         }
 
-        public static async Task RunTestScript(ResourceExplorer resourceExplorer, string resourceId = null, IConfiguration configuration = null, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middleware = null)
+        public static async Task RunTestScript(ResourceExplorer resourceExplorer, string resourceId = null, IConfiguration configuration = null, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middleware = null, string adapterChannel = Channels.Msteams)
         {
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
 
-            var adapter = (TestAdapter)new TestAdapter(Channels.Msteams);
+            var adapter = (TestAdapter)new TestAdapter(CreateConversation(adapterChannel, testName));
 
             if (middleware != null)
             {
@@ -51,7 +49,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
-            adapter.OnTurnError += (context, err) => context.SendActivityAsync(err.Message);
+            adapter.OnTurnError += async (context, err) =>
+            {
+                if (err.Message.EndsWith("MemoryAssertion failed"))
+                {
+                    throw err;
+                }
+
+                await context.SendActivityAsync(err.Message);
+            };
 
             var script = resourceExplorer.LoadType<TestScript>(resourceId ?? $"{testName}.test.dialog");
             script.Configuration = configuration ?? new ConfigurationBuilder().AddInMemoryCollection().Build();
@@ -73,6 +79,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             }
 
             return parent;
+        }
+
+        public static ConversationReference CreateConversation(string channel, string conversationName)
+        {
+            return new ConversationReference
+            {
+                ChannelId = channel ?? Channels.Test,
+                ServiceUrl = "https://test.com",
+                User = new ChannelAccount("user1", "User1"),
+                Bot = new ChannelAccount("bot", "Bot"),
+                Conversation = new ConversationAccount(false, "personal", conversationName),
+                Locale = "en-US",
+            };
         }
     }
 }

@@ -1,0 +1,13 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Get paged members",
+        "subtitle": "Gets members of a one-on-one, group, or team conversation.",
+        "order": [
+            "property",
+            "pageSize",
+            "continuationToken",
+            "*"
+        ]
+    }
+}

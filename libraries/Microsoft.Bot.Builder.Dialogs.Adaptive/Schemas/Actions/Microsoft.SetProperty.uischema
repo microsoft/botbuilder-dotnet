@@ -11,5 +11,9 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": "${coalesce(action.property, \"?\")} : ${coalesce(action.value, \"?\")}"
     }
 }

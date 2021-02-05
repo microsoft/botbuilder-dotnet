@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - BlobTranscripts")]
-    public class AzureBlobTranscriptStoreTests : TranscriptStoreBaseTests, IDisposable
+    public class AzureBlobTranscriptStoreTests : TranscriptStoreBaseTests, IAsyncLifetime
     {
         private readonly string _testName;
 
@@ -43,7 +43,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         protected override ITranscriptStore TranscriptStore => new AzureBlobTranscriptStore(BlobStorageEmulatorConnectionString, ContainerName);
 
-        public async void Dispose()
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
         {
             if (StorageEmulatorHelper.CheckEmulator())
             {

@@ -6,8 +6,6 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
     <NoWarn>$(NoWarn),CS8002</NoWarn>
-    <!-- TODO: Remove the PlatformTarget below once we support Any CPU for Orchestrator -->
-    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

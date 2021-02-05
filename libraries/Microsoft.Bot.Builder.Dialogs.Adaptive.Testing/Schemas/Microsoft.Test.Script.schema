@@ -36,6 +36,14 @@
                 "$kind": "Microsoft.Test.IUserTokenMock"
             }
         },
+        "settingMocks": {
+            "type": "array",
+            "title": "Setting Mocks",
+            "description": "Mock data for setting.",
+            "items": {
+                "$kind": "Microsoft.Test.ISettingMock"
+            }
+        },
         "script": {
             "type": "array",
             "title": "Test actions",
