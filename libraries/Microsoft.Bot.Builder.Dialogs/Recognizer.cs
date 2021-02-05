@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Uses the RecognizerResult to create a list of propeties to be included when tracking the result in telemetry.
+        /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.
         /// </summary>
         /// <param name="recognizerResult">Recognizer Result.</param>
         /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>

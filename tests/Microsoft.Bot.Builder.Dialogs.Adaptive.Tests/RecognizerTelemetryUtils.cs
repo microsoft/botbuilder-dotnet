@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var text = activity.AsMessageActivity().Text;
             var expectedProps = ExpectedProperties.ContainsKey(text) ? ExpectedProperties[text]() : new Dictionary<string, string>();
 
-            if (logPersonalInformation == true)
+            if (logPersonalInformation)
             {
                 expectedProps.Add("Text", activity.AsMessageActivity().Text);
             }

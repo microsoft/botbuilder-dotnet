@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                             {
                                 Intents = new List<IntentPattern>()
                                 {
-                                    new IntentPattern("Greting", "(?i)hiya"),
+                                    new IntentPattern("Greeting", "(?i)hiya"),
                                     new IntentPattern("Goodbye", "(?i)cheerio")
                                 }
                             }

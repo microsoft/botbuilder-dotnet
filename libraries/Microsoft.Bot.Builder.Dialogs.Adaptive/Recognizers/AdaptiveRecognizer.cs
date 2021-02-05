@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
         /// <summary>
-        /// Uses the RecognizerResult to create a list of propeties to be included when tracking the result in telemetry.
+        /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.
         /// </summary>
         /// <param name="recognizerResult">Recognizer Result.</param>
         /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
                 { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null },
                 { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
-                { "Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null },
+                { "Entities", recognizerResult.Entities?.ToString() },
                 { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
             };
 
-            var (logPersonalInfo, error) = this.LogPersonalInformation.TryGetValue(dialogContext.State);
+            var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
             
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {
