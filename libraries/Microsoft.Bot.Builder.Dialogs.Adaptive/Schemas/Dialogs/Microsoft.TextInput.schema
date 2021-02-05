@@ -34,5 +34,10 @@
                 "${toUpper(this.value)}"
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "interactive"
+        }
+    ]
 }

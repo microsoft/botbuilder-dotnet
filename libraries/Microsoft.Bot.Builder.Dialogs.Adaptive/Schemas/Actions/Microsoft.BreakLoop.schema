@@ -19,5 +19,10 @@
                 "user.age > 3"
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
 }

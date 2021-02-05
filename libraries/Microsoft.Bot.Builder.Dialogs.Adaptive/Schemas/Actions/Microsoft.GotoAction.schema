@@ -26,5 +26,10 @@
             "title": "Action Id",
             "description": "Action Id to execute next"
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
 }
