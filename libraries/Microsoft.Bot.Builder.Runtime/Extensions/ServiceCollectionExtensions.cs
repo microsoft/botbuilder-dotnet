@@ -126,7 +126,6 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
 
         internal static void AddBotRuntimePlugins(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
         {
-            var serviceFilter = new AdapterServiceFilter(services, runtimeSettings?.Resources);
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
                 var pluginEnumenator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
@@ -134,7 +133,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
                 // Iterate through configured plugins and load each one
                 foreach (BotPluginDefinition plugin in runtimeSettings.Plugins ?? Enumerable.Empty<BotPluginDefinition>())
                 {
-                    plugin.Load(pluginEnumenator, services, configuration, serviceFilter.OnAddServiceDescriptor);
+                    plugin.Load(pluginEnumenator, services, configuration);
                 }
             }
         }

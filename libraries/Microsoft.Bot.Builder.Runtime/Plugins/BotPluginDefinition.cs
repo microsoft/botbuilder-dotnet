@@ -45,13 +45,11 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
         /// <param name="pluginEnumerator">Enumerates available plugins from the definition information.</param>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">Application configuration.</param>
-        /// <param name="serviceFilter">Optional filter to decide whether a specific <see cref="ServiceDescriptor"/> should be consumed or discarded. 
         /// This is relevant for optional security checks and features such as configurable adapters.</param>
         public void Load(
             IBotPluginEnumerator pluginEnumerator,
             IServiceCollection services,
-            IConfiguration configuration,
-            Func<ServiceDescriptor, bool> serviceFilter = null)
+            IConfiguration configuration)
         {
             if (pluginEnumerator == null)
             {
