@@ -2,8 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,9 +27,28 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public async Task NoCallerIdShouldSetNullOAuthScope()
         {
             var mockCredentialProvider = new Mock<ICredentialProvider>();
-            var bot = new TestBot();
-            var adapter = new MockAdapter(mockCredentialProvider.Object);
+            var mockSocket = new Mock<WebSocket>();
+            var bot = new TestBot(null);
+            var adapter = new MockAdapter(mockCredentialProvider.Object, bot);
+
             var originalActivity = CreateBasicActivity(); // Has no callerId, therefore OAuthScope in TurnState should be null.
+            adapter.CreateStreamingRequestHandler(mockSocket.Object, originalActivity);
+
+            await adapter.ProcessStreamingActivityAsync(originalActivity, bot.OnTurnAsync);
+        }
+
+        [Fact]
+        public async Task PublicCloudCallerIdShouldSetCorrectOAuthScope()
+        {
+            var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockSocket = new Mock<WebSocket>();
+            var oAuthScope = AuthenticationConstants.ToBotFromChannelTokenIssuer;
+            var bot = new TestBot(oAuthScope);
+            var adapter = new MockAdapter(mockCredentialProvider.Object, bot);
+
+            var originalActivity = CreateBasicActivity();
+            originalActivity.CallerId = CallerIdConstants.PublicAzureChannel;
+            adapter.CreateStreamingRequestHandler(mockSocket.Object, originalActivity, oAuthScope);
 
             await adapter.ProcessStreamingActivityAsync(originalActivity, bot.OnTurnAsync);
         }
@@ -56,20 +78,52 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
         private class MockAdapter : BotFrameworkHttpAdapterBase
         {
-            public MockAdapter(ICredentialProvider credentialProvider, MockLogger logger = null)
+            public MockAdapter(ICredentialProvider credentialProvider, IBot bot, MockLogger logger = null)
                 : base(credentialProvider, null, logger)
             {
                 Logger = logger;
+                ConnectedBot = bot;
             }
 
             public new MockLogger Logger { get; private set; }
+
+            public void CreateStreamingRequestHandler(WebSocket socket, Activity activity, string audience = null)
+            {
+                var srh = new StreamingRequestHandler(ConnectedBot, this, socket, audience, Logger);
+
+                // Prepare StreamingRequestHandler for BotFrameworkHttpAdapterBase.ProcessStreamingActivityAsync()
+                // Add ConversationId to StreamingRequestHandler's conversations cache
+                var cacheField = typeof(StreamingRequestHandler).GetField("_conversations", BindingFlags.NonPublic | BindingFlags.Instance);
+                var cache = (ConcurrentDictionary<string, DateTime>)cacheField.GetValue(srh);
+                cache.TryAdd(activity.Conversation.Id, DateTime.Now);
+
+                // Add ServiceUrl to StreamingRequestHandler
+                var serviceUrlProp = typeof(StreamingRequestHandler).GetProperty("ServiceUrl");
+                serviceUrlProp.DeclaringType.GetProperty("ServiceUrl");
+                serviceUrlProp.GetSetMethod(true).Invoke(srh, new object[] { activity.ServiceUrl });
+
+                if (RequestHandlers != null)
+                {
+                    RequestHandlers.Add(srh);
+                    return;
+                }
+                
+                RequestHandlers = new List<StreamingRequestHandler> { srh };
+            }
         }
 
         private class TestBot : IBot
         {
+            private string _expectedOAuthScope;
+            
+            public TestBot(string expectedOAuthScope)
+            {
+                _expectedOAuthScope = expectedOAuthScope;
+            }
+
             public Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
             {
-                Assert.Null(turnContext.TurnState.Get<string>(BotAdapter.OAuthScopeKey));
+                Assert.Equal(turnContext.TurnState.Get<string>(BotAdapter.OAuthScopeKey), _expectedOAuthScope);
                 return Task.CompletedTask;
             }
         }
