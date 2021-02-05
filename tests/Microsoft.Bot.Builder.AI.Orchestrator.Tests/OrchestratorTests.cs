@@ -60,8 +60,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelPath = new StringExpression("fakePath"),
-                SnapshotPath = new StringExpression("fakePath"),
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath"),
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = true
             };
