@@ -954,6 +954,72 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public async Task TestTabFetch()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "tab/fetch",
+                Value = JObject.Parse(@"{""data"":{""key"":""value"",""type"":""tab / fetch""},""context"":{""theme"":""default""}}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTabFetchAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [Fact]
+        public async Task TestTabSubmit()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "tab/submit",
+                Value = JObject.Parse(@"{""data"":{""key"":""value"",""type"":""tab / submit""},""context"":{""theme"":""default""}}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsTabSubmitAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
+            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [Fact]
         public async Task TestSigninVerifyState()
         {
             // Arrange
@@ -1217,6 +1283,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.CompletedTask;
+            }
+
+            protected override Task<TabResponse> OnTeamsTabFetchAsync(ITurnContext<IInvokeActivity> turnContext, TabRequest taskModuleRequest, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(new TabResponse());
+            }
+
+            protected override Task<TabResponse> OnTeamsTabSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TabSubmit taskModuleRequest, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(new TabResponse());
             }
         }
 

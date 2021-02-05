@@ -1,0 +1,52 @@
+﻿{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Continue conversation (Queue)",
+    "description": "Continue a specific conversation (via StorageQueue implementation).",
+    "type": "object",
+    "required": [
+        "conversationReference"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "conversationReference": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "Conversation Reference",
+            "description": "A conversation reference. (NOTE: Minimum required values or channelId, conversation).",
+            "examples": [
+                {
+                    "channelId": "skype",
+                    "serviceUrl": "http://smba.skype.com",
+                    "conversation": {
+                        "id": "11111"
+                    },
+                    "bot": {
+                        "id": "22222"
+                    },
+                    "user": {
+                        "id": "33333"
+                    },
+                    "locale": "en-us"
+                }
+            ]
+        },
+        "value": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Value",
+            "description": "Value to send in the activity.value."
+        }
+
+    }
+}

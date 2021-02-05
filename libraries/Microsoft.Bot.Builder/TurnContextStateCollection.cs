@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -16,6 +15,8 @@ namespace Microsoft.Bot.Builder
     /// </remarks>
     public class TurnContextStateCollection : Dictionary<string, object>, IDisposable
     {
+        private bool _disposed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TurnContextStateCollection"/> class.
         /// </summary>
@@ -35,6 +36,11 @@ namespace Microsoft.Bot.Builder
         public T Get<T>(string key)
             where T : class
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Get));
+            }
+
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
@@ -74,6 +80,11 @@ namespace Microsoft.Bot.Builder
         public void Add<T>(string key, T value)
             where T : class
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Add));
+            }
+
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
@@ -111,6 +122,11 @@ namespace Microsoft.Bot.Builder
         public void Set<T>(string key, T value)
             where T : class
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Set));
+            }
+
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
@@ -146,10 +162,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="disposing">Boolean value that indicates if freeing resources should be performed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Dispose any disposable objects owned by the class here.
-            }
+            _disposed = true;
         }
     }
 }

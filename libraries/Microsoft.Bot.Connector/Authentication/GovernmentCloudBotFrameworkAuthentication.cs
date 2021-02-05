@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Connector.Authentication
                   GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
                   CallerIdConstants.USGovChannel,
                   GovernmentAuthenticationConstants.ChannelService,
+                  GovernmentAuthenticationConstants.OAuthUrlGov,
                   credentialFactory,
                   authConfiguration,
                   httpClient,

@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
-    "title": "OnTeamsCardAction",
+    "title": "On Teams card action",
     "description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
     "type": "object",
     "required": [

@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Conditions
 {
     /// <summary>
     /// Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamArchived'.

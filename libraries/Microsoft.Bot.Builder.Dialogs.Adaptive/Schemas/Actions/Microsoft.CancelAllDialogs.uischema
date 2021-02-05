@@ -4,5 +4,13 @@
         "label": "Cancel all active dialogs",
         "subtitle": "Cancel All Dialogs",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "PropertyDescription",
+            "property": "=coalesce(action.eventName, \"?\")",
+            "description": "(Event)"
+        }
     }
 }

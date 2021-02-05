@@ -83,7 +83,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Validate the header and extract claims.
             var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, authConfig, activity.ServiceUrl, httpClient ?? _httpClient).ConfigureAwait(false);
-            AppCredentials.TrustServiceUrl(activity.ServiceUrl);
             return claimsIdentity;
         }
 

@@ -28,5 +28,13 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ForeachWidget",
+        "nowrap": true,
+        "loop": {
+            "widget": "ActionCard",
+            "body": "=concat(\"Each value in \", coalesce(action.itemsProperty, \"?\"))"
+        }
     }
 }

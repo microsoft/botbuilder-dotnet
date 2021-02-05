@@ -1,0 +1,65 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.GetPagedTeamMembers",
+                        "property": "conversation.result"
+                    },
+                    {
+                        "$kind": "Teams.GetPagedTeamMembers",
+                        "property": "conversation.resultWithCustomProperties",
+                        "continuationToken": "token",
+                        "pageSize": 2
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "channelData": {
+                    "tenant": {
+                        "id": "tenant-id-1"
+                    },
+                    "team": {
+                        "id": "team-id-1"
+                    }
+                }
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "conversation.result.continuationToken == 'token'",
+                "conversation.result.members[0].email == 'User.0@microsoft.com'",
+                "conversation.result.members[0].id == '29:User-Id-0'",
+                "conversation.result.members[0].objectId == 'User-0-Object-Id'",
+                "conversation.result.members[1].email == 'User.1@microsoft.com'",
+                "conversation.result.members[1].id == '29:User-Id-1'",
+                "conversation.result.members[1].objectId == 'User-1-Object-Id'",
+                "conversation.result.members[2].email == 'User.2@microsoft.com'",
+                "conversation.result.members[2].id == '29:User-Id-2'",
+                "conversation.result.members[2].objectId == 'User-2-Object-Id'",
+                "conversation.resultWithCustomProperties.continuationToken == 'customToken'",
+                "conversation.resultWithCustomProperties.members[0].email == 'User.0@microsoft.com'",
+                "conversation.resultWithCustomProperties.members[0].id == '29:User-Id-0'",
+                "conversation.resultWithCustomProperties.members[0].objectId == 'User-0-Object-Id'",
+                "conversation.resultWithCustomProperties.members[1].email == 'User.1@microsoft.com'",
+                "conversation.resultWithCustomProperties.members[1].id == '29:User-Id-1'",
+                "conversation.resultWithCustomProperties.members[1].objectId == 'User-1-Object-Id'",
+                "not(exists(conversation.resultWithCustomProperties.members[2]))"
+            ]
+        }
+    ]
+}

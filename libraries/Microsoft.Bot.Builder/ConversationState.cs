@@ -39,7 +39,6 @@ namespace Microsoft.Bot.Builder
         {
             var channelId = turnContext.Activity.ChannelId ?? throw new InvalidOperationException("invalid activity-missing channelId");
             var conversationId = turnContext.Activity.Conversation?.Id ?? throw new InvalidOperationException("invalid activity-missing Conversation.Id");
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             return $"{channelId}/conversations/{conversationId}";
         }
     }

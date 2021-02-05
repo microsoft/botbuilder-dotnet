@@ -24,6 +24,8 @@ namespace AdaptiveExpressions
         public const string Floor = "floor";
         public const string Ceiling = "ceiling";
         public const string Round = "round";
+        public const string Abs = "abs";
+        public const string Sqrt = "sqrt";
 
         // Comparisons
         public const string LessThan = "<";
