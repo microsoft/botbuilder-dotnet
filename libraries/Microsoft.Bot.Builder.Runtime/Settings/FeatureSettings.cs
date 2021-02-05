@@ -3,16 +3,49 @@
 
 namespace Microsoft.Bot.Builder.Runtime.Settings
 {
+    /// <summary>
+    /// Settings for runtime features.
+    /// </summary>
     internal class FeatureSettings
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether the runtime should remove recipient mentions.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether the runtime should remove recipient mentions.
+        /// </value>
         public bool RemoveRecipientMentions { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the runtime should send typing activities.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether the runtime should send typing activities.
+        /// </value>
         public bool ShowTyping { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to use inspection middleware.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to use inspection middleware.
+        /// </value>
         public bool UseInspection { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to use traces for transcripts.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to use traces for transcripts.
+        /// </value>
         public bool TraceTranscript { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to save transcripts to blob storage.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to save transcripts to blob storage.
+        /// </value>
         public bool BlobTranscript { get; set; } = false;
     }
 }
