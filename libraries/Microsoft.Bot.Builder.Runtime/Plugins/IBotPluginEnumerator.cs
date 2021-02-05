@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Runtime.Plugins;
 
 namespace Microsoft.Bot.Builder.Runtime.Plugins
 {

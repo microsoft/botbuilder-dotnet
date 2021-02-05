@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
@@ -13,7 +11,6 @@ using Microsoft.Bot.Builder.Runtime.Settings;
 using Microsoft.Bot.Builder.Runtime.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

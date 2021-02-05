@@ -1,0 +1,5 @@
+{
+    "$kind": "Contoso.AdventureWorksAdapter",
+    "adventureWorksSkillId": "=settings.Contoso.AdventureWorksAdapter.AdventureWorksSkillId",
+    "adventureWorksSecretKey": "=settings.Contoso.AdventureWorksAdapter.AdventureWorksSecretKey"
+}

@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Runtime.Extensions;

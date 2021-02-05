@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

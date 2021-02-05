@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Builder.Runtime
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
             ComponentRegistration.Add(new QnAMakerComponentRegistration());
             ComponentRegistration.Add(new LuisComponentRegistration());
-            ComponentRegistration.Add(new CoreBotComponentRegistration());
         }
     }
 }

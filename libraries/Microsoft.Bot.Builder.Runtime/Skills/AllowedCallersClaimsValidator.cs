@@ -7,7 +7,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Runtime.Skills
 {

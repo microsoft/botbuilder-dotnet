@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="**/*.dialog;**/*.lg;**/*.lu;**/*.qna" Exclude="$(BaseOutputPath)/**;$(BaseIntermediateOutputPath)/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Contoso.CustomAdapter" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Runtime\Microsoft.Bot.Builder.Runtime.csproj" />
+  </ItemGroup>
+</Project>

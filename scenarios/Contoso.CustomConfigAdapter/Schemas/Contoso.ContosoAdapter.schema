@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IAdapter)",
+    "title": "Contoso Chat Client Adapter",
+    "description": "Connect your bot to Contoso Chat Client",
+    "type": "object",
+    "properties": {
+        "contosoSkillId": {
+            "type": "string",
+            "title": "Contoso Skill Id",
+            "description": "SkillId from Contoso portal"
+        },
+        "contosoSecretKey": {
+            "type": "string",
+            "title": "Contoso Secret Key",
+            "description": "Secret Key obtained in Contoso portal."
+        },
+        "allowSuggestedActions": {
+            "type": "boolean",
+            "title": "Allow Suggested Actions",
+            "description": "Optional condition which if true will allow suggested actions."
+        }
+    },
+    "required": [
+        "contosoSkillId",
+        "contosoSecretKey"
+    ]
+}

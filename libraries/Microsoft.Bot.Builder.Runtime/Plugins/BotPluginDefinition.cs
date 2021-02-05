@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -89,7 +88,7 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
         {
             if (string.IsNullOrEmpty(this.SettingsPrefix))
             {
-                return configuration;
+                return EmptyConfiguration;
             }
 
             IConfigurationSection section = configuration.GetSection(this.SettingsPrefix);

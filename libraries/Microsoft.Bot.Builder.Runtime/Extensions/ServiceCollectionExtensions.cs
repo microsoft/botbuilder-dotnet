@@ -2,10 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Runtime.Loader;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -27,7 +24,6 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Runtime.Extensions
 {
@@ -174,7 +170,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             }
         }
 
-        internal static void AddBotRuntimeTelemetry(this IServiceCollection services, TelemetrySettings telemetrySettings)
+        internal static void AddBotRuntimeTelemetry(this IServiceCollection services, TelemetrySettings telemetrySettings = null)
         {
             if (string.IsNullOrEmpty(telemetrySettings?.InstrumentationKey))
             {
