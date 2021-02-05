@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Runtime.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -73,14 +74,7 @@ namespace Microsoft.Bot.Builder.Runtime.Plugins
             {
                 var context = new BotPluginLoadContext(pluginConfiguration);
                 plugin.Load(context);
-
-                foreach (var service in context.Services)
-                {
-                    if (serviceFilter == null || serviceFilter(service))
-                    {
-                        services.Add(service);
-                    }
-                }
+                services.AddRange(context.Services);
             }
         }
 

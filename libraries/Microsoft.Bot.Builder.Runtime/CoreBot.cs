@@ -79,8 +79,7 @@ namespace Microsoft.Bot.Builder.Runtime
             var resourceExplorer = services.GetRequiredService<ResourceExplorer>();
             var telemetryClient = services.GetService<IBotTelemetryClient>();
 
-            //options.Value.RootDialog);
-            Resource rootDialogResource = resourceExplorer.GetResource("echobot-0.dialog"); 
+            Resource rootDialogResource = resourceExplorer.GetResource(options.Value.RootDialog); 
             var rootDialog = resourceExplorer.LoadType<AdaptiveDialog>(rootDialogResource);
 
             var dialogManager = new DialogManager(rootDialog)
