@@ -12,6 +12,7 @@ using AdaptiveExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -562,6 +563,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         else
                         {
                             // KeyValueStructuredLine
+                            var structureKey = body.keyValueStructureLine().STRUCTURE_IDENTIFIER();
                             var structureValues = body.keyValueStructureLine().keyValueStructureValue();
                             foreach (var structureValue in structureValues)
                             {
@@ -570,6 +572,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                     FillInExpression(expression);
                                 }
                             }
+
+                            FillInProperties(structureKey.GetText().Trim(), structureValues);
                         }
                     }
                 }
@@ -671,6 +675,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var sourceRange = new SourceRange(expressionContext, _template.SourceRange.Source, lineOffset);
                 var expressionRef = new ExpressionRef(exp, sourceRange);
                 _template.Expressions.Add(expressionRef);
+            }
+
+            private void FillInProperties(string key, LGTemplateParser.KeyValueStructureValueContext[] structureValues)
+            {
+                if (structureValues.Length == 1)
+                {
+                    _template.Properties[key] = structureValues[0].GetText();
+                }
+                else if (structureValues.Length > 1)
+                {
+                    _template.Properties[key] = JArray.FromObject(structureValues.Select(u => u.GetText()));
+                }
             }
         }
     }
