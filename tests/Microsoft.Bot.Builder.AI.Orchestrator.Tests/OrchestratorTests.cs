@@ -129,7 +129,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
                 TelemetryClient = telemetryClient.Object,
-                LogPersonalInformation = false
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
