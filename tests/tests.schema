@@ -3920,6 +3920,30 @@
           "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -3938,7 +3962,6 @@
           "$ref": "#/definitions/Microsoft.ContinueConversation"
         },
         {
-
           "$ref": "#/definitions/Microsoft.ContinueConversationLater"
         },
         {
@@ -4026,75 +4049,10 @@
           "$ref": "#/definitions/Microsoft.ThrowException"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
+          "$ref": "#/definitions/Microsoft.TraceActivity"
         },
         {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-
-          "$ref": "#/definitions/CustomAction.dialog"
-        },
-        {
-          "$ref": "#/definitions/CustomAction2.dialog"
-        }
-      ]
-    },
-    "Microsoft.IEntityRecognizer": {
-      "$role": "interface",
-      "title": "Entity recognizers",
-      "description": "Components which derive from EntityRecognizer.",
-      "type": "object",
-      "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.IEntityRecognizer",
-          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
-
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
+          "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
@@ -4136,25 +4094,6 @@
           "$ref": "#/definitions/Teams.SendMessagingExtensionBotMessagePreviewResponse"
         },
         {
-
-          "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        }
-      ]
-    },
-    "Microsoft.ILanguageGenerator": {
-      "title": "Microsoft LanguageGenerator",
-      "description": "Components which dervie from the LanguageGenerator class",
-      "$role": "interface",
-      "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
-
           "$ref": "#/definitions/Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
         },
         {
@@ -4193,50 +4132,17 @@
       "type": "object",
       "oneOf": [
         {
-
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-
           "type": "string",
           "title": "Reference to Microsoft.IEntityRecognizer",
           "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
         },
         {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
-
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChannelMentionEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
-
           "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
         },
         {
@@ -4277,13 +4183,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
-
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
-        },
-        {
-
         },
         {
           "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
@@ -4318,10 +4217,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -7412,8 +7311,8 @@
       "description": "Orchestrator recognizer.",
       "type": "object",
       "required": [
-        "model",
-        "shapShot",
+        "modelFolder",
+        "snapshotFile",
         "$kind"
       ],
       "additionalProperties": false,
@@ -7429,17 +7328,17 @@
           "title": "Id",
           "description": "Optional unique id using with RecognizerSet."
         },
-        "modelPath": {
+        "modelFolder": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Model",
-          "description": "NLR model file path.",
-          "default": "=settings.orchestrator.modelpath"
+          "title": "Base Model",
+          "description": "Base model folder path.",
+          "default": "=settings.orchestrator.modelFolder"
         },
-        "snapshotPath": {
+        "snapshotFile": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint key",
-          "description": "SnapShot file path.",
-          "default": "=settings.orchestrator.shapshotpath"
+          "title": "Snapshot File",
+          "description": "Snapshot file.",
+          "default": "=settings.orchestrator.snapshotFile"
         },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -10890,6 +10789,18 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendAppBasedLinkQueryResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11530,6 +11441,18 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11593,6 +11516,15 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive",
+          "kinds": [
+            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -11658,6 +11590,18 @@
       "required": [
         "actions",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionActionResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -11850,6 +11794,17 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionActionResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -12106,6 +12061,19 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendTaskModuleCardResponse",
+            "Teams.SendTaskModuleMessageResponse",
+            "Teams.SendTaskModuleUrlResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -12613,6 +12581,14 @@
       "title": "Send query link response",
       "description": "Query link requests have activity.name='composeExtension/queryLink'.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnAppBasedLinkQuery"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -12743,6 +12719,15 @@
       "title": "Messaging extension action response",
       "description": "Send an task action response containing a card.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnMessagingExtensionFetchTask",
+            "Teams.OnMessagingExtensionSubmitAction"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13041,6 +13026,14 @@
       "title": "Send query link response",
       "description": "Query link requests have activity.name='composeExtension/queryLink'.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13223,6 +13216,15 @@
       "title": "Send task module card response",
       "description": "Send a card response to a Task Module request.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13311,6 +13313,15 @@
       "title": "Send task module message response",
       "description": "Send a message response to a Task Module request.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -13372,6 +13383,15 @@
       "title": "Send task module url response",
       "description": "Send a url type continue response to a Task Module request.",
       "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
       "required": [
         "$kind"
       ],

@@ -8,7 +8,7 @@
     ],
     "policies": [
         {
-            "type": "triggerNotInteractive",
+            "type": "triggerNotInteractive"
         },
         {
             "type": "triggerRequiresAction",
