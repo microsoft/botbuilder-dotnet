@@ -12,11 +12,11 @@ namespace Microsoft.Bot.Builder.Runtime.Skills
 {
     public class AllowedCallersClaimsValidator : ClaimsValidator
     {
-        private readonly IEnumerable<string> _allowedCallers;
+        private readonly IList<string> _allowedCallers;
 
-        public AllowedCallersClaimsValidator(IEnumerable<string> allowedCallers)
+        public AllowedCallersClaimsValidator(IList<string> allowedCallers)
         {
-            _allowedCallers = allowedCallers ?? Enumerable.Empty<string>();
+            _allowedCallers = allowedCallers ?? new List<string>();
         }
 
         /// <summary>
