@@ -27,7 +27,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
             if (!(stringInput is string))
             {
-                error = "Parameter should be string.";
+                error = "Parameter should be a string.";
             }
 
             if (error == null)
@@ -36,7 +36,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 var firstChildren = expr.Children[0];
                 var secondChildren = expr.Children[1];
 
-                // If the Expression is follow this format:
+                // If the Expression follows this format:
                 // concat('', childExpression)
                 // return the childExpression result directly.
                 if ((firstChildren is Constant child)
