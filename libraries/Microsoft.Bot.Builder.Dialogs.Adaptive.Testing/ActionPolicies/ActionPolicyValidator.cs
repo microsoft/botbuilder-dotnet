@@ -6,25 +6,35 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.ActionPolicies
 {
     /// <summary>
     /// Validator used to verify a dialog with its triggers and actions are not violating
     /// any Action Policies. ValidatePolicies will throw an <see cref="ActionPolicyException"/>
     /// if any policy violations are found.
     /// </summary>
-    internal class ActionPolicyValidator
+    public class ActionPolicyValidator
     {
         private readonly ResourceExplorer _resources;
-        
-        public ActionPolicyValidator(ResourceExplorer resources)
+        private readonly IEnumerable<ActionPolicy> _actionPolicies;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ActionPolicyValidator"/> class.
+        /// </summary>
+        /// <param name="resources">The resources contining the kind and types used for validation.</param>
+        /// <param name="actionPolicies">Policies to use during validation.</param>
+        public ActionPolicyValidator(ResourceExplorer resources, IEnumerable<ActionPolicy> actionPolicies)
         {
             _resources = resources;
+            _actionPolicies = actionPolicies;
         }
 
+        /// <summary>
+        /// Validates an Adaptive Dialog's Triggers against action policies.
+        /// </summary>
+        /// <param name="dialog">The dialog to validate.</param>
         public void ValidatePolicies(Dialog dialog)
         {
             // validate policies for all triggers and their child actions
@@ -49,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private void ValidateKind(List<string> parentKinds, string kind, List<Dialog> dialogs)
         {
-            var kindPolicy = ActionPolicies.FirstOrDefault(p => p.Kind == kind);
+            var kindPolicy = _actionPolicies.FirstOrDefault(p => p.Kind == kind);
             if (kindPolicy != null)
             {
                 ValidatePolicy(parentKinds, kindPolicy, dialogs);
@@ -65,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         List<string> parentKindsInner = new List<string>(parentKinds);
                         parentKindsInner.Add(actionKind);
 
-                        var actionPolicy = ActionPolicies.FirstOrDefault(p => p.Kind == actionKind);
+                        var actionPolicy = _actionPolicies.FirstOrDefault(p => p.Kind == actionKind);
                         if (actionPolicy != null)
                         {
                             ValidatePolicy(parentKindsInner, actionPolicy, dialogs, dialog);
@@ -93,7 +103,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     // This dialog is interactive, so cannot be under NonInteractive triggers
                     foreach (var parentKind in parentKinds)
                     {
-                        var parentPolicy = ActionPolicies.FirstOrDefault(p => p.Kind == parentKind);
+                        var parentPolicy = _actionPolicies.FirstOrDefault(p => p.Kind == parentKind);
                         if (parentPolicy != null && parentPolicy.Type == ActionPolicyType.TriggerNotInteractive)
                         {
                             throw new ActionPolicyException(policy, dialog);
@@ -120,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         var childKinds = _resources.GetKindsForType(childDialog.GetType());
                         foreach (var childKind in childKinds)
                         {
-                            var childPolicy = ActionPolicies.FirstOrDefault(p => p.Kind == childKind);
+                            var childPolicy = _actionPolicies.FirstOrDefault(p => p.Kind == childKind);
                             if (childPolicy != null && childPolicy.Type == ActionPolicyType.Interactive)
                             {
                                 // Interactive action found below TriggerNotInteractive trigger
@@ -202,40 +212,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
 
             return null;
-        }
-
-#pragma warning disable SA1201 // Elements should appear in the correct order
-        private static IEnumerable<ActionPolicy> ActionPolicies
-#pragma warning restore SA1201 // Elements should appear in the correct order
-        {
-            get
-            {
-                // LastAction (dialog continues)
-                yield return new ActionPolicy(BreakLoop.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(ContinueLoop.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(GotoAction.Kind, ActionPolicyType.LastAction);
-
-                // LastAction (dialog ends)
-                yield return new ActionPolicy(CancelDialog.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(CancelAllDialogs.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(EndDialog.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(RepeatDialog.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(ReplaceDialog.Kind, ActionPolicyType.LastAction);
-                yield return new ActionPolicy(ThrowException.Kind, ActionPolicyType.LastAction);
-
-                // Interactive (Input Dialogs)
-                yield return new ActionPolicy(Ask.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(AttachmentInput.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(ChoiceInput.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(ConfirmInput.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(DateTimeInput.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(NumberInput.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(OAuthInput.Kind, ActionPolicyType.Interactive);
-                yield return new ActionPolicy(TextInput.Kind, ActionPolicyType.Interactive);
-
-                // TriggerNotInteractive (no intput dialogs)
-                yield return new ActionPolicy(OnEndOfConversationActivity.Kind, ActionPolicyType.TriggerNotInteractive);
-            }
         }
     }
 }

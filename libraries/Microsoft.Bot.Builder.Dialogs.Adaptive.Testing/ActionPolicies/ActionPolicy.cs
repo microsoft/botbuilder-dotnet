@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+using System.Collections.Generic;
+
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.ActionPolicies
 {
     /// <summary>
     /// Policy for a specific Action, or Trigger.
     /// </summary>
-    internal class ActionPolicy
+    public class ActionPolicy
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionPolicy"/> class.

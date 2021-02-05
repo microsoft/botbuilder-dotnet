@@ -2,10 +2,13 @@
 // Licensed under the MIT License.
 #pragma warning disable SA1118 // Parameter should not span multiple lines
 
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.ActionPolicies;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -20,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public ActionPolicyTests(ResourceExplorerFixture resourceExplorerFixture)
         {
             _resourceExplorerFixture = resourceExplorerFixture.Initialize(nameof(ActionPolicyTests));
-            _validator = new ActionPolicyValidator(_resourceExplorerFixture.ResourceExplorer);
+            _validator = new ActionPolicyValidator(_resourceExplorerFixture.ResourceExplorer, GetActionPolicies());
         }
 
         [Fact]
@@ -63,6 +66,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             script.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
 
             _validator.ValidatePolicies(script.Dialog);
+        }
+
+#pragma warning disable SA1204 // Elements should appear in the correct order
+        private static IEnumerable<ActionPolicy> GetActionPolicies()
+#pragma warning restore SA1204 // Elements should appear in the correct order
+        {
+            // LastAction (dialog continues)
+            yield return new ActionPolicy(BreakLoop.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(ContinueLoop.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(GotoAction.Kind, ActionPolicyType.LastAction);
+
+            // LastAction (dialog ends)
+            yield return new ActionPolicy(CancelDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(CancelAllDialogs.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(EndDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(RepeatDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(ReplaceDialog.Kind, ActionPolicyType.LastAction);
+            yield return new ActionPolicy(ThrowException.Kind, ActionPolicyType.LastAction);
+
+            // Interactive (Input Dialogs)
+            yield return new ActionPolicy(Ask.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(AttachmentInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(ChoiceInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(ConfirmInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(DateTimeInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(NumberInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(OAuthInput.Kind, ActionPolicyType.Interactive);
+            yield return new ActionPolicy(TextInput.Kind, ActionPolicyType.Interactive);
+
+            // TriggerNotInteractive (no intput dialogs)
+            yield return new ActionPolicy(OnEndOfConversationActivity.Kind, ActionPolicyType.TriggerNotInteractive);
         }
     }
 }
