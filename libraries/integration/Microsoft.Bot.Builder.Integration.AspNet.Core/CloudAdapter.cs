@@ -19,6 +19,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     public class CloudAdapter : CloudAdapterBase, IBotFrameworkHttpAdapter
     {
+        private readonly BackgroundTaskService _backgroundTaskService = new BackgroundTaskService(); // TODO get this from DI
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
         /// </summary>
@@ -91,11 +93,29 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 try
                 {
-                    // Process the inbound activity with the bot
-                    var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                    if (activity.DeliveryMode == DeliveryModes.ExpectReplies || activity.Type == ActivityTypes.Invoke)
+                    {
+                        // Process the inbound activity with the bot
+                        var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                    // write the response, potentially serializing the InvokeResponse
-                    await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
+                        // write the response, potentially serializing the InvokeResponse
+                        await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
+                    }
+                    else
+                    {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        // run pipeline in background and return immediately.
+                        var turnProcessingTask = ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken)
+                            .ContinueWith(t => t?.Exception?.Handle((e) => true), TaskScheduler.Default);
+
+                        // when there is a BackgroundTaskService we use it to inform asp.net that we have an async task.
+                        if (_backgroundTaskService != null)
+                        {
+                            _backgroundTaskService.AddTask(turnProcessingTask);
+                        }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        httpResponse.StatusCode = (int)HttpStatusCode.Accepted;
+                    }
                 }
                 catch (UnauthorizedAccessException)
                 {

@@ -172,11 +172,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 try
                 {
-                    var claimsIdentity = await GetClaimsIdentityAsync(authHeader, activity).ConfigureAwait(false);
                     if (activity.DeliveryMode == DeliveryModes.ExpectReplies || activity.Type == ActivityTypes.Invoke)
                     {
                         // Process the inbound activity with the bot
-                        var invokeResponse = await ProcessActivityAsync(claimsIdentity, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                        var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                         // write the response, potentially serializing the InvokeResponse
                         await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
@@ -186,12 +185,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         // run pipeline in background and return immediately.
                         var turnProcessingTask = ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken)
-                            .ContinueWith(
-                                t => t?.Exception?.Handle((e) =>
-                                {
-                                    Logger.LogError(t.Exception.Message);
-                                    return true;
-                                }), TaskScheduler.Default);
+                            .ContinueWith(t => t?.Exception?.Handle((e) => true), TaskScheduler.Default);
 
                         // when there is a BackgroundTaskService we use it to inform asp.net that we have an async task.
                         if (_backgroundTaskService != null)

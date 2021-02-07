@@ -94,7 +94,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
                 try
                 {
-                    var claimsIdentity = await GetClaimsIdentityAsync(authHeader, activity).ConfigureAwait(false);
                     if (activity.DeliveryMode == DeliveryModes.ExpectReplies || activity.Type == ActivityTypes.Invoke)
                     {
                         // process the inbound activity with the bot
@@ -108,12 +107,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         // run pipeline in background and return immediately.
                         var turnProcessingTask = ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken)
-                            .ContinueWith(
-                                t => t?.Exception?.Handle((e) =>
-                                {
-                                    Logger.LogError(t.Exception.Message);
-                                    return true;
-                                }), TaskScheduler.Default);
+                            .ContinueWith(t => t?.Exception?.Handle((e) => true), TaskScheduler.Default);
 
                         // when in asp.net we tell it about the background task 
                         if (HostingEnvironment.IsHosted)
