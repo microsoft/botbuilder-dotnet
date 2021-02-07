@@ -411,8 +411,19 @@ namespace Microsoft.Bot.Builder
         {
             BotAssert.ActivityNotNull(activity);
 
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
+            var claimsIdentity = await GetClaimsIdentityAsync(authHeader, activity).ConfigureAwait(false);
             return await ProcessActivityAsync(claimsIdentity, activity, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Given a Authorization header and activity validate it and return claimsIdentity.
+        /// </summary>
+        /// <param name="authHeader">"Authorization" header with JWT bearer token.</param>
+        /// <param name="activity">Activity payload.</param>
+        /// <returns>ClaimsIdentity from the bearer token.</returns>
+        public async Task<ClaimsIdentity> GetClaimsIdentityAsync(string authHeader, Activity activity)
+        {
+            return await JwtTokenValidation.AuthenticateRequest(activity, authHeader, CredentialProvider, ChannelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
         }
 
         /// <summary>

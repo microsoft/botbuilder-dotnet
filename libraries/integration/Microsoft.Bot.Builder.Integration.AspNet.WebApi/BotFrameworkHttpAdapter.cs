@@ -9,8 +9,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
@@ -92,11 +94,35 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
                 try
                 {
-                    // process the inbound activity with the bot
-                    var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                    var claimsIdentity = await GetClaimsIdentityAsync(authHeader, activity).ConfigureAwait(false);
+                    if (activity.DeliveryMode == DeliveryModes.ExpectReplies || activity.Type == ActivityTypes.Invoke)
+                    {
+                        // process the inbound activity with the bot
+                        var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                    // write the response, potentially serializing the InvokeResponse
-                    HttpHelper.WriteResponse(httpRequest, httpResponse, invokeResponse);
+                        // write the response, potentially serializing the InvokeResponse
+                        HttpHelper.WriteResponse(httpRequest, httpResponse, invokeResponse);
+                    }
+                    else
+                    {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        // run pipeline in background and return immediately.
+                        var turnProcessingTask = ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken)
+                            .ContinueWith(
+                                t => t?.Exception?.Handle((e) =>
+                                {
+                                    Logger.LogError(t.Exception.Message);
+                                    return true;
+                                }), TaskScheduler.Default);
+
+                        // when in asp.net we tell it about the background task 
+                        if (HostingEnvironment.IsHosted)
+                        {
+                            HostingEnvironment.QueueBackgroundWorkItem((ct) => turnProcessingTask);
+                        }
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        httpResponse.StatusCode = HttpStatusCode.Accepted;
+                    }
                 }
                 catch (UnauthorizedAccessException)
                 {
