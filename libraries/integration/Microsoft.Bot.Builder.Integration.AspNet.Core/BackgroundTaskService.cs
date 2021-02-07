@@ -11,10 +11,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// <summary>
     /// Class which tracks running tasks so that when service shuts down it waits for them to finish before shutting down.
     /// </summary>
-    internal class BackgroundTaskService : IHostedService
+    public class BackgroundTaskService : IHostedService
     {
         private long _taskCounter = 1;
         private Dictionary<long, Task> _runningTasks = new Dictionary<long, Task>();
+
+        /// <summary>
+        /// Gets count of Pending Tasks.
+        /// </summary>
+        /// <value>
+        /// Count of Pending Tasks.
+        /// </value>
+        public long Pending
+        {
+            get
+            {
+                lock (_runningTasks)
+                {
+                    return _runningTasks.Count;
+                }
+            }
+        }
 
         /// <summary>
         /// Called when service starts.
@@ -37,20 +54,28 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             return Task.WhenAll(_runningTasks.Values);
         }
 
+        /// <summary>
+        /// Add a task to track.
+        /// </summary>
+        /// <param name="task">task to track.</param>
         public void AddTask(Task task)
         {
             var id = Interlocked.Increment(ref _taskCounter);
             task = task.ContinueWith(
                 t =>
                 {
-                    _runningTasks.Remove(id);
-                    if (t.IsFaulted)
+                    lock (_runningTasks)
                     {
-                        Trace.TraceError($"Task failed: {t.Exception.Message}", t.Exception);
+                        _runningTasks.Remove(id);
                     }
+
+                    t.Exception?.Handle((e) => true);
                 }, TaskScheduler.Default);
 
-            _runningTasks[id] = task;
+            lock (_runningTasks)
+            {
+                _runningTasks[id] = task;
+            }
         }
     }
 }
