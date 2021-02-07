@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     [System.Diagnostics.DebuggerDisplay("{GetType().Name}[{ActiveDialog?.Id}]")]
     public class DialogContext
     {
+        private readonly string _convoLocale = "conversation.locale";
         private readonly string _turnLocale = "turn.locale";
         
         /// <summary>
@@ -662,7 +663,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the current locale.</returns>
         public string GetLocale()
         {
-            return State[_turnLocale]?.ToString();
+            return State[_convoLocale]?.ToString() ?? State[_turnLocale]?.ToString();
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

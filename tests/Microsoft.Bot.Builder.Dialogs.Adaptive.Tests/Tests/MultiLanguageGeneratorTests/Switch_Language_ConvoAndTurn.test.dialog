@@ -20,49 +20,32 @@
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",
-            "$designer": {
-              "id": "003038"
-            },
             "activity": "${SendActivity_003038()}"
           }
         ]
       },
       {
         "$kind": "Microsoft.OnIntent",
-        "$designer": {
-          "id": "ptAZgj",
-          "name": "English"
-        },
         "intent": "English",
         "actions": [
           {
             "$kind": "Microsoft.SetProperty",
-            "$designer": {
-              "id": "A64Qwv"
-            },
             "property": "turn.locale",
             "value": "en-us"
           },
           {
             "$kind": "Microsoft.SendActivity",
-            "$designer": {
-              "id": "HFemAd"
-            },
             "activity": "${SendActivity_HFemAd()}"
           }
         ]
       },
       {
         "$kind": "Microsoft.OnIntent",
-        "$designer": {
-          "id": "g2laRy",
-          "name": "Spanish"
-        },
         "intent": "Spanish",
         "actions": [
           {
             "$kind": "Microsoft.SetProperty",
-            "property": "turn.locale",
+            "property": "conversation.locale",
             "value": "es-ar"
           },
           {
@@ -128,7 +111,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "You said 'como estas'"
+      "text": "Hola! Has dicho 'como estas'."
     },
     {
       "$kind": "Microsoft.Test.UserSays",
@@ -136,7 +119,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
-      "text": "switching to english"
+      "text": "Cambiar de español a inglés."
     }
 
   ]
