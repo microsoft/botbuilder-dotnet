@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var activity = SlackHelper.EventToActivity(slackBody, slackApi.Object);
 
-            Assert.Equal(slackBody.Event.AdditionalProperties["text"].ToString(), activity.Text);
+            Assert.Equal(slackBody.Event.Text, activity.Text);
         }
 
         [Fact]
