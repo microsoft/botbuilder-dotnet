@@ -2632,7 +2632,7 @@
                     "title": "ActivityId",
                     "description": "expression to an activityId to delete",
                     "examples": [
-                        "=$lastActivity"
+                        "=turn.lastresult.id"
                     ]
                 },
                 "disabled": {
@@ -3382,7 +3382,7 @@
                     "title": "Activity Id",
                     "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
                     "examples": [
-                        "$lastActivity"
+                        "turn.lastresult.id"
                     ]
                 },
                 "disabled": {
@@ -10333,7 +10333,7 @@
                     "title": "Activity Id",
                     "description": "An string expression with the activity id to update.",
                     "examples": [
-                        "=dialog.lastActivityId"
+                        "=turn.lastresult.id"
                     ]
                 },
                 "activity": {

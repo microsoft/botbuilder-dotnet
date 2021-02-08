@@ -35,5 +35,10 @@
             "description": "Value to emit with the event (optional).",
             "additionalProperties": true
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
 }

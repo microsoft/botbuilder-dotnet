@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AdaptiveExpressions.BuiltinFunctions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json.Linq;
@@ -803,6 +804,11 @@ namespace AdaptiveExpressions.Tests
             Test("round(3.51)", 4),
             Test("round(3.55, 1)", 3.6),
             Test("round(3.12134, 3)", 3.121),
+            Test("abs(3.12134)", 3.12134),
+            Test("abs(-3.12134)", 3.12134),
+            Test("abs(0)", 0),
+            Test("sqrt(9)", 3),
+            Test("sqrt(0)", 0),
             #endregion
 
             #region  Date and time function test
@@ -885,6 +891,7 @@ namespace AdaptiveExpressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.UtcNow.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.UtcNow.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.UtcNow.AddDays(1).ToString("MM-dd-yy")),
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time')", "2018-01-01T18:00:00.0000000"),
             Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertFromUTC(timestampObj2, 'Pacific Standard Time', 'D', 'en-US')", "Monday, January 1, 2018"),
             Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D', 'en-US')", "Monday, January 1, 2018"),
@@ -1437,6 +1444,18 @@ namespace AdaptiveExpressions.Tests
             // null is also the valid value
             (value, error) = Expression.Parse("b").TryEvaluate(sM);
             Assert.Null(value);
+        }
+
+        [Fact]
+        public void TestNumericEvaluator()
+        {
+            var functionName = "Math.sum";
+            Expression.Functions.Add(
+                functionName,
+                new NumericEvaluator(functionName, (args) => (int)args[0] + (int)args[1]));
+            var (result, error) = Expression.Parse("Math.sum(1, 2, 3)").TryEvaluate(null);
+            Assert.Equal(6, result);
+            Assert.Null(error);
         }
 
         private void AssertResult<T>(string text, T expected)

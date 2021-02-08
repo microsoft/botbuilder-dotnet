@@ -10,25 +10,22 @@
             "title": "Id",
             "description": "Optional unique id using with RecognizerSet."
         },
-        "modelPath": {
+        "modelFolder": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Model",
-            "description": "NLR model file path.",
-            "default": "=settings.orchestrator.modelpath"
+            "title": "Base Model",
+            "description": "Base model folder path.",
+            "default": "=settings.orchestrator.modelFolder"
         },
-        "snapshotPath": {
+        "snapshotFile": {
             "$ref": "schema:#/definitions/stringExpression",
-            "title": "Endpoint key",
-            "description": "SnapShot file path.",
-            "default": "=settings.orchestrator.shapshotpath"
+            "title": "Snapshot File",
+            "description": "Snapshot file.",
+            "default": "=settings.orchestrator.snapshotFile"
         },
-        "entityRecognizers": {
-            "type": "array",
-            "items": {
-                "$kind": "Microsoft.IEntityRecognizer"
-            },
-            "title": "Entity recognizers",
-            "description": "Collection of entity recognizers to use."
+        "externalEntityRecognizer": {
+            "$kind": "Microsoft.IRecognizer",
+            "title": "External entity recognizer",
+            "description": "Entities recognized by this recognizer will be merged with Orchestrator results."
         },
         "disambiguationScoreThreshold": {
             "$ref": "schema:#/definitions/numberExpression",
@@ -54,7 +51,7 @@
         }
     },
     "required": [
-        "model",
-        "shapShot"
+        "modelFolder",
+        "snapshotFile"
     ]
 }

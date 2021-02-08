@@ -290,8 +290,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         return null;
                     }
                     
-                    // Add ServiceURL to the cache of trusted sites in order to allow token refreshing.
-                    AppCredentials.TrustServiceUrl(claimsIdentity.FindFirst(AuthenticationConstants.ServiceUrlClaim).Value);
                     ClaimsIdentity = claimsIdentity;
                     return claimsIdentity;
                 }

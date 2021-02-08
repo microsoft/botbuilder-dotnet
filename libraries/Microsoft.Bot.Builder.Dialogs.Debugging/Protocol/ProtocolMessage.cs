@@ -2,13 +2,27 @@
 // Licensed under the MIT License.
 
 using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging.Protocol
 {
     // https://github.com/Microsoft/debug-adapter-protocol/blob/gh-pages/debugAdapterProtocol.json
     internal static class ProtocolMessage
     {
+        private static readonly JsonSerializer Serializer = new JsonSerializer
+        {
+            NullValueHandling = NullValueHandling.Include,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        public static JToken ToToken(Message message)
+        {
+            var token = JToken.FromObject(message, Serializer);
+            return token;
+        }
+
         public static Request Parse(JToken token)
         {
             switch ((string)token["type"])

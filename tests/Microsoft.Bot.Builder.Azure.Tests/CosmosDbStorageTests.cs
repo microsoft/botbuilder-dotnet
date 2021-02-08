@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 {
     [Trait("TestCategory", "Storage")]
     [Trait("TestCategory", "Storage - CosmosDB")]
-    public class CosmosDbStorageTests : StorageBaseTests, IDisposable
+    public class CosmosDbStorageTests : StorageBaseTests, IAsyncLifetime
     {
         // Endpoint and Authkey for the CosmosDB Emulator running locally
         private const string CosmosServiceEndpoint = "https://localhost:8081";
@@ -94,7 +94,12 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
-        public async void Dispose()
+        public Task InitializeAsync() 
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
         {
             if (_storage != null)
             {

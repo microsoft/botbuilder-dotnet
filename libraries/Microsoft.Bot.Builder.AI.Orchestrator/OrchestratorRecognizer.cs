@@ -38,8 +38,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <value>
         /// Model path.
         /// </value>
-        [JsonProperty("modelPath")]
-        public string ModelPath { get; set; }
+        [JsonProperty("modelFolder")]
+        public string ModelFolder { get; set; }
 
         /// <summary>
         /// Gets or sets the full path to Orchestrator snapshot file to use.
@@ -47,19 +47,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <value>
         /// Snapshot path.
         /// </value>
-        [JsonProperty("snapshotPath")]
-        public string SnapshotPath { get; set; }
+        [JsonProperty("snapshotFile")]
+        public string SnapshotFile { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity recognizers.
+        /// Gets or sets an external entity recognizer.
         /// </summary>
-        /// <value>
-        /// The entity recognizers.
-        /// </value>
-        [JsonProperty("entityRecognizers")]
-#pragma warning disable CA2227 // Collection properties should be read only (keeping this consistent with RegexRecognizer)
-        public List<EntityRecognizer> EntityRecognizers { get; set; } = new List<EntityRecognizer>();
-#pragma warning restore CA2227 // Collection properties should be read only
+        /// <remarks>This recognizer is run before calling Orchestrator and the entities are merged with Orchestrator results.</remarks>
+        /// <value>Recognizer.</value>
+        [JsonProperty("externalEntityRecognizer")]
+        public Recognizer ExternalEntityRecognizer { get; set; }
 
         /// <summary>
         /// Gets or sets the disambiguation score threshold.
@@ -86,10 +83,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 Id = this.Id,
                 DetectAmbiguousIntents = this.DetectAmbiguousIntents,
-                ModelPath = this.ModelPath,
-                SnapshotPath = this.SnapshotPath,
+                ModelFolder = this.ModelFolder,
+                SnapshotFile = this.SnapshotFile,
                 DisambiguationScoreThreshold = this.DisambiguationScoreThreshold,
-                EntityRecognizers = this.EntityRecognizers,
+                ExternalEntityRecognizer = this.ExternalEntityRecognizer,
             };
 
             var dc = new DialogContext(new DialogSet(), turnContext, new DialogState());

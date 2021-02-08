@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text.RegularExpressions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Rest;
 using Newtonsoft.Json.Serialization;
@@ -199,12 +200,53 @@ namespace Microsoft.Bot.Connector
 
                 // Additional Info.
                 // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-                var userAgent = $"({GetASPNetVersion()}; {GetOsVersion()}; {GetArchitecture()})";
-                if (ProductInfoHeaderValue.TryParse(userAgent, out var additionalProductInfo))
+                var framework = GetASPNetVersion();
+                if (!string.IsNullOrWhiteSpace(framework) && framework.Length > 0)
                 {
-                    if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(additionalProductInfo))
+                    // from:
+                    // .NETCoreApp,Version=v3.1
+                    // to:
+                    // .NETCoreAppVersion/v3.1
+
+                    // from:
+                    // .NET Framework 4.8.4250.0
+                    // to:
+                    // .NETFramework/4.8.4250.0
+
+                    var splitFramework = framework.Replace(",", string.Empty).Replace(" ", string.Empty).Split('=');
+                    if (splitFramework.Length > 1)
                     {
-                        httpClient.DefaultRequestHeaders.UserAgent.Add(additionalProductInfo);
+                        ProductInfoHeaderValue aspProductInfo = null;
+
+                        if (ProductInfoHeaderValue.TryParse($"{splitFramework[0]}/{splitFramework[1]}", out aspProductInfo))
+                        {
+                            if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(aspProductInfo))
+                            {
+                                httpClient.DefaultRequestHeaders.UserAgent.Add(aspProductInfo);
+                            }
+                        }
+                    }
+                    else if (splitFramework.Length > 0)
+                    {
+                        framework = splitFramework[0];
+
+                        // Parse the version from the framework string.
+                        Regex regEx = new Regex(@"(?:(\d+)\.)?(?:(\d+)\.)?(?:(\d+)\.\d+)", RegexOptions.Compiled);
+                        var version = regEx.Match(framework);
+
+                        if (version.Success)
+                        {
+                            framework = framework.Replace(version.Value, string.Empty).Trim();
+
+                            ProductInfoHeaderValue aspProductInfo = null;
+                            if (ProductInfoHeaderValue.TryParse($"{framework}/{version.Value}", out aspProductInfo))
+                            {
+                                if (!httpClient.DefaultRequestHeaders.UserAgent.Contains(aspProductInfo))
+                                {
+                                    httpClient.DefaultRequestHeaders.UserAgent.Add(aspProductInfo);
+                                }
+                            }
+                        }
                     }
                 }
 

@@ -27,5 +27,10 @@
                 "='tomato'"
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
 }

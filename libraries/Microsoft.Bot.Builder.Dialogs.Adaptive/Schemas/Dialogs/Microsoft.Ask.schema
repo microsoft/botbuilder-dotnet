@@ -30,5 +30,10 @@
                 "Remove()"
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "interactive"
+        }
+    ]
 }

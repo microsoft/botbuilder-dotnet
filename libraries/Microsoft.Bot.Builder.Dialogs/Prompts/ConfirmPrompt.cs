@@ -22,13 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// A dictionary of Default Choices based on <seealso cref="GetSupportedCultures"/>.
         /// Can be replaced by user using the constructor that contains choiceDefaults.
         /// </summary>
-        private readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> _choiceDefaults =
-            new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(
-            GetSupportedCultures().ToDictionary(
-                culture => culture.Locale, culture =>
-                (new Choice(culture.YesInLanguage),
-                    new Choice(culture.NoInLanguage),
-                    new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true))));
+        private readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> _choiceDefaults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
@@ -46,10 +40,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
         public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null)
-            : base(dialogId, validator)
+            : this(
+                dialogId,
+                new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(
+                    GetSupportedCultures().ToDictionary(
+                        culture => culture.Locale, culture =>
+                        (new Choice(culture.YesInLanguage),
+                            new Choice(culture.NoInLanguage),
+                            new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true)))),
+                validator,
+                defaultLocale)
         {
-            Style = ListStyle.Auto;
-            DefaultLocale = defaultLocale;
         }
 
         /// <summary>
@@ -70,8 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
         public ConfirmPrompt(string dialogId, Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> choiceDefaults, PromptValidator<bool> validator = null, string defaultLocale = null)
-            : this(dialogId, validator, defaultLocale)
+            : base(dialogId, validator)
         {
+            Style = ListStyle.Auto;
+            DefaultLocale = defaultLocale;
             _choiceDefaults = choiceDefaults;
         }
 
@@ -114,7 +117,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(
+            ITurnContext turnContext,
+            IDictionary<string, object> state,
+            PromptOptions options,
+            bool isRetry,
+            CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
             {
@@ -159,7 +167,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result describes the result of the recognition attempt.</remarks>
-        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<bool>> OnRecognizeAsync(
+            ITurnContext turnContext,
+            IDictionary<string, object> state,
+            PromptOptions options,
+            CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
             {

@@ -1,0 +1,47 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendTaskModuleUrlResponse",
+                        "title": "some title",
+                        "height": 1,
+                        "width": 2,
+                        "completionBotId": "someBotId",
+                        "url": "http://thisIsTheMainUrl.com",
+                        "fallbackUrl": "http://thisIsTheFallbackUrl.net/okay/falling/back_now"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'invokeResponse'",
+                "conversation.id == 'Action_SendTaskModuleUrlResponse'",
+                "value.body.task.value.completionBotId == 'someBotId'",
+                "value.body.task.value.height == 1",
+                "value.body.task.value.title == 'some title'",
+                "value.body.task.value.width == 2",
+                "value.body.task.value.url == 'http://thisIsTheMainUrl.com'",
+                "value.body.task.value.fallbackUrl == 'http://thisIsTheFallbackUrl.net/okay/falling/back_now'"
+            ]
+        }
+    ]
+}

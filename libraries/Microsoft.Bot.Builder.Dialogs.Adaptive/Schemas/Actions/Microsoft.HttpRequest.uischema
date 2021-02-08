@@ -18,5 +18,20 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "=action.method",
+            "resource": "=action.url",
+            "singleline": true
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Result property"
+        },
+        "hideFooter": "=!action.resultProperty"
     }
 }

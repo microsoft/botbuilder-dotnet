@@ -439,6 +439,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
+            if (dc.Context.TurnState.ContainsKey(typeof(UserTokenClient).FullName))
+            {
+                return await new CloudOAuthPrompt(_settings, _validator).BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
+            }
+
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token", nameof(options));
@@ -479,7 +484,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider adapter))
             {
-                throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                throw new InvalidOperationException("OAuthPrompt.BeginDialog(): not supported by the current adapter");
             }
 
             var output = await adapter.GetUserTokenAsync(dc.Context, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
@@ -510,6 +515,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (dc.Context.TurnState.ContainsKey(typeof(UserTokenClient).FullName))
+            {
+                return await new CloudOAuthPrompt(_settings, _validator).ContinueDialogAsync(dc, cancellationToken).ConfigureAwait(false);
             }
 
             // Check for timeout
@@ -583,6 +593,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the result contains the user's token.</remarks>
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
+            if (userTokenClient != null)
+            {
+                return await userTokenClient.GetUserTokenAsync(turnContext.Activity.From.Id, _settings.ConnectionName, turnContext.Activity.ChannelId, null, cancellationToken).ConfigureAwait(false);
+            }
+
             if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
@@ -600,6 +616,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
+            if (userTokenClient != null)
+            {
+                await userTokenClient.SignOutUserAsync(turnContext.Activity.From.Id, _settings.ConnectionName, turnContext.Activity.ChannelId, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
             if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
             {
                 throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");

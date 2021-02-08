@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
             {
-                throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
+                throw new InvalidOperationException("OAuthInput.BeginDialog(): not supported by the current adapter");
             }
 
             var output = await adapter.GetUserTokenAsync(dc.Context, ConnectionName.GetValue(dc.State), null, cancellationToken).ConfigureAwait(false);
@@ -235,11 +235,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     { 
                         // increase the turnCount as last step
                         dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                        var prompt = await this.OnRenderPromptAsync(dc, inputState, cancellationToken).ConfigureAwait(false);
-                        await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
+
+                        if (isMessage)
+                        {
+                            var prompt = await this.OnRenderPromptAsync(dc, inputState, cancellationToken).ConfigureAwait(false);
+                            await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
-                    await SendOAuthCardAsync(dc, promptOptions?.Prompt, cancellationToken).ConfigureAwait(false);
+                    // Only send the card in response to a message.
+                    if (isMessage)
+                    {
+                        await SendOAuthCardAsync(dc, promptOptions?.Prompt, cancellationToken).ConfigureAwait(false);
+                    }
+
                     return Dialog.EndOfTurn;
                 }
                 else

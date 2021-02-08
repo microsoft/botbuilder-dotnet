@@ -17,6 +17,8 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     internal class ConvertFromUtc : ExpressionEvaluator
     {
+        private const string DefaultFormat = "yyyy-MM-ddTHH:mm:ss.fffffffK";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertFromUtc"/> class.
         /// </summary>
@@ -31,7 +33,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
             string error = null;
             IReadOnlyList<object> args;
             var locale = options.Locale != null ? new CultureInfo(options.Locale) : Thread.CurrentThread.CurrentCulture;
-            var format = FunctionUtils.DefaultDateTimeFormat;
+            var format = DefaultFormat;
             (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
