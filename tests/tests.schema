@@ -1121,6 +1121,7 @@
             },
             {
               "$ref": "#/definitions/equalsExpression",
+              "pattern": "^(?!(=)).*",
               "examples": [
                 "=settings.dialogId"
               ]

@@ -26,6 +26,7 @@
                 },
                 {
                     "$ref": "schema:#/definitions/equalsExpression",
+                    "pattern": "^(?!(=)).*",
                     "examples": [
                         "=settings.dialogId"
                     ]
