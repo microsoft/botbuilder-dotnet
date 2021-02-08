@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <value>The extended properties for the object.</value>
 #pragma warning disable CA2227 // Collection properties should be read only
-        public JObject Properties { get; set; } = new JObject();
+        public JObject Properties { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <inheritdoc/>

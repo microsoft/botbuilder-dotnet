@@ -565,6 +565,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             // KeyValueStructuredLine
                             var structureKey = body.keyValueStructureLine().STRUCTURE_IDENTIFIER();
                             var structureValues = body.keyValueStructureLine().keyValueStructureValue();
+                            var typeName = context.structuredBodyNameLine().STRUCTURE_NAME().GetText().Trim();
                             foreach (var structureValue in structureValues)
                             {
                                 foreach (var expression in structureValue.expressionInStructure())
@@ -573,7 +574,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                 }
                             }
 
-                            FillInProperties(structureKey.GetText().Trim(), structureValues);
+                            FillInProperties(structureKey.GetText().Trim(), structureValues, typeName);
                         }
                     }
                 }
@@ -677,8 +678,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 _template.Expressions.Add(expressionRef);
             }
 
-            private void FillInProperties(string key, LGTemplateParser.KeyValueStructureValueContext[] structureValues)
+            private void FillInProperties(string key, LGTemplateParser.KeyValueStructureValueContext[] structureValues, string name)
             {
+                if (_template.Properties == null)
+                {
+                    _template.Properties = new JObject();
+                }
+
+                _template.Properties["$type"] = name;
+
                 if (structureValues.Length == 1)
                 {
                     _template.Properties[key] = structureValues[0].GetText();
