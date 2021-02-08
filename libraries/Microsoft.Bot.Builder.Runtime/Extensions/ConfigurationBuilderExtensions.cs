@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
                 Path.Combine(applicationRootPath, settingsDirectory, AppSettingsFileName));
 
             builder.AddJsonFile(configFilePath, optional: true, reloadOnChange: true);
-
+            
             // Use Composer luis and qna settings extensions
             builder.AddComposerConfiguration();
 

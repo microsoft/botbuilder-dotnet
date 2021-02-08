@@ -85,8 +85,9 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             services.AddBotRuntimeStorage(configuration, runtimeSettings);
             services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
             services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
+            services.AddBotRuntimeFeatures(runtimeSettings.Features);
             services.AddBotRuntimePlugins(configuration, runtimeSettings);
-            services.AddBotRuntimeAdapters(configuration, runtimeSettings);
+            services.AddCoreBotAdapter();
         }
 
         internal static void AddBotRuntimeSkills(this IServiceCollection services, SkillSettings skillSettings)
@@ -138,35 +139,20 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             }
         }
 
-        internal static void AddBotRuntimeAdapters(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
+        internal static void AddCoreBotAdapter(this IServiceCollection services)
         {
             const string defaultRoute = "messages";
-
-            // CoreAdapter registration
-            services.AddSingleton<CoreBotAdapter>();
-            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetService<CoreBotAdapter>());
-            services.AddSingleton<BotAdapter>(sp => sp.GetService<CoreBotAdapter>());
-            
-            // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
-            services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
 
             // CoreAdapter dependencies registration
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
             services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
 
-            using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
-            {
-                // Configure CoreAdapter features
-                ConfigureFeatures(serviceScope, configuration, serviceScope.ServiceProvider.GetService<CoreBotAdapter>(), runtimeSettings.Features);
-
-                // Configure other registered adapters
-                var registeredAdapters = serviceScope.ServiceProvider.GetServices<BotAdapter>();
-
-                foreach (var adapter in registeredAdapters)
-                {
-                    ConfigureFeatures(serviceScope, configuration, adapter, runtimeSettings.Features);
-                }
-            }
+            // CoreAdapter registration
+            services.AddSingleton<IBotFrameworkHttpAdapter, CoreBotAdapter>();
+            services.AddSingleton<BotAdapter>(sp => sp.GetService<CoreBotAdapter>());
+            
+            // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
+            services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
         }
 
         internal static void AddBotRuntimeTelemetry(this IServiceCollection services, TelemetrySettings telemetrySettings = null)
@@ -231,40 +217,22 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             }
         }
 
-        private static void ConfigureFeatures(IServiceScope serviceScope, IConfiguration configuration, BotAdapter adapter, FeatureSettings featureSettings)
+        internal static void AddBotRuntimeFeatures(this IServiceCollection services, FeatureSettings featureSettings)
         {
-            var conversationState = serviceScope.ServiceProvider.GetService<ConversationState>();
-            var userState = serviceScope.ServiceProvider.GetService<UserState>();
-
-            adapter
-                .UseStorage(serviceScope.ServiceProvider.GetService<IStorage>())
-                .UseBotState(userState, conversationState)
-                .Use(new RegisterClassMiddleware<IConfiguration>(configuration));
-
-            var middlewares = serviceScope.ServiceProvider.GetServices<IMiddleware>();
-
-            foreach (var middleware in middlewares)
+            if (featureSettings.UseInspection)
             {
-                adapter.Use(middleware);
+                services.AddSingleton<InspectionState>();
+                services.AddSingleton<IMiddleware, InspectionMiddleware>();
             }
 
-            if (adapter is CoreBotAdapter)
+            if (featureSettings.RemoveRecipientMentions)
             {
-                if (featureSettings.UseInspection)
-                {
-                    var storage = serviceScope.ServiceProvider.GetService<IStorage>();
-                    adapter.Use(new InspectionMiddleware(new InspectionState(storage)));
-                }
+                services.AddSingleton<NormalizeMentionsMiddleware>();
+            }
 
-                if (featureSettings.RemoveRecipientMentions)
-                {
-                    adapter.Use(new NormalizeMentionsMiddleware());
-                }
-
-                if (featureSettings.ShowTyping)
-                {
-                    adapter.Use(new ShowTypingMiddleware());
-                }
+            if (featureSettings.ShowTyping)
+            {
+                services.AddSingleton<ShowTypingMiddleware>();
             }
         }
     }

@@ -21,7 +21,8 @@ namespace Microsoft.Bot.Builder.Runtime
         /// Initializes a new instance of the <see cref="CoreBotAdapter"/> class.
         /// </summary>
         /// <param name="services">Services registered with the application.</param>
-        public CoreBotAdapter(IServiceProvider services)
+        /// <param name="configuration">Application configuration.</param>
+        public CoreBotAdapter(IServiceProvider services, IConfiguration configuration)
             : base(
                 services.GetService<ICredentialProvider>(),
                 services.GetService<AuthenticationConfiguration>(),
@@ -29,6 +30,19 @@ namespace Microsoft.Bot.Builder.Runtime
                 logger: services.GetService<ILogger<BotFrameworkHttpAdapter>>())
         {
             var conversationState = services.GetService<ConversationState>();
+            var userState = services.GetService<UserState>();
+
+            this.UseStorage(services.GetService<IStorage>())
+                .UseBotState(userState, conversationState)
+                .Use(new RegisterClassMiddleware<IConfiguration>(configuration));
+
+            // Pick up feature based middlewares: telemetry, inspection, transcripts, etc
+            var middlewares = services.GetServices<IMiddleware>();
+
+            foreach (IMiddleware middleware in middlewares)
+            {
+                this.Use(middleware);
+            }
 
             OnTurnError = async (turnContext, exception) =>
             {
