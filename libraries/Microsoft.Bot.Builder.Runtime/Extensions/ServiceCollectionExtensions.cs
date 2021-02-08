@@ -54,14 +54,15 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             // is instantiated will not be picked up otherwise.
             ComponentRegistrations.Add();
 
-            // System configuration
+            // Configuration
             string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
             string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocale).Value;
             string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
-
-            // Runtime configuration
+            
             var runtimeSettings = configuration.GetSection(ConfigurationConstants.RuntimeSettingsKey).Get<RuntimeSettings>();
 
+            // Bot
+            services.AddSingleton<IBot, CoreBot>();
             services.AddOptions()
                 .Configure<CoreBotOptions>(o =>
                 {
@@ -71,23 +72,21 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
 
             services.AddSingleton(configuration);
 
-            // ResourceExplorer
+            // ResourceExplorer. TryAddSingleton will only add if there is no other registration for resource explorer.
+            // Tests use this to inject custom resource explorers but could also be used for advanced runtime customization scenarios.
             services.TryAddSingleton<ResourceExplorer>(serviceProvider =>
                 new ResourceExplorer()
                     .AddFolder(applicationRoot)
                     .RegisterType<OnQnAMatch>(OnQnAMatch.Kind));
-
-            // Bot
-            services.AddSingleton<IBot, CoreBot>();
             
-            // Runtime
+            // Runtime set up
             services.AddBotRuntimeSkills(runtimeSettings.Skills);
             services.AddBotRuntimeStorage(configuration, runtimeSettings);
             services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
             services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
             services.AddBotRuntimeFeatures(runtimeSettings.Features);
             services.AddBotRuntimePlugins(configuration, runtimeSettings);
-            services.AddCoreBotAdapter();
+            services.AddBotRuntimeAdapters(runtimeSettings);
         }
 
         internal static void AddBotRuntimeSkills(this IServiceCollection services, SkillSettings skillSettings)
@@ -139,7 +138,7 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             }
         }
 
-        internal static void AddCoreBotAdapter(this IServiceCollection services)
+        internal static void AddBotRuntimeAdapters(this IServiceCollection services, RuntimeSettings runtimeSettings)
         {
             const string defaultRoute = "messages";
 
@@ -153,6 +152,12 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             
             // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
             services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
+
+            // Adapter settings for configurable adapters. Runtime controllers pick up this config to get info on adapters and routes.
+            foreach (var adapterSetting in runtimeSettings.Adapters)
+            {
+                services.AddSingleton<AdapterSettings>(adapterSetting);
+            }
         }
 
         internal static void AddBotRuntimeTelemetry(this IServiceCollection services, TelemetrySettings telemetrySettings = null)
