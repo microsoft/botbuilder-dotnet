@@ -466,6 +466,12 @@ namespace AdaptiveExpressions.Tests
             // optional throws because it's a placeholder only interpreted by trigger tree and is removed before evaluation
             Test("optional(true)"), 
             #endregion
+
+            #region StringOrValue
+            Test("stringOrValue()"), // should have 1 parameter
+            Test("stringOrValue(1)"), // should have string parameter
+            Test("stringOrValue('${1/0} item')"), // throw error in evaluation stage
+            #endregion
         };
 
         /// <summary>

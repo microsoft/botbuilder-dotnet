@@ -197,6 +197,9 @@ namespace AdaptiveExpressions
         public const string IsBoolean = "isBoolean";
         public const string IsDateTime = "isDateTime";
 
+        // StringOrValue
+        public const string StringOrValue = "stringOrValue";
+
         // trigger tree 
 
         /// <summary>

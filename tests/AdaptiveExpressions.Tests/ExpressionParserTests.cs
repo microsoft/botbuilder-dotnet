@@ -1155,6 +1155,11 @@ namespace AdaptiveExpressions.Tests
             #region TriggerTree Tests
             Test("ignore(true)", true),
             #endregion
+
+            #region StringOrValue
+            Test("stringOrValue('${one}')", 1.0),
+            Test("stringOrValue('${one} item')", "1 item"),
+            #endregion
         };
 
         public static IEnumerable<object[]> DataForThreadLocale => new[]
