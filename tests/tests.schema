@@ -56,6 +56,9 @@
       "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
     },
     {
+      "$ref": "#/definitions/Microsoft.ContinueConversation"
+    },
+    {
       "$ref": "#/definitions/Microsoft.ContinueConversationLater"
     },
     {
@@ -120,6 +123,9 @@
     },
     {
       "$ref": "#/definitions/Microsoft.GetConversationMembers"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.GetConversationReference"
     },
     {
       "$ref": "#/definitions/Microsoft.GotoAction"
@@ -389,6 +395,24 @@
       "$ref": "#/definitions/Teams.GetMeetingParticipant"
     },
     {
+      "$ref": "#/definitions/Teams.GetMember"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetPagedMembers"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetPagedTeamMembers"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetTeamChannels"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetTeamDetails"
+    },
+    {
+      "$ref": "#/definitions/Teams.GetTeamMember"
+    },
+    {
       "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
     },
     {
@@ -408,6 +432,12 @@
     },
     {
       "$ref": "#/definitions/Teams.OnFileConsent"
+    },
+    {
+      "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewEdit"
+    },
+    {
+      "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewSend"
     },
     {
       "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
@@ -462,6 +492,42 @@
     },
     {
       "$ref": "#/definitions/Teams.OnTeamUnarchived"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendAppBasedLinkQueryResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionActionResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionAttachmentsResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionAuthResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionBotMessagePreviewResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionMessageResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMessagingExtensionSelectItemResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendTaskModuleUrlResponse"
     },
     {
       "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -741,6 +807,11 @@
       "title": "Send activity to ask a question",
       "description": "This is an action which sends an activity to the user when a response is expected",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -814,6 +885,11 @@
       ],
       "title": "Attachment input dialog",
       "description": "Collect information - Ask for a file or image.",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "type": "object",
       "required": [
         "$kind"
@@ -1207,6 +1283,11 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -1247,6 +1328,11 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -1307,6 +1393,11 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -1402,6 +1493,11 @@
       "title": "Choice input dialog",
       "description": "Collect information - Pick from a list of choices",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -1797,6 +1893,11 @@
       "title": "Confirm input dialog",
       "description": "Collect information - Ask for confirmation (yes or no).",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -2117,14 +2218,83 @@
         }
       }
     },
+    "Microsoft.ContinueConversation": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Continue conversation (Queue)",
+      "description": "Continue a specific conversation (via StorageQueue implementation).",
+      "type": "object",
+      "required": [
+        "conversationReference",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "conversationReference": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Conversation Reference",
+          "description": "A conversation reference. (NOTE: Minimum required values or channelId, conversation).",
+          "examples": [
+            {
+              "channelId": "skype",
+              "serviceUrl": "http://smba.skype.com",
+              "conversation": {
+                "id": "11111"
+              },
+              "bot": {
+                "id": "22222"
+              },
+              "user": {
+                "id": "33333"
+              },
+              "locale": "en-us"
+            }
+          ]
+        },
+        "value": {
+          "$ref": "#/definitions/valueExpression",
+          "title": "Value",
+          "description": "Value to send in the activity.value."
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ContinueConversation"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.ContinueConversationLater": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Continue conversation later (Queue)",
-      "description": "Continue conversation at later time (via Azure Storage Queue).",
+      "description": "Continue conversation at later time (via StorageQueue implementation).",
       "type": "object",
       "required": [
         "date",
-        "connectionString",
         "$kind"
       ],
       "additionalProperties": false,
@@ -2182,6 +2352,11 @@
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -2343,6 +2518,11 @@
         "description": "Default locale.",
         "default": "en-us"
       },
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -3019,6 +3199,11 @@
       "title": "End dialog",
       "description": "End this dialog.",
       "type": "object",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -3401,6 +3586,57 @@
         }
       }
     },
+    "Microsoft.GetConversationReference": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get ConversationReference",
+      "description": "Gets the ConversationReference from current context and stores it in property so it can be used to with ContinueConversation action.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "user.age"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.GetConversationReference"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.GotoAction": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Go to action",
@@ -3409,6 +3645,11 @@
       "required": [
         "actionId",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -3694,6 +3935,9 @@
           "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
+          "$ref": "#/definitions/Microsoft.ContinueConversation"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ContinueConversationLater"
         },
         {
@@ -3737,6 +3981,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.GetConversationMembers"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.GetConversationReference"
         },
         {
           "$ref": "#/definitions/Microsoft.GotoAction"
@@ -3809,6 +4056,60 @@
         },
         {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetMember"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetPagedMembers"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetPagedTeamMembers"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamChannels"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamDetails"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamMember"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendAppBasedLinkQueryResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionActionResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionAttachmentsResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionAuthResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionBotMessagePreviewResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionMessageResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessagingExtensionSelectItemResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleUrlResponse"
         },
         {
           "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -3919,10 +4220,10 @@
           "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -4119,6 +4420,12 @@
         },
         {
           "$ref": "#/definitions/Teams.OnFileConsent"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewEdit"
+        },
+        {
+          "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewSend"
         },
         {
           "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
@@ -4840,6 +5147,11 @@
       "title": "Number input dialog",
       "description": "Collect information - Ask for a number.",
       "type": "object",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -5046,6 +5358,11 @@
       "required": [
         "connectionName",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "interactive"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -6019,6 +6336,11 @@
       "required": [
         "$kind"
       ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        }
+      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -6989,8 +7311,8 @@
       "description": "Orchestrator recognizer.",
       "type": "object",
       "required": [
-        "model",
-        "shapShot",
+        "modelFolder",
+        "snapshotFile",
         "$kind"
       ],
       "additionalProperties": false,
@@ -7006,17 +7328,17 @@
           "title": "Id",
           "description": "Optional unique id using with RecognizerSet."
         },
-        "modelPath": {
+        "modelFolder": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Model",
-          "description": "NLR model file path.",
-          "default": "=settings.orchestrator.modelpath"
+          "title": "Base Model",
+          "description": "Base model folder path.",
+          "default": "=settings.orchestrator.modelFolder"
         },
-        "snapshotPath": {
+        "snapshotFile": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint key",
-          "description": "SnapShot file path.",
-          "default": "=settings.orchestrator.shapshotpath"
+          "title": "Snapshot File",
+          "description": "Snapshot file.",
+          "default": "=settings.orchestrator.snapshotFile"
         },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -7701,6 +8023,11 @@
       "type": "object",
       "title": "Repeat dialog",
       "description": "Repeat current dialog.",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -7768,6 +8095,11 @@
       "type": "object",
       "title": "Replace dialog",
       "description": "Replace current dialog with another dialog.",
+      "policies": [
+        {
+          "type": "lastAction"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -9555,6 +9887,11 @@
       "type": "object",
       "title": "Text input dialog",
       "description": "Collection information - Ask for a word or sentence.",
+      "policies": [
+        {
+          "type": "interactive"
+        }
+      ],
       "required": [
         "$kind"
       ],
@@ -9760,6 +10097,11 @@
       "required": [
         "errorValue",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "lastAction"
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10012,12 +10354,12 @@
           "title": "Property",
           "description": "Property (named location to store information).",
           "examples": [
-            "user.participantInfo"
+            "dialog.participantInfo"
           ]
         },
         "meetingId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Meeting Id",
+          "title": "Meeting id",
           "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
           "examples": [
             "=turn.activity.channelData.meeting.id"
@@ -10025,7 +10367,7 @@
         },
         "participantId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Participant Id",
+          "title": "Participant id",
           "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
           "examples": [
             "=turn.activity.from.aadObjectId"
@@ -10033,7 +10375,7 @@
         },
         "tenantId": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Tenant Id",
+          "title": "Tenant id",
           "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
           "examples": [
             "=turn.activity.channelData.tenant.id"
@@ -10061,16 +10403,403 @@
         }
       }
     },
+    "Teams.GetMember": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get member",
+      "description": "This works in one-on-one, group, and teams scoped conversations.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "dialog.memberInfo"
+          ]
+        },
+        "memberId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Member Id",
+          "description": "Member Id or expression to a member id to use to get the member information. Default value is the current turn.activity.from.id.",
+          "examples": [
+            "=turn.activity.from.id"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetMember"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetPagedMembers": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get paged members",
+      "description": "Get a paginated list of members.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "dialog.pagedMembers"
+          ]
+        },
+        "pageSize": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Page Size",
+          "description": "Page Size or expression to use to get the page size.",
+          "examples": [
+            "100"
+          ]
+        },
+        "continuationToken": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Continuation token",
+          "description": "The continuation token that will be used to retrieve the members.",
+          "default": "=dialog.membersContinuationToken"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetPagedMembers"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetPagedTeamMembers": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get paged team members",
+      "description": "Get a paginated list of team members.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "dialog.pagedTeamMembers"
+          ]
+        },
+        "pageSize": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Page size",
+          "description": "Page Size or expression to use to get the page size.",
+          "examples": [
+            "100"
+          ]
+        },
+        "continuationToken": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Continuation token",
+          "description": "The continuation token that will be used to retrieve the members.",
+          "default": "=dialog.membersContinuationToken"
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "The team id that will be used to retrieve the members.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetPagedTeamMembers"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetTeamChannels": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get team channels",
+      "description": "Get channels for a team.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "dialog.teamChannels"
+          ]
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "Team Id or expression to a team id to use to get the team channels. Default value is the current turn.activity.channelData.team.id.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetTeamChannels"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetTeamDetails": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get team details",
+      "description": "Get details for a team.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "dialog.teamDetails"
+          ]
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "Team Id or expression to a team id to use to get the team details. Default value is the current turn.activity.channelData.team.id.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetTeamDetails"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.GetTeamMember": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get team member",
+      "description": "Get teams member information.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "dialog.teamMemberInfo"
+          ]
+        },
+        "memberId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Member id",
+          "description": "Member Id or expression to a member id to use to get the member information. Default value is the current turn.activity.from.id.",
+          "default": "=turn.activity.from.id"
+        },
+        "teamId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Team id",
+          "description": "Team Id or expression to a team id to use to get the member information. Default value is the current turn.activity.channelData.team.id.",
+          "default": "=turn.activity.channelData.team.id"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.GetTeamMember"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.OnAppBasedLinkQuery": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsAppBasedLinkQuery",
+      "title": "On app based link query",
       "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
       "type": "object",
+      "hidden": [
+        "actions"
+      ],
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendAppBasedLinkQueryResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10130,7 +10859,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsCardAction",
+      "title": "On Teams card action",
       "description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
       "type": "object",
       "required": [
@@ -10194,7 +10923,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsChannelCreated",
+      "title": "On Teams channel created",
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
       "type": "object",
       "required": [
@@ -10258,7 +10987,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsChannelDeleted",
+      "title": "On Teams channel deleted",
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelDeleted'.",
       "type": "object",
       "required": [
@@ -10322,7 +11051,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsChannelRenamed",
+      "title": "On Teams channel renamed",
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRenamed'.",
       "type": "object",
       "required": [
@@ -10386,7 +11115,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsChannelRestored",
+      "title": "On Teams channel restored",
       "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRestored'.",
       "type": "object",
       "required": [
@@ -10450,7 +11179,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsFileConsent",
+      "title": "On Teams file consent",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name == 'fileConsent/invoke'.",
       "type": "object",
       "required": [
@@ -10509,12 +11238,140 @@
         }
       }
     },
+    "Teams.OnMessagingExtensionBotMessagePreviewEdit": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On teams messaging extension preview edit submit action",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'edit'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnMessagingExtensionBotMessagePreviewEdit"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.OnMessagingExtensionBotMessagePreviewSend": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On teams messaging extension preview send submit action",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'send'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnMessagingExtensionBotMessagePreviewSend"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.OnMessagingExtensionCardButtonClicked": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionCardButtonClicked",
+      "title": "On Teams messaging extension card button clicked",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
       "type": "object",
       "required": [
@@ -10578,11 +11435,23 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionConfigurationQuerySettingUrl",
+      "title": "On Teams messaging extension configuration query setting url",
       "description": "Actions triggered when a Teams InvokeActivity is received with name='composeExtension/querySettingUrl'.",
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10642,11 +11511,20 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionConfigurationSetting",
+      "title": "On Teams messaging extension configuration setting",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/setting'.",
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive",
+          "kinds": [
+            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10706,12 +11584,24 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionFetchTask",
+      "title": "On Teams messaging extension fetch task",
       "description": "Actions triggered when a Teams InvokeActivity is received when activity.name='composeExtension/fetchTask'.",
       "type": "object",
       "required": [
         "actions",
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionActionResponse",
+            "Teams.SendMessagingExtensionAuthResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10771,7 +11661,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionQuery",
+      "title": "On Teams messaging extension query",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/query'.",
       "type": "object",
       "required": [
@@ -10835,7 +11725,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionSelectItem",
+      "title": "On Teams messaging extension select item",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
       "type": "object",
       "required": [
@@ -10899,11 +11789,22 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsMessagingExtensionSubmitAction",
+      "title": "On teams messaging extension submit action",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction'.",
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendMessagingExtensionActionResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -10963,7 +11864,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsO365ConnectorCardAction",
+      "title": "On Teams O365 connector card action",
       "description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
       "type": "object",
       "required": [
@@ -11155,11 +12056,24 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTaskModuleFetch",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/fetch'.",
+      "title": "On Teams task module fetch",
+      "description": "Actions triggered when a Teams Invoke Activity is received with activity.name='task/fetch'.",
       "type": "object",
       "required": [
         "$kind"
+      ],
+      "policies": [
+        {
+          "type": "triggerNotInteractive"
+        },
+        {
+          "type": "triggerRequiresAction",
+          "kinds": [
+            "Teams.SendTaskModuleCardResponse",
+            "Teams.SendTaskModuleMessageResponse",
+            "Teams.SendTaskModuleUrlResponse"
+          ]
+        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -11219,7 +12133,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTaskModuleSubmit",
+      "title": "On Teams task module submit",
       "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/submit'.",
       "type": "object",
       "required": [
@@ -11283,7 +12197,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTeamArchived",
+      "title": "On Teams team archived",
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamArchived'.",
       "type": "object",
       "required": [
@@ -11347,7 +12261,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTeamDeleted",
+      "title": "On Teams team deleted",
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamDeleted'.",
       "type": "object",
       "required": [
@@ -11411,7 +12325,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTeamHardDeleted",
+      "title": "On Teams team hard deleted",
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamHardDeleted'.",
       "type": "object",
       "required": [
@@ -11475,7 +12389,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTeamRenamed",
+      "title": "On Teams team renamed",
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRenamed'.",
       "type": "object",
       "required": [
@@ -11539,7 +12453,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTeamRestored",
+      "title": "On Teams team restored",
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRestored'.",
       "type": "object",
       "required": [
@@ -11603,7 +12517,7 @@
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
       ],
-      "title": "OnTeamsTeamUnarchived",
+      "title": "On Teams team unarchived",
       "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamUnarchived'.",
       "type": "object",
       "required": [
@@ -11654,6 +12568,917 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Teams.OnTeamUnarchived"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendAppBasedLinkQueryResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send query link response",
+      "description": "Query link requests have activity.name='composeExtension/queryLink'.",
+      "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnAppBasedLinkQuery"
+          ]
+        }
+      ],
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "card": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Card",
+          "description": "Expession for an Attachment template of Hero Card or Thumbnail Card to send. Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendAppBasedLinkQueryResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessageToTeamsChannel": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a message to a teams channel",
+      "description": "The resulting ConversationReference and ActivityId can be stored for later use.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "conversationReferenceProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Conversation reference property",
+          "description": "Property path to put the newly created activity's Conversation Reference.",
+          "examples": [
+            "dialog.threadReference"
+          ]
+        },
+        "activityIdProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Activity id property",
+          "description": "Property path to put the newly created activity's id.",
+          "examples": [
+            "dialog.threadId"
+          ]
+        },
+        "teamsChannelId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Teams channel id",
+          "description": "Teams channel id to send a message to.",
+          "default": "=turn.activity.channelData.channel.id"
+        },
+        "activity": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Activity",
+          "description": "Expession for an activity to send to the channel.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessageToTeamsChannel"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionActionResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Messaging extension action response",
+      "description": "Send an task action response containing a card.",
+      "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnMessagingExtensionFetchTask",
+            "Teams.OnMessagingExtensionSubmitAction"
+          ]
+        }
+      ],
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "title": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Title",
+          "description": "Title of the Action Response.",
+          "examples": [
+            "Action Response"
+          ]
+        },
+        "height": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Height",
+          "description": "Height of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "width": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Width",
+          "description": "Width of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "card": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Card",
+          "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "completionBotId": {
+          "type": "string",
+          "title": "completionBotId",
+          "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionActionResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionAttachmentsResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Messaging extensions attachments response",
+      "description": "Send a response containing attachments to a messaging extension request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "attachmentLayout": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Attachment layout",
+          "description": "Defines the type of attachment layout. Either 'grid' or 'list'.",
+          "oneOf": [
+            {
+              "type": "string",
+              "title": "Layout type",
+              "description": "Layout type of 'grid' or 'list'.",
+              "enum": [
+                "list",
+                "grid"
+              ],
+              "default": "list"
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
+        },
+        "attachments": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Attachments",
+          "description": "Expession for Attachments template of Cards or Adaptive Cards to send. Minimum of one Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionAttachmentsResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionAuthResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send messaging extension auth response",
+      "description": "If the user is signed in, the dialog will end setting the TokenResponse in the specified property.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "connectionName": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "OAuth connection name",
+          "description": "The OAuth Connection Name, that will be used to perform the Sign On.",
+          "default": "=settings.connectionName"
+        },
+        "title": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Title",
+          "description": "Title of the response for the Suggested Actions sent back."
+        },
+        "resultProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property to store the TokenResponse in once Sign In completes.",
+          "examples": [
+            "dialog.userName"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionAuthResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionBotMessagePreviewResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a bot message preview response",
+      "description": "Send a bot message preview response to a messaging extension request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "card": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Card",
+          "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionBotMessagePreviewResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send query link response",
+      "description": "Query link requests have activity.name='composeExtension/queryLink'.",
+      "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+          ]
+        }
+      ],
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "configUrl": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Configuration url",
+          "description": "Url to use for the configuration page path.",
+          "examples": [
+            "https://mysite.com/config.html",
+            "=user.surveySiteUrl"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionMessageResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send messaging extension message response",
+      "description": "Send a message response to a messaging extension request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "message": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Message",
+          "description": "The response message to send.",
+          "examples": [
+            "Thanks, have a nice day! :)"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionMessageResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessagingExtensionSelectItemResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a messaging extension response when an item is selected",
+      "description": "Query link requests have activity.name='composeExtension/queryLink'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "card": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Card",
+          "description": "Expression for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessagingExtensionSelectItemResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendTaskModuleCardResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send task module card response",
+      "description": "Send a card response to a Task Module request.",
+      "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "title": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Title",
+          "description": "Title of the Task Module Response.",
+          "examples": [
+            "Bot Task Module"
+          ]
+        },
+        "height": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Height",
+          "description": "Height of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "width": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Width",
+          "description": "Width of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "card": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Card",
+          "description": "Expession for an Attachment template of Hero Card or Adaptive Card to send. Attachment is required.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "completionBotId": {
+          "type": "string",
+          "title": "completionBotId",
+          "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendTaskModuleCardResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendTaskModuleMessageResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send task module message response",
+      "description": "Send a message response to a Task Module request.",
+      "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "message": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Message",
+          "description": "The response message to send.",
+          "examples": [
+            "Thanks, have a nice day! :)"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendTaskModuleMessageResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendTaskModuleUrlResponse": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send task module url response",
+      "description": "Send a url type continue response to a Task Module request.",
+      "type": "object",
+      "policies": [
+        {
+          "type": "allowedTrigger",
+          "kinds": [
+            "Teams.OnTaskModuleFetch",
+            "Teams.OnTaskModuleSubmit"
+          ]
+        }
+      ],
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "cacheType": {
+          "type": "string",
+          "title": "Cache type",
+          "description": "Optional type of cache: 'cache' or 'no_cache'."
+        },
+        "cacheDuration": {
+          "type": "string",
+          "title": "Cache duration",
+          "description": "Optional duration in seconds of the result in the cache."
+        },
+        "title": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Title",
+          "description": "Title of the Task Module Response.",
+          "examples": [
+            "Bot Task Module"
+          ]
+        },
+        "height": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Height",
+          "description": "Height of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "width": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Width",
+          "description": "Width of the Task Module Response.",
+          "examples": [
+            "450"
+          ]
+        },
+        "url": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Url",
+          "description": "Url to use for the Task Module Response.",
+          "examples": [
+            "https://mysite.com",
+            "=user.surveySiteUrl"
+          ]
+        },
+        "fallbackUrl": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Fallback Url",
+          "description": "Fallback Url to use for the Task Module Response.",
+          "examples": [
+            "https://fallbacksite.com",
+            "=user.surveySiteFallbackUrl"
+          ]
+        },
+        "completionBotId": {
+          "type": "string",
+          "title": "completionBotId",
+          "description": "an optional expression for the Completion Bot Id of the Task Module Task Info response. This is a bot App ID to send the result of the user's interaction with the task module to. If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload."
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendTaskModuleUrlResponse"
         },
         "$designer": {
           "title": "Designer information",

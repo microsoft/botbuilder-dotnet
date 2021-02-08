@@ -146,6 +146,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
         /// <remarks>If expiration time is not provided, the expiration time will DateTime.UtcNow.AddDays(1).</remarks>
+        [Obsolete("TrustServiceUrl is not a required part of the security model.")]
 #pragma warning disable CA1801 // Review unused parameters
         public static void TrustServiceUrl(string serviceUrl)
 #pragma warning restore CA1801 // Review unused parameters
@@ -157,6 +158,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="expirationTime">The expiration time after which this service url is not trusted anymore.</param>
+        [Obsolete("TrustServiceUrl is not a required part of the security model.")]
 #pragma warning disable CA1801 // Review unused parameters
         public static void TrustServiceUrl(string serviceUrl, DateTime expirationTime)
 #pragma warning restore CA1801 // Review unused parameters
@@ -168,6 +170,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="serviceUrl">The service url.</param>
         /// <returns>True if the host of the service url is trusted; False otherwise.</returns>
+        [Obsolete("IsTrustedServiceUrl is not a required part of the security model.")]
 #pragma warning disable CA1801 // Review unused parameters
         public static bool IsTrustedServiceUrl(string serviceUrl)
 #pragma warning restore CA1801 // Review unused parameters

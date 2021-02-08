@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AdaptiveExpressions.BuiltinFunctions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json.Linq;
@@ -1154,6 +1155,11 @@ namespace AdaptiveExpressions.Tests
             #region TriggerTree Tests
             Test("ignore(true)", true),
             #endregion
+
+            #region StringOrValue
+            Test("stringOrValue('${one}')", 1.0),
+            Test("stringOrValue('${one} item')", "1 item"),
+            #endregion
         };
 
         public static IEnumerable<object[]> DataForThreadLocale => new[]
@@ -1443,6 +1449,18 @@ namespace AdaptiveExpressions.Tests
             // null is also the valid value
             (value, error) = Expression.Parse("b").TryEvaluate(sM);
             Assert.Null(value);
+        }
+
+        [Fact]
+        public void TestNumericEvaluator()
+        {
+            var functionName = "Math.sum";
+            Expression.Functions.Add(
+                functionName,
+                new NumericEvaluator(functionName, (args) => (int)args[0] + (int)args[1]));
+            var (result, error) = Expression.Parse("Math.sum(1, 2, 3)").TryEvaluate(null);
+            Assert.Equal(6, result);
+            Assert.Null(error);
         }
 
         private void AssertResult<T>(string text, T expected)

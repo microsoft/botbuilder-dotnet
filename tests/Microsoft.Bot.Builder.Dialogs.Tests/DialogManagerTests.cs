@@ -403,6 +403,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.NotNull(_eocSent);
                 Assert.Equal(ActivityTypes.EndOfConversation, _eocSent.Type);
+                Assert.Equal(EndOfConversationCodes.CompletedSuccessfully, _eocSent.Code);
                 Assert.Equal("SomeName", _eocSent.Value);
                 Assert.Equal("en-GB", _eocSent.Locale);
             }

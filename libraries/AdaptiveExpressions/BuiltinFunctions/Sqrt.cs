@@ -7,7 +7,7 @@ using System.Globalization;
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
-    /// Returns the logarithm of a specified number.
+    /// Returns the square root of a specified number.
     /// </summary>
     internal class Sqrt : ExpressionEvaluator
     {

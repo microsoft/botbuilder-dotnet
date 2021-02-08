@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -26,12 +25,18 @@ namespace Microsoft.Bot.Connector.Authentication
         public abstract Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get the credentials object needed to make a proactive call.
+        /// Creates a <see cref="ConnectorFactory"/> that can be used to create <see cref="IConnectorClient"/> that use credentials from this particular cloud environment.
         /// </summary>
-        /// <param name="claimsIdentity">The inbound Activity.</param>
-        /// <param name="audience">The http auth header.</param>
+        /// <param name="claimsIdentity">The inbound <see cref="Activity"/>'s <see cref="ClaimsIdentity"/>.</param>
+        /// <returns>A <see cref="ConnectorFactory"/>.</returns>
+        public abstract ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity);
+
+        /// <summary>
+        /// Creates the appropriate <see cref="UserTokenClient" /> instance.
+        /// </summary>
+        /// <param name="claimsIdentity">The inbound <see cref="Activity"/>'s <see cref="ClaimsIdentity"/>.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>Asynchronous Task with <see cref="ProactiveCredentialsResult"/>.</returns>
-        public abstract Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken);
+        /// <returns>Asynchronous Task with <see cref="UserTokenClient" /> instance.</returns>
+        public abstract Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken);
     }
 }

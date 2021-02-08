@@ -34,8 +34,12 @@ namespace Microsoft.Bot.Schema.Teams
         /// task module. One of url or card is required.</param>
         /// <param name="card">The JSON for the Adaptive card to appear in the
         /// task module.</param>
-        /// <param name="fallbackUrl">The fallback URL. If a client does not support the task module feature, this URL is opened in a browser tab.</param>
-        /// <param name="completionBotId">If a client does not support the task module feature, this URL is opened in a browser tab.</param>
+        /// <param name="fallbackUrl">If a client does not support the task
+        /// module feature, this URL is opened in a browser tab.</param>
+        /// <param name="completionBotId">Specifies a bot App ID to send the
+        /// result of the user's interaction with the task module to. If
+        /// specified, the bot will receive a task/submit invoke event with
+        /// a JSON object in the event payload.</param>
         public TaskModuleTaskInfo(string title = default(string), object height = default(object), object width = default(object), string url = default(string), Attachment card = default(Attachment), string fallbackUrl = default(string), string completionBotId = default(string))
         {
             Title = title;
@@ -101,8 +105,9 @@ namespace Microsoft.Bot.Schema.Teams
 #pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
-        /// Gets or sets if a client does not support the task module feature,
-        /// this URL is opened in a browser tab.
+        /// Gets or sets Specifies a bot App ID to send the result of the user's
+        /// interaction with the task module to. If specified, the bot will receive
+        /// a task/submit invoke event with a JSON object in the event payload.
         /// </summary>
         /// <value>The completion bot ID.</value>
         [JsonProperty(PropertyName = "completionBotId")]

@@ -7,7 +7,7 @@ using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Conditions
 {
     /// <summary>
     /// Actions triggered when a Teams InvokeActivity is received with activity.name == 'composeExtension/queryLink'.

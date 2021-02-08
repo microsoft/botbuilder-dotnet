@@ -214,5 +214,10 @@
                 }
             ]
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "interactive"
+        }
+    ]
 }
