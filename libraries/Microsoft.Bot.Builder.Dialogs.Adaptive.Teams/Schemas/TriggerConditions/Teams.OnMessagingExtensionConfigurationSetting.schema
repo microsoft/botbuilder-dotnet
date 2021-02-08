@@ -5,5 +5,14 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/setting'.",
     "type": "object",
     "required": [
+    ],
+    "policies": [
+        {
+            "type": "triggerNotInteractive",
+            "kinds": [
+                "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
+                "Teams.SendMessagingExtensionAuthResponse" 
+            ]
+        }
     ]
 }

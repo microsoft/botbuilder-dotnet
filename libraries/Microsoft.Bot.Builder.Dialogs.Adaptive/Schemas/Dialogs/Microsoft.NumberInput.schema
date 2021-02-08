@@ -38,5 +38,10 @@
             "description": "Default locale to use if there is no locale available..",
             "default": "en-us"
         }
-    }
+    },
+    "policies": [
+        {
+            "type": "interactive"
+        }
+    ]
 }
