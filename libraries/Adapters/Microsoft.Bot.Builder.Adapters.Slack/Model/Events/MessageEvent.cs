@@ -12,8 +12,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model.Events
     /// </summary>
     public class MessageEvent : EventType
     {
-        public string Text { get; set; }
-
         [JsonProperty(PropertyName = "channel_type")]
         public string ChannelType { get; set; }
 
