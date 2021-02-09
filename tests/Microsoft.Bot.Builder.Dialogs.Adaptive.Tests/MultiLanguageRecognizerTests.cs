@@ -17,47 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class MultiLanguageRecognizerTests : IClassFixture<ResourceExplorerFixture>
     {
-        private static readonly MultiLanguageRecognizer Recognizer = new MultiLanguageRecognizer()
-        {
-            Recognizers = new ConcurrentDictionary<string, Recognizer>(
-                new Dictionary<string, Recognizer>()
-                {
-                    {
-                        "en-us",
-                        new RegexRecognizer()
-                        {
-                            Intents = new List<IntentPattern>()
-                            {
-                                new IntentPattern("Greeting", "(?i)howdy"),
-                                new IntentPattern("Goodbye", "(?i)bye")
-                            }
-                        }
-                    },
-                    {
-                        "en-gb",
-                        new RegexRecognizer()
-                        {
-                            Intents = new List<IntentPattern>()
-                            {
-                                new IntentPattern("Greeting", "(?i)hiya"),
-                                new IntentPattern("Goodbye", "(?i)cheerio")
-                            }
-                        }
-                    },
-                    {
-                        "en",
-                        new RegexRecognizer()
-                        {
-                            Intents = new List<IntentPattern>()
-                            {
-                                new IntentPattern("Greeting", "(?i)hello"),
-                                new IntentPattern("Goodbye", "(?i)goodbye")
-                            }
-                        }
-                    }
-                })
-        };
-
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public MultiLanguageRecognizerTests(ResourceExplorerFixture resourceExplorerFixture)
@@ -107,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task MultiLanguageRecognizerTest_LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = Recognizer;
+            var recognizer = GetRecognizer();
             recognizer.TelemetryClient = telemetryClient.Object;
             recognizer.LogPersonalInformation = logPersonalInformation;
 
@@ -118,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task MultiLanguageRecognizerTest_LogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = Recognizer;
+            var recognizer = GetRecognizer();
             recognizer.TelemetryClient = telemetryClient.Object;
             
             var dc = TestUtils.CreateContext(GreetingIntentTextEnUs);
@@ -131,5 +90,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var result = await recognizer.RecognizeAsync(dc, activity, CancellationToken.None);
             ValidateGreetingIntent(result);
         }
+
+        private static MultiLanguageRecognizer GetRecognizer() => new MultiLanguageRecognizer()
+        {
+            Recognizers = new Dictionary<string, Recognizer>()
+            {
+                {
+                    "en-us",
+                    new RegexRecognizer()
+                    {
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("Greeting", "(?i)howdy"),
+                            new IntentPattern("Goodbye", "(?i)bye")
+                        }
+                    }
+                },
+                {
+                    "en-gb",
+                    new RegexRecognizer()
+                    {
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("Greeting", "(?i)hiya"),
+                            new IntentPattern("Goodbye", "(?i)cheerio")
+                        }
+                    }
+                },
+                {
+                    "en",
+                    new RegexRecognizer()
+                    {
+                        Intents = new List<IntentPattern>()
+                        {
+                            new IntentPattern("Greeting", "(?i)hello"),
+                            new IntentPattern("Goodbye", "(?i)goodbye")
+                        }
+                    }
+                }
+            }
+        };
     }
 }

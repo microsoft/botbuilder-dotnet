@@ -16,44 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class RecognizerSetTests : IClassFixture<ResourceExplorerFixture>
     {
-        private static readonly RecognizerSet Recognizers = new RecognizerSet()
-        {
-            Recognizers = new List<Recognizer>()
-                {
-                    new RegexRecognizer()
-                    {
-                        Id = "CodeRecognizer",
-                        Intents = new List<IntentPattern>()
-                        {
-                            new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                        },
-                        Entities = new EntityRecognizerSet()
-                        {
-                            new AgeEntityRecognizer(),
-                            new NumberEntityRecognizer(),
-                            new PercentageEntityRecognizer(),
-                            new PhoneNumberEntityRecognizer(),
-                            new TemperatureEntityRecognizer()
-                        }
-                    },
-                    new RegexRecognizer()
-                    {
-                        Id = "ColorRecognizer",
-                        Intents = new List<IntentPattern>()
-                        {
-                            new IntentPattern("colorIntent", "(?i)(color|colour)")
-                        },
-                        Entities = new EntityRecognizerSet()
-                        {
-                            new UrlEntityRecognizer(),
-                            new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                            new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background)" },
-                            new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" }
-                        }
-                    }
-                }
-        };
-
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public RecognizerSetTests(ResourceExplorerFixture resourceExplorerFixture)
@@ -79,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task RecognizerSetTests_Merge_LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizers = Recognizers;
+            var recognizers = GetRecognizer();
             recognizers.TelemetryClient = telemetryClient.Object;
             recognizers.LogPersonalInformation = logPersonalInformation;
 
@@ -112,5 +74,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var result = await recognizerSet.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             Assert.NotNull(result);
         }
+
+        private static RecognizerSet GetRecognizer() => new RecognizerSet()
+        {
+            Recognizers = new List<Recognizer>()
+            {
+                new RegexRecognizer()
+                {
+                    Id = "CodeRecognizer",
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                    },
+                    Entities = new EntityRecognizerSet()
+                    {
+                        new AgeEntityRecognizer(),
+                        new NumberEntityRecognizer(),
+                        new PercentageEntityRecognizer(),
+                        new PhoneNumberEntityRecognizer(),
+                        new TemperatureEntityRecognizer()
+                    }
+                },
+                new RegexRecognizer()
+                {
+                    Id = "ColorRecognizer",
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("colorIntent", "(?i)(color|colour)")
+                    },
+                    Entities = new EntityRecognizerSet()
+                    {
+                        new UrlEntityRecognizer(),
+                        new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                        new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background)" },
+                        new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" }
+                    }
+                }
+            }
+        };
     }
 }

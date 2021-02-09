@@ -15,40 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class CrossTrainedRecognizerSetTests : IClassFixture<ResourceExplorerFixture>
     {
-        private static readonly CrossTrainedRecognizerSet Recognizers = new CrossTrainedRecognizerSet()
-        {
-            Recognizers = new List<Recognizer>()
-            {
-                new RegexRecognizer()
-                {
-                    Id = "x",
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("DeferToRecognizer_y", CrossTrainText),
-                        new IntentPattern("x", "x")
-                    }
-                },
-                new RegexRecognizer()
-                {
-                    Id = "y",
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("y", CrossTrainText),
-                        new IntentPattern("y", "y")
-                    }
-                },
-                new RegexRecognizer()
-                {
-                    Id = "z",
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("z", CrossTrainText),
-                        new IntentPattern("z", "z")
-                    }
-                },
-            }
-        };
-
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
         public CrossTrainedRecognizerSetTests(ResourceExplorerFixture resourceExplorerFixture)
@@ -104,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task CrossTrainedRecognizerSetTests_LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizers = Recognizers;
+            var recognizers = GetRecognizers();
             recognizers.TelemetryClient = telemetryClient.Object;
             recognizers.LogPersonalInformation = logPersonalInformation;
 
@@ -116,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         public async Task CrossTrainedRecognizerSetTests_LogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizers = Recognizers;
+            var recognizers = GetRecognizers();
             recognizers.TelemetryClient = telemetryClient.Object;
             var dc = TestUtils.CreateContext(CrossTrainText);
 
@@ -127,5 +93,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.NotNull(result);
             Assert.Single(result.Intents);
         }
+
+        private static CrossTrainedRecognizerSet GetRecognizers() => new CrossTrainedRecognizerSet()
+        {
+            Recognizers = new List<Recognizer>()
+            {
+                new RegexRecognizer()
+                {
+                    Id = "x",
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("DeferToRecognizer_y", CrossTrainText),
+                        new IntentPattern("x", "x")
+                    }
+                },
+                new RegexRecognizer()
+                {
+                    Id = "y",
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("y", CrossTrainText),
+                        new IntentPattern("y", "y")
+                    }
+                },
+                new RegexRecognizer()
+                {
+                    Id = "z",
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("z", CrossTrainText),
+                        new IntentPattern("z", "z")
+                    }
+                },
+            }
+        };
     }
 }
