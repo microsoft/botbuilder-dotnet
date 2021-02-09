@@ -227,26 +227,22 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 
         private static bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual)
         {
-            if (expected.Count == actual.Count)
-            {
-                foreach (var property in actual)
-                {
-                    if (expected.ContainsKey(property.Key))
-                    {
-                        if (property.Value != expected[property.Key])
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
+            if (expected.Count != actual.Count)
             {
                 return false;
+            }
+
+            foreach (var property in actual)
+            {
+                if (!expected.ContainsKey(property.Key))
+                {
+                    return false;
+                }
+
+                if (property.Value != expected[property.Key])
+                {
+                    return false;
+                }
             }
 
             return true;
