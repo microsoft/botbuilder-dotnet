@@ -301,36 +301,32 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
         private bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual)
         {
-            if (expected.Count == actual.Count)
+            if (expected.Count != actual.Count)
             {
-                foreach (var property in actual)
+                return false;
+            }
+
+            foreach (var property in actual)
+            {
+                if (!expected.ContainsKey(property.Key))
                 {
-                    if (expected.ContainsKey(property.Key))
-                    {
-                        if (property.Key == "Entities")
-                        {
-                            if (!property.Value.Contains("answer"))
-                            {
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            if (property.Value != expected[property.Key])
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    else
+                    return false;
+                }
+
+                if (property.Key == "Entities")
+                {
+                    if (!property.Value.Contains("answer"))
                     {
                         return false;
                     }
                 }
-            }
-            else
-            {
-                return false;
+                else
+                {
+                    if (property.Value != expected[property.Key])
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;
