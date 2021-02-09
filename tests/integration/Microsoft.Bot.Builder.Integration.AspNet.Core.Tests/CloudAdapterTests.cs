@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = new ClaimsIdentity(),
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "scope",
                 CallerId = "callerId"
             };
 
@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = new ClaimsIdentity(),
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "scope",
                 CallerId = "callerId"
             };
 
@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "scope",
                 CallerId = "callerId"
             };
 
@@ -362,7 +362,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "scope",
                 CallerId = "callerId"
             };
 

@@ -33,7 +33,8 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, AuthBot<MainDialog>>();
+            //services.AddTransient<IBot, AuthBot<MainDialog>>();
+            services.AddTransient<IBot, EchoBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,9 +45,10 @@ namespace Microsoft.BotBuilderSamples
                 app.UseDeveloperExceptionPage();
             }
 
+            //.UseWebSockets()
             app.UseDefaultFiles()
                 .UseStaticFiles()
-                .UseWebSockets()
+                .UseNamedPipes()
                 .UseRouting()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
