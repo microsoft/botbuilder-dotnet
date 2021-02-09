@@ -28,8 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="pattern">The regex pattern to match.</param>
         public IntentPattern(string intent, string pattern)
         {
-            this.Intent = intent;
-            this.Pattern = pattern;
+            Intent = intent;
+            Pattern = pattern;
         }
 
         /// <summary>
