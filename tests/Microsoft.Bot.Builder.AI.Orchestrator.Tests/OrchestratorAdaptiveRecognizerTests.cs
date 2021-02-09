@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 {
-    public class OrchestratorTests
+    public class OrchestratorAdaptiveRecognizerTests
     {
         [Fact]
         public async Task TestIntentRecognize()
