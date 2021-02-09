@@ -73,29 +73,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [Fact]
-        public async Task RecognizerSetTests_Merge_LogsTelemetryWhenLogPiiTrue()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task RecognizerSetTests_Merge_LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizers = Recognizers;
             recognizers.TelemetryClient = telemetryClient.Object;
-            recognizers.LogPersonalInformation = true;
-
-            await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizers, telemetryClient, callCount: 1);
-            await RecognizeIntentAndValidateTelemetry(ColorIntentText, recognizers, telemetryClient, callCount: 2);
-
-            // Test custom activity
-            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(CodeIntentText, recognizers, telemetryClient, callCount: 3);
-            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(ColorIntentText, recognizers, telemetryClient, callCount: 4);
-        }
-        
-        [Fact]
-        public async Task RecognizerSetTests_Merge_LogsTelemetryWhenLogPiiFalse()
-        {
-            var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizers = Recognizers;
-            recognizers.TelemetryClient = telemetryClient.Object;
-            recognizers.LogPersonalInformation = false;
+            recognizers.LogPersonalInformation = logPersonalInformation;
 
             await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizers, telemetryClient, callCount: 1);
             await RecognizeIntentAndValidateTelemetry(ColorIntentText, recognizers, telemetryClient, callCount: 2);
@@ -106,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task RecognizerSetTestsLogPiiIsFalseByDefault()
+        public async Task RecognizerSetTests_LogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizerSet = new RecognizerSet()

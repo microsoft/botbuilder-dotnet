@@ -13,7 +13,7 @@ using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.TestTelemetryPropertie
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     /// <summary>
-    /// Helper class used to validate telemetry properties of subclasses of <see cref="Recognizer"/>.
+    /// Helper class used to validate telemetry properties of subclasses of <see cref="AdaptiveRecognizer"/>.
     /// </summary>
     internal class RecognizerTelemetryUtils
     {
