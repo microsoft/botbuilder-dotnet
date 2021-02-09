@@ -22,7 +22,7 @@ using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.AI.Tests
+namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     public class QnAMakerRecognizerTests : IClassFixture<QnAMakerRecognizerFixture>
     {
