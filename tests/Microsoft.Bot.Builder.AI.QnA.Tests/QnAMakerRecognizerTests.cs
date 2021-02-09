@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         public async Task QnAMakerRecognizerLogsTelemetry(bool logPersonalInformation)
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
+            var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_ReturnsAnswer.json")));
             var recognizer = (QnAMakerRecognizer)rootDialog.Recognizer;
             var telemetryClient = new Mock<IBotTelemetryClient>();
             recognizer.TelemetryClient = telemetryClient.Object;
