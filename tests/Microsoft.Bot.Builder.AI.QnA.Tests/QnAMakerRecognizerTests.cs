@@ -335,18 +335,5 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             return true;
         }
-
-        private class CapturedRequest
-        {
-            public string[] Questions { get; set; }
-
-            public int Top { get; set; }
-
-            public Metadata[] StrictFilters { get; set; }
-
-            public Metadata[] MetadataBoost { get; set; }
-
-            public float ScoreThreshold { get; set; }
-        }
     }
 }
