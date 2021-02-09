@@ -88,10 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Times.Exactly(callCount));
         }
 
-        private static string GetEventName(string recognizerName)
-        {
-            return $"{recognizerName}Result";
-        }
+        private static string GetEventName(string recognizerName) => $"{recognizerName}Result";
         
         private static bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual, IActivity activity)
         {

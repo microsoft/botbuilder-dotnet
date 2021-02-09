@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         }
 
         [Fact]
-        public async Task TestIntentRecognize_LogPii_IsFalseByDefault()
+        public async Task TestIntentRecognize_Telemetry_LogPii_IsFalseByDefault()
         {
             var mockResult = new Result
             {
@@ -216,6 +216,21 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.True(result.Intents.ContainsKey("ChooseIntent"));
         }
 
+        private static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
+        {
+            var eventName = GetEventName(recognizer.GetType().Name);
+            var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+            var expectedTelemetryProps = GetExpectedTelemetryProps(activity, result, logPersonalInfo);
+            var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
+
+            telemetryClient.Verify(
+                client => client.TrackEvent(
+                    eventName,
+                    It.Is<Dictionary<string, string>>(d => HasValidTelemetryProps(expectedTelemetryProps, actualTelemetryProps)),
+                    null),
+                Times.Exactly(callCount));
+        }
+
         private static Dictionary<string, string> GetExpectedTelemetryProps(Microsoft.Bot.Schema.IActivity activity, RecognizerResult result, bool logPersonalInformation)
         {
             var props = new Dictionary<string, string>()
@@ -234,21 +249,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             }
 
             return props;
-        }
-
-        private static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
-        {
-            var eventName = GetEventName(recognizer.GetType().Name);
-            var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
-            var expectedTelemetryProps = GetExpectedTelemetryProps(activity, result, logPersonalInfo);
-            var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
-
-            telemetryClient.Verify(
-                client => client.TrackEvent(
-                    eventName,
-                    It.Is<Dictionary<string, string>>(d => HasValidTelemetryProps(expectedTelemetryProps, actualTelemetryProps)),
-                    null),
-                Times.Exactly(callCount));
         }
 
         private static string GetEventName(string recognizerName)
