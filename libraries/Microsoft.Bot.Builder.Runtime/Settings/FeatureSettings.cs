@@ -41,11 +41,11 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         public bool TraceTranscript { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets a value indicating whether to save transcripts to blob storage.
+        /// Gets or sets the blob transcript store settings.
         /// </summary>
         /// <value>
-        /// A value indicating whether to save transcripts to blob storage.
+        /// The blob transcript store settings.
         /// </value>
-        public bool BlobTranscript { get; set; } = false;
+        public BlobsStorageSettings BlobTranscript { get; set; }
     }
 }

@@ -22,11 +22,13 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             const string contosoSecret = "shh123";
             const string adventureWorksSecret = "superSecret!@!";
 
+            var assemblyName = typeof(PluginRegistrationTests).Assembly.GetName().Name;
+
             var settings = new Dictionary<string, string>
                 {
-                    { $"{typeof(ContosoAdapter).FullName}:contosoSecret", contosoSecret },
-                    { $"{typeof(AdventureWorksAdapter).FullName}:AdventureWorksSkillId", "myCoolSkill" },
-                    { $"{typeof(AdventureWorksAdapter).FullName}:AdventureWorksSecret", adventureWorksSecret },
+                    { $"{assemblyName}:contosoSecret", contosoSecret },
+                    { $"{assemblyName}:AdventureWorksSkillId", "myCoolSkill" },
+                    { $"{assemblyName}:AdventureWorksSecret", adventureWorksSecret },
                 };
 
             IServiceCollection services = new ServiceCollection();
@@ -40,15 +42,16 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 {
                     new BotPluginDefinition()
                     {
-                        Name = typeof(PluginRegistrationTests).Assembly.GetName().Name,
+                        Name = assemblyName,
+                        SettingsPrefix = assemblyName
                     } 
                 },
 
                 // Adapters
                 Adapters = new[]
                 {
-                    new AdapterSettings() { Name = typeof(ContosoAdapter).FullName, Route = "contoso", Enabled = true },
-                    new AdapterSettings() { Name = typeof(AdventureWorksAdapter).FullName, Route = "adventureworks", Enabled = true },
+                    new AdapterSettings() { Name = assemblyName, Route = "contoso", Enabled = true },
+                    new AdapterSettings() { Name = assemblyName, Route = "adventureworks", Enabled = true },
                 }
             };
 
@@ -62,15 +65,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             var httpAdapters = provider.GetServices<IBotFrameworkHttpAdapter>();
             Assert.Contains(httpAdapters, a => a.GetType().Equals(typeof(ContosoAdapter)));
             Assert.Contains(httpAdapters, a => a.GetType().Equals(typeof(AdventureWorksAdapter)));
-
-            var botAdapters = provider.GetServices<BotAdapter>();
-            Assert.Contains(botAdapters, a => a.GetType().Equals(typeof(ContosoAdapter)));
-            Assert.Contains(botAdapters, a => a.GetType().Equals(typeof(AdventureWorksAdapter)));
-
-            // Assert adapter settings
-            var adapterSettings = provider.GetServices<AdapterSettings>();
-            Assert.Contains(adapterSettings, s => s.Name == typeof(ContosoAdapter).FullName);
-            Assert.Contains(adapterSettings, s => s.Name == typeof(AdventureWorksAdapter).FullName);
         }
     }
 }

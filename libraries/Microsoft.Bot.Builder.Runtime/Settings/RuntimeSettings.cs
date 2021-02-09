@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         /// <value>
         /// The settings for runtime features.
         /// </value>
-        public FeatureSettings Features { get; set; }
+        public FeatureSettings Features { get; set; } = new FeatureSettings();
 
         /// <summary>
         /// Gets or sets the telemetry settings for the runtime.
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         /// <value>
         /// The telemetry settings for the runtime.
         /// </value>
-        public TelemetrySettings Telemetry { get; set; }
+        public TelemetrySettings Telemetry { get; set; } = new TelemetrySettings();
 
         /// <summary>
         /// Gets or sets the skill settings for the runtime.
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Runtime.Settings
         /// <value>
         /// The skill settings for the runtime.
         /// </value>
-        public SkillSettings Skills { get; set; }
+        public SkillSettings Skills { get; set; } = new SkillSettings();
 
         /// <summary>
         /// Gets or sets the list of plugins registered for the runtime.

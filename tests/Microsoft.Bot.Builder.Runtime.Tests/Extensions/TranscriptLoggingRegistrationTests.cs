@@ -15,11 +15,15 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 {
     public class TranscriptLoggingRegistrationTests
     {
+        private const string LocalConnectionString = "UseDevelopmentStorage=true";
+        private const string LocalContainer = "testContainer";
+        private static readonly BlobsStorageSettings LocalBlobSettings = new BlobsStorageSettings() { ConnectionString = LocalConnectionString, ContainerName = LocalContainer };
+
         public static IEnumerable<object[]> GetAddBotRuntimeTranscriptLoggerData()
         {
             var settings = new Dictionary<string, string>
             {
-                { "blobTranscript:connectionString", "UseDevelopmentStorage=true" },
+                { "blobTranscript:connectionString", LocalConnectionString },
                 { "blobTranscript:containerName", "containerName" },
             };
 
@@ -29,75 +33,54 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             yield return new object[]
             {
                 configuration,
-                new FeatureSettings() { TraceTranscript = true, BlobTranscript = true },
+                new FeatureSettings() { TraceTranscript = true, BlobTranscript = LocalBlobSettings },
                 2
             };
             yield return new object[]
             {
                 configuration,
-                new FeatureSettings() { TraceTranscript = true, BlobTranscript = false },
+                new FeatureSettings() { TraceTranscript = true, BlobTranscript = null },
                 1
             };
             yield return new object[]
             {
                 configuration,
-                new FeatureSettings() { TraceTranscript = false, BlobTranscript = true },
+                new FeatureSettings() { TraceTranscript = false, BlobTranscript = LocalBlobSettings },
                 1
             };
             yield return new object[]
             {
                 configuration,
-                new FeatureSettings() { TraceTranscript = false, BlobTranscript = false },
+                new FeatureSettings() { TraceTranscript = false, BlobTranscript = null },
                 0
             };
         }
 
         public static IEnumerable<object[]> GetAddBotRuntimeTranscriptLoggerErrorData()
         {
-            // params: config settings dictionary
-            yield return new object[]
-            {
-                new Dictionary<string, string>
-                {
-                    { "blobTranscript:connectionStringWRONG", "connectionString" },
-                    { "blobTranscript:containerName", "containerName" },
-                }
-            };
-            yield return new object[]
-            {
-                new Dictionary<string, string>
-                {
-                    { "blobTranscript:connectionString", "connectionString" },
-                }
-            };
-            yield return new object[]
-            {
-                new Dictionary<string, string>
-                {
-                    { "blobTranscript:containerName", "containerName" },
-                }
-            };
-            yield return new object[]
-            {
-                new Dictionary<string, string>()
-            };
+            // params: string connectionString, string containerName
+            yield return new object[] { "connectionString", null };
+            yield return new object[] { null, "containerName" };
+            yield return new object[] { null, null };
+            yield return new object[] { string.Empty, "containerName" };
+            yield return new object[] { "containerName", string.Empty };
         }
 
         [Theory]
         [MemberData(nameof(GetAddBotRuntimeTranscriptLoggerErrorData))]
-        public void AddBotRuntimeTranscriptLogger_ErrorCases(Dictionary<string, string> settings)
+        public void AddBotRuntimeTranscriptLogger_ErrorCases(string connectionString, string containerNAme)
         {
             IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
-            var featureSettings = new FeatureSettings() { BlobTranscript = true };
-            Assert.Throws<ConfigurationException>(() => services.AddBotRuntimeTranscriptLogging(configuration, featureSettings));
+            IConfiguration configuration = new ConfigurationBuilder().Build();
+            var featureSettings = new FeatureSettings() { BlobTranscript = new BlobsStorageSettings() { ConnectionString = connectionString, ContainerName = containerNAme } };
+            Assert.Throws<ArgumentNullException>(() => services.AddBotRuntimeTranscriptLogging(configuration, featureSettings));
         }
 
         [Fact]
         public void AddBotRuntimeTranscriptLogger_NullConfiguration_Throws()
         {
             IServiceCollection services = new ServiceCollection();
-            var featureSettings = new FeatureSettings() { BlobTranscript = true };
+            var featureSettings = new FeatureSettings() { BlobTranscript = LocalBlobSettings };
             Assert.Throws<ArgumentNullException>(() => services.AddBotRuntimeTranscriptLogging(null, featureSettings));
         }
 

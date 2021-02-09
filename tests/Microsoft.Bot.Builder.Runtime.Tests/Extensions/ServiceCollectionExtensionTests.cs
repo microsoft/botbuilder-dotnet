@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Runtime.Extensions;
+using Microsoft.Bot.Builder.Runtime.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
@@ -37,7 +39,9 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         public void AddBotRuntime_Succeeds()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+            var settings = new RuntimeSettings();
+
+            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot(JObject.FromObject(settings));
 
             services.AddSingleton(TestDataGenerator.BuildMemoryResourceExplorer());
             services.AddBotRuntime(configuration);

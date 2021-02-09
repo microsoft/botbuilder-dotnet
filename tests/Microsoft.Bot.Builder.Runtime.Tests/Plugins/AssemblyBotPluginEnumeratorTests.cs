@@ -60,8 +60,10 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
 
             IList<IBotPlugin> plugins = enumerator.GetPlugins(Assembly.GetExecutingAssembly().FullName).ToList();
 
-            Assert.Equal(1, plugins.Count);
-            Assert.Equal(typeof(PublicBotPlugin), plugins[0].GetType());
+            Assert.Equal(3, plugins.Count);
+            Assert.Contains(plugins, p => typeof(PublicBotPlugin) == p.GetType());
+            Assert.Contains(plugins, p => typeof(AdventureWorksAdapterPlugin) == p.GetType());
+            Assert.Contains(plugins, p => typeof(ContosoAdapterPlugin) == p.GetType());
         }
 
         // The below type definitions are intended purely for test usage to ensure that the assembly

@@ -16,12 +16,10 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins.Implementations
             IServiceCollection services = context.Services;
             IConfiguration configuration = context.Configuration;
 
-            // AdventureWorksAdapter
-            var adventureWorksSection = configuration.GetSection(typeof(AdventureWorksAdapter).FullName);
+            var options = configuration.Get<AdventureWorksAdapterOptions>();
 
-            if (adventureWorksSection.Exists())
+            if (options != null)
             {
-                var options = adventureWorksSection.Get<AdventureWorksAdapterOptions>();
                 services.AddSingleton<IBotFrameworkHttpAdapter>(new AdventureWorksAdapter(options));
             }
         }

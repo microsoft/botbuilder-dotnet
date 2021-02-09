@@ -59,7 +59,8 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocale).Value;
             string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
             
-            var runtimeSettings = configuration.GetSection(ConfigurationConstants.RuntimeSettingsKey).Get<RuntimeSettings>();
+            // Runtime settings. If no config is provided, we create basic runtime config with defaults.
+            var runtimeSettings = configuration.GetSection(ConfigurationConstants.RuntimeSettingsKey).Get<RuntimeSettings>() ?? new RuntimeSettings();
 
             // Bot
             services.AddSingleton<IBot, CoreBot>();
@@ -197,8 +198,6 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            const string blobTranscriptSection = "blobTranscript";
-
             // Trace Trascript
             if (featureSettings.TraceTranscript)
             {
@@ -206,19 +205,11 @@ namespace Microsoft.Bot.Builder.Runtime.Extensions
             }
 
             // Blob transcript
-            if (featureSettings.BlobTranscript)
+            var blobOptions = featureSettings.BlobTranscript;
+            if (blobOptions != null)
             {
-                var blobOptions = configuration.GetSection(blobTranscriptSection).Get<BlobsStorageSettings>();
-
-                if (blobOptions != null)
-                {
-                    var transcriptStore = new BlobsTranscriptStore(blobOptions.ConnectionString, blobOptions.ContainerName);
-                    services.AddSingleton<IMiddleware>(sp => new TranscriptLoggerMiddleware(transcriptStore));
-                }
-                else
-                {
-                    throw new ConfigurationException("Blob transcript is enabled but no blob transcript store configuration was found.");
-                }
+                var transcriptStore = new BlobsTranscriptStore(blobOptions.ConnectionString, blobOptions.ContainerName);
+                services.AddSingleton<IMiddleware>(sp => new TranscriptLoggerMiddleware(transcriptStore));
             }
         }
 
