@@ -65,6 +65,13 @@ steps:
   displayName: 'Display env vars'
 
 - powershell: |
+   # Create DateTimeTag for Resource Group
+   $DateTimeTag=Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
+   "##vso[task.setvariable variable=DateTimeTag]$DateTimeTag";
+  displayName: 'Create DateTimeTag for Resource Group'
+  # Get-Date on Azure DevOps returns a datetime relative to UTC-0, so "Z" is being used instead of the dynamic "K".
+
+- powershell: |
     $InvalidVariables = $FALSE
     $Message = "Required variable 'REPLACE_VARIABLE' either null, empty or whitespaced. Please set up this variable in the pipeline configuration."
 
@@ -85,6 +92,12 @@ steps:
       Write-Host "##vso[task.complete result=Failed;]DONE"
     }
   displayName: Validate variables
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
@@ -92,8 +105,10 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     modifyOutputPath: false
+    verbosityPack: 'Diagnostic'
+    verbosityRestore: 'Diagnostic'
 
 - task: AzureCLI@2
   displayName: 'Preexisting RG: create Azure resources. Runs in even builds.'
@@ -106,7 +121,7 @@ steps:
      Write-Host "This task runs for even-numbered builds. Build ID = $(Build.BuildId)";
      Write-Host "************************************************************************";
      Set-PSDebug -Trace 1;
-     az group create --location westus --name $(BotGroup);
+     az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)";
      
      # set up bot channels registration, app service, app service plan
      az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-preexisting-rg.json" --parameters appId="$(AppId)" appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" --name "$(BotName)"
@@ -126,7 +141,7 @@ steps:
      Set-PSDebug -Trace 1;
      
      # set up resource group, bot channels registration, app service, app service plan
-     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" groupName="$(BotGroup)" groupLocation="westus"
+     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\DeploymentTemplates\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" webexPublicAddress="$(WebexPublicAddress)" webexAccessToken="$(WebexTestBotWebexBotAccessToken)" webexSecret="$(WebexTestBotWebexWebhookSecret)" webexWebhookName="$(WebexTestBotWebexWebhookName)" groupName="$(BotGroup)" groupLocation="westus" groupTags='{\"buildName\":\"$(Build.DefinitionName)\", \"cause\":\"automation\", \"date\":\"$(DateTimeTag)\", \"product\":\"$(Build.Repository.Name)\", \"sourceBranch\":\"$(Build.SourceBranch)\"}';
      Set-PSDebug -Trace 0;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
 

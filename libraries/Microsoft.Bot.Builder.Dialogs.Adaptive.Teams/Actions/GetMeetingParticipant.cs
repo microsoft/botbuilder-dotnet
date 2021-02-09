@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
     /// Calls TeamsInfo.GetMeetingParticipantAsync and sets the result to a memory property.
@@ -99,31 +99,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
             
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (this.Disabled != null && this.Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (dc.Context.Activity.ChannelId != Channels.Msteams)
             {
-                throw new InvalidOperationException("TeamsInfo.GetMeetingParticipantAsync() works only on the Teams channel.");
+                throw new InvalidOperationException($"{Kind} works only on the Teams channel.");
             }
 
-            string meetingId = GetValueOrNull(dc, this.MeetingId);
-            string participantId = GetValueOrNull(dc, this.ParticipantId);
-            string tenantId = GetValueOrNull(dc, this.TenantId);
+            string meetingId = MeetingId.GetValueOrNull(dc.State);
+            string participantId = ParticipantId.GetValueOrNull(dc.State);
+            string tenantId = TenantId.GetValueOrNull(dc.State);
 
             if (participantId == null)
             {
                 // TeamsInfo.GetMeetingParticipantAsync will default to retrieving the current meeting's participant
                 // if none is provided.  This could lead to unexpected results.  Therefore, GetMeetingParticipant action
                 // throws an exception if the expression provided somehow maps to an invalid result.
-                throw new InvalidOperationException($"GetMeetingParticipant could determine the participant id by expression value provided. {nameof(participantId)} is required.");
+                throw new InvalidOperationException($"{Kind} could not determine the participant id by expression value provided. {nameof(participantId)} is required.");
             }
 
             var result = await TeamsInfo.GetMeetingParticipantAsync(dc.Context, meetingId, participantId, tenantId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            dc.State.SetValue(this.Property.GetValue(dc.State), result);
+            if (this.Property != null)
+            {
+                dc.State.SetValue(this.Property.GetValue(dc.State), result);
+            }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
@@ -135,22 +138,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{this.MeetingId?.ToString() ?? string.Empty},{this.ParticipantId?.ToString() ?? string.Empty},{this.TenantId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
-        }
-
-        private string GetValueOrNull(DialogContext dc, StringExpression stringExpression)
-        {
-            if (stringExpression != null)
-            {
-                var (value, valueError) = stringExpression.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{stringExpression.ExpressionText}\". Error: {valueError}");
-                }
-
-                return value as string;
-            }
-
-            return null;
         }
     }
 }

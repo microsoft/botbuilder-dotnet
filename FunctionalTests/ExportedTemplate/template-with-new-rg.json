@@ -69,6 +69,15 @@
       "metadata": {
         "description": "The globally unique name of the Web App. Defaults to the value passed in for \"botId\"."
       }
+    },
+    "groupTags": {
+      "type": "object",
+      "defaultValue": {
+        "cause": "automation"
+      },
+      "metadata": {
+        "description": "Populated with DevOps Pipeline values at runtime."
+      }
     }
   },
   "variables": {
@@ -85,8 +94,8 @@
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2018-05-01",
       "location": "[parameters('groupLocation')]",
-      "properties": {
-      }
+      "properties": {},
+      "tags": "[parameters('groupTags')]"
     },
     {
       "type": "Microsoft.Resources/deployments",

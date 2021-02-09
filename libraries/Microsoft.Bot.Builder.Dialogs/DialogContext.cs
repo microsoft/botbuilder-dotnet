@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -659,7 +660,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the current locale.</returns>
         public string GetLocale()
         {
-            return Context.TurnState.Get<string>("turn.locale");
+            return Context.TurnState.Get<JObject>("turn")["locale"]?.ToString();
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -3,5 +3,9 @@
     "form": {
         "label": "Modify active dialog",
         "subtitle": "Edit Actions"
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": "=action.changeType"
     }
 }

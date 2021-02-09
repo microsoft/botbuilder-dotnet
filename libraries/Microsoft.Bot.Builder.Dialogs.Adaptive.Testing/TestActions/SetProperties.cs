@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 {
@@ -54,7 +57,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 {
                     foreach (var assignment in Assignments)
                     {
-                        dc.State.SetValue(assignment.Property.GetValue(dc.State), assignment.Value.GetValue(dc.State));
+                        JToken value = null;
+                        var (val, valueError) = assignment.Value.TryGetValue(dc.State);
+                        if (valueError != null)
+                        {
+                            throw new Exception($"Expression evaluation resulted in an error. Expression: {assignment.Value.ToString()}. Error: {valueError}");
+                        }
+
+                        if (val != null)
+                        {
+                            value = JToken.FromObject(val).DeepClone();
+                        }
+
+                        value = value?.ReplaceJTokenRecursively(dc.State);
+                        var property = assignment.Property.GetValue(dc.State);
+                        dc.State.SetValue(property, value);
                     }
                 }).ConfigureAwait(false);
                 Trace.TraceInformation($"[Turn Ended => SetProperties completed]");

@@ -14,6 +14,7 @@
     <None Remove="Fallback\datetime.dialog" />
     <None Remove="Fallback\inject.dialog" />
     <None Remove="Fallback\locale.dialog" />
+    <None Remove="Fallback\manuallySetLocale.dialog"/>
     <None Remove="Fallback\test.dialog" />
     <None Remove="lg\inject.lg" />
   </ItemGroup>
@@ -37,6 +38,21 @@
     <Content Include="Fallback\locale.dialog">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Fallback\datetime.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Fallback\inject.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Fallback\test.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Fallback\locale.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Fallback\manuallySetLocale.dialog">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lg\inject.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -49,18 +65,6 @@
     <Content Include="lg\herocard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-    
-  <ItemGroup>
-    <Page Include="Fallback\datetime.dialog">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
-    <Page Include="Fallback\inject.dialog">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
-    <Page Include="Fallback\test.dialog">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 
   <ItemGroup>

@@ -82,6 +82,12 @@ namespace Microsoft.Bot.Builder.Teams
 
                         case "task/submit":
                             return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+                        
+                        case "tab/fetch":
+                            return CreateInvokeResponse(await OnTeamsTabFetchAsync(turnContext, SafeCast<TabRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+                        
+                        case "tab/submit":
+                            return CreateInvokeResponse(await OnTeamsTabSubmitAsync(turnContext, SafeCast<TabSubmit>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         default:
                             return await base.OnInvokeActivityAsync(turnContext, cancellationToken).ConfigureAwait(false);
@@ -379,6 +385,32 @@ namespace Microsoft.Bot.Builder.Teams
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A Task Module Response for the request.</returns>
         protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic for when a tab is fetched.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="tabRequest">The tab invoke request value payload.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A Tab Response for the request.</returns>
+        protected virtual Task<TabResponse> OnTeamsTabFetchAsync(ITurnContext<IInvokeActivity> turnContext, TabRequest tabRequest, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
+        }
+
+        /// <summary>
+        /// Override this in a derived class to provide logic for when a tab is submitted.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="tabSubmit">The tab submit invoke request value payload.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A Tab Response for the request.</returns>
+        protected virtual Task<TabResponse> OnTeamsTabSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TabSubmit tabSubmit, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }

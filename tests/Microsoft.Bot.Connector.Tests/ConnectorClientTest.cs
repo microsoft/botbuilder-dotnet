@@ -13,6 +13,18 @@ namespace Microsoft.Bot.Connector.Tests
     public class ConnectorClientTest : BaseTest
     {
         [Fact]
+        public void ConnectorClient_CustomHttpClient_UserAgentContainsAspNetVersion()
+        {
+            var customHttpClient = new HttpClient();   
+            ConnectorClient.AddDefaultRequestHeaders(customHttpClient);
+
+            // The AspNetVersion string is modified, to be used in a ProductInfoHeaderValue.
+            // This test replaces the same characters as what are required to construct a valid ProductInfoHeaderValue
+            var aspNetVersion = ConnectorClient.GetASPNetVersion().Replace(",", string.Empty).Replace(" ", string.Empty).Replace("=", string.Empty);
+            Assert.Contains(aspNetVersion, customHttpClient.DefaultRequestHeaders.UserAgent.ToString().Replace("/", string.Empty));
+        }
+
+        [Fact]
         public void ConnectorClient_CustomHttpClient_AndMicrosoftCredentials()
         {
             var baseUri = new Uri("https://test.coffee");

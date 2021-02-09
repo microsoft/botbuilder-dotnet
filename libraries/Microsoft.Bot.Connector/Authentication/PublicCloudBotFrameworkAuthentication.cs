@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Connector.Authentication
                   AuthenticationConstants.ToChannelFromBotLoginUrlTemplate,
                   CallerIdConstants.PublicAzureChannel,
                   null,
+                  AuthenticationConstants.OAuthUrl,
                   credentialFactory,
                   authConfiguration,
                   httpClient,

@@ -234,9 +234,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         .AssertReply("echo:bar")
                     .StartTestAsync();
 
-                await Task.Delay(1000);
-
-                var pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
+                var pagedResult = await GetPagedResultAsync(conversation, 6);
                 Assert.Equal(6, pagedResult.Items.Length);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.NotNull(pagedResult.Items[1].AsTypingActivity());
@@ -284,9 +282,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         .AssertReply("new response")
                     .StartTestAsync();
 
-                await Task.Delay(1000);
-
-                var pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
+                var pagedResult = await GetPagedResultAsync(conversation, 3);
                 Assert.Equal(3, pagedResult.Items.Length);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.Equal("new response", pagedResult.Items[1].AsMessageActivity().Text);
@@ -378,9 +374,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     .Send("deleteIt")
                     .StartTestAsync();
 
-                await Task.Delay(1000);
-
-                var pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
+                var pagedResult = await GetPagedResultAsync(conversation, 3);
                 Assert.Equal(3, pagedResult.Items.Length);
                 Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.NotNull(pagedResult.Items[1].AsMessageDeleteActivity());
@@ -407,6 +401,44 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 From = new ChannelAccount("testUser"),
                 Recipient = new ChannelAccount("testBot"),
             };
+        }
+
+        /// <summary>
+        /// There are some async oddities within TranscriptLoggerMiddleware that make it difficult to set a short delay when running this tests that ensures
+        /// the TestFlow completes while also logging transcripts. Some tests will not pass without longer delays, but this method minimizes the delay required.
+        /// </summary>
+        /// <param name="conversation">ConversationReference to pass to GetTranscriptActivitiesAsync() that contains ChannelId and Conversation.Id.</param>
+        /// <param name="expectedLength">Expected length of pagedResult array.</param>
+        /// <param name="maxTimeout">Maximum time to wait to retrieve pagedResult.</param>
+        /// <returns>PagedResult.</returns>
+        private async Task<PagedResult<IActivity>> GetPagedResultAsync(ConversationReference conversation, int expectedLength, int maxTimeout = 5000)
+        {
+            PagedResult<IActivity> pagedResult = null;
+            for (var timeout = 0; timeout < maxTimeout; timeout += 500)
+            {
+                await Task.Delay(500);
+                try
+                {
+                    pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
+                    if (pagedResult.Items.Length >= expectedLength)
+                    {
+                        break;
+                    }
+                }
+                catch (KeyNotFoundException) 
+                { 
+                }
+                catch (NullReferenceException)
+                {
+                }
+            }
+
+            if (pagedResult == null)
+            {
+                throw new TimeoutException("Unable to retrieve pagedResult in time");
+            }
+
+            return pagedResult;
         }
     }
 }
