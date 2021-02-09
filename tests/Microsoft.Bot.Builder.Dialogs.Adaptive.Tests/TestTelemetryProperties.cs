@@ -3,7 +3,7 @@
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     /// <summary>
-    /// Helper class used to provide the expected telemetry properties for the intent specified <see cref="RecognizerTelemetryUtils"/>.
+    /// Helper class used to provide the expected telemetry properties for the intent specified in <see cref="RecognizerTelemetryUtils"/>.
     /// </summary>
     internal static class TestTelemetryProperties
     {
