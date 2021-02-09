@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     .AssertReply("done")
                 .StartTestAsync();
 
-            ValidateTelemetry(nameof(QnAMakerRecognizer), QnAReturnsAnswerText, telemetryClient, logPersonalInfo: true, callCount: 1);
+            ValidateTelemetry(QnAReturnsAnswerText, telemetryClient, logPersonalInfo: true, callCount: 1);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     .AssertReply("done")
                 .StartTestAsync();
 
-            ValidateTelemetry(nameof(QnAMakerRecognizer), QnAReturnsAnswerText, telemetryClient, logPersonalInfo: false, callCount: 1);
+            ValidateTelemetry(QnAReturnsAnswerText, telemetryClient, logPersonalInfo: false, callCount: 1);
         }
 
         [Fact]
@@ -280,9 +280,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
         }
 
-        private void ValidateTelemetry(string recognizerName, string text, Mock<IBotTelemetryClient> telemetryClient, bool logPersonalInfo, int callCount)
+        private void ValidateTelemetry(string text, Mock<IBotTelemetryClient> telemetryClient, bool logPersonalInfo, int callCount)
         {
-            var eventName = GetEventName(recognizerName);
+            var eventName = $"{nameof(QnAMakerRecognizer)}Result";
             var expectedTelemetryProps = GetExpectedTelemetryProps(text, logPersonalInfo);
             var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount].Arguments[1];
 
@@ -315,8 +315,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             return props;
         }
-
-        private string GetEventName(string recognizerName) => $"{recognizerName}Result";
 
         private bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual)
         {
