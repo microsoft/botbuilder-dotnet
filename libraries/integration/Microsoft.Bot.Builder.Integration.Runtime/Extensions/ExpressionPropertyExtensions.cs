@@ -5,7 +5,7 @@ using System;
 using AdaptiveExpressions.Properties;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Extensions
+namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
     /// <summary>
     /// Defines extension methods for <see cref="ExpressionProperty{T}"/>.

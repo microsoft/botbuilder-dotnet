@@ -17,8 +17,8 @@ using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
-using Microsoft.Bot.Builder.Runtime.Integration.Settings;
-using Microsoft.Bot.Builder.Runtime.Integration.Skills;
+using Microsoft.Bot.Builder.Integration.Runtime.Settings;
+using Microsoft.Bot.Builder.Integration.Runtime.Skills;
 using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -26,7 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Extensions
+namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
     /// <summary>
     /// Defines extension methods for <see cref="IServiceCollection"/>.

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Settings
+namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
 {
     /// <summary>
     /// Settings for blob storage.

@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Runtime.Integration.Skills;
+using Microsoft.Bot.Builder.Integration.Runtime.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Xunit;

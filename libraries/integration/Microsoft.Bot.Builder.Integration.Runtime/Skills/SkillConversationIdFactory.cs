@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Skills
+namespace Microsoft.Bot.Builder.Integration.Runtime.Skills
 {
     /// <summary>
     /// A <see cref="SkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store

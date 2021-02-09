@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Settings
+namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
 {
     /// <summary>
     /// Skill settings for the runtme.

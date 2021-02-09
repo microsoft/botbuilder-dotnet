@@ -2,21 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Runtime.Integration.Settings;
+using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Bot.Builder.Runtime
+namespace Microsoft.Bot.Builder.Integration.Runtime
 {
     /// <summary>
     /// Defines the bot runtime standard implementation of <see cref="IBot"/>.

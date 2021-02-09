@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Integration.Runtime;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Xunit;

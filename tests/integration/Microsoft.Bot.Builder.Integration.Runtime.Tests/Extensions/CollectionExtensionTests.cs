@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
-using CollectionExtensions = Microsoft.Bot.Builder.Runtime.Integration.Extensions.CollectionExtensions;
+using CollectionExtensions = Microsoft.Bot.Builder.Integration.Runtime.Extensions.CollectionExtensions;
 
 namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 {

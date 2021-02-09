@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 
-namespace Microsoft.Bot.Builder.Runtime
+namespace Microsoft.Bot.Builder.Integration.Runtime
 {
     /// <summary>
     /// Defines the standard set of component registrations to be applied within the bot runtime.

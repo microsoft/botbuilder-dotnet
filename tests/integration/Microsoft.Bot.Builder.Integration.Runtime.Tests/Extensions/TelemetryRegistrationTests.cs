@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
-using Microsoft.Bot.Builder.Runtime.Integration.Extensions;
-using Microsoft.Bot.Builder.Runtime.Integration.Settings;
+using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
+using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

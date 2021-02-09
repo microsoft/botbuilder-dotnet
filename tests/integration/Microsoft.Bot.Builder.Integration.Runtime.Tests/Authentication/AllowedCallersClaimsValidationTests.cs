@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Runtime.Integration.Skills;
+using Microsoft.Bot.Builder.Integration.Runtime.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Xunit;
 

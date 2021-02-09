@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Extensions
+namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
     /// <summary>
     /// Defines extension methods for <see cref="ICollection{T}"/>.

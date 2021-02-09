@@ -3,10 +3,9 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
-using Microsoft.Bot.Builder.Runtime.Integration.Extensions;
-using Microsoft.Bot.Builder.Runtime.Integration.Settings;
-using Microsoft.Bot.Builder.Runtime.Plugins;
+using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Bot.Builder.Runtime.Tests.Plugins.TestComponents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

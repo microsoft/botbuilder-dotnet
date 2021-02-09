@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Runtime
+namespace Microsoft.Bot.Builder.Integration.Runtime
 {
     /// <summary>
     /// Provides a wrapper around <see cref="IConfiguration"/> that adheres to the <see cref="IMemory"/> interface,

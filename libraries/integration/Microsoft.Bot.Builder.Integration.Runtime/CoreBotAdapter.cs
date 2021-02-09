@@ -3,14 +3,12 @@
 
 using System;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Runtime.Integration.Settings;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Microsoft.Bot.Builder.Runtime
+namespace Microsoft.Bot.Builder.Integration.Runtime
 {
     /// <summary>
     /// Defines the bot runtime standard implementation of <see cref="BotFrameworkHttpAdapter"/>.

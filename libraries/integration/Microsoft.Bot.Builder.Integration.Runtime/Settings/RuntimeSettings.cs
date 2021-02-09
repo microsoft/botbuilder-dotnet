@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Plugins;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Settings
+namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
 {
     /// <summary>
     /// Settings for the bot runtime.

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Runtime.Integration.Extensions;
+using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 

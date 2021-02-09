@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Runtime.Integration.Extensions
+namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
     /// <summary>
     /// Extensions for setting up Runtime IConfiguration.
