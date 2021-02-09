@@ -56,4 +56,8 @@
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.Runtime.Plugins\Microsoft.Bot.Builder.Runtime.Plugins.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="**/*.schema" />
+  </ItemGroup>
+
 </Project>
