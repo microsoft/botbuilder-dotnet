@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 ValidateIntent[text](result);
             }
 
-            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount);
         }
         
         internal static async Task RecognizeIntentAndValidateTelemetry_WithCustomActivity(string text, AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, int callCount)
@@ -70,15 +70,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 ValidateIntent[text](result);
             }
 
-            ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, callCount);
+            ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, result, callCount);
         }
 
-        internal static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, int callCount)
+        internal static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
         {
             var eventName = GetEventName(recognizer.GetType().Name);
             var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
-            var expectedTelemetryProps = GetExpectedProps(activity, logPersonalInfo);
             var actualTelemetryProps = (IDictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
+            var expectedTelemetryProps = GetExpectedProps(activity, result, logPersonalInfo);
 
             telemetryClient.Verify(
                 client => client.TrackEvent(
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             return true;
         }
 
-        private static Dictionary<string, string> GetExpectedProps(IActivity activity, bool logPersonalInformation)
+        private static Dictionary<string, string> GetExpectedProps(IActivity activity, RecognizerResult result, bool logPersonalInformation)
         {
             var text = activity.AsMessageActivity().Text;
             var expectedProps = ExpectedProperties.ContainsKey(text) ? ExpectedProperties[text]() : new Dictionary<string, string>();
@@ -138,6 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             if (logPersonalInformation)
             {
                 expectedProps.Add("Text", activity.AsMessageActivity().Text);
+                expectedProps.Add("AlteredText", result.AlteredText);
             }
 
             return expectedProps;

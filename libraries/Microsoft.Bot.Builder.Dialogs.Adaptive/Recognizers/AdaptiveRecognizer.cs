@@ -53,7 +53,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var properties = new Dictionary<string, string>
             {
-                { "AlteredText", recognizerResult.AlteredText },
                 { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
                 { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
                 { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
@@ -66,6 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
             {
                 properties.Add("Text", recognizerResult.Text);
+                properties.Add("AlteredText", recognizerResult.AlteredText);
             }
 
             // Additional Properties can override "stock" properties.

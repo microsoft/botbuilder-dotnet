@@ -8,7 +8,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             return new Dictionary<string, string>()
             {
-                { "AlteredText", null },
                 { "TopIntent", "codeIntent" },
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"codeIntent\":{\"score\":1.0,\"pattern\":\"(?<code>[a-z][0-9])\"}}" },
@@ -24,7 +23,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             return new Dictionary<string, string>()
             {
-                { "AlteredText", null },
                 { "TopIntent", "colorIntent" },
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"colorIntent\":{\"score\":1.0,\"pattern\":\"(?i)(color|colour)\"}}" },
@@ -40,7 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             return new Dictionary<string, string>()
             {
-                { "AlteredText", null },
                 { "TopIntent", "Greeting" },
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"Greeting\":{\"score\":1.0,\"pattern\":\"(?i)howdy\"}}" },
@@ -53,7 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             return new Dictionary<string, string>()
             {
-                { "AlteredText", null },
                 { "TopIntent", "ChooseIntent" },
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"ChooseIntent\":{\"score\":1.0}}" },
@@ -66,7 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             return new Dictionary<string, string>()
             {
-                { "AlteredText", null },
                 { "TopIntent", "x" },
                 { "TopIntentScore", "1.0" },
                 { "Intents", "{\"x\":{\"score\":1.0,\"pattern\":\"x\"}}" },
