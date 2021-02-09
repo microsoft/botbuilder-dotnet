@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Tests.Plugins.Implementations;
 using Xunit;

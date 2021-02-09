@@ -3,11 +3,12 @@
 
 using System;
 using Microsoft.Bot.Builder.Runtime.Integration.Extensions;
+using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Runtime.Plugins
+namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
 {
     /// <summary>
     /// Represents the definition of a plugin that can be loaded into the bot runtime.

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Extensions.Configuration;
 using Xunit;

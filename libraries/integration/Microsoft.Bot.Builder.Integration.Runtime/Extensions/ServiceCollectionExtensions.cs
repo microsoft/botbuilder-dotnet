@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
+using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Integration.Settings;
 using Microsoft.Bot.Builder.Runtime.Integration.Skills;
 using Microsoft.Bot.Builder.Runtime.Plugins;
@@ -132,7 +133,7 @@ namespace Microsoft.Bot.Builder.Runtime.Integration.Extensions
                 var pluginEnumenator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
 
                 // Iterate through configured plugins and load each one
-                foreach (BotPluginDefinition plugin in runtimeSettings.Plugins ?? Enumerable.Empty<BotPluginDefinition>())
+                foreach (BotPluginDefinition plugin in runtimeSettings.Plugins)
                 {
                     plugin.Load(pluginEnumenator, services, configuration);
                 }

@@ -2,8 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Runtime.Plugins;
 
-namespace Microsoft.Bot.Builder.Runtime.Plugins
+namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
 {
     /// <summary>
     /// Provides an interface for retrieving a collection of bot plugins from a given source.

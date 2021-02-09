@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Builder.Runtime.Plugins;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.Builder.Runtime.Plugins
+namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
 {
     /// <summary>
     /// Provides a standard implementation of <see cref="IBotPluginLoadContext"/>.

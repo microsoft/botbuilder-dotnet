@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
 using Microsoft.Bot.Builder.Runtime.Integration.Extensions;
 using Microsoft.Bot.Builder.Runtime.Integration.Settings;
 using Microsoft.Bot.Builder.Runtime.Plugins;

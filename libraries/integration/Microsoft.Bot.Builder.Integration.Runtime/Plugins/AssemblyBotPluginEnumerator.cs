@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Loader;
+using Microsoft.Bot.Builder.Runtime.Plugins;
 
-namespace Microsoft.Bot.Builder.Runtime.Plugins
+namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
 {
     /// <summary>
     /// Provides an implementation of <see cref="IBotPluginLoadContext"/> used to retrieve available
