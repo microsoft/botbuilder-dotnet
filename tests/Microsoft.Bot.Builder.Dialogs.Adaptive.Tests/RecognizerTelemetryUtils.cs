@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// <param name="callCount">How many times the telemetry client should have logged the `RecognizerResult` of our target recognizer.</param>
         internal static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
         {
-            var eventName = GetEventName(recognizer.GetType().Name);
+            var eventName = $"{recognizer.GetType().Name}Result";
             var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
             var actualTelemetryProps = (IDictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
             var expectedTelemetryProps = GetExpectedProps(activity, result, logPersonalInfo);
@@ -130,8 +130,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Times.Exactly(callCount));
         }
 
-        private static string GetEventName(string recognizerName) => $"{recognizerName}Result";
-        
         /// <summary>
         /// Validate that the actual telemetry properties logged match the telemetry properties we expect to log.
         /// </summary>
@@ -141,36 +139,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// <returns>A boolean value.</returns>
         private static bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual, IActivity activity)
         {
-            if (expected.Count == actual.Count)
+            if (expected.Count != actual.Count)
+            { 
+                return false;
+            }
+
+            foreach (var property in actual)
             {
-                foreach (var property in actual)
+                if (!expected.ContainsKey(property.Key))
                 {
-                    if (expected.ContainsKey(property.Key))
-                    {
-                        if (property.Key == "Entities")
-                        {
-                            if (!HasValidEntities(activity, property))
-                            {
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            if (property.Value != expected[property.Key])
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    else
+                    return false;
+                }
+
+                if (property.Key == "Entities")
+                {
+                    if (!HasValidEntities(activity, property))
                     {
                         return false;
                     }
                 }
-            }
-            else
-            {
-                return false;
+                else
+                {
+                    if (property.Value != expected[property.Key])
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;
