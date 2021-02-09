@@ -255,14 +255,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task TestChannelMentionEntityRecognizer_Telemetry_DoesNotLogByDefault()
+        public async Task TestChannelMentionEntityRecognizer_TelemetryDoesNotLogByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new ChannelMentionEntityRecognizer()
             {
                 TelemetryClient = telemetryClient.Object
             };
-            var dialogContext = GetDialogContext(nameof(TestChannelMentionEntityRecognizer_Telemetry_DoesNotLogByDefault), "gobble gobble");
+            var dialogContext = GetDialogContext(nameof(TestChannelMentionEntityRecognizer_TelemetryDoesNotLogByDefault), "gobble gobble");
             var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dialogContext.State);
             Assert.False(logPersonalInformation);
 
