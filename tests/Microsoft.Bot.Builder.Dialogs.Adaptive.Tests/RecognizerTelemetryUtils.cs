@@ -12,6 +12,9 @@ using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.TestTelemetryPropertie
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    /// <summary>
+    /// Helper class used to validate telemetry properties of subclasses of <see cref="Recognizer"/>.
+    /// </summary>
     internal class RecognizerTelemetryUtils
     {
         internal static readonly string CodeIntentText = "intent a1 b2";
@@ -24,6 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         internal static readonly string X = "x";
 
+        /// <summary>
+        /// Get the expected properties based on the text/utterance that we run the recognizer against.
+        /// </summary>
         private static readonly Dictionary<string, Func<Dictionary<string, string>>> ExpectedProperties = new Dictionary<string, Func<Dictionary<string, string>>>()
         {
             { CodeIntentText, GetCodeIntentProperties },
@@ -33,6 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             { X, GetXIntentProperties }
         };
 
+        /// <summary>
+        /// Run the expected validations based on intent recognized.
+        /// </summary>
         private static readonly Dictionary<string, Action<RecognizerResult>> ValidateIntent = new Dictionary<string, Action<RecognizerResult>>()
         {
             { CodeIntentText, ValidateCodeIntent },
@@ -42,6 +51,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             { X, ValidateXIntent }
         };
 
+        /// <summary>
+        /// Calls the recognizer's `RecognizeAsync` method and validates appropriate telemetry properties are logged.
+        /// </summary>
+        /// <param name="text">The activity's text used run recognition against.</param>
+        /// <param name="recognizer">The recognizer used to call `RecognizeAsync`.</param>
+        /// <param name="telemetryClient">The telemetry client used to log telemetry.</param>
+        /// <param name="callCount">How many times the telemetry client should have logged the `RecognizerResult` of our target recognizer.</param>
+        /// <returns>Task representing the validation work done.</returns>
         internal static async Task RecognizeIntentAndValidateTelemetry(string text, AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, int callCount)
         {
             var dc = TestUtils.CreateContext(text);
@@ -55,7 +72,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount);
         }
-        
+
+        /// <summary>
+        /// Calls the recognizer's `RecognizeAsync` method and validates appropriate telemetry properties are logged,
+        /// using a custom activity, separate from the activity found in <see cref="DialogContext"/>.
+        /// </summary>
+        /// <param name="text">The activity's text used run recognition against.</param>
+        /// <param name="recognizer">The recognizer used to call `RecognizeAsync`.</param>
+        /// <param name="telemetryClient">The telemetry client used to log telemetry.</param>
+        /// <param name="callCount">How many times the telemetry client should have logged the `RecognizerResult` of our target recognizer.</param>
+        /// <returns>Task representing the validation work done.</returns>
         internal static async Task RecognizeIntentAndValidateTelemetry_WithCustomActivity(string text, AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, int callCount)
         {
             var dc = TestUtils.CreateContext(string.Empty);
@@ -73,6 +99,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             ValidateTelemetry(recognizer, telemetryClient, dc, (Activity)customActivity, result, callCount);
         }
 
+        /// <summary>
+        /// Ensure recognizer correctly logs telemetry.
+        /// 
+        /// More specifically, verify that <see cref="IBotTelemetryClient"/>.TrackEvent is called with:
+        /// <list type="bullet">
+        ///     <item>Appropriate event name (e.g. "RegexRecognizerResult" for <see cref="RegexRecognizer"/>.</item>
+        ///     <item>Recognizer properly called <see cref="IBotTelemetryClient.TrackEvent(string, IDictionary{string, string}, IDictionary{string, double})"/> method to log telemetry with correct telemetry properties.</item>
+        ///     <item><see cref="IBotTelemetryClient"/>.TrackEvent is called correct number of times.</item>
+        /// </list>
+        /// </summary>
+        /// <param name="recognizer">The recognizer used to call `RecognizeAsync` and, in turn, that logged telemetry.</param>
+        /// <param name="telemetryClient">The telemetry client used to log telemetry.</param>
+        /// <param name="dc">The <see cref="DialogContext"/>.</param>
+        /// <param name="activity">The activity used to recognize intent with in `RecognizeAsync`.</param>
+        /// <param name="result">The <see cref="RecognizerResult"/>.</param>
+        /// <param name="callCount">How many times the telemetry client should have logged the `RecognizerResult` of our target recognizer.</param>
         internal static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
         {
             var eventName = GetEventName(recognizer.GetType().Name);
@@ -90,6 +132,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         private static string GetEventName(string recognizerName) => $"{recognizerName}Result";
         
+        /// <summary>
+        /// Validate that the actual telemetry properties logged match the telemetry properties we expect to log.
+        /// </summary>
+        /// <param name="expected">The telemetry properties expected to log.</param>
+        /// <param name="actual">The actual telemetry properties logged.</param>
+        /// <param name="activity">The activity used in `Recognizer.RecognizerAsync` to recognize intent with.</param>
+        /// <returns>A boolean value.</returns>
         private static bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual, IActivity activity)
         {
             if (expected.Count == actual.Count)
@@ -127,6 +176,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             return true;
         }
 
+        /// <summary>
+        /// Get expected properties based on the <see cref="Activity"/>.Text that was used to recognize intent with in `RecognizeAsync`.
+        /// Telemetry properties logged should also differ, depending on value of <see cref="AdaptiveRecognizer.LogPersonalInformation"/>.
+        /// </summary>
+        /// <param name="activity">The activity used in `Recognizer.RecognizerAsync` to recognize intent with.</param>
+        /// <param name="result">The <see cref="RecognizerResult"/>.</param>
+        /// <param name="logPersonalInformation">Flag used to determine whether or not to log personally identifiable information.</param>
+        /// <returns>Dictionary of expected telemetry properties.</returns>
         private static Dictionary<string, string> GetExpectedProps(IActivity activity, RecognizerResult result, bool logPersonalInformation)
         {
             var text = activity.AsMessageActivity().Text;

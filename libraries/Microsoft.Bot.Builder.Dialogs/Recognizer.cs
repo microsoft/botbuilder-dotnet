@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected static RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
         {
             string text = null;
-            List<JObject> candidates = new List<JObject>();
+            var candidates = new List<JObject>();
 
             foreach (var recognizerResult in recognizerResults)
             {
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
                 { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null },
                 { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
-                { "Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null },
+                { "Entities", recognizerResult.Entities?.ToString() },
                 { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
             };
 

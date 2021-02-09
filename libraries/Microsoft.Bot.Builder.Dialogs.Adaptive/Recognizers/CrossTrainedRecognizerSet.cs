@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var result = ProcessResults(results);
 
-            this.TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
         private void EnsureRecognizerIds()
         {
-            if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
+            if (Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
             {
                 throw new InvalidOperationException("This recognizer requires that each recognizer in the set have an .Id value.");
             }

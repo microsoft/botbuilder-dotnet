@@ -16,11 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
     [CollectionDefinition("Dialogs.Adaptive.Recognizers")]
     public class RecognizerSetTests : IClassFixture<ResourceExplorerFixture>
     {
-        private static readonly Lazy<RecognizerSet> Recognizers = new Lazy<RecognizerSet>(() =>
+        private static readonly RecognizerSet Recognizers = new RecognizerSet()
         {
-            return new RecognizerSet()
-            {
-                Recognizers = new List<Recognizer>()
+            Recognizers = new List<Recognizer>()
                 {
                     new RegexRecognizer()
                     {
@@ -54,8 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         }
                     }
                 }
-            };
-        });
+        };
 
         private readonly ResourceExplorerFixture _resourceExplorerFixture;
 
@@ -77,10 +74,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task RecognizerSetTests_Merge_LogsTelemetry_WhenLogPiiTrue()
+        public async Task RecognizerSetTests_Merge_LogsTelemetryWhenLogPiiTrue()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizers = Recognizers.Value;
+            var recognizers = Recognizers;
             recognizers.TelemetryClient = telemetryClient.Object;
             recognizers.LogPersonalInformation = true;
 
@@ -93,10 +90,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
         
         [Fact]
-        public async Task RecognizerSetTests_Merge_LogsTelemetry_WhenLogPiiFalse()
+        public async Task RecognizerSetTests_Merge_LogsTelemetryWhenLogPiiFalse()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizers = Recognizers.Value;
+            var recognizers = Recognizers;
             recognizers.TelemetryClient = telemetryClient.Object;
             recognizers.LogPersonalInformation = false;
 
@@ -109,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task RecognizerSetTests_LogPii_IsFalseByDefault()
+        public async Task RecognizerSetTestsLogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizerSet = new RecognizerSet()
