@@ -141,10 +141,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             return expectedProps;
         }
 
-        private static bool HasValidEntities(IActivity activity, KeyValuePair<string, string> entry)
+        private static bool HasValidEntities(IActivity activity, KeyValuePair<string, string> property)
         {
             var text = activity.AsMessageActivity().Text;
-            var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(entry.Value);
+            var actualEntity = JsonConvert.DeserializeObject<Dictionary<string, object>>(property.Value);
 
             if (text == CodeIntentText && !actualEntity.ContainsKey("code"))
             {

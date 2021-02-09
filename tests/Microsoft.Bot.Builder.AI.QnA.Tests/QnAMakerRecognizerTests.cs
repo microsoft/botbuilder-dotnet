@@ -326,9 +326,19 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 {
                     if (expected.ContainsKey(property.Key))
                     {
-                        if (property.Value != expected[property.Key])
+                        if (property.Key == "Entities")
                         {
-                            return false;
+                            if (!property.Value.Contains("answer"))
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (property.Value != expected[property.Key])
+                            {
+                                return false;
+                            }
                         }
                     }
                     else
