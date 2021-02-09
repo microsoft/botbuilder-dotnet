@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.Equal(1, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.Equal(1, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.Equal(1, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-            ValidateTelemetry(recognizer, telemetryClient, dc, activity, callCount: 1);
+            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
         }
 
         [Fact]
@@ -216,11 +216,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.True(result.Intents.ContainsKey("ChooseIntent"));
         }
 
-        private static Dictionary<string, string> GetExpectedTelemetryProps(Microsoft.Bot.Schema.IActivity activity, bool logPersonalInformation)
+        private static Dictionary<string, string> GetExpectedTelemetryProps(Microsoft.Bot.Schema.IActivity activity, RecognizerResult result, bool logPersonalInformation)
         {
             var props = new Dictionary<string, string>()
             {
-                { "AlteredText", null },
                 { "TopIntent", "mockLabel" },
                 { "TopIntentScore", "0.9" },
                 { "Intents", "{\"mockLabel\":{\"score\":0.9}}" },
@@ -231,16 +230,17 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             if (logPersonalInformation == true)
             {
                 props.Add("Text", activity.AsMessageActivity().Text);
+                props.Add("AlteredText", result.AlteredText);
             }
 
             return props;
         }
 
-        private static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, int callCount)
+        private static void ValidateTelemetry(AdaptiveRecognizer recognizer, Mock<IBotTelemetryClient> telemetryClient, DialogContext dc, IActivity activity, RecognizerResult result, int callCount)
         {
             var eventName = GetEventName(recognizer.GetType().Name);
             var (logPersonalInfo, error) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
-            var expectedTelemetryProps = GetExpectedTelemetryProps(activity, logPersonalInfo);
+            var expectedTelemetryProps = GetExpectedTelemetryProps(activity, result, logPersonalInfo);
             var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount - 1].Arguments[1];
 
             telemetryClient.Verify(
