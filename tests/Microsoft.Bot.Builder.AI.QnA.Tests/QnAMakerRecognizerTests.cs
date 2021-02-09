@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task QnAMakerRecognizer_LogsTelemetry(bool logPersonalInformation)
+        public async Task QnAMakerRecognizerLogsTelemetry(bool logPersonalInformation)
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         }
 
         [Fact]
-        public void QnAMakerRecognizer_TelemetryLogPiiIsFalseByDefault()
+        public void QnAMakerRecognizerTelemetryLogPiiIsFalseByDefault()
         {
             var recognizer = new QnAMakerRecognizer()
             {

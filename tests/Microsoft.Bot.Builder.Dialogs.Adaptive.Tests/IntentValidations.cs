@@ -3,6 +3,9 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
+    /// <summary>
+    /// Validations to run for specific intents specified in <see cref="RecognizerTelemetryUtils"/>.
+    /// </summary>
     internal static class IntentValidations
     {
         /// <summary>

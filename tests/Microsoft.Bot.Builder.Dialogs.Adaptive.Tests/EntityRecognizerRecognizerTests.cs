@@ -391,14 +391,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task TestTelemetry_DoesNotLogByDefault()
+        public async Task TestTelemetryDoesNotLogByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new EntityRecognizer()
             {
                 TelemetryClient = telemetryClient.Object
             };
-            var dialogContext = GetDialogContext(nameof(TestTelemetry_DoesNotLogByDefault), "gobble gobble");
+            var dialogContext = GetDialogContext(nameof(TestTelemetryDoesNotLogByDefault), "gobble gobble");
 
             var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dialogContext.State);
             Assert.False(logPersonalInformation);
