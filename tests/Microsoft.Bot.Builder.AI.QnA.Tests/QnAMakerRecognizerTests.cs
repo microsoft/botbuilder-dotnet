@@ -57,15 +57,17 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
-        [Fact]
-        public async Task QnAMakerRecognizer_Telemetry_LogsPii_WhenTrue()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task QnAMakerRecognizer_LogsTelemetry(bool logPersonalInformation)
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
             var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
             var recognizer = (QnAMakerRecognizer)rootDialog.Recognizer;
             var telemetryClient = new Mock<IBotTelemetryClient>();
             recognizer.TelemetryClient = telemetryClient.Object;
-            recognizer.LogPersonalInformation = true;
+            recognizer.LogPersonalInformation = logPersonalInformation;
 
             await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithAnswer))
                 .Send(QnAReturnsAnswerText)
@@ -73,30 +75,11 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     .AssertReply("done")
                 .StartTestAsync();
 
-            ValidateTelemetry(QnAReturnsAnswerText, telemetryClient, logPersonalInfo: true, callCount: 1);
+            ValidateTelemetry(QnAReturnsAnswerText, telemetryClient, logPersonalInfo: logPersonalInformation, callCount: 1);
         }
 
         [Fact]
-        public async Task QnAMakerRecognizer_Telemetry_DoesNotLogPii_WhenFalse()
-        {
-            var rootDialog = QnAMakerRecognizer_DialogBase();
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
-            var recognizer = (QnAMakerRecognizer)rootDialog.Recognizer;
-            var telemetryClient = new Mock<IBotTelemetryClient>();
-            recognizer.TelemetryClient = telemetryClient.Object;
-            recognizer.LogPersonalInformation = false;
-
-            await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithAnswer))
-                .Send(QnAReturnsAnswerText)
-                    .AssertReply(response.Answers[0].Answer)
-                    .AssertReply("done")
-                .StartTestAsync();
-
-            ValidateTelemetry(QnAReturnsAnswerText, telemetryClient, logPersonalInfo: false, callCount: 1);
-        }
-
-        [Fact]
-        public void QnAMakerRecognizer_Telemetry_LogPii_IsFalseByDefault()
+        public void QnAMakerRecognizer_TelemetryLogPiiIsFalseByDefault()
         {
             var recognizer = new QnAMakerRecognizer()
             {
