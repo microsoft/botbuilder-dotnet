@@ -12,12 +12,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
 
         public TestBotPlugin(Action<IBotPluginLoadContext> loadAction)
         {
-            this._loadAction = loadAction ?? throw new ArgumentNullException(nameof(loadAction));
+            _loadAction = loadAction ?? throw new ArgumentNullException(nameof(loadAction));
         }
 
         public void Load(IBotPluginLoadContext context)
         {
-            this._loadAction(context);
+            _loadAction(context);
         }
     }
 }

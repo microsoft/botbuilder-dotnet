@@ -33,10 +33,9 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <param name="options">Configured options for the <see cref="CoreBot"/> instance.</param>
         public CoreBot(IServiceProvider services, IOptions<CoreBotOptions> options)
         {
-            this._conversationState = services.GetRequiredService<ConversationState>();
-            this._userState = services.GetRequiredService<UserState>();
-
-            this._dialogManager = CreateDialogManager(services, options);
+            _conversationState = services.GetRequiredService<ConversationState>();
+            _userState = services.GetRequiredService<UserState>();
+            _dialogManager = CreateDialogManager(services, options);
         }
 
         /// <summary>
@@ -66,9 +65,9 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <seealso cref="ActivityTypes"/>
         public virtual async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await this._dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            await this._conversationState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-            await this._userState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+            await _dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+            await _userState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
         }
 
         private DialogManager CreateDialogManager(IServiceProvider services, IOptions<CoreBotOptions> options)

@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            // Trace Trascript
+            // Trace Transcript
             if (featureSettings.TraceTranscript)
             {
                 services.AddSingleton<IMiddleware>(sp => new TranscriptLoggerMiddleware(new TraceTranscriptLogger()));

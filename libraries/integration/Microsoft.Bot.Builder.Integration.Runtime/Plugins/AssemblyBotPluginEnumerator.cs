@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
         /// </param>
         public AssemblyBotPluginEnumerator(AssemblyLoadContext loadContext)
         {
-            this._loadContext = loadContext ?? throw new ArgumentNullException(nameof(loadContext));
+            _loadContext = loadContext ?? throw new ArgumentNullException(nameof(loadContext));
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
             }
 
             var assemblyName = new AssemblyName(pluginName);
-            Assembly pluginAssembly = this._loadContext.LoadFromAssemblyName(assemblyName);
+            Assembly pluginAssembly = _loadContext.LoadFromAssemblyName(assemblyName);
 
             foreach (Type type in pluginAssembly.GetTypes())
             {
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
                     continue;
                 }
 
-                // Ensure that the type has a public, paramterless constructor.
+                // Ensure that the type has a public, parameterless constructor.
 
                 ConstructorInfo constructor = type.GetConstructor(
                     bindingAttr: BindingFlags.Instance | BindingFlags.Public,

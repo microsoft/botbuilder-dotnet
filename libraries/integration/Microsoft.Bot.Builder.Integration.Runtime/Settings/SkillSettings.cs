@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
 {
     /// <summary>
-    /// Skill settings for the runtme.
+    /// Skill settings for the runtime.
     /// </summary>
     internal class SkillSettings
     {

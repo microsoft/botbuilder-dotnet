@@ -14,8 +14,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
 
         public TestBotPluginEnumerator(IDictionary<string, ICollection<IBotPlugin>> plugins = null)
         {
-            this._plugins =
-                plugins ?? new Dictionary<string, ICollection<IBotPlugin>>(StringComparer.OrdinalIgnoreCase);
+            _plugins = plugins ?? new Dictionary<string, ICollection<IBotPlugin>>(StringComparer.OrdinalIgnoreCase);
         }
 
         public IEnumerable<IBotPlugin> GetPlugins(string pluginName)
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
                 throw new ArgumentNullException(nameof(pluginName));
             }
 
-            if (!this._plugins.TryGetValue(pluginName, out ICollection<IBotPlugin> matchingPlugins))
+            if (!_plugins.TryGetValue(pluginName, out ICollection<IBotPlugin> matchingPlugins))
             {
                 yield break;
             }
