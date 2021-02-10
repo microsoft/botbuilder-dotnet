@@ -10,10 +10,18 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime.Skills
 {
+    /// <summary>
+    /// Claims validator that adds application level authorization based on a simple list
+    /// of application Ids that are allowed to call. 
+    /// </summary>
     public class AllowedCallersClaimsValidator : ClaimsValidator
     {
         private readonly IList<string> _allowedCallers;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AllowedCallersClaimsValidator"/> class.
+        /// </summary>
+        /// <param name="allowedCallers">List of allowed callers.</param>
         public AllowedCallersClaimsValidator(IList<string> allowedCallers)
         {
             _allowedCallers = allowedCallers ?? new List<string>();
