@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <summary>
-        /// Process the inbound http request with the bot resulting in the outbound http response, this method can be called directly from a Controller.
+        /// Process the inbound HTTP request with the bot resulting in the outbound http response, this method can be called directly from a Controller.
         /// If the HTTP method is a POST the body will contain the <see cref="Activity"/> to process. 
         /// </summary>
         /// <param name="httpRequest">The <see cref="HttpRequest"/>.</param>
@@ -80,6 +80,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 {
                     // All socket communication will be handled by the internal streaming-specific BotAdapter
                     await ConnectAsync(httpRequest, bot, cancellationToken).ConfigureAwait(false);
+
+                    // Acknowledge the GET request
+                    httpResponse.StatusCode = (int)HttpStatusCode.OK;
                 }
                 else if (httpRequest.Method == HttpMethods.Post)
                 {
@@ -99,7 +102,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     // Process the inbound activity with the bot
                     var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                    // write the response, potentially serializing the InvokeResponse
+                    // Write the response, potentially serializing the InvokeResponse
                     await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
                 }
                 else

@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// This is a helper to create the ClaimsIdentity structure from an appId that will be added to the TurnContext.
-        /// It is inteded for use in proactive and named-pipe scenarios.
+        /// It is intended for use in proactive and named-pipe scenarios.
         /// </summary>
         /// <param name="botAppId">The bot's application id.</param>
         /// <returns>A <see cref="ClaimsIdentity"/> with the audience and appId claims set to the appId.</returns>
