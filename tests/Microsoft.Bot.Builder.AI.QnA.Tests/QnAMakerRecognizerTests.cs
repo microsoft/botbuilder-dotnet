@@ -7,26 +7,26 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
-using Microsoft.Bot.Builder.AI.QnA.Tests;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
+using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.AI.Tests
+namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     public class QnAMakerRecognizerTests : IClassFixture<QnAMakerRecognizerFixture>
     {
         private const string KnowledgeBaseId = "dummy-id";
         private const string EndpointKey = "dummy-key";
         private const string Hostname = "https://dummy-hostname.azurewebsites.net/qnamaker";
+        private const string QnAReturnsAnswerText = "QnaMaker_ReturnsAnswer";
 
         private readonly QnAMakerRecognizerFixture _qnaMakerRecognizerFixture;
 
@@ -54,12 +54,51 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return CreateQnAMakerActionDialog(mockHttp);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task LogsTelemetry(bool logPersonalInformation)
+        {
+            var rootDialog = QnAMakerRecognizer_DialogBase();
+            var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_ReturnsAnswer.json")));
+            var recognizer = (QnAMakerRecognizer)rootDialog.Recognizer;
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            recognizer.TelemetryClient = telemetryClient.Object;
+            recognizer.LogPersonalInformation = logPersonalInformation;
+
+            await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithAnswer))
+                .Send(QnAReturnsAnswerText)
+                    .AssertReply(response.Answers[0].Answer)
+                    .AssertReply("done")
+                .StartTestAsync();
+
+            ValidateTelemetry(QnAReturnsAnswerText, telemetryClient, logPersonalInfo: logPersonalInformation, callCount: 1);
+        }
+
+        [Fact]
+        public void LogPiiIsFalseByDefault()
+        {
+            var recognizer = new QnAMakerRecognizer()
+            {
+                HostName = Hostname,
+                EndpointKey = EndpointKey,
+                KnowledgeBaseId = KnowledgeBaseId
+            };
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(new TestAdapter(), activity);
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+
+            // Should be false by default, when not specified by user.
+            Assert.False(logPersonalInfo);
+        }
+
         [Fact]
         public async Task QnAMakerRecognizer_WithTopNAnswer()
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_TopNAnswer.json")));
+            var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_TopNAnswer.json")));
 
             await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithTopNAnswer))
             .Send("QnaMaker_TopNAnswer")
@@ -73,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
+            var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_ReturnsAnswer.json")));
 
             await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithAnswer))
             .Send("QnaMaker_ReturnsAnswer")
@@ -221,17 +260,73 @@ namespace Microsoft.Bot.Builder.AI.Tests
             return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
         }
 
-        private class CapturedRequest
+        private void ValidateTelemetry(string text, Mock<IBotTelemetryClient> telemetryClient, bool logPersonalInfo, int callCount)
         {
-            public string[] Questions { get; set; }
+            var eventName = $"{nameof(QnAMakerRecognizer)}Result";
+            var expectedTelemetryProps = GetExpectedTelemetryProps(text, logPersonalInfo);
+            var actualTelemetryProps = (Dictionary<string, string>)telemetryClient.Invocations[callCount].Arguments[1];
 
-            public int Top { get; set; }
+            telemetryClient.Verify(
+                client => client.TrackEvent(
+                    eventName,
+                    It.Is<Dictionary<string, string>>(d => HasValidTelemetryProps(expectedTelemetryProps, actualTelemetryProps)),
+                    null),
+                Times.Exactly(callCount));
+        }
 
-            public Metadata[] StrictFilters { get; set; }
+        private Dictionary<string, string> GetExpectedTelemetryProps(string text, bool logPersonalInformation)
+        {
+            var props = new Dictionary<string, string>()
+            {
+                { "TopIntent", "QnAMatch" },
+                { "TopIntentScore", "1.0" },
+                { "Intents", "{\"QnAMatch\":{\"score\":1.0}}" },
+                { "Entities", "{\r\n  \"answer\": [\r\n    \"BaseCamp: You can use a damp rag to clean around the Power Pack\"\r\n  ],\r\n  \"$instance\": {\r\n    \"answer\": [\r\n      {\r\n        \"questions\": [\r\n          \"how do I clean the stove?\"\r\n        ],\r\n        \"answer\": \"BaseCamp: You can use a damp rag to clean around the Power Pack\",\r\n        \"score\": 1.0,\r\n        \"metadata\": [],\r\n        \"source\": \"Editorial\",\r\n        \"id\": 5,\r\n        \"context\": {\r\n          \"prompts\": [\r\n            {\r\n              \"displayOrder\": 0,\r\n              \"qnaId\": 55,\r\n              \"displayText\": \"Where can I buy?\",\r\n              \"qna\": null\r\n            }\r\n          ]\r\n        },\r\n        \"startIndex\": 0,\r\n        \"endIndex\": 22\r\n      }\r\n    ]\r\n  }\r\n}" },
+                { "AdditionalProperties", "{\"answers\":[{\"questions\":[\"how do I clean the stove?\"],\"answer\":\"BaseCamp: You can use a damp rag to clean around the Power Pack\",\"score\":1.0,\"metadata\":[],\"source\":\"Editorial\",\"id\":5,\"context\":{\"prompts\":[{\"displayOrder\":0,\"qnaId\":55,\"displayText\":\"Where can I buy?\",\"qna\":null}]}}]}" }
+            };
 
-            public Metadata[] MetadataBoost { get; set; }
+            if (logPersonalInformation == true)
+            {
+                // Out-of-the-box, QnAMakerRecognizer does not alter text
+                // So for these tests, we always expect it to be null
+                props.Add("AlteredText", null);
+                props.Add("Text", text);
+            }
 
-            public float ScoreThreshold { get; set; }
+            return props;
+        }
+
+        private bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual)
+        {
+            if (expected.Count != actual.Count)
+            {
+                return false;
+            }
+
+            foreach (var property in actual)
+            {
+                if (!expected.ContainsKey(property.Key))
+                {
+                    return false;
+                }
+
+                if (property.Key == "Entities")
+                {
+                    if (!property.Value.Contains("answer"))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (property.Value != expected[property.Key])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

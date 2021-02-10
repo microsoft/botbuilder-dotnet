@@ -261,7 +261,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 recognizerResult.Intents.Add("None", new IntentScore { Score = 1.0f });
             }
 
-            TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "QnAMakerRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
             return recognizerResult;
         }
@@ -300,5 +300,47 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
 
             return Task.FromResult<IQnAMakerClient>(new QnAMaker(endpoint, new QnAMakerOptions(), httpClient, TelemetryClient, logPersonalInfo));
         }
+
+        /// <summary>
+        /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.
+        /// </summary>
+        /// <param name="recognizerResult">Recognizer Result.</param>
+        /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <returns>A dictionary that can be included when calling the TrackEvent method on the TelemetryClient.</returns>
+        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext), "DialogContext needed for state in AdaptiveRecognizer.FillRecognizerResultTelemetryProperties method.");
+            }
+
+            var properties = new Dictionary<string, string>
+            {
+                { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
+                { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Entities", recognizerResult.Entities?.ToString() },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+            };
+
+            var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
+            
+            if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
+            {
+                properties.Add("Text", recognizerResult.Text);
+                properties.Add("AlteredText", recognizerResult.AlteredText);
+            }
+
+            // Additional Properties can override "stock" properties.
+            if (telemetryProperties != null)
+            {
+                return telemetryProperties.Concat(properties)
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value);
+            }
+
+            return properties;
+        } 
     }
 }

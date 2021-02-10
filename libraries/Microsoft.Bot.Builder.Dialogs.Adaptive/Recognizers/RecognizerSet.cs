@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// Intents will be merged by picking the intent with the MaxScore.
     /// Entities are merged as a simple union of all of the Entities.
     /// </remarks>
-    public class RecognizerSet : Recognizer
+    public class RecognizerSet : AdaptiveRecognizer
     {
         /// <summary>
         /// Class identifier.
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // merge intents
             var result = MergeResults(results);
 
-            this.TrackRecognizerResult(dialogContext, "RecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "RecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }
