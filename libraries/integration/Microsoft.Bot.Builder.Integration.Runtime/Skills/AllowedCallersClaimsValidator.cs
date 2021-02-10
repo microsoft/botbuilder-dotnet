@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Skills
     /// Claims validator that adds application level authorization based on a simple list
     /// of application Ids that are allowed to call. 
     /// </summary>
-    public class AllowedCallersClaimsValidator : ClaimsValidator
+    internal class AllowedCallersClaimsValidator : ClaimsValidator
     {
         private readonly IList<string> _allowedCallers;
 
