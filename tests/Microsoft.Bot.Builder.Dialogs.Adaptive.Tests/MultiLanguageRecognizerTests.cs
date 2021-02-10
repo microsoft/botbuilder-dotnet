@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,23 +61,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task MultiLanguageRecognizerTest_LogsTelemetry(bool logPersonalInformation)
+        public async Task LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = GetRecognizer();
             recognizer.TelemetryClient = telemetryClient.Object;
             recognizer.LogPersonalInformation = logPersonalInformation;
 
-            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(GreetingIntentTextEnUs, recognizer, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(GreetingIntentTextEnUs, recognizer, telemetryClient,  1);
         }
 
         [Fact]
-        public async Task MultiLanguageRecognizerTest_LogPiiIsFalseByDefault()
+        public async Task LogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = GetRecognizer();
             recognizer.TelemetryClient = telemetryClient.Object;
-            
+
             var dc = TestUtils.CreateContext(GreetingIntentTextEnUs);
             var activity = dc.Context.Activity;
             activity.Locale = "en-us";
@@ -91,15 +89,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             ValidateGreetingIntent(result);
         }
 
-        private static MultiLanguageRecognizer GetRecognizer() => new MultiLanguageRecognizer()
+        private static MultiLanguageRecognizer GetRecognizer() => new MultiLanguageRecognizer
         {
-            Recognizers = new Dictionary<string, Recognizer>()
+            Recognizers = new Dictionary<string, Recognizer>
             {
                 {
-                    "en-us",
-                    new RegexRecognizer()
+                    "en-us", new RegexRecognizer
                     {
-                        Intents = new List<IntentPattern>()
+                        Intents = new List<IntentPattern>
                         {
                             new IntentPattern("Greeting", "(?i)howdy"),
                             new IntentPattern("Goodbye", "(?i)bye")
@@ -107,10 +104,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                     }
                 },
                 {
-                    "en-gb",
-                    new RegexRecognizer()
+                    "en-gb", new RegexRecognizer
                     {
-                        Intents = new List<IntentPattern>()
+                        Intents = new List<IntentPattern>
                         {
                             new IntentPattern("Greeting", "(?i)hiya"),
                             new IntentPattern("Goodbye", "(?i)cheerio")
@@ -118,10 +114,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                     }
                 },
                 {
-                    "en",
-                    new RegexRecognizer()
+                    "en", new RegexRecognizer
                     {
-                        Intents = new List<IntentPattern>()
+                        Intents = new List<IntentPattern>
                         {
                             new IntentPattern("Greeting", "(?i)hello"),
                             new IntentPattern("Goodbye", "(?i)goodbye")

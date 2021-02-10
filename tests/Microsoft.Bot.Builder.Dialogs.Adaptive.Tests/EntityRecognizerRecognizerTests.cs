@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -255,14 +258,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task TestChannelMentionEntityRecognizer_TelemetryDoesNotLogByDefault()
+        public async Task TelemetryDoesNotLogByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new ChannelMentionEntityRecognizer()
             {
                 TelemetryClient = telemetryClient.Object
             };
-            var dialogContext = GetDialogContext(nameof(TestChannelMentionEntityRecognizer_TelemetryDoesNotLogByDefault), "gobble gobble");
+            var dialogContext = GetDialogContext(nameof(TelemetryDoesNotLogByDefault), "gobble gobble");
             var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dialogContext.State);
             Assert.False(logPersonalInformation);
 

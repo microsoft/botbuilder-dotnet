@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
@@ -49,40 +48,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task TestIntentRecognize_LogsTelemetry(bool logPersonalInformation)
-        {
-            var mockResult = new Result
-            {
-                Score = 0.9,
-                Label = new Label { Name = "mockLabel" }
-            };
-
-            var mockScore = new List<Result> { mockResult };
-            var mockResolver = new MockResolver(mockScore);
-            var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
-            {
-                ModelFolder = new StringExpression("fakePath"),
-                SnapshotFile = new StringExpression("fakePath"),
-                TelemetryClient = telemetryClient.Object,
-                LogPersonalInformation = logPersonalInformation
-            };
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
-            var activity = MessageFactory.Text("hi");
-            var context = new TurnContext(adapter, activity);
-
-            var dc = new DialogContext(new DialogSet(), context, new DialogState());
-            var result = await recognizer.RecognizeAsync(dc, activity, default);
-
-            Assert.Equal(1, result.Intents.Count);
-            Assert.True(result.Intents.ContainsKey("mockLabel"));
-            Assert.Equal(0.9, result.Intents["mockLabel"].Score);
-            ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
-        }
-
-        [Fact]
-        public async Task TestIntentRecognize_Telemetry_LogPii_IsFalseByDefault()
+        [InlineData(null)]
+        public async Task TestIntentRecognizeLogsTelemetry(bool? logPersonalInformation)
         {
             var mockResult = new Result
             {
@@ -100,16 +67,25 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 TelemetryClient = telemetryClient.Object,
             };
 
+            if (logPersonalInformation != null)
+            {
+                recognizer.LogPersonalInformation = logPersonalInformation;
+            }
+
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
             var activity = MessageFactory.Text("hi");
             var context = new TurnContext(adapter, activity);
 
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             var result = await recognizer.RecognizeAsync(dc, activity, default);
-            var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
 
-            // Should be false by default, when not specified by user.
-            Assert.False(logPersonalInfo);
+            if (logPersonalInformation == null)
+            {
+                // Should be false by default, when not specified by user.
+                var (logPersonalInfo, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
+                Assert.False(logPersonalInfo);
+            }
+
             Assert.Equal(1, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
@@ -200,9 +176,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Times.Exactly(callCount));
         }
 
-        private static Dictionary<string, string> GetExpectedTelemetryProps(Microsoft.Bot.Schema.IActivity activity, RecognizerResult result, bool logPersonalInformation)
+        private static Dictionary<string, string> GetExpectedTelemetryProps(IActivity activity, RecognizerResult result, bool logPersonalInformation)
         {
-            var props = new Dictionary<string, string>()
+            var props = new Dictionary<string, string>
             {
                 { "TopIntent", "mockLabel" },
                 { "TopIntentScore", "0.9" },
@@ -211,7 +187,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 { "AdditionalProperties", "{\"result\":[{\"Label\":{\"Type\":0,\"Name\":\"mockLabel\",\"Span\":{\"Offset\":0,\"Length\":0}},\"Score\":0.9,\"ClosestText\":null}]}" }
             };
 
-            if (logPersonalInformation == true)
+            if (logPersonalInformation)
             {
                 props.Add("Text", activity.AsMessageActivity().Text);
                 props.Add("AlteredText", result.AlteredText);

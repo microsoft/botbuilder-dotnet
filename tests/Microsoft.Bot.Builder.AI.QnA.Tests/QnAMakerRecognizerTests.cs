@@ -7,16 +7,13 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Recognizers;
-using Microsoft.Bot.Builder.AI.QnA.Tests;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.Actions;
-using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
@@ -60,7 +57,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task QnAMakerRecognizerLogsTelemetry(bool logPersonalInformation)
+        public async Task LogsTelemetry(bool logPersonalInformation)
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
             var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_ReturnsAnswer.json")));
@@ -79,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
 
         [Fact]
-        public void QnAMakerRecognizerTelemetryLogPiiIsFalseByDefault()
+        public void LogPiiIsFalseByDefault()
         {
             var recognizer = new QnAMakerRecognizer()
             {
@@ -101,7 +98,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_TopNAnswer.json")));
+            var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_TopNAnswer.json")));
 
             await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithTopNAnswer))
             .Send("QnaMaker_TopNAnswer")
@@ -115,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var rootDialog = QnAMakerRecognizer_DialogBase();
 
-            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnsAnswer.json")));
+            var response = JsonConvert.DeserializeObject<QueryResults>(await File.ReadAllTextAsync(GetFilePath("QnaMaker_ReturnsAnswer.json")));
 
             await CreateFlow(rootDialog, nameof(QnAMakerRecognizer_WithAnswer))
             .Send("QnaMaker_ReturnsAnswer")

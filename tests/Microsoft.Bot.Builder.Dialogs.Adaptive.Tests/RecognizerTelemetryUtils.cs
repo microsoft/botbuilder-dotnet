@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// <summary>
         /// Get the expected properties based on the text/utterance that we run the recognizer against.
         /// </summary>
-        private static readonly Dictionary<string, Func<Dictionary<string, string>>> ExpectedProperties = new Dictionary<string, Func<Dictionary<string, string>>>()
+        private static readonly Dictionary<string, Func<Dictionary<string, string>>> ExpectedProperties = new Dictionary<string, Func<Dictionary<string, string>>>
         {
             { CodeIntentText, GetCodeIntentProperties },
             { ColorIntentText, GetColorIntentProperties },
@@ -42,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         /// <summary>
         /// Run the expected validations based on intent recognized.
         /// </summary>
-        private static readonly Dictionary<string, Action<RecognizerResult>> ValidateIntent = new Dictionary<string, Action<RecognizerResult>>()
+        private static readonly Dictionary<string, Action<RecognizerResult>> ValidateIntent = new Dictionary<string, Action<RecognizerResult>>
         {
             { CodeIntentText, ValidateCodeIntent },
             { ColorIntentText, ValidateColorIntent },
@@ -88,7 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var customActivity = Activity.CreateMessageActivity();
             customActivity.Text = text;
             customActivity.Locale = Culture.English;
-            
+
             var result = await recognizer.RecognizeAsync(dc, (Activity)customActivity, CancellationToken.None);
 
             if (ValidateIntent.ContainsKey(text))
@@ -140,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         private static bool HasValidTelemetryProps(IDictionary<string, string> expected, IDictionary<string, string> actual, IActivity activity)
         {
             if (expected.Count != actual.Count)
-            { 
+            {
                 return false;
             }
 

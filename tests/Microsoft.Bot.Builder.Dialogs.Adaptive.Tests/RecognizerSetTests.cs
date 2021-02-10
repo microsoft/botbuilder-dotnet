@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
-using Microsoft.Bot.Schema;
 using Moq;
 using Xunit;
 using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.RecognizerTelemetryUtils;
@@ -38,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task RecognizerSetTests_Merge_LogsTelemetry(bool logPersonalInformation)
+        public async Task LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizers = GetRecognizer();
@@ -54,15 +52,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [Fact]
-        public async Task RecognizerSetTests_LogPiiIsFalseByDefault()
+        public async Task LogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizerSet = new RecognizerSet()
+            var recognizerSet = new RecognizerSet
             {
-                Recognizers = new List<Recognizer>()
-                {
-                    new RegexRecognizer()
-                },
+                Recognizers = new List<Recognizer> { new RegexRecognizer() },
                 TelemetryClient = telemetryClient.Object
             };
 
@@ -75,18 +70,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.NotNull(result);
         }
 
-        private static RecognizerSet GetRecognizer() => new RecognizerSet()
+        private static RecognizerSet GetRecognizer() => new RecognizerSet
         {
-            Recognizers = new List<Recognizer>()
+            Recognizers = new List<Recognizer>
             {
-                new RegexRecognizer()
+                new RegexRecognizer
                 {
                     Id = "CodeRecognizer",
-                    Intents = new List<IntentPattern>()
+                    Intents = new List<IntentPattern>
                     {
                         new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
                     },
-                    Entities = new EntityRecognizerSet()
+                    Entities = new EntityRecognizerSet
                     {
                         new AgeEntityRecognizer(),
                         new NumberEntityRecognizer(),
@@ -95,19 +90,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         new TemperatureEntityRecognizer()
                     }
                 },
-                new RegexRecognizer()
+                new RegexRecognizer
                 {
                     Id = "ColorRecognizer",
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("colorIntent", "(?i)(color|colour)")
-                    },
-                    Entities = new EntityRecognizerSet()
+                    Intents = new List<IntentPattern> { new IntentPattern("colorIntent", "(?i)(color|colour)") },
+                    Entities = new EntityRecognizerSet
                     {
                         new UrlEntityRecognizer(),
-                        new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                        new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background)" },
-                        new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" }
+                        new RegexEntityRecognizer
+                        {
+                            Name = "color",
+                            Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)"
+                        },
+                        new RegexEntityRecognizer
+                        {
+                            Name = "backgroundColor",
+                            Pattern = "(?i)(back|background)"
+                        },
+                        new RegexEntityRecognizer
+                        {
+                            Name = "foregroundColor",
+                            Pattern = "(?i)(foreground|front) {color}"
+                        }
                     }
                 }
             }

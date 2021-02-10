@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
-        
+
         [Fact]
         public async Task CrossTrainedRecognizerSetTests_Empty()
         {
@@ -67,19 +67,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task CrossTrainedRecognizerSetTests_LogsTelemetry(bool logPersonalInformation)
+        public async Task LogsTelemetry(bool logPersonalInformation)
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizers = GetRecognizers();
             recognizers.TelemetryClient = telemetryClient.Object;
             recognizers.LogPersonalInformation = logPersonalInformation;
 
-            await RecognizeIntentAndValidateTelemetry(CrossTrainText, recognizers, telemetryClient, callCount: 1);
-            await RecognizeIntentAndValidateTelemetry("x", recognizers, telemetryClient, callCount: 2);
+            await RecognizeIntentAndValidateTelemetry(CrossTrainText, recognizers, telemetryClient,  1);
+            await RecognizeIntentAndValidateTelemetry("x", recognizers, telemetryClient,  2);
         }
 
         [Fact]
-        public async Task CrossTrainedRecognizerSetTests_LogPiiIsFalseByDefault()
+        public async Task LogPiiIsFalseByDefault()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizers = GetRecognizers();
