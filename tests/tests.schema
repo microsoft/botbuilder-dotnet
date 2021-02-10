@@ -5924,7 +5924,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On choose property",
-      "description": "Actions to take when there are multiple possible mappings of entities to properties.",
+      "description": "Actions to take when there are multiple possible mappings of entities to properties and operations.",
       "type": "object",
       "required": [
         "$kind"
@@ -5937,31 +5937,6 @@
         }
       },
       "properties": {
-        "entity": {
-          "type": "string",
-          "title": "Entity being assigned",
-          "description": "Entity being assigned to property choice"
-        },
-        "properties": {
-          "type": "array",
-          "title": "Possible properties",
-          "description": "Properties to be chosen between.",
-          "items": {
-            "type": "string",
-            "title": "Property name",
-            "description": "Possible property to choose."
-          }
-        },
-        "entities": {
-          "type": "array",
-          "title": "Entities",
-          "description": "Ambiguous entity names.",
-          "items": {
-            "type": "string",
-            "title": "Entity name",
-            "description": "Entity name being chosen between."
-          }
-        },
         "condition": {
           "$ref": "#/definitions/condition",
           "title": "Condition",
