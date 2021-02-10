@@ -9,11 +9,6 @@
             "type": "string",
             "title": "Adapter http route",
             "description": "Route where to expose the adapter."
-        },
-        "settingsNamespace": {
-            "type": "string",
-            "title": "Settings namespace",
-            "description": "Optional namespace for adapter settings. Default is adapter package name."
         }
     }
 }
