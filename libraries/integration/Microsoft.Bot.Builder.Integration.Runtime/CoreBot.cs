@@ -29,13 +29,42 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="CoreBot"/> class.
         /// </summary>
-        /// <param name="services">Services registered with the application.</param>
         /// <param name="options">Configured options for the <see cref="CoreBot"/> instance.</param>
-        public CoreBot(IServiceProvider services, IOptions<CoreBotOptions> options)
+        /// <param name="conversationState"><see cref="ConversationState"/> for the bot.</param>
+        /// <param name="userState"><see cref="UserState"/> instance for the bot.</param>
+        /// <param name="resourceExplorer"><see cref="ResourceExplorer"/> instance to access declarative assets.</param>
+        /// <param name="telemetryClient"><see cref="IBotTelemetryClient"/> for the bot.</param>
+        /// <param name="botFrameworkClient"><see cref="BotFrameworkClient"/> instance for the bot.</param>
+        /// <param name="conversationIdfactory"><see cref="SkillConversationIdFactoryBase"/> instance for the bot.</param>
+        public CoreBot(
+            IOptions<CoreBotOptions> options,
+            ConversationState conversationState,
+            UserState userState,
+            ResourceExplorer resourceExplorer,
+            IBotTelemetryClient telemetryClient,
+            BotFrameworkClient botFrameworkClient,
+            SkillConversationIdFactoryBase conversationIdfactory)
         {
-            _conversationState = services.GetRequiredService<ConversationState>();
-            _userState = services.GetRequiredService<UserState>();
-            _dialogManager = CreateDialogManager(services, options);
+            _conversationState = conversationState;
+            _userState = userState;
+
+            Resource rootDialogResource = resourceExplorer.GetResource(options.Value.RootDialog);
+            var rootDialog = resourceExplorer.LoadType<AdaptiveDialog>(rootDialogResource);
+
+            _dialogManager = new DialogManager(rootDialog)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration()
+                .UseLanguagePolicy(new LanguagePolicy(options.Value.DefaultLocale ?? DefaultLocale));
+
+            if (telemetryClient != null)
+            {
+                _dialogManager.UseTelemetry(telemetryClient);
+            }
+
+            _dialogManager.InitialTurnState.Set(botFrameworkClient);
+            _dialogManager.InitialTurnState.Set(conversationIdfactory);
+            _dialogManager.InitialTurnState.Set(_userState);
+            _dialogManager.InitialTurnState.Set(_conversationState);
         }
 
         /// <summary>
@@ -68,32 +97,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
             await _dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
             await _userState.SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-        }
-
-        private DialogManager CreateDialogManager(IServiceProvider services, IOptions<CoreBotOptions> options)
-        {
-            var resourceExplorer = services.GetRequiredService<ResourceExplorer>();
-            var telemetryClient = services.GetService<IBotTelemetryClient>();
-
-            Resource rootDialogResource = resourceExplorer.GetResource(options.Value.RootDialog); 
-            var rootDialog = resourceExplorer.LoadType<AdaptiveDialog>(rootDialogResource);
-
-            var dialogManager = new DialogManager(rootDialog)
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration()
-                .UseLanguagePolicy(new LanguagePolicy(options.Value.DefaultLocale ?? DefaultLocale));
-
-            if (telemetryClient != null)
-            {
-                dialogManager.UseTelemetry(telemetryClient);
-            }
-
-            dialogManager.InitialTurnState.Set(services.GetRequiredService<BotFrameworkClient>());
-            dialogManager.InitialTurnState.Set(services.GetRequiredService<SkillConversationIdFactoryBase>());
-            dialogManager.InitialTurnState.Set(_userState);
-            dialogManager.InitialTurnState.Set(_conversationState);
-
-            return dialogManager;
         }
     }
 }
