@@ -4,19 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -327,10 +320,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             throw new NotImplementedException();
         }
 
-        private Task SendOAuthCardAsync(DialogContext dc, IMessageActivity prompt, CancellationToken cancellationToken)
+        private async Task SendOAuthCardAsync(DialogContext dc, IMessageActivity prompt, CancellationToken cancellationToken)
         {
-            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State), Title = Title?.GetValue(dc.State), Text = Text?.GetValue(dc.State) };
-            return OAuthPrompt.SendOAuthCardAsync(settings, dc.Context, prompt, cancellationToken);
+            var title = await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var text = await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State), Title = title, Text = text };
+            await OAuthPrompt.SendOAuthCardAsync(settings, dc.Context, prompt, cancellationToken).ConfigureAwait(false);
         }
 
         private Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(DialogContext dc, CancellationToken cancellationToken)
