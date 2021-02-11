@@ -8,10 +8,13 @@
     ],
     "policies": [
         {
-            "type": "triggerNotInteractive",
+            "type": "triggerNotInteractive"
+        },
+        {
+            "type": "triggerRequiresAction",
             "kinds": [
                 "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
-                "Teams.SendMessagingExtensionAuthResponse" 
+                "Teams.SendMessagingExtensionAuthResponse"
             ]
         }
     ]

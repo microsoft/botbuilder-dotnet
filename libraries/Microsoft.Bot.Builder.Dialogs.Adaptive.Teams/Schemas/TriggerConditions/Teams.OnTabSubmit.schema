@@ -5,5 +5,16 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='tab/submit'.",
     "type": "object",
     "required": [
+    ],
+    "policies": [
+        {
+            "type": "triggerNotInteractive"
+        },
+        {
+            "type": "triggerRequiresAction",
+            "kinds": [
+                "Teams.SendTabCardResponse"
+            ]
+        }
     ]
 }

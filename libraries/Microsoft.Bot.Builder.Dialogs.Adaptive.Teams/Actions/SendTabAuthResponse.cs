@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,27 +17,39 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'auth' response.
+    /// Send an tab 'auth' response.
     /// </summary>
-    public class SendMessagingExtensionAuthResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendTabAuthResponse : Dialog
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendMessagingExtensionAuthResponse";
+        public const string Kind = "Teams.SendTabAuthResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendMessagingExtensionAuthResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendTabAuthResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendMessagingExtensionAuthResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendTabAuthResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             RegisterSourceLocation(callerPath, callerLine);
         }
+
+        /// <summary>
+        /// Gets or sets an optional expression which if is true will disable this action.
+        /// </summary>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
+        /// <value>
+        /// A boolean expression. 
+        /// </value>
+        [JsonProperty("disabled")]
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets property path to put the TokenResponse value in once retrieved.
@@ -160,10 +173,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
             var signInLink = await tokenProvider.GetOauthSignInLinkAsync(dc.Context, connectionName, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            var result = new MessagingExtensionResult
+            var result = new TabResponsePayload
             {
-                Type = MessagingExtensionResultResponseType.auth.ToString(),
-                SuggestedActions = new MessagingExtensionSuggestedAction
+                Type = "auth",
+                SuggestedActions = new TabSuggestedActions
                 {
                     Actions = new List<CardAction>
                     {
@@ -176,8 +189,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
                     },
                 },
             };
-
-            return CreateMessagingExtensionInvokeResponseActivity(dc, result);
+            
+            return new Activity
+            {
+                Value = new InvokeResponse
+                {
+                    Status = (int)HttpStatusCode.OK,
+                    Body = new TabResponse { Tab = result }
+                },
+                Type = ActivityTypesEx.InvokeResponse
+            };
         }
     }
 }

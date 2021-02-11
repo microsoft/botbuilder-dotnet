@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         //[Fact]
         //public async Task Action_SendMessageToTeamsChannel()
         //{
-        //    NOTE: Current test adpater is not a BotFrameworkAdapter,
+        //    NOTE: Current test adapter is not a BotFrameworkAdapter,
         //           and does not support mocking SendMessageToTeamsChannel
         //    var teamsMiddleware = GetTeamsMiddleware(new JObject(), "/v3/conversations");
         //    await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, middleware: new[] { teamsMiddleware });
@@ -281,6 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         //[Fact]
         //public async Task Action_SendMessagingExtensionAuthResponseError()
         //{
+        //      NOTE: Current test adapter is not a BotFrameworkAdapter,
         //    await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         //}
 
@@ -368,10 +369,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
+        [Fact]
+        public async Task Action_SendTabCardResponseError()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+        
+        [Fact]
+        public async Task Action_SendTabCardResponse()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        //[Fact]
+        //public async Task Action_SendTabAuthResponseError()
+        //{
+        //      NOTE: Current test adapter is not a BotFrameworkAdapter,
+        //    await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        //}
+
         private IMiddleware GetErrorTeamsMiddleware(string exception)
         {
             // Create a connector client, setup with a custom httpclient which will 
-            // throw an exception when the connectorclient's outgoing pipeline's SendAsync
+            // throw an exception when the connectorclient's outgoing pipeline's SendAsyncg
             // is called
             var messageHandler = new ErrorHttpMessageHandler(exception);
             return GetTestConnectorClientMiddleware(messageHandler);

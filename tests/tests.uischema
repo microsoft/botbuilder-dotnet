@@ -1430,6 +1430,19 @@
       "subtitle": "Invoke activity.name='actionableMessage/executeAction'"
     }
   },
+  "Teams.OnTabFetch": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams tab fetch",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='tab/fetch'"
+    }
+  },
   "Teams.OnTaskModuleFetch": {
     "form": {
       "hidden": [
@@ -1568,6 +1581,28 @@
         "*"
       ],
       "subtitle": "Send a messaging extension response when an item is selected"
+    }
+  },
+  "Teams.SendTabAuthResponse": {
+    "form": {
+      "label": "Tab auth response",
+      "order": [
+        "connectionName",
+        "title",
+        "resultProperty",
+        "*"
+      ],
+      "subtitle": "Send a response to a cards tab requiring auth."
+    }
+  },
+  "Teams.SendTabCardResponse": {
+    "form": {
+      "label": "Send tab card response",
+      "order": [
+        "cards",
+        "*"
+      ],
+      "subtitle": "Send a tab continue response containing adaptive cards."
     }
   },
   "Teams.SendTaskModuleCardResponse": {

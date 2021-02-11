@@ -64,6 +64,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams
             yield return new DeclarativeType<SendTaskModuleCardResponse>(SendTaskModuleCardResponse.Kind);
             yield return new DeclarativeType<SendTaskModuleMessageResponse>(SendTaskModuleMessageResponse.Kind);
             yield return new DeclarativeType<SendTaskModuleUrlResponse>(SendTaskModuleUrlResponse.Kind);
+            yield return new DeclarativeType<SendTabAuthResponse>(SendTabAuthResponse.Kind);
+            yield return new DeclarativeType<SendTabCardResponse>(SendTabCardResponse.Kind);
         }
 
         public virtual IEnumerable<JsonConverter> GetConverters(ResourceExplorer resourceExplorer, SourceContext sourceContext)
