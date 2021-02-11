@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.IDialog)", "extends(Microsoft.InputDialog)" ],
+    "title": "Attachment input dialog",
+    "description": "Collect information - Ask for a file or image.",
+    "properties": {
+        "defaultValue": {
+            "$role": "expression",
+            "title": "Default value",
+            "description": "'Property' will be set to the object or the result of this expression when max turn count is exceeded.",
+            "oneOf": [
+                {
+                    "$ref": "https://schemas.botframework.com/schemas/protocol/botframework.json#/definitions/Attachment",
+                    "title": "Object",
+                    "description": "Attachment object."
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "value": {
+            "$role": "expression",
+            "title": "Value",
+            "description": "'Property' will be set to the object or the result of this expression unless it evaluates to null.",
+            "oneOf": [
+                {
+                    "$ref": "https://schemas.botframework.com/schemas/protocol/botframework.json#/definitions/Attachment",
+                    "title": "Object",
+                    "description": "Attachment object."
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "outputFormat": {
+            "$role": "expression",
+            "title": "Output format",
+            "description": "Attachment output format.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Standard format",
+                    "description": "Standard output formats.",
+                    "enum": [
+                        "all",
+                        "first"
+                    ],
+                    "default": "first"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        }
+    },
+    "policies": [
+        {
+            "type": "interactive"
+        }
+    ]
+}

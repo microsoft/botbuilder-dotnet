@@ -1,7 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -28,6 +27,8 @@ namespace Microsoft.Bot.Builder
         /// Any extra properties to include in the results.
         /// </value>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only  (we can't change this without breaking binary compat)
         public IDictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

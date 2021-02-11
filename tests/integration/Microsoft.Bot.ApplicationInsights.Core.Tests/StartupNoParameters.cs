@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
@@ -26,12 +26,14 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
             // Adding IConfiguration in sample test server.  Otherwise this appears to be
             // registered.
-            services.AddSingleton<IConfiguration>(this.Configuration);
+            services.AddSingleton(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             app.UseBotApplicationInsights();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.ITriggerSelector)",
+    "title": "Conditional trigger selector",
+    "description": "Use a rule selector based on a condition",
+    "type": "object",
+    "properties": {
+        "condition": {
+            "$ref": "schema:#/definitions/condition",
+            "title": "Condition",
+            "description": "Expression to evaluate"
+        },
+        "ifTrue": {
+            "$kind": "Microsoft.ITriggerSelector"
+        },
+        "ifFalse": {
+            "$kind": "Microsoft.ITriggerSelector"
+        }
+    },
+    "required": [
+        "condition",
+        "ifTrue",
+        "ifFalse"
+    ]
+}

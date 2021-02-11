@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -20,9 +21,13 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class TurnContext : ITurnContext, IDisposable
     {
+        private const string Turn = "turn";
+
         private readonly IList<SendActivitiesHandler> _onSendActivities = new List<SendActivitiesHandler>();
         private readonly IList<UpdateActivityHandler> _onUpdateActivity = new List<UpdateActivityHandler>();
         private readonly IList<DeleteActivityHandler> _onDeleteActivity = new List<DeleteActivityHandler>();
+
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TurnContext"/> class.
@@ -40,6 +45,40 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TurnContext"/> class from another turncontext class to target an alternate Activity.
+        /// </summary>
+        /// <remarks>
+        /// For supporting calling legacy systems that always assume turncontext.Activity is the activity should be processed.
+        /// This class clones the turncontext and then replaces the original.activity with the passed in activity.
+        /// </remarks>
+        /// <param name="turnContext">context to clone.</param>
+        /// <param name="activity">activity to put into the new turn context.</param>
+        public TurnContext(ITurnContext turnContext, Activity activity)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            Activity = activity ?? throw new ArgumentNullException(nameof(activity));
+
+            // all properties should be copied over except for activity.
+            Adapter = turnContext.Adapter;
+            TurnState = turnContext.TurnState;
+            Responded = turnContext.Responded;
+
+            if (turnContext is TurnContext tc)
+            {
+                BufferedReplyActivities = tc.BufferedReplyActivities;
+
+                // keep private middelware pipeline hooks.
+                _onSendActivities = tc._onSendActivities;
+                _onUpdateActivity = tc._onUpdateActivity;
+                _onDeleteActivity = tc._onDeleteActivity;
+            }
+        }
+
+        /// <summary>
         /// Gets the bot adapter that created this context object.
         /// </summary>
         /// <value>The bot adapter that created this context object.</value>
@@ -50,6 +89,40 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <value>The services registered on this context object.</value>
         public TurnContextStateCollection TurnState { get; } = new TurnContextStateCollection();
+
+        /// <summary>
+        /// Gets or sets the locale on this context object.
+        /// </summary>
+        /// <value>The string of locale on this context object.</value>
+        public string Locale
+        {
+            get 
+            { 
+                var valueObj = this.TurnState.Get<JObject>(Turn);
+                if (valueObj.TryGetValue(nameof(Locale).ToLowerInvariant(), out var locale))
+                {
+                    return locale.ToString();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            set
+            {
+                var valueObj = this.TurnState.Get<JObject>(Turn);
+                if (valueObj != null)
+                {
+                    valueObj[nameof(Locale).ToLowerInvariant()] = value;
+                }
+                else
+                {
+                    valueObj = new JObject(new JProperty(nameof(Locale).ToLowerInvariant(), value));
+                    TurnState.Set(Turn, valueObj);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the activity associated with this turn; or <c>null</c> when processing
@@ -70,6 +143,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Gets a list of activities to send when `context.Activity.DeliveryMode == 'expectReplies'.
+        /// </summary>
+        /// <value>A list of activities.</value>
+        public List<Activity> BufferedReplyActivities { get; } = new List<Activity>();
+
+        /// <summary>
         /// Adds a response handler for send activity operations.
         /// </summary>
         /// <param name="handler">The handler to add to the context object.</param>
@@ -82,6 +161,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public ITurnContext OnSendActivities(SendActivitiesHandler handler)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(OnSendActivities));
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -103,6 +187,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public ITurnContext OnUpdateActivity(UpdateActivityHandler handler)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(OnUpdateActivity));
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -125,6 +214,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public ITurnContext OnDeleteActivity(DeleteActivityHandler handler)
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(OnDeleteActivity));
+            }
+
             if (handler == null)
             {
                 throw new ArgumentNullException(nameof(handler));
@@ -159,6 +253,11 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public async Task<ResourceResponse> SendActivityAsync(string textReplyToSend, string speak = null, string inputHint = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SendActivityAsync));
+            }
+
             if (string.IsNullOrWhiteSpace(textReplyToSend))
             {
                 throw new ArgumentNullException(nameof(textReplyToSend));
@@ -191,6 +290,11 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.</remarks>
         public async Task<ResourceResponse> SendActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SendActivityAsync));
+            }
+
             BotAssert.ActivityNotNull(activity);
 
             ResourceResponse[] responses = await SendActivitiesAsync(new[] { activity }, cancellationToken).ConfigureAwait(false);
@@ -217,6 +321,11 @@ namespace Microsoft.Bot.Builder
         /// the receiving channel assigned to the activities.</remarks>
         public Task<ResourceResponse[]> SendActivitiesAsync(IActivity[] activities, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(SendActivitiesAsync));
+            }
+
             if (activities == null)
             {
                 throw new ArgumentNullException(nameof(activities));
@@ -261,27 +370,59 @@ namespace Microsoft.Bot.Builder
 
             async Task<ResourceResponse[]> SendActivitiesThroughAdapter()
             {
-                // Send from the list which may have been manipulated via the event handlers.
-                // Note that 'responses' was captured from the root of the call, and will be
-                // returned to the original caller.
-                var responses = await Adapter.SendActivitiesAsync(this, bufferedActivities.ToArray(), cancellationToken).ConfigureAwait(false);
-                var sentNonTraceActivity = false;
-
-                for (var index = 0; index < responses.Length; index++)
+                if (Activity.DeliveryMode == DeliveryModes.ExpectReplies)
                 {
-                    var activity = bufferedActivities[index];
+                    var responses = new ResourceResponse[bufferedActivities.Count];
+                    var sentNonTraceActivity = false;
 
-                    activity.Id = responses[index].Id;
+                    for (var index = 0; index < responses.Length; index++)
+                    {
+                        var activity = bufferedActivities[index];
+                        BufferedReplyActivities.Add(activity);
 
-                    sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                        // Ensure the TurnState has the InvokeResponseKey, since this activity
+                        // is not being sent through the adapter, where it would be added to TurnState.
+                        if (activity.Type == ActivityTypesEx.InvokeResponse)
+                        {
+                            TurnState.Add(BotFrameworkAdapter.InvokeResponseKey, activity);
+                        }
+
+                        responses[index] = new ResourceResponse();
+
+                        sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                    }
+
+                    if (sentNonTraceActivity)
+                    {
+                        Responded = true;
+                    }
+
+                    return responses;
                 }
-
-                if (sentNonTraceActivity)
+                else
                 {
-                    Responded = true;
-                }
+                    // Send from the list which may have been manipulated via the event handlers.
+                    // Note that 'responses' was captured from the root of the call, and will be
+                    // returned to the original caller.
+                    var responses = await Adapter.SendActivitiesAsync(this, bufferedActivities.ToArray(), cancellationToken).ConfigureAwait(false);
+                    var sentNonTraceActivity = false;
 
-                return responses;
+                    for (var index = 0; index < responses.Length; index++)
+                    {
+                        var activity = bufferedActivities[index];
+
+                        activity.Id = responses[index].Id;
+
+                        sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
+                    }
+
+                    if (sentNonTraceActivity)
+                    {
+                        Responded = true;
+                    }
+
+                    return responses;
+                }
             }
         }
 
@@ -300,9 +441,17 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
-        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default)
         {
-            Activity a = (Activity)activity;
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(UpdateActivityAsync));
+            }
+
+            BotAssert.ActivityNotNull(activity);
+
+            var conversationReference = Activity.GetConversationReference();
+            var a = activity.ApplyConversationReference(conversationReference);
 
             async Task<ResourceResponse> ActuallyUpdateStuff()
             {
@@ -322,6 +471,11 @@ namespace Microsoft.Bot.Builder
         /// The HTTP operation failed and the response contained additional information.</exception>
         public async Task DeleteActivityAsync(string activityId, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(DeleteActivityAsync));
+            }
+
             if (string.IsNullOrWhiteSpace(activityId))
             {
                 throw new ArgumentNullException(nameof(activityId));
@@ -350,6 +504,11 @@ namespace Microsoft.Bot.Builder
         /// indicates the activity in the conversation to delete.</remarks>
         public async Task DeleteActivityAsync(ConversationReference conversationReference, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(DeleteActivityAsync));
+            }
+
             if (conversationReference == null)
             {
                 throw new ArgumentNullException(nameof(conversationReference));
@@ -368,7 +527,27 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         public void Dispose()
         {
-            TurnState.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">Boolean value that determines whether to free resources or not.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                TurnState.Dispose();
+            }
+
+            _disposed = true;
         }
 
         private async Task<ResourceResponse> UpdateActivityInternalAsync(
@@ -380,11 +559,11 @@ namespace Microsoft.Bot.Builder
             BotAssert.ActivityNotNull(activity);
             if (updateHandlers == null)
             {
-                throw new ArgumentException(nameof(updateHandlers));
+                throw new ArgumentException($"{nameof(updateHandlers)} is null.", nameof(updateHandlers));
             }
 
             // No middleware to run.
-            if (updateHandlers.Count() == 0)
+            if (!updateHandlers.Any())
             {
                 if (callAtBottom != null)
                 {
@@ -412,19 +591,19 @@ namespace Microsoft.Bot.Builder
 
         private async Task DeleteActivityInternalAsync(
             ConversationReference cr,
-            IEnumerable<DeleteActivityHandler> updateHandlers,
+            IEnumerable<DeleteActivityHandler> deleteHandlers,
             Func<Task> callAtBottom,
             CancellationToken cancellationToken)
         {
             BotAssert.ConversationReferenceNotNull(cr);
 
-            if (updateHandlers == null)
+            if (deleteHandlers == null)
             {
-                throw new ArgumentException(nameof(updateHandlers));
+                throw new ArgumentException($"{nameof(deleteHandlers)} is null", nameof(deleteHandlers));
             }
 
             // No middleware to run.
-            if (updateHandlers.Count() == 0)
+            if (!deleteHandlers.Any())
             {
                 if (callAtBottom != null)
                 {
@@ -439,12 +618,12 @@ namespace Microsoft.Bot.Builder
             {
                 // Remove the first item from the list of middleware to call,
                 // so that the next call just has the remaining items to worry about.
-                IEnumerable<DeleteActivityHandler> remaining = updateHandlers.Skip(1);
+                IEnumerable<DeleteActivityHandler> remaining = deleteHandlers.Skip(1);
                 await DeleteActivityInternalAsync(cr, remaining, callAtBottom, cancellationToken).ConfigureAwait(false);
             }
 
             // Grab the current middleware, which is the 1st element in the array, and execute it.
-            DeleteActivityHandler toCall = updateHandlers.First();
+            DeleteActivityHandler toCall = deleteHandlers.First();
             await toCall(this, cr, Next).ConfigureAwait(false);
         }
     }

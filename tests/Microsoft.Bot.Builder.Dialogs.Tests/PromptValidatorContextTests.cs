@@ -4,14 +4,13 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class PromptValidatorContextTests
     {
-        [TestMethod]
+        [Fact]
         public async Task PromptValidatorContextEnd()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -61,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PromptValidatorContextRetryEnd()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -123,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task PromptValidatorNumberOfAttempts()
         {
             var convoState = new ConversationState(new MemoryStorage());

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -80,18 +79,35 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             var storageKey = GetStorageKey(turnContext);
             if (force || cachedState == null || cachedState.State == null)
             {
                 var items = await _storage.ReadAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
                 items.TryGetValue(storageKey, out object val);
-                turnContext.TurnState[_contextServiceKey] = new CachedBotState((IDictionary<string, object>)val);
+
+                if (val is IDictionary<string, object> asDictionary)
+                {
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asDictionary);
+                }
+                else if (val is JObject asJobject)
+                {
+                    // If types are not used by storage serialization, and Newtonsoft is the serializer
+                    // the item found will be a JObject.
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState(asJobject.ToObject<IDictionary<string, object>>());
+                }
+                else if (val == null)
+                {
+                    // This is the case where the dictionary did not exist in the store.
+                    turnContext.TurnState[_contextServiceKey] = new CachedBotState();
+                }
+                else
+                {
+                    // This should never happen
+                    throw new InvalidOperationException("Data is not in the correct format for BotState.");
+                }
             }
         }
 
@@ -107,13 +123,10 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-            if (force || (cachedState != null && cachedState.IsChanged()))
+            var cachedState = GetCachedState(turnContext);
+            if (cachedState != null && (force || cachedState.IsChanged()))
             {
                 var key = GetStorageKey(turnContext);
                 var changes = new Dictionary<string, object>
@@ -121,7 +134,7 @@ namespace Microsoft.Bot.Builder
                     { key, cachedState.State },
                 };
                 await _storage.WriteAsync(changes).ConfigureAwait(false);
-                cachedState.Hash = cachedState.ComputeHash(cachedState.State);
+                cachedState.Hash = CachedBotState.ComputeHash(cachedState.State);
                 return;
             }
         }
@@ -140,10 +153,7 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             // Explicitly setting the hash will mean IsChanged is always true. And that will force a Save.
             turnContext.TurnState[_contextServiceKey] = new CachedBotState { Hash = string.Empty };
@@ -161,12 +171,9 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             if (cachedState != null)
             {
                 turnContext.TurnState.Remove(_contextServiceKey);
@@ -184,14 +191,24 @@ namespace Microsoft.Bot.Builder
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public JToken Get(ITurnContext turnContext)
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
-            var stateKey = this.GetType().Name;
-            var cachedState = turnContext.TurnState.Get<object>(stateKey);
-            return JObject.FromObject(cachedState)["State"];
+            var cachedState = GetCachedState(turnContext);
+            return JObject.FromObject(cachedState.State);
+        }
+
+        /// <summary>
+        /// Gets the cached bot state instance that wraps the raw cached data for this <see cref="BotState"/>
+        /// from the turn context.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>The cached bot state instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
+        public CachedBotState GetCachedState(ITurnContext turnContext)
+        {
+            BotAssert.ContextNotNull(turnContext);
+
+            return turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
         }
 
         /// <summary>
@@ -210,26 +227,56 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful, the result contains the property value.</remarks>
+        /// <remarks>If the task is successful, the result contains the property value, otherwise it will be default(T).</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             if (propertyName == null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
 
-            // if there is no value, this will throw, to signal to IPropertyAccesor that a default value should be computed
-            // This allows this to work with value types
-            return Task.FromResult((T)cachedState.State[propertyName]);
+            if (cachedState.State.TryGetValue(propertyName, out object result))
+            {
+                if (result is T t)
+                {
+                    return Task.FromResult(t);
+                }
+
+                if (result == null)
+                {
+                    return Task.FromResult(default(T));
+                }
+
+                // If types are not used by storage serialization, and Newtonsoft is the serializer,
+                // use Newtonsoft to convert the object to the type expected.
+                if (result is JObject jObj)
+                {
+                    return Task.FromResult(jObj.ToObject<T>());
+                }
+
+                if (result is JArray jarray)
+                {
+                    return Task.FromResult(jarray.ToObject<T>());
+                }
+
+                // attempt to convert result to T using json serializer.
+                return Task.FromResult(JToken.FromObject(result).ToObject<T>());
+            }
+
+            if (typeof(T).IsValueType)
+            {
+                throw new KeyNotFoundException(propertyName);
+            }
+
+            return Task.FromResult(default(T));
         }
 
         /// <summary>
@@ -242,19 +289,18 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             if (propertyName == null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             cachedState.State.Remove(propertyName);
             return Task.CompletedTask;
         }
@@ -270,19 +316,18 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
         /// <paramref name="propertyName"/> is <c>null</c>.</exception>
+#pragma warning disable CA1801 // Review unused parameters (we can't change this without breaking binary compat)
         protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
+#pragma warning restore CA1801 // Review unused parameters
         {
-            if (turnContext == null)
-            {
-                throw new ArgumentNullException(nameof(turnContext));
-            }
+            BotAssert.ContextNotNull(turnContext);
 
             if (propertyName == null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
+            var cachedState = GetCachedState(turnContext);
             cachedState.State[propertyName] = value;
             return Task.CompletedTask;
         }
@@ -290,32 +335,46 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Internal cached bot state.
         /// </summary>
-        private class CachedBotState
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
+        public class CachedBotState
+#pragma warning restore CA1034 // Nested types should not be visible
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CachedBotState"/> class.
+            /// </summary>
+            /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
             public CachedBotState(IDictionary<string, object> state = null)
             {
-                State = state ?? new ConcurrentDictionary<string, object>();
+                State = state ?? new Dictionary<string, object>();
                 Hash = ComputeHash(State);
             }
 
+            /// <summary>
+            /// Gets or sets the state as a dictionary of key value pairs.
+            /// </summary>
+            /// <value>
+            /// The state as a dictionary of key value pairs.
+            /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
             public IDictionary<string, object> State { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
-            public string Hash { get; set; }
+            internal string Hash { get; set; }
 
-            public bool IsChanged()
-            {
-                return Hash != ComputeHash(State);
-            }
-
-            internal string ComputeHash(object obj)
+            internal static string ComputeHash(object obj)
             {
                 return JsonConvert.SerializeObject(obj);
+            }
+
+            internal bool IsChanged()
+            {
+                return Hash != ComputeHash(State);
             }
         }
 
         /// <summary>
-        /// Implements IPropertyAccessor for an IPropertyContainer.
-        /// Note the semantic of this accessor are intended to be lazy, this means teh Get, Set and Delete
+        /// Implements an <see cref="IStatePropertyAccessor{T}"/> for a property container.
+        /// Note the semantics of this accessor are intended to be lazy, this means the Get, Set and Delete
         /// methods will first call LoadAsync. This will be a no-op if the data is already loaded.
         /// The implication is you can just use this accessor in the application code directly without first calling LoadAsync
         /// this approach works with the AutoSaveStateMiddleware which will save as needed at the end of a turn.
@@ -355,30 +414,42 @@ namespace Microsoft.Bot.Builder
             /// Get the property value. The semantics are intended to be lazy, note the use of LoadAsync at the start.
             /// </summary>
             /// <param name="turnContext">The context object for this turn.</param>
-            /// <param name="defaultValueFactory">Defines the default value. Invoked when no value been set for the requested state property.  If defaultValueFactory is defined as null, the MissingMemberException will be thrown if the underlying property is not set.</param>
+            /// <param name="defaultValueFactory">Defines the default value.
+            /// Invoked when no value been set for the requested state property.
+            /// If defaultValueFactory is defined as null in that case, the method returns null and
+            /// <see cref="SetAsync(ITurnContext, T, CancellationToken)">SetAsync</see> is not called.</param>
             /// <param name="cancellationToken">The cancellation token.</param>
             /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
             public async Task<T> GetAsync(ITurnContext turnContext, Func<T> defaultValueFactory, CancellationToken cancellationToken)
             {
+                T result = default(T);
+                
                 await _botState.LoadAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+
                 try
                 {
-                    return await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+                    // if T is a value type, lookup up will throw key not found if not found, but as perf
+                    // optimization it will return null if not found for types which are not value types (string and object).
+                    result = await _botState.GetPropertyValueAsync<T>(turnContext, Name, cancellationToken).ConfigureAwait(false);
+
+                    if (result == null && defaultValueFactory != null)
+                    {
+                        // use default Value Factory and save default value for any further calls
+                        result = defaultValueFactory();
+                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
+                    }
                 }
                 catch (KeyNotFoundException)
                 {
-                    // ask for default value from factory
-                    if (defaultValueFactory == null)
+                    if (defaultValueFactory != null)
                     {
-                        return default(T);
+                        // use default Value Factory and save default value for any further calls
+                        result = defaultValueFactory();
+                        await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
                     }
-
-                    var result = defaultValueFactory();
-
-                    // save default value for any further calls
-                    await SetAsync(turnContext, result, cancellationToken).ConfigureAwait(false);
-                    return result;
                 }
+
+                return result;
             }
 
             /// <summary>

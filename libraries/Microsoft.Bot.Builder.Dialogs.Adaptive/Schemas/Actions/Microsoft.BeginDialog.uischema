@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Begin a new dialog",
+        "subtitle": "Begin Dialog",
+        "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+        "order": [
+            "dialog",
+            "options",
+            "resultProperty",
+            "*"
+        ],
+        "properties": {
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "DialogRef",
+            "dialog": "=action.dialog"
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Return value"
+        },
+        "hideFooter": "=!action.resultProperty"
+    }
+}

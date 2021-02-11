@@ -1,0 +1,11 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "title": "Microsoft TextTemplate",
+    "description": "Components which derive from TextTemplate class",
+    "$role": "interface",
+    "oneOf": [
+        {
+            "type": "string"
+        }
+    ]
+}

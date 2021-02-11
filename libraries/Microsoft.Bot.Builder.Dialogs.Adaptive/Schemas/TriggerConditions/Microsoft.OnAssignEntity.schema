@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "On entity assignment",
+    "description": "Actions to take when an entity should be assigned to a property.",
+    "type": "object",
+    "properties": {
+        "property": {
+            "type": "string",
+            "title": "Property",
+            "description": "Property that will be set after entity is selected."
+        },
+        "entity": {
+            "type": "string",
+            "title": "Entity",
+            "description": "Entity being put into property"
+        },
+        "operation": {
+            "type": "string",
+            "title": "Operation",
+            "description": "Operation for assigning entity."
+        }
+    }
+}

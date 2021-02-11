@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Logging client for Bot Telemetry.
+    /// Describes a logging client for bot telemetry.
     /// </summary>
     public interface IBotTelemetryClient
     {

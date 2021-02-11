@@ -10,6 +10,9 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
+    /// <summary>
+    /// Extension methods for <see cref="HttpConfiguration"/>.
+    /// </summary>
     public static class HttpConfigurationExtensions
     {
         /// <summary>
@@ -33,9 +36,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             var adapter = httpConfiguration.DependencyResolver.GetService(typeof(IAdapterIntegration)) as IAdapterIntegration;
             if (adapter == null)
             {
-                var credentialProvider = ResolveCredentialProvider(options);
+                BotFrameworkAdapter botFrameworkAdapter;
 
-                var botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.AuthenticationConfiguration, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                if (options.AppCredentials != null)
+                {
+                    botFrameworkAdapter = new BotFrameworkAdapter(options.AppCredentials, options.AuthenticationConfiguration, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                }
+                else
+                {
+                    var credentialProvider = ResolveCredentialProvider(options);
+                    botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.AuthenticationConfiguration, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                }
 
                 // error handler
                 botFrameworkAdapter.OnTurnError = options.OnTurnError;
@@ -66,7 +77,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                     baseUrl.Trim('/') + "/" + options.Paths.MessagesPath.Trim('/'),
                     defaults: null,
                     constraints: null,
+#pragma warning disable CA2000 // Dispose objects before losing scope (we will let ASP.Net core deal with disposing this handler)
                     handler: new BotMessageHandler(adapter));
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         private static ICredentialProvider ResolveCredentialProvider(BotFrameworkOptions options)
@@ -104,9 +117,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 
             var emulateOAuthCards = ConfigurationManager.AppSettings[AuthenticationConstants.EmulateOAuthCardsKey];
 
-            if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emualteOAuthCardsValue))
+            if (!string.IsNullOrEmpty(emulateOAuthCards) && bool.TryParse(emulateOAuthCards, out bool emulateOAuthCardsValue))
             {
-                OAuthClientConfig.EmulateOAuthCards = emualteOAuthCardsValue;
+                OAuthClientConfig.EmulateOAuthCards = emulateOAuthCardsValue;
             }
         }
     }

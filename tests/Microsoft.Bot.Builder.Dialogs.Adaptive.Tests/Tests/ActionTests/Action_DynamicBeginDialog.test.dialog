@@ -1,0 +1,62 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.name",
+                        "value": "Tom"
+                    },
+                    {
+                        "$kind": "CustomAction.dialog",
+                        "name": "=user.name",
+                        "age": 52,
+                        "resultProperty": "dialog.foo"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "result:${dialog.foo}"
+                    },
+                    {
+                        "$kind": "CustomAction2.dialog",
+                        "name": "Bob",
+                        "age": 34,
+                        "resultProperty": "dialog.bar"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "result2:${dialog.bar}"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Hi."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hi Tom, you are 52."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "result:13"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hi2 Bob, you are 34."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "result2:99"
+        }
+    ]
+}

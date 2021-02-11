@@ -1,0 +1,24 @@
+﻿{
+  "object": "page",
+  "entry": [
+    {
+      "id": "fakeId",
+      "time": 1572630401588,
+      "messaging": [
+        {
+          "recipient": {
+            "id": "fakeId"
+          },
+          "timestamp": 1572630401588,
+          "sender": {
+            "id": "fakeId"
+          },
+          "request_thread_control": {
+            "requested_owner_app_id": 1234567890,
+            "metadata": null
+          }
+        }
+      ]
+    }
+  ]
+}

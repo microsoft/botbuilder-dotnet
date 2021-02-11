@@ -1,0 +1,25 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.TextInput",
+                    "prompt": "Hello, what is your name?",
+                    "property": "user.name"
+                },
+                {
+                    "$kind": "Microsoft.TraceActivity",
+                    "valueType": "memory",
+                    "value": "=user"
+                },
+                {
+                    "$kind": "Microsoft.LogAction",
+                    "text": "${user.name}"
+                }
+            ]
+        }
+    ]
+}

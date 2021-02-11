@@ -1,0 +1,104 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "type": "object",
+    "title": "HTTP request",
+    "description": "Make a HTTP request.",
+    "required": [
+        "url",
+        "method"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "method": {
+            "type": "string",
+            "title": "HTTP method",
+            "description": "HTTP method to use.",
+            "enum": [
+                "GET",
+                "POST",
+                "PATCH",
+                "PUT",
+                "DELETE"
+            ],
+            "examples": [
+                "GET",
+                "POST"
+            ]
+        },
+        "url": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Url",
+            "description": "URL to call (supports data binding).",
+            "examples": [
+                "https://contoso.com"
+            ]
+        },
+        "body": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Body",
+            "description": "Body to include in the HTTP call (supports data binding).",
+            "additionalProperties": true
+        },
+        "resultProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Result property",
+            "description": "A property to store the result of this action. The result can include any of the 4 properties from the HTTP response: statusCode, reasonPhrase, content, and headers. If the content is JSON it will be a deserialized object. The values can be accessed via .content for example.",
+            "examples": [
+                "dialog.contosodata"
+            ]
+        },
+        "contentType": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Content type",
+            "description": "Content media type for the body.",
+            "examples": [
+                "application/json",
+                "text/plain"
+            ]
+        },
+        "headers": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "schema:#/definitions/stringExpression"
+            },
+            "title": "Headers",
+            "description": "One or more headers to include in the request (supports data binding)."
+        },
+        "responseType": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Response type",
+            "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Standard response",
+                    "description": "Standard response type.",
+                    "enum": [
+                        "none",
+                        "json",
+                        "activity",
+                        "activities",
+                        "binary"
+                    ],
+                    "default": "json"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Edit an array property",
+        "subtitle": "Edit Array",
+        "helpLink": "https://aka.ms/bfc-using-memory",
+        "properties": {
+            "itemsProperty": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
+            },
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "=coalesce(action.changeType, \"?\")",
+            "resource": "=coalesce(action.itemsProperty, \"?\")"
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Result"
+        },
+        "hideFooter": "=!action.resultProperty"
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "If condition",
+    "description": "Two-way branch the conversation flow based on a condition.",
+    "type": "object",
+    "required": [
+        "condition"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "condition": {
+            "$ref": "schema:#/definitions/condition",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Actions",
+            "description": "Actions to execute if condition is true."
+        },
+        "elseActions": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Else",
+            "description": "Actions to execute if condition is false."
+        }
+    }
+}

@@ -1,0 +1,24 @@
+﻿{
+  "object": "page",
+  "entry": [
+    {
+      "id": "fakeId",
+      "time": 1572630386105,
+      "messaging": [
+        {
+          "recipient": {
+            "id": "fakeId"
+          },
+          "timestamp": 1572630386105,
+          "sender": {
+            "id": "fakeId"
+          },
+          "take_thread_control": {
+            "previous_owner_app_id": 1234567890,
+            "metadata": "Take thread control from a secondary receiver"
+          }
+        }
+      ]
+    }
+  ]
+}

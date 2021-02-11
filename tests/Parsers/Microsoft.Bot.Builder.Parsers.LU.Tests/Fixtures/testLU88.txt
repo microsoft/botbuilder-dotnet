@@ -1,0 +1,8 @@
+
+@ ml fooBar
+@ ml x1
+@ prebuilt number
+@ list l1
+@ composite c1
+@ regex r1
+@fooBar usesFeatures x1, number, l1, c1, r1

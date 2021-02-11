@@ -2303,7 +2303,8 @@
       }
     },
     "MicrosoftPayMethodData": {
-      "description": "W3C Payment Method Data for Microsoft Pay",
+      "deprecated": true,
+      "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "merchantId": {
@@ -2311,14 +2312,16 @@
           "type": "string"
         },
         "supportedNetworks": {
-          "description": "Supported payment networks (e.g., \"visa\" and \"mastercard\")",
+            "deprecated": true,
+            "description": "Deprecated. Bot Framework no longer supports payments.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "supportedTypes": {
-          "description": "Supported payment types (e.g., \"credit\")",
+            "deprecated": true,
+            "description": "Deprecated. Bot Framework no longer supports payments.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2327,7 +2330,8 @@
       }
     },
     "PaymentAddress": {
-      "description": "Address within a Payment Request",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "country": {
@@ -2380,7 +2384,8 @@
       }
     },
     "PaymentCurrencyAmount": {
-      "description": "Supplies monetary amounts",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "currency": {
@@ -2398,7 +2403,8 @@
       }
     },
     "PaymentDetails": {
-      "description": "Provides information about the requested transaction",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "total": {
@@ -2433,7 +2439,8 @@
       }
     },
     "PaymentItem": {
-      "description": "Indicates what the payment request is for and the value asked for",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "label": {
@@ -2451,7 +2458,8 @@
       }
     },
     "PaymentShippingOption": {
-      "description": "Describes a shipping option",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "id": {
@@ -2473,7 +2481,8 @@
       }
     },
     "PaymentDetailsModifier": {
-      "description": "Provides details that modify the PaymentDetails based on payment method identifier",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "supportedMethods": {
@@ -2501,7 +2510,8 @@
       }
     },
     "PaymentMethodData": {
-      "description": "Indicates a set of supported payment methods and any associated payment method specific data for those methods",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "supportedMethods": {
@@ -2518,7 +2528,8 @@
       }
     },
     "PaymentOptions": {
-      "description": "Provides information about the options desired for the payment request",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "requestPayerName": {
@@ -2544,7 +2555,8 @@
       }
     },
     "PaymentRequest": {
-      "description": "A request to make a payment",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "id": {
@@ -2573,7 +2585,8 @@
       }
     },
     "PaymentRequestComplete": {
-      "description": "Payload delivered when completing a payment request",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "id": {
@@ -2591,7 +2604,8 @@
       }
     },
     "PaymentResponse": {
-      "description": "A PaymentResponse is returned when a user has selected a payment method and approved a payment request",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "methodName": {
@@ -2621,7 +2635,8 @@
       }
     },
     "PaymentRequestCompleteResult": {
-      "description": "Result from a completed payment request",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "result": {
@@ -2631,7 +2646,8 @@
       }
     },
     "PaymentRequestUpdate": {
-      "description": "An update to a payment request",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "id": {
@@ -2653,7 +2669,8 @@
       }
     },
     "PaymentRequestUpdateResult": {
-      "description": "A result object from a Payment Request Update invoke operation",
+    "deprecated": true,
+    "description": "Deprecated. Bot Framework no longer supports payments.",
       "type": "object",
       "properties": {
         "details": {

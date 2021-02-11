@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Throw an exception",
+    "description": "Throw an exception. Capture this exception with OnError trigger.",
+    "type": "object",
+    "required": [
+        "errorValue"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "errorValue": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Error value",
+            "description": "Error value to throw."
+        }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.IRecognizer)", "implements(Microsoft.IEntityRecognizer)" ],
+    "title": "Regex entity recognizer",
+    "description": "Recognizer which recognizes patterns of input based on regex.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the entity"
+        },
+        "pattern": {
+            "type": "string",
+            "title": "Pattern",
+            "description": "Pattern expressed as regular expression."
+        }
+    },
+    "required": [
+        "name",
+        "pattern"
+    ]
+}

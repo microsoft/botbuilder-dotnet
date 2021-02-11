@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.TestBot.Shared.Controllers;
 using Moq;
 using Xunit;
 
@@ -35,7 +36,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Controllers
             var mockBot = new Mock<IBot>();
 
             // Create and initialize controller
-            var sut = new BotController(mockAdapter.Object, arg => mockBot.Object)
+            var sut = new BotController(mockAdapter.Object, (s) => mockBot.Object)
             {
                 ControllerContext = new ControllerContext(actionContext),
             };

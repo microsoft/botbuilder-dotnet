@@ -10,10 +10,16 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     public class OverrideFillRecognizer : LuisRecognizer
     {
+        #pragma warning disable CS0618 // Type or member is obsolete
         public OverrideFillRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
            : base(application, predictionOptions, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;
+        }
+
+        public OverrideFillRecognizer(LuisRecognizerOptions recognizerOptions, HttpClientHandler clientHandler = null)
+        : base(recognizerOptions, clientHandler)
+        {
         }
 
         protected override async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)

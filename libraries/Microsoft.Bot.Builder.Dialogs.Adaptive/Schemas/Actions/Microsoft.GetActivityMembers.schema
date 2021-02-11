@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Get activity members",
+    "description": "Get the members who are participating in an activity. (BotFrameworkAdapter only)",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "property": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Property",
+            "description": "Property (named location to store information).",
+            "examples": [
+                "user.age"
+            ]
+        },
+        "activityId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Activity Id",
+            "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
+            "examples": [
+                "turn.lastresult.id"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        }
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "property": "$age",
+                        "prompt": "Hello, how old are you?"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "options": {
+                            "userAge": "=$age"
+                        },
+                        "dialog": "AdaptiveDialog_BindingOptionsAcrossAdaptiveDialogs.AgeDialog"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, how old are you?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "44"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, you are 44 years old!"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "And your actual age is 44"
+        }
+    ]
+}

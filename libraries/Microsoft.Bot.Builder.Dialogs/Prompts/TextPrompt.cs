@@ -93,5 +93,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return Task.FromResult(result);
         }
+
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <remarks>
+        /// This is a good place to perform interception of an event as returning `true` will prevent
+        /// any further bubbling of the event to the dialogs parents and will also prevent any child
+        /// dialogs from performing their default processing.
+        /// </remarks>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            return await Task.FromResult(false).ConfigureAwait(false);
+        }
     }
 }

@@ -1,0 +1,80 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Switch condition",
+    "description": "Execute different actions based on the value of a property.",
+    "type": "object",
+    "required": [
+        "condition"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "condition": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Condition",
+            "description": "Property to evaluate.",
+            "examples": [
+                "user.favColor"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        },
+        "cases": {
+            "type": "array",
+            "title": "Cases",
+            "description": "Actions for each possible condition.",
+            "items": {
+                "type": "object",
+                "title": "Case",
+                "description": "Case and actions.",
+                "properties": {
+                    "value": {
+                        "type": [
+                            "number",
+                            "integer",
+                            "boolean",
+                            "string"
+                        ],
+                        "title": "Value",
+                        "description": "The value to compare the condition with.",
+                        "examples": [
+                            "red",
+                            "true",
+                            "13"
+                        ]
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "$kind": "Microsoft.IDialog"
+                        },
+                        "title": "Actions",
+                        "description": "Actions to execute."
+                    }
+                },
+                "required": [
+                    "value"
+                ]
+            }
+        },
+        "default": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Default",
+            "description": "Actions to execute if none of the cases meet the condition."
+        }
+    }
+}

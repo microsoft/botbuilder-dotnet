@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send an HTTP request",
+        "subtitle": "HTTP Request",
+        "order": [
+            "method",
+            "url",
+            "body",
+            "headers",
+            "*"
+        ],
+        "helpLink": "https://aka.ms/bfc-using-http",
+        "properties": {
+            "resultProperty": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "=action.method",
+            "resource": "=action.url",
+            "singleline": true
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.resultProperty",
+            "description": "= Result property"
+        },
+        "hideFooter": "=!action.resultProperty"
+    }
+}

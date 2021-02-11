@@ -3,11 +3,19 @@
 
 namespace Microsoft.Bot.Configuration
 {
+    using System;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// An Endpoint service containing configuration properties defining the endpoint for a bot (Azure or Government).
+    /// </summary>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class EndpointService : ConnectedService
-    {
+    { 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EndpointService"/> class.
+        /// </summary>
         public EndpointService()
             : base(ServiceTypes.Endpoint)
         {

@@ -1,0 +1,13 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "PATCH",
+    "url": "http://127.0.0.1",
+    "matchType": "Exact",
+    "body": "full body",
+    "responses": [
+        {
+            "content": "exact match"
+        }
+    ]
+}

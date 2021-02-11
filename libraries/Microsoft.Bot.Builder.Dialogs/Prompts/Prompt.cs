@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Prompt(string dialogId, PromptValidator<T> validator = null)
             : base(dialogId)
         {
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
+                throw new ArgumentNullException(nameof(dialogId));
+            }
+
             _validator = validator;
         }
 
@@ -58,11 +64,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the prompt is still
         /// active after the turn has been processed by the prompt.</remarks>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
             if (!(options is PromptOptions))
@@ -106,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the dialog.
         /// <para>The prompt generally continues to receive the user's replies until it accepts the
         /// user's reply as valid input for the prompt.</para></remarks>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -127,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Increment attempt count
             // Convert.ToInt32 For issue https://github.com/Microsoft/botbuilder-dotnet/issues/1859
-            state[AttemptCountKey] = Convert.ToInt32(state[AttemptCountKey]) + 1;
+            state[AttemptCountKey] = Convert.ToInt32(state[AttemptCountKey], CultureInfo.InvariantCulture) + 1;
 
             // Validate the return value
             var isValid = false;
@@ -160,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// when the previous active dialog on the stack completes.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">An enumeration values that indicates why the dialog resumed.</param>
+        /// <param name="reason">An enum indicating why the dialog resumed.</param>
         /// <param name="result">Optional, value returned from the previous dialog on the stack.
         /// The type of the value returned is dependent on the previous dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -168,8 +179,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog.</remarks>
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.
@@ -187,11 +203,36 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default)
         {
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Called before an event is bubbled to its parent.
+        /// </summary>
+        /// <remarks>
+        /// This is a good place to perform interception of an event as returning `true` will prevent
+        /// any further bubbling of the event to the dialogs parents and will also prevent any child
+        /// dialogs from performing their default processing.
+        /// </remarks>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                // Perform base recognition
+                var state = dc.ActiveDialog.State;
+                var recognized = await OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
+                return recognized.Succeeded;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -202,11 +243,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="options">A prompt options object constructed from the options initially provided
         /// in the call to <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>.</param>
         /// <param name="isRetry">true if this is the first time this prompt dialog instance
-        /// on the stack is prompting the user for input; otherwise, false.</param>
+        /// is on the stack is prompting the user for input; otherwise, false. Determines whether
+        /// <see cref="PromptOptions.Prompt"/> or <see cref="PromptOptions.RetryPrompt"/> should be used.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// When overridden in a derived class, attempts to recognize the user's input.
@@ -219,7 +261,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result describes the result of the recognition attempt.</remarks>
-        protected abstract Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken));
+        protected abstract Task<PromptRecognizerResult<T>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// When overridden in a derived class, appends choices to the activity when the user is prompted for input.
@@ -233,7 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the updated activity.</remarks>
-        protected IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default)
         {
             // Get base prompt text (if any)
             var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
@@ -283,16 +325,21 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (msg.Attachments != null && msg.Attachments.Any())
                 {
-                    prompt.Attachments = msg.Attachments;
+                    if (prompt.Attachments == null)
+                    {
+                        prompt.Attachments = msg.Attachments;
+                    }
+                    else
+                    {
+                        prompt.Attachments = prompt.Attachments.Concat(msg.Attachments).ToList();
+                    }
                 }
 
                 return prompt;
             }
-            else
-            {
-                msg.InputHint = InputHints.ExpectingInput;
-                return msg;
-            }
+
+            msg.InputHint = InputHints.ExpectingInput;
+            return msg;
         }
     }
 }

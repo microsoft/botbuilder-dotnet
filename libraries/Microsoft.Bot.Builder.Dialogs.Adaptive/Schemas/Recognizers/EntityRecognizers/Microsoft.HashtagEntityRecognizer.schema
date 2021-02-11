@@ -1,0 +1,8 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.IRecognizer)", "implements(Microsoft.IEntityRecognizer)" ],
+    "title": "Hashtag entity recognizer",
+    "description": "Recognizer which recognizes Hashtags.",
+    "type": "object",
+    "properties": {}
+}

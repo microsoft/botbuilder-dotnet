@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IActivityTemplate)",
+    "title": "Microsoft activity template",
+    "type": "object",
+    "properties": {
+        "template": {
+            "title": "Template",
+            "description": "Language Generator template to use to create the activity",
+            "type": "string"
+        }
+    },
+    "required": [
+        "template"
+    ]
+}

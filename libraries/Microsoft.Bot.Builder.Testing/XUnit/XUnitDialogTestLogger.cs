@@ -45,7 +45,15 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <value>The <see cref="ITestOutputHelper"/> instance for this middleware.</value>
         protected ITestOutputHelper Output { get; }
 
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Processes the incoming activity and logs it using the <see cref="ITestOutputHelper"/>.
+        /// </summary>
+        /// <param name="context">The context object for this turn.</param>
+        /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -66,7 +74,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <param name="activity">The <see cref="Activity"/> to be logged.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work to execute.</returns>
-        protected virtual Task LogIncomingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default)
+        protected virtual Task LogIncomingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             var actor = "User: ";
             if (activity.Type == ActivityTypes.Message)
@@ -90,7 +98,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// <param name="activity">The <see cref="Activity"/> to be logged.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that represents the work to execute.</returns>
-        protected virtual Task LogOutgoingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default)
+        protected virtual Task LogOutgoingActivityAsync(ITurnContext context, Activity activity, CancellationToken cancellationToken = default(CancellationToken))
         {
             var stopwatch = (Stopwatch)context.TurnState[_stopWatchStateKey];
             var actor = "Bot:  ";

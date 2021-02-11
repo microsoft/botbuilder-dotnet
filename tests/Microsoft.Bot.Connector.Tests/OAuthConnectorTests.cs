@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Connector.Tests
         //     });
         // }
         [Fact]
-        public async Task GetUserToken_ShouldReturnNullOnInvalidConnectionstring()
+        public async Task GetUserToken_ShouldReturnNullOnInvalidConnectionString()
         {
             await UseOAuthClientFor(async client =>
              {

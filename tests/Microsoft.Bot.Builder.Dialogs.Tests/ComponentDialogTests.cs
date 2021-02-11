@@ -7,23 +7,88 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
-    [TestCategory("Prompts")]
-    [TestCategory("ComponentDialog Tests")]
+    [Trait("TestCategory", "Prompts")]
+    [Trait("TestCategory", "ComponentDialog Tests")]
     public class ComponentDialogTests
     {
-        [TestMethod]
+        [Fact]
+        public async Task CallDialogInParentComponent()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(CallDialogDefinedInParentComponent)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var state = await dialogState.GetAsync(turnContext, () => new DialogState());
+                var dialogs = new DialogSet(dialogState);
+
+                var childComponent = new ComponentDialog("childComponent");
+                var childStep = new WaterfallStep[]
+                    {
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync("Child started.");
+                            return await step.BeginDialogAsync("parentDialog", "test");
+                        },
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync($"Child finished. Value: {step.Result}");
+                            return await step.EndDialogAsync();
+                        }
+                    };
+                childComponent.AddDialog(new WaterfallDialog("childDialog", childStep));
+
+                var parentComponent = new ComponentDialog("parentComponent");
+                parentComponent.AddDialog(childComponent);
+                var parentStep = new WaterfallStep[]
+                    {
+                        async (step, token) =>
+                        {
+                            await step.Context.SendActivityAsync("Parent called.");
+                            return await step.EndDialogAsync(step.Options);
+                        }
+                    };
+                parentComponent.AddDialog(new WaterfallDialog("parentDialog", parentStep));
+
+                dialogs.Add(parentComponent);
+
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.BeginDialogAsync("parentComponent", null, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var value = (int)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{value}'."), cancellationToken);
+                }
+            })
+            .Send("Hi")
+                .AssertReply("Child started.")
+                .AssertReply("Parent called.")
+                .AssertReply("Child finished. Value: test")
+            .StartTestAsync();
+        }
+
+        [Fact]
         public async Task BasicWaterfallTest()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(BasicWaterfallTest)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -56,80 +121,81 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TelemetryBasicWaterfallTest()
         {
             var testComponentDialog = new TestComponentDialog();
-            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
 
             testComponentDialog.TelemetryClient = new MyBotTelemetryClient();
-            Assert.IsTrue(testComponentDialog.TelemetryClient is MyBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is MyBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is MyBotTelemetryClient);
+            Assert.Equal(typeof(MyBotTelemetryClient), testComponentDialog.TelemetryClient.GetType());
+            Assert.Equal(typeof(MyBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(MyBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TelemetryHeterogeneousLoggerTest()
         {
             var testComponentDialog = new TestComponentDialog();
-            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
 
             testComponentDialog.FindDialog("test-waterfall").TelemetryClient = new MyBotTelemetryClient();
 
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is MyBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            Assert.Equal(typeof(MyBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TelemetryAddWaterfallTest()
         {
             var testComponentDialog = new TestComponentDialog();
-            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
 
             testComponentDialog.TelemetryClient = new MyBotTelemetryClient();
             testComponentDialog.AddDialog(new WaterfallDialog("C"));
 
-            Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is MyBotTelemetryClient);
+            Assert.Equal(typeof(MyBotTelemetryClient), testComponentDialog.FindDialog("C").TelemetryClient.GetType());
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TelemetryNullUpdateAfterAddTest()
         {
             var testComponentDialog = new TestComponentDialog();
-            Assert.IsTrue(testComponentDialog.TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
 
             testComponentDialog.TelemetryClient = new MyBotTelemetryClient();
             testComponentDialog.AddDialog(new WaterfallDialog("C"));
 
-            Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is MyBotTelemetryClient);
+            Assert.Equal(typeof(MyBotTelemetryClient), testComponentDialog.FindDialog("C").TelemetryClient.GetType());
             testComponentDialog.TelemetryClient = null;
 
-            Assert.IsTrue(testComponentDialog.FindDialog("test-waterfall").TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("number").TelemetryClient is NullBotTelemetryClient);
-            Assert.IsTrue(testComponentDialog.FindDialog("C").TelemetryClient is NullBotTelemetryClient);
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("test-waterfall").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("number").TelemetryClient.GetType());
+            Assert.Equal(typeof(NullBotTelemetryClient), testComponentDialog.FindDialog("C").TelemetryClient.GetType());
 
             await Task.CompletedTask;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BasicComponentDialogTest()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(BasicComponentDialogTest)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -161,14 +227,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task NestedComponentDialogTest()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(NestedComponentDialogTest)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -216,7 +283,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task CallDialogDefinedInParentComponent()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -228,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var options = new Dictionary<string, string> { { "value", "test" } };
 
             var childComponent = new ComponentDialog("childComponent");
-            var childSteps = new WaterfallStep[]
+            var childActions = new WaterfallStep[]
             {
                 async (step, ct) =>
                 {
@@ -237,31 +304,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 async (step, ct) =>
                 {
-                    Assert.AreEqual("test", (string)step.Result);
+                    Assert.Equal("test", (string)step.Result);
                     await step.Context.SendActivityAsync("Child finished.");
                     return await step.EndDialogAsync();
                 },
             };
             childComponent.AddDialog(new WaterfallDialog(
                 "childDialog",
-                childSteps));
+                childActions));
 
             var parentComponent = new ComponentDialog("parentComponent");
             parentComponent.AddDialog(childComponent);
-            var parentSteps = new WaterfallStep[]
+            var parentActions = new WaterfallStep[]
             {
                 async (step, dc) =>
                 {
                     var stepOptions = step.Options as IDictionary<string, string>;
-                    Assert.IsNotNull(stepOptions);
-                    Assert.IsTrue(stepOptions.ContainsKey("value"));
+                    Assert.NotNull(stepOptions);
+                    Assert.True(stepOptions.ContainsKey("value"));
                     await step.Context.SendActivityAsync($"Parent called with: {stepOptions["value"]}");
                     return await step.EndDialogAsync(stepOptions["value"]);
                 },
             };
             parentComponent.AddDialog(new WaterfallDialog(
                 "parentDialog",
-                parentSteps));
+                parentActions));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
@@ -405,7 +472,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        private class MyBotTelemetryClient : IBotTelemetryClient
+        private class MyBotTelemetryClient : IBotTelemetryClient, IBotPageViewTelemetryClient
         {
             public MyBotTelemetryClient()
             {
@@ -422,6 +489,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
 
             public void TrackDependency(string dependencyTypeName, string target, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, string resultCode, bool success)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void TrackPageView(string dialogName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
             {
                 throw new NotImplementedException();
             }

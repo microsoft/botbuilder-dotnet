@@ -1,21 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Configuration.Tests
 {
-    [TestClass]
     public class ConnectionTests
     {
-        private const string TestBotFileName = @"../../../test.bot";
+        private readonly string testBotFileName = NormalizePath(@"..\..\..\test.bot");
 
-        [TestMethod]
+        public static string NormalizePath(string ambiguousPath)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // map linux/mac sep -> windows
+                return ambiguousPath.Replace("/", "\\");
+            }
+            else
+            {
+                // map windows sep -> linux/mac
+                return ambiguousPath.Replace("\\", "/");
+            }
+        }
+
+        [Fact]
         public async Task ConnectAssignsUniqueIds()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -26,33 +40,31 @@ namespace Microsoft.Bot.Configuration.Tests
             var hashset = new HashSet<string>();
             foreach (var service in config2.Services)
             {
-                Assert.IsFalse(hashset.Contains(service.Id), "the id assigned is not unique for the collection");
+                Assert.DoesNotContain(service.Id, hashset);
                 hashset.Add(service.Id);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task FindServices()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
-            Assert.IsNotNull(config.FindServiceByNameOrId("3"), "Should find by id");
-            Assert.IsNotNull(config.FindServiceByNameOrId("testInsights"), "Should find by name");
-            Assert.IsNotNull(config.FindService("3"), "Should find by id");
-            Assert.IsNull(config.FindService("testInsights"), "Should not find by name ");
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
+            Assert.NotNull(config.FindServiceByNameOrId("3"));
+            Assert.NotNull(config.FindServiceByNameOrId("testInsights"));
+            Assert.NotNull(config.FindService("3"));
+            Assert.Null(config.FindService("testInsights"));
 
             var service = config.FindServiceByNameOrId<GenericService>("testAbs");
-            Assert.IsNotNull(service, "Should find a service with this type and name.");
-            Assert.IsTrue(service.Id.Equals("12"), "Should find the correct service.");
+            Assert.NotNull(service);
+            Assert.Equal("12", service.Id);
 
-            Assert.IsNull(
-                config.FindServiceByNameOrId<CosmosDbService>("testAbs"),
-                "Should not find a service of this type and name.");
+            Assert.Null(config.FindServiceByNameOrId<CosmosDbService>("testAbs"));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisconnectServicesById()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -66,13 +78,13 @@ namespace Microsoft.Bot.Configuration.Tests
                 config2.DisconnectService(key);
             }
 
-            Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
+            Assert.Empty(config2.Services);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisconnectServicesByNameOrId_UsingId()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -86,13 +98,13 @@ namespace Microsoft.Bot.Configuration.Tests
                 config2.DisconnectServiceByNameOrId(id);
             }
 
-            Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
+            Assert.Empty(config2.Services);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisconnectByNameOrId_UsingName()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -106,13 +118,13 @@ namespace Microsoft.Bot.Configuration.Tests
                 config2.DisconnectServiceByNameOrId(name);
             }
 
-            Assert.AreEqual(config2.Services.Count, 0, "didn't remove all services");
+            Assert.Empty(config2.Services);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisconnectService_UsingNameAndType()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -123,22 +135,22 @@ namespace Microsoft.Bot.Configuration.Tests
             // We should have at least an ABS and generic service with the name "testAbs".
             const string name = "testAbs";
             var duplicateServices = config2.Services.Where(s => s.Name.Equals(name)).ToArray();
-            Assert.IsTrue(duplicateServices.Length > 1, "Should have at least two services with this name.");
+            Assert.True(duplicateServices.Length > 1, "Should have at least two services with this name.");
 
             var botService = config2.DisconnectServiceByNameOrId<BotService>(name);
-            Assert.IsNotNull(botService, "Should have removed an ABS service.");
+            Assert.NotNull(botService);
 
             // Make sure this operation is not order dependent.
             config2.ConnectService(botService);
             var genericService = config2.DisconnectServiceByNameOrId<GenericService>(name);
-            Assert.IsNotNull(genericService, "Should have removed a generic service.");
+            Assert.NotNull(genericService);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DisconnectByNameOrId_UsingName_WithDuplicates()
         {
             // We have a least one duplicate name in the config.
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             var uniqueNames = new List<string>();
             var duplicatedNames = new List<string>();
@@ -156,22 +168,22 @@ namespace Microsoft.Bot.Configuration.Tests
                 }
             }
 
-            Assert.IsTrue(duplicatedNames.Count > 0, "The config file should have at least one duplicated service name.");
+            Assert.True(duplicatedNames.Count > 0, "The config file should have at least one duplicated service name.");
             foreach (var name in uniqueNames)
             {
                 config2.DisconnectServiceByNameOrId(name);
             }
 
-            Assert.AreEqual(config2.Services.Count, duplicatedNames.Count, "Extra services (with a duplicated name) should still be connected.");
+            Assert.Equal(config2.Services.Count, duplicatedNames.Count);
             foreach (var name in duplicatedNames)
             {
                 config2.DisconnectServiceByNameOrId(name);
             }
 
-            Assert.AreEqual(config2.Services.Count, 0, "Didn't remove remaining services.");
+            Assert.Empty(config2.Services);
         }
 
-        [TestMethod]
+        [Fact]
         public void EncryptWithNullPropertiesOK()
         {
             // all of these objects should have null properties, this should not cause secret to blow up
@@ -185,7 +197,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("generic failed with empty values");
+                throw new XunitException("generic failed with empty values");
             }
 
             try
@@ -196,7 +208,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("file failed with empty values");
+                throw new XunitException("file failed with empty values");
             }
 
             try
@@ -207,7 +219,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("luis failed with empty values");
+                throw new XunitException("luis failed with empty values");
             }
 
             try
@@ -218,7 +230,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("dispatch failed with empty values");
+                throw new XunitException("dispatch failed with empty values");
             }
 
             try
@@ -229,7 +241,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("insights failed with empty values");
+                throw new XunitException("insights failed with empty values");
             }
 
             try
@@ -240,7 +252,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("bot failed with empty values");
+                throw new XunitException("bot failed with empty values");
             }
 
             try
@@ -251,7 +263,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("cosmos failed with empty values");
+                throw new XunitException("cosmos failed with empty values");
             }
 
             try
@@ -262,7 +274,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("qna failed with empty values");
+                throw new XunitException("qna failed with empty values");
             }
 
             try
@@ -273,7 +285,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("blob failed with empty values");
+                throw new XunitException("blob failed with empty values");
             }
 
             try
@@ -284,11 +296,11 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("endpoint failed with empty values");
+                throw new XunitException("endpoint failed with empty values");
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void EncryptWithEmptyPropertiesOK()
         {
             // all of these objects should have null properties, this should not cause secret to blow up
@@ -303,7 +315,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("generic failed with empty values");
+                throw new XunitException("generic failed with empty values");
             }
 
             try
@@ -317,7 +329,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("file failed with empty values");
+                throw new XunitException("file failed with empty values");
             }
 
             try
@@ -331,7 +343,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("luis failed with empty values");
+                throw new XunitException("luis failed with empty values");
             }
 
             try
@@ -345,7 +357,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("dispatch failed with empty values");
+                throw new XunitException("dispatch failed with empty values");
             }
 
             try
@@ -359,7 +371,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("insights failed with empty values");
+                throw new XunitException("insights failed with empty values");
             }
 
             try
@@ -370,7 +382,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("bot failed with empty values");
+                throw new XunitException("bot failed with empty values");
             }
 
             try
@@ -384,7 +396,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("cosmos failed with empty values");
+                throw new XunitException("cosmos failed with empty values");
             }
 
             try
@@ -398,7 +410,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("qna failed with empty values");
+                throw new XunitException("qna failed with empty values");
             }
 
             try
@@ -412,7 +424,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("blob failed with empty values");
+                throw new XunitException("blob failed with empty values");
             }
 
             try
@@ -426,15 +438,15 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-                Assert.Fail("endpoint failed with empty values");
+                throw new XunitException("endpoint failed with empty values");
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestLuisEndpoint()
         {
             var luisApp = new LuisService() { Region = "westus" };
-            Assert.AreEqual(luisApp.GetEndpoint(), $"https://{luisApp.Region}.api.cognitive.microsoft.com");
+            Assert.Equal($"https://{luisApp.Region}.api.cognitive.microsoft.com", luisApp.GetEndpoint());
         }
     }
 }

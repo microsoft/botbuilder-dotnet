@@ -1,0 +1,6 @@
+
+# test1
+- book a flight to {location}
+
+# testIntent
+- book a flight to {location=redmond}

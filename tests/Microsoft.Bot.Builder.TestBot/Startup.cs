@@ -4,16 +4,16 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.TestBot.Bots;
+using Microsoft.Bot.Builder.TestBot.Shared.Bots;
+using Microsoft.Bot.Builder.TestBot.Shared.Dialogs;
+using Microsoft.Bot.Builder.TestBot.Shared.Services;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.BotBuilderSamples.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -35,7 +35,9 @@ namespace Microsoft.BotBuilderSamples
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllers().AddNewtonsoftJson();
+
+            services.AddHttpClient();
 
             // Create the debug middleware
             services.AddSingleton(sp => new MicrosoftAppCredentials(sp.GetRequiredService<IConfiguration>()["MicrosoftAppId"], sp.GetRequiredService<IConfiguration>()["MicrosoftAppPassword"]));
@@ -88,27 +90,23 @@ namespace Microsoft.BotBuilderSamples
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.UseDefaultFiles()
+                .UseStaticFiles()
+                .UseRouting()
+                .UseAuthorization()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
 
             // app.UseHttpsRedirection();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "api/{controller}");
-            });
         }
 
         private static void RegisterDialogs(IServiceCollection services)
@@ -130,7 +128,7 @@ namespace Microsoft.BotBuilderSamples
                     Configuration["LuisAPIKey"],
                     "https://" + Configuration["LuisAPIHostName"]);
 
-                var recognizer = new LuisRecognizer(luisApplication);
+                var recognizer = new LuisRecognizer(new LuisRecognizerOptionsV2(luisApplication));
                 services.AddSingleton<IRecognizer>(recognizer);
             }
         }

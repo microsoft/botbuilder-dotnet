@@ -1,0 +1,141 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "QnAMaker dialog",
+    "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "knowledgeBaseId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "KnowledgeBase Id",
+            "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+            "default": "=settings.qna.knowledgebaseid"
+        },
+        "endpointKey": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Endpoint key",
+            "description": "Endpoint key for the QnA Maker KB.",
+            "default": "=settings.qna.endpointkey"
+        },
+        "hostname": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Hostname",
+            "description": "Hostname for your QnA Maker service.",
+            "default": "=settings.qna.hostname",
+            "examples": [
+                "https://yourserver.azurewebsites.net/qnamaker"
+            ]
+        },
+        "noAnswer": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Fallback answer",
+            "description": "Default answer to return when none found in KB.",
+            "default": "Sorry, I did not find an answer."
+        },
+        "threshold": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Threshold",
+            "description": "Threshold score to filter results.",
+            "default": 0.3
+        },
+        "activeLearningCardTitle": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Active learning card title",
+            "description": "Title for active learning suggestions card.",
+            "default": "Did you mean:"
+        },
+        "cardNoMatchText": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Card no match text",
+            "description": "Text for no match option.",
+            "default": "None of the above."
+        },
+        "cardNoMatchResponse": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Card no match response",
+            "description": "Custom response when no match option was selected.",
+            "default": "Thanks for the feedback."
+        },
+        "strictFilters": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Strict filters",
+            "description": "Metadata filters to use when calling the QnA Maker KB.",
+            "items": {
+                "type": "object",
+                "title": "Metadata filter",
+                "description": "Metadata filter.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "description": "Name of filter property.",
+                        "maximum": 100
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value",
+                        "description": "Value to filter on.",
+                        "maximum": 100
+                    }
+                }
+            }
+        },
+        "top": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Top",
+            "description": "The number of answers you want to retrieve.",
+            "default": 3
+        },
+        "isTest": {
+            "type": "boolean",
+            "title": "IsTest",
+            "description": "True, if pointing to Test environment, else false.",
+            "default": false
+        },
+        "rankerType": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Ranker type",
+            "description": "Type of Ranker.",
+            "oneOf": [
+                {
+                    "title": "Standard ranker",
+                    "description": "Standard ranker types.",
+                    "enum": [
+                        "default",
+                        "questionOnly",
+                        "autoSuggestQuestion"
+                    ],
+                    "default": "default"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
+        "strictFiltersJoinOperator": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "StrictFiltersJoinOperator",
+            "description": "Join operator for Strict Filters.",
+            "oneOf": [
+                {
+                    "title": "Join operator",
+                    "description": "Value of Join Operator to be used as conjunction with Strict Filter values.",
+                    "enum": [
+                        "AND",
+                        "OR"
+                    ],
+                    "default": "AND"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        }
+    },
+    "required": [
+        "knowledgeBaseId",
+        "endpointKey",
+        "hostname"
+    ]
+}

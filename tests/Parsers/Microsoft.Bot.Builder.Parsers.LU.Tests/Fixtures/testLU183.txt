@@ -1,0 +1,18 @@
+
+    @list x1
+    @x1 r1
+    @ x1 r2
+    @ x1 =  
+        - a1:
+            - one
+    @ x1 = 
+        - a1:
+            - one
+            - two
+    @x1 =
+        - a2:
+            -three, four
+    @ x1 = 
+        - a2:
+            - three, four
+    @x1 hasRoles a1, a2

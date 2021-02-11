@@ -1,30 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests
 {
-    [TestClass]
     public class ActivityTest
     {
-        [TestMethod]
+        [Fact]
         public void GetConversationReference()
         {
             var activity = CreateActivity();
 
             var conversationReference = activity.GetConversationReference();
 
-            Assert.AreEqual(activity.Id, conversationReference.ActivityId);
-            Assert.AreEqual(activity.From.Id, conversationReference.User.Id);
-            Assert.AreEqual(activity.Recipient.Id, conversationReference.Bot.Id);
-            Assert.AreEqual(activity.Conversation.Id, conversationReference.Conversation.Id);
-            Assert.AreEqual(activity.ChannelId, conversationReference.ChannelId);
-            Assert.AreEqual(activity.ServiceUrl, conversationReference.ServiceUrl);
+            Assert.Equal(activity.Id, conversationReference.ActivityId);
+            Assert.Equal(activity.From.Id, conversationReference.User.Id);
+            Assert.Equal(activity.Recipient.Id, conversationReference.Bot.Id);
+            Assert.Equal(activity.Conversation.Id, conversationReference.Conversation.Id);
+            Assert.Equal(activity.ChannelId, conversationReference.ChannelId);
+            Assert.Equal(activity.Locale, conversationReference.Locale);
+            Assert.Equal(activity.ServiceUrl, conversationReference.ServiceUrl);
         }
 
-        [TestMethod]
+        [Fact]
         public void GetReplyConversationReference()
         {
             var activity = CreateActivity();
@@ -36,19 +38,75 @@ namespace Microsoft.Bot.Schema.Tests
 
             var conversationReference = activity.GetReplyConversationReference(reply);
 
-            Assert.AreEqual(reply.Id, conversationReference.ActivityId);
-            Assert.AreEqual(activity.From.Id, conversationReference.User.Id);
-            Assert.AreEqual(activity.Recipient.Id, conversationReference.Bot.Id);
-            Assert.AreEqual(activity.Conversation.Id, conversationReference.Conversation.Id);
-            Assert.AreEqual(activity.ChannelId, conversationReference.ChannelId);
-            Assert.AreEqual(activity.ServiceUrl, conversationReference.ServiceUrl);
+            Assert.Equal(reply.Id, conversationReference.ActivityId);
+            Assert.Equal(activity.From.Id, conversationReference.User.Id);
+            Assert.Equal(activity.Recipient.Id, conversationReference.Bot.Id);
+            Assert.Equal(activity.Conversation.Id, conversationReference.Conversation.Id);
+            Assert.Equal(activity.ChannelId, conversationReference.ChannelId);
+            Assert.Equal(activity.Locale, conversationReference.Locale);
+            Assert.Equal(activity.ServiceUrl, conversationReference.ServiceUrl);
         }
 
-        [TestMethod]
+        [Fact]
+        public void RemoveRecipientMention_forTeams()
+        {
+            var activity = CreateActivity();
+            activity.Text = "<at>firstName</at> lastName\n";
+            var expectedStrippedName = "lastName";
+
+            var mention = new Mention
+            {
+                Mentioned = new ChannelAccount()
+                {
+                    Id = activity.Recipient.Id,
+                    Name = "firstName",
+                },
+                Text = null,
+                Type = "mention",
+            };
+            var lst = new List<Entity>();
+
+            var output = JsonConvert.SerializeObject(mention);
+            var entity = JsonConvert.DeserializeObject<Entity>(output);
+            lst.Add(entity);
+            activity.Entities = lst;
+
+            var strippedActivityText = activity.RemoveRecipientMention();
+            Assert.Equal(strippedActivityText, expectedStrippedName);
+        }
+
+        [Fact]
+        public void RemoveRecipientMention_forNonTeamsScenario()
+        {
+            var activity = CreateActivity();
+            activity.Text = "<at>firstName</at> lastName\n";
+            var expectedStrippedName = "lastName";
+
+            var mention = new Mention
+            {
+                Mentioned = new ChannelAccount()
+                {
+                    Id = activity.Recipient.Id,
+                    Name = "<at>firstName</at>",
+                },
+                Text = "<at>firstName</at>",
+                Type = "mention",
+            };
+            var lst = new List<Entity>();
+
+            var output = JsonConvert.SerializeObject(mention);
+            var entity = JsonConvert.DeserializeObject<Entity>(output);
+            lst.Add(entity);
+            activity.Entities = lst;
+
+            var strippedActivityText = activity.RemoveRecipientMention();
+            Assert.Equal(strippedActivityText, expectedStrippedName);
+        }
+
+        [Fact]
         public void ApplyConversationReference_isIncoming()
         {
             var activity = CreateActivity();
-
             var conversationReference = new ConversationReference
             {
                 ChannelId = "cr_123",
@@ -66,20 +124,22 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "cr_def",
                 },
                 ActivityId = "cr_12345",
+                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             };
 
             activity.ApplyConversationReference(conversationReference, true);
 
-            Assert.AreEqual(conversationReference.ChannelId, activity.ChannelId);
-            Assert.AreEqual(conversationReference.ServiceUrl, activity.ServiceUrl);
-            Assert.AreEqual(conversationReference.Conversation.Id, activity.Conversation.Id);
+            Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
+            Assert.Equal(conversationReference.Locale, activity.Locale);
+            Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
+            Assert.Equal(conversationReference.Conversation.Id, activity.Conversation.Id);
 
-            Assert.AreEqual(conversationReference.User.Id, activity.From.Id);
-            Assert.AreEqual(conversationReference.Bot.Id, activity.Recipient.Id);
-            Assert.AreEqual(conversationReference.ActivityId, activity.Id);
+            Assert.Equal(conversationReference.User.Id, activity.From.Id);
+            Assert.Equal(conversationReference.Bot.Id, activity.Recipient.Id);
+            Assert.Equal(conversationReference.ActivityId, activity.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void ApplyConversationReference()
         {
             var activity = CreateActivity();
@@ -101,20 +161,22 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "def",
                 },
                 ActivityId = "12345",
+                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
             };
 
             activity.ApplyConversationReference(conversationReference, false);
 
-            Assert.AreEqual(conversationReference.ChannelId, activity.ChannelId);
-            Assert.AreEqual(conversationReference.ServiceUrl, activity.ServiceUrl);
-            Assert.AreEqual(conversationReference.Conversation.Id, activity.Conversation.Id);
+            Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
+            Assert.Equal(conversationReference.Locale, activity.Locale);
+            Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
+            Assert.Equal(conversationReference.Conversation.Id, activity.Conversation.Id);
 
-            Assert.AreEqual(conversationReference.Bot.Id, activity.From.Id);
-            Assert.AreEqual(conversationReference.User.Id, activity.Recipient.Id);
-            Assert.AreEqual(conversationReference.ActivityId, activity.ReplyToId);
+            Assert.Equal(conversationReference.Bot.Id, activity.From.Id);
+            Assert.Equal(conversationReference.User.Id, activity.Recipient.Id);
+            Assert.Equal(conversationReference.ActivityId, activity.ReplyToId);
         }
 
-        [TestMethod]
+        [Fact]
         public void CreateTraceAllowsNullRecipient()
         {
             // https://github.com/Microsoft/botbuilder-dotnet/issues/1580
@@ -123,7 +185,41 @@ namespace Microsoft.Bot.Schema.Tests
             var trace = activity.CreateTrace("test");
 
             // CreateTrace flips Recipient and From
-            Assert.IsNull(trace.From.Id);
+            Assert.Null(trace.From.Id);
+        }
+
+        [Fact]
+        public void IsFromStreamingConnectionTests()
+        {
+            var nonStreaming = new List<string>()
+            {
+                "http://yayay.com",
+                "https://yayay.com",
+                "HTTP://yayay.com",
+                "HTTPS://yayay.com",
+            };
+
+            var streaming = new List<string>()
+            {
+                "urn:botframework:WebSocket:wss://beep.com",
+                "urn:botframework:WebSocket:http://beep.com",
+                "URN:botframework:WebSocket:wss://beep.com",
+                "URN:botframework:WebSocket:http://beep.com",
+            };
+
+            var activity = CreateActivity();
+
+            nonStreaming.ForEach(s =>
+            {
+                activity.ServiceUrl = s;
+                Assert.False(activity.IsFromStreamingConnection());
+            });
+
+            streaming.ForEach(s =>
+            {
+                activity.ServiceUrl = s;
+                Assert.True(activity.IsFromStreamingConnection());
+            });
         }
 
         private Activity CreateActivity()
@@ -161,6 +257,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Recipient = account2,
                 Conversation = conversationAccount,
                 ChannelId = "ChannelId123",
+                Locale = "en-uS", // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
                 ServiceUrl = "ServiceUrl123",
             };
 

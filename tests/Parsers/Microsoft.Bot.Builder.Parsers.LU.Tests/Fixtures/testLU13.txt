@@ -1,0 +1,3 @@
+
+@phraselist "foo bar"
+@phraselist 'a b'

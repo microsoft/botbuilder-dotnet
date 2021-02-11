@@ -1,0 +1,68 @@
+name: create-botbuilder-js-parity-issue.yml
+
+on:
+  pull_request:
+    branches:
+    - main
+    types: [closed]
+
+jobs:
+  encode:
+    name: encode inputs
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+
+    outputs:
+      pr-body: ${{ steps.pr-body.outputs.value }}
+      pr-number: ${{ steps.pr-number.outputs.value }}
+      pr-title: ${{ steps.pr-title.outputs.value }}
+      repository: ${{ steps.repository.outputs.value }}
+
+    steps:
+      - id: pr-body
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.event.pull_request.body }}
+
+      - id: pr-number
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.event.pull_request.number }}
+
+      - id: pr-title
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.event.pull_request.title }}
+
+      - id: repository
+        uses: joshgummersall/base64-encode@main
+        with:
+          value: ${{ github.repository }}
+
+  dispatchWorkflow:
+    name: create parity issues
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    needs: encode
+
+    strategy:
+      matrix:
+        repo: [js, python, java]
+
+    steps:
+      - uses: joshgummersall/dispatch-workflow@main
+        if: |
+          contains(github.event.pull_request.labels.*.name, 'Automation: No parity') == false || contains(github.event.pull_request.labels.*.name, format('Automation: parity with {0}', matrix.repo)) == true
+        with:
+          encoded: "true"
+          inputs: |
+            {
+              "prDescription": "${{ needs.encode.outputs.pr-body }}",
+              "prNumber": "${{ needs.encode.outputs.pr-number }}",
+              "prTitle": "${{ needs.encode.outputs.pr-title }}",
+              "sourceRepo": "${{ needs.encode.outputs.repository }}"
+            }
+          ref: main
+          repo: microsoft/botbuilder-${{ matrix.repo }}
+          token: "${{ secrets.BOTBUILDER_JS_ACCESS_TOKEN }}"
+          workflow: create-parity-issue.yml

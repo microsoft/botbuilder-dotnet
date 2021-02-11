@@ -4,27 +4,29 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class ReplaceDialogTest
     {
-        [TestMethod]
+        [Fact]
         public async Task ReplaceDialogNoBranchAsync()
         {
-            var conversationState = new ConversationState(new MemoryStorage());
-            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter();
             var dialog = new FirstDialog();
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(userState, conversationState);
+            var dialogManager = new DialogManager(dialog);
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
-                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
             .AssertReply("prompt one")
@@ -37,19 +39,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ReplaceDialogBranchAsync()
         {
-            var conversationState = new ConversationState(new MemoryStorage());
-            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter();
             var dialog = new FirstDialog();
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(userState, conversationState);
+            var dialogManager = new DialogManager(dialog);
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
-                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
             .AssertReply("prompt one")
@@ -64,24 +68,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ReplaceDialogTelemetryClientNotNull()
         {
-            var conversationState = new ConversationState(new MemoryStorage());
-            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
             var botTelemetryClient = new Mock<IBotTelemetryClient>();
-            var adapter = new TestAdapter();
-            var dialog = new FirstDialog()
-            {
-                TelemetryClient = botTelemetryClient.Object,
-            };
+            var dialog = new FirstDialog();
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseBotState(userState, conversationState);
+            var dialogManager = new DialogManager(dialog);
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
-                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                Assert.AreEqual(dialog.TelemetryClient, botTelemetryClient.Object);
+                Assert.NotNull(dialog.TelemetryClient);
             })
             .Send("hello")
             .StartTestAsync();
@@ -94,11 +98,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var steps = new WaterfallStep[]
                 {
-                    StepOneAsync,
-                    StepTwoAsync,
-                    ReplaceStepAsync,
-                    StepThreeAsync,
-                    LastStepAsync,
+                    ActionOneAsync,
+                    ActionTwoAsync,
+                    ReplaceActionAsync,
+                    ActionThreeAsync,
+                    LastActionAsync,
                 };
 
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -108,17 +112,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 InitialDialogId = nameof(WaterfallWithEndDialog);
             }
 
-            private static async Task<DialogTurnResult> StepOneAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionOneAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt one") });
             }
 
-            private static async Task<DialogTurnResult> StepTwoAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionTwoAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt two") });
             }
 
-            private static async Task<DialogTurnResult> ReplaceStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ReplaceActionAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 if (context.Result as string == "replace")
                 {
@@ -130,12 +134,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             }
 
-            private static async Task<DialogTurnResult> StepThreeAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionThreeAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt three") });
             }
 
-            private static async Task<DialogTurnResult> LastStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> LastActionAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.EndDialogAsync();
             }
@@ -162,9 +166,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var steps = new WaterfallStep[]
                 {
-                    StepFourAsync,
-                    StepFiveAsync,
-                    LastStepAsync,
+                    ActionFourAsync,
+                    ActionFiveAsync,
+                    LastActionAsync,
                 };
 
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -173,17 +177,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 InitialDialogId = nameof(WaterfallDialog);
             }
 
-            private static async Task<DialogTurnResult> StepFourAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionFourAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt four") });
             }
 
-            private static async Task<DialogTurnResult> StepFiveAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionFiveAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt five") });
             }
 
-            private static async Task<DialogTurnResult> LastStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> LastActionAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.EndDialogAsync();
             }

@@ -12,24 +12,30 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public static class ActiveLearningUtils
     {
         /// <summary>
-        /// Minimum Score For Low Score Variation.
-        /// </summary>
-        private const double MinimumScoreForLowScoreVariation = 20.0;
-
-        /// <summary>
         /// Previous Low Score Variation Multiplier.
         /// </summary>
-        private const double PreviousLowScoreVariationMultiplier = 1.4;
+        private const double PreviousLowScoreVariationMultiplier = 0.7;
 
         /// <summary>
         /// Max Low Score Variation Multiplier.
         /// </summary>
-        private const double MaxLowScoreVariationMultiplier = 2.0;
+        private const double MaxLowScoreVariationMultiplier = 1.0;
 
         /// <summary>
-        /// Maximum Score For Low Score Variation.
+        /// Gets or sets maximum Score For Low Score Variation.
         /// </summary>
-        private const double MaximumScoreForLowScoreVariation = 95.0;
+        /// <value>
+        /// Maximum Score For Low Score Variation.
+        /// </value>                        
+        public static double MaximumScoreForLowScoreVariation { get; set; } = 95.0;
+
+        /// <summary>
+        /// Gets or sets minimum Score For Low Score Variation.
+        /// </summary>
+        /// <value>
+        /// Minimum Score For Low Score Variation.
+        /// </value>
+        public static double MinimumScoreForLowScoreVariation { get; set; } = 20.0;
 
         /// <summary>
         /// Returns list of qnaSearch results which have low score variation.
@@ -51,9 +57,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var topAnswerScore = qnaSearchResults[0].Score * 100;
+            if (topAnswerScore > MaximumScoreForLowScoreVariation)
+            {
+                filteredQnaSearchResult.Add(qnaSearchResults[0]);
+                return filteredQnaSearchResult;
+            }
+
             var prevScore = topAnswerScore;
 
-            if ((topAnswerScore > MinimumScoreForLowScoreVariation) && (topAnswerScore <= MaximumScoreForLowScoreVariation))
+            if (topAnswerScore > MinimumScoreForLowScoreVariation)
             {
                 filteredQnaSearchResult.Add(qnaSearchResults[0]);
 

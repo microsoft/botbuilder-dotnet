@@ -1,0 +1,95 @@
+﻿{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Tests for Adding Entity",
+  "httpRequestMocks": [
+    "LuisAddEntity.mock"
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "schema": "twoProperties.json",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "welcome"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnEndOfActions",
+        "condition": "=!$Bread",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Bread?",
+            "expectedProperties": [
+              "Bread"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Add()",
+        "property": "Bread",
+        "entity": "BreadEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "Set bread to rye"
+          },
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "$Bread",
+            "value": "=@BreadEntity"
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "welcome"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Bread?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "rye"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Set bread to rye"
+    },
+    {
+      "$kind": "Microsoft.Test.MemoryAssertions",
+      "assertions": [
+        "$Bread == 'rye'"
+      ]
+    }
+  ]
+}

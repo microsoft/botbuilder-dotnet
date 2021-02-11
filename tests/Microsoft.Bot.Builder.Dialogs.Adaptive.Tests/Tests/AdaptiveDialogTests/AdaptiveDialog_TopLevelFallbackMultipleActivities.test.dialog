@@ -1,0 +1,39 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello Planning!"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Howdy awain"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "start"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Planning!"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Howdy awain"
+        }
+    ]
+}

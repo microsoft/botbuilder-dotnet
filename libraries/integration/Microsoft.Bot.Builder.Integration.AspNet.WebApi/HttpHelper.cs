@@ -8,6 +8,7 @@ using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
 {
@@ -33,8 +34,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var activity = await request.Content.ReadAsAsync<Activity>(BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
-            return activity;
+            try
+            {
+                var activity = await request.Content.ReadAsAsync<Activity>(BotMessageMediaTypeFormatters, cancellationToken).ConfigureAwait(false);
+                return activity;
+            }
+            catch (UnsupportedMediaTypeException)
+            {
+                return null;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
 
         public static void WriteResponse(HttpRequestMessage request, HttpResponseMessage response, InvokeResponse invokeResponse)

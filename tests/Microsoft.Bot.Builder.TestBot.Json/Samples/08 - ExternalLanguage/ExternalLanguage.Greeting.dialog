@@ -1,0 +1,28 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "ExternalLanguage.main.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.name == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.TextInput",
+                            "property": "user.name",
+                            "prompt": "${Greeting.Name.initialPrompt()}",
+                            "invalidPrompt": "${Greeting.Name.notMatched()}"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${Greeting.GreetUser()}"
+                }
+            ]
+        }
+    ]
+}

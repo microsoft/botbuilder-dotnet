@@ -1,0 +1,90 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "Start",
+                    "pattern": "(?i)start"
+                }
+            ]
+        },
+        "generator": {
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Start",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "allowInterruptions": false,
+                        "property": "user.age",
+                        "prompt": "What is your age?",
+                        "unrecognizedPrompt": "Sorry. I did not recognize a number. What is your age?"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I have ${user.age} as your age"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "None",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "In None..."
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "turn.processInput",
+                        "value": "=True"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "start"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "What is your age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "santa"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Sorry. I did not recognize a number. What is your age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "red"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Sorry. I did not recognize a number. What is your age?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "36"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have 36 as your age"
+        }
+    ]
+}

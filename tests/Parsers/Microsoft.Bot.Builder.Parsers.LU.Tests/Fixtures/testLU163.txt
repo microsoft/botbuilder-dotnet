@@ -1,0 +1,6 @@
+
+    @phraselist xyz(interchangeable)
+    @xyz =
+        - one,two
+    @xyz =
+        - three, four

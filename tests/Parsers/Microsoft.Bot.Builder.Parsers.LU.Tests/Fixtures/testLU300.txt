@@ -1,0 +1,4 @@
+$temperatureUnit : [device, temperature] roles=from
+$device : simple
+$PREBUILT : temperature
+$temperatureUnit : [device, temperature] roles=to

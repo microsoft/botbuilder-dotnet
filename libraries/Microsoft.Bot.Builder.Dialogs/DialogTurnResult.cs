@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Diagnostics;
+
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
@@ -10,8 +12,14 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Use <see cref="DialogContext.EndDialogAsync(object, System.Threading.CancellationToken)"/>
     /// to end a <see cref="Dialog"/> and return a result to the calling context.
     /// </remarks>
+    [DebuggerDisplay("[DialogTurnStatus.{Status}]{Result ?? string.Empty}")]
     public class DialogTurnResult
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogTurnResult"/> class.
+        /// </summary>
+        /// <param name="status">The status of the stack.</param>
+        /// <param name="result">The result return by the dialog.</param>
         public DialogTurnResult(DialogTurnStatus status, object result = null)
         {
             Status = status;
@@ -39,5 +47,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// The result returned by a dialog that was just ended.
         /// </value>
         public object Result { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether a DialogCommand has ended its parent container and the parent should not perform any further processing.
+        /// </summary>
+        /// <value>
+        /// Whether a DialogCommand has ended its parent container and the parent should not perform any further processing.
+        /// </value>
+        public bool ParentEnded { get; set; }
     }
 }

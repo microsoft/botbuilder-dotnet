@@ -3,11 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
-using static Microsoft.Recognizers.Text.Culture;
+using static Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -16,17 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class ChoicePrompt : Prompt<FoundChoice>
     {
-        private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
-        {
-            { Spanish, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true } },
-            { Dutch, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true } },
-            { English, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true } },
-            { French, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
-            { German, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true } },
-            { Japanese, new ChoiceFactoryOptions { InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true } },
-            { Portuguese, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
-            { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
-        };
+        /// <summary>
+        /// A dictionary of Default Choices based on <seealso cref="GetSupportedCultures"/>.
+        /// Can be replaced by user using the constructor that contains choiceDefaults.
+        /// </summary>
+        private readonly Dictionary<string, ChoiceFactoryOptions> _choiceDefaults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChoicePrompt"/> class.
@@ -44,10 +39,40 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
         public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
+            : this(
+                dialogId,
+                new Dictionary<string, ChoiceFactoryOptions>(
+                    GetSupportedCultures().ToDictionary(
+                        culture => culture.Locale, culture =>
+                        new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true))),
+                validator,
+                defaultLocale)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChoicePrompt"/> class.
+        /// </summary>
+        /// <param name="dialogId">The ID to assign to this prompt.</param>
+        /// <param name="validator">Optional, a <see cref="PromptValidator{FoundChoice}"/> that contains additional,
+        /// custom validation for this prompt.</param>
+        /// <param name="defaultLocale">Optional, the default locale used to determine language-specific behavior of the prompt.
+        /// The locale is a 2, 3, or 4 character ISO 639 code that represents a language or language family.</param>
+        /// <param name="choiceDefaults">Overrides the dictionary of Bot Framework SDK-supported _choiceDefaults (for prompt localization).
+        /// Must be passed in to each ConfirmPrompt that needs the custom choice defaults.</param>
+        /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
+        /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.
+        /// <para>If the <see cref="Activity.Locale"/>
+        /// of the <see cref="DialogContext"/>.<see cref="DialogContext.Context"/>.<see cref="ITurnContext.Activity"/>
+        /// is specified, then that local is used to determine language specific behavior; otherwise
+        /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
+        /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
+        public ChoicePrompt(string dialogId, Dictionary<string, ChoiceFactoryOptions> choiceDefaults, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
             DefaultLocale = defaultLocale;
+            _choiceDefaults = choiceDefaults;
         }
 
         /// <summary>
@@ -88,7 +113,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        protected override async Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task OnPromptAsync(
+            ITurnContext turnContext,
+            IDictionary<string, object> state,
+            PromptOptions options,
+            bool isRetry,
+            CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
             {
@@ -100,18 +130,13 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(options));
             }
 
-            // Determine culture
-            var culture = turnContext.Activity.Locale ?? DefaultLocale;
-            if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
-            {
-                culture = English;
-            }
+            var culture = DetermineCulture(turnContext.Activity);
 
             // Format prompt to send
             IMessageActivity prompt;
             var choices = options.Choices ?? new List<Choice>();
             var channelId = turnContext.Activity.ChannelId;
-            var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
+            var choiceOptions = ChoiceOptions ?? _choiceDefaults[culture];
             var choiceStyle = options.Style ?? Style;
             if (isRetry && options.RetryPrompt != null)
             {
@@ -137,7 +162,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result describes the result of the recognition attempt.</remarks>
-        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task<PromptRecognizerResult<FoundChoice>> OnRecognizeAsync(
+            ITurnContext turnContext,
+            IDictionary<string, object> state,
+            PromptOptions options,
+            CancellationToken cancellationToken = default)
         {
             if (turnContext == null)
             {
@@ -151,8 +180,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var activity = turnContext.Activity;
                 var utterance = activity.Text;
+                if (string.IsNullOrEmpty(utterance))
+                {
+                    return Task.FromResult(result);
+                }
+
                 var opt = RecognizerOptions ?? new FindChoicesOptions();
-                opt.Locale = activity.Locale ?? opt.Locale ?? DefaultLocale ?? English;
+                opt.Locale = DetermineCulture(activity, opt);
                 var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
                 if (results != null && results.Count > 0)
                 {
@@ -162,6 +196,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return Task.FromResult(result);
+        }
+
+        private string DetermineCulture(Activity activity, FindChoicesOptions opt = null)
+        {
+            var culture = MapToNearestLanguage(activity.Locale ?? opt?.Locale ?? DefaultLocale ?? English.Locale);
+            if (string.IsNullOrEmpty(culture) || !_choiceDefaults.ContainsKey(culture))
+            {
+                culture = English.Locale;
+            }
+
+            return culture;
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "user.endDateTime",
+                    "value": "=addSeconds(user.startDateTime[0].Value, user.duration)"
+                }
+            ]
+        }
+    ]
+}

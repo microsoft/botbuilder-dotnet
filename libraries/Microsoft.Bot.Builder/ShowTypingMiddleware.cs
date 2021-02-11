@@ -2,15 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// When added, this middleware will send typing activities back to the user when a Message activity
-    /// is receieved to let them know that the bot has receieved the message and is working on the response.
+    /// is received to let them know that the bot has received the message and is working on the response.
     /// You can specify a delay in milliseconds before the first typing activity is sent and then a frequency,
     /// also in milliseconds which determines how often another typing activity is sent. Typing activities
     /// will continue to be sent until your bot sends another message back to the user.
@@ -55,28 +58,35 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="Bot.Schema.IActivity"/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
         {
-            CancellationTokenSource cts = null;
-            try
+            using (var cts = new CancellationTokenSource())
             {
-                // If the incoming activity is a MessageActivity, start a timer to periodically send the typing activity
-                if (turnContext.Activity.Type == ActivityTypes.Message)
+                Task typingTask = null;
+                try
                 {
-                    cts = new CancellationTokenSource();
-                    cancellationToken.Register(() => cts.Cancel());
+                    // Start a timer to periodically send the typing activity (bots running as skills should not send typing activity)
+                    if (!IsSkillBot(turnContext) && turnContext.Activity.Type == ActivityTypes.Message)
+                    {
+                        // do not await task - we want this to run in the background and we will cancel it when its done
+                        typingTask = SendTypingAsync(turnContext, _delay, _period, cts.Token);
+                    }
 
-                    // do not await task - we want this to run in the background and we will cancel it when its done
-                    var task = Task.Run(() => SendTypingAsync(turnContext, _delay, _period, cts.Token), cancellationToken);
+                    await next(cancellationToken).ConfigureAwait(false);
                 }
-
-                await next(cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (cts != null)
+                finally
                 {
-                    cts.Cancel();
+                    if (typingTask != null && !typingTask.IsCanceled)
+                    {
+                        // Cancel the typing loop.
+                        cts.Cancel();
+                    }
                 }
             }
+        }
+
+        private static bool IsSkillBot(ITurnContext turnContext)
+        {
+            return turnContext.TurnState.Get<IIdentity>(BotAdapter.BotIdentityKey) is ClaimsIdentity claimIdentity
+                && SkillValidation.IsSkillClaim(claimIdentity.Claims);
         }
 
         private static async Task SendTypingAsync(ITurnContext turnContext, TimeSpan delay, TimeSpan period, CancellationToken cancellationToken)
@@ -96,7 +106,7 @@ namespace Microsoft.Bot.Builder
                     await Task.Delay(period, cancellationToken).ConfigureAwait(false);
                 }
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 // do nothing
             }

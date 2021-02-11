@@ -1,0 +1,46 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "todo.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "value": "=@title",
+                    "property": "dialog.todo"
+                },
+                {
+                    "$kind": "Microsoft.TextInput",
+                    "prompt": "OK, please enter the title of the todo you want to remove.",
+                    "value": "=@title",
+                    "property": "dialog.todo"
+                },
+                {
+                    "$kind": "Microsoft.EditArray",
+                    "changeType": "remove",
+                    "itemsProperty": "user.todos",
+                    "value": "=dialog.todo",
+                    "resultProperty": "dialog.removed"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "dialog.removed",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "Successfully removed a todo named \"${dialog.todo}\""
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$kind": "Microsoft.SendActivity",
+                            "activity": "\"${dialog.todo}\" is not in the Todo List"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

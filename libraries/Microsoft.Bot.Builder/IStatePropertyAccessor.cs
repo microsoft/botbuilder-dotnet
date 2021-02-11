@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Interface which defines methods for how you can get data from a property source such as BotState.
+    /// Interface which defines methods for how you can get data from a property source,
+    /// such as <see cref="BotState"/>.
     /// </summary>
     /// <typeparam name="T">type of the property.</typeparam>
     public interface IStatePropertyAccessor<T> : IStatePropertyInfo
     {
         /// <summary>
-        /// Get the property value from the source.
-        /// If the property is not set, and no default value was defined, a <see cref="MissingMemberException"/> is thrown.
+        /// Gets the property value from the source.
         /// </summary>
         /// <param name="turnContext">Turn Context.</param>
         /// <param name="defaultValueFactory">Function which defines the property value to be returned if no value has been set.</param>

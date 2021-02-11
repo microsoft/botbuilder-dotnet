@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Cancel all dialogs",
+    "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "activityProcessed": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Activity processed",
+            "description": "When set to false, the caller dialog is told it should process the current activity.",
+            "default": true
+        },
+        "eventName": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Event name",
+            "description": "Name of the event to emit."
+        },
+        "eventValue": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Event value",
+            "description": "Value to emit with the event (optional).",
+            "additionalProperties": true
+        }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
+}

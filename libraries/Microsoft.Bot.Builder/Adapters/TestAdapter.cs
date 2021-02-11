@@ -3,10 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters
@@ -15,15 +18,19 @@ namespace Microsoft.Bot.Builder.Adapters
     /// A mock adapter that can be used for unit testing of bot logic.
     /// </summary>
     /// <seealso cref="TestFlow"/>
-    public class TestAdapter : BotAdapter, IUserTokenProvider
+    public class TestAdapter : BotAdapter, IExtendedUserTokenProvider
     {
-        private readonly bool _sendTraceActivity;
+        private const string ExceptionExpected = "ExceptionExpected";
+
+        private bool _sendTraceActivity;
         private readonly object _conversationLock = new object();
         private readonly object _activeQueueLock = new object();
         private readonly IDictionary<UserTokenKey, string> _userTokens = new Dictionary<UserTokenKey, string>();
+        private readonly IDictionary<ExchangableTokenKey, string> _exchangableToken = new Dictionary<ExchangableTokenKey, string>();
         private readonly IList<TokenMagicCode> _magicCodes = new List<TokenMagicCode>();
 
         private int _nextId = 0;
+        private Queue<TaskCompletionSource<IActivity>> _queuedRequests = new Queue<TaskCompletionSource<IActivity>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
@@ -42,6 +49,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 User = new ChannelAccount("user1", "User1"),
                 Bot = new ChannelAccount("bot", "Bot"),
                 Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
+                Locale = this.Locale,
             };
         }
 
@@ -67,9 +75,30 @@ namespace Microsoft.Bot.Builder.Adapters
                     User = new ChannelAccount("user1", "User1"),
                     Bot = new ChannelAccount("bot", "Bot"),
                     Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
+                    Locale = this.Locale,
                 };
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to send trace activities.
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to send trace activities.
+        /// </value>
+        public bool EnableTrace
+        {
+            get => _sendTraceActivity;
+            set => this._sendTraceActivity = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the locale for the conversation.
+        /// </summary>
+        /// <value>
+        /// The locale for the conversation.
+        /// </value>
+        public string Locale { get; set; } = "en-us";
 
         /// <summary>
         /// Gets the queue of responses from the bot.
@@ -82,6 +111,26 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <value>A reference to the current conversation.</value>
         public ConversationReference Conversation { get; set; }
+
+        /// <summary>
+        /// Create a ConversationReference. 
+        /// </summary>
+        /// <param name="name">name of the conversation (also ID).</param>
+        /// <param name="user">name of the user (also ID) default:User1.</param>
+        /// <param name="bot">name of the bot (also ID) default:Bot.</param>
+        /// <returns>ConversationReference.</returns>
+        public static ConversationReference CreateConversation(string name, string user = "User1", string bot = "Bot")
+        {
+            return new ConversationReference
+            {
+                ChannelId = "test",
+                ServiceUrl = "https://test.com",
+                Conversation = new ConversationAccount(false, name, name),
+                User = new ChannelAccount(id: user.ToLowerInvariant(), name: user),
+                Bot = new ChannelAccount(id: bot.ToLowerInvariant(), name: bot),
+                Locale = "en-us"
+            };
+        }
 
         /// <summary>
         /// Adds middleware to the adapter's pipeline.
@@ -105,7 +154,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default)
         {
             lock (_conversationLock)
             {
@@ -116,29 +165,53 @@ namespace Microsoft.Bot.Builder.Adapters
                 }
 
                 activity.ChannelId = Conversation.ChannelId;
-                activity.From = Conversation.User;
+
+                if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
+                {
+                    activity.From = Conversation.User;
+                }
+
                 activity.Recipient = Conversation.Bot;
                 activity.Conversation = Conversation.Conversation;
                 activity.ServiceUrl = Conversation.ServiceUrl;
 
-                var id = activity.Id = (_nextId++).ToString();
+                var id = activity.Id = (_nextId++).ToString(CultureInfo.InvariantCulture);
             }
 
             if (activity.Timestamp == null || activity.Timestamp == default(DateTimeOffset))
             {
-                activity.Timestamp = DateTime.UtcNow;
+                activity.Timestamp = DateTimeOffset.UtcNow;
             }
 
-            using (var context = new TurnContext(this, activity))
+            if (activity.LocalTimestamp == null || activity.LocalTimestamp == default(DateTimeOffset))
             {
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                activity.LocalTimestamp = DateTimeOffset.Now;
             }
+
+            // note here Dispose is NOT called on the TurnContext because we want to use it later in the test code
+            var context = CreateTurnContext(activity);
+            await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the request.</param>
+        /// <param name="activity">The incoming activity.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        public override async Task<InvokeResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
+            return null;
         }
 
         /// <summary>
         /// Sends activities to the conversation.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="activities">The activities to send.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -197,18 +270,12 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     if (_sendTraceActivity)
                     {
-                        lock (_activeQueueLock)
-                        {
-                            ActiveQueue.Enqueue(activity);
-                        }
+                        Enqueue(activity);
                     }
                 }
                 else
                 {
-                    lock (_activeQueueLock)
-                    {
-                        ActiveQueue.Enqueue(activity);
-                    }
+                    Enqueue(activity);
                 }
 
                 responses[index] = new ResourceResponse(activity.Id);
@@ -220,7 +287,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Replaces an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -258,7 +325,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Deletes an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -303,9 +370,12 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             ActiveQueue.Clear();
             var update = Activity.CreateConversationUpdateActivity();
-            update.Conversation = new ConversationAccount() { Id = Guid.NewGuid().ToString("n") };
-            var context = new TurnContext(this, (Activity)update);
-            return callback(context, cancellationToken);
+            update.ChannelId = channelId;
+            update.Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("n") };
+            using (var context = CreateTurnContext((Activity)update))
+            {
+                return callback(context, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -327,6 +397,31 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Get the next reply async.
+        /// </summary>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>activity when it's available or canceled task if it is canceled.</returns>
+        public Task<IActivity> GetNextReplyAsync(CancellationToken cancellationToken = default)
+        {
+            lock (_activeQueueLock)
+            {
+                if (!_queuedRequests.Any())
+                {
+                    var result = GetNextReply();
+                    if (result != null)
+                    {
+                        return Task.FromResult(result);
+                    }
+                }
+
+                var tcs = new TaskCompletionSource<IActivity>();
+                cancellationToken.Register(() => tcs.SetCanceled());
+                this._queuedRequests.Enqueue(tcs);
+                return tcs.Task;
+            }
+        }
+
+        /// <summary>
         /// Creates a message activity from text and the current conversational context.
         /// </summary>
         /// <param name="text">The message text.</param>
@@ -338,11 +433,12 @@ namespace Microsoft.Bot.Builder.Adapters
             Activity activity = new Activity
             {
                 Type = ActivityTypes.Message,
+                Locale = this.Locale ?? "en-us",
                 From = Conversation.User,
                 Recipient = Conversation.Bot,
                 Conversation = Conversation.Conversation,
                 ServiceUrl = Conversation.ServiceUrl,
-                Id = (_nextId++).ToString(),
+                Id = (_nextId++).ToString(CultureInfo.InvariantCulture),
                 Text = text,
             };
 
@@ -366,8 +462,8 @@ namespace Microsoft.Bot.Builder.Adapters
         /// Adds a fake user token so it can later be retrieved.
         /// </summary>
         /// <param name="connectionName">The connection name.</param>
-        /// <param name="channelId">The channel id.</param>
-        /// <param name="userId">The user id.</param>
+        /// <param name="channelId">The channel ID.</param>
+        /// <param name="userId">The user ID.</param>
         /// <param name="token">The token to store.</param>
         /// <param name="magicCode">The optional magic code to associate with this token.</param>
         public void AddUserToken(string connectionName, string channelId, string userId, string token, string magicCode = null)
@@ -401,14 +497,69 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
-        /// <summary>Attempts to retrieve the token for a user that's in a login flow.
+        /// <summary>
+        /// Adds a fake exchangeable token so it can be exchanged later.
+        /// </summary>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="channelId">The channel ID.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="exchangableItem">The exchangeable token or resource URI.</param>
+        /// <param name="token">The token to store.</param>
+        public void AddExchangeableToken(string connectionName, string channelId, string userId, string exchangableItem, string token)
+        {
+            var key = new ExchangableTokenKey()
+            {
+                ConnectionName = connectionName,
+                ChannelId = channelId,
+                UserId = userId,
+                ExchangableItem = exchangableItem
+            };
+
+            if (_exchangableToken.ContainsKey(key))
+            {
+                _exchangableToken[key] = token;
+            }
+            else
+            {
+                _exchangableToken.Add(key, token);
+            }
+        }
+
+        /// <summary> Adds an instruction to throw an exception during exchange requests.
+        /// </summary>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="channelId">The channel ID.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="exchangableItem">The exchangeable token or resource URI.</param>
+        public void ThrowOnExchangeRequest(string connectionName, string channelId, string userId, string exchangableItem)
+        {
+            var key = new ExchangableTokenKey()
+            {
+                ConnectionName = connectionName,
+                ChannelId = channelId,
+                UserId = userId,
+                ExchangableItem = exchangableItem
+            };
+
+            if (_exchangableToken.ContainsKey(key))
+            {
+                _exchangableToken[key] = ExceptionExpected;
+            }
+            else
+            {
+                _exchangableToken.Add(key, ExceptionExpected);
+            }
+        }
+
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
         /// <param name="connectionName">Name of the auth connection to use.</param>
         /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Token Response or null if the token was not found.</returns>
-        public virtual Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken)
+        public virtual Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string magicCode, CancellationToken cancellationToken)
         {
             var key = new UserTokenKey()
             {
@@ -437,48 +588,87 @@ namespace Microsoft.Bot.Builder.Adapters
                     Token = token,
                 });
             }
-            else
-            {
-                // not found
-                return Task.FromResult<TokenResponse>(null);
-            }
+
+            // not found
+            return Task.FromResult<TokenResponse>(null);
+        }
+
+        /// <summary>Attempts to retrieve the token for a user that's in a login flow, using the bot's AppCredentials.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="magicCode">(Optional) user entered code to validate.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Token Response or null if the token was not found.</returns>
+        public virtual Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, string connectionName, string magicCode, CancellationToken cancellationToken)
+        {
+            return GetUserTokenAsync(turnContext, null, connectionName, magicCode, cancellationToken);
         }
 
         /// <summary>
-        /// Returns a fake link for a sign-in.
+        /// Returns a fake link for a sign-in, using customized AppCredentials.
+        /// </summary>
+        /// <param name="turnContext">The turn context (must have a valid Activity).</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="cancellationToken">A Task cancellationToken.</param>
+        /// <returns>The sign-in link.</returns>
+        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, CancellationToken cancellationToken)
+        {
+            return Task.FromResult($"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}");
+        }
+
+        /// <summary>
+        /// Returns a fake link for a sign-in, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turn context (must have a valid Activity).</param>
         /// <param name="connectionName">The connectionName.</param>
         /// <param name="cancellationToken">A Task cancellationToken.</param>
-        /// <returns>The signin link.</returns>
+        /// <returns>The sign-in link.</returns>
         public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken)
         {
-            return GetOauthSignInLinkAsync(turnContext, connectionName, turnContext.Activity.From.Id, null, cancellationToken);
+            return GetOauthSignInLinkAsync(turnContext, null, connectionName, cancellationToken);
         }
 
         /// <summary>
-        /// Returns a fake link for a sign-in.
+        /// Returns a fake link for a sign-in, using customized AppCredentials.
+        /// </summary>
+        /// <param name="turnContext">The turn context (must have a valid Activity).</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="finalRedirect">The final redirect value, which is ignored here.</param>
+        /// <param name="cancellationToken">A Task cancellationToken.</param>
+        /// <returns>The sign-in link.</returns>
+        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult($"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}/{userId}");
+        }
+
+        /// <summary>
+        /// Returns a fake link for a sign-in, using the bot's AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turn context (must have a valid Activity).</param>
         /// <param name="connectionName">The connectionName.</param>
         /// <param name="userId">The user id.</param>
         /// <param name="finalRedirect">The final redirect value, which is ignored here.</param>
         /// <param name="cancellationToken">A Task cancellationToken.</param>
-        /// <returns>The signin link.</returns>
-        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default(CancellationToken))
+        /// <returns>The sign-in link.</returns>
+        public virtual Task<string> GetOauthSignInLinkAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult($"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}/{userId}");
+            return GetOauthSignInLinkAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
         }
 
         /// <summary>
-        /// Signs a user out by remove the user's token(s) from mock storage.
+        /// Signs a user out by remove the user's token(s) from mock storage, using customized AppCredentials.
         /// </summary>
         /// <param name="turnContext">The turnContext (with a valid Activity).</param>
-        /// <param name="connectionName">The conectionName.</param>
-        /// <param name="userId">The userId.</param>
+        /// <param name="oAuthAppCredentials">The app credentials for OAuth.</param>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="userId">The user ID.</param>
         /// <param name="cancellationToken">The Task cancellation token.</param>
         /// <returns>None.</returns>
-        public virtual Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task SignOutUserAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName = null, string userId = null, CancellationToken cancellationToken = default)
         {
             var channelId = turnContext.Activity.ChannelId;
             userId = userId ?? turnContext.Activity.From.Id;
@@ -498,14 +688,29 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Gets the token statuses.
+        /// Signs a user out by removing the user's token(s) from mock storage, using the bot's app credentials.
+        /// </summary>
+        /// <param name="turnContext">The turnContext (with a valid activity).</param>
+        /// <param name="connectionName">The connection name.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">The Task cancellation token.</param>
+        /// <returns>None.</returns>
+        public virtual Task SignOutUserAsync(ITurnContext turnContext, string connectionName = null, string userId = null, CancellationToken cancellationToken = default)
+        {
+            return SignOutUserAsync(turnContext, null, connectionName, userId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the token statuses, using customized AppCredentials.
         /// </summary>
         /// <param name="context">The turnContext (with a valid Activity).</param>
-        /// <param name="userId">The user id.</param>
-        /// <param name="includeFilter">Optional comma separated list of connection's to include. Blank will return token status for all configured connections.</param>
+        /// <param name="oAuthAppCredentials">The app credentials for OAuth.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="includeFilter">Optional comma separated list of the connections to include,
+        /// or `null` to return the token status for each configured connection.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Array of TokenStatus.</returns>
-        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string userId, string includeFilter = null, CancellationToken cancellationToken = default)
         {
             var filter = includeFilter == null ? null : includeFilter.Split(',');
             var records = _userTokens.
@@ -524,7 +729,36 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Returns a dictionary of TokenResponses for the resource URLs.
+        /// Gets the token statuses, using the bot's app credentials.
+        /// </summary>
+        /// <param name="context">The turnContext (with a valid Activity).</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="includeFilter">Optional comma separated list of the connections to include,
+        /// or `null` to return the token status for each configured connection.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Array of TokenStatus.</returns>
+        public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default)
+        {
+            return GetTokenStatusAsync(context, null, userId, includeFilter, cancellationToken);
+        }
+
+        /// <summary>
+        /// Returns a dictionary of TokenResponses for the resource URLs, using customized AppCredentials.
+        /// </summary>
+        /// <param name="context">The TurnContext.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="resourceUrls">The list of AAD resource URLs.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>The dictionary of TokenResponses for each resource URL.</returns>
+        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, AppCredentials oAuthAppCredentials, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new Dictionary<string, TokenResponse>());
+        }
+
+        /// <summary>
+        /// Returns a dictionary of TokenResponses for the resource URLs, using the bot's AppCredentials.
         /// </summary>
         /// <param name="context">The TurnContext.</param>
         /// <param name="connectionName">The connectionName.</param>
@@ -532,9 +766,149 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="userId">The user ID.</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
         /// <returns>The dictionary of TokenResponses for each resource URL.</returns>
-        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(new Dictionary<string, TokenResponse>());
+            return GetAadTokensAsync(context, null, connectionName, resourceUrls, userId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign-in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, CancellationToken cancellationToken = default)
+        {
+            return GetSignInResourceAsync(turnContext, connectionName, turnContext?.Activity?.Recipient?.Id, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign-in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="finalRedirect">A final redirect URL.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
+            return GetSignInResourceAsync(turnContext, null, connectionName, userId, finalRedirect, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a sign-in resource.
+        /// </summary>
+        /// <param name="turnContext">The TurnContext.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">The connectionName.</param>
+        /// <param name="userId">The user ID.</param>
+        /// <param name="finalRedirect">A final redirect URL.</param>
+        /// <param name="cancellationToken">The cancellationToken.</param>
+        /// <returns>A SignInResource with the link and token exchange info.</returns>
+        public Task<SignInResource> GetSignInResourceAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, string finalRedirect = null, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new SignInResource()
+            {
+                SignInLink = $"https://fake.com/oauthsignin/{connectionName}/{turnContext.Activity.ChannelId}/{userId}",
+                TokenExchangeResource = new TokenExchangeResource()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ProviderId = null,
+                    Uri = $"api://{connectionName}/resource"
+                }
+            });
+        }
+
+        /// <summary>
+        /// Performs a token exchange operation such as for single sign-on.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id associated with the token..</param>
+        /// <param name="exchangeRequest">The exchange request details, either a token to exchange or a uri to exchange.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>If the task completes, the exchanged token is returned.</returns>
+        public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
+        {
+            return ExchangeTokenAsync(turnContext, null, connectionName, userId, exchangeRequest, cancellationToken);
+        }
+
+        /// <summary>
+        /// Performs a token exchange operation such as for single sign-on.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="oAuthAppCredentials">AppCredentials for OAuth.</param>
+        /// <param name="connectionName">Name of the auth connection to use.</param>
+        /// <param name="userId">The user id associated with the token..</param>
+        /// <param name="exchangeRequest">The exchange request details, either a token to exchange or a uri to exchange.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>If the task completes, the exchanged token is returned.</returns>
+        public Task<TokenResponse> ExchangeTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string userId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken = default)
+        {
+            var exchangableValue = !string.IsNullOrEmpty(exchangeRequest?.Token) ?
+                exchangeRequest?.Token :
+                exchangeRequest?.Uri;
+
+            var key = new ExchangableTokenKey()
+            {
+                ChannelId = turnContext?.Activity?.ChannelId,
+                ConnectionName = connectionName,
+                ExchangableItem = exchangableValue,
+                UserId = userId,
+            };
+
+            if (_exchangableToken.TryGetValue(key, out string token))
+            {
+                if (token == ExceptionExpected)
+                {
+                    throw new InvalidOperationException("Exception occurred during exchanging tokens");
+                }
+
+                return Task.FromResult(new TokenResponse()
+                {
+                    ChannelId = key.ChannelId,
+                    ConnectionName = key.ConnectionName,
+                    Token = token
+                });
+            }
+            else
+            {
+                return Task.FromResult<TokenResponse>(null);
+            }
+        }
+        
+        /// <summary>
+        /// Creates the turn context for the adapter.
+        /// </summary>
+        /// <param name="activity">An <see cref="Activity"/> instance for the turn.</param>
+        /// <returns>A <see cref="TurnContext"/> instance to be used by the adapter.</returns>
+        protected virtual TurnContext CreateTurnContext(Activity activity)
+        {
+            return new TurnContext(this, activity);
+        }
+
+        private void Enqueue(Activity activity)
+        {
+            lock (_activeQueueLock)
+            {
+                // if there are pending requests, fulfill them with the activity.
+                while (_queuedRequests.Any())
+                {
+                    var tcs = _queuedRequests.Dequeue();
+                    if (tcs.Task.IsCanceled == false)
+                    {
+                        tcs.SetResult(activity);
+                        return;
+                    }
+                }
+
+                // else we enqueue for next requester
+                ActiveQueue.Enqueue(activity);
+            }
         }
 
         private class UserTokenKey
@@ -550,9 +924,9 @@ namespace Microsoft.Bot.Builder.Adapters
                 var rhs = obj as UserTokenKey;
                 if (rhs != null)
                 {
-                    return string.Equals(this.ConnectionName, rhs.ConnectionName) &&
-                        string.Equals(this.UserId, rhs.UserId) &&
-                        string.Equals(this.ChannelId, rhs.ChannelId);
+                    return string.Equals(this.ConnectionName, rhs.ConnectionName, StringComparison.Ordinal) &&
+                        string.Equals(this.UserId, rhs.UserId, StringComparison.Ordinal) &&
+                        string.Equals(this.ChannelId, rhs.ChannelId, StringComparison.Ordinal);
                 }
 
                 return base.Equals(obj);
@@ -563,6 +937,29 @@ namespace Microsoft.Bot.Builder.Adapters
                 return (ConnectionName ?? string.Empty).GetHashCode() +
                     (UserId ?? string.Empty).GetHashCode() +
                     (ChannelId ?? string.Empty).GetHashCode();
+            }
+        }
+
+        private class ExchangableTokenKey : UserTokenKey
+        {
+            public string ExchangableItem { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                var rhs = obj as ExchangableTokenKey;
+                if (rhs != null)
+                {
+                    return string.Equals(this.ExchangableItem, rhs.ExchangableItem, StringComparison.Ordinal) &&
+                        base.Equals(obj);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return (ExchangableItem ?? string.Empty).GetHashCode() +
+                    base.GetHashCode();
             }
         }
 

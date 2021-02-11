@@ -5,40 +5,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Message")]
     public class MessageFactoryTests
     {
-        [TestMethod]
+        [Fact]
         public void NullText()
         {
-            IMessageActivity message = MessageFactory.Text(null);
-            Assert.IsNull(message.Text, "Message Text is not null. Null must have been passed through.");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            var message = MessageFactory.Text(null);
+            
+            Assert.Null(message.Text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextOnly()
         {
-            string messageText = Guid.NewGuid().ToString();
-            IMessageActivity message = MessageFactory.Text(messageText);
-            Assert.AreEqual(message.Text, messageText, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+            var messageText = Guid.NewGuid().ToString();
+
+            var message = MessageFactory.Text(messageText);
+
+            Assert.Equal(message.Text, messageText);
+            Assert.Equal(message.Type, ActivityTypes.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void TextAndSSML()
         {
-            string messageText = Guid.NewGuid().ToString();
-            string ssml = @"
+            var messageText = Guid.NewGuid().ToString();
+            var ssml = @"
                 <speak xmlns=""http://www.w3.org/2001/10/synthesis""
                        xmlns:dc=""http://purl.org/dc/elements/1.1/""
                        version=""1.0"">
@@ -50,418 +52,408 @@ namespace Microsoft.Bot.Builder.Tests
                     </s>
                   </p>
                 </speak>";
-            IMessageActivity message = MessageFactory.Text(messageText, ssml);
-            Assert.AreEqual(message.Text, messageText, "Message Text is not an empty string");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.AreEqual(message.InputHint, InputHints.AcceptingInput, "InputHint is not AcceptingInput");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
+
+            var message = MessageFactory.Text(messageText, ssml);
+
+            Assert.Equal(message.Text, messageText);
+            Assert.Equal(message.Speak, ssml);
+            Assert.Equal(message.InputHint, InputHints.AcceptingInput);
+            Assert.Equal(message.Type, ActivityTypes.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void SuggestedActionText()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
-            IList<string> textActions = new List<string> { "one", "two" };
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
+            var textActions = new List<string> { "one", "two" };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsNotNull(message.SuggestedActions);
-            Assert.IsNotNull(message.SuggestedActions.Actions);
-            Assert.IsTrue(message.SuggestedActions.Actions.Count == 2);
-            Assert.IsTrue((string)message.SuggestedActions.Actions[0].Value == "one");
-            Assert.IsTrue(message.SuggestedActions.Actions[0].Title == "one");
-            Assert.IsTrue(message.SuggestedActions.Actions[0].Type == ActionTypes.ImBack);
-            Assert.IsTrue((string)message.SuggestedActions.Actions[1].Value == "two");
-            Assert.IsTrue(message.SuggestedActions.Actions[1].Title == "two");
-            Assert.IsTrue(message.SuggestedActions.Actions[1].Type == ActionTypes.ImBack);
+            var message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
+
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.NotNull(message.SuggestedActions);
+            Assert.NotNull(message.SuggestedActions.Actions);
+            Assert.True(message.SuggestedActions.Actions.Count == 2);
+            Assert.True((string)message.SuggestedActions.Actions[0].Value == "one");
+            Assert.True(message.SuggestedActions.Actions[0].Title == "one");
+            Assert.True(message.SuggestedActions.Actions[0].Type == ActionTypes.ImBack);
+            Assert.True((string)message.SuggestedActions.Actions[1].Value == "two");
+            Assert.True(message.SuggestedActions.Actions[1].Title == "two");
+            Assert.True(message.SuggestedActions.Actions[1].Type == ActionTypes.ImBack);
         }
 
-        [TestMethod]
+        [Fact]
         public void SuggestedActionEnumerable()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
-            HashSet<string> textActions = new HashSet<string> { "one", "two", "three" };
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
+            var textActions = new HashSet<string> { "one", "two", "three" };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsNotNull(message.SuggestedActions);
-            Assert.IsNotNull(message.SuggestedActions.Actions);
-            Assert.IsTrue(
+            var message = MessageFactory.SuggestedActions(textActions, text, ssml, inputHint);
+
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.NotNull(message.SuggestedActions);
+            Assert.NotNull(message.SuggestedActions.Actions);
+            Assert.True(
                 textActions.SetEquals(message.SuggestedActions.Actions.Select(action => (string)action.Value)),
                 "The message's suggested actions have the wrong set of values.");
-            Assert.IsTrue(
+            Assert.True(
                 textActions.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
                 "The message's suggested actions have the wrong set of titles.");
-            Assert.IsTrue(
+            Assert.True(
                 message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
                 "The message's suggested actions are of the wrong action type.");
         }
 
-        [TestMethod]
+        [Fact]
         public void SuggestedActionCardAction()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
 
-            string cardActionValue = Guid.NewGuid().ToString();
-            string cardActionTitle = Guid.NewGuid().ToString();
+            var cardActionValue = Guid.NewGuid().ToString();
+            var cardActionTitle = Guid.NewGuid().ToString();
 
-            CardAction ca = new CardAction
+            var ca = new CardAction
             {
                 Type = ActionTypes.ImBack,
                 Value = cardActionValue,
                 Title = cardActionTitle,
             };
 
-            IList<CardAction> cardActions = new List<CardAction> { ca };
+            var cardActions = new List<CardAction> { ca };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
+            var message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsNotNull(message.SuggestedActions);
-            Assert.IsNotNull(message.SuggestedActions.Actions);
-            Assert.IsTrue(message.SuggestedActions.Actions.Count == 1);
-            Assert.IsTrue((string)message.SuggestedActions.Actions[0].Value == cardActionValue);
-            Assert.IsTrue(message.SuggestedActions.Actions[0].Title == cardActionTitle);
-            Assert.IsTrue(message.SuggestedActions.Actions[0].Type == ActionTypes.ImBack);
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.NotNull(message.SuggestedActions);
+            Assert.NotNull(message.SuggestedActions.Actions);
+            Assert.True(message.SuggestedActions.Actions.Count == 1);
+            Assert.True((string)message.SuggestedActions.Actions[0].Value == cardActionValue);
+            Assert.True(message.SuggestedActions.Actions[0].Title == cardActionTitle);
+            Assert.True(message.SuggestedActions.Actions[0].Type == ActionTypes.ImBack);
         }
 
-        [TestMethod]
+        [Fact]
         public void SuggestedActionCardActionUnordered()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
 
-            string cardValue1 = Guid.NewGuid().ToString();
-            string cardTitle1 = Guid.NewGuid().ToString();
+            var cardValue1 = Guid.NewGuid().ToString();
+            var cardTitle1 = Guid.NewGuid().ToString();
 
-            CardAction cardAction1 = new CardAction
+            var cardAction1 = new CardAction
             {
                 Type = ActionTypes.ImBack,
                 Value = cardValue1,
                 Title = cardTitle1,
             };
 
-            string cardValue2 = Guid.NewGuid().ToString();
-            string cardTitle2 = Guid.NewGuid().ToString();
+            var cardValue2 = Guid.NewGuid().ToString();
+            var cardTitle2 = Guid.NewGuid().ToString();
 
-            CardAction cardAction2 = new CardAction
+            var cardAction2 = new CardAction
             {
                 Type = ActionTypes.ImBack,
                 Value = cardValue2,
                 Title = cardTitle2,
             };
 
-            HashSet<CardAction> cardActions = new HashSet<CardAction> { cardAction1, cardAction2 };
-            HashSet<object> values = new HashSet<object> { cardValue1, cardValue2 };
-            HashSet<string> titles = new HashSet<string> { cardTitle1, cardTitle2 };
+            var cardActions = new HashSet<CardAction> { cardAction1, cardAction2 };
+            var values = new HashSet<object> { cardValue1, cardValue2 };
+            var titles = new HashSet<string> { cardTitle1, cardTitle2 };
 
-            IMessageActivity message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
+            var message = MessageFactory.SuggestedActions(cardActions, text, ssml, inputHint);
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsNotNull(message.SuggestedActions);
-            Assert.IsNotNull(message.SuggestedActions.Actions);
-            Assert.IsTrue(message.SuggestedActions.Actions.Count == 2);
-            Assert.IsTrue(
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.NotNull(message.SuggestedActions);
+            Assert.NotNull(message.SuggestedActions.Actions);
+            Assert.True(message.SuggestedActions.Actions.Count == 2);
+            Assert.True(
                 values.SetEquals(message.SuggestedActions.Actions.Select(action => action.Value)),
                 "The message's suggested actions have the wrong set of values.");
-            Assert.IsTrue(
+            Assert.True(
                 titles.SetEquals(message.SuggestedActions.Actions.Select(action => action.Title)),
                 "The message's suggested actions have the wrong set of titles.");
-            Assert.IsTrue(
+            Assert.True(
                 message.SuggestedActions.Actions.All(action => action.Type.Equals(ActionTypes.ImBack)),
                 "The message's suggested actions are of the wrong action type.");
         }
 
-        [TestMethod]
+        [Fact]
         public void AttachmentSingle()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
 
-            string attachmentName = Guid.NewGuid().ToString();
-            Attachment a = new Attachment
+            var attachmentName = Guid.NewGuid().ToString();
+            var attachment = new Attachment
             {
                 Name = attachmentName,
             };
 
-            IMessageActivity message = MessageFactory.Attachment(a, text, ssml, inputHint);
+            var message = MessageFactory.Attachment(attachment, text, ssml, inputHint);
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.Attachments.Count == 1, "Incorrect Attachment Count");
-            Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment Name");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.True(message.Attachments.Count == 1, "Incorrect Attachment Count");
+            Assert.True(message.Attachments[0].Name == attachmentName, "Incorrect Attachment Name");
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        public void SuggestedActionsCardActionCollectionNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<CardAction>)null));
+        }
+
+        [Fact]
+        public void SuggestedActionsStringCollectionNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.SuggestedActions((IEnumerable<string>)null));
+        }
+
+        [Fact]
         public void AttachmentNull()
         {
-            IMessageActivity message = MessageFactory.Attachment((Attachment)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.Attachment((Attachment)null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void AttachmentMultipleNull()
         {
-            IMessageActivity message = MessageFactory.Attachment((IList<Attachment>)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.Attachment((IList<Attachment>)null));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
         public void CarouselNull()
         {
-            IMessageActivity message = MessageFactory.Carousel((IList<Attachment>)null);
-            Assert.Fail("Exception not thrown");
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.Carousel((IList<Attachment>)null));
         }
 
-        [TestMethod]
+        [Theory]
+        [InlineData("url", null)]
+        [InlineData("url", "")]
+        [InlineData("url", " ")]
+        [InlineData(null, "contentType")]
+        [InlineData("", "contentType")]
+        [InlineData(" ", "contentType")]
+        public void ContentUrlNull(string url, string contentType)
+        {
+            Assert.Throws<ArgumentNullException>(() => MessageFactory.ContentUrl(url, contentType));
+        }
+
+        [Fact]
         public void CarouselTwoAttachments()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
 
-            string attachmentName = Guid.NewGuid().ToString();
-            Attachment attachment1 = new Attachment
+            var attachmentName = Guid.NewGuid().ToString();
+            var attachment1 = new Attachment
             {
                 Name = attachmentName,
             };
 
-            string attachmentName2 = Guid.NewGuid().ToString();
-            Attachment attachment2 = new Attachment
+            var attachmentName2 = Guid.NewGuid().ToString();
+            var attachment2 = new Attachment
             {
                 Name = attachmentName2,
             };
 
-            IList<Attachment> multipleAttachments = new List<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+            var multipleAttachments = new List<Attachment> { attachment1, attachment2 };
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
-            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
-            Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
-            Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
+            var message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
+            Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.True(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
+            Assert.True(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
         }
 
+        [Fact]
         public void CarouselUnorderedAttachments()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
 
-            string attachmentName1 = Guid.NewGuid().ToString();
-            Attachment attachment1 = new Attachment
+            var attachmentName1 = Guid.NewGuid().ToString();
+            var attachment1 = new Attachment
             {
                 Name = attachmentName1,
             };
 
-            string attachmentName2 = Guid.NewGuid().ToString();
-            Attachment attachment2 = new Attachment
+            var attachmentName2 = Guid.NewGuid().ToString();
+            var attachment2 = new Attachment
             {
                 Name = attachmentName2,
             };
 
-            HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
+            var multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
+            var names = new HashSet<string> { attachmentName1, attachmentName2 };
 
-            HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
+            var message = MessageFactory.Carousel(multipleAttachments, text, ssml, inputHint);
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
-            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
-            Assert.IsTrue(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.Carousel);
+            Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.True(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
         }
 
-        [TestMethod]
+        [Fact]
         public void AttachmentMultiple()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
 
-            string attachmentName = Guid.NewGuid().ToString();
-            Attachment a = new Attachment
-            {
-                Name = attachmentName,
-            };
-
-            string attachmentName2 = Guid.NewGuid().ToString();
-            Attachment a2 = new Attachment
-            {
-                Name = attachmentName2,
-            };
-
-            IList<Attachment> multipleAttachments = new List<Attachment> { a, a2 };
-            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
-
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.List);
-            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
-            Assert.IsTrue(message.Attachments[0].Name == attachmentName, "Incorrect Attachment1 Name");
-            Assert.IsTrue(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
-        }
-
-        [TestMethod]
-        public void AttachmentMultipleUnordered()
-        {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
-
-            string attachmentName1 = Guid.NewGuid().ToString();
-            Attachment attachment1 = new Attachment
+            var attachmentName1 = Guid.NewGuid().ToString();
+            var attachment1 = new Attachment
             {
                 Name = attachmentName1,
             };
 
-            string attachmentName2 = Guid.NewGuid().ToString();
-            Attachment attachment2 = new Attachment
+            var attachmentName2 = Guid.NewGuid().ToString();
+            var attachment2 = new Attachment
             {
                 Name = attachmentName2,
             };
 
-            HashSet<Attachment> multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
-            IMessageActivity message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
+            var multipleAttachments = new List<Attachment> { attachment1, attachment2 };
 
-            HashSet<string> names = new HashSet<string> { attachmentName1, attachmentName2 };
+            var message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.AttachmentLayout == AttachmentLayoutTypes.List);
-            Assert.IsTrue(message.Attachments.Count == 2, "Incorrect Attachment Count");
-            Assert.IsTrue(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.List);
+            Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.True(message.Attachments[0].Name == attachmentName1, "Incorrect Attachment1 Name");
+            Assert.True(message.Attachments[1].Name == attachmentName2, "Incorrect Attachment2 Name");
         }
 
-        [TestMethod]
+        [Fact]
+        public void AttachmentMultipleUnordered()
+        {
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
+
+            var attachmentName1 = Guid.NewGuid().ToString();
+            var attachment1 = new Attachment
+            {
+                Name = attachmentName1,
+            };
+
+            var attachmentName2 = Guid.NewGuid().ToString();
+            var attachment2 = new Attachment
+            {
+                Name = attachmentName2,
+            };
+
+            var multipleAttachments = new HashSet<Attachment> { attachment1, attachment2 };
+            var names = new HashSet<string> { attachmentName1, attachmentName2 };
+
+            var message = MessageFactory.Attachment(multipleAttachments, text, ssml, inputHint);
+
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.True(message.AttachmentLayout == AttachmentLayoutTypes.List);
+            Assert.True(message.Attachments.Count == 2, "Incorrect Attachment Count");
+            Assert.True(names.SetEquals(message.Attachments.Select(a => a.Name)), "Incorrect set of attachment names.");
+        }
+
+        [Fact]
         public void ContentUrl()
         {
-            string text = Guid.NewGuid().ToString();
-            string ssml = Guid.NewGuid().ToString();
-            string inputHint = InputHints.ExpectingInput;
-            string uri = $"https:// {Guid.NewGuid().ToString()}";
-            string contentType = MediaTypeNames.Image.Jpeg;
-            string name = Guid.NewGuid().ToString();
+            var text = Guid.NewGuid().ToString();
+            var ssml = Guid.NewGuid().ToString();
+            var inputHint = InputHints.ExpectingInput;
+            var uri = $"https://{Guid.NewGuid().ToString()}";
+            var contentType = MediaTypeNames.Image.Jpeg;
+            var name = Guid.NewGuid().ToString();
 
-            IMessageActivity message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);
+            var message = MessageFactory.ContentUrl(uri, contentType, name, text, ssml, inputHint);
 
-            Assert.AreEqual(message.Text, text, "Message Text does not match");
-            Assert.AreEqual(message.Type, ActivityTypes.Message, "Incorrect Activity Type");
-            Assert.AreEqual(message.InputHint, inputHint, "InputHint does not match");
-            Assert.AreEqual(message.Speak, ssml, "ssml text is incorrect");
-            Assert.IsTrue(message.Attachments.Count == 1);
-            Assert.IsTrue(message.Attachments[0].Name == name, "Incorrect Attachment1 Name");
-            Assert.IsTrue(message.Attachments[0].ContentType == contentType, "Incorrect contentType");
-            Assert.IsTrue(message.Attachments[0].ContentUrl == uri, "Incorrect Uri");
+            Assert.Equal(message.Text, text);
+            Assert.Equal(message.Type, ActivityTypes.Message);
+            Assert.Equal(message.InputHint, inputHint);
+            Assert.Equal(message.Speak, ssml);
+            Assert.True(message.Attachments.Count == 1);
+            Assert.True(message.Attachments[0].Name == name, "Incorrect Attachment1 Name");
+            Assert.True(message.Attachments[0].ContentType == contentType, "Incorrect contentType");
+            Assert.True(message.Attachments[0].ContentUrl == uri, "Incorrect Uri");
         }
 
-        [TestMethod]
-        public async Task ValidateIMBackWithText()
+        [Theory]
+        [InlineData("", null)]
+        [InlineData("Select color", "Select color")]
+        public async Task ValidateImBack(string inputText, string expectedText)
         {
-            TestAdapter adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ValidateImBack"));
 
-            async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
+            async Task ReplyWithImBack(ITurnContext ctx, CancellationToken cancellationToken)
             {
                 if (ctx.Activity.AsMessageActivity().Text == "test")
                 {
                     var activity = MessageFactory.SuggestedActions(
                         new CardAction[]
-                    {
-                        new CardAction(type: "imBack", text: "red", title: "redTitle"),
-                    }, "Select color");
+                        {
+                            new CardAction(type: "imBack", text: "red", title: "redTitle"),
+                        },
+                        inputText);
 
                     await ctx.SendActivityAsync((Activity)activity);
                 }
             }
 
-            void ValidateIMBack(IActivity activity)
+            void ValidateImBack(IActivity activity)
             {
-                Assert.IsTrue(activity.Type == ActivityTypes.Message);
+                Assert.True(activity.Type == ActivityTypes.Message);
 
                 var messageActivity = activity.AsMessageActivity();
 
-                Assert.IsTrue(messageActivity.Text == "Select color");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text == "red", "incorrect text");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Title == "redTitle", "incorrect text");
+                Assert.True(messageActivity.Text == expectedText);
+                Assert.True(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
+                Assert.True(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
+                Assert.True(messageActivity.SuggestedActions.Actions[0].Text == "red", "incorrect text");
+                Assert.True(messageActivity.SuggestedActions.Actions[0].Title == "redTitle", "incorrect text");
             }
 
-            await new TestFlow(adapter, ReplyWithimBackBack)
+            await new TestFlow(adapter, ReplyWithImBack)
                 .Send("test")
-                .AssertReply(ValidateIMBack, "IMBack Did not validate")
-                .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ValidateIMBackWithNoTest()
-        {
-            TestAdapter adapter = new TestAdapter();
-
-            async Task ReplyWithimBackBack(ITurnContext ctx, CancellationToken cancellationToken)
-            {
-                if (ctx.Activity.AsMessageActivity().Text == "test")
-                {
-                    var activity = MessageFactory.SuggestedActions(
-                        new CardAction[]
-                    {
-                        new CardAction(type: "imBack", text: "red", title: "redTitle"),
-                    }, string.Empty);
-
-                    await ctx.SendActivityAsync((Activity)activity);
-                }
-            }
-
-            void ValidateIMBack(IActivity activity)
-            {
-                Assert.IsTrue(activity.Type == ActivityTypes.Message);
-
-                var messageActivity = activity.AsMessageActivity();
-
-                Assert.IsTrue(messageActivity.Text == null);
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions.Count == 1, "Incorrect Count");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Type == ActionTypes.ImBack, "Incorrect Action Type");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Text == "red", "incorrect text");
-                Assert.IsTrue(messageActivity.SuggestedActions.Actions[0].Title == "redTitle", "incorrect text");
-            }
-
-            await new TestFlow(adapter, ReplyWithimBackBack)
-                .Send("test")
-                .AssertReply(ValidateIMBack, "IMBack Did not validate")
+                .AssertReply(ValidateImBack, "ImBack Did not validate")
                 .StartTestAsync();
         }
     }

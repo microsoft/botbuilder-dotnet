@@ -1,0 +1,78 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "Test",
+                    "pattern": "test"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.ApplicationInsights.InstrumentationKey}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Test",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "settings.cannot",
+                        "value": "='foo'"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${settings.cannot}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "howdy"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "00000000-0000-0000-0000-000000000000"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "howdy"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "00000000-0000-0000-0000-000000000000"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "howdy"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "00000000-0000-0000-0000-000000000000"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "test"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Specified method is not supported."
+        }
+    ]
+}

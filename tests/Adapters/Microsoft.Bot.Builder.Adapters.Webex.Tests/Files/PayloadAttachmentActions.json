@@ -1,0 +1,23 @@
+{
+  "id": "test_id",
+  "name": "Webex AttachmentActions",
+  "resource": "attachmentActions",
+  "event": "created",
+  "filter": null,
+  "orgId": "test_org_id",
+  "createdBy": "test_creatorId",
+  "appId": "test_appId",
+  "ownedBy": "creator",
+  "status": "active",
+  "actorId": "test_personId",
+  "targetUrl": "https://f7f6772c.ngrok.io/api/messages",
+  "created": "2019-09-04T20:53:25.258Z",
+  "data": {
+    "id": "test_actionId",
+    "type": "submit",
+    "messageId": "test_messageId",
+    "personId": "test_personId",
+    "roomId": "test_roomId",
+    "created": "2019-09-05T14:28:08.041Z"
+  }
+}

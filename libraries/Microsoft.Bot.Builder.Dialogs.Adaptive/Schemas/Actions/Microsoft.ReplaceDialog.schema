@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Replace dialog",
+    "description": "Replace current dialog with another dialog.",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "dialog": {
+            "oneOf": [
+                {
+                    "$kind": "Microsoft.IDialog",
+                    "pattern": "^(?!(=)).*",
+                    "title": "Dialog"
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression",
+                    "examples": [
+                        "=settings.dialogId"
+                    ]
+                }
+            ],
+            "title": "Dialog name",
+            "description": "Name of the dialog to call."
+        },
+        "options": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "Options",
+            "description": "One or more options that are passed to the dialog that is called.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options",
+                "description": "Options for replacing dialog."
+            }
+        },
+        "activityProcessed": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Activity processed",
+            "description": "When set to false, the dialog that is called can process the current activity.",
+            "default": true
+        }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
+}

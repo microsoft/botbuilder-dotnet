@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -10,6 +11,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// Validates JWT tokens from an enterprise channel.
+    /// </summary>
     public sealed class EnterpriseChannelValidation
     {
         /// <summary>
@@ -26,6 +30,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromMinutes(5),
                 RequireSignedTokens = true,
+                ValidateIssuerSigningKey = true,
             };
 
         /// <summary>
@@ -40,7 +45,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// setup and teardown, so a shared HttpClient is recommended.</param>
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <returns>ClaimsIdentity.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string serviceUrl, HttpClient httpClient, string channelId)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             return await AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, new AuthenticationConfiguration()).ConfigureAwait(false);
         }
@@ -58,7 +65,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="channelId">The ID of the channel to validate.</param>
         /// <param name="authConfig">The authentication configuration.</param>
         /// <returns>ClaimsIdentity.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateChannelToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string serviceUrl, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (authConfig == null)
             {
@@ -70,7 +79,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
                 ToBotFromEnterpriseChannelTokenValidationParameters,
-                string.Format(AuthenticationConstants.ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat, channelService),
+                string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat, channelService),
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
@@ -80,7 +89,16 @@ namespace Microsoft.Bot.Connector.Authentication
             return identity;
         }
 
+        /// <summary>
+        /// Validates a <see cref="ClaimsIdentity"/> object against the credentials and service URL provided.
+        /// </summary>
+        /// <param name="identity">The identity to validate.</param>
+        /// <param name="credentials">The credentials to use for validation.</param>
+        /// <param name="serviceUrl">The service URL to validate.</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task ValidateIdentity(ClaimsIdentity identity, ICredentialProvider credentials, string serviceUrl)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (identity == null)
             {
@@ -118,7 +136,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            if (!await credentials.IsValidAppIdAsync(appIdFromClaim))
+            if (!await credentials.IsValidAppIdAsync(appIdFromClaim).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");
@@ -133,7 +151,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     throw new UnauthorizedAccessException();
                 }
 
-                if (!string.Equals(serviceUrlClaim, serviceUrl))
+                if (!string.Equals(serviceUrlClaim, serviceUrl, StringComparison.OrdinalIgnoreCase))
                 {
                     // Claim must match. Not Authorized.
                     throw new UnauthorizedAccessException();

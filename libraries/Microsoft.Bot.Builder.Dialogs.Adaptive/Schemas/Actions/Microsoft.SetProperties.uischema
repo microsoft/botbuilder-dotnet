@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Set properties",
+        "subtitle": "Set Properties",
+        "helpLink": "https://aka.ms/bfc-using-memory",
+        "properties": {
+            "assignments": {
+                "properties": {
+                    "property": {
+                        "intellisenseScopes": [
+                            "variable-scopes"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ListOverview",
+            "items": "=foreach(action.assignments, x => concat(coalesce(x.property, \"?\"), \" : \", coalesce(x.value, \"?\")))"
+        }
+    }
+}

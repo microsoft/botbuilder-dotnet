@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Log to console",
+    "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
+    "type": "object",
+    "required": [
+        "text"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        },
+        "text": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Text",
+            "description": "Information to log."
+        },
+        "label": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Label",
+            "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+        },
+        "traceActivity": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Send trace activity",
+            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator)."
+        }
+    }
+}

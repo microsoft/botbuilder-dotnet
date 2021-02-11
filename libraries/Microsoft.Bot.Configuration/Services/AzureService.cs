@@ -4,10 +4,12 @@
 namespace Microsoft.Bot.Configuration
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Represents the base configuration for an Azure service.
+    /// </summary>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class AzureService : ConnectedService
     {
         /// <summary>

@@ -1,0 +1,17 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "On activity",
+    "description": "Actions to perform on receipt of a generic activity.",
+    "type": "object",
+    "properties": {
+        "type": {
+            "type": "string",
+            "title": "Activity type",
+            "description": "The Activity.Type to match"
+        }
+    },
+    "required": [
+        "type"
+    ]
+}

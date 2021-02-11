@@ -1,0 +1,1 @@
+{"Sections":[{"Errors":[],"SectionType":"newEntitySection","Id":"newEntitySection_fooBar","Body":"","Name":"fooBar","Type":"ml","ListBody":["- @ ml x1 usesFeature pa1"],"Range":{"Start":{"Line":2,"Character":0},"End":{"Line":3,"Character":26}}}],"Content":"\n@ ml fooBar\n- @ ml x1 usesFeature pa1\n","Errors":[]}

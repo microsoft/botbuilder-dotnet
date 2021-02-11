@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Different shipping types. See http://www.w3.org/TR/payment-request/#dom-paymentoptions-shippingtype for more information.
     /// </summary>
+    [Obsolete("Bot Framework no longer supports payments.")]
     public static class PaymentShippingTypes
     {
         /// <summary>

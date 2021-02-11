@@ -10,10 +10,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class FeedbackRecords
     {
-        // <summary>
-        // List of feedback records
-        // </summary>
+        /// <summary>
+        /// Gets or sets the list of feedback records.
+        /// </summary>
+        /// <value>
+        /// List of feedback records.
+        /// </value>
         [JsonProperty("feedbackRecords")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public FeedbackRecord[] Records { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

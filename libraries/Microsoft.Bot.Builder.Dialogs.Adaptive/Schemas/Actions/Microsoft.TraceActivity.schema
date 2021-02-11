@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send a TraceActivity",
+    "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        },
+        "name": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Name",
+            "description": "Name of the trace activity"
+        },
+        "label": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Label",
+            "description": "Label for the trace activity (used to identify it in a list of trace activities.)"
+        },
+        "valueType": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Value type",
+            "description": "Type of value"
+        },
+        "value": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Value",
+            "description": "Property that holds the value to send as trace activity."
+        }
+    }
+}

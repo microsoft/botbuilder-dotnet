@@ -1,0 +1,11 @@
+﻿{
+  "template_type": "button",
+  "text": "You can contact with a secondary bot.",
+  "buttons": [
+    {
+      "type": "postback",
+      "title": "Contact",
+      "payload": "SecondaryBot"
+    }
+  ]
+}

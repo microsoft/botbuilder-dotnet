@@ -66,6 +66,17 @@ namespace Microsoft.Bot.Builder.Testing
         }
 
         /// <summary>
+        /// Gets a reference for the <see cref="DialogContext"/>.
+        /// </summary>
+        /// <value>
+        /// A reference for the <see cref="DialogContext"/>.
+        /// </value>
+        /// <remarks>
+        /// This property will be null until at least one activity is sent to <see cref="DialogTestClient"/>.
+        /// </remarks>
+        public DialogContext DialogContext { get; private set; }
+
+        /// <summary>
         /// Gets the latest <see cref="DialogTurnResult"/> for the dialog being tested.
         /// </summary>
         /// <value>A <see cref="DialogTurnResult"/> instance with the result of the last turn.</value>
@@ -122,16 +133,14 @@ namespace Microsoft.Bot.Builder.Testing
                 // Ensure dialog state is created and pass it to DialogSet.
                 await dialogState.GetAsync(turnContext, () => new DialogState(), cancellationToken).ConfigureAwait(false);
                 var dialogs = new DialogSet(dialogState);
-
                 dialogs.Add(targetDialog);
 
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
-
-                DialogTurnResult = await dc.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
+                DialogContext = await dialogs.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                DialogTurnResult = await DialogContext.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
                 switch (DialogTurnResult.Status)
                 {
                     case DialogTurnStatus.Empty:
-                        DialogTurnResult = await dc.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken).ConfigureAwait(false);
+                        DialogTurnResult = await DialogContext.BeginDialogAsync(targetDialog.Id, initialDialogOptions, cancellationToken).ConfigureAwait(false);
                         break;
                     case DialogTurnStatus.Complete:
                     {

@@ -1,0 +1,104 @@
+#variables:
+#  DotNetCoverallsToken: define this in Azure
+#  PublishCoverage: (optional) set to true in the calling template.
+steps:
+- powershell: |
+   Remove-Item CodeCoverage -Force -Recurse -ErrorAction Ignore
+   New-Item CodeCoverage -ItemType Directory -Force
+  displayName: 'Create Code Coverage directory'
+
+# - task: petergroenewegen.PeterGroenewegen-Xpirit-Vsts-Build-InlinePowershell.Xpirit-Vsts-Build-InlinePowershell.InlinePowershell@1
+#   displayName: 'Start CosmosDB Emulator'
+#   inputs:
+#     Script: |
+#         Write-Host "Starting CosmosDB Emulator on Windows"
+#         Import-Module "C:/Program Files/Azure Cosmos DB Emulator/PSModules/Microsoft.Azure.CosmosDB.Emulator"
+#         Start-CosmosDbEmulator
+
+- task: Npm@1
+  displayName: 'install botframework-cli to set up for Schema merge tests.'
+  inputs:
+    command: custom
+    verbose: false
+    customCommand: 'install -g @microsoft/botframework-cli@next'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 2.1'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.TestBot.Tests.csproj
+     !Tests/**/Microsoft.Bot.Builder.AI.Orchestrator.Tests.csproj
+     
+    arguments: '-v n  -f netcoreapp2.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp21'))
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test (release) 3.1'
+  inputs:
+    command: test
+    projects: |
+     Tests/**/*Tests.csproj
+     !Tests/**/*21.Tests.csproj
+
+    arguments: '-v n  -f netcoreapp3.1 --configuration release --no-build --no-restore --filter "TestCategory!=IgnoreInAutomatedBuild&TestCategory!=FunctionalTests" --collect:"Code Coverage" --settings $(Build.SourcesDirectory)\CodeCoverage.runsettings'
+  condition: and(eq(variables['BuildConfiguration'],'Release-Windows'), eq(variables['BuildTarget'],'netcoreapp31'))
+
+- powershell: |
+   # This task copies the code coverage file created by dotnet test into a well known location. In all
+   # checks I've done, dotnet test ALWAYS outputs the coverage file to the temp directory. 
+   # My attempts to override this and have it go directly to the CodeCoverage directory have
+   # all failed, so I'm just doing the copy here.  (cmullins)
+   
+   Get-ChildItem -Path "D:\a\_temp" -Include "*.coverage" -Recurse | Copy-Item -Destination CodeCoverage
+  displayName: 'Copy .coverage Files to CodeCoverage folder'
+  condition: eq(variables['BuildConfiguration'],'Release-Windows')
+
+- powershell: 'echo ''##vso[task.setvariable variable=CoverallsToken]$(DotNetCoverallsToken)'''
+  displayName: 'Set CoverallsToken for PublishToCoveralls.ps1 if token exists'
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
+- task: PowerShell@2
+  displayName: 'Upload Coverage Files to Coveralls.io https://coveralls.io/github/microsoft/botbuilder-dotnet'
+  inputs:
+    targetType: filePath
+    filePath: '$(Build.SourcesDirectory)\build\PublishToCoveralls.ps1'
+    arguments: '-pathToCoverageFiles "$(Build.SourcesDirectory)\CodeCoverage" -serviceName "CI-PR build"'
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['PublishCoverage'], 'true'))
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish build artifact CodeCoverage'
+  inputs:
+    PathtoPublish: CodeCoverage
+    ArtifactName: CodeCoverage
+  enabled: false
+
+- powershell: |
+   New-Item -ItemType directory -Path "outputLibraries\" -Force
+   
+   $buildTarget = $env:BuildConfiguration.Split("-")[0];
+   
+   $env:BotBuilderDll.Split(",") | ForEach {
+       $library = $_.Trim()
+       Write-Host $library
+   
+       Get-ChildItem -Path "*/$library/bin/$buildTarget/netstandard2.0/$library.dll" -Recurse | Copy-Item -Destination 'outputLibraries\' -Force
+       Get-ChildItem -Path "*/*/$library/bin/$buildTarget/netstandard2.0/$library.dll" -Recurse | Copy-Item -Destination 'outputLibraries\' -Force
+   }
+  displayName: 'Copy DLLs to outputLibraries folder'
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Microsoft.Bot.Builder DLLs artifact'
+  inputs:
+    artifactName: 'BotBuilderDLLs-$(BuildConfiguration)-$(BuildTarget)'
+    targetPath: outputLibraries
+
+- script: |
+   cd ..
+   dir *.* /s
+  displayName: 'Dir workspace'
+  continueOnError: true
+  condition: succeededOrFailed()

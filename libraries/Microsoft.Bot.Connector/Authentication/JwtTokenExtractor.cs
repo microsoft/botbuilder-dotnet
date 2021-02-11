@@ -16,6 +16,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// A JWT token processing class that gets identity information and performs security token validation.
+    /// </summary>
     public class JwtTokenExtractor
     {
         /// <summary>
@@ -116,11 +119,24 @@ namespace Microsoft.Bot.Connector.Authentication
             _endorsementsData = customEndorsementsConfig ?? throw new ArgumentNullException(nameof(customEndorsementsConfig));
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="authorizationHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId)
         {
-            return await GetIdentityAsync(authorizationHeader, channelId, new string[] { }).ConfigureAwait(false);
+            return await GetIdentityAsync(authorizationHeader, channelId, Array.Empty<string>()).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="authorizationHeader">The raw HTTP header in the format: "Bearer [longString]".</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <param name="requiredEndorsements">The required JWT endorsements.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string authorizationHeader, string channelId, string[] requiredEndorsements)
         {
             if (authorizationHeader == null)
@@ -137,11 +153,26 @@ namespace Microsoft.Bot.Connector.Authentication
             return null;
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="scheme">The associated scheme.</param>
+        /// <param name="parameter">The token.</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId)
         {
-            return await GetIdentityAsync(scheme, parameter, channelId, new string[] { }).ConfigureAwait(false);
+            return await GetIdentityAsync(scheme, parameter, channelId, Array.Empty<string>()).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets the claims identity associated with a request.
+        /// </summary>
+        /// <param name="scheme">The associated scheme.</param>
+        /// <param name="parameter">The token.</param>
+        /// <param name="channelId">The Id of the channel being validated in the original request.</param>
+        /// <param name="requiredEndorsements">The required JWT endorsements.</param>
+        /// <returns>A <see cref="Task{ClaimsIdentity}"/> object.</returns>
         public async Task<ClaimsIdentity> GetIdentityAsync(string scheme, string parameter, string channelId, string[] requiredEndorsements)
         {
             if (requiredEndorsements == null)
@@ -195,11 +226,6 @@ namespace Microsoft.Bot.Connector.Authentication
             return false;
         }
 
-        private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId)
-        {
-            return await ValidateTokenAsync(jwtToken, channelId, new string[] { }).ConfigureAwait(false);
-        }
-
         private async Task<ClaimsPrincipal> ValidateTokenAsync(string jwtToken, string channelId, string[] requiredEndorsements)
         {
             if (requiredEndorsements == null)
@@ -226,7 +252,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Update the signing tokens from the last refresh
             _tokenValidationParameters.IssuerSigningKeys = config.SigningKeys;
-
             var tokenHandler = new JwtSecurityTokenHandler();
 
             try
@@ -237,7 +262,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 // Validate Channel / Token Endorsements. For this, the channelID present on the Activity
                 // needs to be matched by an endorsement.
                 var keyId = (string)parsedJwtToken?.Header?[AuthenticationConstants.KeyIdHeader];
-                var endorsements = await _endorsementsData.GetConfigurationAsync();
+                var endorsements = await _endorsementsData.GetConfigurationAsync().ConfigureAwait(false);
 
                 // Note: On the Emulator Code Path, the endorsements collection is empty so the validation code
                 // below won't run. This is normal.

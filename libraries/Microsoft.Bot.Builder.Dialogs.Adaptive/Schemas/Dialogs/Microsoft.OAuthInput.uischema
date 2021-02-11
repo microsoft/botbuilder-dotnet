@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "OAuth login",
+        "subtitle": "OAuth Input",
+        "helpLink": "https://aka.ms/bfc-using-oauth",
+        "order": [
+            "connectionName",
+            "*"
+        ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "ResourceOperation",
+            "operation": "Connection",
+            "resource": "=coalesce(action.connectionName, \"?\")",
+            "singleline": true
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.property",
+            "description": "= Token property"
+        },
+        "hideFooter": "=!action.property"
+    }
+}

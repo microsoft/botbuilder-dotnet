@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -15,14 +17,23 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
+        /// <summary>
+        /// Constant key used for storing activity information in turn state.
+        /// </summary>
         public static readonly string BotActivityKey = "BotBuilderActivity";
+
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryBotIdInitializer"/> class.
+        /// </summary>
+        /// <param name="httpContextAccessor">The HttpContextAccessor used to access the current HttpContext.</param>
         public TelemetryBotIdInitializer(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
+        /// <inheritdoc/>
         public void Initialize(ITelemetry telemetry)
         {
             if (telemetry == null)
@@ -35,7 +46,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
             if (items != null)
             {
-                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry || telemetry is TraceTelemetry)
+                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry
+                    || telemetry is TraceTelemetry || telemetry is DependencyTelemetry || telemetry is PageViewTelemetry)
                     && items.ContainsKey(BotActivityKey))
                 {
                     if (items[BotActivityKey] is JObject body)
@@ -50,19 +62,29 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                         var channelId = (string)body["channelId"];
 
                         var conversationId = string.Empty;
+                        var sessionId = string.Empty;
                         var conversation = body["conversation"];
-                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
+
+                            sessionId = StringUtils.Hash(conversationId);
                         }
 
                         // Set the user id on the Application Insights telemetry item.
                         telemetry.Context.User.Id = channelId + userId;
 
                         // Set the session id on the Application Insights telemetry item.
-                        telemetry.Context.Session.Id = conversationId;
+                        // Hashed ID is used due to max session ID length for App Insights session Id
+                        telemetry.Context.Session.Id = sessionId;
 
                         var telemetryProperties = ((ISupportProperties)telemetry).Properties;
+
+                        // Set the conversation id
+                        if (!telemetryProperties.ContainsKey("conversationId"))
+                        {
+                            telemetryProperties.Add("conversationId", conversationId);
+                        }
 
                         // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
                         if (!telemetryProperties.ContainsKey("activityId"))

@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Sign out user",
+    "description": "Sign a user out that was logged in previously using OAuthInput.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "userId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "UserId",
+            "description": "Expression to an user to signout. Default is user.id.",
+            "default": "=user.id"
+        },
+        "connectionName": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Connection name",
+            "description": "Connection name that was used with OAuthInput to log a user in."
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        }
+    }
+}

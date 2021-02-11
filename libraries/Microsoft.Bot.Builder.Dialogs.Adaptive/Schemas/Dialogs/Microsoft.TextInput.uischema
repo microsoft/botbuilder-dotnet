@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Prompt for text",
+        "subtitle": "Text Input",
+        "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+        "properties": {
+            "property": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
+    },
+    "flow": {
+        "widget": "PromptWidget",
+        "body": "=action.prompt",
+        "nowrap": true,
+        "botAsks": {
+            "widget": "ActionCard",
+            "header": {
+                "widget": "ActionHeader",
+                "icon": "MessageBot",
+                "colors": {
+                    "theme": "#EEEAF4",
+                    "icon": "#5C2E91"
+                }
+            },
+            "body": {
+                "widget": "LgWidget",
+                "field": "prompt",
+                "defaultContent": "<prompt>"
+            }
+        },
+        "userInput": {
+            "widget": "ActionCard",
+            "header": {
+                "widget": "ActionHeader",
+                "disableSDKTitle": true,
+                "icon": "User",
+                "menu": "none",
+                "colors": {
+                    "theme": "#E5F0FF",
+                    "icon": "#0078D4"
+                }
+            }
+        }
+    }
+}

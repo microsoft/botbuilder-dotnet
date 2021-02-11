@@ -3,9 +3,14 @@
 
 namespace Microsoft.Bot.Configuration
 {
+    using System;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Configuration properties for a connected LUIS Service.
+    /// </summary>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class LuisService : ConnectedService
     {
         /// <summary>
@@ -52,12 +57,34 @@ namespace Microsoft.Bot.Configuration
         public string Region { get; set; }
 
         /// <summary>
+        /// Gets or sets the URL for a custom endpoint. This should only be used when the LUIS deployed via a container.
+        /// If a value is set, then the GetEndpoint() method will return the value for Custom Endpoint.
+        /// </summary>
+        /// <value>The Region.</value>
+        [JsonProperty("customEndpoint")]
+        public string CustomEndpoint { get; set; }
+
+        /// <summary>
         /// Gets the endpoint for this LUIS service.
         /// </summary>
         /// <returns>The URL for this service.</returns>
         public string GetEndpoint()
         {
+            // If a custom endpoint has been supplied, then we should return this instead of
+            // generating an endpoint based on the region.
+            if (!string.IsNullOrEmpty(this.CustomEndpoint))
+            {
+                return this.CustomEndpoint;
+            }
+
+            if (string.IsNullOrWhiteSpace(this.Region))
+            {
+                throw new System.NullReferenceException("LuisService.Region cannot be Null");
+            }
+
+#pragma warning disable CA1304 // Specify CultureInfo (this class is obsolete, we won't fix it)
             var region = this.Region.ToLower();
+#pragma warning restore CA1304 // Specify CultureInfo
 
             // usgovvirginia is that actual azure region name, but the cognitive service team called their endpoint 'virginia' instead of 'usgovvirginia'
             // We handle both region names as an alias for virginia.api.cognitive.microsoft.us
@@ -67,7 +94,9 @@ namespace Microsoft.Bot.Configuration
             }
 
             // if it starts with usgov or usdod then it is a .us TLD
+#pragma warning disable CA1307 // Specify StringComparison (this class is obsolete, we won't fix it)
             else if (region.StartsWith("usgov") || region.StartsWith("usdod"))
+#pragma warning restore CA1307 // Specify StringComparison
             {
                 return $"https://{this.Region}.api.cognitive.microsoft.us";
             }

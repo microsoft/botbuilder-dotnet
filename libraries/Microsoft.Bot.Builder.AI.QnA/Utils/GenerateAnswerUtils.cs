@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -17,9 +15,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     internal class GenerateAnswerUtils
     {
-        private readonly IBotTelemetryClient telemetryClient;
-        private QnAMakerEndpoint _endpoint;
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
+        private readonly IBotTelemetryClient _telemetryClient;
+        private readonly QnAMakerEndpoint _endpoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenerateAnswerUtils"/> class.
@@ -30,12 +28,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">Http client.</param>
         public GenerateAnswerUtils(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
         {
-            this.telemetryClient = telemetryClient;
-            this._endpoint = endpoint;
+            _telemetryClient = telemetryClient;
+            _endpoint = endpoint;
 
-            this.Options = options ?? new QnAMakerOptions();
-            ValidateOptions(this.Options);
-            this.httpClient = httpClient;
+            Options = options ?? new QnAMakerOptions();
+            ValidateOptions(Options);
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -51,7 +49,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="messageActivity">Message activity of the turn context.</param>
         /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        [Obsolete]
         public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
+        {
+            var result = await GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+
+            return result.Answers;
+        }
+
+        /// <summary>
+        /// Generates an answer from the knowledge base.
+        /// </summary>
+        /// <param name="turnContext">The Turn Context that contains the user question to be queried against your knowledge base.</param>
+        /// <param name="messageActivity">Message activity of the turn context.</param>
+        /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
+        /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
+        public async Task<QueryResults> GetAnswersRawAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
             if (turnContext == null)
             {
@@ -60,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (turnContext.Activity == null)
             {
-                throw new ArgumentNullException(nameof(turnContext.Activity));
+                throw new ArgumentException($"The {nameof(turnContext.Activity)} property for {nameof(turnContext)} can't be null.", nameof(turnContext));
             }
 
             if (messageActivity == null)
@@ -73,12 +86,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
-            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, hydratedOptions).ConfigureAwait(false);
+            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers, hydratedOptions).ConfigureAwait(false);
 
             return result;
         }
 
-        private static async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
+        private static async Task<QueryResults> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -89,9 +102,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+            results.Answers = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
 
-            return result;
+            return results;
         }
 
         private static void ValidateOptions(QnAMakerOptions options)
@@ -108,7 +121,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
+                throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.ScoreThreshold)} property should be a value between 0 and 1");
             }
 
             if (options.Timeout == 0.0D)
@@ -118,20 +131,18 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (options.Top < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(options.Top), "Top should be an integer greater than 0");
+                throw new ArgumentOutOfRangeException(nameof(options), $"The {nameof(options.Top)} property should be an integer greater than 0");
             }
 
             if (options.StrictFilters == null)
             {
-                options.StrictFilters = new Metadata[] { };
+                options.StrictFilters = Array.Empty<Metadata>();
             }
 
-            if (options.MetadataBoost == null)
+            if (options.RankerType == null)
             {
-                options.MetadataBoost = new Metadata[] { };
+                options.RankerType = RankerTypes.DefaultRankerType;
             }
-
-            options.Context = new QnARequestContext();
         }
 
         /// <summary>
@@ -141,7 +152,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <returns>Return modified options for the QnA Maker knowledge base.</returns>
         private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
         {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(this.Options));
+            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(Options));
 
             if (queryOptions != null)
             {
@@ -160,21 +171,17 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.StrictFilters = queryOptions.StrictFilters;
                 }
 
-                if (queryOptions.MetadataBoost?.Length > 0)
-                {
-                    hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
-                }
-
-                if (queryOptions.Context != null)
-                {
-                    hydratedOptions.Context = queryOptions.Context;
-                }
+                hydratedOptions.Context = queryOptions.Context;
+                hydratedOptions.QnAId = queryOptions.QnAId;
+                hydratedOptions.IsTest = queryOptions.IsTest;
+                hydratedOptions.RankerType = queryOptions.RankerType != null ? queryOptions.RankerType : RankerTypes.DefaultRankerType;
+                hydratedOptions.StrictFiltersJoinOperator = queryOptions.StrictFiltersJoinOperator;
             }
 
             return hydratedOptions;
         }
 
-        private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
+        private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
             var jsonRequest = JsonConvert.SerializeObject(
@@ -183,12 +190,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     question = messageActivity.Text,
                     top = options.Top,
                     strictFilters = options.StrictFilters,
-                    metadataBoost = options.MetadataBoost,
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
+                    qnaId = options.QnAId,
+                    isTest = options.IsTest,
+                    rankerType = options.RankerType,
+                    StrictFiltersCompoundOperationType = options.StrictFiltersJoinOperator,
                 }, Formatting.None);
 
-            var httpRequestHelper = new HttpRequestUtils(httpClient);
+            var httpRequestHelper = new HttpRequestUtils(_httpClient);
             var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
 
             var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
@@ -200,14 +210,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var traceInfo = new QnAMakerTraceInfo
             {
-                Message = (Activity)messageActivity,
+                Message = messageActivity,
                 QueryResults = result,
                 KnowledgeBaseId = _endpoint.KnowledgeBaseId,
                 ScoreThreshold = options.ScoreThreshold,
                 Top = options.Top,
                 StrictFilters = options.StrictFilters,
-                MetadataBoost = options.MetadataBoost,
                 Context = options.Context,
+                QnAId = options.QnAId,
+                IsTest = options.IsTest,
+                RankerType = options.RankerType
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

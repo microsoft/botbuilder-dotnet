@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Contains an ordered set of <see cref="IMiddleware"/>.
     /// </summary>
-    public class MiddlewareSet : IMiddleware
+    public class MiddlewareSet : IMiddleware, IEnumerable<IMiddleware>
     {
         private readonly IList<IMiddleware> _middleware = new List<IMiddleware>();
 
@@ -55,12 +55,26 @@ namespace Microsoft.Bot.Builder
             await ReceiveActivityInternalAsync(turnContext, callback, 0, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Gets an enumerator that iterates over a collection of implementations of <see cref="IMiddleware"/> objects.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate over the collection.</returns>
+        public IEnumerator<IMiddleware> GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
         private Task ReceiveActivityInternalAsync(ITurnContext turnContext, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
         {
             // Check if we're at the end of the middleware list yet
             if (nextMiddlewareIndex == _middleware.Count)
             {
-                // If all the Middlware ran, the "leading edge" of the tree is now complete.
+                // If all the middleware ran, the "leading edge" of the tree is now complete.
                 // This means it's time to run any developer specified callback.
                 // Once this callback is done, the "trailing edge" calls are then completed. This
                 // allows code that looks like:
@@ -76,7 +90,7 @@ namespace Microsoft.Bot.Builder
             // Get the next piece of middleware
             var nextMiddleware = _middleware[nextMiddlewareIndex];
 
-            // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middlware as the NextDelegate
+            // Execute the next middleware passing a closure that will recurse back into this method at the next piece of middleware as the NextDelegate
             return nextMiddleware.OnTurnAsync(
                 turnContext,
                 (ct) => ReceiveActivityInternalAsync(turnContext, callback, nextMiddlewareIndex + 1, ct),

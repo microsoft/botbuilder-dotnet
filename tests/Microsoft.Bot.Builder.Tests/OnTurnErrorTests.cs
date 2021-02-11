@@ -4,18 +4,16 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
     public class OnTurnErrorTests
     {
-        [TestMethod]
-        [TestCategory("Middleware")]
+        [Fact]
         public async Task OnTurnError_Test()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation("OnTurnError_Test"));
             adapter.OnTurnError = async (context, exception) =>
             {
                 if (exception is NotImplementedException)

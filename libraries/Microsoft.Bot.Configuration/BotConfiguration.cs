@@ -17,6 +17,7 @@ namespace Microsoft.Bot.Configuration
     /// </summary>
     /// <remarks>It is typically loaded from a .bot file on disk.
     /// This class implements methods for encrypting and manipulating the in memory representation of the configuration.</remarks>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class BotConfiguration
     {
         private const string SECRETKEY = "secretKey";
@@ -55,7 +56,9 @@ namespace Microsoft.Bot.Configuration
         /// <value>The list of connected services.</value>
         [JsonProperty("services")]
         [JsonConverter(typeof(BotServiceConverter))]
+#pragma warning disable CA2227 // Collection properties should be read only (this class is obsolete, we won't fix it)
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets properties that are not otherwise defined.
@@ -65,7 +68,9 @@ namespace Microsoft.Bot.Configuration
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (this class is obsolete, we won't fix it)
         public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets the location of the configuration.
@@ -191,7 +196,9 @@ namespace Microsoft.Bot.Configuration
             if (string.IsNullOrEmpty(path) && string.IsNullOrEmpty(this.Location))
             {
                 // If location is not set, we expect the path to be provided
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly (this class is obsolete, we won't fix it)
                 throw new ArgumentException(nameof(path));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             if (!string.IsNullOrEmpty(secret))
@@ -242,7 +249,9 @@ namespace Microsoft.Bot.Configuration
             if (string.IsNullOrEmpty(path) && string.IsNullOrEmpty(this.Location))
             {
                 // If location is not set, we expect the path to be provided
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly (this class is obsolete, we won't fix it)
                 throw new ArgumentException(nameof(path));
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             this.SaveAsAsync(path, secret).GetAwaiter().GetResult();
@@ -275,11 +284,13 @@ namespace Microsoft.Bot.Configuration
                     }
                 }
 
+#pragma warning disable CA1305 // Specify IFormatProvider (this class is obsolete, we won't fix it)
                 newService.Id = (++maxValue).ToString();
+#pragma warning restore CA1305 // Specify IFormatProvider
             }
             else if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
             {
-                throw new Exception($"service with {newService.Id} is already connected");
+                throw new InvalidOperationException($"service with {newService.Id} is already connected");
             }
 
             this.Services.Add(newService);
@@ -377,7 +388,7 @@ namespace Microsoft.Bot.Configuration
             var service = this.FindServiceByNameOrId(nameOrId);
             if (service == null)
             {
-                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+                throw new ArgumentException($"a service with id or name of[{nameOrId}] was not found");
             }
 
             this.Services.Remove(service);
@@ -402,7 +413,7 @@ namespace Microsoft.Bot.Configuration
             var service = this.FindServiceByNameOrId<T>(nameOrId);
             if (service == null)
             {
-                throw new Exception($"a service with id or name of[{nameOrId}] was not found");
+                throw new ArgumentException($"a service with id or name of[{nameOrId}] was not found");
             }
 
             this.Services.Remove(service);
@@ -435,7 +446,7 @@ namespace Microsoft.Bot.Configuration
         {
             if (secret?.Length == null)
             {
-                throw new Exception("You are attempting to perform an operation which needs access to the secret and --secret is missing");
+                throw new InvalidOperationException("You are attempting to perform an operation which needs access to the secret and --secret is missing");
             }
 
             try
@@ -453,7 +464,7 @@ namespace Microsoft.Bot.Configuration
             }
             catch
             {
-                throw new Exception("You are attempting to perform an operation which needs access to the secret and --secret is incorrect.");
+                throw new InvalidOperationException("You are attempting to perform an operation which needs access to the secret and --secret is incorrect.");
             }
         }
 
@@ -506,7 +517,9 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Converter for strongly typed connected services.
         /// </summary>
+#pragma warning disable CA1812 // Internal class that is apparently never instantiated (this class is obsolete, we won't fix this)
         internal class BotServiceConverter : JsonConverter
+#pragma warning restore CA1812 // Internal class that is apparently never instantiated
         {
             public override bool CanWrite => false;
 

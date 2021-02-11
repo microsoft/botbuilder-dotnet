@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,21 +9,21 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
     public class DateTimePromptTests
     {
-        [TestMethod]
+        [Fact]
         public async Task BasicDateTimePrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(BasicDateTimePrompt)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -55,14 +56,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MultipleResolutionsDateTimePrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(MultipleResolutionsDateTimePrompt)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -96,14 +98,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DateTimePromptWithValidator()
         {
+            string folder = Environment.CurrentDirectory;
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            TestAdapter adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(DateTimePromptWithValidator)))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);

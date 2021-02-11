@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "For each item",
+    "description": "Execute actions on each item in an a collection.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "itemsProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Items property",
+            "description": "Property that holds the array.",
+            "examples": [
+                "user.todoList"
+            ]
+        },
+        "index": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Index property",
+            "description": "Property that holds the index of the item.",
+            "default": "dialog.foreach.index"
+        },
+        "value": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Value property",
+            "description": "Property that holds the value of the item.",
+            "default": "dialog.foreach.value"
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Actions",
+            "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item. Use '$foreach.index' to access the index of each item."
+        }
+    },
+    "required": [
+        "itemsProperty"
+    ]
+}

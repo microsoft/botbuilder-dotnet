@@ -1,0 +1,44 @@
+﻿{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "generator": "issue.lg",
+    "recognizer": {
+        "$kind": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+                "intent": "Test",
+                "pattern": "test"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnIntent",
+            "intent": "Test",
+            "actions": [
+              {
+                "$kind": "Microsoft.BeginDialog",
+                "dialog": {
+                  "$kind": "Microsoft.AdaptiveDialog",
+                  "generator": "sub.lg",
+                  "triggers": [
+                    {
+                      "$kind": "Microsoft.OnBeginDialog",
+                      "actions": [
+                        {
+                          "$kind": "Microsoft.EndDialog"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "$kind": "Microsoft.SendActivity",
+                "activity": "${main_template()}"
+              }
+            ]
+        }
+    ]
+}

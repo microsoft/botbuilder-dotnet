@@ -60,9 +60,58 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The operation succeeded.",
             "schema": {
               "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/api/botsignin/GetSignInResource": {
+      "get": {
+        "tags": [
+          "BotSignIn"
+        ],
+        "operationId": "BotSignIn_GetSignInResource",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "code_challenge",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "emulatorUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "finalRedirect",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/SignInUrlResponse"
             }
           }
         }
@@ -293,9 +342,109 @@
           }
         }
       }
+    },
+    "/api/usertoken/exchange": {
+      "post": {
+        "tags": [
+          "UserToken"
+        ],
+        "operationId": "UserToken_ExchangeAsync",
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml",
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectionName",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "channelId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exchangeRequest",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TokenExchangeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A Token Response object will be returned\r\n",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "400": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Resource was not found\r\n",
+            "schema": {
+              "$ref": "#/definitions/TokenResponse"
+            }
+          },
+          "default": {
+            "description": "The operation failed and the response is an error object describing the status code and failure.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "SignInUrlResponse": {
+      "type": "object",
+      "properties": {
+        "signInLink": {
+          "type": "string"
+        },
+        "tokenExchangeResource": {
+          "$ref": "#/definitions/TokenExchangeResource"
+        }
+      }
+    },
+    "TokenExchangeResource": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "providerId": {
+          "type": "string"
+        }
+      }
+    },
     "TokenResponse": {
       "type": "object",
       "properties": {
@@ -380,6 +529,17 @@
         },
         "serviceProviderDisplayName": {
           "description": "The display name of the service provider for which this Token belongs to",
+          "type": "string"
+        }
+      }
+    },
+    "TokenExchangeRequest": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "token": {
           "type": "string"
         }
       }

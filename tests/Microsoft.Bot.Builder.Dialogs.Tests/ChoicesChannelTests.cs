@@ -4,136 +4,149 @@
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
-    [TestCategory("Prompts")]
-    [TestCategory("Choice Tests")]
+    [Trait("TestCategory", "Prompts")]
+    [Trait("TestCategory", "Choice Tests")]
     public class ChoicesChannelTests
     {
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsSuggestedActionsWithLineAnd13()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Line, 13);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForSupportsSuggestedActionsWithLineAnd14()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Line, 14);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsSuggestedActionsWithSkypeAnd10()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Skype, 10);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForSupportsSuggestedActionsWithSkypeAnd11()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Skype, 11);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsSuggestedActionsWithKikAnd20()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Kik, 20);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForSupportsSuggestedActionsWithKikAnd21()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Skype, 21);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsSuggestedActionsWithEmulatorAnd100()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Emulator, 100);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForSupportsSuggestedActionsWithEmulatorAnd101()
         {
             var supports = Channel.SupportsSuggestedActions(Channels.Emulator, 101);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
+        public void ShouldReturnTrueForSupportsSuggestedActionsWithDirectLineSpeechAnd100()
+        {
+            var supports = Channel.SupportsSuggestedActions(Channels.DirectlineSpeech, 100);
+            Assert.True(supports);
+        }
+
+        [Fact]
+        public void ShouldReturnTrueForSupportsCardActionsWithDirectLineSpeechAnd99()
+        {
+            var supports = Channel.SupportsCardActions(Channels.DirectlineSpeech, 99);
+            Assert.True(supports);
+        }
+
+        [Fact]
         public void ShouldReturnTrueForSupportsCardActionsWithLineAnd99()
         {
             var supports = Channel.SupportsCardActions(Channels.Line, 99);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForSupportsCardActionsWithLineAnd100()
         {
             var supports = Channel.SupportsCardActions(Channels.Line, 100);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsCardActionsWithCortanaAnd100()
         {
             var supports = Channel.SupportsCardActions(Channels.Cortana, 100);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsCardActionsWithSlackAnd100()
         {
             var supports = Channel.SupportsCardActions(Channels.Slack, 100);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnTrueForSupportsCardActionsWithSkypeAnd100()
         {
             var supports = Channel.SupportsCardActions(Channels.Skype, 3);
-            Assert.IsTrue(supports);
+            Assert.True(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForSupportsCardActionsWithSkypeAnd5()
         {
             var supports = Channel.SupportsCardActions(Channels.Skype, 5);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnFalseForHasMessageFeedWithCortana()
         {
             var supports = Channel.HasMessageFeed(Channels.Cortana);
-            Assert.IsFalse(supports);
+            Assert.False(supports);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnChannelIdFromContextActivity()
         {
             var testActivity = new Schema.Activity() { ChannelId = Channels.Facebook };
             var testContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider()), testActivity);
             var channelId = Channel.GetChannelId(testContext);
-            Assert.AreEqual(Channels.Facebook, channelId);
+            Assert.Equal(Channels.Facebook, channelId);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldReturnEmptyFromContextActivityMissingChannel()
         {
             var testActivity = new Schema.Activity() { ChannelId = null };
             var testContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider()), testActivity);
             var channelId = Channel.GetChannelId(testContext);
-            Assert.AreEqual(channelId, string.Empty);
+            Assert.Equal(channelId, string.Empty);
         }
     }
 }

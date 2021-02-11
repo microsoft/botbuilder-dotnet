@@ -4,20 +4,28 @@
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// The Telemetry Logger Event names.
+    /// Defines names of common events for use with a <see cref="IBotTelemetryClient"/> object.
     /// </summary>
     public static class TelemetryLoggerConstants
     {
-        // The name of the event when a new message is received from the user.
+        /// <summary>
+        /// The name of the event when a new message is received from the user.
+        /// </summary>
         public static readonly string BotMsgReceiveEvent = "BotMessageReceived";
 
-        // The name of the event when logged when a message is sent from the bot to the user.
+        /// <summary>
+        /// The name of the event when logged when a message is sent from the bot to the user.
+        /// </summary>
         public static readonly string BotMsgSendEvent = "BotMessageSend";
 
-        // The name of the event when a message is updated by the bot.
+        /// <summary>
+        /// The name of the event when a message is updated by the bot.
+        /// </summary>
         public static readonly string BotMsgUpdateEvent = "BotMessageUpdate";
 
-        // The name of the event when a message is deleted by the bot.
+        /// <summary>
+        /// The name of the event when a message is deleted by the bot.
+        /// </summary>
         public static readonly string BotMsgDeleteEvent = "BotMessageDelete";
     }
 }

@@ -45,12 +45,33 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Different types of geographic locations.
         /// </summary>
+#pragma warning disable CA1034 // Nested types should not be visible (we can't change this without breaking binary compat)
         public static class Types
+#pragma warning restore CA1034 // Nested types should not be visible
         {
+            /// <summary>
+            /// Constant for LUIS geographic location type of POI.
+            /// </summary>
             public const string POI = "poi";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type of City.
+            /// </summary>
             public const string City = "city";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type Country or Region.
+            /// </summary>
             public const string CountryRegion = "countryRegion";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type of Continent.
+            /// </summary>
             public const string Continent = "continent";
+
+            /// <summary>
+            /// Constant for LUIS geographic location type of State.
+            /// </summary>
             public const string State = "state";
         }
     }

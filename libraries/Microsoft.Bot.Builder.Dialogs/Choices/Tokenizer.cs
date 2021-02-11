@@ -17,7 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
     /// <summary>
     /// Provides a default tokenizer implementation.
     /// </summary>
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class Tokenizer
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
         /// Gets the default <see cref="TokenizerFunction"/> implementation.
@@ -39,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             Token token = null;
 
             // Parse text
-            var length = text != null ? text.Length : 0;
+            var length = text?.Length ?? 0;
             var i = 0;
 
             while (i < length)
@@ -47,10 +49,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // Get both the UNICODE value of the current character and the complete character itself
                 // which can potentially be multiple segments.
                 var codePoint = char.IsSurrogatePair(text, i)
-                        ?
-                    char.ConvertToUtf32(text, i)
-                        :
-                    Convert.ToInt32(text[i]);
+                    ? char.ConvertToUtf32(text, i)
+                    : Convert.ToInt32(text[i]);
 
                 var chr = char.ConvertFromUtf32(codePoint);
 
@@ -102,18 +102,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             if (token != null)
             {
                 token.End = end;
-                token.Normalized = token.Text.ToLower();
+                token.Normalized = token.Text.ToLowerInvariant();
                 tokens.Add(token);
             }
         }
 
         private static bool IsBreakingChar(int codePoint) => IsBetween(codePoint, 0x0000, 0x002F) ||
-                    IsBetween(codePoint, 0x003A, 0x0040) ||
-                    IsBetween(codePoint, 0x005B, 0x0060) ||
-                    IsBetween(codePoint, 0x007B, 0x00BF) ||
-                    IsBetween(codePoint, 0x02B9, 0x036F) ||
-                    IsBetween(codePoint, 0x2000, 0x2BFF) ||
-                    IsBetween(codePoint, 0x2E00, 0x2E7F);
+                                                             IsBetween(codePoint, 0x003A, 0x0040) ||
+                                                             IsBetween(codePoint, 0x005B, 0x0060) ||
+                                                             IsBetween(codePoint, 0x007B, 0x00BF) ||
+                                                             IsBetween(codePoint, 0x02B9, 0x036F) ||
+                                                             IsBetween(codePoint, 0x2000, 0x2BFF) ||
+                                                             IsBetween(codePoint, 0x2E00, 0x2E7F);
 
         private static bool IsBetween(int value, int from, int to) => value >= from && value <= to;
     }

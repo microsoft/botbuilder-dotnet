@@ -2,16 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
-using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Activity = Microsoft.Bot.Schema.Activity;
+using System.Runtime.InteropServices;
+using System.Text;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
@@ -47,17 +40,56 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Clear,
         }
 
-        public static int StartStorageEmulator()
+        public static bool CheckEmulator()
+        {
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_NAME")))
+            {
+                return false;
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var (code, output) = StorageEmulatorHelper.Status();
+                if (output.IndexOf("IsRunning: True") > 0)
+                {
+                    return true;
+                }
+
+                (code, output) = StorageEmulatorHelper.StartStorageEmulator();
+                return output.IndexOf("started") > 0;
+            }
+
+            return false;
+        }
+
+        public static bool EnsureStarted()
+        {
+            var (code, output) = StorageEmulatorHelper.Status();
+            if (output.IndexOf("IsRunning: True") > 0)
+            {
+                return true;
+            }
+
+            (code, output) = StorageEmulatorHelper.StartStorageEmulator();
+            return output.IndexOf("started") > 0;
+        }
+
+        public static (int, string) StartStorageEmulator()
         {
             return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Start);
         }
 
-        public static int StopStorageEmulator()
+        public static (int, string) Status()
+        {
+            return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Status);
+        }
+
+        public static (int, string) StopStorageEmulator()
         {
             return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Stop);
         }
 
-        public static int ExecuteStorageEmulatorCommand(StorageEmulatorCommand command)
+        public static (int, string) ExecuteStorageEmulatorCommand(StorageEmulatorCommand command)
         {
             var emulatorPath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
@@ -66,26 +98,23 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 "Storage Emulator",
                 "AzureStorageEmulator.exe");
 
-            var start = new ProcessStartInfo
+            var sb = new StringBuilder();
+            var startIInfo = new ProcessStartInfo
             {
                 Arguments = command.ToString(),
                 FileName = emulatorPath,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
             };
-            var exitCode = ExecuteProcess(start);
-            return exitCode;
-        }
 
-        private static int ExecuteProcess(ProcessStartInfo startInfo)
-        {
-            int exitCode = -1;
-            using (var proc = new Process { StartInfo = startInfo })
+            using (var proc = new Process { StartInfo = startIInfo })
             {
+                proc.OutputDataReceived += (sender, e) => sb.Append(e.Data);
                 proc.Start();
+                proc.BeginOutputReadLine();
                 proc.WaitForExit();
-                exitCode = proc.ExitCode;
+                return (proc.ExitCode, sb.ToString());
             }
-
-            return exitCode;
         }
     }
 }

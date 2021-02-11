@@ -29,13 +29,24 @@ namespace Microsoft.Bot.Schema
         public ConversationReference Conversation { get; set; }
 
         /// <summary>
+        /// Gets or sets a reference to a related parent conversation for this token exchange.
+        /// </summary>
+        /// <value>
+        /// A reference to a related parent conversation conversation.
+        /// </value>
+        [JsonProperty("relatesTo")]
+        public ConversationReference RelatesTo { get; set; }
+
+        /// <summary>
         /// Gets or sets the URL of the bot messaging endpoint.
         /// </summary>
         /// <value>
         /// The URL of the bot messaging endpoint.
         /// </value>
         [JsonProperty("botUrl")]
+#pragma warning disable CA1056 // Uri properties should not be strings (we can't change this without breaking binary compat)
         public string BotUrl { get; set; }
+#pragma warning restore CA1056 // Uri properties should not be strings
 
         /// <summary>
         /// Gets or sets the bot's registered application ID.

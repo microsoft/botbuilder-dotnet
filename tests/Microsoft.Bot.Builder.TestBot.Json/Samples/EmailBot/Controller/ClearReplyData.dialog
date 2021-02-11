@@ -1,0 +1,14 @@
+{
+    "$schema": "../../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "actions": [
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.toContent"
+        },
+        {
+            "$kind": "Microsoft.DeleteProperty",
+            "property": "user.toSubject"
+        }
+    ]
+}

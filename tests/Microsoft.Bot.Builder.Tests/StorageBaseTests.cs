@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.Adapters;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    public class StorageBaseTests
+    public class StorageBaseTests 
     {
         protected async Task ReadUnknownTest(IStorage storage)
         {
             var result = await storage.ReadAsync(new[] { "unknown" });
-            Assert.IsNotNull(result, "result should not be null");
-            Assert.IsNull(result.FirstOrDefault(e => e.Key == "unknown").Value, "\"unknown\" key should have returned no value");
+            Assert.NotNull(result);
+            Assert.Null(result.FirstOrDefault(e => e.Key == "unknown").Value);
         }
 
         protected async Task CreateObjectTest(IStorage storage)
@@ -30,19 +31,19 @@ namespace Microsoft.Bot.Builder.Tests
 
             var readStoreItems = new Dictionary<string, object>(await storage.ReadAsync(storeItems.Keys.ToArray()));
 
-            Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
-            Assert.IsInstanceOfType(readStoreItems["createPocoStoreItem"], typeof(PocoStoreItem));
+            Assert.IsType<PocoItem>(readStoreItems["createPoco"]);
+            Assert.IsType<PocoStoreItem>(readStoreItems["createPocoStoreItem"]);
 
             var createPoco = readStoreItems["createPoco"] as PocoItem;
 
-            Assert.IsNotNull(createPoco, "createPoco should not be null");
-            Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
+            Assert.NotNull(createPoco);
+            Assert.Equal("1", createPoco.Id);
 
             var createPocoStoreItem = readStoreItems["createPocoStoreItem"] as PocoStoreItem;
 
-            Assert.IsNotNull(createPocoStoreItem, "createPocoStoreItem should not be null");
-            Assert.AreEqual(createPocoStoreItem.Id, "2", "createPocoStoreItem.id should be 2");
-            Assert.IsNotNull(createPocoStoreItem.ETag, "createPocoStoreItem.eTag  should not be null");
+            Assert.NotNull(createPocoStoreItem);
+            Assert.Equal("2", createPocoStoreItem.Id);
+            Assert.NotNull(createPocoStoreItem.ETag);
         }
 
         protected async Task HandleCrazyKeys(IStorage storage)
@@ -58,11 +59,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             storeItem = storeItems.FirstOrDefault(si => si.Key == key).Value as PocoStoreItem;
 
-            Assert.IsNotNull(storeItem);
-            Assert.AreEqual("1", storeItem.Id);
+            Assert.NotNull(storeItem);
+            Assert.Equal("1", storeItem.Id);
         }
 
-        protected async Task UpdateObjectTest(IStorage storage)
+        protected async Task UpdateObjectTest<T>(IStorage storage)
+            where T : Exception
         {
             var originalPocoItem = new PocoItem() { Id = "1", Count = 1 };
             var originalPocoStoreItem = new PocoStoreItem() { Id = "1", Count = 1 };
@@ -80,7 +82,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var updatePocoItem = loadedStoreItems["pocoItem"] as PocoItem;
             var updatePocoStoreItem = loadedStoreItems["pocoStoreItem"] as PocoStoreItem;
-            Assert.IsNotNull(updatePocoStoreItem.ETag, "updatePocoItem.eTag  should not be null");
+            Assert.NotNull(updatePocoStoreItem.ETag);
 
             // 2nd write should work, because we have new etag, or no etag
             updatePocoItem.Count++;
@@ -93,10 +95,10 @@ namespace Microsoft.Bot.Builder.Tests
             var reloeadedUpdatePocoItem = reloadedStoreItems["pocoItem"] as PocoItem;
             var reloadedUpdatePocoStoreItem = reloadedStoreItems["pocoStoreItem"] as PocoStoreItem;
 
-            Assert.IsNotNull(reloadedUpdatePocoStoreItem.ETag, "updatePocoItem.eTag  should not be null");
-            Assert.AreNotEqual(updatePocoStoreItem.ETag, reloadedUpdatePocoStoreItem.ETag, "updatePocoItem.eTag  should not be different");
-            Assert.AreEqual(2, reloeadedUpdatePocoItem.Count, "updatePocoItem.Count should be 2");
-            Assert.AreEqual(2, reloadedUpdatePocoStoreItem.Count, "updatePocoStoreItem.Count should be 2");
+            Assert.NotNull(reloadedUpdatePocoStoreItem.ETag);
+            Assert.NotEqual(updatePocoStoreItem.ETag, reloadedUpdatePocoStoreItem.ETag);
+            Assert.Equal(2, reloeadedUpdatePocoItem.Count);
+            Assert.Equal(2, reloadedUpdatePocoStoreItem.Count);
 
             // write with old etag should succeed for non-storeitem
             try
@@ -108,30 +110,23 @@ namespace Microsoft.Bot.Builder.Tests
             }
             catch
             {
-                Assert.Fail("Should not throw exception on write with pocoItem");
+                Assert.True(false); // This should not be hit
             }
 
             // write with old etag should FAIL for storeitem
-            try
-            {
-                updatePocoStoreItem.Count = 123;
+            
+            updatePocoStoreItem.Count = 123;
 
-                await storage.WriteAsync(
-                    new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } });
-
-                Assert.Fail("Should have thrown exception on write with store item because of old etag");
-            }
-            catch
-            {
-            }
+            await Assert.ThrowsAnyAsync<Exception>(() => storage.WriteAsync(
+                new Dictionary<string, object>() { { "pocoStoreItem", updatePocoStoreItem } }));
 
             var reloadedStoreItems2 = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
 
             var reloadedPocoItem2 = reloadedStoreItems2["pocoItem"] as PocoItem;
             var reloadedPocoStoreItem2 = reloadedStoreItems2["pocoStoreItem"] as PocoStoreItem;
 
-            Assert.AreEqual(123, reloadedPocoItem2.Count);
-            Assert.AreEqual(2, reloadedPocoStoreItem2.Count);
+            Assert.Equal(123, reloadedPocoItem2.Count);
+            Assert.Equal(2, reloadedPocoStoreItem2.Count);
 
             // write with wildcard etag should work
             reloadedPocoItem2.Count = 100;
@@ -148,13 +143,16 @@ namespace Microsoft.Bot.Builder.Tests
 
             var reloadedStoreItems3 = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
 
-            Assert.AreEqual(100, (reloadedStoreItems3["pocoItem"] as PocoItem).Count);
-            Assert.AreEqual(100, (reloadedStoreItems3["pocoStoreItem"] as PocoStoreItem).Count);
+            Assert.Equal(100, (reloadedStoreItems3["pocoItem"] as PocoItem).Count);
+            Assert.Equal(100, (reloadedStoreItems3["pocoStoreItem"] as PocoStoreItem).Count);
 
             // write with empty etag should not work
             try
             {
-                var reloadedStoreItem4 = (await storage.ReadAsync(new[] { "pocoStoreItem" })).OfType<PocoStoreItem>().First();
+                var reloadedStoreItems4 = await storage.ReadAsync(new[] { "pocoStoreItem" });
+                var reloadedStoreItem4 = reloadedStoreItems4["pocoStoreItem"] as PocoStoreItem;
+
+                Assert.NotNull(reloadedStoreItem4);
 
                 reloadedStoreItem4.ETag = string.Empty;
                 var dict2 = new Dictionary<string, object>()
@@ -164,15 +162,15 @@ namespace Microsoft.Bot.Builder.Tests
 
                 await storage.WriteAsync(dict2);
 
-                Assert.Fail("Should have thrown exception on write with storeitem because of empty etag");
+                Assert.True(false); // "Should have thrown exception on write with storeitem because of empty etag"
             }
             catch
             {
             }
 
             var finalStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "pocoItem", "pocoStoreItem" }));
-            Assert.AreEqual(100, (finalStoreItems["pocoItem"] as PocoItem).Count);
-            Assert.AreEqual(100, (finalStoreItems["pocoStoreItem"] as PocoStoreItem).Count);
+            Assert.Equal(100, (finalStoreItems["pocoItem"] as PocoItem).Count);
+            Assert.Equal(100, (finalStoreItems["pocoStoreItem"] as PocoStoreItem).Count);
         }
 
         protected async Task DeleteObjectTest(IStorage storage)
@@ -188,14 +186,14 @@ namespace Microsoft.Bot.Builder.Tests
             var storeItems = await storage.ReadAsync(new[] { "delete1" });
             var storeItem = storeItems.First().Value as PocoStoreItem;
 
-            Assert.IsNotNull(storeItem.ETag, "etag should be set");
-            Assert.AreEqual(1, storeItem.Count);
+            Assert.NotNull(storeItem.ETag);
+            Assert.Equal(1, storeItem.Count);
 
             await storage.DeleteAsync(new[] { "delete1" });
 
             var reloadedStoreItems = await storage.ReadAsync(new[] { "delete1" });
 
-            Assert.IsFalse(reloadedStoreItems.Any(), "no store item should have been found because it was deleted");
+            Assert.False(reloadedStoreItems.Any(), "no store item should have been found because it was deleted");
         }
 
         protected async Task DeleteUnknownObjectTest(IStorage storage)
@@ -219,9 +217,9 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storeItemsList = new List<Dictionary<string, object>>(new[]
                 {
-                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray } },
-                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray } },
-                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray } },
+                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray } },
+                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray } },
+                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray } },
                 });
 
             // TODO: this code as a generic test doesn't make much sense - for now just eliminating the custom exception
@@ -234,13 +232,42 @@ namespace Microsoft.Bot.Builder.Tests
             }
             catch (Exception ex)
             {
-                Assert.IsInstanceOfType(ex, typeof(InvalidOperationException));
+                Assert.IsType<InvalidOperationException>(ex);
             }
 
             var readStoreItems = new Dictionary<string, object>(await storage.ReadAsync(new[] { "createPoco" }));
-            Assert.IsInstanceOfType(readStoreItems["createPoco"], typeof(PocoItem));
+            Assert.IsType<PocoItem>(readStoreItems["createPoco"]);
             var createPoco = readStoreItems["createPoco"] as PocoItem;
-            Assert.AreEqual(createPoco.Id, "1", "createPoco.id should be 1");
+            Assert.Equal("1", createPoco.Id);
+        }
+
+        protected async Task StatePersistsThroughMultiTurn(IStorage storage)
+        {
+            var userState = new UserState(storage);
+            var testProperty = userState.CreateProperty<TestPocoState>("test");
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(userState));
+
+            await new TestFlow(
+                adapter,
+                async (context, cancellationToken) =>
+                {
+                    var state = await testProperty.GetAsync(context, () => new TestPocoState());
+                    Assert.NotNull(state);
+                    switch (context.Activity.Text)
+                    {
+                        case "set value":
+                            state.Value = "test";
+                            await context.SendActivityAsync("value saved");
+                            break;
+                        case "get value":
+                            await context.SendActivityAsync(state.Value);
+                            break;
+                    }
+                })
+                .Test("set value", "value saved")
+                .Test("get value", "test")
+                .StartTestAsync();
         }
     }
 }

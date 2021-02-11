@@ -1,0 +1,3 @@
+﻿> Expression Evaluate error
+# template1
+- ${length(first(createArray(1,2)))}

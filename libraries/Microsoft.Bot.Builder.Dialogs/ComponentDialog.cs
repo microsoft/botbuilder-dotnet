@@ -1,7 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,56 +14,29 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     /// <remarks>A component dialog has an inner <see cref="DialogSet"/> and <see cref="DialogContext"/>,
     /// which provides an inner dialog stack that is hidden from the parent dialog.</remarks>
-    public class ComponentDialog : Dialog
+    public class ComponentDialog : DialogContainer
     {
-        private const string PersistedDialogState = "dialogs";
+        /// <summary>
+        /// The id for the persisted dialog state.
+        /// </summary>
+        public const string PersistedDialogState = "dialogs";
 
-        private DialogSet _dialogs;
+        private bool _initialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentDialog"/> class.
         /// </summary>
         /// <param name="dialogId">The ID to assign to the new dialog within the parent dialog set.</param>
-        public ComponentDialog(string dialogId)
+        public ComponentDialog(string dialogId = null)
             : base(dialogId)
         {
-            if (string.IsNullOrEmpty(dialogId))
-            {
-                throw new ArgumentNullException(nameof(dialogId));
-            }
-
-            _dialogs = new DialogSet();
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
-        /// When setting this property, all of the contained dialogs' <see cref="Dialog.TelemetryClient"/>
-        /// properties are also set.
+        /// Gets or sets the id assigned to the initial dialog.
         /// </summary>
-        /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
-        /// <seealso cref="DialogSet.TelemetryClient"/>
-        public new IBotTelemetryClient TelemetryClient
-        {
-            get
-            {
-                return base.TelemetryClient;
-            }
-
-            set
-            {
-                base.TelemetryClient = value ?? NullBotTelemetryClient.Instance;
-                _dialogs.TelemetryClient = base.TelemetryClient;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the ID of the inner <see cref="Dialog"/> to start when the
-        /// <see cref="ComponentDialog"/> is started.
-        /// </summary>
-        /// <value>The ID of the inner <see cref="Dialog"/> to start when the <see cref="ComponentDialog"/>
-        /// is started.</value>
-        /// <seealso cref="BeginDialogAsync(DialogContext, object, CancellationToken)"/>
-        protected string InitialDialogId { get; set; }
+        /// <value>The id of the initial dialog.</value>
+        public string InitialDialogId { get; set; }
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the parent's dialog stack.
@@ -77,16 +52,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             if (outerDc == null)
             {
                 throw new ArgumentNullException(nameof(outerDc));
             }
 
-            // Start the inner dialog.
-            var dialogState = new DialogState();
-            outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
-            var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
-            innerDc.Parent = outerDc;
+            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+
+            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+
+            var innerDc = this.CreateChildContext(outerDc);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
 
             // Check for end of inner dialog
@@ -96,8 +76,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
+            TelemetryClient.TrackDialogView(Id);
+
             // Just signal waiting
-            return EndOfTurn;
+            return Dialog.EndOfTurn;
         }
 
         /// <summary>
@@ -122,24 +104,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="DialogContext.ContinueDialogAsync(CancellationToken)"/>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (outerDc == null)
-            {
-                throw new ArgumentNullException(nameof(outerDc));
-            }
+            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
 
-            // Continue execution of inner dialog.
-            var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
-            innerDc.Parent = outerDc;
-            var turnResult = await OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
+            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
 
+            // Continue execution of inner dialog
+            var innerDc = this.CreateChildContext(outerDc);
+            var turnResult = await this.OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
+
+            // Check for end of inner dialog
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
-                // Return result to calling dialog
-                return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
+                // Return to calling dialog
+                return await this.EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
-            return EndOfTurn;
+            // Just signal waiting
+            return Dialog.EndOfTurn;
         }
 
         /// <summary>
@@ -169,9 +150,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Containers are typically leaf nodes on the stack but the developer is free to push other dialogs
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
+            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
+
+            await this.CheckForVersionChangeAsync(outerDc).ConfigureAwait(false);
+
+            // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
-            // ResumeDialogAsync() when the pushed on dialog ends.
+            // dialogResume() when the pushed on dialog ends.
             // To avoid the container prematurely ending we need to implement this method and simply
             // ask our inner dialog stack to re-prompt.
             await RepromptDialogAsync(outerDc.Context, outerDc.ActiveDialog, cancellationToken).ConfigureAwait(false);
@@ -191,8 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Delegate to inner dialog.
-            var dialogState = (DialogState)instance.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, turnContext, dialogState);
+            var innerDc = this.CreateInnerDc(turnContext, instance);
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
@@ -218,9 +207,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Forward cancel to inner dialogs
             if (reason == DialogReason.CancelCalled)
             {
-                var dialogState = (DialogState)instance.State[PersistedDialogState];
-                var innerDc = new DialogContext(_dialogs, turnContext, dialogState);
-                await innerDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
+                var innerDc = this.CreateInnerDc(turnContext, instance);
+                await innerDc.CancelAllDialogsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             await OnEndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
@@ -232,27 +220,56 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The <see cref="ComponentDialog"/> after the operation is complete.</returns>
         /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
-        /// <see cref="TelemetryClient"/> of the component dialog.</remarks>
+        /// <see cref="DialogContainer.TelemetryClient"/> of the component dialog.</remarks>
         public ComponentDialog AddDialog(Dialog dialog)
         {
-            _dialogs.Add(dialog);
-            if (string.IsNullOrEmpty(InitialDialogId))
+            this.Dialogs.Add(dialog);
+
+            if (this.InitialDialogId == null)
             {
-                InitialDialogId = dialog.Id;
+                this.InitialDialogId = dialog.Id;
             }
 
             return this;
         }
 
         /// <summary>
-        /// Searches the inner <see cref="DialogSet"/> of the component dialog for a
-        /// <see cref="Dialog"/> by its ID.
+        /// Creates an inner <see cref="DialogContext"/>.
         /// </summary>
-        /// <param name="dialogId">The ID of the dialog to find.</param>
-        /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>
-        public Dialog FindDialog(string dialogId)
+        /// <param name="dc">The parent <see cref="DialogContext"/>.</param>
+        /// <returns>The created Dialog Context.</returns>
+        public override DialogContext CreateChildContext(DialogContext dc)
         {
-            return _dialogs.Find(dialogId);
+            return this.CreateInnerDc(dc, dc.ActiveDialog);
+        }
+
+        /// <summary>
+        /// Ensures the dialog is initialized.
+        /// </summary>
+        /// <param name="outerDc">The outer <see cref="DialogContext"/>.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        protected async Task EnsureInitializedAsync(DialogContext outerDc)
+        {
+            if (!this._initialized)
+            {
+                this._initialized = true;
+                await OnInitializeAsync(outerDc).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Initilizes the dialog.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> to initialize.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        protected virtual Task OnInitializeAsync(DialogContext dc)
+        {
+            if (this.InitialDialogId == null)
+            {
+                this.InitialDialogId = Dialogs.GetDialogs().FirstOrDefault()?.Id;
+            }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -360,6 +377,43 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual Task<DialogTurnResult> EndComponentAsync(DialogContext outerDc, object result, CancellationToken cancellationToken)
         {
             return outerDc.EndDialogAsync(result, cancellationToken);
+        }
+
+        private static DialogState BuildDialogState(DialogInstance instance)
+        {
+            DialogState state;
+
+            if (instance.State.ContainsKey(PersistedDialogState))
+            {
+                state = instance.State[PersistedDialogState] as DialogState;
+            }
+            else
+            {
+                state = new DialogState();
+                instance.State[PersistedDialogState] = state;
+            }
+
+            if (state.DialogStack == null)
+            {
+                state.DialogStack = new List<DialogInstance>();
+            }
+
+            return state;
+        }
+
+        private DialogContext CreateInnerDc(DialogContext outerDc, DialogInstance instance)
+        {
+            var state = BuildDialogState(instance);
+
+            return new DialogContext(this.Dialogs, outerDc, state);
+        }
+
+        // NOTE: You should only call this if you don't have a dc to work with (such as OnResume()) 
+        private DialogContext CreateInnerDc(ITurnContext turnContext, DialogInstance instance)
+        {
+            var state = BuildDialogState(instance);
+
+            return new DialogContext(this.Dialogs, turnContext, state);
         }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ namespace Microsoft.Bot.Schema
     /// The Activity class contains all properties that individual, more specific activities
     /// could contain. It is a superset type.
     /// </remarks>
+    [DebuggerDisplay("[{Type}] {Text ?? System.String.Empty}")]
     public partial class Activity :
         IActivity,
         IConversationUpdateActivity,
@@ -49,7 +51,9 @@ namespace Microsoft.Bot.Schema
         /// the JSON object is deserialized, but are instead stored in this property. Such properties
         /// will be written to a JSON object when the instance is serialized.</remarks>
         [JsonExtensionData(ReadData = true, WriteData = true)]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public JObject Properties { get; set; } = new JObject();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Creates an instance of the <see cref="Activity"/> class as an <see cref="IMessageActivity"/> object.
@@ -194,11 +198,11 @@ namespace Microsoft.Bot.Schema
                 Type = ActivityTypes.Trace,
                 Timestamp = DateTime.UtcNow,
                 From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
-                Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name),
+                Recipient = new ChannelAccount(id: this.From?.Id, name: this.From?.Name),
                 ReplyToId = this.Id,
                 ServiceUrl = this.ServiceUrl,
                 ChannelId = this.ChannelId,
-                Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
+                Conversation = this.Conversation,
                 Name = name,
                 Label = label,
                 ValueType = valueType ?? value?.GetType().Name,
@@ -376,8 +380,8 @@ namespace Microsoft.Bot.Schema
         /// <seealso cref="Mention"/>
         public Mention[] GetMentions()
         {
-            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", ignoreCase: true) == 0)
-                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? new Mention[0];
+            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
+                .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? Array.Empty<Mention>();
         }
 
         /// <summary>
@@ -387,7 +391,9 @@ namespace Microsoft.Bot.Schema
         /// <returns>The strongly-typed object; or the type's default value, if the <see cref="ChannelData"/> is null.</returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="TryGetChannelData{TypeT}(out TypeT)"/>
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change it without breaking binary compatibility)
         public TypeT GetChannelData<TypeT>()
+#pragma warning restore CA1715 // Identifiers should have correct prefix
         {
             if (this.ChannelData == null)
             {
@@ -414,7 +420,9 @@ namespace Microsoft.Bot.Schema
         /// </returns>
         /// <seealso cref="ChannelData"/>
         /// <seealso cref="GetChannelData{TypeT}"/>
+#pragma warning disable CA1715 // Identifiers should have correct prefix (we can't change it without breaking binary compatibility)
         public bool TryGetChannelData<TypeT>(out TypeT instance)
+#pragma warning restore CA1715 // Identifiers should have correct prefix
         {
             instance = default(TypeT);
 
@@ -428,7 +436,9 @@ namespace Microsoft.Bot.Schema
                 instance = this.GetChannelData<TypeT>();
                 return true;
             }
+#pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return false;
             }
@@ -440,13 +450,14 @@ namespace Microsoft.Bot.Schema
         /// <returns>A conversation reference for the conversation that contains this activity.</returns>
         public ConversationReference GetConversationReference()
         {
-            ConversationReference reference = new ConversationReference
+            var reference = new ConversationReference
             {
                 ActivityId = this.Id,
                 User = this.From,
                 Bot = this.Recipient,
                 Conversation = this.Conversation,
                 ChannelId = this.ChannelId,
+                Locale = this.Locale,
                 ServiceUrl = this.ServiceUrl,
             };
 
@@ -484,6 +495,7 @@ namespace Microsoft.Bot.Schema
             this.ChannelId = reference.ChannelId;
             this.ServiceUrl = reference.ServiceUrl;
             this.Conversation = reference.Conversation;
+            this.Locale = reference.Locale ?? this.Locale;
 
             if (isIncoming)
             {
@@ -505,6 +517,19 @@ namespace Microsoft.Bot.Schema
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Determine if the Activity was sent via an Http/Https connection or Streaming
+        /// This can be determined by looking at the ServiceUrl property:
+        /// (1) All channels that send messages via http/https are not streaming
+        /// (2) Channels that send messages via streaming have a ServiceUrl that does not begin with http/https.
+        /// </summary>
+        /// <returns>True if the Activity originated from a streaming connection.</returns>
+        public bool IsFromStreamingConnection()
+        {
+            var isHttp = ServiceUrl?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase);
+            return isHttp.HasValue ? !isHttp.Value : false;
         }
 
         /// <summary>
@@ -550,10 +575,6 @@ namespace Microsoft.Bot.Schema
             }
 
             return result;
-        }
-
-        partial void CustomInit()
-        {
         }
     }
 }

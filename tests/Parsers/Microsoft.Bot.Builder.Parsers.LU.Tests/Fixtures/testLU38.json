@@ -1,0 +1,45 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_abc",
+      "Body": "",
+      "Name": "abc",
+      "Type": "ml",
+      "Features": "simple1",
+      "ListBody": [],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 2,
+          "Character": 29
+        }
+      }
+    },
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_simple1",
+      "Body": "",
+      "Name": "simple1",
+      "Type": "list",
+      "SynonymsList": [],
+      "Range": {
+        "Start": {
+          "Line": 3,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 15
+        }
+      }
+    }
+  ],
+  "Content": "\n@ ml abc usesFeature simple1\n@ list simple1\n",
+  "Errors": []
+}

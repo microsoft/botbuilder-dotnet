@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send a response",
+        "subtitle": "Send Activity",
+        "helpLink": "https://aka.ms/bfc-send-activity",
+        "order": [
+            "activity",
+            "*"
+        ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "LgWidget",
+            "field": "activity"
+        },
+        "header": {
+            "widget": "ActionHeader",
+            "icon": "MessageBot",
+            "colors": {
+                "theme": "#EEEAF4",
+                "icon": "#5C2E91"
+            }
+        }
+    }
+}

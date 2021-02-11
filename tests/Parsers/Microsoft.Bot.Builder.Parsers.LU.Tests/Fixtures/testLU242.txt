@@ -1,0 +1,4 @@
+# test
+- I want {productOrder = another {product = shirt} and {product = pant} please}
+
+$ productOrder : [product]

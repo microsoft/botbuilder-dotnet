@@ -2,12 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Contains state information associated with a <see cref="Dialog"/> on a dialog stack.
     /// </summary>
+    [DebuggerDisplay("{Id}")]
     public class DialogInstance
     {
         /// <summary>
@@ -16,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The ID of the dialog.
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -24,6 +28,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The instance's persisted state.
         /// </value>
+        [JsonProperty("state")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IDictionary<string, object> State { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
+        /// Gets or sets a stack index. Positive values are indexes within the current DC and negative values are 
+        /// indexes in the parent DC.
+        /// </summary>
+        /// <value>
+        /// Positive values are indexes within the current DC and negative values are indexes in
+        /// the parent DC.
+        /// </value>
+        public int? StackIndex { get; set; }
+
+        /// <summary>
+        /// Gets or sets version string.
+        /// </summary>
+        /// <value>Unique string from the dialog this dialoginstance is tracking which is used to identify when a dialog has changed in way that should emit an event for changed content.</value>
+        public string Version { get; set; }
     }
 }

@@ -1,0 +1,14 @@
+
+
+$product : simple
+
+$PREBUILT : number
+
+$drinks:phraseList
+    - tea, latte, milk
+
+$product:phraseList
+    - a, b, c
+$EspressoType:Blonde ::201=
+    - blonde
+    - blond

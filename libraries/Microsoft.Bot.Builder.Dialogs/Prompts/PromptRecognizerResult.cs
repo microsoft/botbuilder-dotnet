@@ -28,5 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>If <see cref="Succeeded"/> is true, the recognition result from the prompt.</value>
         public T Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether flag indicating whether or not parent dialogs should be allowed to interrupt the prompt.
+        /// </summary>
+        /// <value>
+        /// The default value is `false`.
+        /// </value>
+        public bool AllowInterruption { get; set; } = false;
     }
 }

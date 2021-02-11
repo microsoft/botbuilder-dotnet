@@ -1,0 +1,5 @@
+﻿> !# @strict = true
+> !# @replaceNull = The ${path} is undefined
+> !# @lineBreakStyle = markdown
+
+> empty but options

@@ -3,11 +3,16 @@
 
 namespace Microsoft.Bot.Configuration
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Bot.Configuration.Encryption;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Represents the configuration properties for an Application Insights service.
+    /// </summary>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public class AppInsightsService : AzureService
     {
         /// <summary>
@@ -37,7 +42,9 @@ namespace Microsoft.Bot.Configuration
         /// </summary>
         /// <value>The Api Keys.</value>
         [JsonProperty("apiKeys")]
+#pragma warning disable CA2227 // Collection properties should be read only (this class is obsolete, we won't fix it)
         public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <inheritdoc/>
         public override void Encrypt(string secret)

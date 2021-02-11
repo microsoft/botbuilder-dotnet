@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Repeat dialog",
+    "description": "Repeat current dialog.",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "allowLoop": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "AllowLoop",
+            "description": "Optional condition which if true will allow loop of the repeated dialog.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "options": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "Options",
+            "description": "One or more options that are passed to the dialog that is called.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options",
+                "description": "Options for repeating dialog."
+            }
+        },
+        "activityProcessed": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Activity processed",
+            "description": "When set to false, the dialog that is called can process the current activity.",
+            "default": true
+        }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
+}

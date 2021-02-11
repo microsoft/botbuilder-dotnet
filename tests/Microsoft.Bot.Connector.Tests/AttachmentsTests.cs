@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Connector.Tests
     public class AttachmentsTests : BaseTest
     {
         protected const string ConversationId = "B21UTEF8S:T03CWQ0QB:D2369CT7C";
-
+        
         [Fact]
         public async Task UploadAttachmentAndGetAttachment()
         {
@@ -132,10 +133,14 @@ namespace Microsoft.Bot.Connector.Tests
                 var attachmentId = response.Id;
                 var stream = await client.Attachments.GetAttachmentAsync(attachmentId, "original");
 
-                // Workaround for TestFramework not saving/replaying binary content
-                // Instead, convert the expected output the same way that the TestRecorder converts binary content to string
-                var expectedAsString = new StreamReader(new MemoryStream(attachment.OriginalBase64)).ReadToEnd();
-                var actualAsString = new StreamReader(stream).ReadToEnd();
+                var expectedAsString = Convert.ToBase64String(attachment.OriginalBase64, Base64FormattingOptions.None);
+                
+                stream.Position = 0;
+                var length = stream.Length > int.MaxValue ? int.MaxValue : Convert.ToInt32(stream.Length);
+                var buffer = new byte[length];
+                stream.Read(buffer, 0, length);
+
+                var actualAsString = Convert.ToBase64String(buffer, Base64FormattingOptions.None);
 
                 Assert.Equal(expectedAsString, actualAsString);
             });

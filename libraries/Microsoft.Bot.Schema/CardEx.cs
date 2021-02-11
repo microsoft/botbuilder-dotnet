@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Extension methods for converting strongly typed Card objects to Attachement.
+    /// Extension methods for converting strongly typed Card objects to <see cref="Attachment"/>.
     /// </summary>
     public static partial class Extensions
     {
@@ -76,6 +76,16 @@ namespace Microsoft.Bot.Schema
         public static Attachment ToAttachment(this AnimationCard card)
         {
             return CreateAttachment(card, AnimationCard.ContentType);
+        }
+
+        /// <summary>
+        /// Creates a new attachment from <see cref="OAuthCard"/>.
+        /// </summary>
+        /// <param name="card"> The instance of <see cref="OAuthCard"/>.</param>
+        /// <returns> The generated attachment.</returns>
+        public static Attachment ToAttachment(this OAuthCard card)
+        {
+            return CreateAttachment(card, OAuthCard.ContentType);
         }
 
         private static Attachment CreateAttachment<T>(T card, string contentType)

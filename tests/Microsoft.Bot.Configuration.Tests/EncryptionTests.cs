@@ -1,106 +1,105 @@
 ﻿using System;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Configuration.Encryption;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Microsoft.Bot.Configuration.Tests
 {
-    [TestClass]
     public class EncryptionTests
     {
-        [TestMethod]
+        [Fact]
         public void EncryptDecrypt()
         {
-            string value = "1234567890";
+            var value = "1234567890";
             var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
 
-            string encrypted = value.Encrypt(key);
-            Assert.AreNotEqual(value, encrypted, "encryption failed");
+            var encrypted = value.Encrypt(key);
+            Assert.NotEqual(value, encrypted);
 
-            string decrypted = encrypted.Decrypt(key);
-            Assert.AreEqual(value, decrypted, "decryption failed");
+            var decrypted = encrypted.Decrypt(key);
+            Assert.Equal(value, decrypted);
         }
 
-        [TestMethod]
+        [Fact]
         public void EncryptDecryptEmptyWorks()
         {
             var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
 
-            string encrypted = string.Empty.Encrypt(key);
-            Assert.AreEqual(string.Empty, encrypted, "encryption failed");
+            var encrypted = string.Empty.Encrypt(key);
+            Assert.Equal(string.Empty, encrypted);
 
-            string decrypted = encrypted.Decrypt(key);
-            Assert.AreEqual(string.Empty, decrypted, "decryption failed");
+            var decrypted = encrypted.Decrypt(key);
+            Assert.Equal(string.Empty, decrypted);
         }
 
-        [TestMethod]
+        [Fact]
         public void EncryptDecryptNullWorks()
         {
             var key = "lgCbJPXnfOlatjbBDKMbh0ie6bc8PD/cjqA/2tPgMS0=";
 
-            string encrypted = EncryptUtilities.Encrypt(null, key);
-            Assert.AreEqual(null, encrypted, "encryption failed");
+            var encrypted = EncryptUtilities.Encrypt(null, key);
+            Assert.Null(encrypted);
 
-            string decrypted = EncryptUtilities.Decrypt(encrypted, key);
-            Assert.AreEqual(null, decrypted, "decryption failed");
+            var decrypted = EncryptUtilities.Decrypt(encrypted, key);
+            Assert.Null(decrypted);
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateKeyWorks()
         {
-            string value = "1234567890";
+            var value = "1234567890";
             var key = EncryptUtilities.GenerateKey();
 
-            string encrypted = value.Encrypt(key);
-            Assert.AreNotEqual(value, encrypted, "encryption failed");
+            var encrypted = value.Encrypt(key);
+            Assert.NotEqual(value, encrypted);
 
-            string decrypted = encrypted.Decrypt(key);
-            Assert.AreEqual(value, decrypted, "decryption failed");
+            var decrypted = encrypted.Decrypt(key);
+            Assert.Equal(value, decrypted);
         }
 
-        [TestMethod]
+        [Fact]
         public void EncryptWithNullKeyThrows()
         {
-            string value = "1234567890";
+            var value = "1234567890";
 
             try
             {
-                string encrypted = value.Encrypt(null);
-                Assert.Fail("Encrypt with null key should throw");
+                var encrypted = value.Encrypt(null);
+                throw new XunitException("Encrypt with null key should throw");
             }
             catch (Exception)
             {
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DecryptWithNullKeyThrows()
         {
-            string value = "1234567890";
+            var value = "1234567890";
 
             try
             {
                 var key = EncryptUtilities.GenerateKey();
-                string encrypted = value.Encrypt(key);
-                string nonresult = encrypted.Decrypt(null);
-                Assert.Fail("Decrypt with null secret should throw");
+                var encrypted = value.Encrypt(key);
+                var nonresult = encrypted.Decrypt(null);
+                throw new XunitException("Decrypt with null key should throw");
             }
             catch (Exception)
             {
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void DecryptWithBadKeyThrows()
         {
-            string value = "1234567890";
+            var value = "1234567890";
 
             try
             {
                 var key = EncryptUtilities.GenerateKey();
-                string encrypted = value.Encrypt(key);
-                string nonresult = encrypted.Decrypt("bad");
-                Assert.Fail("Decrypt with bad key should throw");
+                var encrypted = value.Encrypt(key);
+                var nonresult = encrypted.Decrypt("bad");
+                throw new XunitException("Decrypt with bad key should throw");
             }
             catch (Exception)
             {
@@ -109,11 +108,11 @@ namespace Microsoft.Bot.Configuration.Tests
             try
             {
                 var key = EncryptUtilities.GenerateKey();
-                string encrypted = value.Encrypt(key);
+                var encrypted = value.Encrypt(key);
 
                 var key2 = EncryptUtilities.GenerateKey();
-                string nonresult = encrypted.Decrypt(key2);
-                Assert.Fail("Decrypt with different key should throw");
+                var nonresult = encrypted.Decrypt(key2);
+                throw new XunitException("Decrypt with different key should throw");
             }
             catch (Exception)
             {

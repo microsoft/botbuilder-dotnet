@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Loop: For each item",
+        "subtitle": "For Each",
+        "order": [
+            "itemsProperty",
+            "*"
+        ],
+        "hidden": [
+            "actions"
+        ],
+        "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
+        "properties": {
+            "itemsProperty": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
+            },
+            "index": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            },
+            "value": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
+    },
+    "flow": {
+        "widget": "ForeachWidget",
+        "nowrap": true,
+        "loop": {
+            "widget": "ActionCard",
+            "body": "=concat(\"Each value in \", coalesce(action.itemsProperty, \"?\"))"
+        }
+    }
+}

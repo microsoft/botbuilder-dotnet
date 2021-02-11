@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "For each page",
+    "description": "Execute actions on each page (collection of items) in an array.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "itemsProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Items property",
+            "description": "Property that holds the array.",
+            "examples": [
+                "user.todoList"
+            ]
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+                "$kind": "Microsoft.IDialog"
+            },
+            "title": "Actions",
+            "description": "Actions to execute for each page. Use '$foreach.page' to access each page."
+        },
+        "pageIndex": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Index property",
+            "description": "Property that holds the index of the page.",
+            "default": "dialog.foreach.pageindex"
+        },
+        "page": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Page property",
+            "description": "Property that holds the value of the page.",
+            "default": "dialog.foreach.page"
+        },
+        "pageSize": {
+            "$ref": "schema:#/definitions/integerExpression",
+            "title": "Page size",
+            "description": "Number of items in each page.",
+            "default": 10
+        }
+    },
+    "required": [
+        "itemsProperty"
+    ]
+}

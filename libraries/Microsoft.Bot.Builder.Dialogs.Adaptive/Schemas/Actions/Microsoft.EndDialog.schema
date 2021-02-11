@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "End dialog",
+    "description": "End this dialog.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "user.age > 3"
+            ]
+        },
+        "value": {
+            "$ref": "schema:#/definitions/valueExpression",
+            "title": "Value",
+            "description": "Result value returned to the parent dialog.",
+            "examples": [
+                "=dialog.userName",
+                "='tomato'"
+            ]
+        }
+    },
+    "policies": [
+        {
+            "type": "lastAction"
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": "todo.lg",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "dialog.todo",
+                    "value": "=@title"
+                },
+                {
+                    "$kind": "Microsoft.TextInput",
+                    "prompt": "OK, please enter the title of your todo.",
+                    "property": "dialog.todo"
+                },
+                {
+                    "$kind": "Microsoft.IfCondition",
+                    "condition": "user.todos == null",
+                    "actions": [
+                        {
+                            "$kind": "Microsoft.SetProperty",
+                            "property": "user.todos",
+                            "value": "=[]"
+                        }
+                    ]
+                },
+                {
+                    "$kind": "Microsoft.EditArray",
+                    "changeType": "push",
+                    "itemsProperty": "user.todos",
+                    "value": "=dialog.todo"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Successfully added a todo named \"${dialog.todo}\""
+                }
+            ]
+        }
+    ]
+}

@@ -4,114 +4,88 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.TemplateManager.Tests
 {
-    [TestClass]
-    [TestCategory("Template")]
-    public class TemplateManagerTests
+    [Trait("TestCategory", "Template")]
+    public class TemplateManagerTests : IClassFixture<TemplateFixture>
     {
-        private static TestContext _testContext;
-        private static LanguageTemplateDictionary templates1;
-        private static LanguageTemplateDictionary templates2;
+        private readonly TemplateFixture _templateFixture;
 
-        [AssemblyInitialize]
-        public static void SetupDictionaries(TestContext testContext)
+        public TemplateManagerTests(TemplateFixture templateFixture)
         {
-            _testContext = testContext;
-            templates1 = new LanguageTemplateDictionary
-            {
-                ["default"] = new TemplateIdMap
-                {
-                    { "stringTemplate", (context, data) => $"default: {data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)default: {data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"default: Yo {data.name}" },
-                },
-                ["en"] = new TemplateIdMap
-                {
-                    { "stringTemplate", (context, data) => $"en: {data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)en: {data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"en: Yo {data.name}" },
-                },
-                ["fr"] = new TemplateIdMap
-                {
-                    { "stringTemplate", (context, data) => $"fr: {data.name}" },
-                    { "activityTemplate", (context, data) => { return new Activity() { Type = ActivityTypes.Message, Text = $"(Activity)fr: {data.name}" }; } },
-                    { "stringTemplate2", (context, data) => $"fr: Yo {data.name}" },
-                },
-            };
-            templates2 = new LanguageTemplateDictionary
-            {
-                ["en"] = new TemplateIdMap
-                {
-                    { "stringTemplate2", (context, data) => $"en: StringTemplate2 override {data.name}" },
-                },
-            };
+            _templateFixture = templateFixture;
         }
 
-        [TestMethod]
+        [Fact]
         public void TemplateManager_Registration()
         {
             var templateManager = new TemplateManager();
-            Assert.AreEqual(templateManager.List().Count, 0, "nothing registered yet");
-            var templateEngine1 = new DictionaryRenderer(templates1);
-            var templateEngine2 = new DictionaryRenderer(templates2);
-            templateManager.Register(templateEngine1);
-            Assert.AreEqual(templateManager.List().Count, 1, "one registered");
+            Assert.Empty(templateManager.List());
 
+            var templateEngine1 = new DictionaryRenderer(_templateFixture.Templates1);
+            var templateEngine2 = new DictionaryRenderer(_templateFixture.Templates2);
             templateManager.Register(templateEngine1);
-            Assert.AreEqual(templateManager.List().Count, 1, "only  one registered");
+            Assert.Single(templateManager.List());
+
+            // Test that only one has to be registered.
+            templateManager.Register(templateEngine1);
+            Assert.Single(templateManager.List()); 
 
             templateManager.Register(templateEngine2);
-            Assert.AreEqual(templateManager.List().Count, 2, "two registered");
+            Assert.Equal(2, templateManager.List().Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void TemplateManager_MultiTemplate()
         {
             var templateManager = new TemplateManager();
-            Assert.AreEqual(templateManager.List().Count, 0, "nothing registered yet");
-            var templateEngine1 = new DictionaryRenderer(templates1);
-            var templateEngine2 = new DictionaryRenderer(templates2);
-            templateManager.Register(templateEngine1);
-            Assert.AreEqual(templateManager.List().Count, 1, "one registered");
+            Assert.Empty(templateManager.List());
 
+            var templateEngine1 = new DictionaryRenderer(_templateFixture.Templates1);
+            var templateEngine2 = new DictionaryRenderer(_templateFixture.Templates2);
             templateManager.Register(templateEngine1);
-            Assert.AreEqual(templateManager.List().Count, 1, "only  one registered");
+            Assert.Single(templateManager.List());
+
+            // Test that only one has to be registered.
+            templateManager.Register(templateEngine1);
+            Assert.Single(templateManager.List());
 
             templateManager.Register(templateEngine2);
-            Assert.AreEqual(templateManager.List().Count, 2, "two registered");
+            Assert.Equal(2, templateManager.List().Count);
         }
 
-        [TestMethod]
-        public async Task DictionaryTemplateEngine_SimpleStringBinging()
+        [Fact]
+        public async Task DictionaryTemplateEngine_SimpleStringBinding()
         {
-            var engine = new DictionaryRenderer(templates1);
+            var engine = new DictionaryRenderer(_templateFixture.Templates1);
             var result = await engine.RenderTemplate(null, "en", "stringTemplate", new { name = "joe" });
-            Assert.IsInstanceOfType(result, typeof(string));
-            Assert.AreEqual("en: joe", (string)result);
+            Assert.Equal(typeof(string), result.GetType());
+            Assert.Equal("en: joe", (string)result);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task DictionaryTemplateEngine_SimpleActivityBinding()
         {
-            var engine = new DictionaryRenderer(templates1);
+            var engine = new DictionaryRenderer(_templateFixture.Templates1);
             var result = await engine.RenderTemplate(null, "en", "activityTemplate", new { name = "joe" });
-            Assert.IsInstanceOfType(result, typeof(Activity));
+            Assert.Equal(typeof(Activity), result.GetType());
+
             var activity = result as Activity;
-            Assert.AreEqual(ActivityTypes.Message, activity.Type);
-            Assert.AreEqual("(Activity)en: joe", activity.Text);
+            Assert.Equal(ActivityTypes.Message, activity.Type);
+            Assert.Equal("(Activity)en: joe", activity.Text);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TemplateManager_defaultlookup()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TemplateManager_defaultlookup)))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templates1))
-                .Register(new DictionaryRenderer(templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -123,13 +97,40 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
+        public async Task TemplateManager_DataDefined()
+        {
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TemplateManager_DataDefined)))
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            var templateManager = new TemplateManager()
+            {
+                Renderers =
+                {
+                    new DictionaryRenderer(_templateFixture.Templates1),
+                    new DictionaryRenderer(_templateFixture.Templates2)
+                }
+            };
+
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                var templateId = context.Activity.AsMessageActivity().Text.Trim();
+                await templateManager.ReplyWith(context, templateId, new { name = "joe" });
+            })
+                .Send("stringTemplate").AssertReply("default: joe")
+                .Send("activityTemplate").AssertReply("(Activity)default: joe")
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task TemplateManager_enLookup()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TemplateManager_enLookup)))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templates1))
-                .Register(new DictionaryRenderer(templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -142,13 +143,15 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TemplateManager_frLookup()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TemplateManager_frLookup)))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templates1))
-                .Register(new DictionaryRenderer(templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -161,13 +164,15 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TemplateManager_override()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TemplateManager_override)))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templates1))
-                .Register(new DictionaryRenderer(templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -180,13 +185,15 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TemplateManager_useTemplateEngine()
         {
-            TestAdapter adapter = new TestAdapter();
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TemplateManager_useTemplateEngine)))
+                                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
             var templateManager = new TemplateManager()
-                .Register(new DictionaryRenderer(templates1))
-                .Register(new DictionaryRenderer(templates2));
+                .Register(new DictionaryRenderer(_templateFixture.Templates1))
+                .Register(new DictionaryRenderer(_templateFixture.Templates2));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
                 {

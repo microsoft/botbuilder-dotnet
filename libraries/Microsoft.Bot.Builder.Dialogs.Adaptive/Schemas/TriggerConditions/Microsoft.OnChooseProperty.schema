@@ -1,0 +1,6 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "On choose property",
+    "description": "Actions to take when there are multiple possible mappings of entities to properties and operations."
+}

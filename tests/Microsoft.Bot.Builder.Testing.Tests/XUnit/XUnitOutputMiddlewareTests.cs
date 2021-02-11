@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests.XUnit
                 _inputHint = inputHint;
             }
 
-            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
             {
                 var echoActivity = dc.Context.Activity;
                 if (dc.Context.Activity.Type == ActivityTypes.Message)

@@ -1,0 +1,14 @@
+$alphaEntity:word1=
+$alphaEntity:word2=
+
+$numberEntity:3= 
+- three
+
+$numberEntity:4=
+- four
+
+# intent
+- word1
+- word2
+- three
+- four

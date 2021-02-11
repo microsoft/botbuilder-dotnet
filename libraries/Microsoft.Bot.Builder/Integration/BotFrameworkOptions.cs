@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
@@ -31,6 +30,13 @@ namespace Microsoft.Bot.Builder.Integration
         /// </summary>
         /// <value>The credential provider.</value>
         public ICredentialProvider CredentialProvider { get; set; } = new SimpleCredentialProvider();
+
+        /// <summary>
+        /// Gets or sets an <see cref="AppCredentials"/> that should be used to store and retrieve the
+        /// credentials used during authentication with the Bot Framework Service.
+        /// </summary>
+        /// <value>The credential provider.</value>
+        public AppCredentials AppCredentials { get; set; }
 
         /// <summary>
         /// Gets or sets an <see cref="IChannelProvider"/> that should be used to provide configuration for

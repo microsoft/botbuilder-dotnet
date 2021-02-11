@@ -7,12 +7,21 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration
 {
+    /// <summary>
+    /// A class containing serializer settings for Microsoft.Bot.Connector.
+    /// </summary>
     public static class MessageSerializerSettings
     {
+        /// <summary>
+        /// Creates a new ConnectorClient deserialization settings object.
+        /// </summary>
+        /// <returns>A <see cref="JsonSerializerSettings"/> object.</returns>
         public static JsonSerializerSettings Create()
         {
-            var connector = new ConnectorClient(new Uri("http://localhost/"));
-            return connector.DeserializationSettings;
+            using (var connector = new ConnectorClient(new Uri("http://localhost/")))
+            {
+                return connector.DeserializationSettings;
+            }
         }
     }
 }

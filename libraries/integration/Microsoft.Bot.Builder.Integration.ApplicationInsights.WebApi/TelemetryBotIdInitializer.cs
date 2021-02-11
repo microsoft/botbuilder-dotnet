@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using Microsoft.ApplicationInsights.Channel;
@@ -17,8 +18,15 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
     /// </summary>
     public class TelemetryBotIdInitializer : ITelemetryInitializer
     {
+        /// <summary>
+        /// Constant key used for storing activity information in turn state.
+        /// </summary>
         public static readonly string BotActivityKey = "BotBuilderActivity";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TelemetryBotIdInitializer"/> class.
+        /// </summary>
+        /// <param name="telemetry">The telemetry item to be logged to Application Insights.</param>
         public void Initialize(ITelemetry telemetry)
         {
             var httpContext = HttpContext.Current;
@@ -28,13 +36,14 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
             {
                 CacheBody();
 
-                if (telemetry is RequestTelemetry || telemetry is EventTelemetry || telemetry is TraceTelemetry)
+                if (telemetry is RequestTelemetry || telemetry is EventTelemetry
+                    || telemetry is TraceTelemetry || telemetry is DependencyTelemetry)
                 {
                     if (items[BotActivityKey] is JObject body)
                     {
                         var userId = string.Empty;
                         var from = body["from"];
-                        if (!string.IsNullOrWhiteSpace(from.ToString()))
+                        if (!string.IsNullOrWhiteSpace(from?.ToString()))
                         {
                             userId = (string)from["id"];
                         }
@@ -42,10 +51,13 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         var channelId = (string)body["channelId"];
 
                         var conversationId = string.Empty;
+                        var sessionId = string.Empty;
                         var conversation = body["conversation"];
-                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        
+                        if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
+                            sessionId = StringUtils.Hash(conversationId);
                         }
 
                         var context = telemetry.Context;
@@ -53,25 +65,29 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                         // Set the user id on the Application Insights telemetry item.
                         context.User.Id = channelId + userId;
 
-                        // Set the session id on the Application Insights telemetry item.
-                        context.Session.Id = conversationId;
+                        // Set the session id on the Application Insights telemetry item using hashed conversation Id.
+                        // Hashed ID is used due to max session ID length for App Insights session Id
+                        context.Session.Id = sessionId;
 
                         var telemetryProperties = ((ISupportProperties)telemetry).Properties;
 
-                        // Set the activity id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#id
+                        // Set the conversation id
+                        telemetryProperties.Add("conversationId", conversationId);
+
+                        // Set the activity id https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#id
                         telemetryProperties.Add("activityId", (string)body["id"]);
 
-                        // Set the channel id https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#channel-id
+                        // Set the channel id https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#channel-id
                         telemetryProperties.Add("channelId", (string)channelId);
 
-                        // Set the activity type https://github.com/Microsoft/botframework-obi/blob/master/botframework-activity/botframework-activity.md#type
+                        // Set the activity type https://github.com/microsoft/botframework-obi/blob/master/protocols/botframework-activity/botframework-activity.md#type
                         telemetryProperties.Add("activityType", (string)body["type"]);
                     }
                 }
             }
         }
 
-        private void CacheBody()
+        private static void CacheBody()
         {
             var httpContext = HttpContext.Current;
             var request = httpContext.Request;

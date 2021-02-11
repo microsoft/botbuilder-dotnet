@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -32,6 +33,11 @@ namespace Microsoft.Bot.Builder
         public static Activity TraceActivity(this Exception exception)
         {
             return (Activity)Activity.CreateTraceActivity("TurnError", "https://www.botframework.com/schemas/error", exception.Message, "Turn Error");
+        }
+
+        public static Activity CloneTraceActivity(this Activity activity) 
+        {
+            return (Activity)Activity.CreateTraceActivity(activity.Name, activity.ValueType, activity.Value, activity.Label);
         }
     }
 }

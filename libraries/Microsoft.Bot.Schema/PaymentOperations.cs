@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Names for invocable operations in the payment callback protocol.
     /// </summary>
+    [Obsolete("Bot Framework no longer supports payments.")]
     public static class PaymentOperations
     {
         /// <summary>

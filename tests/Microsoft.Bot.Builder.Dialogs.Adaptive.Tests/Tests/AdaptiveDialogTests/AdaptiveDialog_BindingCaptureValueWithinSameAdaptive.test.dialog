@@ -1,0 +1,47 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "generator": {
+            "$kind": "Microsoft.TemplateEngineLanguageGenerator"
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "property": "$number",
+                        "prompt": "Give me a number"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You said ${$number}"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Give me a number"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "32"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 32"
+        }
+    ]
+}

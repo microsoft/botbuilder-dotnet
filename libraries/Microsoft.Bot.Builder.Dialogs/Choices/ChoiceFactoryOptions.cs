@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
@@ -38,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The character used to separate individual choices when there are more than 2 choices.
         /// </value>
+        [JsonProperty("inlineSeparator")]
         public string InlineSeparator { get; set; }
 
         /// <summary>
@@ -47,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The separator inserted between the choices when their are only 2 choices.
         /// </value>
+        [JsonProperty("inlineOr")]
         public string InlineOr { get; set; }
 
         /// <summary>
@@ -56,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The separator inserted between the last 2 choices when their are more than 2 choices.
         /// </value>
+        [JsonProperty("inlineOrMore")]
         public string InlineOrMore { get; set; }
 
         /// <summary>
@@ -66,6 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// A <c>true</c>if an inline and list style choices will be prefixed with the index of the
         /// choice as in "1. choice"; otherwise a <c>false</c> and the list style will use a bulleted list instead.
         /// </value>
+        [JsonProperty("includeNumbers")]
         public bool? IncludeNumbers { get; set; }
     }
 }

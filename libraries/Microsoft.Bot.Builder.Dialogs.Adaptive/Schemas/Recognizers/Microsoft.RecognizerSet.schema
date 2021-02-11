@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "Recognizer set",
+    "description": "Creates the union of the intents and entities of the recognizers in the set.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+        },
+        "recognizers": {
+            "type": "array",
+            "title": "Recognizers",
+            "description": "List of Recognizers defined for this set.",
+            "items": {
+                "$kind": "Microsoft.IRecognizer"
+            }
+        }
+    },
+    "required": [
+        "recognizers"
+    ]
+}

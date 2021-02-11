@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send a response to ask a question",
+        "subtitle": "Ask Activity",
+        "helpLink": "https://aka.ms/bfc-send-activity",
+        "order": [
+            "activity",
+            "*"
+        ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "header": {
+            "widget": "ActionHeader",
+            "icon": "MessageBot",
+            "colors": {
+                "theme": "#EEEAF4",
+                "icon": "#5C2E91"
+            }
+        },
+        "body": {
+            "widget": "LgWidget",
+            "field": "activity"
+        },
+        "footer": {
+            "widget": "PropertyDescription",
+            "property": "=action.defaultOperation",
+            "description": "= Default operation"
+        },
+        "hideFooter": "=!action.defaultOperation"
+    }
+}

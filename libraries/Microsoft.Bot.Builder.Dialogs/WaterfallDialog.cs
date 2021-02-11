@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -27,18 +28,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
         /// </summary>
         /// <param name="dialogId">The dialog ID.</param>
-        /// <param name="steps">Optional steps to be defined by the caller.</param>
-        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
+        /// <param name="actions">Optional actions to be defined by the caller.</param>
+        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> actions = null)
             : base(dialogId)
         {
-            if (steps != null)
-            {
-                _steps = new List<WaterfallStep>(steps);
-            }
-            else
-            {
-                _steps = new List<WaterfallStep>();
-            }
+            _steps = actions != null ? new List<WaterfallStep>(actions) : new List<WaterfallStep>();
+        }
+
+        /// <summary>
+        /// Gets a unique string which represents the version of this dialog.  If the version changes between turns the dialog system will emit a DialogChanged event.
+        /// </summary>
+        /// <returns>Version will change when steps count changes (because dialog has no way of evaluating the content of the steps.</returns>
+        public override string GetVersion()
+        {
+            return $"{Id}:{_steps.Count}";
         }
 
         /// <summary>
@@ -52,8 +55,23 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this;
         }
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Called when the waterfall dialog is started and pushed onto the dialog stack.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog.</remarks>
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
@@ -66,18 +84,30 @@ namespace Microsoft.Bot.Builder.Dialogs
             state[PersistedValues] = new Dictionary<string, object>();
             state[PersistedInstanceId] = instanceId;
 
-            var properties = new Dictionary<string, string>()
-                {
-                    { "DialogId", Id },
-                    { "InstanceId", instanceId },
-                };
+            var properties = new Dictionary<string, string>
+            {
+                { "DialogId", Id },
+                { "InstanceId", instanceId },
+            };
             TelemetryClient.TrackEvent("WaterfallStart", properties);
+            TelemetryClient.TrackDialogView(Id);
 
             // Run first step
             return await RunStepAsync(dc, 0, DialogReason.BeginCalled, null, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Called when the waterfall dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog. The result may also contain a
+        /// return value.</remarks>
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -87,14 +117,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Don't do anything for non-message activities.
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return EndOfTurn;
             }
 
             // Run next step with the message text as the result.
             return await ResumeDialogAsync(dc, DialogReason.ContinueCalled, dc.Context.Activity.Text, cancellationToken).ConfigureAwait(false);
         }
 
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Called when a child waterfall dialog completed its turn, returning control to this dialog.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -109,7 +149,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // data store for state. The stepIndex which was an object being cast to an Int64
             // after deserialization was throwing an exception for not being Int32 datatype.
             // This change ensures the correct datatype conversion has been done.
-            var index = Convert.ToInt32(state[StepIndex]);
+            var index = Convert.ToInt32(state[StepIndex], CultureInfo.InvariantCulture);
             return await RunStepAsync(dc, index + 1, reason, result, cancellationToken).ConfigureAwait(false);
         }
 
@@ -122,15 +162,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
             if (reason == DialogReason.CancelCalled)
             {
-                var index = Convert.ToInt32(instance.State[StepIndex]);
-                var stepName = WaterfallStepName(index);
-                var instanceId = instance.State[PersistedInstanceId] as string;
+                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
 
-                var properties = new Dictionary<string, string>()
+                // Create step context
+                var index = Convert.ToInt32(state[StepIndex], CultureInfo.InvariantCulture);
+                var stepName = WaterfallStepName(index);
+                var instanceId = state[PersistedInstanceId] as string;
+
+                var properties = new Dictionary<string, string>
                 {
                     { "DialogId", Id },
                     { "StepName", stepName },
@@ -140,8 +183,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (reason == DialogReason.EndCalled)
             {
-                var instanceId = instance.State[PersistedInstanceId] as string;
-                var properties = new Dictionary<string, string>()
+                var state = new Dictionary<string, object>((Dictionary<string, object>)instance.State);
+                var instanceId = state[PersistedInstanceId] as string;
+                var properties = new Dictionary<string, string>
                 {
                     { "DialogId", Id },
                     { "InstanceId", instanceId },
@@ -152,11 +196,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Called when an individual waterfall step is being executed.
+        /// </summary>
+        /// <param name="stepContext">Context for the waterfall step to execute.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var stepName = WaterfallStepName(stepContext.Index);
             var instanceId = stepContext.ActiveDialog.State[PersistedInstanceId] as string;
-            var properties = new Dictionary<string, string>()
+            var properties = new Dictionary<string, string>
             {
                 { "DialogId", Id },
                 { "StepName", stepName },
@@ -166,7 +217,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
+        /// <summary>
+        /// Excutes a step of the waterfall dialog.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="index">The index of the current waterfall step to execute.</param>
+        /// <param name="reason">The reason the waterfall step is being executed.</param>
+        /// <param name="result">Result returned by a dialog called in the previous waterfall step.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
         {
             if (dc == null)
             {
@@ -187,11 +248,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Execute step
                 return await OnStepAsync(stepContext, cancellationToken).ConfigureAwait(false);
             }
-            else
-            {
-                // End of waterfall so just return any result to parent
-                return await dc.EndDialogAsync(result).ConfigureAwait(false);
-            }
+
+            // End of waterfall so just return any result to parent
+            return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
 
         private string WaterfallStepName(int index)

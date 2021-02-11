@@ -8,7 +8,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -29,14 +28,14 @@ namespace Microsoft.Bot.Builder.Tests
         /// Loads a list of activities from a transcript file.
         /// Use the context of the test to find the transcript file.
         /// </summary>
-        /// <param name="context">Test context.</param>
+        /// <param name="className">Class name.</param>
+        /// <param name="testName">Test name.</param>
         /// <returns>A list of activities to test.</returns>
-        public static IEnumerable<IActivity> GetFromTestContext(TestContext context)
+        public static IEnumerable<IActivity> GetActivitiesFromFile(string className, string testName)
         {
             // Use TestContext to find transcripts using the following naming convention:
             // {BOTBUILDER_TRANSCRIPTS_LOCATION}\{TestClassName}\{TestMethodName}.chat
-            var testClassName = context.FullyQualifiedTestClassName.Split('.').Last();
-            var relativePath = Path.Combine($"{testClassName}", $"{context.TestName}.transcript");
+            var relativePath = Path.Combine($"{className}", $"{testName}.transcript");
             return GetActivities(relativePath);
         }
 

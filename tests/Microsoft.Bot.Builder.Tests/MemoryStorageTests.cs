@@ -1,56 +1,69 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("Storage")]
-    [TestCategory("Storage - Memory")]
-    public class MemoryStorageTests : StorageBaseTests
+    public class MemoryStorageTests : StorageBaseTests, IDisposable
     {
         private IStorage storage;
 
         public MemoryStorageTests()
         {
+            storage = new MemoryStorage();
         }
 
-        [TestInitialize]
-        public void Initialize()
+        public void Dispose()
         {
             storage = new MemoryStorage();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryStorage_CreateObjectTest()
         {
             await CreateObjectTest(storage);
         }
 
-        [TestMethod]
+        [Fact]
+        public void MemoryParamTest()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                new MemoryStorage((JsonSerializer)null));
+        }
+
+        [Fact]
         public async Task MemoryStorage_ReadUnknownTest()
         {
             await ReadUnknownTest(storage);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryStorage_UpdateObjectTest()
         {
-            await UpdateObjectTest(storage);
+            await UpdateObjectTest<Exception>(storage);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryStorage_DeleteObjectTest()
         {
             await DeleteObjectTest(storage);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task MemoryStorage_HandleCrazyKeys()
         {
             await HandleCrazyKeys(storage);
+        }
+
+        [Fact]
+        public async Task StatePersistsThroughMultiTurn_TypeNameHandlingNone()
+        {
+            storage = new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None });
+            await StatePersistsThroughMultiTurn(storage);
         }
     }
 }

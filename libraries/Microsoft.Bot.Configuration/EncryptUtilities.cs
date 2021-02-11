@@ -7,6 +7,10 @@ namespace Microsoft.Bot.Configuration.Encryption
     using System.IO;
     using System.Security.Cryptography;
 
+    /// <summary>
+    /// Helper methods to assist with encryption of connected service keys.
+    /// </summary>
+    [Obsolete("This class is deprecated.  See https://aka.ms/bot-file-basics for more information.", false)]
     public static class EncryptUtilities
     {
         /// <summary>
@@ -36,7 +40,9 @@ namespace Microsoft.Bot.Configuration.Encryption
 
             if (string.IsNullOrEmpty(key))
             {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly (this class is obsolete, we won't fix it)
                 throw new ArgumentNullException("Missing key");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             // Encrypt the string to an array of bytes.
@@ -61,7 +67,9 @@ namespace Microsoft.Bot.Configuration.Encryption
 
             if (string.IsNullOrEmpty(key))
             {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly (this class is obsolete, we won't fix it)
                 throw new ArgumentNullException("Missing key");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             var parts = encryptedText.Split('!');
@@ -111,7 +119,9 @@ namespace Microsoft.Bot.Configuration.Encryption
         /// <param name="key">The 32-byte encryption key to use.</param>
         /// <param name="iv">A 16-byte initialization vector to use.</param>
         /// <returns>The initialization vector and the encrypted bytes.</returns>
+#pragma warning disable CA1707 // Identifiers should not contain underscores (this class is obsolete, we won't fix it)
         public static Tuple<byte[], byte[]> EncryptStringToBytes_Aes(string plainText, byte[] key, byte[] iv = null)
+#pragma warning restore CA1707 // Identifiers should not contain underscores
         {
             // Check arguments.
             if (plainText == null || plainText.Length <= 0)
@@ -167,7 +177,9 @@ namespace Microsoft.Bot.Configuration.Encryption
         /// <param name="key">The 32-byte encryption key to use.</param>
         /// <param name="iv">A 16-byte initialization vector to use.</param>
         /// <returns>The decrypted string.</returns>
+#pragma warning disable CA1707 // Identifiers should not contain underscores (this class is obsolete, we won't fix it)
         public static string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] key, byte[] iv)
+#pragma warning restore CA1707 // Identifiers should not contain underscores
         {
             // Check arguments.
             if (cipherText == null || cipherText.Length <= 0)

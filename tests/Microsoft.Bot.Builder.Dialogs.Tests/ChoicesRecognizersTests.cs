@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    [TestClass]
-    [TestCategory("Prompts")]
-    [TestCategory("Choice Tests")]
+    [Trait("TestCategory", "Prompts")]
+    [Trait("TestCategory", "Choice Tests")]
     public class ChoicesRecognizersTests
     {
         // FindChoices
@@ -37,180 +37,211 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             new SortedValue { Value = "option C", Index = 2 },
         };
 
+        private static List<SortedValue> valuesWithSpecialCharacters = new List<SortedValue>
+        {
+            new SortedValue { Value = "A < B", Index = 0 },
+            new SortedValue { Value = "A >= B", Index = 1 },
+            new SortedValue { Value = "A ??? B", Index = 2 },
+        };
+
         // FindValues
-        [TestMethod]
+        [Fact]
         public void ShouldFindASimpleValueInAnSingleWordUtterance()
         {
             var found = Find.FindValues("red", colorValues);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 0, 2, "red");
             AssertValue(found[0], "red", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindASimpleValueInAnUtterance()
         {
             var found = Find.FindValues("the red one please.", colorValues);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 4, 6, "red");
             AssertValue(found[0], "red", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindMultipleValuesWithinAnUtterance()
         {
             var found = Find.FindValues("the red and blue ones please.", colorValues);
-            Assert.AreEqual(2, found.Count);
+            Assert.Equal(2, found.Count);
             AssertResult(found[0], 4, 6, "red");
             AssertValue(found[0], "red", 0, 1.0f);
             AssertValue(found[1], "blue", 2, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindMultipleValuesThatOverlap()
         {
             var found = Find.FindValues("the bread pudding and bread please.", overlappingValues);
-            Assert.AreEqual(2, found.Count);
+            Assert.Equal(2, found.Count);
             AssertResult(found[0], 4, 16, "bread pudding");
             AssertValue(found[0], "bread pudding", 1, 1.0f);
             AssertValue(found[1], "bread", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldCorrectlyDisambiguateBetweenVerySimilarValues()
         {
             var found = Find.FindValues("option B", similarValues, new FindValuesOptions { AllowPartialMatches = true });
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertValue(found[0], "option B", 1, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
+        public void ShouldPreferExactMatch()
+        {
+            var index = 1;
+            var utterance = valuesWithSpecialCharacters[index].Value;
+            var found = Find.FindValues(utterance, valuesWithSpecialCharacters);
+
+            AssertValue(found.Single(), utterance, index, 1);
+        }
+
+        [Fact]
         public void ShouldFindASingleChoiceInAnUtterance()
         {
             var found = Find.FindChoices("the red one please.", colorChoices);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 4, 6, "red");
             AssertChoice(found[0], "red", 0, 1.0f, "red");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindMultipleChoicesWithinAnUtterance()
         {
             var found = Find.FindChoices("the red and blue ones please.", colorChoices);
-            Assert.AreEqual(2, found.Count);
+            Assert.Equal(2, found.Count);
             AssertResult(found[0], 4, 6, "red");
             AssertChoice(found[0], "red", 0, 1.0f);
             AssertChoice(found[1], "blue", 2, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindMultipleChoicesThatOverlap()
         {
             var found = Find.FindChoices("the bread pudding and bread please.", overlappingChoices);
-            Assert.AreEqual(2, found.Count);
+            Assert.Equal(2, found.Count);
             AssertResult(found[0], 4, 16, "bread pudding");
             AssertChoice(found[0], "bread pudding", 1, 1.0f);
             AssertChoice(found[1], "bread", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldAcceptNullUtteranceInFindChoices()
         {
             var found = Find.FindChoices(null, colorChoices);
-            Assert.AreEqual(0, found.Count);
+            Assert.Empty(found);
         }
 
         // RecognizeChoices
-        [TestMethod]
+        [Fact]
         public void ShouldFindAChoiceInAnUtteranceByName()
         {
             var found = ChoiceRecognizers.RecognizeChoices("the red one please.", colorChoices);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 4, 6, "red");
             AssertChoice(found[0], "red", 0, 1.0f, "red");
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindAChoiceInAnUtteranceByOrdinalPosition()
         {
             var found = ChoiceRecognizers.RecognizeChoices("the first one please.", colorChoices);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 4, 8, "first");
             AssertChoice(found[0], "red", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindMultipleChoicesInAnUtteranceByOrdinalPosition()
         {
             var found = ChoiceRecognizers.RecognizeChoices("the first and third one please.", colorChoices);
-            Assert.AreEqual(2, found.Count);
+            Assert.Equal(2, found.Count);
             AssertChoice(found[0], "red", 0, 1.0f);
             AssertChoice(found[1], "blue", 2, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindAChoiceInAnUtteranceByNumericalIndex_digit()
         {
             var found = ChoiceRecognizers.RecognizeChoices("1", colorChoices);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 0, 0, "1");
             AssertChoice(found[0], "red", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindAChoiceInAnUtteranceByNumericalIndex_Text()
         {
             var found = ChoiceRecognizers.RecognizeChoices("one", colorChoices);
-            Assert.AreEqual(1, found.Count);
+            Assert.Single(found);
             AssertResult(found[0], 0, 2, "one");
             AssertChoice(found[0], "red", 0, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldFindMultipleChoicesInAnUtteranceByNumerical_index()
         {
             var found = ChoiceRecognizers.RecognizeChoices("option one and 3.", colorChoices);
-            Assert.AreEqual(2, found.Count);
+            Assert.Equal(2, found.Count);
             AssertChoice(found[0], "red", 0, 1.0f);
             AssertChoice(found[1], "blue", 2, 1.0f);
         }
 
-        [TestMethod]
+        [Fact]
         public void ShouldAcceptNullUtteranceInRecognizeChoices()
         {
             var found = ChoiceRecognizers.RecognizeChoices(null, colorChoices);
-            Assert.AreEqual(0, found.Count);
+            Assert.Empty(found);
+        }
+
+        [Fact]
+        public void ShouldNOTFindAChoiceInAnUtteranceByOrdinalPosition_RecognizeOrdinalsFalseAndRecognizeNumbersFalse()
+        {
+            var found = ChoiceRecognizers.RecognizeChoices("the first one please.", colorChoices, new FindChoicesOptions() { RecognizeOrdinals = false, RecognizeNumbers = false });
+            Assert.Empty(found);
+        }
+
+        [Fact]
+        public void ShouldNOTFindAChoiceInAnUtteranceByNumericalIndex_Text_RecognizeNumbersFalse()
+        {
+            var found = ChoiceRecognizers.RecognizeChoices("one", colorChoices, new FindChoicesOptions() { RecognizeNumbers = false });
+            Assert.Empty(found);
         }
 
         // Helper functions
         private static void AssertResult<T>(ModelResult<T> result, int start, int end, string text)
         {
-            Assert.AreEqual(start, result.Start);
-            Assert.AreEqual(end, result.End);
-            Assert.AreEqual(text, result.Text);
+            Assert.Equal(start, result.Start);
+            Assert.Equal(end, result.End);
+            Assert.Equal(text, result.Text);
         }
 
         private static void AssertValue(ModelResult<FoundValue> result, string value, int index, float score)
         {
-            Assert.AreEqual("value", result.TypeName);
-            Assert.IsNotNull(result.Resolution);
+            Assert.Equal("value", result.TypeName);
+            Assert.NotNull(result.Resolution);
             var resolution = result.Resolution;
-            Assert.AreEqual(value, resolution.Value);
-            Assert.AreEqual(index, resolution.Index);
-            Assert.AreEqual(score, resolution.Score);
+            Assert.Equal(value, resolution.Value);
+            Assert.Equal(index, resolution.Index);
+            Assert.Equal(score, resolution.Score);
         }
 
         private static void AssertChoice(ModelResult<FoundChoice> result, string value, int index, float score, string synonym = null)
         {
-            Assert.AreEqual("choice", result.TypeName);
-            Assert.IsNotNull(result.Resolution);
+            Assert.Equal("choice", result.TypeName);
+            Assert.NotNull(result.Resolution);
             var resolution = result.Resolution;
-            Assert.AreEqual(value, resolution.Value);
-            Assert.AreEqual(index, resolution.Index);
-            Assert.AreEqual(score, resolution.Score);
+            Assert.Equal(value, resolution.Value);
+            Assert.Equal(index, resolution.Index);
+            Assert.Equal(score, resolution.Score);
             if (synonym != null)
             {
-                Assert.AreEqual(synonym, resolution.Synonym);
+                Assert.Equal(synonym, resolution.Synonym);
             }
         }
     }

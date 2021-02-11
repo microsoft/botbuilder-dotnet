@@ -1,0 +1,78 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "$name",
+                        "prompt": "Hello, what is your name?"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "resultProperty": "$age",
+                        "options": {
+                            "userName": "=$name"
+                        },
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnBeginDialog",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.NumberInput",
+                                            "prompt": "Hello ${$userName}, how old are you?",
+                                            "property": "$age"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.EndDialog",
+                                            "value": "=$age"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Hello ${$name}, you are ${$age} years old!"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "zoidberg"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello zoidberg, how old are you?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I'm 77"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello zoidberg, you are 77 years old!"
+        }
+    ]
+}

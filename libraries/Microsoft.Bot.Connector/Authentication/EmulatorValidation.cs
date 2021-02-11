@@ -30,7 +30,9 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
                     "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",      // Auth v3.2, 2.0 token
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/",                    // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0",       // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",           // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",       // Auth for US Gov, 2.0 token
                 },
                 ValidateAudience = false,   // Audience validation takes place manually in code.
                 ValidateLifetime = true,
@@ -45,35 +47,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True, if the token was issued by the Emulator. Otherwise, false.</returns>
         public static bool IsTokenFromEmulator(string authHeader)
         {
-            // The Auth Header generally looks like this:
-            // "Bearer eyJ0e[...Big Long String...]XAiO"
-            if (string.IsNullOrWhiteSpace(authHeader))
+            if (!JwtTokenValidation.IsValidTokenFormat(authHeader))
             {
-                // No token. Can't be an emulator token.
                 return false;
             }
 
-            string[] parts = authHeader?.Split(' ');
-            if (parts.Length != 2)
-            {
-                // Emulator tokens MUST have exactly 2 parts. If we don't have 2 parts, it's not an emulator token
-                return false;
-            }
-
-            string authScheme = parts[0];
-            string bearerToken = parts[1];
-
-            // We now have an array that should be:
+            // We know is a valid token, split it and work with it:
             // [0] = "Bearer"
             // [1] = "[Big Long String]"
-            if (authScheme != "Bearer")
-            {
-                // The scheme from the emulator MUST be "Bearer"
-                return false;
-            }
+            var bearerToken = authHeader.Split(' ')[1];
 
             // Parse the Big Long String into an actual token.
-            JwtSecurityToken token = new JwtSecurityToken(bearerToken);
+            var token = new JwtSecurityToken(bearerToken);
 
             // Is there an Issuer?
             if (string.IsNullOrWhiteSpace(token.Issuer))
@@ -109,7 +94,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             return await AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, new AuthenticationConfiguration()).ConfigureAwait(false);
         }
@@ -131,7 +118,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
+#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             if (authConfig == null)
             {
@@ -148,7 +137,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     openIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms);
 
-            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements);
+            var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, authConfig.RequiredEndorsements).ConfigureAwait(false);
             if (identity == null)
             {
                 // No valid identity. Not Authorized.
@@ -207,7 +196,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Unknown Emulator Token version '{tokenVersion}'.");
             }
 
-            if (!await credentials.IsValidAppIdAsync(appID))
+            if (!await credentials.IsValidAppIdAsync(appID).ConfigureAwait(false))
             {
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appID}");
             }

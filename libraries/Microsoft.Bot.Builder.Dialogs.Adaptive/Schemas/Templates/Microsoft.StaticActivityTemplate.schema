@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IActivityTemplate)",
+    "title": "Microsoft static activity template",
+    "description": "This allows you to define a static Activity object",
+    "type": "object",
+    "properties": {
+        "activity": {
+            "$ref": "https://schemas.botframework.com/schemas/protocol/botframework.json#/definitions/Activity",
+            "title": "Activity",
+            "description": "A static Activity to used.",
+            "required": [
+                "type"
+            ]
+        }
+    },
+    "required": [
+        "activity"
+    ]
+}

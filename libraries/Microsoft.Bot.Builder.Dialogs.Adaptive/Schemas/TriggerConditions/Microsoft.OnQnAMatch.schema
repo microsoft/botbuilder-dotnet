@@ -1,0 +1,9 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "On QnAMaker match",
+    "description": "Actions to perform on when an match from QnAMaker is found.",
+    "type": "object",
+    "required": [
+    ]
+}

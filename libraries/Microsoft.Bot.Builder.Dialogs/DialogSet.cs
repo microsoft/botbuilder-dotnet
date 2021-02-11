@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -13,9 +15,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class DialogSet
     {
-        private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
+        private readonly IStatePropertyAccessor<DialogState> _dialogState;
         private IBotTelemetryClient _telemetryClient;
+        private string _version;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogSet"/> class.
@@ -28,14 +31,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
-            _dialogState = dialogState ?? throw new ArgumentNullException($"missing {nameof(dialogState)}");
+            _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
-        internal DialogSet()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogSet"/> class with null <see cref="DialogState"/>.
+        /// </summary>
+        public DialogSet()
         {
-            // TODO: This is only used by ComponentDialog and future release
-            // will refactor to use IStatePropertyAccessor from context
             _dialogState = null;
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
@@ -46,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
         /// <remarks>When this property is set, it sets the <see cref="Dialog.TelemetryClient"/> of each
         /// dialog in the set to the new value.</remarks>
+        [JsonIgnore]
         public IBotTelemetryClient TelemetryClient
         {
             get
@@ -64,7 +69,35 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Adds a new <see cref="Dialog"/> to the set and returns the updated set.
+        /// Gets a unique string which represents the combined versions of all dialogs in this this dialogset.  
+        /// </summary>
+        /// <returns>Version will change when any of the child dialogs version changes.</returns>
+        public virtual string GetVersion()
+        {
+            if (_version == null)
+            {
+                var sb = new StringBuilder();
+                foreach (var dialog in _dialogs)
+                {
+                    var v = _dialogs[dialog.Key].GetVersion();
+                    if (v != null)
+                    {
+                        sb.Append(v);
+                    }
+                }
+
+                _version = StringUtils.Hash(sb.ToString());
+            }
+
+            return _version;
+        }
+
+        /// <summary>
+        /// Adds a new dialog to the set and returns the set to allow fluent chaining.
+        /// If the Dialog.Id being added already exists in the set, the dialogs id will be updated to 
+        /// include a suffix which makes it unique. So adding 2 dialogs named "duplicate" to the set
+        /// would result in the first one having an id of "duplicate" and the second one having an id
+        /// of "duplicate2".
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The dialog set after the operation is complete.</returns>
@@ -72,6 +105,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <see cref="TelemetryClient"/> of the dialog set.</remarks>
         public DialogSet Add(Dialog dialog)
         {
+            // Ensure new version hash is computed
+            _version = null;
+
             if (dialog == null)
             {
                 throw new ArgumentNullException(nameof(dialog));
@@ -79,11 +115,42 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (_dialogs.ContainsKey(dialog.Id))
             {
-                throw new ArgumentException($"DialogSet.Add(): A dialog with an id of '{dialog.Id}' already added.");
+                // If we are trying to add the same exact instance, it's not a name collision.
+                // No operation required since the instance is already in the dialog set.
+                if (_dialogs[dialog.Id] == dialog)
+                {
+                    return this;
+                }
+
+                // If we are adding a new dialog with a conflicting name, add a suffix to avoid
+                // dialog name collisions.
+                var nextSuffix = 2;
+
+                while (true)
+                {
+                    var suffixId = dialog.Id + nextSuffix;
+
+                    if (!_dialogs.ContainsKey(suffixId))
+                    {
+                        dialog.Id = suffixId;
+                        break;
+                    }
+
+                    nextSuffix++;
+                }
             }
 
             dialog.TelemetryClient = _telemetryClient;
             _dialogs[dialog.Id] = dialog;
+
+            // Automatically add any dependencies the dialog might have
+            if (dialog is IDialogDependencies dialogWithDependencies)
+            {
+                foreach (var dependencyDialog in dialogWithDependencies.GetDependencies())
+                {
+                    Add(dependencyDialog);
+                }
+            }
 
             return this;
         }
@@ -98,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result contains the created <see cref="DialogContext"/>.
         /// </remarks>
-        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -106,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (_dialogState == null)
             {
                 // Note: This shouldn't ever trigger, as the _dialogState is set in the constructor and validated there.
-                throw new InvalidOperationException($"DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor.");
+                throw new InvalidOperationException("DialogSet.CreateContextAsync(): DialogSet created with a null IStatePropertyAccessor.");
             }
 
             // Load/initialize dialog state
@@ -134,6 +201,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets the Dialogs of the set.
+        /// </summary>
+        /// <returns>A collection of <see cref="Dialog"/>.</returns>
+        public IEnumerable<Dialog> GetDialogs()
+        {
+            return _dialogs.Values;
         }
     }
 }

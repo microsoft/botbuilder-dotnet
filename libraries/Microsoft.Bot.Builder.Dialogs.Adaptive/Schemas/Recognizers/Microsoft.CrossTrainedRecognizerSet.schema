@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "Cross-trained recognizer set",
+    "description": "Recognizer for selecting between cross trained recognizers.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional unique id using with RecognizerSet."
+        },
+        "recognizers": {
+            "type": "array",
+            "title": "Recognizers",
+            "description": "List of Recognizers defined for this set.",
+            "items": {
+                "$kind": "Microsoft.IRecognizer"
+            }
+        }
+    },
+    "required": [
+        "recognizers"
+    ]
+}

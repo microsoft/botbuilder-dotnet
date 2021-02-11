@@ -7,18 +7,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Tests
 {
-    [TestClass]
-    [TestCategory("State Management")]
     public class BotStateTests
     {
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "Cannot have empty/null property name")]
+        [Fact]
         public void State_EmptyName()
         {
             // Arrange
@@ -26,11 +23,10 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage(dictionary));
 
             // Act
-            var propertyA = userState.CreateProperty<string>(string.Empty);
+            Assert.Throws<ArgumentNullException>(() => userState.CreateProperty<string>(string.Empty));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "Cannot have empty/null property name")]
+        [Fact]
         public void State_NullName()
         {
             // Arrange
@@ -38,11 +34,10 @@ namespace Microsoft.Bot.Builder.Tests
             var userState = new UserState(new MemoryStorage(dictionary));
 
             // Act
-            var propertyA = userState.CreateProperty<string>(null);
+            Assert.Throws<ArgumentNullException>(() => userState.CreateProperty<string>(null));
         }
 
-        [TestMethod]
-        [Description("Verify storage not called when no changes are made")]
+        [Fact]
         public async Task MakeSureStorageNotCalledNoChangesAsync()
         {
             // Mock a storage provider, which counts read/writes
@@ -63,32 +58,31 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
-            Assert.AreEqual(storeCount, 0);
+            Assert.Equal(0, storeCount);
             await userState.SaveChangesAsync(context);
             await propertyA.SetAsync(context, "hello");
-            Assert.AreEqual(readCount, 1);       // Initial save bumps count
-            Assert.AreEqual(storeCount, 0);       // Initial save bumps count
+            Assert.Equal(1, readCount);       // Initial save bumps count
+            Assert.Equal(0, storeCount);       // Initial save bumps count
             await propertyA.SetAsync(context, "there");
-            Assert.AreEqual(storeCount, 0);       // Set on property should not bump
+            Assert.Equal(0, storeCount);       // Set on property should not bump
             await userState.SaveChangesAsync(context);
-            Assert.AreEqual(storeCount, 1);       // Explicit save should bump
+            Assert.Equal(1, storeCount);       // Explicit save should bump
             var valueA = await propertyA.GetAsync(context);
-            Assert.AreEqual("there", valueA);
-            Assert.AreEqual(storeCount, 1);       // Gets should not bump
+            Assert.Equal("there", valueA);
+            Assert.Equal(1, storeCount);       // Gets should not bump
             await userState.SaveChangesAsync(context);
-            Assert.AreEqual(storeCount, 1);
+            Assert.Equal(1, storeCount);
             await propertyA.DeleteAsync(context);   // Delete alone no bump
-            Assert.AreEqual(storeCount, 1);
+            Assert.Equal(1, storeCount);
             await userState.SaveChangesAsync(context);  // Save when dirty should bump
-            Assert.AreEqual(storeCount, 2);
-            Assert.AreEqual(readCount, 1);
+            Assert.Equal(2, storeCount);
+            Assert.Equal(1, readCount);
             await userState.SaveChangesAsync(context);  // Save not dirty should not bump
-            Assert.AreEqual(storeCount, 2);
-            Assert.AreEqual(readCount, 1);
+            Assert.Equal(2, storeCount);
+            Assert.Equal(1, readCount);
         }
 
-        [TestMethod]
-        [Description("Should be able to set a property with no Load")]
+        [Fact]
         public async Task State_SetNoLoad()
         {
             // Arrange
@@ -101,8 +95,7 @@ namespace Microsoft.Bot.Builder.Tests
             await propertyA.SetAsync(context, "hello");
         }
 
-        [TestMethod]
-        [Description("Should be able to load multiple times")]
+        [Fact]
         public async Task State_MultipleLoads()
         {
             // Arrange
@@ -116,8 +109,7 @@ namespace Microsoft.Bot.Builder.Tests
             await userState.LoadAsync(context);
         }
 
-        [TestMethod]
-        [Description("Should be able to get a property with no Load and default")]
+        [Fact]
         public async Task State_GetNoLoadWithDefault()
         {
             // Arrange
@@ -128,11 +120,10 @@ namespace Microsoft.Bot.Builder.Tests
             // Act
             var propertyA = userState.CreateProperty<string>("propertyA");
             var valueA = await propertyA.GetAsync(context, () => "Default!");
-            Assert.AreEqual("Default!", valueA);
+            Assert.Equal("Default!", valueA);
         }
 
-        [TestMethod]
-        [Description("Cannot get a string with no default set")]
+        [Fact]
         public async Task State_GetNoLoadNoDefault()
         {
             // Arrange
@@ -145,11 +136,10 @@ namespace Microsoft.Bot.Builder.Tests
             var valueA = await propertyA.GetAsync(context);
 
             // Assert
-            Assert.IsNull(valueA);
+            Assert.Null(valueA);
         }
 
-        [TestMethod]
-        [Description("Cannot get a POCO with no default set")]
+        [Fact]
         public async Task State_POCO_NoDefault()
         {
             // Arrange
@@ -162,11 +152,10 @@ namespace Microsoft.Bot.Builder.Tests
             var value = await testProperty.GetAsync(context);
 
             // Assert
-            Assert.IsNull(value);
+            Assert.Null(value);
         }
 
-        [TestMethod]
-        [Description("Cannot get a bool with no default set")]
+        [Fact]
         public async Task State_bool_NoDefault()
         {
             // Arrange
@@ -179,11 +168,10 @@ namespace Microsoft.Bot.Builder.Tests
             var value = await testProperty.GetAsync(context);
 
             // Assert
-            Assert.IsFalse(value);
+            Assert.False(value);
         }
 
-        [TestMethod]
-        [Description("Cannot get a int with no default set")]
+        [Fact]
         public async Task State_int_NoDefault()
         {
             // Arrange
@@ -196,11 +184,10 @@ namespace Microsoft.Bot.Builder.Tests
             var value = await testProperty.GetAsync(context);
 
             // Assert
-            Assert.AreEqual(0, value);
+            Assert.Equal(0, value);
         }
 
-        [TestMethod]
-        [Description("Verify setting property after save")]
+        [Fact]
         public async Task State_SetAfterSave()
         {
             // Arrange
@@ -220,8 +207,7 @@ namespace Microsoft.Bot.Builder.Tests
             await propertyA.SetAsync(context, "hello2");
         }
 
-        [TestMethod]
-        [Description("Verify multiple saves")]
+        [Fact]
         public async Task State_MultipleSave()
         {
             // Arrange
@@ -241,10 +227,10 @@ namespace Microsoft.Bot.Builder.Tests
             await propertyA.SetAsync(context, "hello2");
             await userState.SaveChangesAsync(context);
             var valueA = await propertyA.GetAsync(context);
-            Assert.AreEqual("hello2", valueA);
+            Assert.Equal("hello2", valueA);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoadSetSave()
         {
             // Arrange
@@ -263,11 +249,11 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
-            Assert.AreEqual("hello", obj["property-a"]);
-            Assert.AreEqual("world", obj["property-b"]);
+            Assert.Equal("hello", obj["property-a"]);
+            Assert.Equal("world", obj["property-b"]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoadSetSaveTwice()
         {
             // Arrange
@@ -289,8 +275,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
-            Assert.AreEqual("hello", obj["property-a"]);
-            Assert.AreEqual("world", obj["property-b"]);
+            Assert.Equal("hello", obj["property-a"]);
+            Assert.Equal("world", obj["property-b"]);
 
             // Act 2
             var userState2 = new UserState(new MemoryStorage(dictionary));
@@ -305,12 +291,12 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert 2
             var obj2 = dictionary["EmptyContext/users/empty@empty.context.org"];
-            Assert.AreEqual("hello-2", obj2["property-a"]);
-            Assert.AreEqual("world-2", obj2["property-b"]);
-            Assert.AreEqual("test", obj2["property-c"]);
+            Assert.Equal("hello-2", obj2["property-a"]);
+            Assert.Equal("world-2", obj2["property-b"]);
+            Assert.Equal("test", obj2["property-c"]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoadSaveDelete()
         {
             // Arrange
@@ -330,8 +316,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             var obj = dictionary["EmptyContext/users/empty@empty.context.org"];
-            Assert.AreEqual("hello", obj["property-a"]);
-            Assert.AreEqual("world", obj["property-b"]);
+            Assert.Equal("hello", obj["property-a"]);
+            Assert.Equal("world", obj["property-b"]);
 
             // Act 2
             var userState2 = new UserState(new MemoryStorage(dictionary));
@@ -346,31 +332,31 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert 2
             var obj2 = dictionary["EmptyContext/users/empty@empty.context.org"];
-            Assert.AreEqual("hello-2", obj2["property-a"]);
-            Assert.IsNull(obj2["property-b"]);
+            Assert.Equal("hello-2", obj2["property-a"]);
+            Assert.Null(obj2["property-b"]);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_DoNOTRememberContextState()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_DoNOTRememberContextState"));
 
             await new TestFlow(adapter, (context, cancellationToken) =>
             {
                 var obj = context.TurnState.Get<UserState>();
-                Assert.IsNull(obj, "context.state should not exist");
+                Assert.Null(obj);
                 return Task.CompletedTask;
             })
             .Send("set value")
             .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_RememberIStoreItemUserState()
         {
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_RememberIStoreItemUserState"))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(
@@ -378,7 +364,7 @@ namespace Microsoft.Bot.Builder.Tests
                 async (context, cancellationToken) =>
                 {
                     var state = await testProperty.GetAsync(context, () => new TestPocoState());
-                    Assert.IsNotNull(state, "user state should exist");
+                    Assert.NotNull(state);
                     switch (context.Activity.Text)
                     {
                         case "set value":
@@ -395,19 +381,19 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_RememberPocoUserState()
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("tate_RememberPocoUserState"))
                 .Use(new AutoSaveStateMiddleware(userState));
             await new TestFlow(
                 adapter,
                 async (context, cancellationToken) =>
                     {
                         var testPocoState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
-                        Assert.IsNotNull(userState, "user state should exist");
+                        Assert.NotNull(userState);
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -424,13 +410,13 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_RememberIStoreItemConversationState()
         {
             var userState = new UserState(new MemoryStorage());
             var testProperty = userState.CreateProperty<TestState>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_RememberIStoreItemConversationState"))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(
@@ -438,7 +424,7 @@ namespace Microsoft.Bot.Builder.Tests
                 async (context, cancellationToken) =>
                     {
                         var conversationState = await testProperty.GetAsync(context, () => new TestState());
-                        Assert.IsNotNull(conversationState, "state.conversation should exist");
+                        Assert.NotNull(conversationState);
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -455,12 +441,12 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_RememberPocoConversationState()
         {
             var userState = new UserState(new MemoryStorage());
             var testPocoProperty = userState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_RememberPocoConversationState"))
                 .Use(new AutoSaveStateMiddleware(userState));
 
             await new TestFlow(
@@ -468,7 +454,7 @@ namespace Microsoft.Bot.Builder.Tests
                 async (context, cancellationToken) =>
                     {
                         var conversationState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
-                        Assert.IsNotNull(conversationState, "state.conversation should exist");
+                        Assert.NotNull(conversationState);
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -485,12 +471,12 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_RememberPocoPrivateConversationState()
         {
             var privateConversationState = new PrivateConversationState(new MemoryStorage());
             var testPocoProperty = privateConversationState.CreateProperty<TestPocoState>("testPoco");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_RememberPocoPrivateConversationState"))
                 .Use(new AutoSaveStateMiddleware(privateConversationState));
 
             await new TestFlow(
@@ -498,7 +484,7 @@ namespace Microsoft.Bot.Builder.Tests
                 async (context, cancellationToken) =>
                     {
                         var conversationState = await testPocoProperty.GetAsync(context, () => new TestPocoState());
-                        Assert.IsNotNull(conversationState, "state.conversation should exist");
+                        Assert.NotNull(conversationState);
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -515,7 +501,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_CustomStateManagerTest()
         {
             var testGuid = Guid.NewGuid().ToString();
@@ -523,7 +509,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             var testProperty = customState.CreateProperty<TestPocoState>("test");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_CustomStateManagerTest"))
                 .Use(new AutoSaveStateMiddleware(customState));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -545,12 +531,12 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_RoundTripTypedObject()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<TypedObject>("typed");
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_RoundTripTypedObject"))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             await new TestFlow(
@@ -558,7 +544,7 @@ namespace Microsoft.Bot.Builder.Tests
                 async (context, cancellationToken) =>
                     {
                         var conversation = await testProperty.GetAsync(context, () => new TypedObject());
-                        Assert.IsNotNull(conversation, "conversationstate should exist");
+                        Assert.NotNull(conversation);
                         switch (context.Activity.AsMessageActivity().Text)
                         {
                             case "set value":
@@ -575,10 +561,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task State_UseBotStateDirectly()
         {
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("State_UseBotStateDirectly"));
 
             await new TestFlow(
                 adapter,
@@ -594,9 +580,9 @@ namespace Microsoft.Bot.Builder.Tests
                         var customState = await testProperty.GetAsync(context, () => new CustomState());
 
                         // this should be a 'new CustomState' as nothing is currently stored in storage
-                        Assert.IsNotNull(customState);
-                        Assert.IsInstanceOfType(customState, typeof(CustomState));
-                        Assert.IsNull(customState.CustomString);
+                        Assert.NotNull(customState);
+                        Assert.IsType<CustomState>(customState);
+                        Assert.Null(customState.CustomString);
 
                         // amend property and write to storage
                         customState.CustomString = "test";
@@ -610,14 +596,13 @@ namespace Microsoft.Bot.Builder.Tests
                         customState = await testProperty.GetAsync(context);
 
                         // check object read from value has the correct value for CustomString
-                        Assert.AreEqual("test", customState.CustomString);
+                        Assert.Equal("test", customState.CustomString);
                     })
                 .Send(new Activity() { Type = ActivityTypes.ConversationUpdate })
                 .StartTestAsync();
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [Fact]
         public async Task UserState_BadFromThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
@@ -625,11 +610,10 @@ namespace Microsoft.Bot.Builder.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Activity.From = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var value = await testProperty.GetAsync(context);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [Fact]
         public async Task ConversationState_BadConverationThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
@@ -637,11 +621,10 @@ namespace Microsoft.Bot.Builder.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var value = await testProperty.GetAsync(context);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [Fact]
         public async Task PrivateConversationState_BadActivityFromThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
@@ -650,11 +633,10 @@ namespace Microsoft.Bot.Builder.Tests
             context.Activity.Conversation = null;
             context.Activity.From = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var value = await testProperty.GetAsync(context);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "bad activity should throw ArgumentNullException")]
+        [Fact]
         public async Task PrivateConversationState_BadActivityConversationThrows()
         {
             var dictionary = new Dictionary<string, JObject>();
@@ -662,10 +644,10 @@ namespace Microsoft.Bot.Builder.Tests
             var context = TestUtilities.CreateEmptyContext();
             context.Activity.Conversation = null;
             var testProperty = userState.CreateProperty<TestPocoState>("test");
-            var value = await testProperty.GetAsync(context);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => testProperty.GetAsync(context));
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ClearAndSave()
         {
             var turnContext = TestUtilities.CreateEmptyContext();
@@ -686,7 +668,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .CreateProperty<TestPocoState>("test-name")
                 .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
 
-            Assert.AreEqual("test-value", value1);
+            Assert.Equal("test-value", value1);
 
             // Turn 2
             var botState3 = new ConversationState(storage);
@@ -699,10 +681,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .CreateProperty<TestPocoState>("test-name")
                 .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
 
-            Assert.AreEqual("default-value", value2);
+            Assert.Equal("default-value", value2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateDelete()
         {
             var turnContext = TestUtilities.CreateEmptyContext();
@@ -723,7 +705,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .CreateProperty<TestPocoState>("test-name")
                 .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
 
-            Assert.AreEqual("test-value", value1);
+            Assert.Equal("test-value", value1);
 
             // Turn 2
             var botState3 = new ConversationState(storage);
@@ -735,10 +717,10 @@ namespace Microsoft.Bot.Builder.Tests
                 .CreateProperty<TestPocoState>("test-name")
                 .GetAsync(turnContext, () => new TestPocoState { Value = "default-value" })).Value;
 
-            Assert.AreEqual("default-value", value2);
+            Assert.Equal("default-value", value2);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task BotStateGet()
         {
             var turnContext = TestUtilities.CreateEmptyContext();
@@ -746,14 +728,85 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storage = new MemoryStorage(new Dictionary<string, JObject>());
 
-            var conversationState = new ConversationState(storage);
-            (await conversationState
+            // This was changed from ConversationSate to TestBotState
+            // because TestBotState has a context service key
+            // that is different from the name of its type
+            var botState = new TestBotState(storage);
+            (await botState
                 .CreateProperty<TestPocoState>("test-name")
                 .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
 
-            var json = conversationState.Get(turnContext);
+            var json = botState.Get(turnContext);
 
-            Assert.AreEqual("test-value", json["test-name"]["Value"].ToString());
+            Assert.Equal("test-value", json["test-name"]["Value"].ToString());
+        }
+
+        [Fact]
+        public async Task BotStateGetCachedState()
+        {
+            var turnContext = TestUtilities.CreateEmptyContext();
+            turnContext.Activity.Conversation = new ConversationAccount { Id = "1234" };
+
+            var storage = new MemoryStorage(new Dictionary<string, JObject>());
+            var botState = new TestBotState(storage);
+
+            (await botState
+                .CreateProperty<TestPocoState>("test-name")
+                .GetAsync(turnContext, () => new TestPocoState())).Value = "test-value";
+
+            var cache = botState.GetCachedState(turnContext);
+
+            Assert.NotNull(cache);
+
+            Assert.Same(cache, botState.GetCachedState(turnContext));
+        }
+
+        [Fact]
+        public async Task State_ForceIsNoOpWithoutCachedBotState()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            await userState.SaveChangesAsync(context, true);
+        }
+
+        [Fact]
+        public async Task State_ForceCallsSaveWithoutCachedBotStateChanges()
+        {
+            // Mock a storage provider, which counts writes
+            var storeCount = 0;
+            var dictionary = new Dictionary<string, object>();
+            var mock = new Mock<IStorage>();
+            mock.Setup(ms => ms.WriteAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
+                .Callback(() => storeCount++);
+            mock.Setup(ms => ms.ReadAsync(It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(result: (IDictionary<string, object>)dictionary));
+
+            // Arrange
+            var userState = new UserState(mock.Object);
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var propertyA = userState.CreateProperty<string>("propertyA");
+
+            // Set initial value and save
+            await propertyA.SetAsync(context, "test");
+            await userState.SaveChangesAsync(context);
+
+            // Assert
+            Assert.Equal(1, storeCount);
+
+            // Saving without changes and wthout force does NOT call .WriteAsync
+            await userState.SaveChangesAsync(context);
+            Assert.Equal(1, storeCount);
+
+            // Forcing save without changes DOES call .WriteAsync
+            await userState.SaveChangesAsync(context, true);
+            Assert.Equal(2, storeCount);
         }
 
         public class TypedObject

@@ -3,14 +3,21 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
     /// <summary>
     /// Represents a choice for a choice prompt.
     /// </summary>
+#pragma warning disable CA1724 // Namespace name conflict (we can't change this without breaking binary compat)
     public class Choice
+#pragma warning restore CA1724 // Namespace name conflict
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Choice"/> class to add a choice to a choice prompt.
+        /// </summary>
+        /// <param name="value">The value to return when the choice is selected.</param>
         public Choice(string value = null)
         {
             Value = value;
@@ -22,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The value to return when selected.
         /// </value>
+        [JsonProperty("value")]
         public string Value { get; set; }
 
         /// <summary>
@@ -31,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The action to use when rendering the choice as a suggested action or hero card.
         /// </value>
+        [JsonProperty("action")]
         public CardAction Action { get; set; }
 
         /// <summary>
@@ -39,6 +48,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <value>
         /// The list of synonyms to recognize in addition to the value.
         /// </value>
+        [JsonProperty("synonyms")]
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public List<string> Synonyms { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
     }
 }

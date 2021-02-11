@@ -1,0 +1,8 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.IRecognizer)", "implements(Microsoft.IEntityRecognizer)" ],
+    "title": "IP entity recognizer",
+    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+    "type": "object",
+    "properties": {}
+}

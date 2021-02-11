@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send an activity",
+    "description": "Respond with an activity.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action."
+        },
+        "activity": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Activity to send."
+        }
+    }
+}

@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// This is metadata about the property including policy info.
+    /// Metadata about a property, including policy info.
     /// </summary>
     public interface IStatePropertyInfo
     {

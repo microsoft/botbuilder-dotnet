@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Custom Action",
+    "description": "My Custom Action.",
+    "type": "object",
+    "properties": {
+        "age": {
+            "$ref": "schema:#/definitions/numberExpression",
+            "title": "Age",
+            "description": "The age.",
+            "examples": [
+                20,
+                "=$foo"
+            ]
+        },
+        "name": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Name",
+            "description": "The name."
+        },
+        "resultProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Property",
+            "description": "Property to store any value returned by the dialog that is called.",
+            "examples": [
+                "$name"
+            ]
+        }
+    }
+}

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
+    /// <summary>
+    /// A simple channel provider with basic configuration parameters to connect to a Bot Framework channel service.
+    /// </summary>
     public class SimpleChannelProvider : IChannelProvider
     {
         /// <summary>
@@ -25,6 +28,12 @@ namespace Microsoft.Bot.Connector.Authentication
             this.ChannelService = channelService;
         }
 
+        /// <summary>
+        /// Gets or sets the channel service.
+        /// </summary>
+        /// <value>
+        /// The channel service.
+        /// </value>
         public string ChannelService { get; set; }
 
         /// <summary>
@@ -42,7 +51,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>True if this channel provider represents a channel on US Government Azure.</returns>
         public bool IsGovernment()
         {
-            return string.Equals(GovernmentAuthenticationConstants.ChannelService, ChannelService, StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(GovernmentAuthenticationConstants.ChannelService, ChannelService, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

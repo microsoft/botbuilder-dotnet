@@ -1,0 +1,91 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Begin a skill",
+    "description": "Begin a remote skill.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the skill dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=f(x)"
+            ]
+        },
+        "activityProcessed": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Activity processed",
+            "description": "When set to false, the skill will be started using the activity in the current turn context instead of the activity in the Activity property.",
+            "default": true,
+            "examples": [
+                true,
+                "=f(x)"
+            ]
+        },
+        "resultProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Property",
+            "description": "Property to store any value returned by the dialog that is called.",
+            "examples": [
+                "dialog.userName"
+            ]
+        },
+        "botId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Skill host bot ID",
+            "description": "The Microsoft App ID that will be calling the skill.",
+            "default": "=settings.MicrosoftAppId"
+        },
+        "skillHostEndpoint": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Skill host",
+            "description": "The callback Url for the skill host.",
+            "default": "=settings.skillHostEndpoint",
+            "examples": [
+                "https://mybot.contoso.com/api/skills/"
+            ]
+        },
+        "connectionName": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "OAuth connection name (SSO)",
+            "description": "The OAuth Connection Name, that would be used to perform Single SignOn with a skill.",
+            "default": "=settings.connectionName"
+        },
+        "skillAppId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Skill App Id",
+            "description": "The Microsoft App ID for the skill."
+        },
+        "skillEndpoint": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Skill endpoint ",
+            "description": "The /api/messages endpoint for the skill.",
+            "examples": [
+                "https://myskill.contoso.com/api/messages/"
+            ]
+        },
+        "activity": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "The activity to send to the skill."
+        },
+        "allowInterruptions": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Allow interruptions",
+            "description": "A boolean expression that determines whether the parent should be allowed to interrupt the skill.",
+            "default": true,
+            "examples": [
+                true,
+                "=user.xyz"
+            ]
+        }
+
+    }
+}

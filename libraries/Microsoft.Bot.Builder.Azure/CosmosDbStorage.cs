@@ -11,19 +11,19 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
     /// Implements an CosmosDB based storage provider for a bot.
     /// </summary>
-    public class CosmosDbStorage : IStorage
+    [Obsolete("This class is deprecated. Please use CosmosDbPartitionedStorage instead.", false)]
+    public class CosmosDbStorage : IStorage, IDisposable
     {
         // When setting up the database, calls are made to CosmosDB. If multiple calls are made, we'll end up setting the
         // collectionLink member variable more than once. The semaphore is for making sure the initialization of the
         // database is done only once.
-        private static SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
@@ -33,7 +33,10 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly RequestOptions _documentCollectionCreationRequestOptions = null;
         private readonly RequestOptions _databaseCreationRequestOptions = null;
         private readonly IDocumentClient _client;
-        private string _collectionLink = null;
+        private string _collectionLink;
+
+        // To detect redundant calls to dispose
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
@@ -49,22 +52,22 @@ namespace Microsoft.Bot.Builder.Azure
 
             if (cosmosDbStorageOptions.CosmosDBEndpoint == null)
             {
-                throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
+                throw new ArgumentException("Service EndPoint for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
+                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
             {
-                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbStorageOptions.DatabaseId));
+                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbStorageOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.CollectionId))
             {
-                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbStorageOptions.CollectionId));
+                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbStorageOptions));
             }
 
             _databaseId = cosmosDbStorageOptions.DatabaseId;
@@ -79,6 +82,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
+
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
         }
 
@@ -119,12 +123,12 @@ namespace Microsoft.Bot.Builder.Azure
 
             if (string.IsNullOrEmpty(cosmosDbCustomClientOptions.DatabaseId))
             {
-                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbCustomClientOptions.DatabaseId));
+                throw new ArgumentException("DatabaseId is required.", nameof(cosmosDbCustomClientOptions));
             }
 
             if (string.IsNullOrEmpty(cosmosDbCustomClientOptions.CollectionId))
             {
-                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbCustomClientOptions.CollectionId));
+                throw new ArgumentException("CollectionId is required.", nameof(cosmosDbCustomClientOptions));
             }
 
             _client = documentClient ?? throw new ArgumentNullException(nameof(documentClient), "An implementation of IDocumentClient for CosmosDB is required.");
@@ -138,6 +142,11 @@ namespace Microsoft.Bot.Builder.Azure
             _client.ConnectionPolicy.UserAgentSuffix = $"Microsoft-BotFramework {version}";
         }
 
+        /// <summary>
+        /// Escapes a given key to be compatible for use with Cosmos DB. 
+        /// </summary>
+        /// <param name="key">The key to be sanitized (escaped).</param>
+        /// <returns>An appropriately escaped version of the key.</returns>
         [Obsolete("Replaced by CosmosDBKeyEscape.EscapeKey.")]
         public static string SanitizeKey(string key) => CosmosDbKeyEscape.EscapeKey(key);
 
@@ -311,9 +320,45 @@ namespace Microsoft.Bot.Builder.Azure
                 }
                 else
                 {
-                    throw new Exception("etag empty");
+                    throw new ArgumentException("etag empty");
                 }
             }
+        }
+
+        /// <summary>
+        /// Disposes the object instance and releases any related objects owned by the class.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes objects used by the class.
+        /// </summary>
+        /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
+        /// <remarks>
+        /// The disposing parameter should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.
+        /// In other words, it is true when deterministically called and false when non-deterministically called.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed objects owned by the class here.
+                if (_client is IDisposable documentClient)
+                {
+                    documentClient.Dispose();
+                }
+            }
+
+            _disposed = true;
         }
 
         /// <summary>

@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Update an activity",
+    "description": "Respond with an activity.",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        },
+        "activityId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Activity Id",
+            "description": "An string expression with the activity id to update.",
+            "examples": [
+                "=turn.lastresult.id"
+            ]
+        },
+        "activity": {
+            "$kind": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Activity to send."
+        }
+    }
+}

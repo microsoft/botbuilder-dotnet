@@ -1,0 +1,121 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IRecognizer)",
+    "title": "LUIS Recognizer",
+    "description": "LUIS recognizer.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional unique id using with RecognizerSet.  Other recognizers should return 'DeferToRecognizer_{Id}' intent when cross training data for this recognizer."
+        },
+        "applicationId": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "LUIS application id",
+            "description": "Application ID for your model from the LUIS service."
+        },
+        "version": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "LUIS version",
+            "description": "Optional version to target.  If null then predictionOptions.Slot is used."
+        },
+        "endpoint": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "LUIS endpoint",
+            "description": "Endpoint to use for LUIS service like https://westus.api.cognitive.microsoft.com."
+        },
+        "endpointKey": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "LUIS prediction key",
+            "description": "LUIS prediction key used to call endpoint."
+        },
+        "externalEntityRecognizer": {
+            "$kind": "Microsoft.IRecognizer",
+            "title": "External entity recognizer",
+            "description": "Entities recognized by this recognizer will be passed to LUIS as external entities."
+        },
+        "dynamicLists": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Dynamic lists",
+            "description": "Runtime defined entity lists.",
+            "items": {
+                "title": "Entity list",
+                "description": "Lists of canonical values and synonyms for an entity.",
+                "type": "object",
+                "properties": {
+                    "entity": {
+                        "title": "Entity",
+                        "description": "Entity to extend with a dynamic list.",
+                        "type": "string"
+                    },
+                    "list": {
+                        "title": "Dynamic list",
+                        "description": "List of canonical forms and synonyms.",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "title": "List entry",
+                            "description": "Canonical form and synonynms.",
+                            "properties": {
+                                "canonicalForm": {
+                                    "title": "Canonical form",
+                                    "description": "Resolution if any synonym matches.",
+                                    "type": "string"
+                                },
+                                "synonyms": {
+                                    "title": "Synonyms",
+                                    "description": "List of synonyms for a canonical form.",
+                                    "type": "array",
+                                    "items": {
+                                        "title": "Synonym",
+                                        "description": "Synonym for canonical form.",
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "predictionOptions": {
+            "type": "object",
+            "title": "Prediction options",
+            "description": "Options to control LUIS prediction behavior.",
+            "properties": {
+                "includeAllIntents": {
+                    "$ref": "schema:#/definitions/booleanExpression",
+                    "title": "Include all intents",
+                    "description": "True for all intents, false for only top intent."
+                },
+                "includeInstanceData": {
+                    "$ref": "schema:#/definitions/booleanExpression",
+                    "title": "Include $instance",
+                    "description": "True to include $instance metadata in the LUIS response."
+                },
+                "log": {
+                    "$ref": "schema:#/definitions/booleanExpression",
+                    "title": "Log utterances",
+                    "description": "True to log utterances on LUIS service."
+                },
+                "preferExternalEntities": {
+                    "$ref": "schema:#/definitions/booleanExpression",
+                    "title": "Prefer external entities",
+                    "description": "True to prefer external entities to those generated by LUIS models."
+                },
+                "slot": {
+                    "$ref": "schema:#/definitions/stringExpression",
+                    "title": "Slot",
+                    "description": "Slot to use for talking to LUIS service like production or staging."
+                }
+            }
+        }
+    },
+    "required": [
+        "applicationId",
+        "endpoint",
+        "endpointKey"
+    ]
+}

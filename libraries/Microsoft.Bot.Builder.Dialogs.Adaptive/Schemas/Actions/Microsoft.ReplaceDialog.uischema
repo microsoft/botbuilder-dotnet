@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Replace this dialog",
+        "subtitle": "Replace Dialog",
+        "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+        "order": [
+            "dialog",
+            "options",
+            "*"
+        ]
+    },
+    "flow": {
+        "widget": "ActionCard",
+        "body": {
+            "widget": "DialogRef",
+            "dialog": "=action.dialog"
+        }
+    }
+}

@@ -20,14 +20,13 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
 
         // LUIS tests run off of recorded HTTP responses to avoid service dependencies.
         // To update the recorded responses:
-        // 1) Change Mock to false below, or set LUISMOCK=false
+        // 1) Change Mock to false below, or set LUISMOCK=false in your environment
         // 2) Set environment variable LUISSUBSCRIPTIONKEY = any valid LUIS endpoint key
         // 3) Run the LuisRecognizerTests
         // 4) If the http responses have changed there will be a file in this directory of<test>.json.new
         // 5) Run the review.cmd file to review each file if approved the new oracle file will replace the old one.
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
-        // TODO: set to true
         public bool Mock { get; set; } = true;
 
         public void GetEnvironmentVars()

@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "title": "Language policy",
+    "description": "This represents a policy map for locales lookups to use for language",
+    "type": "object",
+    "additionalProperties": {
+        "type": "array",
+        "title": "Per-locale policy",
+        "description": "Language policy per locale.",
+        "items": {
+            "type": "string",
+            "title": "Locale",
+            "description": "Locale like en-us."
+        }
+    }
+}

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Configuration;
-using System.Linq;
 using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.BotFramework
@@ -22,6 +21,9 @@ namespace Microsoft.Bot.Builder.BotFramework
         /// </summary>
         public const string ChannelServiceKey = "ChannelService";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationChannelProvider"/> class.
+        /// </summary>
         public ConfigurationChannelProvider()
         {
             this.ChannelService = ConfigurationManager.AppSettings[ChannelServiceKey];

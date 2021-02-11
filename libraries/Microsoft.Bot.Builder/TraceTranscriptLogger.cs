@@ -9,11 +9,30 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Representas a transcript logger that writes activites to a <see cref="Trace"/> object.
+    /// Represents a transcript logger that writes activities to a <see cref="Trace"/> object.
     /// </summary>
     public class TraceTranscriptLogger : ITranscriptLogger
     {
-        private static JsonSerializerSettings serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+        private static readonly JsonSerializerSettings _serializationSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+
+        private readonly bool _traceActivity;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraceTranscriptLogger"/> class.
+        /// </summary>
+        public TraceTranscriptLogger()
+            : this(true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TraceTranscriptLogger"/> class.
+        /// </summary>
+        /// <param name="traceActivity">Indicates if trace information should be logged.</param>
+        public TraceTranscriptLogger(bool traceActivity)
+        {
+            this._traceActivity = traceActivity;
+        }
 
         /// <summary>
         /// Log an activity to the transcript.
@@ -23,7 +42,22 @@ namespace Microsoft.Bot.Builder
         public Task LogActivityAsync(IActivity activity)
         {
             BotAssert.ActivityNotNull(activity);
-            Trace.TraceInformation(JsonConvert.SerializeObject(activity, serializationSettings));
+            if (_traceActivity)
+            {
+                Trace.TraceInformation(JsonConvert.SerializeObject(activity, _serializationSettings));
+            }
+            else
+            {
+                if (Debugger.IsAttached && activity.Type == ActivityTypes.Message)
+                {
+                    Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}] {activity.AsMessageActivity()?.Text}");
+                }
+                else
+                {
+                    Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
+                }
+            }
+
             return Task.CompletedTask;
         }
     }

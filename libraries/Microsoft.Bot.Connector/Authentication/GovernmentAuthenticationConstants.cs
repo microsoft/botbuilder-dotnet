@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
-
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
@@ -18,7 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: Login URL.
         /// </summary>
-        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e";
+        public const string ToChannelFromBotLoginUrl = "https://login.microsoftonline.us/MicrosoftServices.onmicrosoft.us";
 
         /// <summary>
         /// TO GOVERNMENT CHANNEL FROM BOT: OAuth scope to request.

@@ -1,0 +1,9 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
+    "title": "On continue conversation",
+    "description": "Actions to perform when a conversation is started up again from a ContinueConversationLater action.",
+    "type": "object",
+    "required": [
+    ]
+}

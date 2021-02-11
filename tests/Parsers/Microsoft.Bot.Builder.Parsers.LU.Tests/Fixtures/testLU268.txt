@@ -1,0 +1,7 @@
+> # Intent definitions
+## Book flight
+- book flight from {geographyV2:fromCity=london} to {geographyV2:toCity=paris} on {datetimeV2:date=feb 14th}
+
+> # Entity definitions
+$PREBUILT:datetimeV2
+$PREBUILT:geographyV2

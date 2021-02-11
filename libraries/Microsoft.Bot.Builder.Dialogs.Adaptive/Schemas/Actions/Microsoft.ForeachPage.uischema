@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Loop: For each page (multiple items)",
+        "subtitle": "For Each Page",
+        "order": [
+            "itemsProperty",
+            "pageSize",
+            "*"
+        ],
+        "hidden": [
+            "actions"
+        ],
+        "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
+        "properties": {
+            "itemsProperty": {
+                "intellisenseScopes": [
+                    "user-variables"
+                ]
+            },
+            "pageIndex": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            },
+            "page": {
+                "intellisenseScopes": [
+                    "variable-scopes"
+                ]
+            }
+        }
+    },
+    "flow": {
+        "widget": "ForeachWidget",
+        "nowrap": true,
+        "loop": {
+            "widget": "ActionCard",
+            "body": "=concat(\"Each page of \", coalesce(action.pageSize, \"?\"), \" in \", coalesce(action.page, \"?\"))"
+        }
+    }
+}

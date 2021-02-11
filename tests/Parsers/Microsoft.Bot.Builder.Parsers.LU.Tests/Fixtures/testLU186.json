@@ -1,0 +1,32 @@
+{
+  "Sections": [
+    {
+      "Errors": [],
+      "SectionType": "newEntitySection",
+      "Id": "newEntitySection_blah=",
+      "Body": "",
+      "Name": "blah=",
+      "Type": "list",
+      "SynonymsList": [
+        {
+          "NormalizedValue": "something",
+          "Synonyms": [
+
+          ]
+        }
+      ],
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 3,
+          "Character": 17
+        }
+      }
+    }
+  ],
+  "Content": "\n@ list blah=\n    - something:\n",
+  "Errors": []
+}

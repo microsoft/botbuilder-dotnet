@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Linq;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 
@@ -22,6 +21,10 @@ namespace Microsoft.Bot.Builder.BotFramework
         /// </summary>
         public const string ChannelServiceKey = "ChannelService";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationChannelProvider"/> class.
+        /// </summary>
+        /// <param name="configuration">An instance of <see cref="IConfiguration"/>.</param>
         public ConfigurationChannelProvider(IConfiguration configuration)
         {
             this.ChannelService = configuration.GetSection(ChannelServiceKey)?.Value;

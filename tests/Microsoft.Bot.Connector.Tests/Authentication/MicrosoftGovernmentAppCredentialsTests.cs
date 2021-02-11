@@ -25,6 +25,14 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         }
 
         [Fact]
+        public void MicrosoftGovernmentAppCredentials_Uses_Custom_Scope()
+        {
+            var cred = new MicrosoftGovernmentAppCredentials(string.Empty, string.Empty, null, null, "my Custom oAuthScope");
+
+            Assert.Equal("my Custom oAuthScope", cred.OAuthScope);
+        }
+
+        [Fact]
         public void GovernmentAuthenticationConstants_ChannelService_IsRight()
         {
             // This value should not change
@@ -35,7 +43,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         public void GovernmentAuthenticationConstants_ToChannelFromBotLoginUrl_IsRight()
         {
             // This value should not change
-            Assert.Equal("https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e", GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl);
+            Assert.Equal("https://login.microsoftonline.us/MicrosoftServices.onmicrosoft.us", GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl);
         }
 
         [Fact]

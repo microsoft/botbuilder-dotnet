@@ -1,0 +1,261 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "a",
+                    "pattern": "a"
+                },
+                {
+                    "intent": "b",
+                    "pattern": "b"
+                },
+                {
+                    "intent": "c",
+                    "pattern": "c"
+                },
+                {
+                    "intent": "trigger",
+                    "pattern": "trigger"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "a",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.a",
+                        "value": "=1"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "b",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.b",
+                        "value": "=1"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "c",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.c",
+                        "value": "=1"
+                    }
+                ]
+            },
+            {
+                "$comment": "This will never fire since there are no memory references.",
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "runOnce": true,
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleEmptyOnce"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "default"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "runOnce": true,
+                "condition": "user.a == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleAOnce"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "runOnce": true,
+                "condition": "user.a == 1 && user.b == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleAandBOnce"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "trigger",
+                "runOnce": true,
+                "condition": "user.a == 1 || user.c == 1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "ruleAorCOnce"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false,
+        "selector": {
+            "$kind": "Microsoft.MostSpecificSelector",
+            "selector": {
+                "$kind": "Microsoft.FirstSelector"
+            }
+        },
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default",
+            "description": "Default empty"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "a"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ruleAOnce",
+            "description": "Initial a runonce"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default",
+            "description": "Initial a default"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ruleAorCOnce",
+            "description": "Or on c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default",
+            "description": "Default on c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ruleAorCOnce",
+            "description": "Or on changed c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default",
+            "description": "Default on changed c"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "a"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ruleAOnce",
+            "description": "Changed a runonce"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$comment": "This fires because c is present and a changed.  A little weird, but b/c runonce is with the whole rule.",
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ruleAorCOnce",
+            "description": "Or on changed a"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default",
+            "description": "Changed a default"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "b"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "ruleAandBOnce",
+            "description": "Both a & b runonce"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "trigger"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "default",
+            "description": "Both default"
+        }
+    ]
+}

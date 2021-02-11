@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -28,7 +29,7 @@ namespace Microsoft.Bot.Builder
         {
             if (activity == null)
             {
-                throw new ArgumentNullException("activity cannot be null for LogActivity()");
+                throw new ArgumentNullException(nameof(activity), "activity cannot be null for LogActivity()");
             }
 
             lock (_channels)
@@ -45,7 +46,57 @@ namespace Microsoft.Bot.Builder
                     channel[activity.Conversation.Id] = transcript;
                 }
 
-                transcript.Add(activity);
+                switch (activity.Type)
+                {
+                    case ActivityTypes.MessageDelete:
+                        // if message delete comes in, delete the message from the transcript
+                        for (int i = 0; i < transcript.Count; i++)
+                        {
+                            var originalActivity = transcript[i] as IMessageActivity;
+                            if (originalActivity.Id == activity.Id)
+                            {
+                                // tombstone the original message
+                                transcript[i] = new Activity()
+                                {
+                                    Type = ActivityTypes.MessageDelete,
+                                    Id = originalActivity.Id,
+                                    From = new ChannelAccount(id: "deleted", role: originalActivity.From.Role),
+                                    Recipient = new ChannelAccount(id: "deleted", role: originalActivity.Recipient.Role),
+                                    Locale = originalActivity.Locale,
+                                    LocalTimestamp = originalActivity.Timestamp,
+                                    Timestamp = originalActivity.Timestamp,
+                                    ChannelId = originalActivity.ChannelId,
+                                    Conversation = originalActivity.Conversation,
+                                    ServiceUrl = originalActivity.ServiceUrl,
+                                    ReplyToId = originalActivity.ReplyToId,
+                                };
+                                break;
+                            }
+                        }
+
+                        break;
+
+                    case ActivityTypes.MessageUpdate:
+                        for (int i = 0; i < transcript.Count; i++)
+                        {
+                            var originalActivity = transcript[i];
+                            if (originalActivity.Id == activity.Id)
+                            {
+                                var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                                updatedActivity.Type = originalActivity.Type; // fixup original type (should be Message)
+                                updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
+                                updatedActivity.Timestamp = originalActivity.Timestamp;
+                                transcript[i] = updatedActivity;
+                                break;
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        transcript.Add(activity);
+                        break;
+                }
             }
 
             return Task.CompletedTask;
@@ -91,7 +142,7 @@ namespace Microsoft.Bot.Builder
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Count() == 20)
+                            if (pagedResult.Items.Length == 20)
                             {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                             }
@@ -104,7 +155,7 @@ namespace Microsoft.Bot.Builder
                                 .Take(20)
                                 .ToArray();
 
-                            if (pagedResult.Items.Count() == 20)
+                            if (pagedResult.Items.Length == 20)
                             {
                                 pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                             }
@@ -181,7 +232,7 @@ namespace Microsoft.Bot.Builder
                         .Take(20)
                         .ToArray();
 
-                        if (pagedResult.Items.Count() == 20)
+                        if (pagedResult.Items.Length == 20)
                         {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                         }
@@ -199,7 +250,7 @@ namespace Microsoft.Bot.Builder
                             .Take(20)
                             .ToArray();
 
-                        if (pagedResult.Items.Count() == 20)
+                        if (pagedResult.Items.Length == 20)
                         {
                             pagedResult.ContinuationToken = pagedResult.Items.Last().Id;
                         }

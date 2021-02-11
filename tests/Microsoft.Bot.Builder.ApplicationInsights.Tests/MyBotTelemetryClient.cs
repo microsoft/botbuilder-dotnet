@@ -4,12 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Bot.Builder.ApplicationInsights;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 {
@@ -43,6 +38,11 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
         public override void TrackTrace(string message, Severity severityLevel, IDictionary<string, string> properties)
         {
             base.TrackTrace(message, severityLevel, properties);
+        }
+
+        public override void TrackPageView(string name, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        {
+            base.TrackPageView(name, properties, metrics);
         }
 
         public override void Flush()

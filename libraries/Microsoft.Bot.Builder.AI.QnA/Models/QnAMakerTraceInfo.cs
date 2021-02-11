@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -27,7 +28,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Results that QnAMaker returned.
         /// </value>
         [JsonProperty("queryResults")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public QueryResult[] QueryResults { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets iD of the Knowledgebase that is being used.
@@ -59,22 +62,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int Top { get; set; }
 
         /// <summary>
-        /// Gets or sets the filters used to return answers that have the specified metadata.
+        /// Gets or sets the filters used to return answers that have the specified metadata.       
         /// </summary>
         /// <value>
         /// The filters used to return answers that have the specified metadata.
-        /// </value>
+        /// </value>        
         [JsonProperty("strictFilters")]
+#pragma warning disable CA1819 // Properties should not return arrays (we can't change this without breaking binary compat)
         public Metadata[] StrictFilters { get; set; }
-
-        /// <summary>
-        /// Gets or sets miscellaneous data to boost answers.
-        /// </summary>
-        /// <value>
-        /// Miscellaneous data to boost answers.
-        /// </value>
-        [JsonProperty("metadataBoost")]
-        public Metadata[] MetadataBoost { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets or sets context for multi-turn responses.
@@ -84,5 +80,44 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("context")]
         public QnARequestContext Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets QnA Id of the current question asked.
+        /// </summary>
+        /// <value>
+        /// Id of the current question asked.
+        /// </value>
+        [JsonProperty("qnaId")]
+        public int QnAId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or sets environment of knowledgebase to be called. 
+        /// </summary>
+        /// <value>
+        /// A value indicating whether to call test or prod environment of knowledgebase. 
+        /// </value>
+        [JsonProperty("isTest")]
+        public bool IsTest { get; set; }
+
+        /// <summary>
+        /// Gets or sets ranker Types.
+        /// </summary>
+        /// <value>
+        /// Ranker Types.
+        /// </value>
+        [JsonProperty("rankerType")]
+        public string RankerType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="Metadata"/> collection to be sent when calling QnA Maker to boost results.
+        /// </summary>
+        /// <value>
+        /// An array of <see cref="Metadata"/>.
+        /// </value>
+        [Obsolete("This property is no longer used and will be ignored")]
+        [JsonIgnore]
+#pragma warning disable CA1819 // Properties should not return arrays (this property is obsolete and we won't change it)
+        public Metadata[] MetadataBoost { get; set; }
+#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

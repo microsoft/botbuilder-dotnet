@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Enums the possible states of the dialogs on the stack.
+    /// </summary>
     public enum DialogTurnStatus
     {
         /// <summary>
@@ -26,5 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// dialogs to the current context are on the dialog stack.
         /// </summary>
         Cancelled,
+
+        /// <summary>
+        /// Current dialog completed successfully, but turn should end.
+        /// </summary>
+        CompleteAndWait,
     }
 }

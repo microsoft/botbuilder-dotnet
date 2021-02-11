@@ -1,0 +1,18 @@
+﻿{
+  "title": "titleContent",
+  "text": "textContent",
+  "Buttons": [
+    {
+      "type": "imBack",
+      "Title": "titleContent",
+      "Value": "textContent",
+      "Text": "textContent"
+    }
+  ],
+  "tap": {
+    "type": "${type}",
+    "title": "${title}",
+    "text": "${title}",
+    "value": "${value}"
+  }
+}

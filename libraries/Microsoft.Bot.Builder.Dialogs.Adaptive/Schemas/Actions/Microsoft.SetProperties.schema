@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Set property",
+    "description": "Set one or more property values.",
+    "type": "object",
+    "required": [
+        "assignments"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                true,
+                "=user.age > 3"
+            ]
+        },
+        "assignments": {
+            "type": "array",
+            "title": "Assignments",
+            "description": "Property value assignments to set.",
+            "items": {
+                "type": "object",
+                "title": "Assignment",
+                "description": "Property assignment.",
+                "properties": {
+                    "property": {
+                        "$ref": "schema:#/definitions/stringExpression",
+                        "title": "Property",
+                        "description": "Property (named location to store information).",
+                        "examples": [
+                            "user.age"
+                        ]
+                    },
+                    "value": {
+                        "$ref": "schema:#/definitions/valueExpression",
+                        "title": "Value",
+                        "description": "New value or expression.",
+                        "examples": [
+                            "='milk'",
+                            "=dialog.favColor",
+                            "=dialog.favColor == 'red'"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

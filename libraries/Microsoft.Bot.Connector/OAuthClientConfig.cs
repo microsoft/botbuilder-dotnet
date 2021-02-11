@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -10,10 +11,14 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
+using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector
 {
+    /// <summary>
+    /// A class containing OAuthClient configuration values.
+    /// </summary>
     public static class OAuthClientConfig
     {
         /// <summary>
@@ -45,7 +50,7 @@ namespace Microsoft.Bot.Connector
             string invocationId = null;
             if (shouldTrace)
             {
-                invocationId = ServiceClientTracing.NextInvocationId.ToString();
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("emulateOAuthCards", emulateOAuthCards);
                 ServiceClientTracing.Enter(invocationId, client, "GetToken", tracingParameters);
@@ -53,84 +58,82 @@ namespace Microsoft.Bot.Connector
 
             // Construct URL
             var baseUrl = client.BaseUri.AbsoluteUri;
-            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/") ? string.Empty : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
+            var url = new Uri(new Uri(baseUrl + (baseUrl.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? string.Empty : "/")), "api/usertoken/emulateOAuthCards?emulate={emulate}").ToString();
             url = url.Replace("{emulate}", emulateOAuthCards.ToString());
 
             // Create HTTP transport objects
-            var httpRequest = new HttpRequestMessage();
-            HttpResponseMessage httpResponse = null;
-            httpRequest.Method = new HttpMethod("POST");
-            httpRequest.RequestUri = new System.Uri(url);
-
-            var cancellationToken = CancellationToken.None;
-
-            // Serialize Request
-            string requestContent = null;
-
-            // Set Credentials
-            if (client.Credentials != null)
+            using (var httpRequest = new HttpRequestMessage())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            }
+                httpRequest.Method = new HttpMethod("POST");
+                httpRequest.RequestUri = new Uri(url);
 
-            // Send Request
-            if (shouldTrace)
-            {
-                ServiceClientTracing.SendRequest(invocationId, httpRequest);
-            }
+                var cancellationToken = CancellationToken.None;
 
-            cancellationToken.ThrowIfCancellationRequested();
-            httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
-            if (shouldTrace)
-            {
-                ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
-            }
+                // Serialize Request
+                string requestContent = null;
 
-            HttpStatusCode statusCode = httpResponse.StatusCode;
-            cancellationToken.ThrowIfCancellationRequested();
-            string responseContent = null;
-            if (statusCode != HttpStatusCode.OK && statusCode != HttpStatusCode.NotFound)
-            {
-                var ex = new ErrorResponseException(string.Format("Operation returned an invalid status code '{0}'", statusCode));
-                try
+                // Set Credentials
+                if (client.Credentials != null)
                 {
-                    responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ErrorResponse errorBody = Rest.Serialization.SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, client.DeserializationSettings);
-                    if (errorBody != null)
-                    {
-                        ex.Body = errorBody;
-                    }
-                }
-                catch (JsonException)
-                {
-                    // Ignore the exception
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
                 }
 
-                ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
-                ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                // Send Request
                 if (shouldTrace)
                 {
-                    ServiceClientTracing.Error(invocationId, ex);
+                    ServiceClientTracing.SendRequest(invocationId, httpRequest);
                 }
 
-                httpRequest.Dispose();
-                if (httpResponse != null)
+                cancellationToken.ThrowIfCancellationRequested();
+                using (var httpResponse = await client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                 {
-                    httpResponse.Dispose();
+                    if (shouldTrace)
+                    {
+                        ServiceClientTracing.ReceiveResponse(invocationId, httpResponse);
+                    }
+
+                    var statusCode = httpResponse.StatusCode;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    string responseContent = null;
+                    if (statusCode != HttpStatusCode.OK && statusCode != HttpStatusCode.NotFound)
+                    {
+                        var ex = new ErrorResponseException(string.Format(CultureInfo.InvariantCulture, "Operation returned an invalid status code '{0}'", statusCode));
+                        try
+                        {
+                            responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            var errorBody = SafeJsonConvert.DeserializeObject<ErrorResponse>(responseContent, client.DeserializationSettings);
+                            if (errorBody != null)
+                            {
+                                ex.Body = errorBody;
+                            }
+                        }
+                        catch (JsonException)
+                        {
+                            // Ignore the exception
+                        }
+
+                        ex.Request = new HttpRequestMessageWrapper(httpRequest, requestContent);
+                        ex.Response = new HttpResponseMessageWrapper(httpResponse, responseContent);
+                        if (shouldTrace)
+                        {
+                            ServiceClientTracing.Error(invocationId, ex);
+                        }
+
+                        throw ex;
+                    }
+
+                    if (shouldTrace)
+                    {
+                        // Create  and log result
+                        using (var result = new HttpOperationResponse<int>())
+                        {
+                            result.Request = httpRequest;
+                            result.Response = httpResponse;
+                            ServiceClientTracing.Exit(invocationId, result);
+                        }
+                    }
                 }
-
-                throw ex;
-            }
-
-            // Create Result
-            var result = new HttpOperationResponse<int>();
-            result.Request = httpRequest;
-            result.Response = httpResponse;
-
-            if (shouldTrace)
-            {
-                ServiceClientTracing.Exit(invocationId, result);
             }
         }
     }

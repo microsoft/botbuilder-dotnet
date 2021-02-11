@@ -1,0 +1,23 @@
+{
+  "id": "test_id",
+  "name": "Webex Firehose",
+  "resource": "messages",
+  "event": "updated",
+  "filter": null,
+  "orgId": "org_id",
+  "createdBy": "actor_id",
+  "appId": "app_id",
+  "ownedBy": "creator",
+  "status": "active",
+  "actorId": "actor_id",
+  "targetUrl": "https://eb59c905.ngrok.io/api/messages",
+  "created": "2019-07-17T12:14:37.522Z",
+  "data": {
+    "id": "actor_id",
+    "roomId": "room_id",
+    "roomType": "direct",
+    "personId": "person_id",
+    "personEmail": "SampleLittleBot@webex.bot",
+    "created": "2019-08-26T20:10:15.849Z"
+  }
+}
