@@ -1045,6 +1045,14 @@ namespace AdaptiveExpressions.Tests
             Test("flatten(createArray(1,createArray(2),createArray(createArray(3, 4), createArray(5,6))))", new List<object> { 1, 2, 3, 4, 5, 6 }),
             Test("flatten(createArray(1,createArray(2),createArray(createArray(3, 4), createArray(5,6))), 1)", new List<object> { 1, 2, new List<object>() { 3, 4 }, new List<object>() { 5, 6 } }),
             Test("unique(createArray(1, 5, 1))", new List<object>() { 1, 5 }),
+            Test("any(createArray(1, 'cool'), item, isInteger(item))", true),
+            Test("any(createArray('first', 'cool'), item => isInteger(item))", false),
+            Test("all(createArray(1, 'cool'), item, isInteger(item))", false),
+            Test("all(createArray(1, 2), item => isInteger(item))", true),
+            Test("any(dialog, item, item.key == 'title')", true),
+            Test("any(dialog, item, isInteger(item.value))", true),
+            Test("all(dialog, item, item.key == 'title')", false),
+            Test("all(dialog, item, isInteger(item.value))", false),
             #endregion
 
             #region  Object manipulation and construction functions

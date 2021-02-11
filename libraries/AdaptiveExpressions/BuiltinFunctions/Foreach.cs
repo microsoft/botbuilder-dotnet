@@ -12,7 +12,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
         /// Initializes a new instance of the <see cref="Foreach"/> class.
         /// </summary>
         public Foreach()
-            : base(ExpressionType.Foreach, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateForeach)
+            : base(ExpressionType.Foreach, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateLambdaExpression)
         {
         }
     }
