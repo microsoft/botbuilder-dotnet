@@ -61,8 +61,8 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 
             IConfiguration configuration = builder.Build();
 
-            string applicationRootPath = configuration.GetValue<string>(ConfigurationConstants.ApplicationRootKey);
-            string configFilePath = Path.GetFullPath(
+            var applicationRootPath = configuration.GetValue<string>(ConfigurationConstants.ApplicationRootKey);
+            var configFilePath = Path.GetFullPath(
                 Path.Combine(applicationRootPath, settingsDirectory, AppSettingsFileName));
 
             builder.AddJsonFile(configFilePath, optional: true, reloadOnChange: true);
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                 builder.AddJsonFile(qnaSettingsFile.FullName, optional: false, reloadOnChange: true);
             }
 
-            string orchestratorSettingsPath = Path.GetFullPath(Path.Combine(botRoot, "generated", "orchestrator.settings.json"));
+            var orchestratorSettingsPath = Path.GetFullPath(Path.Combine(botRoot, "generated", "orchestrator.settings.json"));
             var orchestratorSettingsFile = new FileInfo(orchestratorSettingsPath);
             if (orchestratorSettingsFile.Exists)
             {
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         private static string GetDefaultRootDialog(string botRoot)
         {
             var directory = new DirectoryInfo(botRoot);
-            foreach (FileInfo file in directory.GetFiles())
+            foreach (var file in directory.GetFiles())
             {
                 if (string.Equals(DialogFileExtension, file.Extension, StringComparison.OrdinalIgnoreCase))
                 {
