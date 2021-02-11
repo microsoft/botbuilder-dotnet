@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         public static IEnumerable<object[]> GetAddBotRuntimeThrowsArgumentNullExceptionData()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+            IConfiguration configuration = new ConfigurationBuilder().Build();
 
             yield return new object[]
             {
@@ -39,9 +39,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         public void AddBotRuntime_Succeeds()
         {
             IServiceCollection services = new ServiceCollection();
-            var settings = new RuntimeSettings();
-
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot(JObject.FromObject(settings));
+            IConfiguration configuration = new ConfigurationBuilder().Build();
 
             services.AddSingleton(TestDataGenerator.BuildMemoryResourceExplorer());
             services.AddBotRuntime(configuration);

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
         {
             var pluginEnumerator = new TestBotPluginEnumerator();
             var services = new ServiceCollection();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+            IConfiguration configuration = new ConfigurationBuilder().Build();
 
             yield return new object[]
             {
@@ -49,11 +49,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
 
         public static IEnumerable<object[]> GetLoadSucceedsConfigurationData()
         {
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot(new JObject
-            {
-                { "foo", "bar" },
-                { "other", "setting" }
-            });
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>()
+                {
+                    { "foo", "bar" },
+                    { "other", "setting" }
+                }).Build();
 
             Action<IBotPluginLoadContext> assertEmptyConfiguration = (context) =>
             {
@@ -153,7 +154,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
 
             var pluginEnumerator = new TestBotPluginEnumerator(plugins);
             var services = new ServiceCollection();
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+            IConfiguration configuration = new ConfigurationBuilder().Build();
 
             new BotPluginDefinition
             {
@@ -193,7 +194,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
         {
             var pluginEnumerator = new TestBotPluginEnumerator();
             var services = new ServiceCollection();
-            var configuration = TestDataGenerator.BuildConfigurationRoot();
+            var configuration = new ConfigurationBuilder().Build();
 
             Assert.Throws<ArgumentNullException>(
                 "pluginName",

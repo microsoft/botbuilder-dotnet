@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins
         [Fact]
         public void Constructor_Succeeds()
         {
-            IConfiguration configuration = TestDataGenerator.BuildConfigurationRoot();
+            IConfiguration configuration = new ConfigurationBuilder().Build();
 
             var context = new BotPluginLoadContext(configuration);
 

@@ -13,13 +13,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests
 {
     public class TestDataGenerator
     {
-        public static IConfigurationRoot BuildConfigurationRoot(JObject jObject = null)
-        {
-            return new ConfigurationBuilder()
-                .Add(new JObjectConfigurationSource(jObject ?? new JObject()))
-                .Build();
-        }
-
         public static ResourceExplorer BuildMemoryResourceExplorer(IEnumerable<MemoryResource> resources = null)
         {
             var resourceExplorer = new ResourceExplorer();

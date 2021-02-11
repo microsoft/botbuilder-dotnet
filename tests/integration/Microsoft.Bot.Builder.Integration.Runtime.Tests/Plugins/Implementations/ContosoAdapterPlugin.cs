@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Plugins.Implementations
             IConfiguration configuration = context.Configuration;
 
             // ContosoAdapter
-            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => new ContosoAdapter(configuration));
+            services.AddSingleton<IBotFrameworkHttpAdapter, ContosoAdapter>();
         }
     }
 }
