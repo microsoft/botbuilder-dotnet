@@ -59,7 +59,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var handoffContext = HandoffContext?.GetValue(dc.State);
-            var eventActivity = EventFactory.CreateHandoffInitiation(dc.Context, handoffContext, new Transcript());
+            var transcript = Transcript?.GetValue(dc.State);
+            var eventActivity = EventFactory.CreateHandoffInitiation(dc.Context, handoffContext, transcript);
             await dc.Context.SendActivityAsync(eventActivity, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
