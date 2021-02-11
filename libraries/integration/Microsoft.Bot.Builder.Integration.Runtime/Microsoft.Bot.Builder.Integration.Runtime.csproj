@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.AI.Luis\Microsoft.Bot.Builder.AI.Luis.csproj" />
