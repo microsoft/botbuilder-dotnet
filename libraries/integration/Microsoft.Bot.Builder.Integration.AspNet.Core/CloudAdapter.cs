@@ -80,9 +80,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 {
                     // All socket communication will be handled by the internal streaming-specific BotAdapter
                     await ConnectAsync(httpRequest, bot, cancellationToken).ConfigureAwait(false);
-
-                    // Acknowledge the GET request
-                    httpResponse.StatusCode = (int)HttpStatusCode.OK;
                 }
                 else if (httpRequest.Method == HttpMethods.Post)
                 {

@@ -45,10 +45,10 @@ namespace Microsoft.BotBuilderSamples
                 app.UseDeveloperExceptionPage();
             }
 
-            //.UseWebSockets()
+            //.UseNamedPipes()
             app.UseDefaultFiles()
                 .UseStaticFiles()
-                .UseNamedPipes()
+                .UseWebSockets()
                 .UseRouting()
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>

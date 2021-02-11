@@ -181,7 +181,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
-            Assert.Equal((int)HttpStatusCode.OK, httpResponseMock.Object.StatusCode);
             botFrameworkAuthenticationMock.Verify(x => x.AuthenticateStreamingRequestAsync(It.Is<string>(v => true), It.Is<string>(v => true), It.Is<CancellationToken>(ct => true)), Times.Once());
         }
 
