@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 
             IConfiguration configuration = builder.Build();
 
-            string applicationRootPath = configuration.GetValue<string>(ConfigurationConstants.ApplicationRootKey);
+            var applicationRootPath = configuration.GetValue<string>(ConfigurationConstants.ApplicationRootKey);
             string configFilePath = Path.GetFullPath(
                 Path.Combine(applicationRootPath, settingsDirectory, AppSettingsFileName));
 
