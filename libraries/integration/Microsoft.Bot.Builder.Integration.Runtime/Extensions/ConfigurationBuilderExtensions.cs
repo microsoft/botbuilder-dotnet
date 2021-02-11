@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         private static string GetDefaultRootDialog(string botRoot)
         {
             var directory = new DirectoryInfo(botRoot);
-            foreach (FileInfo file in directory.GetFiles())
+            foreach (var file in directory.GetFiles())
             {
                 if (string.Equals(DialogFileExtension, file.Extension, StringComparison.OrdinalIgnoreCase))
                 {
