@@ -23,7 +23,7 @@
                 "intent": "NoConnectionName",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMessagingExtensionAuthResponse",
+                        "$kind": "Teams.SendTabAuthResponse",
                         "connectionName": "=turn.channelData.DoesNotExist"
                     }
                 ]
@@ -33,7 +33,7 @@
                 "intent": "NoTitle",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMessagingExtensionAuthResponse",
+                        "$kind": "Teams.SendTabAuthResponse",
                         "connectionName": "testConnection",
                         "title": "=turn.channelData.doesNotExist"
                     }
@@ -44,7 +44,7 @@
                 "intent": "NoAttachments",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMessagingExtensionAuthResponse"
+                        "$kind": "Teams.SendTabAuthResponse"
                     }
                 ]
             },
@@ -65,24 +65,24 @@
             "activity": {
                 "type": "message",
                 "text": "NoConnectionName",
-                "name": "composeExtension/queryLink"
+                "name": "tab/fetch"
             }
         },
         {
           "$kind": "Microsoft.Test.AssertReply",
-          "text": "A valid ConnectionName is required for SendMessagingExtensionAuthResponse."
+          "text": "A valid ConnectionName is required for SendTabAuthResponse."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
                 "text": "NoTitle",
-                "name": "composeExtension/queryLink"
+                "name": "tab/fetch"
             }
         },
         {
           "$kind": "Microsoft.Test.AssertReply",
-          "text": "A valid Title is required for SendMessagingExtensionAuthResponse."
+          "text": "A valid Title is required for SendTabAuthResponse."
         }
     ]
 }

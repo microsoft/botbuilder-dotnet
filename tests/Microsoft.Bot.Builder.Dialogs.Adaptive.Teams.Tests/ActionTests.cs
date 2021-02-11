@@ -380,6 +380,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
+        
+        [Fact]
+        public async Task Action_SendTabAuthResponseErrorWithAdapter()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
 
         //[Fact]
         //public async Task Action_SendTabAuthResponseError()

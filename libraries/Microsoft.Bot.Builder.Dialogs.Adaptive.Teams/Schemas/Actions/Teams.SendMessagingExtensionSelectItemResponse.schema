@@ -2,7 +2,7 @@
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Send a messaging extension response when an item is selected",
-    "description": "Query link requests have activity.name='composeExtension/queryLink'.",
+    "description": "Query link requests have activity.name='composeExtension/selectItem'.",
     "type": "object",
     "properties": {
         "id": {
