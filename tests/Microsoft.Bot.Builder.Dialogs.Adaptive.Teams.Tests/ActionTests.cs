@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         private IMiddleware GetErrorTeamsMiddleware(string exception)
         {
             // Create a connector client, setup with a custom httpclient which will 
-            // throw an exception when the connectorclient's outgoing pipeline's SendAsyncg
+            // throw an exception when the connectorclient's outgoing pipeline's SendAsync
             // is called
             var messageHandler = new ErrorHttpMessageHandler(exception);
             return GetTestConnectorClientMiddleware(messageHandler);
