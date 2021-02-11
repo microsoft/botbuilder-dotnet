@@ -287,7 +287,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = new ClaimsIdentity(),
                 ConnectorFactory = new TestConnectorFactory(),
-                Audience = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 
@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = new ClaimsIdentity(),
                 ConnectorFactory = new TestConnectorFactory(),
-                Audience = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 
@@ -422,7 +422,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
-                Audience = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 
@@ -440,7 +440,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
-            Assert.Equal("scope", bot.Authorization.Parameter);
+            Assert.Equal("audience", bot.Authorization.Parameter);
             Assert.Equal(claimsIdentity, bot.Identity);
             Assert.Equal(userTokenClient, bot.UserTokenClient);
             Assert.True(bot.ConnectorClient != null);
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
-                Audience = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 

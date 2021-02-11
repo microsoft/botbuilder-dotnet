@@ -68,10 +68,8 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Is the activity from another bot?
             return SkillValidation.IsSkillClaim(claimsIdentity.Claims)
-                    ?
-                $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}"
-                    :
-                callerId;
+                ? $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}"
+                : callerId;
         }
     }
 }

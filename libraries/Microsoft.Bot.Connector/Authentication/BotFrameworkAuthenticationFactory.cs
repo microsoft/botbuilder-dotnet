@@ -18,7 +18,20 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
         public static BotFrameworkAuthentication Create()
         {
-            return Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), null, null);
+            return Create(
+                channelService: null,
+                validateAuthority: false,
+                toChannelFromBotLoginUrl: null,
+                toChannelFromBotOAuthScope: null,
+                toBotFromChannelTokenIssuer: null,
+                oAuthUrl: null,
+                toBotFromChannelOpenIdMetadataUrl: null,
+                toBotFromEmulatorOpenIdMetadataUrl: null,
+                callerId: null,
+                credentialFactory: new PasswordServiceClientCredentialFactory(),
+                authConfiguration: new AuthenticationConfiguration(),
+                httpClient: null,
+                logger: null);
         }
 
         /// <summary>
