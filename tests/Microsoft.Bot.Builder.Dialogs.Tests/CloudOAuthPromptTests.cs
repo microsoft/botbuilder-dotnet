@@ -755,7 +755,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
-                Name = SignInConstants.TokenExchangeOperationName,
                 From = new ChannelAccount { Id = userId },
                 Conversation = new ConversationAccount { Id = "conversation-id" },
                 ChannelId = channelId,

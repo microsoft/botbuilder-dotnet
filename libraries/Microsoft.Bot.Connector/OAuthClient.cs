@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Connector
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Rest;
     using Microsoft.Rest.Serialization;
@@ -710,7 +711,7 @@ namespace Microsoft.Bot.Connector
         {
             BotSignIn = new BotSignIn(this);
             UserToken = new UserToken(this);
-            BaseUri = new System.Uri("https://token.botframework.com");
+            BaseUri = new System.Uri(AuthenticationConstants.OAuthUrl);
             SerializationSettings = new JsonSerializerSettings
             {
                 Formatting = Newtonsoft.Json.Formatting.Indented,
