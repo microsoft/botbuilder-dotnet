@@ -47,25 +47,25 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
                 // Log any leaked exception from the application
                 Logger.LogError(exception, exception.Message);
 
-                // Send the exception message to the user. Since the default behavior does not
-                // send logs or trace activities, the bot appears hanging without any activity
-                // to the user.
-                await turnContext.SendActivityAsync(exception.Message).ConfigureAwait(false);
-
-                if (conversationState != null)
+                try
                 {
-                    try
+                    // Send the exception message to the user. Since the default behavior does not
+                    // send logs or trace activities, the bot appears hanging without any activity
+                    // to the user.
+                    await turnContext.SendActivityAsync(exception.Message).ConfigureAwait(false);
+
+                    if (conversationState != null)
                     {
                         // Delete the conversationState for the current conversation to prevent the
                         // bot from getting stuck in a error-loop caused by being in a bad state.
                         await conversationState.DeleteAsync(turnContext).ConfigureAwait(false);
                     }
+                }
 #pragma warning disable CA1031 // Do not catch general exception types (we just log the exception and continue)
-                    catch (Exception ex)
+                catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
-                    {
-                        Logger.LogError(ex, $"Exception caught on attempting to Delete ConversationState : {ex.Message}");
-                    }
+                {
+                    Logger.LogError(ex, $"Exception caught on attempting to Delete ConversationState : {ex.Message}");
                 }
             };
         }
