@@ -1,0 +1,19 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send a handoff activity",
+    "description": "Sends a handoff activity to trigger a handoff request.",
+    "type": "object",
+    "properties": {
+        "context": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "Context",
+            "description": "Context to send with the handoff request"
+        },
+        "transcript": {
+            "$ref": "schema:#/definitions/objectExpression",
+            "title": "transcript",
+            "description": "Transcript to send with the handoff request"
+        }
+    }
+}
