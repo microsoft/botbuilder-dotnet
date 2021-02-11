@@ -71,8 +71,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                     o.RootDialog = rootDialog;
                 });
 
-            services.AddSingleton(configuration);
-
             // ResourceExplorer. TryAddSingleton will only add if there is no other registration for resource explorer.
             // Tests use this to inject custom resource explorers but could also be used for advanced runtime customization scenarios.
             services.TryAddSingleton<ResourceExplorer>(serviceProvider =>
