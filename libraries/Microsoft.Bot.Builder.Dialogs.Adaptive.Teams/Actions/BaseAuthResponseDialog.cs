@@ -129,8 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             var userTokenClient = dc.Context.TurnState.Get<UserTokenClient>();
             if (userTokenClient != null)
             {
-                var activity = dc.Context.Activity;
-                return OAuthHelper.CreateTokenResponseFromMessageAsync(userTokenClient, activity.From?.Id, activity.ChannelId, connectionName, state, cancellationToken);
+                return userTokenClient.GetUserTokenAsync(dc.Context.Activity.From?.Id, connectionName, dc.Context.Activity.ChannelId, state, cancellationToken);
             }
 
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider tokenProvider))
