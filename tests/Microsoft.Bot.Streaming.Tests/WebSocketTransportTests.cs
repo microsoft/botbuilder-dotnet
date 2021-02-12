@@ -12,6 +12,8 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests
@@ -21,12 +23,22 @@ namespace Microsoft.Bot.Streaming.UnitTests
         [Fact]
         public async Task WebSocketServer_Connects()
         {
+            var requestHandlerMock = new Mock<RequestHandler>();
+            requestHandlerMock.Setup(
+                rh => rh.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new StreamingResponse { StatusCode = 200 });
+
             var sock = new FauxSock();
-            var writer = new WebSocketServer(sock, new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), sock));
+
+            // Set the faux-socket state because otherwise the background task might check it and disconnected before this test completes
+            sock.RealState = WebSocketState.Open;
+
+            var writer = new WebSocketServer(sock, requestHandlerMock.Object);
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             writer.StartAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
             Assert.True(writer.IsConnected);
         }
 
