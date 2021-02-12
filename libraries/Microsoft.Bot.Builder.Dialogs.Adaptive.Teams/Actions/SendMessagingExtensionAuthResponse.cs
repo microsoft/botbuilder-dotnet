@@ -31,10 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         {
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{GetType().Name}[{Title?.ToString() ?? string.Empty}]";

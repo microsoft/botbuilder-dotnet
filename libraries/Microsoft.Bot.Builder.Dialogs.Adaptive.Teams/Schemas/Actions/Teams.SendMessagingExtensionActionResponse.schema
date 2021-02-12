@@ -4,6 +4,9 @@
     "title": "Messaging extension action response",
     "description": "Send an task action response containing a card.",
     "type": "object",
+    "required": [
+        "card"
+    ],
     "properties": {
         "id": {
             "type": "string",

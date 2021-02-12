@@ -2,8 +2,11 @@
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Tab card response",
-    "description": "Send n tab response containing cards.",
+    "description": "Send a tab response containing cards.",
     "type": "object",
+    "required": [
+        "cards"
+    ],
     "properties": {
         "id": {
             "type": "string",
@@ -13,7 +16,7 @@
         "cards": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Cards",
-            "description": "Expession for Attachments template of Adaptive Cards to send. Attachment(s) is required."
+            "description": "Expession for Attachments template of Adaptive Cards to send."
         },
         "disabled": {
             "$ref": "schema:#/definitions/booleanExpression",

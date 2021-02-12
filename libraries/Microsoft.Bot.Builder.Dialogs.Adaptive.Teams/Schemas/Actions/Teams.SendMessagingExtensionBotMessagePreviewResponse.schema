@@ -4,6 +4,9 @@
     "title": "Send a bot message preview response",
     "description": "Send a bot message preview response to a messaging extension request.",
     "type": "object",
+    "required": [
+        "card"
+    ],
     "properties": {
         "id": {
             "type": "string",

@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         public StringExpression ConnectionName { get; set; }
 
         /// <summary>
-        /// Gets or sets an Title of the response.
+        /// Gets or sets the response title.
         /// </summary>
         /// <value>
         /// An string or expression which evaluates to a string for the response title.
@@ -134,7 +134,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
                 return OAuthHelper.CreateTokenResponseFromMessageAsync(userTokenClient, connectionName, activity, cancellationToken);
             }
 
-            //TODO: deprecate IExtendedUserTokenProvider
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider tokenProvider))
             {
                 throw new InvalidOperationException($"Auth is not supported by the current adapter");
@@ -162,7 +161,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
                 return CreateOAuthInvokeResponseActivity(dc, title, signInResource.SignInLink);
             }
 
-            //TODO: deprecate IExtendedUserTokenProvider
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider tokenProvider))
             {
                 throw new InvalidOperationException($"Auth is not supported by the current adapter");

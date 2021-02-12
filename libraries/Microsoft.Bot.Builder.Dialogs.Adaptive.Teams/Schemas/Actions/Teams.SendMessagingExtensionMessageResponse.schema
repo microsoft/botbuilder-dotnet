@@ -4,6 +4,9 @@
     "title": "Send messaging extension message response",
     "description": "Send a message response to a messaging extension request.",
     "type": "object",
+    "required": [
+        "message"
+    ],
     "properties": {
         "id": {
             "type": "string",

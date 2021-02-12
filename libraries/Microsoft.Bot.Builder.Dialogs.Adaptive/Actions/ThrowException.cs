@@ -90,10 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             throw new InvalidOperationException(value?.ToString());
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{DialogEvents.Error}]";

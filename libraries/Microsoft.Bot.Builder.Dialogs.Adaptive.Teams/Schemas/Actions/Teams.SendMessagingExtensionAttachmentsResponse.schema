@@ -4,6 +4,9 @@
     "title": "Messaging extensions attachments response",
     "description": "Send a response containing attachments to a messaging extension request.",
     "type": "object",
+    "required": [
+        "attachments"
+    ],
     "properties": {
         "id": {
             "type": "string",

@@ -59,14 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         [JsonProperty("cards")]
         public ITemplate<Activity> Cards { get; set; }
 
-        /// <summary>
-        /// Called when the dialog is started and pushed onto the dialog stack.
-        /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
-        /// <param name="options">Optional, initial information to pass to the dialog.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <inheritdoc/>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -97,10 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             if (Cards is ActivityTemplate at)

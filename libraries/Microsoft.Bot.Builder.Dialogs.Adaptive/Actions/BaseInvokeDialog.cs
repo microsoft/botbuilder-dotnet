@@ -75,10 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             yield break;
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{Dialog?.ToString()}]";

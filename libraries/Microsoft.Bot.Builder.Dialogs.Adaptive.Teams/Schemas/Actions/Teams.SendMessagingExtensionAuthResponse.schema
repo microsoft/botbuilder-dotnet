@@ -2,8 +2,12 @@
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
     "title": "Send messaging extension auth response",
-    "description": "If the user is signed in, the dialog will end setting the TokenResponse in the specified property.",
+    "description": "Send 'auth' response or return the TokenResponse if already signed in.",
     "type": "object",
+    "required": [
+        "connectionName",
+        "title"
+    ],
     "properties": {
         "id": {
             "type": "string",
@@ -23,18 +27,18 @@
         "connectionName": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "OAuth connection name",
-            "description": "The OAuth Connection Name, that will be used to perform the Sign On.",
+            "description": "The oauth connection name used to perform the sign in.",
             "default": "=settings.connectionName"
         },
         "title": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Title",
-            "description": "Title of the response for the Suggested Actions sent back."
+            "description": "Title of the suggested action response."
         },
         "resultProperty": {
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Property",
-            "description": "Property to store the TokenResponse in once Sign In completes.",
+            "description": "Property to store the TokenResponse in once sign in completes.",
             "examples": [
                 "dialog.userName"
             ]

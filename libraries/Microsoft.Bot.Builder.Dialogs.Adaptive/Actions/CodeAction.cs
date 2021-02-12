@@ -67,10 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await this.codeHandler(dc, options).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}({StringUtils.Ellipsis(codeHandler.ToString(), 50)})";
