@@ -100,6 +100,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 "Action_SendMessagingExtensionSelectItemResponseError.test.dialog",
                 "Action_SendMessagingExtensionAuthResponseErrorWithAdapter.test.dialog",
                 "Action_SendMessagingExtensionMessageResponseError.test.dialog",
+                "Action_SendMessagingExtensionBotMessagePreviewResponseError.test.dialog",
+                "Action_SendMessagingExtensionConfigQuerySettingUrlResponseError.test.dialog",
+                "Action_SendTabAuthResponseError.test.dialog",
                 "TestScriptTests_OAuthInputLG.test.dialog"
             };
             if (omit.Any(e => fileResource.FullName.Contains(e)))
