@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "../../../tests.schema",
+    "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "description": "Test OAuthInput prompts retry when it receives a Message with null text",
     "userTokenMocks": [
