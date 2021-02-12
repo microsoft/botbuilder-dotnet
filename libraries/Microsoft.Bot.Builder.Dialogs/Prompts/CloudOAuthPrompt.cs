@@ -87,7 +87,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private static async Task<DialogTurnResult> OnContinueWithMessageActivityAsync(DialogContext dc, UserTokenClient userTokenClient, string connectionName, PromptValidator<TokenResponse> validator, bool endOnInvalidMessage, CancellationToken cancellationToken)
         {
-            var tokenResponse = await OAuthHelper.CreateTokenResponseFromMessageAsync(userTokenClient, connectionName, dc.Context.Activity, cancellationToken).ConfigureAwait(false);
+            var activity = dc.Context.Activity;
+            var tokenResponse = await OAuthHelper.CreateTokenResponseFromMessageAsync(userTokenClient, activity.From?.Id, activity.ChannelId, connectionName, activity.Text, cancellationToken).ConfigureAwait(false);
 
             // Call any custom validation we might have.
             if (await CheckValidatorAsync(dc, validator, tokenResponse, cancellationToken).ConfigureAwait(false))

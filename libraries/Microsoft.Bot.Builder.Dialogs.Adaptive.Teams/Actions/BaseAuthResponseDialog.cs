@@ -129,9 +129,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             var userTokenClient = dc.Context.TurnState.Get<UserTokenClient>();
             if (userTokenClient != null)
             {
-                // CreateTokenResponseFromMessageAsync requires an activity with 'magiccode' in the Text property.
-                var activity = MessageFactory.Text(state);
-                return OAuthHelper.CreateTokenResponseFromMessageAsync(userTokenClient, connectionName, activity, cancellationToken);
+                var activity = dc.Context.Activity;
+                return OAuthHelper.CreateTokenResponseFromMessageAsync(userTokenClient, activity.From?.Id, activity.ChannelId, connectionName, state, cancellationToken);
             }
 
             if (!(dc.Context.Adapter is IExtendedUserTokenProvider tokenProvider))

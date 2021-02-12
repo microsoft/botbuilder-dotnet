@@ -197,25 +197,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Uses a magic code in message text to create a TokenResponse.
         /// </summary>
         /// <param name="userTokenClient">The UserTokenClient to use.</param>
+        /// <param name="userId">Id of the user to retreive the token for.</param>
+        /// <param name="channelId">ChannelId for which the token should be retrieved.</param>
         /// <param name="connectionName">The Connection Name to use.</param>
-        /// <param name="activity">A message activity.</param>
+        /// <param name="magicCode">The Magic Code used to verify user sign in.</param>
         /// <param name="cancellationToken">A CancellationToken.</param>
         /// <returns>A TokenResponse.</returns>
-        public static async Task<TokenResponse> CreateTokenResponseFromMessageAsync(UserTokenClient userTokenClient, string connectionName, Activity activity, CancellationToken cancellationToken)
+        public static Task<TokenResponse> CreateTokenResponseFromMessageAsync(UserTokenClient userTokenClient, string userId, string channelId, string connectionName, string magicCode, CancellationToken cancellationToken)
         {
             // Attempt to recognize a magic code in the message text.
-            var magicCode = RecognizeMagicCode(activity);
-
-            // If we have a magic code then call the user token service.
-            var userId = activity.From.Id;
-            var channelId = activity.ChannelId;
-            return magicCode != null ? await userTokenClient.GetUserTokenAsync(userId, connectionName, channelId, magicCode, cancellationToken).ConfigureAwait(false) : null;
+            var recognizedCode = RecognizeMagicCode(magicCode);
+            return userTokenClient.GetUserTokenAsync(userId, connectionName, channelId, recognizedCode, cancellationToken);
         }
 
-        private static string RecognizeMagicCode(Activity activity)
+        private static string RecognizeMagicCode(string magicCode)
         {
             var magicCodeRegex = new Regex(@"(\d{6})");
-            var matched = magicCodeRegex.Match(activity?.Text ?? string.Empty);
+            var matched = magicCodeRegex.Match(magicCode ?? string.Empty);
             return matched.Success ? matched.Value : null;
         }
 
