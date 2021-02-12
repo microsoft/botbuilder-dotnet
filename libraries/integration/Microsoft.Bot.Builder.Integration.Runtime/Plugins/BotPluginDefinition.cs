@@ -72,7 +72,11 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Plugins
             {
                 var context = new BotPluginLoadContext(pluginConfiguration);
                 plugin.Load(context);
-                services.AddRange(context.Services);
+
+                foreach (var serviceDescriptor in context.Services)
+                {
+                    services.Add(serviceDescriptor);
+                }
             }
         }
 

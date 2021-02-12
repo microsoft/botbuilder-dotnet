@@ -102,16 +102,16 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.AddSingleton<ConversationState>();
 
             // Cosmosdb
-            if (runtimeSettings?.Storage == typeof(CosmosDbPartitionedStorage).Name)
+            if (runtimeSettings?.Storage == nameof(CosmosDbPartitionedStorage))
             {
-                var cosmosDbOptions = configuration?.GetSection(typeof(CosmosDbPartitionedStorage).Name).Get<CosmosDbPartitionedStorageOptions>();
+                var cosmosDbOptions = configuration?.GetSection(nameof(CosmosDbPartitionedStorage)).Get<CosmosDbPartitionedStorageOptions>();
                 services.AddSingleton<IStorage>(sp => new CosmosDbPartitionedStorage(cosmosDbOptions));
             }
 
             // Blob
-            else if (runtimeSettings?.Storage == typeof(BlobsStorage).Name)
+            else if (runtimeSettings?.Storage == nameof(BlobsStorage))
             {
-                var blobOptions = configuration?.GetSection(typeof(BlobsStorage).Name).Get<BlobsStorageSettings>();
+                var blobOptions = configuration?.GetSection(nameof(BlobsStorage)).Get<BlobsStorageSettings>();
                 services.AddSingleton<IStorage>(sp => new BlobsStorage(blobOptions?.ConnectionString, blobOptions?.ContainerName));
             }
 
@@ -127,12 +127,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         {
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
-                var pluginEnumenator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
+                var pluginEnumerator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
 
                 // Iterate through configured plugins and load each one
                 foreach (BotPluginDefinition plugin in runtimeSettings.Plugins)
                 {
-                    plugin.Load(pluginEnumenator, services, configuration);
+                    plugin.Load(pluginEnumerator, services, configuration);
                 }
             }
         }

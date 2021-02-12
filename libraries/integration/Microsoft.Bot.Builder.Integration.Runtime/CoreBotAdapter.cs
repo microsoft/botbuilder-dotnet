@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
@@ -18,25 +19,32 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <summary>
         /// Initializes a new instance of the <see cref="CoreBotAdapter"/> class.
         /// </summary>
-        /// <param name="services">Services registered with the application.</param>
         /// <param name="configuration">Application configuration.</param>
-        public CoreBotAdapter(IServiceProvider services, IConfiguration configuration)
-            : base(
-                services.GetService<ICredentialProvider>(),
-                services.GetService<AuthenticationConfiguration>(),
-                services.GetService<IChannelProvider>(),
-                logger: services.GetService<ILogger<BotFrameworkHttpAdapter>>())
+        /// <param name="credentialProvider">Credential provider.</param>
+        /// <param name="authenticationConfiguration">Authentication configuration for the adapter.</param>
+        /// <param name="channelProvider">Channel provider for the adapter.</param>
+        /// <param name="storage">Registered storage for the adapter.</param>
+        /// <param name="conversationState">Conversation state for the adapter.</param>
+        /// <param name="userState">User state for the adapter.</param>
+        /// <param name="middlewares">Collection of registered middlewares to be used in the adapter.</param>
+        /// <param name="logger">Telemetry logger.</param>
+        public CoreBotAdapter(
+            IConfiguration configuration,
+            ICredentialProvider credentialProvider,
+            AuthenticationConfiguration authenticationConfiguration,
+            IChannelProvider channelProvider,
+            IStorage storage,
+            ConversationState conversationState,
+            UserState userState,
+            IEnumerable<IMiddleware> middlewares,
+            ILogger<BotFrameworkHttpAdapter> logger)
+            : base(credentialProvider, authenticationConfiguration, channelProvider, logger: logger)
         {
-            var conversationState = services.GetService<ConversationState>();
-            var userState = services.GetService<UserState>();
-
-            this.UseStorage(services.GetService<IStorage>())
+            this.UseStorage(storage)
                 .UseBotState(userState, conversationState)
                 .Use(new RegisterClassMiddleware<IConfiguration>(configuration));
 
-            // Pick up feature based middlewares: telemetry, inspection, transcripts, etc
-            var middlewares = services.GetServices<IMiddleware>();
-
+            // Pick up feature based middlewares such as telemetry or transcripts
             foreach (IMiddleware middleware in middlewares)
             {
                 this.Use(middleware);
