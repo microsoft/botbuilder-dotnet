@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A string representing the compute Id.</returns>
         protected virtual string OnComputeId()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         /// <summary>

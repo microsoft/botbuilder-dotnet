@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.ToString()}]";
+            return $"{GetType().Name}[{Dialog?.ToString()}]";
         }
 
         /// <summary>

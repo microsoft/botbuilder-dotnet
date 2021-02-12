@@ -41,6 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <returns>String with the identity.</returns>
         public override string GetIdentity()
-            => $"{this.GetType().Name}()";
+            => $"{GetType().Name}()";
     }
 }

@@ -52,10 +52,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             if (this.GetType() == typeof(OnActivity))
             {
-                return $"{this.GetType().Name}({this.Type})[{this.Condition}]";
+                return $"{GetType().Name}({Type})[{Condition}]";
             }
 
-            return $"{this.GetType().Name}[{this.Condition}]";
+            return $"{GetType().Name}[{Condition}]";
         }
 
         /// <inheritdoc/>

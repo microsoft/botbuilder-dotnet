@@ -78,13 +78,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             var connectionName = ConnectionName.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(connectionName))
             {
-                throw new InvalidOperationException($"A valid {nameof(ConnectionName)} is required for {this.GetType().Name}.");
+                throw new InvalidOperationException($"A valid {nameof(ConnectionName)} is required for {GetType().Name}.");
             }
 
             var title = Title.GetValueOrNull(dc.State);
             if (string.IsNullOrEmpty(title))
             {
-                throw new InvalidOperationException($"A valid {nameof(Title)} is required for {this.GetType().Name}.");
+                throw new InvalidOperationException($"A valid {nameof(Title)} is required for {GetType().Name}.");
             }
 
             var tokenResponse = await GetUserTokenAsync(dc, connectionName, cancellationToken).ConfigureAwait(false);
