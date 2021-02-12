@@ -1556,7 +1556,7 @@
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a response to a query setting configuration url request."
+      "subtitle": "Send a response to a query setting config url request."
     }
   },
   "Teams.SendMessagingExtensionMessageResponse": {
