@@ -44,4 +44,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
   </ItemGroup>
+
 </Project>
