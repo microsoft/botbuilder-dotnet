@@ -213,6 +213,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             var turnContext = dc.Context;
             var result = new PromptRecognizerResult<TokenResponse>();
+
+            // In the case of Teams SSO, the token will have been retrieved and cached
+            // prior to the dialog stack loading.
+            var cachedResponse = turnContext.TurnState.Get<TokenResponse>("CachedTokenResponse");
+            if (cachedResponse != null)
+            {
+                result.Value = cachedResponse;
+                result.Succeeded = true;
+                return result;
+            }
+
             if (IsTokenResponseEvent(turnContext))
             {
                 var tokenResponseObject = turnContext.Activity.Value as JObject;

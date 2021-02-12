@@ -75,6 +75,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return dc.EndDialogAsync(null, cancellationToken);
             }
 
+            // In the case of Teams SSO, the token will have been retrieved and cached
+            // prior to the dialog stack loading.
+            var cachedResponse = dc.Context.TurnState.Get<TokenResponse>("CachedTokenResponse");
+            if (cachedResponse != null)
+            {
+                return dc.EndDialogAsync(cachedResponse, cancellationToken);
+            }
+
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 return OnContinueWithMessageActivityAsync(dc, userTokenClient, _settings.ConnectionName, _validator, _settings.EndOnInvalidMessage, cancellationToken);
