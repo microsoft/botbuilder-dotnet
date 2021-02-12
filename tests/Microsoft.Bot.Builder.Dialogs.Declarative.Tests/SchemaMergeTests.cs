@@ -96,6 +96,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 "Action_SendTaskModuleCardResponseError.test.dialog",
                 "Action_SendAppBasedLinkQueryResponseError.test.dialog",
                 "Action_SendTabCardResponseError.test.dialog",
+                "Action_SendMessagingExtensionAuthResponseError.test.dialog",
+                "Action_SendMessagingExtensionSelectItemResponseError.test.dialog",
+                "Action_SendMessagingExtensionAuthResponseErrorWithAdapter.test.dialog",
+                "Action_SendMessagingExtensionMessageResponseError.test.dialog",
                 "TestScriptTests_OAuthInputLG.test.dialog"
             };
             if (omit.Any(e => fileResource.FullName.Contains(e)))
