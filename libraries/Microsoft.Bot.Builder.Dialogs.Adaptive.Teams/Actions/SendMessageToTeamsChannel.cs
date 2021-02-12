@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         public SendMessageToTeamsChannel([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -135,14 +135,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             // The result comes back as a tuple, which is used to set the two properties (if present).
             var result = await TeamsInfo.SendMessageToTeamsChannelAsync(dc.Context, activity, teamsChannelId, credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            if (this.ConversationReferenceProperty != null)
+            if (ConversationReferenceProperty != null)
             {
-                dc.State.SetValue(this.ConversationReferenceProperty.GetValue(dc.State), result.Item1);
+                dc.State.SetValue(ConversationReferenceProperty.GetValue(dc.State), result.Item1);
             }
             
-            if (this.ActivityIdProperty != null)
+            if (ActivityIdProperty != null)
             {
-                dc.State.SetValue(this.ActivityIdProperty.GetValue(dc.State), result.Item2);
+                dc.State.SetValue(ActivityIdProperty.GetValue(dc.State), result.Item2);
             }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{this.TeamsChannelId?.ToString() ?? string.Empty},{this.ActivityIdProperty?.ToString() ?? string.Empty},{this.ConversationReferenceProperty?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{TeamsChannelId?.ToString() ?? string.Empty},{ActivityIdProperty?.ToString() ?? string.Empty},{ConversationReferenceProperty?.ToString() ?? string.Empty}]";
         }
     }
 }

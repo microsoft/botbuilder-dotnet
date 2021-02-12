@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         public GetTeamDetails([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
             string teamId = TeamId.GetValueOrNull(dc.State);
             var result = await TeamsInfo.GetTeamDetailsAsync(dc.Context, teamId, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            if (this.Property != null)
+            if (Property != null)
             {
-                dc.State.SetValue(this.Property.GetValue(dc.State), result);
+                dc.State.SetValue(Property.GetValue(dc.State), result);
             }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{this.TeamId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{TeamId?.ToString() ?? string.Empty},{Property?.ToString() ?? string.Empty}]";
         }
     }
 }

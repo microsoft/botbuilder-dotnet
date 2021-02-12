@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         public SendMessagingExtensionAttachmentsResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{this.Attachments?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{Attachments?.ToString() ?? string.Empty}]";
         }
     }
 }

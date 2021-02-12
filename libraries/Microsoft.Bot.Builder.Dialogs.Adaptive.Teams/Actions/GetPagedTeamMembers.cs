@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         public GetPagedTeamMembers([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 
             var result = await TeamsInfo.GetPagedTeamMembersAsync(dc.Context, teamId, continuationToken, pageSize, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            if (this.Property != null)
+            if (Property != null)
             {
-                dc.State.SetValue(this.Property.GetValue(dc.State), result);
+                dc.State.SetValue(Property.GetValue(dc.State), result);
             }
 
             return await dc.EndDialogAsync(result, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{GetType().Name}[{this.TeamId?.ToString() ?? string.Empty},{this.PageSize?.ToString() ?? string.Empty},{this.ContinuationToken?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
+            return $"{GetType().Name}[{TeamId?.ToString() ?? string.Empty},{PageSize?.ToString() ?? string.Empty},{ContinuationToken?.ToString() ?? string.Empty},{Property?.ToString() ?? string.Empty}]";
         }
     }
 }
