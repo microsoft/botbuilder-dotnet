@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +59,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
+        [Fact]
+        public async Task MultiLanguageRecognizerTest_LocaleCaseInsensitivity()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
@@ -91,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 
         private static MultiLanguageRecognizer GetRecognizer() => new MultiLanguageRecognizer
         {
-            Recognizers = new Dictionary<string, Recognizer>
+            Recognizers = new Dictionary<string, Recognizer>(StringComparer.OrdinalIgnoreCase)
             {
                 {
                     "en-us", new RegexRecognizer
