@@ -34,6 +34,8 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             IServiceCollection services = new ServiceCollection();
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
 
+            services.AddSingleton<IConfiguration>(configuration);
+
             // Full component settings
             var runtimeSettings = new RuntimeSettings()
             {
