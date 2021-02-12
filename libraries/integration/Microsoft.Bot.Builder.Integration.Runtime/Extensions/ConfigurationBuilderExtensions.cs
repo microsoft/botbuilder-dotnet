@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
     public static class ConfigurationBuilderExtensions
     {
         private const string AppSettingsFileName = @"appsettings.json";
+        private const string AppSettingsDevelopmentFileName = @"appsettings.Development.json";
         private const string DialogFileExtension = ".dialog";
 
         /// <summary>
@@ -62,13 +63,17 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             IConfiguration configuration = builder.Build();
 
             var applicationRootPath = configuration.GetValue<string>(ConfigurationConstants.ApplicationRootKey);
-            var configFilePath = Path.GetFullPath(
-                Path.Combine(applicationRootPath, settingsDirectory, AppSettingsFileName));
-
-            builder.AddJsonFile(configFilePath, optional: true, reloadOnChange: true);
             
+            var appSettingsConfigFilePath = Path.GetFullPath(Path.Combine(applicationRootPath, settingsDirectory, AppSettingsFileName));
+            var developerSettingsConfigFilePath = Path.GetFullPath(Path.Combine(applicationRootPath, AppSettingsDevelopmentFileName));
+
+            builder.AddJsonFile(appSettingsConfigFilePath, optional: true, reloadOnChange: true);
+            builder.AddJsonFile(developerSettingsConfigFilePath, optional: true, reloadOnChange: true);
+
             // Use Composer luis and qna settings extensions
             builder.AddComposerConfiguration();
+
+            builder.AddEnvironmentVariables();
 
             return builder;
         }
