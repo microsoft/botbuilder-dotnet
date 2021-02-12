@@ -2,7 +2,7 @@
     "$schema": "../../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
     "description": "Test UserTokenMock set Property",
-    "generator": "OAuthInputLG_Test.lg",
+    "generator": "main.lg",
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "triggers": [
