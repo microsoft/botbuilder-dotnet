@@ -130,10 +130,10 @@ Composer is an open ended GUI for editing assets like .dialog files.  Because an
 
 We do that using **.schema files** which are simply **json-schema** files.  To describe FooDialog you create a .schema file with the $kind as the file name, so in our example **MyApp.FooDialog.schema**
 
-```json
+```
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
-    "$role": "implements(Microsoft.IDialog)", <-- Says that this is a "dialog" and be used any place we consume dialogs.
+    "$role": "implements(Microsoft.IDialog)", <-- Says that this is a dialog and be used any place we consume dialogs.
     "type": "object",
     "title": "MyApp.FooDialog",              <-- name in the menu
     "description": "Gather FooDialog data.", <-- Description in the menu
