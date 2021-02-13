@@ -236,7 +236,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         //[Fact]
         //public async Task Action_SendMessageToTeamsChannel()
         //{
-        //    NOTE: Current test adpater is not a BotFrameworkAdapter,
+        //    NOTE: Current test adapter is not a BotFrameworkAdapter,
         //           and does not support mocking SendMessageToTeamsChannel
         //    var teamsMiddleware = GetTeamsMiddleware(new JObject(), "/v3/conversations");
         //    await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, middleware: new[] { teamsMiddleware });
@@ -249,91 +249,92 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionActionResponse()
+        public async Task Action_SendMEActionResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionActionResponseError()
+        public async Task Action_SendMEActionResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionAttachmentsResponse()
+        public async Task Action_SendMEAttachmentsResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionAttachmentsResponseError()
+        public async Task Action_SendMEAttachmentsResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionAuthResponse()
+        public async Task Action_SendMEAuthResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         //[Fact]
-        //public async Task Action_SendMessagingExtensionAuthResponseError()
+        //public async Task Action_SendMEAuthResponseError()
         //{
+        //      NOTE: Current test adapter is not a BotFrameworkAdapter,
         //    await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         //}
 
         [Fact]
-        public async Task Action_SendMessagingExtensionAuthResponseErrorWithAdapter()
+        public async Task Action_SendMEAuthResponseErrorWithAdapter()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionBotMessagePreviewResponse()
+        public async Task Action_SendMEBotMessagePreviewResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionBotMessagePreviewResponseError()
+        public async Task Action_SendMEBotMessagePreviewResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionConfigQuerySettingUrlResponse()
+        public async Task Action_SendMEConfigQuerySettingUrlResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionConfigQuerySettingUrlResponseError()
+        public async Task Action_SendMEConfigQuerySettingUrlResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionMessageResponse()
+        public async Task Action_SendMEMessageResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionMessageResponseError()
+        public async Task Action_SendMEMessageResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionSelectItemResponse()
+        public async Task Action_SendMESelectItemResponse()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_SendMessagingExtensionSelectItemResponseError()
+        public async Task Action_SendMESelectItemResponseError()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer, adapterChannel: Channels.Test);
         }
@@ -367,6 +368,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Tests
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
+
+        [Fact]
+        public async Task Action_SendTabCardResponseError()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+        
+        [Fact]
+        public async Task Action_SendTabCardResponse()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+        
+        [Fact]
+        public async Task Action_SendTabAuthResponseErrorWithAdapter()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        //[Fact]
+        //public async Task Action_SendTabAuthResponseError()
+        //{
+        //      NOTE: Current test adapter is not a BotFrameworkAdapter,
+        //    await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        //}
 
         private IMiddleware GetErrorTeamsMiddleware(string exception)
         {

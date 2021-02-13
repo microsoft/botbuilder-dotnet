@@ -1,0 +1,39 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendMEConfigQuerySettingUrlResponse",
+                        "configUrl": "someBaseUrl.com/somePage.html"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+          "assertions": [
+            "type == 'invokeResponse'",
+            "conversation.id == 'Action_SendMEConfigQuerySettingUrlResponse'",
+            "value.body.composeExtension.type == 'config'",
+            "value.body.composeExtension.suggestedActions.actions[0].type == 'openUrl'",
+            "value.body.composeExtension.suggestedActions.actions[0].value == 'someBaseUrl.com/somePage.html'"
+          ]
+        }
+    ]
+}

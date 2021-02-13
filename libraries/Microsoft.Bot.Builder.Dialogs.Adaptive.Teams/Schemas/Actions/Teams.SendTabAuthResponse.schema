@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IDialog)",
+    "title": "Send tab auth response",
+    "description": "Send 'auth' response or return the TokenResponse if already signed in.",
+    "type": "object",
+    "required": [
+        "connectionName",
+        "title"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Optional id for the dialog"
+        },
+        "connectionName": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "OAuth connection name",
+            "description": "The oauth connection name used to perform the sign in.",
+            "default": "=settings.connectionName"
+        },
+        "title": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Title",
+            "description": "Title of the suggested action response."
+        },
+        "resultProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Property",
+            "description": "Property to store the TokenResponse in once sign in completes.",
+            "examples": [
+                "dialog.userName"
+            ]
+        },
+        "disabled": {
+            "$ref": "schema:#/definitions/booleanExpression",
+            "title": "Disabled",
+            "description": "Optional condition which if true will disable this action.",
+            "examples": [
+                "=user.age > 3"
+            ]
+        }
+    }
+}

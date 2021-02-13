@@ -4,6 +4,9 @@
     "title": "Send task module url response",
     "description": "Send a url type continue response to a Task Module request.",
     "type": "object",
+    "required": [
+        "url"
+    ],
     "properties": {
         "id": {
             "type": "string",
