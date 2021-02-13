@@ -9,7 +9,10 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMEAuthResponse"
+                        "$kind": "Teams.SendMEAttachmentsResponse",
+                        "attachments": {
+                            "type": "message"
+                        }
                     }
                 ]
             },
@@ -29,13 +32,13 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
-                "text": "NoConnectionName",
+                "text": "hi",
                 "name": "composeExtension/queryLink"
             }
         },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMEAuthResponse: not supported by the current adapter."
-        }
+      {
+        "$kind": "Microsoft.Test.AssertReply",
+        "text": "Missing attachments in Teams.SendMEAttachmentsResponse."
+      }
     ]
 }

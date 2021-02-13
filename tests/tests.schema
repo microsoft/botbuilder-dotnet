@@ -296,6 +296,9 @@
       "$ref": "#/definitions/Microsoft.SendActivity"
     },
     {
+      "$ref": "#/definitions/Microsoft.SendHandoffActivity"
+    },
+    {
       "$ref": "#/definitions/Microsoft.SetProperties"
     },
     {
@@ -434,31 +437,31 @@
       "$ref": "#/definitions/Teams.OnFileConsent"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewEdit"
+      "$ref": "#/definitions/Teams.OnMEBotMessagePreviewEdit"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewSend"
+      "$ref": "#/definitions/Teams.OnMEBotMessagePreviewSend"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
+      "$ref": "#/definitions/Teams.OnMEConfigQuerySettingUrl"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+      "$ref": "#/definitions/Teams.OnMEConfigSetting"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
+      "$ref": "#/definitions/Teams.OnMEFetchTask"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
+      "$ref": "#/definitions/Teams.OnMEQuery"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
+      "$ref": "#/definitions/Teams.OnMESelectItem"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
+      "$ref": "#/definitions/Teams.OnMESubmitAction"
     },
     {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
+      "$ref": "#/definitions/Teams.OnMeCardButtonClicked"
     },
     {
       "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
@@ -497,28 +500,28 @@
       "$ref": "#/definitions/Teams.SendAppBasedLinkQueryResponse"
     },
     {
+      "$ref": "#/definitions/Teams.SendMEActionResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMEAttachmentsResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMEAuthResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMEBotMessagePreviewResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMEConfigQuerySettingUrlResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMEMessageResponse"
+    },
+    {
+      "$ref": "#/definitions/Teams.SendMESelectItemResponse"
+    },
+    {
       "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionActionResponse"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionAttachmentsResponse"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionAuthResponse"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionBotMessagePreviewResponse"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionMessageResponse"
-    },
-    {
-      "$ref": "#/definitions/Teams.SendMessagingExtensionSelectItemResponse"
     },
     {
       "$ref": "#/definitions/Teams.SendTabAuthResponse"
@@ -4013,6 +4016,9 @@
           "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
+          "$ref": "#/definitions/Microsoft.SendHandoffActivity"
+        },
+        {
           "$ref": "#/definitions/Microsoft.SetProperties"
         },
         {
@@ -4085,28 +4091,28 @@
           "$ref": "#/definitions/Teams.SendAppBasedLinkQueryResponse"
         },
         {
+          "$ref": "#/definitions/Teams.SendMEActionResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEAttachmentsResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEAuthResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEBotMessagePreviewResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEConfigQuerySettingUrlResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEMessageResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMESelectItemResponse"
+        },
+        {
           "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionActionResponse"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionAttachmentsResponse"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionAuthResponse"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionBotMessagePreviewResponse"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionMessageResponse"
-        },
-        {
-          "$ref": "#/definitions/Teams.SendMessagingExtensionSelectItemResponse"
         },
         {
           "$ref": "#/definitions/Teams.SendTabAuthResponse"
@@ -4229,10 +4235,10 @@
           "type": "string"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
@@ -4434,31 +4440,31 @@
           "$ref": "#/definitions/Teams.OnFileConsent"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewEdit"
+          "$ref": "#/definitions/Teams.OnMEBotMessagePreviewEdit"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionBotMessagePreviewSend"
+          "$ref": "#/definitions/Teams.OnMEBotMessagePreviewSend"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
+          "$ref": "#/definitions/Teams.OnMeCardButtonClicked"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+          "$ref": "#/definitions/Teams.OnMEConfigQuerySettingUrl"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
+          "$ref": "#/definitions/Teams.OnMEConfigSetting"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
+          "$ref": "#/definitions/Teams.OnMEFetchTask"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
+          "$ref": "#/definitions/Teams.OnMEQuery"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
+          "$ref": "#/definitions/Teams.OnMESelectItem"
         },
         {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
+          "$ref": "#/definitions/Teams.OnMESubmitAction"
         },
         {
           "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
@@ -8256,6 +8262,46 @@
         }
       }
     },
+    "Microsoft.SendHandoffActivity": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a handoff activity",
+      "description": "Sends a handoff activity to trigger a handoff request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "context": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Context",
+          "description": "Context to send with the handoff request"
+        },
+        "transcript": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "transcript",
+          "description": "Transcript to send with the handoff request"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.SendHandoffActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.SetProperties": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Set property",
@@ -10789,7 +10835,7 @@
           "type": "triggerRequiresAction",
           "kinds": [
             "Teams.SendAppBasedLinkQueryResponse",
-            "Teams.SendMessagingExtensionAuthResponse"
+            "Teams.SendMEAuthResponse"
           ]
         }
       ],
@@ -11230,7 +11276,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionBotMessagePreviewEdit": {
+    "Teams.OnMEBotMessagePreviewEdit": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11285,7 +11331,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionBotMessagePreviewEdit"
+          "const": "Teams.OnMEBotMessagePreviewEdit"
         },
         "$designer": {
           "title": "Designer information",
@@ -11294,7 +11340,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionBotMessagePreviewSend": {
+    "Teams.OnMEBotMessagePreviewSend": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11349,7 +11395,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionBotMessagePreviewSend"
+          "const": "Teams.OnMEBotMessagePreviewSend"
         },
         "$designer": {
           "title": "Designer information",
@@ -11358,71 +11404,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionCardButtonClicked": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "On Teams messaging extension card button clicked",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionCardButtonClicked"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionConfigurationQuerySettingUrl": {
+    "Teams.OnMEConfigQuerySettingUrl": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11440,8 +11422,8 @@
         {
           "type": "triggerRequiresAction",
           "kinds": [
-            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
-            "Teams.SendMessagingExtensionAuthResponse"
+            "Teams.SendMEConfigQuerySettingUrlResponse",
+            "Teams.SendMEAuthResponse"
           ]
         }
       ],
@@ -11489,7 +11471,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+          "const": "Teams.OnMEConfigQuerySettingUrl"
         },
         "$designer": {
           "title": "Designer information",
@@ -11498,7 +11480,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionConfigurationSetting": {
+    "Teams.OnMEConfigSetting": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11516,8 +11498,8 @@
         {
           "type": "triggerRequiresAction",
           "kinds": [
-            "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse",
-            "Teams.SendMessagingExtensionAuthResponse"
+            "Teams.SendMEConfigQuerySettingUrlResponse",
+            "Teams.SendMEAuthResponse"
           ]
         }
       ],
@@ -11565,7 +11547,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionConfigurationSetting"
+          "const": "Teams.OnMEConfigSetting"
         },
         "$designer": {
           "title": "Designer information",
@@ -11574,7 +11556,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionFetchTask": {
+    "Teams.OnMEFetchTask": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11593,8 +11575,8 @@
         {
           "type": "triggerRequiresAction",
           "kinds": [
-            "Teams.SendMessagingExtensionActionResponse",
-            "Teams.SendMessagingExtensionAuthResponse"
+            "Teams.SendMEActionResponse",
+            "Teams.SendMEAuthResponse"
           ]
         }
       ],
@@ -11642,7 +11624,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionFetchTask"
+          "const": "Teams.OnMEFetchTask"
         },
         "$designer": {
           "title": "Designer information",
@@ -11651,7 +11633,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionQuery": {
+    "Teams.OnMEQuery": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11706,7 +11688,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionQuery"
+          "const": "Teams.OnMEQuery"
         },
         "$designer": {
           "title": "Designer information",
@@ -11715,7 +11697,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionSelectItem": {
+    "Teams.OnMESelectItem": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11770,7 +11752,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionSelectItem"
+          "const": "Teams.OnMESelectItem"
         },
         "$designer": {
           "title": "Designer information",
@@ -11779,7 +11761,7 @@
         }
       }
     },
-    "Teams.OnMessagingExtensionSubmitAction": {
+    "Teams.OnMESubmitAction": {
       "$role": [
         "implements(Microsoft.ITrigger)",
         "extends(Microsoft.OnCondition)"
@@ -11797,7 +11779,7 @@
         {
           "type": "triggerRequiresAction",
           "kinds": [
-            "Teams.SendMessagingExtensionActionResponse"
+            "Teams.SendMEActionResponse"
           ]
         }
       ],
@@ -11845,7 +11827,71 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionSubmitAction"
+          "const": "Teams.OnMESubmitAction"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.OnMeCardButtonClicked": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Teams messaging extension card button clicked",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnMeCardButtonClicked"
         },
         "$designer": {
           "title": "Designer information",
@@ -12662,78 +12708,7 @@
         }
       }
     },
-    "Teams.SendMessageToTeamsChannel": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Send a message to a teams channel",
-      "description": "The resulting ConversationReference and ActivityId can be stored for later use.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "conversationReferenceProperty": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Conversation reference property",
-          "description": "Property path to put the newly created activity's Conversation Reference.",
-          "examples": [
-            "dialog.threadReference"
-          ]
-        },
-        "activityIdProperty": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Activity id property",
-          "description": "Property path to put the newly created activity's id.",
-          "examples": [
-            "dialog.threadId"
-          ]
-        },
-        "teamsChannelId": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Teams channel id",
-          "description": "Teams channel id to send a message to.",
-          "default": "=turn.activity.channelData.channel.id"
-        },
-        "activity": {
-          "$kind": "Microsoft.IActivityTemplate",
-          "title": "Activity",
-          "description": "Expession for an activity to send to the channel.",
-          "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "=user.age > 3"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessageToTeamsChannel"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.SendMessagingExtensionActionResponse": {
+    "Teams.SendMEActionResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Messaging extension action response",
       "description": "Send an task action response containing a card.",
@@ -12746,8 +12721,8 @@
         {
           "type": "allowedTrigger",
           "kinds": [
-            "Teams.OnMessagingExtensionFetchTask",
-            "Teams.OnMessagingExtensionSubmitAction"
+            "Teams.OnMEFetchTask",
+            "Teams.OnMESubmitAction"
           ]
         }
       ],
@@ -12822,7 +12797,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionActionResponse"
+          "const": "Teams.SendMEActionResponse"
         },
         "$designer": {
           "title": "Designer information",
@@ -12831,7 +12806,7 @@
         }
       }
     },
-    "Teams.SendMessagingExtensionAttachmentsResponse": {
+    "Teams.SendMEAttachmentsResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Messaging extensions attachments response",
       "description": "Send a response containing attachments to a messaging extension request.",
@@ -12902,7 +12877,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionAttachmentsResponse"
+          "const": "Teams.SendMEAttachmentsResponse"
         },
         "$designer": {
           "title": "Designer information",
@@ -12911,7 +12886,7 @@
         }
       }
     },
-    "Teams.SendMessagingExtensionAuthResponse": {
+    "Teams.SendMEAuthResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send messaging extension auth response",
       "description": "Send 'auth' response or return the TokenResponse if already signed in.",
@@ -12976,7 +12951,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionAuthResponse"
+          "const": "Teams.SendMEAuthResponse"
         },
         "$designer": {
           "title": "Designer information",
@@ -12985,7 +12960,7 @@
         }
       }
     },
-    "Teams.SendMessagingExtensionBotMessagePreviewResponse": {
+    "Teams.SendMEBotMessagePreviewResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send a bot message preview response",
       "description": "Send a bot message preview response to a messaging extension request.",
@@ -13036,7 +13011,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionBotMessagePreviewResponse"
+          "const": "Teams.SendMEBotMessagePreviewResponse"
         },
         "$designer": {
           "title": "Designer information",
@@ -13045,7 +13020,7 @@
         }
       }
     },
-    "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse": {
+    "Teams.SendMEConfigQuerySettingUrlResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send a config query setting response",
       "description": "Send a response to a config url request. These have an activity.name='composeExtension/setting'.",
@@ -13058,7 +13033,7 @@
         {
           "type": "allowedTrigger",
           "kinds": [
-            "Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
+            "Teams.OnMEConfigQuerySettingUrl"
           ]
         }
       ],
@@ -13107,7 +13082,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse"
+          "const": "Teams.SendMEConfigQuerySettingUrlResponse"
         },
         "$designer": {
           "title": "Designer information",
@@ -13116,7 +13091,7 @@
         }
       }
     },
-    "Teams.SendMessagingExtensionMessageResponse": {
+    "Teams.SendMEMessageResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send messaging extension message response",
       "description": "Send a message response to a messaging extension request.",
@@ -13169,7 +13144,7 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionMessageResponse"
+          "const": "Teams.SendMEMessageResponse"
         },
         "$designer": {
           "title": "Designer information",
@@ -13178,7 +13153,7 @@
         }
       }
     },
-    "Teams.SendMessagingExtensionSelectItemResponse": {
+    "Teams.SendMESelectItemResponse": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Send a messaging extension response when an item is selected",
       "description": "Select item requests have an activity.name='composeExtension/selectItem'.",
@@ -13229,7 +13204,78 @@
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.SendMessagingExtensionSelectItemResponse"
+          "const": "Teams.SendMESelectItemResponse"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Teams.SendMessageToTeamsChannel": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a message to a teams channel",
+      "description": "The resulting ConversationReference and ActivityId can be stored for later use.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "conversationReferenceProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Conversation reference property",
+          "description": "Property path to put the newly created activity's Conversation Reference.",
+          "examples": [
+            "dialog.threadReference"
+          ]
+        },
+        "activityIdProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Activity id property",
+          "description": "Property path to put the newly created activity's id.",
+          "examples": [
+            "dialog.threadId"
+          ]
+        },
+        "teamsChannelId": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Teams channel id",
+          "description": "Teams channel id to send a message to.",
+          "default": "=turn.activity.channelData.channel.id"
+        },
+        "activity": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Activity",
+          "description": "Expession for an activity to send to the channel.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "=user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.SendMessageToTeamsChannel"
         },
         "$designer": {
           "title": "Designer information",

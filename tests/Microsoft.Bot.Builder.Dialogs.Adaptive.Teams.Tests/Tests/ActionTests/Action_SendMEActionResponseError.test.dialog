@@ -4,12 +4,25 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "NoAttachments",
+                    "pattern": "NoAttachments"
+                }
+            ]
+        },
         "triggers": [
             {
-                "$kind": "Microsoft.OnUnknownIntent",
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoAttachments",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMEAuthResponse"
+                        "$kind": "Teams.SendMEActionResponse",
+                        "card": {
+                            "type": "message"
+                        }
                     }
                 ]
             },
@@ -29,13 +42,13 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
-                "text": "NoConnectionName",
+                "text": "NoAttachments",
                 "name": "composeExtension/queryLink"
             }
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMEAuthResponse: not supported by the current adapter."
+            "text": "Missing attachments in Teams.SendMEActionResponse."
         }
     ]
 }

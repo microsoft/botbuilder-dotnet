@@ -14,33 +14,33 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 {
     /// <summary>
-    /// Send a messaging extension 'result' response when a Teams Invoke Activity is received with activity.name='composeExtension/queryLink'.
+    /// Send a messaging extension 'botMessagePreview' response.
     /// </summary>
-    public class SendAppBasedLinkQueryResponse : BaseTeamsCacheInfoResponseDialog
+    public class SendMEBotMessagePreviewResponse : BaseSendTaskModuleContinueResponse
     {
         /// <summary>
         /// Class identifier.
         /// </summary>
         [JsonProperty("$kind")]
-        public const string Kind = "Teams.SendAppBasedLinkQueryResponse";
+        public const string Kind = "Teams.SendMEBotMessagePreviewResponse";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SendAppBasedLinkQueryResponse"/> class.
+        /// Initializes a new instance of the <see cref="SendMEBotMessagePreviewResponse"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public SendAppBasedLinkQueryResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendMEBotMessagePreviewResponse([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Gets or sets template for the attachment template of a Thumbnail or Hero Card to send.
+        /// Gets or sets template for the expression containing a Hero Card or Adaptive Card to send.
         /// </summary>
         /// <value>
-        /// Template for the card.
+        /// Template for the activity.
         /// </value>
         [JsonProperty("card")]
         public ITemplate<Activity> Card { get; set; }
@@ -60,27 +60,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.Actions
 
             if (Card == null)
             {
-                throw new ArgumentException($"An activity with attachments is required for {Kind}.");
+                throw new ArgumentException($"A valid {nameof(Card)} is required for {Kind}.");
             }
 
-            Activity activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
+            var activity = await Card.BindAsync(dc, dc.State).ConfigureAwait(false);
             if (activity?.Attachments?.Any() != true)
             {
                 throw new InvalidOperationException($"Invalid activity. An attachment is required for {Kind}.");
             }
 
-            var attachments = activity.Attachments.Select(a => new MessagingExtensionAttachment(a.ContentType, null, a.Content));
+            Attachment attachment = activity.Attachments[0];
 
-            var result = new MessagingExtensionResult
+            var response = new MessagingExtensionActionResponse
             {
-                Type = MEResultResponseType.result.ToString(),
-                AttachmentLayout = MEAttachmentLayoutResponseType.list.ToString(), // 'list', 'grid'  // TODO: make this configurable
-                Attachments = attachments.ToList(),
+                ComposeExtension = new MessagingExtensionResult
+                {
+                    Type = MEResultResponseType.botMessagePreview.ToString(),
+                    ActivityPreview = MessageFactory.Attachment(new Attachment
+                    {
+                        Content = attachment.Content,
+                        ContentType = attachment.ContentType,
+                    }) as Activity,
+                },
+                CacheInfo = GetCacheInfo(dc),
             };
 
-            var invokeResponse = CreateMessagingExtensionInvokeResponseActivity(dc, result);
-            ResourceResponse resourceResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
-            return await dc.EndDialogAsync(resourceResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var invokeResponse = CreateInvokeResponseActivity(response);
+            ResourceResponse sendResponse = await dc.Context.SendActivityAsync(invokeResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return await dc.EndDialogAsync(sendResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>

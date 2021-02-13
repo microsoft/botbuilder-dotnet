@@ -1,0 +1,79 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "NoCard",
+                    "pattern": "NoCard"
+                },
+                {
+                    "intent": "NoAttachments",
+                    "pattern": "NoAttachments"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoCard",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendMESelectItemResponse"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoAttachments",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendMESelectItemResponse",
+                        "card": {
+                            "type": "message"
+                        }
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnError",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${turn.dialogEvent.value.message}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "NoCard",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "A valid card is required for Teams.SendMESelectItemResponse."
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "NoAttachments",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Invalid activity. An attachment is required for Teams.SendMESelectItemResponse."
+        }
+    ]
+}

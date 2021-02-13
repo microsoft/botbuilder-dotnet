@@ -1,13 +1,11 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
-    "title": "On app based link query",
-    "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
+    "title": "On Teams messaging extension fetch task",
+    "description": "Actions triggered when a Teams InvokeActivity is received when activity.name='composeExtension/fetchTask'.",
     "type": "object",
-    "hidden": [
-        "actions"
-    ],
     "required": [
+        "actions"
     ],
     "policies": [
         {
@@ -16,7 +14,7 @@
         {
             "type": "triggerRequiresAction",
             "kinds": [
-                "Teams.SendAppBasedLinkQueryResponse",
+                "Teams.SendMEActionResponse",
                 "Teams.SendMEAuthResponse"
             ]
         }

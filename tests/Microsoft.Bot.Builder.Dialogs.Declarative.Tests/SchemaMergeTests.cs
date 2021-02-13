@@ -96,12 +96,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 "Action_SendTaskModuleCardResponseError.test.dialog",
                 "Action_SendAppBasedLinkQueryResponseError.test.dialog",
                 "Action_SendTabCardResponseError.test.dialog",
-                "Action_SendMessagingExtensionAuthResponseError.test.dialog",
-                "Action_SendMessagingExtensionSelectItemResponseError.test.dialog",
-                "Action_SendMessagingExtensionAuthResponseErrorWithAdapter.test.dialog",
-                "Action_SendMessagingExtensionMessageResponseError.test.dialog",
-                "Action_SendMessagingExtensionBotMessagePreviewResponseError.test.dialog",
-                "Action_SendMessagingExtensionConfigQuerySettingUrlResponseError.test.dialog",
+                "Action_SendMEAuthResponseError.test.dialog",
+                "Action_SendMESelectItemResponseError.test.dialog",
+                "Action_SendMEAuthResponseErrorWithAdapter.test.dialog",
+                "Action_SendMEMessageResponseError.test.dialog",
+                "Action_SendMEBotMessagePreviewResponseError.test.dialog",
+                "Action_SendMEConfigQuerySettingUrlResponseError.test.dialog",
                 "Action_SendTabAuthResponseError.test.dialog",
                 "TestScriptTests_OAuthInputLG.test.dialog"
             };

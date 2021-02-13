@@ -9,16 +9,8 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMEAuthResponse"
-                    }
-                ]
-            },
-            {
-                "$kind": "Microsoft.OnError",
-                "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.value.message}"
+                        "$kind": "Teams.SendMEMessageResponse",
+                        "message": "i want to send this to the user"
                     }
                 ]
             }
@@ -29,13 +21,18 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
-                "text": "NoConnectionName",
+                "text": "hi",
                 "name": "composeExtension/queryLink"
             }
         },
         {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMEAuthResponse: not supported by the current adapter."
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+          "assertions": [
+            "type == 'invokeResponse'",
+            "conversation.id == 'Action_SendMEMessageResponse'",
+            "value.body.composeExtension.type == 'message'",
+            "value.body.composeExtension.text == 'i want to send this to the user'"
+          ]
         }
     ]
 }

@@ -9,16 +9,7 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMEAuthResponse"
-                    }
-                ]
-            },
-            {
-                "$kind": "Microsoft.OnError",
-                "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "${turn.dialogEvent.value.message}"
+                        "$kind": "Teams.SendMEConfigQuerySettingUrlResponse"
                     }
                 ]
             }
@@ -29,13 +20,13 @@
             "$kind": "Microsoft.Test.UserActivity",
             "activity": {
                 "type": "message",
-                "text": "NoConnectionName",
+                "text": "hi",
                 "name": "composeExtension/queryLink"
             }
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMEAuthResponse: not supported by the current adapter."
+            "text": "ConfigUrl is required for Teams.SendMEConfigQuerySettingUrlResponse."
         }
     ]
 }
