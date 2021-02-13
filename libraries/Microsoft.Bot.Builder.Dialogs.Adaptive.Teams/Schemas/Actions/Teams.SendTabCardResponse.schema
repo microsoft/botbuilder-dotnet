@@ -16,7 +16,7 @@
         "cards": {
             "$kind": "Microsoft.IActivityTemplate",
             "title": "Cards",
-            "description": "Expession for Attachments template of Adaptive Cards to send."
+            "description": "Expression for Attachments template of Adaptive Cards to send."
         },
         "disabled": {
             "$ref": "schema:#/definitions/booleanExpression",
