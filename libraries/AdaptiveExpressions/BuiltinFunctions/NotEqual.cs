@@ -45,7 +45,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
             if (args[0].IsNumber() && args[0].IsNumber())
             {
-                if (Math.Abs(FunctionUtils.CultureInvariantDoubleConvert(args[0]) - FunctionUtils.CultureInvariantDoubleConvert(args[1])) < 0.00000001)
+                if (Math.Abs(FunctionUtils.CultureInvariantDoubleConvert(args[0]) - FunctionUtils.CultureInvariantDoubleConvert(args[1])) < double.Epsilon)
                 {
                     return true;
                 }

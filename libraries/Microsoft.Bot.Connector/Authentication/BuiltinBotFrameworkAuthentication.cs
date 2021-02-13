@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -62,13 +63,29 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), _authConfiguration, _httpClient).ConfigureAwait(false);
 
-            var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
             
-            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, cancellationToken).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
             var connectorFactory = new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialFactory, _httpClient, _logger);
 
-            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Scope = scope, CallerId = callerId, ConnectorFactory = connectorFactory };
+            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
+        }
+
+        public override async Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(channelIdHeader) && !await _credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), channelIdHeader, httpClient: _httpClient).ConfigureAwait(false);
+
+            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+
+            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
+
+            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId };
         }
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
@@ -88,24 +105,6 @@ namespace Microsoft.Bot.Connector.Authentication
         private IChannelProvider GetChannelProvider()
         {
             return _channelService != null ? new SimpleChannelProvider(_channelService) : null;
-        }
-
-        private async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
-        {
-            // Is the bot accepting all incoming messages?
-            if (await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
-            {
-                // Return null so that the callerId is cleared.
-                return null;
-            }
-
-            // Is the activity from another bot?
-            if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
-            {
-                return $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
-            }
-
-            return _callerId;
         }
     }
 }

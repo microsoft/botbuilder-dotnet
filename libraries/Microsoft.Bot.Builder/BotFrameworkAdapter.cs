@@ -47,8 +47,6 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>h
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IExtendedUserTokenProvider, IConnectorClientBuilder
     {
-        internal const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
-
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
 
         private readonly HttpClient _httpClient;

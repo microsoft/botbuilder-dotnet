@@ -14,7 +14,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
         /// Initializes a new instance of the <see cref="Select"/> class.
         /// </summary>
         public Select()
-            : base(ExpressionType.Select, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateForeach)
+            : base(ExpressionType.Select, FunctionUtils.Foreach, ReturnType.Array, FunctionUtils.ValidateLambdaExpression)
         {
         }
     }

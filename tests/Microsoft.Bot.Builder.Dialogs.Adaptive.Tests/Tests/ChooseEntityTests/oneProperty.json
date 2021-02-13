@@ -13,10 +13,23 @@
       "$entities": [
         "BreadEntity"
       ]
+    },
+    "Bread2": {
+      "type": "string",
+      "enum": [
+        "multiGrainWheat",
+        "rye",
+        "white",
+        "wholeWheat"
+      ],
+      "$entities": [
+        "BreadEntity"
+      ]
     }
   },
   "required": [
-    "Bread"
+    "Bread",
+    "Bread2"
   ],
   "$operations": [
     "Add()"

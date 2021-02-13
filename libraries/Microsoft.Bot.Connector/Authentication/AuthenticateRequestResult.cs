@@ -11,12 +11,12 @@ namespace Microsoft.Bot.Connector.Authentication
     public class AuthenticateRequestResult
     {
         /// <summary>
-        /// Gets or sets a value for the Scope.
+        /// Gets or sets a value for the Audience.
         /// </summary>
         /// <value>
-        /// A value for the Scope.
+        /// A value for the Audience.
         /// </value>
-        public string Scope { get; set; }
+        public string Audience { get; set; }
 
         /// <summary>
         /// Gets or sets a value for the ClaimsIdentity.

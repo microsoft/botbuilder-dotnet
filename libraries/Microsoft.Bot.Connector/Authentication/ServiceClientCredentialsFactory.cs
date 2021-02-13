@@ -44,11 +44,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// A factory method for creating ServiceClientCredentials.
         /// </summary>
         /// <param name="appId">The appId.</param>
-        /// <param name="oauthScope">The oauth scope.</param>
+        /// <param name="audience">The audience.</param>
         /// <param name="loginEndpoint">The login url.</param>
         /// <param name="validateAuthority">The validate authority vale to use.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        public abstract Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken);
+        public abstract Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken);
     }
 }

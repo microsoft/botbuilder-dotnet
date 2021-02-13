@@ -62,6 +62,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc/>
+        public override Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
+        {
+            return _inner.AuthenticateStreamingRequestAsync(authHeader, channelIdHeader, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
             return _inner.CreateConnectorFactory(claimsIdentity);

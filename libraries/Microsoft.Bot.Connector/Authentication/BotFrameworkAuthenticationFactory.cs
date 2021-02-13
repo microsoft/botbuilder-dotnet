@@ -13,6 +13,28 @@ namespace Microsoft.Bot.Connector.Authentication
     public static class BotFrameworkAuthenticationFactory
     {
         /// <summary>
+        /// Creates the a <see cref="BotFrameworkAuthentication" /> instance for anonymous testing scenarios.
+        /// </summary>
+        /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
+        public static BotFrameworkAuthentication Create()
+        {
+            return Create(
+                channelService: null,
+                validateAuthority: false,
+                toChannelFromBotLoginUrl: null,
+                toChannelFromBotOAuthScope: null,
+                toBotFromChannelTokenIssuer: null,
+                oAuthUrl: null,
+                toBotFromChannelOpenIdMetadataUrl: null,
+                toBotFromEmulatorOpenIdMetadataUrl: null,
+                callerId: null,
+                credentialFactory: new PasswordServiceClientCredentialFactory(),
+                authConfiguration: new AuthenticationConfiguration(),
+                httpClient: null,
+                logger: null);
+        }
+
+        /// <summary>
         /// Creates the appropriate <see cref="BotFrameworkAuthentication" /> instance.
         /// </summary>
         /// <param name="channelService">The Channel Service.</param>

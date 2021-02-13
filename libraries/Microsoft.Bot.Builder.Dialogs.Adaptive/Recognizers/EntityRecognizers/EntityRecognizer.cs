@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Entity recognizers base class.
     /// </summary>
-    public class EntityRecognizer : Recognizer
+    public class EntityRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityRecognizer"/> class.

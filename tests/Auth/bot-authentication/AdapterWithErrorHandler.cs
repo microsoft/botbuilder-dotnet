@@ -10,6 +10,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.BotBuilderSamples
 {
+    /*
+    public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
+    {
+        public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger, ConversationState conversationState = null)
+    */
     public class AdapterWithErrorHandler : CloudAdapter
     {
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<CloudAdapter> logger, ConversationState conversationState = null)

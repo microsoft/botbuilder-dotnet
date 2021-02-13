@@ -21,14 +21,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Initializes a new instance of the <see cref="OnChooseEntity"/> class.
         /// </summary>
-        /// <param name="property">Optional, property to be assigned for filtering events.</param>
-        /// <param name="entity">Optional, entity name being assigned for filtering events.</param>
+        /// <param name="property">Optional, property for filtering events.</param>
+        /// <param name="entity">Optional, entity for filtering events.</param>
+        /// <param name="operation">Optional, operation for filtering events.</param>
         /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
         /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public OnChooseEntity(string property = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnChooseEntity(string property = null, string entity = null, string operation = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 @event: AdaptiveEvents.ChooseEntity,
                 actions: actions,
@@ -38,17 +39,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             Property = property;
             Entity = entity;
+            Operation = operation;
         }
 
         /// <summary>
-        /// Gets or sets the property entity resolution will be assigned to for filtering events.
+        /// Gets or sets operation to filter ChooseEntity events.
+        /// </summary>
+        /// <value>Property name.</value>
+        [JsonProperty("operation")]
+        public string Operation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property to filter ChooseEntity events.
         /// </summary>
         /// <value>Property name.</value>
         [JsonProperty("property")]
         public string Property { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity name that is ambiguous for filtering events.
+        /// Gets or sets the entity name that is ambiguous for filtering ChooseEntity events.
         /// </summary>
         /// <value>Entity name.</value>
         [JsonProperty("entity")]
@@ -73,6 +82,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             if (this.Entity != null)
             {
                 expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.entity.name == '{this.Entity}'"));
+            }
+
+            if (this.Operation != null)
+            {
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.operation == '{this.Operation}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

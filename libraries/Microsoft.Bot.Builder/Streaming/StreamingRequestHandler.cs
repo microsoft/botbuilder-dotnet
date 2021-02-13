@@ -31,6 +31,9 @@ namespace Microsoft.Bot.Builder.Streaming
     /// </summary>
     public class StreamingRequestHandler : RequestHandler
     {
+        private static ConcurrentDictionary<string, StreamingRequestHandler> _requestHandlers = new ConcurrentDictionary<string, StreamingRequestHandler>();
+        private readonly string _instanceId = Guid.NewGuid().ToString();
+
         private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
@@ -164,6 +167,9 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             await _server.StartAsync().ConfigureAwait(false);
             _logger.LogInformation("Streaming request handler started listening");
+
+            // add ourselves to a global collection to ensure a reference is maintained if we are connected
+            _requestHandlers.TryAdd(_instanceId, this);
         }
 
         /// <summary>
@@ -417,30 +423,14 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="request">The request to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A task that resolves to a <see cref="ReceiveResponse"/>.</returns>
-        public async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
+        public Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
         {
-            try
+            if (!_serverIsConnected)
             {
-                if (!_serverIsConnected)
-                {
-                    throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
-                }
-
-                var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
-
-                if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
-                {
-                    return serverResponse.ReadBodyAsJson<ReceiveResponse>();
-                }
-            }
-#pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
-            catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                _logger.LogError(ex.Message);
+                throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
             }
 
-            return null;
+            return _server.SendAsync(request, cancellationToken);
         }
 
         /// <summary>
@@ -492,6 +482,9 @@ namespace Microsoft.Bot.Builder.Streaming
         private void Server_Disconnected(object sender, DisconnectedEventArgs e)
         {
             _serverIsConnected = false;
+
+            // remove ourselves from the global collection
+            _requestHandlers.TryRemove(_instanceId, out var _);
         }
 
         /// <summary>

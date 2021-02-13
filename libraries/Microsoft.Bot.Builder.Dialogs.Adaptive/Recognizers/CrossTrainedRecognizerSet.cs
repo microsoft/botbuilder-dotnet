@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// In the case that there is conflicting or ambiguous signals from the recognizers then an
     /// intent of "ChooseIntent" will be returned with the results of all of the recognizers.
     /// </remarks>
-    public class CrossTrainedRecognizerSet : Recognizer
+    public class CrossTrainedRecognizerSet : AdaptiveRecognizer
     {
         /// <summary>
         /// Class idenfifier.
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var result = ProcessResults(results);
 
-            this.TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", this.FillRecognizerResultTelemetryProperties(result, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
         }
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
         private void EnsureRecognizerIds()
         {
-            if (this.Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
+            if (Recognizers.Any(recognizer => string.IsNullOrEmpty(recognizer.Id)))
             {
                 throw new InvalidOperationException("This recognizer requires that each recognizer in the set have an .Id value.");
             }
