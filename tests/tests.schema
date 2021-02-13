@@ -296,6 +296,9 @@
       "$ref": "#/definitions/Microsoft.SendActivity"
     },
     {
+      "$ref": "#/definitions/Microsoft.SendHandoffActivity"
+    },
+    {
       "$ref": "#/definitions/Microsoft.SetProperties"
     },
     {
@@ -3912,11 +3915,6 @@
           "type": "string",
           "title": "Adapter http route",
           "description": "Route where to expose the adapter."
-        },
-        "settingsNamespace": {
-          "type": "string",
-          "title": "Settings namespace",
-          "description": "Optional namespace for adapter settings. Default is adapter package name."
         }
       }
     },
@@ -4044,6 +4042,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.SendActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.SendHandoffActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.SetProperties"
@@ -5802,10 +5803,15 @@
         }
       },
       "properties": {
+        "operation": {
+          "type": "string",
+          "title": "Operation",
+          "description": "Operation filter for event."
+        },
         "property": {
           "type": "string",
-          "title": "Property to be set",
-          "description": "Property that will be set after entity is selected."
+          "title": "Property",
+          "description": "Property filter for event."
         },
         "entity": {
           "type": "string",
@@ -5937,7 +5943,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On choose property",
-      "description": "Actions to take when there are multiple possible mappings of entities to properties.",
+      "description": "Actions to take when there are multiple possible mappings of entities to properties and operations.",
       "type": "object",
       "required": [
         "$kind"
@@ -5950,31 +5956,6 @@
         }
       },
       "properties": {
-        "entity": {
-          "type": "string",
-          "title": "Entity being assigned",
-          "description": "Entity being assigned to property choice"
-        },
-        "properties": {
-          "type": "array",
-          "title": "Possible properties",
-          "description": "Properties to be chosen between.",
-          "items": {
-            "type": "string",
-            "title": "Property name",
-            "description": "Possible property to choose."
-          }
-        },
-        "entities": {
-          "type": "array",
-          "title": "Entities",
-          "description": "Ambiguous entity names.",
-          "items": {
-            "type": "string",
-            "title": "Entity name",
-            "description": "Entity name being chosen between."
-          }
-        },
         "condition": {
           "$ref": "#/definitions/condition",
           "title": "Condition",
@@ -8274,6 +8255,46 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.SendActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.SendHandoffActivity": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a handoff activity",
+      "description": "Sends a handoff activity to trigger a handoff request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "context": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Context",
+          "description": "Context to send with the handoff request"
+        },
+        "transcript": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "transcript",
+          "description": "Transcript to send with the handoff request"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.SendHandoffActivity"
         },
         "$designer": {
           "title": "Designer information",
