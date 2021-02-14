@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
-using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -109,17 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private string GetCulture(DialogContext dc)
         {
-            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
-            {
-                return dc.Context.Activity.Locale;
-            }
-
-            if (this.DefaultLocale != null)
-            {
-                return this.DefaultLocale.GetValue(dc.State);
-            }
-
-            return English;
+            return dc.GetLocale(); // ?? DefaultLocale.GetValue(dc.State) ?? string.Empty;
         }
     }
 }

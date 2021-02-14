@@ -1240,9 +1240,9 @@ namespace AdaptiveExpressions.Tests
         [MemberData(nameof(DataForThreadLocale))]
         public void EvaluateWithLocale(string input, object expected, HashSet<string> expectedRefs)
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             var parsed = Expression.Parse(input);
             Assert.NotNull(parsed);
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             var opts = new Options() { Locale = "fr-FR" };
             var (actual, msg) = parsed.TryEvaluate(scopeForThreadLocale, opts);
             Assert.Null(msg);

@@ -3,6 +3,7 @@
 #pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -154,6 +155,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
                 // empty locale
                 dialogContext.Context.Activity.Locale = string.Empty;
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-fr");
                 result = await lg.GenerateAsync(dialogContext, "${templatea()}", null);
                 Assert.Equal("from a.lg", result);
 
@@ -195,6 +197,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
 
+            // Configure last locale fallback to be non-overlapping with the explicitly set languages so we can
+            // verify that when zero locale information is provided we default to it
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("es-ar");
+
             var lg = new MultiLanguageGenerator();
             var multilanguageresources = LGResourceLoader.GroupByLocale(resourceExplorer);
             lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg"), multilanguageresources);
@@ -223,6 +229,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public async Task TestResourceMultiLanguageGenerator()
         {
             var lg = new ResourceMultiLanguageGenerator("test.lg");
+
+            // Configure last locale fallback to be non-overlapping with the explicitly set languages so we can
+            // verify that when zero locale information is provided we default to it
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("es-ar");
 
             // test targeted in each language
             Assert.Equal("english-us", await lg.GenerateAsync(GetDialogContext("en-us", lg), "${test()}", null));
@@ -437,7 +447,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("locale.dialog");
             await CreateFlow(async (turnContext, cancellationToken) =>
             {
-                (turnContext as TurnContext).Locale = "de-DE";
+                turnContext.Activity.Locale = "de-DE";
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hola")
@@ -458,7 +468,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("manuallySetLocale.dialog");
             await CreateFlow(async (turnContext, cancellationToken) =>
             {
-                (turnContext as TurnContext).Locale = "en-US";
+                turnContext.Activity.Locale = "en-US";
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hola")

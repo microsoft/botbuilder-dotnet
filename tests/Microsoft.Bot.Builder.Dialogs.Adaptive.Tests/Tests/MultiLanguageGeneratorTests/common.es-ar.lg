@@ -1,0 +1,21 @@
+# WelcomeUser()
+- Bienvenido al ejemplo de EchoBot
+
+# SendActivity_Welcome()
+- ${WelcomeUser()}
+# SendActivity_003038()
+- Hola! Has dicho '${turn.activity.text}'.
+# SendActivity_4PZq8B()
+- locale: ${conversation.locale}
+# SendActivity_HFemAd()
+- Cambiar de español a inglés. 
+# SendActivity_NBGv2e()
+- Message received. conv: ${conversation.locale}
+# SendActivity_mpv30x()
+- dialog started: ${dialog.id}
+# SendActivity_5ncSjI()
+- OnTurn
+# SendActivity_lGCwKn()
+- In PreLoad: DEBUG: Turn: ${turn.locale} Conv: ${conversation.locale} Activity: ${turn.activity.locale}
+# SendActivity_Eyc6Tf()
+- Cambiando al espanol.

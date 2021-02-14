@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Localization;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -658,9 +659,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Obtain the CultureInfo in DialogContext.
         /// </summary>
         /// <returns>A string representing the current locale.</returns>
+        /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            return Context.TurnState.Get<JObject>("turn")["locale"]?.ToString();
+            var resolver = Context.TurnState.Get<LocaleResolver>() ?? new StateLocaleResolver();
+            var effectiveCulture = resolver.Resolve(this);
+
+            if (!string.IsNullOrEmpty(effectiveCulture?.Name))
+            {
+                return effectiveCulture.Name;
+            }
+
+            throw new CultureNotFoundException("Failed to resolve effective culture.");
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -52,8 +52,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
-            var targetLocale = dialogContext.Context.Activity.Locale?.ToLowerInvariant() ?? string.Empty;
-
             // priority 
             // 1. local policy
             // 2. shared policy in turnContext
@@ -64,6 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             // see if we have any locales that match
             var fallbackLocales = new List<string>();
+            var targetLocale = dialogContext.GetLocale();
+
             if (languagePolicy.ContainsKey(targetLocale))
             {
                 fallbackLocales.AddRange(languagePolicy[targetLocale]);
