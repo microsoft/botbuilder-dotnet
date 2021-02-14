@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <returns>String with the identity.</returns>
         public override string GetIdentity()
-            => $"{this.GetType().Name}({this.Property}, {this.Entity})";
+            => $"{GetType().Name}({this.Property}, {this.Entity})";
 
         /// <inheritdoc/>
         protected override Expression CreateExpression()

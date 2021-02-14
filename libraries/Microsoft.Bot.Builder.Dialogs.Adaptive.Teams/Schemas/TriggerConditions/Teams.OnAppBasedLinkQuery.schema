@@ -17,7 +17,7 @@
             "type": "triggerRequiresAction",
             "kinds": [
                 "Teams.SendAppBasedLinkQueryResponse",
-                "Teams.SendMessagingExtensionAuthResponse"
+                "Teams.SendMEAuthResponse"
             ]
         }
     ]

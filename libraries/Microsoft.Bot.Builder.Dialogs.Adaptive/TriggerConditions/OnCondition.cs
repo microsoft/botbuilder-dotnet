@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual string GetIdentity()
         {
-            return $"{this.GetType().Name}()";
+            return $"{GetType().Name}()";
         }
 
         /// <summary>

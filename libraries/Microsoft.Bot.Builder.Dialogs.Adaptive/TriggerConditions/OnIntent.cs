@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>String with the identity.</returns>
         public override string GetIdentity()
         {
-            return $"{this.GetType().Name}({this.Intent})[{string.Join(",", this.Entities)}]";
+            return $"{GetType().Name}({this.Intent})[{string.Join(",", this.Entities)}]";
         }
 
         /// <inheritdoc/>
