@@ -14,6 +14,7 @@
       <PackageId>Microsoft.Bot.Builder.Integration.Runtime</PackageId>
       <Description>Library for building Adaptive Runtime bots using the Bot Framework SDK</Description>
       <Summary>Library for building Adaptive Runtime bots using the Bot Framework SDK</Summary>
+      <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
