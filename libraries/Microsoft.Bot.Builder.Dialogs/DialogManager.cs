@@ -366,12 +366,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 Thread.CurrentThread.CurrentCulture = effectiveLocale;
             }
-
-            //// Attempt to set the deprecated, legacy turn locale
-            //if (dc.Context is TurnContext turnContext)
-            //{
-            //    turnContext.Locale = effectiveLocale.Name;
-            //}
         }
 
         private void RegisterState(ITurnContext context, BotStateSet botStateSet)
