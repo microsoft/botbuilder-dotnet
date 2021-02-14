@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 var opt = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
-                opt.Locale = DetermineCulture(dc);
+                opt.Locale = DetermineCulture(dc, opt);
                 var results = ChoiceRecognizers.RecognizeChoices(input.ToString(), choices, opt);
                 if (results == null || results.Count == 0)
                 {
@@ -229,9 +229,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return AppendChoices(prompt.AsMessageActivity(), channelId, choices, Style.GetValue(dc.State), choiceOptions);
         }
 
-        private string DetermineCulture(DialogContext dc) //, FindChoicesOptions opt = null)
+        private string DetermineCulture(DialogContext dc, FindChoicesOptions opt = null)
         {
-            var candidateLocale = dc.GetLocale(); // ?? opt?.Locale ?? DefaultLocale?.GetValue(dc.State);
+            // Note: opt.Locale and Default locale will be considered for deprecation as part of 4.13.
+            var candidateLocale = dc.GetLocale() ?? opt?.Locale ?? DefaultLocale?.GetValue(dc.State);
             var culture = PromptCultureModels.MapToNearestLanguage(candidateLocale);
 
             if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
