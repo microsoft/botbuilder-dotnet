@@ -126,12 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             OAuthPrompt.SetCallerInfoInDialogState(state, dc.Context);
 
             // Attempt to get the users token
-            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthInput.BeginDialog(): not supported by the current adapter");
-            }
-
-            var output = await adapter.GetUserTokenAsync(dc.Context, ConnectionName.GetValue(dc.State), null, cancellationToken).ConfigureAwait(false);
+            var output = await GetUserTokenAsync(dc, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 if (this.Property != null)
@@ -282,12 +277,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// the result contains the user's token.</remarks>
         public async Task<TokenResponse> GetUserTokenAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
-            }
-
-            return await adapter.GetUserTokenAsync(dc.Context, ConnectionName.GetValue(dc.State), null, cancellationToken).ConfigureAwait(false);
+            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State) };
+            return await new OAuthPrompt(nameof(OAuthPrompt), settings).GetUserTokenAsync(dc.Context, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -299,13 +290,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
-            }
-
-            // Sign out user
-            await adapter.SignOutUserAsync(dc.Context, ConnectionName.GetValue(dc.State), dc.Context.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State) };
+            await new OAuthPrompt(nameof(OAuthPrompt), settings).SignOutUserAsync(dc.Context, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -330,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(DialogContext dc, CancellationToken cancellationToken)
         {
-            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName.GetValue(dc.State) };
+            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State) };
             return OAuthPrompt.RecognizeTokenAsync(settings, dc, cancellationToken);
         }
 
