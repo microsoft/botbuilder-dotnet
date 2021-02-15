@@ -91,7 +91,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             {
                 "Action_SendActivity.test.dialog",
                 "Action_BeginSkill.test.dialog",
-                "Action_BeginSkillEndDialog.test.dialog"
+                "Action_BeginSkillEndDialog.test.dialog",
+                "Action_SendTabAuthResponseErrorWithAdapter.test.dialog",
+                "Action_SendTaskModuleCardResponseError.test.dialog",
+                "Action_SendAppBasedLinkQueryResponseError.test.dialog",
+                "Action_SendTabCardResponseError.test.dialog",
+                "Action_SendMEAuthResponseError.test.dialog",
+                "Action_SendMESelectItemResponseError.test.dialog",
+                "Action_SendMEAuthResponseErrorWithAdapter.test.dialog",
+                "Action_SendMEMessageResponseError.test.dialog",
+                "Action_SendMEBotMessagePreviewResponseError.test.dialog",
+                "Action_SendMEConfigQuerySettingUrlResponseError.test.dialog",
+                "Action_SendTabAuthResponseError.test.dialog",
+                "TestScriptTests_OAuthInputLG.test.dialog"
             };
             if (omit.Any(e => fileResource.FullName.Contains(e)))
             {

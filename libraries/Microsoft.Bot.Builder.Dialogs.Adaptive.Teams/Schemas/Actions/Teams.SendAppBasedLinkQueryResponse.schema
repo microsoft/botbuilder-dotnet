@@ -1,9 +1,12 @@
 {
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": "implements(Microsoft.IDialog)",
-    "title": "Send query link response",
-    "description": "Query link requests have activity.name='composeExtension/queryLink'.",
+    "title": "Send a config query setting url response",
+    "description": "Send a response to a configuration url request. These have an activity.name='composeExtension/querySettingUrl'.",
     "type": "object",
+    "required": [
+        "card"
+    ],
     "properties": {
         "id": {
             "type": "string",
@@ -37,8 +40,8 @@
     "policies": [
         {
             "type": "allowedTrigger",
-            "kinds": [ 
-                "Teams.OnAppBasedLinkQuery" 
+            "kinds": [
+                "Teams.OnAppBasedLinkQuery"
             ]
         }
     ]

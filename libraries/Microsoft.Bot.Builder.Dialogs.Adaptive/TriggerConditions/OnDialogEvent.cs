@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>String with the identity.</returns>
         public override string GetIdentity()
         {
-            return $"{this.GetType().Name}({this.Event})";
+            return $"{GetType().Name}({this.Event})";
         }
 
         /// <inheritdoc/>

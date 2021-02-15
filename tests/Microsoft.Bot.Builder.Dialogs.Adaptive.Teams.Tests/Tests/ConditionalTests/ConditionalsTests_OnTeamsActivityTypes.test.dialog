@@ -94,7 +94,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionCardButtonClicked",
+        "$kind": "Teams.OnMeCardButtonClicked",
         "condition": "turn.activity.text == 'OnCardButtonClicked'",
         "actions": [
           {
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionConfigurationQuerySettingUrl",
+        "$kind": "Teams.OnMEConfigQuerySettingUrl",
         "condition": "turn.activity.text == 'OnConfigurationQuerySettingUrl'",
         "actions": [
           {
@@ -114,7 +114,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionConfigurationSetting",
+        "$kind": "Teams.OnMEConfigSetting",
         "condition": "turn.activity.text == 'OnConfigurationSetting'",
         "actions": [
           {
@@ -124,7 +124,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionFetchTask",
+        "$kind": "Teams.OnMEFetchTask",
         "condition": "turn.activity.text == 'OnFetchTask'",
         "actions": [
           {
@@ -134,7 +134,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionQuery",
+        "$kind": "Teams.OnMEQuery",
         "condition": "turn.activity.text == 'OnQuery'",
         "actions": [
           {
@@ -144,7 +144,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionSelectItem",
+        "$kind": "Teams.OnMESelectItem",
         "condition": "turn.activity.text == 'OnSelectItem'",
         "actions": [
           {
@@ -154,7 +154,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMessagingExtensionSubmitAction",
+        "$kind": "Teams.OnMESubmitAction",
         "condition": "turn.activity.text == 'OnSubmitAction'",
         "actions": [
           {
