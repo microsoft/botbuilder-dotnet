@@ -287,6 +287,23 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (turnContext.Activity != null)
             {
+                if (turnContext.Activity.Locale != null)
+                {
+                    try
+                    {
+                        Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
+                        if (turnContext is TurnContext ctx)
+                        {
+                            ctx.Locale = turnContext.Activity.Locale;
+                        }
+                    }
+                    catch (CultureNotFoundException)
+                    {
+                        // if turnContext.Activity.Locale is invalid, then TurnContext.Locale will set to Thread.CurrentThread.CurrentCulture.Name as default. 
+                        (turnContext as TurnContext).Locale = Thread.CurrentThread.CurrentCulture.Name;
+                    }
+                }
+
                 try
                 {
                     await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);

@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 var lg = dialogContext.Services.Get<LanguageGenerator>();
 
                 // en-us locale
-                dialogContext.Context.Activity.Locale = "en-us";
+                dialogContext.State.SetValue("turn.locale", "en-us");
                 Assert.NotNull(lg);
                 Assert.NotNull(dialogContext.Services.Get<ResourceExplorer>());
 
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 Assert.Equal("hi", result);
 
                 //en locale
-                dialogContext.Context.Activity.Locale = "en";
+                dialogContext.State.SetValue("turn.locale", "en");
                 Assert.NotNull(lg);
                 Assert.NotNull(dialogContext.Services.Get<ResourceExplorer>());
 
@@ -154,8 +154,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 Assert.Equal("hi", result);
 
                 // empty locale
-                dialogContext.Context.Activity.Locale = string.Empty;
+                dialogContext.State.SetValue("turn.locale", string.Empty);
                 Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-fr");
+                dialogContext.Context.Activity.Locale = "fr-fr";
                 result = await lg.GenerateAsync(dialogContext, "${templatea()}", null);
                 Assert.Equal("from a.lg", result);
 
@@ -445,11 +446,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration("test.lg");
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("locale.dialog");
-            await CreateFlow(async (turnContext, cancellationToken) =>
-            {
-                turnContext.Activity.Locale = "de-DE";
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            })
+
+            await CreateFlow(
+                async (turnContext, cancellationToken) =>
+                {
+                    await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }, 
+                locale: "de-DE")
             .Send("hola")
             .AssertReply("1,122")
             .AssertReply("1,1235")
@@ -566,7 +569,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return dc;
         }
 
-        private TestFlow CreateFlow(BotCallbackHandler handler)
+        private TestFlow CreateFlow(BotCallbackHandler handler, string locale = null)
         {
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
@@ -577,6 +580,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+
+            if (!string.IsNullOrEmpty(locale))
+            {
+                adapter.Locale = locale;
+            }
 
             return new TestFlow(adapter, handler);
         }
