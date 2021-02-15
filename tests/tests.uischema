@@ -1079,6 +1079,13 @@
       "subtitle": "Send Activity"
     }
   },
+  "Microsoft.SendHandoffActivity": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-handoff-activity",
+      "label": "Send a handoff request",
+      "subtitle": "Send Handoff Activity"
+    }
+  },
   "Microsoft.SetProperties": {
     "flow": {
       "body": {
@@ -1300,7 +1307,7 @@
       "subtitle": "Invoke activity with no activity.name"
     }
   },
-  "Teams.OnMessagingExtensionBotMessagePreviewEdit": {
+  "Teams.OnMEBotMessagePreviewEdit": {
     "form": {
       "hidden": [
         "actions"
@@ -1313,7 +1320,7 @@
       "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'edit'"
     }
   },
-  "Teams.OnMessagingExtensionBotMessagePreviewSend": {
+  "Teams.OnMEBotMessagePreviewSend": {
     "form": {
       "hidden": [
         "actions"
@@ -1326,20 +1333,7 @@
       "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
     }
   },
-  "Teams.OnMessagingExtensionCardButtonClicked": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension card button clicked",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
-    }
-  },
-  "Teams.OnMessagingExtensionConfigurationQuerySettingUrl": {
+  "Teams.OnMEConfigQuerySettingUrl": {
     "form": {
       "hidden": [
         "actions"
@@ -1352,7 +1346,7 @@
       "subtitle": "Invoke activity.name='composeExtension/querySettingUrl'"
     }
   },
-  "Teams.OnMessagingExtensionConfigurationSetting": {
+  "Teams.OnMEConfigSetting": {
     "form": {
       "hidden": [
         "actions"
@@ -1365,7 +1359,7 @@
       "subtitle": "Invoke activity.name='composeExtension/setting'"
     }
   },
-  "Teams.OnMessagingExtensionFetchTask": {
+  "Teams.OnMEFetchTask": {
     "form": {
       "hidden": [
         "actions"
@@ -1378,7 +1372,7 @@
       "subtitle": "Invoke activity.name='composeExtension/fetchTask'"
     }
   },
-  "Teams.OnMessagingExtensionQuery": {
+  "Teams.OnMEQuery": {
     "form": {
       "hidden": [
         "actions"
@@ -1391,7 +1385,7 @@
       "subtitle": "Invoke activity.name='composeExtension/query'"
     }
   },
-  "Teams.OnMessagingExtensionSelectItem": {
+  "Teams.OnMESelectItem": {
     "form": {
       "hidden": [
         "actions"
@@ -1404,7 +1398,7 @@
       "subtitle": "Invoke activity.name='composeExtension/selectItem'"
     }
   },
-  "Teams.OnMessagingExtensionSubmitAction": {
+  "Teams.OnMESubmitAction": {
     "form": {
       "hidden": [
         "actions"
@@ -1415,6 +1409,19 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/submitAction'"
+    }
+  },
+  "Teams.OnMeCardButtonClicked": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension card button clicked",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
     }
   },
   "Teams.OnO365ConnectorCardAction": {
@@ -1428,6 +1435,19 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='actionableMessage/executeAction'"
+    }
+  },
+  "Teams.OnTabFetch": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams tab fetch",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='tab/fetch'"
     }
   },
   "Teams.OnTaskModuleFetch": {
@@ -1468,20 +1488,7 @@
       "subtitle": "Send a response to a query link request."
     }
   },
-  "Teams.SendMessageToTeamsChannel": {
-    "form": {
-      "label": "Send a message to a teams channel",
-      "order": [
-        "activity",
-        "teamsChannelId",
-        "activityIdProperty",
-        "conversationReferenceProperty",
-        "*"
-      ],
-      "subtitle": "Create a thread and send a message to a teams channel."
-    }
-  },
-  "Teams.SendMessagingExtensionActionResponse": {
+  "Teams.SendMEActionResponse": {
     "form": {
       "label": "Messaging extension action response",
       "order": [
@@ -1497,7 +1504,7 @@
       "subtitle": "Send a response for a messaging extension request."
     }
   },
-  "Teams.SendMessagingExtensionAttachmentsResponse": {
+  "Teams.SendMEAttachmentsResponse": {
     "form": {
       "label": "Send messaging extensions attachment(s) response",
       "order": [
@@ -1510,7 +1517,7 @@
       "subtitle": "Send an invoke response containing one or more attachments to a messaging extension request."
     }
   },
-  "Teams.SendMessagingExtensionAuthResponse": {
+  "Teams.SendMEAuthResponse": {
     "form": {
       "label": "Messaging Extension auth response",
       "order": [
@@ -1522,7 +1529,7 @@
       "subtitle": "Send a response to a messaging extensin requiring auth."
     }
   },
-  "Teams.SendMessagingExtensionBotMessagePreviewResponse": {
+  "Teams.SendMEBotMessagePreviewResponse": {
     "form": {
       "label": "Send a bot message preview response",
       "order": [
@@ -1534,7 +1541,7 @@
       "subtitle": "Send a bot message preview response to a messaging extension request."
     }
   },
-  "Teams.SendMessagingExtensionConfigQuerySettingUrlResponse": {
+  "Teams.SendMEConfigQuerySettingUrlResponse": {
     "form": {
       "label": "Send a configuration query setting response",
       "order": [
@@ -1543,10 +1550,10 @@
         "cacheDuration",
         "*"
       ],
-      "subtitle": "Send a response to a query setting configuration url request."
+      "subtitle": "Send a response to a query setting config url request."
     }
   },
-  "Teams.SendMessagingExtensionMessageResponse": {
+  "Teams.SendMEMessageResponse": {
     "form": {
       "label": "Send messaging extension message response",
       "order": [
@@ -1558,7 +1565,7 @@
       "subtitle": "Send a message response containing text only."
     }
   },
-  "Teams.SendMessagingExtensionSelectItemResponse": {
+  "Teams.SendMESelectItemResponse": {
     "form": {
       "label": "Send a card response on item selection",
       "order": [
@@ -1568,6 +1575,41 @@
         "*"
       ],
       "subtitle": "Send a messaging extension response when an item is selected"
+    }
+  },
+  "Teams.SendMessageToTeamsChannel": {
+    "form": {
+      "label": "Send a message to a teams channel",
+      "order": [
+        "activity",
+        "teamsChannelId",
+        "activityIdProperty",
+        "conversationReferenceProperty",
+        "*"
+      ],
+      "subtitle": "Create a thread and send a message to a teams channel."
+    }
+  },
+  "Teams.SendTabAuthResponse": {
+    "form": {
+      "label": "Tab auth response",
+      "order": [
+        "connectionName",
+        "title",
+        "resultProperty",
+        "*"
+      ],
+      "subtitle": "Send a response to a cards tab requiring auth."
+    }
+  },
+  "Teams.SendTabCardResponse": {
+    "form": {
+      "label": "Send tab card response",
+      "order": [
+        "cards",
+        "*"
+      ],
+      "subtitle": "Send a tab continue response containing adaptive cards."
     }
   },
   "Teams.SendTaskModuleCardResponse": {

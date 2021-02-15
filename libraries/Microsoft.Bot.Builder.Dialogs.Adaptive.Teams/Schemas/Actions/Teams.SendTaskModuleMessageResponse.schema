@@ -4,6 +4,9 @@
     "title": "Send task module message response",
     "description": "Send a message response to a Task Module request.",
     "type": "object",
+    "required": [
+        "message"
+    ],
     "properties": {
         "id": {
             "type": "string",

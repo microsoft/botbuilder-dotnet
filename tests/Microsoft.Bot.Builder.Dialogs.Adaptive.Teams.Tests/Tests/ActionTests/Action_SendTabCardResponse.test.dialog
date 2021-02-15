@@ -1,0 +1,66 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendTabCardResponse",
+                        "cards": {
+                            "type": "message",
+                            "attachments": [
+                                {
+                                    "contentType": "application/vnd.microsoft.card.adaptive",
+                                    "content": {
+                                      "type": "AdaptiveCard",
+                                      "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                                      "version": "1.2",
+                                      "body": [
+                                        {
+                                          "type": "Container",
+                                          "items": [
+                                            {
+                                              "type": "RichTextBlock",
+                                              "inlines": [
+                                                {
+                                                  "type": "TextRun",
+                                                  "text": "Success!"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "hi",
+                "name": "tab/fetch"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+          "assertions": [
+            "type == 'invokeResponse'",
+            "conversation.id == 'Action_SendTabCardResponse'",
+            "value.body.tab.type == 'continue'",
+            "value.body.tab.value.cards[0].card.body[0].items[0].inlines[0].text == 'Success!'"
+          ]
+        }
+    ]
+}
