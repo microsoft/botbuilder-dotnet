@@ -287,7 +287,6 @@ namespace Microsoft.Bot.Builder
             // Call any registered Middleware Components looking for ReceiveActivityAsync()
             if (turnContext.Activity != null)
             {
-
                 try
                 {
                     await MiddlewareSet.ReceiveActivityWithStatusAsync(turnContext, callback, cancellationToken).ConfigureAwait(false);
