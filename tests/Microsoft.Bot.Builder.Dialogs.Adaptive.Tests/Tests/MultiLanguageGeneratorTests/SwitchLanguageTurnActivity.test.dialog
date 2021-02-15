@@ -45,7 +45,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
-                        "property": "conversation.locale",
+                        "property": "turn.locale",
                         "value": "es-ar"
                     },
                     {
@@ -104,23 +104,6 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Cambiando al espanol."
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "como estas"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hola! Has dicho 'como estas'."
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "English"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Cambiar de español a inglés."
         }
-
     ]
 }

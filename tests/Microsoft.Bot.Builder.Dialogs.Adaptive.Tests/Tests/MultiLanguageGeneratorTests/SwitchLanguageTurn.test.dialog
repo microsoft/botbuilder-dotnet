@@ -4,13 +4,25 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "defaultResultProperty": "dialog.result",
-        "autoEndDialog": true,
+        "autoEndDialog": false,
         "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Welcome to Switch Language Test!"
+                    }
+                ]
+            },
             {
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
+                        "$designer": {
+                            "id": "003038"
+                        },
                         "activity": "${SendActivity_003038()}"
                     }
                 ]
@@ -19,11 +31,6 @@
                 "$kind": "Microsoft.OnIntent",
                 "intent": "English",
                 "actions": [
-                    {
-                        "$kind": "Microsoft.SetProperty",
-                        "property": "conversation.locale",
-                        "value": "en-us"
-                    },
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "turn.locale",
@@ -41,11 +48,6 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SetProperty",
-                        "property": "conversation.locale",
-                        "value": "es-ar"
-                    },
-                    {
-                        "$kind": "Microsoft.SetProperty",
                         "property": "turn.locale",
                         "value": "es-ar"
                     },
@@ -54,29 +56,6 @@
                         "activity": "${SendActivity_Eyc6Tf()}"
                     }
                 ]
-            },
-            {
-                "$kind": "Microsoft.OnActivity",
-                "condition": "=not(exists(turn.localeProcessed))",
-                "runOnce": false,
-                "actions": [
-                {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "turn.locale",
-                    "value": "=conversation.locale"
-                },
-                {
-                    "$kind": "Microsoft.SetProperty",
-                    "property": "turn.localeProcessed",
-                    "value": "true"
-                },
-                {
-                    "$kind": "Microsoft.RepeatDialog",
-                    "activityProcessed": false,
-                    "allowLoop": true
-                }
-                ],
-                "type": "message"
             }
         ],
         "generator": "common.lg",
@@ -99,11 +78,11 @@
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "hello"
+            "text": "Hello"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "You said 'hello'"
+            "text": "Welcome to Switch Language Test!"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -128,30 +107,6 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Cambiando al espanol."
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "como estas"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hola! Has dicho 'como estas'."
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "como estas"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hola! Has dicho 'como estas'."
-        },
-        {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "English"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "switching to english"
         }
     ]
 }

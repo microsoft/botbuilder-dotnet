@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Localization;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -662,15 +661,31 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            var resolver = Context.TurnState.Get<LocaleResolver>() ?? new StateLocaleResolver();
-            var effectiveCulture = resolver.Resolve(this);
+            const string TurnLocaleProperty = "turn.locale";
+            string locale;
 
-            if (!string.IsNullOrEmpty(effectiveCulture?.Name))
+            try
             {
-                return effectiveCulture.Name;
-            }
+                // turn.locale is the highest precedence.
+                if (State.TryGetValue<string>(TurnLocaleProperty, out locale) && !string.IsNullOrEmpty(locale))
+                {
+                    return new CultureInfo(locale).Name;
+                }
 
-            throw new CultureNotFoundException("Failed to resolve effective culture.");
+                // If turn.locale was not populated, fall back to activity locale
+                locale = Context.Activity?.Locale;
+
+                if (!string.IsNullOrEmpty(locale))
+                {
+                    return new CultureInfo(locale).Name;
+                }
+
+                return Thread.CurrentThread.CurrentCulture.Name;
+            }
+            catch (CultureNotFoundException)
+            {
+                return Thread.CurrentThread.CurrentCulture.Name;
+            }
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

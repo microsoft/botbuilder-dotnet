@@ -24,13 +24,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public async Task SwitchLanguageConversation()
+        public async Task SwitchLanguageTurn()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task SwitchLanguageConversationActivity()
+        public async Task SwitchLanguageTurnActivity()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task SwitchLanguageConversation()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }

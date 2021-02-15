@@ -2,16 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Localization;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -143,7 +140,30 @@ namespace Microsoft.Bot.Builder.Dialogs
             // register DialogManager with TurnState.
             context.TurnState.Set(this);
 
-            RegisterState(context, botStateSet);
+            if (ConversationState == null)
+            {
+                ConversationState = context.TurnState.Get<ConversationState>() ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(ConversationState)} from turnContext.");
+            }
+            else
+            {
+                context.TurnState.Set(ConversationState);
+            }
+
+            botStateSet.Add(ConversationState);
+
+            if (UserState == null)
+            {
+                UserState = context.TurnState.Get<UserState>();
+            }
+            else
+            {
+                context.TurnState.Set(UserState);
+            }
+
+            if (UserState != null)
+            {
+                botStateSet.Add(UserState);
+            }
 
             // create property accessors
             var lastAccessProperty = ConversationState.CreateProperty<DateTime>(LastAccess);
@@ -182,9 +202,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialogStateManager = new DialogStateManager(dc, StateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
             dc.Context.TurnState.Add(dialogStateManager);
-
-            // Register initial effective locale for the turn
-            RegisterLocale(dc);
 
             DialogTurnResult turnResult = null;
 
@@ -348,52 +365,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return turnResult;
-        }
-
-        private void RegisterLocale(DialogContext dc)
-        {
-            var localeResolver = dc.Context.TurnState.Get<LocaleResolver>();
-
-            if (localeResolver == null)
-            {
-                localeResolver = new StateLocaleResolver();
-                dc.Context.TurnState.Set(localeResolver);
-            }
-
-            var effectiveLocale = localeResolver.Resolve(dc);
-
-            if (!string.IsNullOrEmpty(effectiveLocale?.Name))
-            {
-                Thread.CurrentThread.CurrentCulture = effectiveLocale;
-            }
-        }
-
-        private void RegisterState(ITurnContext context, BotStateSet botStateSet)
-        {
-            if (ConversationState == null)
-            {
-                ConversationState = context.TurnState.Get<ConversationState>() ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(ConversationState)} from turnContext.");
-            }
-            else
-            {
-                context.TurnState.Set(ConversationState);
-            }
-
-            botStateSet.Add(ConversationState);
-
-            if (UserState == null)
-            {
-                UserState = context.TurnState.Get<UserState>();
-            }
-            else
-            {
-                context.TurnState.Set(UserState);
-            }
-
-            if (UserState != null)
-            {
-                botStateSet.Add(UserState);
-            }
         }
 
         /// <summary>
