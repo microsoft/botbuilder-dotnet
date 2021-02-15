@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private string GetCulture(DialogContext dc)
         {
             // Note: Default locale will be considered for deprecation as part of 4.13.
-            return dc.GetLocale() ?? DefaultLocale.GetValue(dc.State) ?? string.Empty;
+            return dc.GetLocale() ?? DefaultLocale?.GetValue(dc.State) ?? string.Empty;
         }
     }
 }
