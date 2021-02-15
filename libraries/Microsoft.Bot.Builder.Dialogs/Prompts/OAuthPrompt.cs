@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var signInResource = await CloudOAuthHelper.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
+                    var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
                 var cardActionType = ActionTypes.Signin;
-                var signInResource = await CloudOAuthHelper.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
+                var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
                 var value = signInResource.SignInLink;
 
                 // use the SignInLink when 
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var serviceUrl = dc.Context.Activity.ServiceUrl;
                     var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
                     var audience = callerInfo.Scope;
-                    var connectorClient = await CloudOAuthHelper.CreateConnectorClientAsync(turnContext, serviceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
+                    var connectorClient = await UserTokenAccess.CreateConnectorClientAsync(turnContext, serviceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                     if (turnContext.TurnState.Get<IConnectorClient>() != null)
                     {
                         turnContext.TurnState.Set(connectorClient);
@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // progress) retry in that case.
                 try
                 {
-                    var token = await CloudOAuthHelper.GetUserTokenAsync(turnContext, settings, magicCode, cancellationToken).ConfigureAwait(false);
+                    var token = await UserTokenAccess.GetUserTokenAsync(turnContext, settings, magicCode, cancellationToken).ConfigureAwait(false);
 
                     if (token != null)
                     {
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     TokenResponse tokenExchangeResponse = null;
                     try
                     {
-                        tokenExchangeResponse = await CloudOAuthHelper.ExchangeTokenAsync(turnContext, settings, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
+                        tokenExchangeResponse = await UserTokenAccess.ExchangeTokenAsync(turnContext, settings, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
                     }
 #pragma warning disable CA1031 // Do not catch general exception types (ignoring, see comment below)
                     catch
@@ -358,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var matched = magicCodeRegex.Match(turnContext.Activity.Text);
                     if (matched.Success)
                     {
-                        var token = await CloudOAuthHelper.GetUserTokenAsync(turnContext, settings, magicCode: matched.Value, cancellationToken).ConfigureAwait(false);
+                        var token = await UserTokenAccess.GetUserTokenAsync(turnContext, settings, magicCode: matched.Value, cancellationToken).ConfigureAwait(false);
                         if (token != null)
                         {
                             result.Succeeded = true;
@@ -438,7 +438,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetCallerInfoInDialogState(state, dc.Context);
 
             // Attempt to get the users token
-            var output = await CloudOAuthHelper.GetUserTokenAsync(dc.Context, _settings, magicCode: null, cancellationToken).ConfigureAwait(false);
+            var output = await UserTokenAccess.GetUserTokenAsync(dc.Context, _settings, magicCode: null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
@@ -539,7 +539,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// the result contains the user's token.</remarks>
         public Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            return CloudOAuthHelper.GetUserTokenAsync(turnContext, _settings, magicCode: null, cancellationToken);
+            return UserTokenAccess.GetUserTokenAsync(turnContext, _settings, magicCode: null, cancellationToken);
         }
 
         /// <summary>
@@ -551,7 +551,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         public Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            return CloudOAuthHelper.SignOutUserAsync(turnContext, _settings, cancellationToken);
+            return UserTokenAccess.SignOutUserAsync(turnContext, _settings, cancellationToken);
         }
 
         private static CallerInfo CreateCallerInfo(ITurnContext turnContext)

@@ -290,7 +290,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Sign out user
             var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State) };
             await new OAuthPrompt(nameof(OAuthPrompt), settings).SignOutUserAsync(dc.Context, cancellationToken).ConfigureAwait(false);
         }
@@ -317,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private Task<PromptRecognizerResult<TokenResponse>> RecognizeTokenAsync(DialogContext dc, CancellationToken cancellationToken)
         {
-            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName.GetValue(dc.State) };
+            var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State) };
             return OAuthPrompt.RecognizeTokenAsync(settings, dc, cancellationToken);
         }
 

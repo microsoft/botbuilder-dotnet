@@ -12,7 +12,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    internal static class CloudOAuthHelper
+    internal static class UserTokenAccess
     {
         public static async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, OAuthPromptSettings settings, string magicCode, CancellationToken cancellationToken)
         {
