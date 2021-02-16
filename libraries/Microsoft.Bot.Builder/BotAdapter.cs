@@ -292,7 +292,10 @@ namespace Microsoft.Bot.Builder
                     try
                     {
                         Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
-                        (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                        if (turnContext is TurnContext ctx)
+                        {
+                            ctx.Locale = turnContext.Activity.Locale;
+                        }
                     }
                     catch (CultureNotFoundException)
                     {

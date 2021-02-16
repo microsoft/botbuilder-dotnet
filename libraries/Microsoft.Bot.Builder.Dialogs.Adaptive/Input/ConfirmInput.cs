@@ -178,7 +178,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private string DetermineCulture(DialogContext dc)
         {
-            var culture = PromptCultureModels.MapToNearestLanguage(dc.Context.Activity.Locale ?? DefaultLocale?.GetValue(dc.State));
+            // Note: Default locale will be considered for deprecation as part of 4.13.
+            var candidateLocale = dc.GetLocale() ?? DefaultLocale?.GetValue(dc.State);
+            var culture = PromptCultureModels.MapToNearestLanguage(candidateLocale);
 
             if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
