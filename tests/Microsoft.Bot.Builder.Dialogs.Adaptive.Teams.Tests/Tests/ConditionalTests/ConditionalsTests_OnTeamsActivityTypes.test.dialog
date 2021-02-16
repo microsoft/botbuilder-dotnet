@@ -94,7 +94,7 @@
         ]
       },
       {
-        "$kind": "Teams.OnMeCardButtonClicked",
+        "$kind": "Teams.OnMECardButtonClicked",
         "condition": "turn.activity.text == 'OnCardButtonClicked'",
         "actions": [
           {

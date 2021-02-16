@@ -9,7 +9,9 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMEAuthResponse"
+                        "$kind": "Teams.SendTabAuthResponse",
+                        "connectionName": "someConnection",
+                        "title": "someTitle"
                     }
                 ]
             },
@@ -35,7 +37,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Teams.SendMEAuthResponse: not supported by the current adapter."
+            "text": "Teams.SendTabAuthResponse: not supported by the current adapter."
         }
     ]
 }
