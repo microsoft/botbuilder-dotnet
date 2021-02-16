@@ -226,14 +226,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var serviceUrl = dc.Context.Activity.ServiceUrl;
                     var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
                     var audience = callerInfo.Scope;
-                    var connectorClient = await UserTokenAccess.CreateConnectorClientAsync(turnContext, serviceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
-                    if (turnContext.TurnState.Get<IConnectorClient>() != null)
+                    var newConnectorClient = await UserTokenAccess.CreateConnectorClientAsync(turnContext, serviceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
+                    var oldConnectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                    if (oldConnectorClient != null)
                     {
-                        turnContext.TurnState.Set(connectorClient);
+                        turnContext.TurnState.Set(newConnectorClient);
+                        oldConnectorClient.Dispose();
                     }
                     else
                     {
-                        turnContext.TurnState.Add(connectorClient);
+                        turnContext.TurnState.Add(newConnectorClient);
                     }
                 }
             }
