@@ -70,7 +70,7 @@
         },
         {
           "$kind": "Microsoft.Test.AssertReply",
-          "text": "A valid ConnectionName is required for SendTabAuthResponse."
+          "text": "A valid ConnectionName is required for auth responses."
         },
         {
             "$kind": "Microsoft.Test.UserActivity",
@@ -82,7 +82,7 @@
         },
         {
           "$kind": "Microsoft.Test.AssertReply",
-          "text": "A valid Title is required for SendTabAuthResponse."
+          "text": "A valid Title is required for auth responses."
         }
     ]
 }

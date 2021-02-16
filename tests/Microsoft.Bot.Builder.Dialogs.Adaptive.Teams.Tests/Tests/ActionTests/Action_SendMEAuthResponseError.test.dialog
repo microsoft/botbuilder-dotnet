@@ -9,7 +9,9 @@
                 "$kind": "Microsoft.OnUnknownIntent",
                 "actions": [
                     {
-                        "$kind": "Teams.SendMEAuthResponse"
+                        "$kind": "Teams.SendMEAuthResponse",
+                        "connectionName": "someConnection",
+                        "title": "someTitle"
                     }
                 ]
             },
