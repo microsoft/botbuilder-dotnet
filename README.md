@@ -112,7 +112,7 @@ Below are the various channels that are available to you for obtaining support a
 If you issues relates to [Azure Bot Service](https://azure.microsoft.com/en-gb/services/bot-service/), you can take advantage of the available [Azure support options](https://azure.microsoft.com/en-us/support/options/).
 
 ### Twitter
-We use the [@botframework](https://twitter.com/botframework) account on twitter for announcements and members from the development team watch for tweets for @botframework.
+We use the [@msbotframework](https://twitter.com/msbotframework) account on twitter for announcements and members from the development team watch for tweets for [@msbotframework](https://twitter.com/msbotframework).
 
 ### Gitter Chat Room
 The [Gitter Channel](https://gitter.im/Microsoft/BotBuilder) provides a place where the Community can get together and collaborate.
