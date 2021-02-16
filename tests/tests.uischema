@@ -1333,6 +1333,19 @@
       "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
     }
   },
+  "Teams.OnMECardButtonClicked": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension card button clicked",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
+    }
+  },
   "Teams.OnMEConfigQuerySettingUrl": {
     "form": {
       "hidden": [
@@ -1409,19 +1422,6 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/submitAction'"
-    }
-  },
-  "Teams.OnMeCardButtonClicked": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension card button clicked",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
     }
   },
   "Teams.OnO365ConnectorCardAction": {

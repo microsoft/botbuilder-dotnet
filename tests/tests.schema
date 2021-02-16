@@ -443,6 +443,9 @@
       "$ref": "#/definitions/Teams.OnMEBotMessagePreviewSend"
     },
     {
+      "$ref": "#/definitions/Teams.OnMECardButtonClicked"
+    },
+    {
       "$ref": "#/definitions/Teams.OnMEConfigQuerySettingUrl"
     },
     {
@@ -459,9 +462,6 @@
     },
     {
       "$ref": "#/definitions/Teams.OnMESubmitAction"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMeCardButtonClicked"
     },
     {
       "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
@@ -4441,7 +4441,7 @@
           "$ref": "#/definitions/Teams.OnMEBotMessagePreviewSend"
         },
         {
-          "$ref": "#/definitions/Teams.OnMeCardButtonClicked"
+          "$ref": "#/definitions/Teams.OnMECardButtonClicked"
         },
         {
           "$ref": "#/definitions/Teams.OnMEConfigQuerySettingUrl"
@@ -11404,6 +11404,70 @@
         }
       }
     },
+    "Teams.OnMECardButtonClicked": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Teams messaging extension card button clicked",
+      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Teams.OnMECardButtonClicked"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Teams.OnMEConfigQuerySettingUrl": {
       "$role": [
         "implements(Microsoft.ITrigger)",
@@ -11828,70 +11892,6 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Teams.OnMESubmitAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMeCardButtonClicked": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "On Teams messaging extension card button clicked",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMeCardButtonClicked"
         },
         "$designer": {
           "title": "Designer information",
