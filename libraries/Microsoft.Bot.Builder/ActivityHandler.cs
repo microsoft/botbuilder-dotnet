@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -446,6 +447,10 @@ namespace Microsoft.Bot.Builder
             {
                 switch (turnContext.Activity.Name)
                 {
+                    case "adaptiveCard/action":
+                        var invokeValue = GetAdaptiveCardInvokeValue(turnContext.Activity);
+                        return CreateInvokeResponse(await OnAdaptiveCardInvokeAsync(turnContext, invokeValue, cancellationToken).ConfigureAwait(false));
+
                     case SignInConstants.VerifyStateOperationName:
                     case SignInConstants.TokenExchangeOperationName:
                         await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
@@ -506,6 +511,25 @@ namespace Microsoft.Bot.Builder
         protected virtual Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult(HealthCheck.CreateHealthCheckResponse(turnContext.TurnState.Get<IConnectorClient>()));
+        }
+
+        /// <summary>
+        /// Invoked when the bot is sent an Adaptive Card Action Execute.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="invokeValue">A stringly-typed object from the incoming activity's Value.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `adaptiveCard/action`,
+        /// it calls this method.
+        /// </remarks>
+        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
+        protected virtual Task<AdaptiveCardInvokeResponse> OnAdaptiveCardInvokeAsync(ITurnContext<IInvokeActivity> turnContext, AdaptiveCardInvokeValue invokeValue, CancellationToken cancellationToken)
+        {
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         /// <summary>
@@ -634,6 +658,64 @@ namespace Microsoft.Bot.Builder
         protected virtual Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        private AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
+        {
+            if (activity.Value == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Missing value property");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            var obj = activity.Value as JObject;
+            if (obj == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Value property is not properly formed");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            AdaptiveCardInvokeValue invokeValue = null;
+
+            try
+            {
+                invokeValue = obj.ToObject<AdaptiveCardInvokeValue>();
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Value property is not properly formed");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            if (invokeValue.Action == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Missing action property");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            if (invokeValue.Action.Type != "Action.Execute")
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "NotSupported", $"The action '{invokeValue.Action.Type}'is not supported.");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            return invokeValue;
+        }
+
+        private AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
+        {
+            return new AdaptiveCardInvokeResponse()
+            {
+                StatusCode = (int)statusCode,
+                Type = "application/vnd.microsoft.error",
+                Value = new Error()
+                {
+                    Code = code,
+                    Message = message
+                }
+            };
         }
 
         /// <summary>
