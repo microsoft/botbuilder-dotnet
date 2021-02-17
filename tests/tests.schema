@@ -5595,7 +5595,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On entity assignment",
-      "description": "Actions to take when an entity should be assigned to a property.",
+      "description": "Actions to apply an operation on a property and value.",
       "type": "object",
       "required": [
         "$kind"
@@ -5608,20 +5608,20 @@
         }
       },
       "properties": {
-        "property": {
-          "type": "string",
-          "title": "Property",
-          "description": "Property that will be set after entity is selected."
-        },
-        "entity": {
-          "type": "string",
-          "title": "Entity",
-          "description": "Entity being put into property"
-        },
         "operation": {
           "type": "string",
           "title": "Operation",
-          "description": "Operation for assigning entity."
+          "description": "Operation filter on event."
+        },
+        "property": {
+          "type": "string",
+          "title": "Property",
+          "description": "Property filter on event."
+        },
+        "value": {
+          "type": "string",
+          "title": "Value",
+          "description": "Value filter on event."
         },
         "condition": {
           "$ref": "#/definitions/condition",
@@ -5802,7 +5802,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On choose entity",
-      "description": "Actions to be performed when an entity value needs to be resolved.",
+      "description": "Actions to be performed when value is ambiguous for operator and property.",
       "type": "object",
       "required": [
         "$kind"
@@ -5818,17 +5818,17 @@
         "operation": {
           "type": "string",
           "title": "Operation",
-          "description": "Operation filter for event."
+          "description": "Operation filter on event."
         },
         "property": {
           "type": "string",
           "title": "Property",
-          "description": "Property filter for event."
+          "description": "Property filter on event."
         },
-        "entity": {
+        "value": {
           "type": "string",
-          "title": "Ambiguous entity",
-          "description": "Ambiguous entity"
+          "title": "Ambiguous value",
+          "description": "Ambiguous value filter on event."
         },
         "condition": {
           "$ref": "#/definitions/condition",
