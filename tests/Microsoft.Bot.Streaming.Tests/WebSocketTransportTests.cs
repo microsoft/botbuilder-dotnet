@@ -8,6 +8,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -18,7 +19,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
     public class WebSocketTransportTests
     {
         [Fact]
-        public void WebSocketServer_Connects()
+        public async Task WebSocketServer_Connects()
         {
             // Arrange
             var requestHandlerMock = new Mock<RequestHandler>();
@@ -33,14 +34,29 @@ namespace Microsoft.Bot.Streaming.UnitTests
             sock.RealState = WebSocketState.Open;
 
             var writer = new WebSocketServer(sock, requestHandlerMock.Object);
-            
+
             // Act
 
-            // If we are connected the StartAsync task will not complete, so we also WaitAny on the first socket receive having happened
-            Task.WaitAny(new Task[] { writer.StartAsync(), sock.TaskCompletionSource.Task });
+            var task = writer.StartAsync();
+
+            // wait for a socket receive to actually happen to eliminate a race
+            await sock.TaskCompletionSource.Task;
+
+            // now check the connected state
+            bool isConnectedAfterStart = writer.IsConnected;
+
+            // we should be able to safely wait for the Start to complete now
+            await task;
+
+            // disconnect will stop the receive loop
+            writer.Disconnect();
+
+            // now check the connected state
+            bool isConnectedAfterDisconnect = writer.IsConnected;
 
             // Assert
-            Assert.True(writer.IsConnected);
+            Assert.True(isConnectedAfterStart);
+            Assert.False(isConnectedAfterDisconnect);
         }
 
         [Fact]
@@ -225,16 +241,23 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
         }
 
-        // This extends the basic faux socket with a TaskCompletionSource that will complete when the
-        // initial Receive has happened, extend this class to peek into other state changes.
+        // This extends the basic faux socket with a TaskCompletionSource that can be used to block methods to add some synchronization to tests.
         private class FauxSocketTaskCompletionSource : FauxSock
         {
             public TaskCompletionSource<string> TaskCompletionSource { get; } = new TaskCompletionSource<string>();
 
-            public override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+            public override async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
             {
+                // indicate to the test that receive has been called - to we should now be connected
                 TaskCompletionSource.SetResult("ReceiveAsync");
-                return base.ReceiveAsync(buffer, cancellationToken);
+
+                // delay so we don't thrash, the header we return with End=false will cause an infinite receive loop
+                await Task.Delay(1000);
+
+                // send a valid header so we don't immediate get a deserialization exception that triggers disconnect 
+                var header = new Header() { Type = PayloadTypes.Stream, Id = Guid.NewGuid(), PayloadLength = 0, End = false };
+                var count = HeaderSerializer.Serialize(header, buffer.Array, buffer.Offset);
+                return new WebSocketReceiveResult(count, WebSocketMessageType.Binary, true);
             }
         }
     }
