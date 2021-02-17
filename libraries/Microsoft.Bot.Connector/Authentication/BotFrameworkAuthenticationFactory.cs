@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 callerId: null,
                 credentialFactory: new PasswordServiceClientCredentialFactory(),
                 authConfiguration: new AuthenticationConfiguration(),
-                httpClient: null,
+                httpClientFactory: null,
                 logger: null);
         }
 
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="callerId">The Microsoft app password.</param>
         /// <param name="credentialFactory">The <see cref="ServiceClientCredentialsFactory" /> to use to create credentials.</param>
         /// <param name="authConfiguration">The <see cref="AuthenticationConfiguration" /> to use.</param>
-        /// <param name="httpClient">The <see cref="HttpClient" /> to use.</param>
+        /// <param name="httpClientFactory">The <see cref="IHttpClientFactory" /> to use.</param>
         /// <param name="logger">The <see cref="ILogger" /> to use.</param>
         /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
         public static BotFrameworkAuthentication Create(
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Connector.Authentication
             string callerId,
             ServiceClientCredentialsFactory credentialFactory,
             AuthenticationConfiguration authConfiguration,
-            HttpClient httpClient,
+            IHttpClientFactory httpClientFactory,
             ILogger logger)
         {
             if (
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     callerId,
                     credentialFactory,
                     authConfiguration,
-                    httpClient,
+                    httpClientFactory,
                     logger);
             }
             else
@@ -97,11 +97,11 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 if (string.IsNullOrEmpty(channelService))
                 {
-                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
+                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
                 }
                 else if (channelService == GovernmentAuthenticationConstants.ChannelService)
                 {
-                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
+                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
                 }
                 else
                 {

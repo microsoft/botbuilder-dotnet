@@ -16,17 +16,17 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _loginEndpoint;
         private readonly bool _validateAuthority;
         private readonly ServiceClientCredentialsFactory _credentialFactory;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, HttpClient httpClient, ILogger logger)
+        public ConnectorFactoryImpl(string appId, string toChannelFromBotOAuthScope, string loginEndpoint, bool validateAuthority, ServiceClientCredentialsFactory credentialFactory, IHttpClientFactory httpClientFactory, ILogger logger)
         {
             _appId = appId;
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
             _validateAuthority = validateAuthority;
             _credentialFactory = credentialFactory;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -36,7 +36,11 @@ namespace Microsoft.Bot.Connector.Authentication
             var credentials = await _credentialFactory.CreateCredentialsAsync(_appId, audience ?? _toChannelFromBotOAuthScope, _loginEndpoint, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
             // A new connector client for making calls against this serviceUrl using credentials derived from the current appId and the specified audience.
-            return new ConnectorClient(new Uri(serviceUrl), credentials, _httpClient, disposeHttpClient: _httpClient == null);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var httpClient = _httpClientFactory?.CreateClient() ?? new HttpClient();
+            ConnectorClient.AddDefaultRequestHeaders(httpClient);
+            return new ConnectorClient(new Uri(serviceUrl), credentials, httpClient, true);
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
     }
 }

@@ -35,8 +35,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
-        /// <param name="botFrameworkAuthentication">The cloud environment used for validating and creating tokens.</param>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <param name="botFrameworkAuthentication">The <see cref="BotFrameworkAuthentication"/> this adapter should use.</param>
+        /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
         public CloudAdapter(
             BotFrameworkAuthentication botFrameworkAuthentication,
             ILogger logger = null)
@@ -47,14 +47,14 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class.
         /// </summary>
-        /// <param name="configuration">The application configuration instance.</param>
-        /// <param name="httpClient">The HttpClient implementation this adapter should use.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/> instance.</param>
+        /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/> this adapter should use.</param>
         /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
         public CloudAdapter(
             IConfiguration configuration,
-            HttpClient httpClient = null,
+            IHttpClientFactory httpClientFactory = null,
             ILogger logger = null)
-            : this(new ConfigurationBotFrameworkAuthentication(configuration, httpClient: httpClient, logger: logger), logger)
+            : this(new ConfigurationBotFrameworkAuthentication(configuration, httpClientFactory: httpClientFactory, logger: logger), logger)
         {
         }
 

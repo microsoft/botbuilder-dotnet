@@ -120,10 +120,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
             var bot = new MessageBot();
 
             // Act
-            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClient, null);
+            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClientFactoryMock.Object, null);
             var adapter = new CloudAdapter(cloudEnvironment);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
@@ -205,10 +208,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
             var bot = new MessageBot();
 
             // Act
-            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClient, null);
+            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClientFactoryMock.Object, null);
             var adapter = new CloudAdapter(cloudEnvironment);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
