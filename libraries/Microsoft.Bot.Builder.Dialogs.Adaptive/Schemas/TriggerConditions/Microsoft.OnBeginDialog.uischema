@@ -10,5 +10,14 @@
         ],
         "label": "Dialog started",
         "subtitle": "Begin dialog event"
+    },
+    "trigger": {
+		"label": "Dialog started (Begin dialog event)",
+		"order": 4.1,
+		"submenu": {
+			"label": "Dialog events",
+			"prompt": "Which event?",
+			"placeholder": "Select an event type"
+		}
     }
 }

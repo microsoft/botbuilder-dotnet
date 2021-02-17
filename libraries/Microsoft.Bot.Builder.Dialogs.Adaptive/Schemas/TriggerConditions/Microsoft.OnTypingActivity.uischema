@@ -10,5 +10,10 @@
         ],
         "label": "User is typing",
         "subtitle": "Typing activity"
+    },
+    "trigger": {
+		"label": "User is typing (Typing activity)",
+		"order": 5.7,
+        "submenu": "Activities"
     }
 }

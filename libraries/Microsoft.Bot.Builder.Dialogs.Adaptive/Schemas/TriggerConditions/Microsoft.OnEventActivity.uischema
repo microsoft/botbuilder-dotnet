@@ -10,5 +10,10 @@
         ],
         "label": "Event received",
         "subtitle": "Event activity"
+    },
+    "trigger": {
+		"label": "Event received (Event activity)",
+		"order": 5.4,
+		"submenu": "Activities"
     }
 }
