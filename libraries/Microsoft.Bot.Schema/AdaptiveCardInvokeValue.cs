@@ -27,5 +27,14 @@ namespace Microsoft.Bot.Schema
         /// </value>
         [JsonProperty("authentication")]
         public AdaptiveCardAuthentication Authentication { get; set; }
+
+        /// <summary>
+        /// Gets or sets the 'state' or magic code for an OAuth flow.
+        /// </summary>
+        /// <value>
+        /// The 'state' or magic code for an OAuth flow.
+        /// </value>
+        [JsonProperty("state")]
+        public string State { get; set; }
     }
 }
