@@ -8,10 +8,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
-using Microsoft.Bot.Streaming.UnitTests.Mocks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -21,24 +18,28 @@ namespace Microsoft.Bot.Streaming.UnitTests
     public class WebSocketTransportTests
     {
         [Fact]
-        public async Task WebSocketServer_Connects()
+        public void WebSocketServer_Connects()
         {
+            // Arrange
             var requestHandlerMock = new Mock<RequestHandler>();
             requestHandlerMock.Setup(
                 rh => rh.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new StreamingResponse { StatusCode = 200 });
 
-            var sock = new FauxSock();
+            // TaskCompletionSource will complete when the first receive is executed and this must happen AFTER the IsConnected state is set
+            var sock = new FauxSocketTaskCompletionSource();
 
             // Set the faux-socket state because otherwise the background task might check it and disconnected before this test completes
             sock.RealState = WebSocketState.Open;
 
             var writer = new WebSocketServer(sock, requestHandlerMock.Object);
+            
+            // Act
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            writer.StartAsync();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            // If we are connected the StartAsync task will not complete, so we also WaitAny on the first socket receive having happened
+            Task.WaitAny(new Task[] { writer.StartAsync(), sock.TaskCompletionSource.Task });
 
+            // Assert
             Assert.True(writer.IsConnected);
         }
 
@@ -221,6 +222,19 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 SentArray = buffer;
 
                 return Task.CompletedTask;
+            }
+        }
+
+        // This extends the basic faux socket with a TaskCompletionSource that will complete when the
+        // initial Receive has happened, extend this class to peek into other state changes.
+        private class FauxSocketTaskCompletionSource : FauxSock
+        {
+            public TaskCompletionSource<string> TaskCompletionSource { get; } = new TaskCompletionSource<string>();
+
+            public override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+            {
+                TaskCompletionSource.SetResult("ReceiveAsync");
+                return base.ReceiveAsync(buffer, cancellationToken);
             }
         }
     }
