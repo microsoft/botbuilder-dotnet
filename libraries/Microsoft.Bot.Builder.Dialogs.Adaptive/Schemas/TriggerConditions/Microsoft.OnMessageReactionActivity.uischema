@@ -10,5 +10,10 @@
         ],
         "label": "Message reaction",
         "subtitle": "Message reaction activity"
+    },
+    "trigger": {
+		"label": "Message reaction (Message reaction activity)",
+		"order": 5.83,
+		"submenu": "Activities"
     }
 }

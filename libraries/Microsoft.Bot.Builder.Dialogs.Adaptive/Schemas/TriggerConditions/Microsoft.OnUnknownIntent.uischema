@@ -10,5 +10,9 @@
         ],
         "label": "Unknown intent",
         "subtitle": "Unknown intent recognized"
+    },
+    "trigger": {
+		"label": "Unknown intent",
+		"order": 3
     }
 }
