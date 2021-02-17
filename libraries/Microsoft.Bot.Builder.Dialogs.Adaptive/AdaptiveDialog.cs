@@ -917,13 +917,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // TODO: For now, I'm going to dereference to a one-level array value.  There is a bug in the current code in the distinction between
                     // @ which is supposed to unwrap down to non-array and @@ which returns the whole thing. @ in the curent code works by doing [0] which
                     // is not enough.
-                    var entity = nextAssignment.Entity.Value;
+                    var entity = nextAssignment.Value.Value;
                     if (!(entity is JArray))
                     {
                         entity = new object[] { entity };
                     }
 
-                    actionContext.State.SetValue($"{TurnPath.Recognized}.entities.{nextAssignment.Entity.Name}", entity);
+                    actionContext.State.SetValue($"{TurnPath.Recognized}.entities.{nextAssignment.Value.Name}", entity);
                     assignments.Dequeue(actionContext);
                 }
 
@@ -1299,7 +1299,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         assignments.Add(new EntityAssignment
                         {
-                            Entity = alternative,
+                            Value = alternative,
                             Property = alternative.Property,
                             Operation = alternative.Operation,
                             IsExpected = expected.Contains(alternative.Property)
@@ -1324,7 +1324,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 assignments.Add(new EntityAssignment
                                 {
-                                    Entity = entity,
+                                    Value = entity,
                                     Property = propSchema.Name,
                                     Operation = entity.Operation,
                                     IsExpected = isExpected
@@ -1335,7 +1335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 // Recast property with no value as match for property entities
                                 assignments.Add(new EntityAssignment
                                 {
-                                    Entity = entity,
+                                    Value = entity,
                                     Property = propSchema.Name,
                                     Operation = null,
                                     IsExpected = isExpected,
@@ -1353,7 +1353,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     // Assign missing operation
                     if (lastEvent == AdaptiveEvents.ChooseEntity
-                        && assignment.Entity.Property == nextAssignment.Property)
+                        && assignment.Value.Property == nextAssignment.Property)
                     {
                         // Property and value match ambiguous entity
                         assignment.Operation = AdaptiveEvents.ChooseEntity;
@@ -1382,7 +1382,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 assignments.Add(new EntityAssignment
                                 {
-                                    Entity = alternative,
+                                    Value = alternative,
                                     Operation = AdaptiveEvents.ChooseProperty,
                                     IsExpected = true
                                 });
@@ -1401,7 +1401,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         var assignment = new EntityAssignment
                         {
-                            Entity = alternative,
+                            Value = alternative,
                             Property = null,
                             Operation = alternative.Operation,
                             IsExpected = false
@@ -1432,7 +1432,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     assignment.Event = AdaptiveEvents.ChooseProperty;
                 }
-                else if (assignment.Entity.Value is JArray arr)
+                else if (assignment.Value.Value is JArray arr)
                 {
                     if (arr.Count > 1)
                     {
@@ -1441,7 +1441,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     else
                     {
                         assignment.Event = AdaptiveEvents.AssignEntity;
-                        assignment.Entity.Value = arr[0];
+                        assignment.Value.Value = arr[0];
                     }
                 }
                 else
@@ -1474,7 +1474,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         candidate = null;
                         foreach (var mapping in choices)
                         {
-                            if (mapping.Entity.Name == entity)
+                            if (mapping.Value.Name == entity)
                             {
                                 candidate = mapping;
                                 break;
@@ -1484,7 +1484,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         if (candidate != null)
                         {
                             // Remove any overlapping entities without a common root
-                            choices.RemoveAll(choice => choice == candidate || (!choice.Entity.SharesRoot(candidate.Entity) && choice.Entity.Overlaps(candidate.Entity)));
+                            choices.RemoveAll(choice => choice == candidate || (!choice.Value.SharesRoot(candidate.Value) && choice.Value.Overlaps(candidate.Value)));
                             yield return candidate;
                         }
                     }
@@ -1505,14 +1505,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             string operation = null;
             if (assignment.Property != null)
             {
-                if (askDefault != null && (askDefault.TryGetValue(assignment.Entity.Name, out var askOp) || askDefault.TryGetValue(string.Empty, out askOp)))
+                if (askDefault != null && (askDefault.TryGetValue(assignment.Value.Name, out var askOp) || askDefault.TryGetValue(string.Empty, out askOp)))
                 {
                     operation = askOp.Value<string>();
                 }
                 else if (dialogDefault != null
                         && (dialogDefault.TryGetValue(assignment.Property, out var entities)
                             || dialogDefault.TryGetValue(string.Empty, out entities))
-                        && ((entities as JObject).TryGetValue(assignment.Entity.Name, out var dialogOp)
+                        && ((entities as JObject).TryGetValue(assignment.Value.Name, out var dialogOp)
                             || (entities as JObject).TryGetValue(string.Empty, out dialogOp)))
                 {
                     operation = dialogOp.Value<string>();
@@ -1549,7 +1549,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 candidate.IsExpected descending,
                                 candidate.Operation == DefaultOperation(candidate, askDefaultOp, defaultOp) descending
                               select candidate).ToList();
-            var usedEntities = new HashSet<EntityInfo>(from candidate in candidates select candidate.Entity);
+            var usedEntities = new HashSet<EntityInfo>(from candidate in candidates select candidate.Value);
             List<string> expectedChoices = null;
             var choices = new List<EntityAssignment>();
             while (candidates.Any())
@@ -1558,25 +1558,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                 // Alternatives are either for the same entity or from different roots
                 var alternatives = (from alt in candidates
-                                    where candidate.Entity.Overlaps(alt.Entity) && (!candidate.Entity.SharesRoot(alt.Entity) || candidate.Entity == alt.Entity)
+                                    where candidate.Value.Overlaps(alt.Value) && (!candidate.Value.SharesRoot(alt.Value) || candidate.Value == alt.Value)
                                     select alt).ToList();
                 candidates = candidates.Except(alternatives).ToList();
                 foreach (var alternative in alternatives)
                 {
-                    usedEntities.Add(alternative.Entity);
+                    usedEntities.Add(alternative.Value);
                 }
 
-                if (candidate.IsExpected && candidate.Entity.Name != UtteranceKey)
+                if (candidate.IsExpected && candidate.Value.Name != UtteranceKey)
                 {
                     // If expected binds entity, drop unexpected alternatives unless they have an explicit operation
-                    alternatives.RemoveAll(a => !a.IsExpected && a.Entity.Operation == null);
+                    alternatives.RemoveAll(a => !a.IsExpected && a.Value.Operation == null);
                 }
 
                 // Find alternative that covers the largest amount of utterance
-                candidate = (from alternative in alternatives orderby alternative.Entity.Name == UtteranceKey ? 0 : alternative.Entity.End - alternative.Entity.Start descending select alternative).First();
+                candidate = (from alternative in alternatives orderby alternative.Value.Name == UtteranceKey ? 0 : alternative.Value.End - alternative.Value.Start descending select alternative).First();
 
                 // Remove all alternatives that are fully contained in largest
-                alternatives.RemoveAll(a => candidate.Entity.Covers(a.Entity));
+                alternatives.RemoveAll(a => candidate.Value.Covers(a.Value));
 
                 var mapped = false;
                 if (candidate.Operation == AdaptiveEvents.ChooseEntity)
@@ -1584,21 +1584,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Property has resolution so remove entity ambiguity
                     var entityChoices = existing.Dequeue(actionContext);
                     candidate.Operation = entityChoices.Operation;
-                    if (candidate.Entity.Value is JArray values && values.Count > 1)
+                    if (candidate.Value.Value is JArray values && values.Count > 1)
                     {
                         // Resolve ambiguous response to one of the original choices
-                        var originalChoices = entityChoices.Entity.Value as JArray;
+                        var originalChoices = entityChoices.Value.Value as JArray;
                         var intersection = values.Intersect(originalChoices);
                         if (intersection.Any())
                         {
-                            candidate.Entity.Value = intersection;
+                            candidate.Value.Value = intersection;
                         }
                     }
                 }
                 else if (candidate.Operation == AdaptiveEvents.ChooseProperty)
                 {
                     choices = nextAssignment.Alternatives.ToList();
-                    var choice = choices.Find(a => MatchesAssignment(candidate.Entity, a));
+                    var choice = choices.Find(a => MatchesAssignment(candidate.Value, a));
                     if (choice != null)
                     {
                         // Resolve choice, pretend it was expected and add to assignments
@@ -1615,7 +1615,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
 
                         AddAssignment(choice, assignments);
-                        choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
+                        choices.RemoveAll(c => c.Value.Overlaps(choice.Value));
                         mapped = true;
                     }
                 }
@@ -1639,10 +1639,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 while (choices.Any())
                 {
                     var choice = choices.First();
-                    var overlaps = from alt in choices where choice.Entity.Overlaps(alt.Entity) select alt;
+                    var overlaps = from alt in choices where choice.Value.Overlaps(alt.Value) select alt;
                     choice.AddAlternatives(overlaps);
                     AddAssignment(choice, assignments);
-                    choices.RemoveAll(c => c.Entity.Overlaps(choice.Entity));
+                    choices.RemoveAll(c => c.Value.Overlaps(choice.Value));
                 }
 
                 existing.Dequeue(actionContext);
@@ -1664,15 +1664,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 foreach (var bAlt in b.Alternatives)
                 {
-                    if (aAlt.Property == bAlt.Property && aAlt.Entity.Value != null && bAlt.Entity.Value != null)
+                    if (aAlt.Property == bAlt.Property && aAlt.Value.Value != null && bAlt.Value.Value != null)
                     {
                         var prop = dialogSchema.PathToSchema(aAlt.Property);
                         if (!prop.IsArray)
                         {
-                            replaces = -aAlt.Entity.WhenRecognized.CompareTo(bAlt.Entity.WhenRecognized);
+                            replaces = -aAlt.Value.WhenRecognized.CompareTo(bAlt.Value.WhenRecognized);
                             if (replaces == 0)
                             {
-                                replaces = -aAlt.Entity.Start.CompareTo(bAlt.Entity.Start);
+                                replaces = -aAlt.Value.Start.CompareTo(bAlt.Value.Start);
                             }
 
                             if (replaces != 0)

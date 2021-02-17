@@ -52,11 +52,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     if (comparison == 0)
                     {
                         // Order by history
-                        comparison = x.Entity.WhenRecognized.CompareTo(y.Entity.WhenRecognized);
+                        comparison = x.Value.WhenRecognized.CompareTo(y.Value.WhenRecognized);
                         if (comparison == 0)
                         {
                             // Order by position in utterance
-                            comparison = x.Entity.Start.CompareTo(y.Entity.Start);
+                            comparison = x.Value.Start.CompareTo(y.Value.Start);
                         }
                     }
                 }

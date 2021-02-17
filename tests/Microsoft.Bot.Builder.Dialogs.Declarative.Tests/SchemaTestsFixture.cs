@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     // In either case we try installing latest bf if the schema changed to make sure the
                     // discrepancy is not because we are using a different version of the CLI
                     // and we ensure it is installed while on it.
-                    error = RunCommand("/C npm i -g @microsoft/botframework-cli@next");
+                    error = RunCommand("/C npm i -g @microsoft/botframework-cli@next --force");
                     if (error.Length != 0)
                     {
                         throw new InvalidOperationException(error);
