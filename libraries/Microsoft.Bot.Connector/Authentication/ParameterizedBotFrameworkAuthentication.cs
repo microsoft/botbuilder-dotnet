@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class ParameterizedBotFrameworkAuthentication : BotFrameworkAuthentication
     {
-        private static readonly HttpClient _defaultHttpClient = new HttpClient();
+        private static readonly HttpClient _authHttpClient = new HttpClient();
 
         private readonly bool _validateAuthority;
         private readonly string _toChannelFromBotLoginUrl;
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _callerId;
         private readonly ServiceClientCredentialsFactory _credentialFactory;
         private readonly AuthenticationConfiguration _authConfiguration;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
         public ParameterizedBotFrameworkAuthentication(
@@ -43,8 +43,8 @@ namespace Microsoft.Bot.Connector.Authentication
             string callerId,
             ServiceClientCredentialsFactory credentialFactory,
             AuthenticationConfiguration authConfiguration,
-            HttpClient httpClient = null,
-            ILogger logger = null)
+            IHttpClientFactory httpClientFactory,
+            ILogger logger)
         {
             _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _callerId = callerId;
             _credentialFactory = credentialFactory;
             _authConfiguration = authConfiguration;
-            _httpClient = httpClient ?? _defaultHttpClient;
+            _httpClientFactory = httpClientFactory;
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
-            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialFactory, _httpClient, _logger);
+            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialFactory, _httpClientFactory, _logger);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialFactory, _httpClient, _logger);
+            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialFactory, _httpClientFactory, _logger);
         }
 
         public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var credentials = await _credentialFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
-            return new UserTokenClientImpl(appId, credentials, _oAuthUrl, _httpClient, _logger);
+            return new UserTokenClientImpl(appId, credentials, _oAuthUrl, _httpClientFactory?.CreateClient(), _logger);
         }
 
         // The following code is based on JwtTokenValidation.AuthenticateRequest
@@ -180,13 +180,13 @@ namespace Microsoft.Bot.Connector.Authentication
                     ValidateIssuer = true,
                     ValidIssuers = new[]
                     {
-                        // TODO: presumably this table should also come from configuration
-                        "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
-                        "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
-                        "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
-                        "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
-                        "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
-                        "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
+                    // TODO: presumably this table should also come from configuration
+                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
+                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
+                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
+                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
                     },
                     ValidateAudience = false, // Audience validation takes place manually in code.
                     ValidateLifetime = true,
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // TODO: what should the openIdMetadataUrl be here?
             var tokenExtractor = new JwtTokenExtractor(
-                _httpClient,
+                _authHttpClient,
                 tokenValidationParameters,
                 _toBotFromEmulatorOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
@@ -260,13 +260,13 @@ namespace Microsoft.Bot.Connector.Authentication
                     ValidateIssuer = true,
                     ValidIssuers = new[]
                     {
-                        // TODO: presumably this table should also come from configuration
-                        "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
-                        "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
-                        "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
-                        "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",      // Auth v3.2, 2.0 token
-                        "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/",                    // Auth for US Gov, 1.0 token
-                        "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                    // TODO: presumably this table should also come from configuration
+                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",                    // Auth v3.1, 1.0 token
+                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0",      // Auth v3.1, 2.0 token
+                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",                    // Auth v3.2, 1.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",      // Auth v3.2, 2.0 token
+                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/",                    // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
                     },
                     ValidateAudience = false,   // Audience validation takes place manually in code.
                     ValidateLifetime = true,
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 };
 
             var tokenExtractor = new JwtTokenExtractor(
-                    _httpClient,
+                    _authHttpClient,
                     toBotFromEmulatorTokenValidationParameters,
                     _toBotFromEmulatorOpenIdMetadataUrl,
                     AuthenticationConstants.AllowedSigningAlgorithms);
@@ -354,7 +354,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var tokenValidationParameters = GovernmentChannelValidation_GetTokenValidationParameters();
 
             var tokenExtractor = new JwtTokenExtractor(
-                _httpClient,
+                _authHttpClient,
                 tokenValidationParameters,
                 _toBotFromChannelOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
