@@ -10,5 +10,8 @@
             "conversationReferenceProperty",
             "*"
         ]
+    },
+    "menu": {
+      "submenu": ["Microsoft Teams", "Response"]
     }
 }
