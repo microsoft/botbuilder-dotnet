@@ -15,7 +15,7 @@
       "submenu": {
         "label": "Microsoft Teams",
         "prompt": "Which Teams event?",
-        "placeholder": "Select a Teams event type",
+        "placeholder": "Select a Teams event type"
       }
     }
 }
