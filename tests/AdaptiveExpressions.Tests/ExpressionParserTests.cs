@@ -352,6 +352,7 @@ namespace AdaptiveExpressions.Tests
             Test("sentenceCase('aBC', 'fr-FR')", "Abc"),
             Test("titleCase('a', 'en-US')", "A"),
             Test("titleCase('abc dEF', 'en-US')", "Abc Def"),
+            Test("titleCase('today, February 17th', 'en-US')", "Today, February 17th"),
             #endregion
 
             #region accessor and element

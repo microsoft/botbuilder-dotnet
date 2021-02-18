@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -40,6 +41,16 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     var ti = locale.TextInfo;
                     result = ti.ToTitleCase(inputStr);
+
+                    // Case that starts with number.
+                    result = Regex.Replace(
+                        result,
+                        "([0-9]+[a-zA-Z]+)",
+                        new MatchEvaluator((m) =>
+                        {
+                            return m.Captures[0].Value.ToLower(locale);
+                        }),
+                        RegexOptions.IgnoreCase);
                 }
             }
 
