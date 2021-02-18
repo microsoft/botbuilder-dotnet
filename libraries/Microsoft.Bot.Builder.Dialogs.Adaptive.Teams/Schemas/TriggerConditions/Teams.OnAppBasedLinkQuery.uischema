@@ -10,5 +10,12 @@
         ],
         "label": "Teams app based link query",
         "subtitle": "Invoke activity.name='composeExtension/queryLink'"
+    },
+    "trigger": {
+      "submenu": {
+        "label": "Microsoft Teams",
+        "prompt": "Which Teams event?",
+        "placeholder": "Select a Teams event type",
+      }
     }
 }

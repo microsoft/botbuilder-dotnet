@@ -10,5 +10,8 @@
         ],
         "label": "Teams tab fetch",
         "subtitle": "Invoke activity.name='tab/fetch'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
 }

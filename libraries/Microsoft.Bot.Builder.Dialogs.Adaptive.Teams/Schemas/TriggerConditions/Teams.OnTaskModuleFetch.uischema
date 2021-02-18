@@ -10,5 +10,8 @@
         ],
         "label": "Teams task module fetch",
         "subtitle": "Invoke activity.name='task/fetch'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
 }
