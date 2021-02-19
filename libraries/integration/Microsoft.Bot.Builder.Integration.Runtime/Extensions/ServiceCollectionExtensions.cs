@@ -146,8 +146,11 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
 
             // CoreAdapter registration
+            services.AddSingleton<CoreBotAdapter>();
             services.AddSingleton<IBotFrameworkHttpAdapter, CoreBotAdapter>();
-            services.AddSingleton<BotAdapter>(sp => sp.GetService<CoreBotAdapter>());
+
+            // Needed for SkillsHttpClient which depends on BotAdapter
+            services.AddSingleton<BotAdapter, CoreBotAdapter>(); 
             
             // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
             services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
