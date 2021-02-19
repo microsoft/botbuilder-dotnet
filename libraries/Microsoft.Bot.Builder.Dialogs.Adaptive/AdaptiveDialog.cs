@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -85,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Language Generator override.
         /// </value>
         [JsonProperty("generator")]
-        public LanguageGenerator Generator { get; set; }
+        public LanguageGenerator Generator { get; set; } = new TemplateEngineLanguageGenerator();
 
         /// <summary>
         /// Gets or sets trigger handlers to respond to conditions which modifying the executing plan. 
