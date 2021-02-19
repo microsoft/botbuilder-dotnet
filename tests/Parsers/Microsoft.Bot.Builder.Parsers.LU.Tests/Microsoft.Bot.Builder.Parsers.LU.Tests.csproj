@@ -65,6 +65,12 @@
     <None Update="Fixtures\testLU3.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Fixtures\testLU310.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Fixtures\testLU310.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Fixtures\testLU4.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
