@@ -10,5 +10,9 @@
         ],
         "label": "Teams messaging extension query",
         "subtitle": "Invoke activity.name='composeExtension/query'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams",
+      "label": "Messaging extension - on query"
     }
 }

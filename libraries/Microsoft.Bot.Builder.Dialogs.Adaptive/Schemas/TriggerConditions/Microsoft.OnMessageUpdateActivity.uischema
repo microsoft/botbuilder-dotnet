@@ -10,5 +10,10 @@
         ],
         "label": "Message updated",
         "subtitle": "Message updated activity"
+    },
+    "trigger": {
+		"label": "Message updated (Message updated activity)",
+		"order": 5.84,
+		"submenu": "Activities"
     }
 }

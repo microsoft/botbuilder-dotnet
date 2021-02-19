@@ -709,6 +709,15 @@
         "*"
       ],
       "subtitle": "Activity received"
+    },
+    "trigger": {
+      "label": "Activities (Activity received)",
+      "order": 5.1,
+      "submenu": {
+        "label": "Activities",
+        "placeholder": "Select an activity type",
+        "prompt": "Which activity type?"
+      }
     }
   },
   "Microsoft.OnAssignEntity": {
@@ -735,6 +744,15 @@
         "*"
       ],
       "subtitle": "Begin dialog event"
+    },
+    "trigger": {
+      "label": "Dialog started (Begin dialog event)",
+      "order": 4.1,
+      "submenu": {
+        "label": "Dialog events",
+        "placeholder": "Select an event type",
+        "prompt": "Which event?"
+      }
     }
   },
   "Microsoft.OnCancelDialog": {
@@ -748,6 +766,11 @@
         "*"
       ],
       "subtitle": "Cancel dialog event"
+    },
+    "trigger": {
+      "label": "Dialog cancelled (Cancel dialog event)",
+      "order": 4.2,
+      "submenu": "Dialog events"
     }
   },
   "Microsoft.OnChooseEntity": {
@@ -770,6 +793,10 @@
         "condition",
         "*"
       ]
+    },
+    "trigger": {
+      "label": "Duplicated intents recognized",
+      "order": 6
     }
   },
   "Microsoft.OnCondition": {
@@ -798,6 +825,11 @@
         "*"
       ],
       "subtitle": "ConversationUpdate activity"
+    },
+    "trigger": {
+      "label": "Greeting (ConversationUpdate activity)",
+      "order": 5.2,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnDialogEvent": {
@@ -811,6 +843,10 @@
         "*"
       ],
       "subtitle": "Dialog event"
+    },
+    "trigger": {
+      "label": "Custom events",
+      "order": 7
     }
   },
   "Microsoft.OnEndOfActions": {
@@ -837,6 +873,11 @@
         "*"
       ],
       "subtitle": "EndOfConversation activity"
+    },
+    "trigger": {
+      "label": "Conversation ended (EndOfConversation activity)",
+      "order": 5.3,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnError": {
@@ -850,6 +891,11 @@
         "*"
       ],
       "subtitle": "Error event"
+    },
+    "trigger": {
+      "label": "Error occurred (Error event)",
+      "order": 4.3,
+      "submenu": "Dialog events"
     }
   },
   "Microsoft.OnEventActivity": {
@@ -863,6 +909,11 @@
         "*"
       ],
       "subtitle": "Event activity"
+    },
+    "trigger": {
+      "label": "Event received (Event activity)",
+      "order": 5.4,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnHandoffActivity": {
@@ -876,6 +927,11 @@
         "*"
       ],
       "subtitle": "Handoff activity"
+    },
+    "trigger": {
+      "label": "Handover to human (Handoff activity)",
+      "order": 5.5,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnInstallationUpdateActivity": {
@@ -904,6 +960,10 @@
         "*"
       ],
       "subtitle": "Intent recognized"
+    },
+    "trigger": {
+      "label": "Intent recognized",
+      "order": 1
     }
   },
   "Microsoft.OnInvokeActivity": {
@@ -917,6 +977,11 @@
         "*"
       ],
       "subtitle": "Invoke activity"
+    },
+    "trigger": {
+      "label": "Conversation invoked (Invoke activity)",
+      "order": 5.6,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageActivity": {
@@ -930,6 +995,11 @@
         "*"
       ],
       "subtitle": "Message received activity"
+    },
+    "trigger": {
+      "label": "Message received (Message received activity)",
+      "order": 5.81,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageDeleteActivity": {
@@ -943,6 +1013,11 @@
         "*"
       ],
       "subtitle": "Message deleted activity"
+    },
+    "trigger": {
+      "label": "Message deleted (Message deleted activity)",
+      "order": 5.82,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageReactionActivity": {
@@ -956,6 +1031,11 @@
         "*"
       ],
       "subtitle": "Message reaction activity"
+    },
+    "trigger": {
+      "label": "Message reaction (Message reaction activity)",
+      "order": 5.83,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageUpdateActivity": {
@@ -969,6 +1049,17 @@
         "*"
       ],
       "subtitle": "Message updated activity"
+    },
+    "trigger": {
+      "label": "Message updated (Message updated activity)",
+      "order": 5.84,
+      "submenu": "Activities"
+    }
+  },
+  "Microsoft.OnQnAMatch": {
+    "trigger": {
+      "label": "QnA Intent recognized",
+      "order": 2
     }
   },
   "Microsoft.OnRepromptDialog": {
@@ -982,6 +1073,11 @@
         "*"
       ],
       "subtitle": "Reprompt dialog event"
+    },
+    "trigger": {
+      "label": "Re-prompt for input (Reprompt dialog event)",
+      "order": 4.4,
+      "submenu": "Dialog events"
     }
   },
   "Microsoft.OnTypingActivity": {
@@ -995,6 +1091,11 @@
         "*"
       ],
       "subtitle": "Typing activity"
+    },
+    "trigger": {
+      "label": "User is typing (Typing activity)",
+      "order": 5.7,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnUnknownIntent": {
@@ -1008,6 +1109,10 @@
         "*"
       ],
       "subtitle": "Unknown intent recognized"
+    },
+    "trigger": {
+      "label": "Unknown intent",
+      "order": 3
     }
   },
   "Microsoft.QnAMakerDialog": {
@@ -1265,6 +1370,22 @@
       "subtitle": "Update Activity"
     }
   },
+  "Teams.GetMeetingParticipant": {
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
+    }
+  },
+  "Teams.GetMember": {
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
+    }
+  },
   "Teams.GetPagedMembers": {
     "form": {
       "label": "Get paged members",
@@ -1275,6 +1396,12 @@
         "*"
       ],
       "subtitle": "Gets members of a one-on-one, group, or team conversation."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
     }
   },
   "Teams.GetPagedTeamMembers": {
@@ -1288,6 +1415,36 @@
         "*"
       ],
       "subtitle": "Gets members for a team conversation."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
+    }
+  },
+  "Teams.GetTeamChannels": {
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
+    }
+  },
+  "Teams.GetTeamDetails": {
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
+    }
+  },
+  "Teams.GetTeamMember": {
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Get Microsoft Teams data"
+      ]
     }
   },
   "Teams.OnAppBasedLinkQuery": {
@@ -1301,6 +1458,13 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/queryLink'"
+    },
+    "trigger": {
+      "submenu": {
+        "label": "Microsoft Teams",
+        "placeholder": "Select a Teams event type",
+        "prompt": "Which Teams event?"
+      }
     }
   },
   "Teams.OnCardAction": {
@@ -1314,6 +1478,34 @@
         "*"
       ],
       "subtitle": "Invoke activity with no activity.name"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnChannelCreated": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnChannelDeleted": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnChannelRenamed": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnChannelRestored": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnFileConsent": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMEBotMessagePreviewEdit": {
@@ -1327,6 +1519,10 @@
         "*"
       ],
       "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'edit'"
+    },
+    "trigger": {
+      "label": "Messaging extension - BotMessagePreviewEdit",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMEBotMessagePreviewSend": {
@@ -1340,6 +1536,10 @@
         "*"
       ],
       "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
+    },
+    "trigger": {
+      "label": "Messaging extension - BotMessagePreviewSend",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMECardButtonClicked": {
@@ -1353,6 +1553,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
+    },
+    "trigger": {
+      "label": "Messaging extension - car button clicked",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMEConfigQuerySettingUrl": {
@@ -1366,6 +1570,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/querySettingUrl'"
+    },
+    "trigger": {
+      "label": "Messaging extension - on config query setting url",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMEConfigSetting": {
@@ -1379,6 +1587,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/setting'"
+    },
+    "trigger": {
+      "label": "Messaging extension - on config setting",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMEFetchTask": {
@@ -1392,6 +1604,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/fetchTask'"
+    },
+    "trigger": {
+      "label": "Messaging extension - on fetch task",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMEQuery": {
@@ -1405,6 +1621,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/query'"
+    },
+    "trigger": {
+      "label": "Messaging extension - on query",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMESelectItem": {
@@ -1418,6 +1638,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/selectItem'"
+    },
+    "trigger": {
+      "label": "Messaging extension - on select item",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnMESubmitAction": {
@@ -1431,6 +1655,10 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='composeExtension/submitAction'"
+    },
+    "trigger": {
+      "label": "Messaging extension - on submit action",
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnO365ConnectorCardAction": {
@@ -1444,6 +1672,9 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='actionableMessage/executeAction'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnTabFetch": {
@@ -1457,6 +1688,14 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='tab/fetch'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnTabSubmit": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnTaskModuleFetch": {
@@ -1470,6 +1709,9 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='task/fetch'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.OnTaskModuleSubmit": {
@@ -1483,6 +1725,34 @@
         "*"
       ],
       "subtitle": "Invoke activity.name='task/submit'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnTeamArchived": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnTeamDeleted": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnTeamRenamed": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnTeamRestored": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
+    }
+  },
+  "Teams.OnTeamUnarchived": {
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
   },
   "Teams.SendAppBasedLinkQueryResponse": {
@@ -1495,6 +1765,12 @@
         "*"
       ],
       "subtitle": "Send a response to a query link request."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   },
   "Teams.SendMEActionResponse": {
@@ -1511,6 +1787,12 @@
         "*"
       ],
       "subtitle": "Send a response for a messaging extension request."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMEAttachmentsResponse": {
@@ -1524,6 +1806,12 @@
         "*"
       ],
       "subtitle": "Send an invoke response containing one or more attachments to a messaging extension request."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMEAuthResponse": {
@@ -1536,6 +1824,12 @@
         "*"
       ],
       "subtitle": "Send a response to a messaging extensin requiring auth."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMEBotMessagePreviewResponse": {
@@ -1548,6 +1842,12 @@
         "*"
       ],
       "subtitle": "Send a bot message preview response to a messaging extension request."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMEConfigQuerySettingUrlResponse": {
@@ -1560,6 +1860,12 @@
         "*"
       ],
       "subtitle": "Send a response to a query setting config url request."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMEMessageResponse": {
@@ -1572,6 +1878,12 @@
         "*"
       ],
       "subtitle": "Send a message response containing text only."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMESelectItemResponse": {
@@ -1584,6 +1896,12 @@
         "*"
       ],
       "subtitle": "Send a messaging extension response when an item is selected"
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Messaging extension"
+      ]
     }
   },
   "Teams.SendMessageToTeamsChannel": {
@@ -1597,6 +1915,12 @@
         "*"
       ],
       "subtitle": "Create a thread and send a message to a teams channel."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   },
   "Teams.SendTabAuthResponse": {
@@ -1609,6 +1933,12 @@
         "*"
       ],
       "subtitle": "Send a response to a cards tab requiring auth."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   },
   "Teams.SendTabCardResponse": {
@@ -1619,6 +1949,12 @@
         "*"
       ],
       "subtitle": "Send a tab continue response containing adaptive cards."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   },
   "Teams.SendTaskModuleCardResponse": {
@@ -1635,6 +1971,12 @@
         "*"
       ],
       "subtitle": "Send a continue response containing a card."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   },
   "Teams.SendTaskModuleMessageResponse": {
@@ -1647,6 +1989,12 @@
         "*"
       ],
       "subtitle": "Send a message response containing text only."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   },
   "Teams.SendTaskModuleUrlResponse": {
@@ -1664,6 +2012,12 @@
         "*"
       ],
       "subtitle": "Send a continue response containing a url."
+    },
+    "menu": {
+      "submenu": [
+        "Microsoft Teams",
+        "Response"
+      ]
     }
   }
 }
