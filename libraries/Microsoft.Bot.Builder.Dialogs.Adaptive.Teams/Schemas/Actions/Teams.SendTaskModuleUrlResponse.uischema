@@ -14,5 +14,8 @@
             "completionBotId",
             "*"
         ]
+    },
+    "menu": {
+      "submenu": ["Microsoft Teams", "Response"]
     }
 }

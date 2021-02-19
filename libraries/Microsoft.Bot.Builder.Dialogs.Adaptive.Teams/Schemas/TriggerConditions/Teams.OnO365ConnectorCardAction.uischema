@@ -10,5 +10,8 @@
         ],
         "label": "Teams O365 connector card action",
         "subtitle": "Invoke activity.name='actionableMessage/executeAction'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams"
     }
 }
