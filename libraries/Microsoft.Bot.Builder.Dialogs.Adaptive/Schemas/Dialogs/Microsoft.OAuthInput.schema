@@ -109,7 +109,7 @@
     "required": [
         "connectionName"
     ],
-    "policies": [
+    "$policies": [
         {
             "type": "interactive"
         }

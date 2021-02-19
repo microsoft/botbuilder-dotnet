@@ -6,16 +6,9 @@
     "type": "object",
     "required": [
     ],
-    "policies": [
+    "$policies": [
         {
-            "type": "triggerNotInteractive"
-        },
-        {
-            "type": "triggerRequiresAction",
-            "kinds": [
-                "Teams.SendMEConfigQuerySettingUrlResponse",
-                "Teams.SendMEAuthResponse"
-            ]
+            "type": "notInteractive"
         }
     ]
 }

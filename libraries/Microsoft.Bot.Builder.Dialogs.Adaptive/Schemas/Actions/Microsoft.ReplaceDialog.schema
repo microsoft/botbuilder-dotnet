@@ -52,7 +52,7 @@
             "default": true
         }
     },
-    "policies": [
+    "$policies": [
         {
             "type": "lastAction"
         }

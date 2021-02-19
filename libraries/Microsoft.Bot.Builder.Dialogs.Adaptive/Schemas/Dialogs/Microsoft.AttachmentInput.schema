@@ -55,7 +55,7 @@
             ]
         }
     },
-    "policies": [
+    "$policies": [
         {
             "type": "interactive"
         }

@@ -36,13 +36,5 @@
                 "=user.age > 3"
             ]
         }
-    },
-    "policies": [
-        {
-            "type": "allowedTrigger",
-            "kinds": [
-                "Teams.OnAppBasedLinkQuery"
-            ]
-        }
-    ]
+    }
 }

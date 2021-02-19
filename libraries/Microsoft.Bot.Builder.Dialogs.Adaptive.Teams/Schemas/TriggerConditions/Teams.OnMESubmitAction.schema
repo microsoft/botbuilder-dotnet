@@ -6,12 +6,12 @@
     "type": "object",
     "required": [
     ],
-    "policies": [
+    "$policies": [
         {
-            "type": "triggerNotInteractive"
+            "type": "notInteractive"
         },
         {
-            "type": "triggerRequiresAction",
+            "type": "requiresAction",
             "kinds": [
                 "Teams.SendMEActionResponse"
             ]

@@ -5,5 +5,16 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction' and activity.value.botMessagePreviewAction == 'edit'.",
     "type": "object",
     "required": [
+    ],
+    "$policies": [
+        {
+            "type": "notInteractive"
+        },
+        {
+            "type": "requiresAction",
+            "kinds": [
+                "Teams.SendMEActionResponse"
+            ]
+        }
     ]
 }

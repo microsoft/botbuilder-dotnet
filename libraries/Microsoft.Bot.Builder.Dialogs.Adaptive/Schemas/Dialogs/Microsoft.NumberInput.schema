@@ -39,7 +39,7 @@
             "default": "en-us"
         }
     },
-    "policies": [
+    "$policies": [
         {
             "type": "interactive"
         }

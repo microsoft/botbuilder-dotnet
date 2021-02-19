@@ -27,7 +27,7 @@
             "description": "Action Id to execute next"
         }
     },
-    "policies": [
+    "$policies": [
         {
             "type": "lastAction"
         }

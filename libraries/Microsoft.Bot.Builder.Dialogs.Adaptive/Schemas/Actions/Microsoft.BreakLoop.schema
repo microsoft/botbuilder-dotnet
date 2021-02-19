@@ -20,7 +20,7 @@
             ]
         }
     },
-    "policies": [
+    "$policies": [
         {
             "type": "lastAction"
         }

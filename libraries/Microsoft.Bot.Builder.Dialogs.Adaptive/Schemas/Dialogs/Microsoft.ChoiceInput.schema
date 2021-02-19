@@ -215,7 +215,7 @@
             ]
         }
     },
-    "policies": [
+    "$policies": [
         {
             "type": "interactive"
         }

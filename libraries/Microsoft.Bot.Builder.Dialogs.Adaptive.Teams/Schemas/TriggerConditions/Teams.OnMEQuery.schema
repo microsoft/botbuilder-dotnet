@@ -5,5 +5,17 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/query'.",
     "type": "object",
     "required": [
+    ],
+    "$policies": [
+        {
+            "type": "notInteractive"
+        },
+        {
+            "type": "requiresAction",
+            "kinds": [
+                "Teams.SendMEAttachmentsResponse",
+                "Teams.SendMEAuthResponse"
+            ]
+        }
     ]
 }

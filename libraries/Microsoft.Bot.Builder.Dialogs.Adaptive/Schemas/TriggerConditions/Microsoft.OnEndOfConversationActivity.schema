@@ -6,9 +6,9 @@
     "type": "object",
     "required": [
     ],
-    "policies": [
+    "$policies": [
         {
-            "type": "triggerNotInteractive"
+            "type": "notInteractive"
         }
     ]
 }
