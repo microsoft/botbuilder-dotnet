@@ -38,9 +38,7 @@
         "description": "Default locale.",
         "default": "en-us"
     },
-    "policies": [
-        {
-            "type": "interactive"
-        }
-    ]
+    "$policies": {
+        "interactive": true
+    }
 }

@@ -27,9 +27,7 @@
             "description": "Error value to throw."
         }
     },
-    "policies": [
-        {
-            "type": "lastAction"
-        }
-    ]
+    "$policies": {
+        "lastAction": true
+    }
 }
