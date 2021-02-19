@@ -10,5 +10,9 @@
         ],
         "label": "Teams messaging extension submit action",
         "subtitle": "Invoke activity.name='composeExtension/submitAction'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams",
+      "label": "Messaging extension - on submit action"
     }
 }

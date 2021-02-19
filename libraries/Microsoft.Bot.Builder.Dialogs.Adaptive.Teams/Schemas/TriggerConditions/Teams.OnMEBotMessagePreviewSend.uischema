@@ -10,5 +10,9 @@
         ],
         "label": "Teams messaging extension preview send submit action",
         "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams",
+      "label": "Messaging extension - BotMessagePreviewSend"
     }
 }

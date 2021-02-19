@@ -10,5 +10,8 @@
             "cacheDuration",
             "*"
         ]
+    },
+    "menu": {
+      "submenu": ["Microsoft Teams", "Messaging extension"]
     }
 }

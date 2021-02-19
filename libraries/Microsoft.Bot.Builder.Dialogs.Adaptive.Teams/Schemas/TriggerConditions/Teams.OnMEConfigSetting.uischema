@@ -10,5 +10,9 @@
         ],
         "label": "Teams messaging extension configuration setting",
         "subtitle": "Invoke activity.name='composeExtension/setting'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams",
+      "label": "Messaging extension - on config setting"
     }
 }
