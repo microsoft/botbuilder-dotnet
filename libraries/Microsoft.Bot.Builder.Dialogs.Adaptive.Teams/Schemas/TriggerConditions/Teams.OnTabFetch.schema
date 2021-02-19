@@ -6,13 +6,11 @@
     "type": "object",
     "required": [
     ],
-    "$policies": [
-        {
-            "requiresKind": [
-                "Teams.SendTabAuthResponse",
-                "Teams.SendTabCardResponse"
-            ],
-            "nonInteractive": true
-        }
-    ]
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendTabAuthResponse",
+            "Teams.SendTabCardResponse"
+        ],
+        "nonInteractive": true
+    }
 }

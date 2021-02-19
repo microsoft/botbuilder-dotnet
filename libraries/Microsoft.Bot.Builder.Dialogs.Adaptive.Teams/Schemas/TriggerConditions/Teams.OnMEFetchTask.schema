@@ -7,13 +7,11 @@
     "required": [
         "actions"
     ],
-    "$policies": [
-        {
-            "requiresKind": [
-                "Teams.SendMEActionResponse",
-                "Teams.SendMEAuthResponse"
-            ],
-            "nonInteractive": true
-        }
-    ]
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendMEActionResponse",
+            "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+    }
 }

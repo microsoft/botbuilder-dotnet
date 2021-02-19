@@ -9,13 +9,11 @@
     ],
     "required": [
     ],
-    "$policies": [
-        {
-            "requiresKind": [
-                "Teams.SendAppBasedLinkQueryResponse",
-                "Teams.SendMEAuthResponse"
-            ],
-            "nonInteractive": true
-        }
-    ]
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendAppBasedLinkQueryResponse",
+            "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+    }
 }

@@ -816,11 +816,9 @@
       "title": "Send activity to ask a question",
       "description": "This is an action which sends an activity to the user when a response is expected",
       "type": "object",
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -894,11 +892,9 @@
       ],
       "title": "Attachment input dialog",
       "description": "Collect information - Ask for a file or image.",
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "type": "object",
       "required": [
         "$kind"
@@ -1292,11 +1288,9 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -1337,11 +1331,9 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -1402,11 +1394,9 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -1502,11 +1492,9 @@
       "title": "Choice input dialog",
       "description": "Collect information - Pick from a list of choices",
       "type": "object",
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -1902,11 +1890,9 @@
       "title": "Confirm input dialog",
       "description": "Collect information - Ask for confirmation (yes or no).",
       "type": "object",
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -2362,11 +2348,9 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -2527,11 +2511,9 @@
         "description": "Default locale.",
         "default": "en-us"
       },
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -3208,11 +3190,9 @@
       "title": "End dialog",
       "description": "End this dialog.",
       "type": "object",
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -3655,11 +3635,9 @@
         "actionId",
         "$kind"
       ],
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -4251,10 +4229,10 @@
           "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -5178,11 +5156,9 @@
       "title": "Number input dialog",
       "description": "Collect information - Ask for a number.",
       "type": "object",
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -5390,11 +5366,9 @@
         "connectionName",
         "$kind"
       ],
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -6347,11 +6321,9 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "type": "notInteractive"
-        }
-      ],
+      "$policies": {
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -8034,11 +8006,9 @@
       "type": "object",
       "title": "Repeat dialog",
       "description": "Repeat current dialog.",
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -8106,11 +8076,9 @@
       "type": "object",
       "title": "Replace dialog",
       "description": "Replace current dialog with another dialog.",
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -9938,11 +9906,9 @@
       "type": "object",
       "title": "Text input dialog",
       "description": "Collection information - Ask for a word or sentence.",
-      "$policies": [
-        {
-          "interactive": true
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -10149,11 +10115,9 @@
         "errorValue",
         "$kind"
       ],
-      "$policies": [
-        {
-          "lastAction": true
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -10840,15 +10804,13 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendAppBasedLinkQueryResponse",
-            "Teams.SendMEAuthResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendAppBasedLinkQueryResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11297,14 +11259,12 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendMEActionResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEActionResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11497,15 +11457,13 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendMEConfigQuerySettingUrlResponse",
-            "Teams.SendMEAuthResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEConfigQuerySettingUrlResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11570,11 +11528,9 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11640,15 +11596,13 @@
         "actions",
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendMEActionResponse",
-            "Teams.SendMEAuthResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEActionResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11713,15 +11667,13 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendMEAttachmentsResponse",
-            "Teams.SendMEAuthResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEAttachmentsResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11786,14 +11738,12 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "SendMEAttachmentsResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "SendMEAttachmentsResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11858,14 +11808,12 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "SendMEActionResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "SendMEActionResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11994,15 +11942,13 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendTabAuthResponse",
-            "Teams.SendTabCardResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTabAuthResponse",
+          "Teams.SendTabCardResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12067,14 +12013,12 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendTabCardResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTabCardResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12139,16 +12083,14 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendTaskModuleCardResponse",
-            "Teams.SendTaskModuleMessageResponse",
-            "Teams.SendTaskModuleUrlResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTaskModuleCardResponse",
+          "Teams.SendTaskModuleMessageResponse",
+          "Teams.SendTaskModuleUrlResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12213,16 +12155,14 @@
       "required": [
         "$kind"
       ],
-      "$policies": [
-        {
-          "requiresKind": [
-            "Teams.SendTaskModuleCardResponse",
-            "Teams.SendTaskModuleMessageResponse",
-            "Teams.SendTaskModuleUrlResponse"
-          ],
-          "nonInteractive": true
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTaskModuleCardResponse",
+          "Teams.SendTaskModuleMessageResponse",
+          "Teams.SendTaskModuleUrlResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {

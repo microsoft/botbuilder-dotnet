@@ -28,9 +28,7 @@
             ]
         }
     },
-    "$policies": [
-        {
-            "lastAction": true
-        }
-    ]
+    "$policies": {
+        "lastAction": true
+    }
 }

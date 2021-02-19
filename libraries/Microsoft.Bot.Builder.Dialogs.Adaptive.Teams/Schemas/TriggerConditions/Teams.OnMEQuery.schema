@@ -6,13 +6,11 @@
     "type": "object",
     "required": [
     ],
-    "$policies": [
-        {
-            "requiresKind": [
-                "Teams.SendMEAttachmentsResponse",
-                "Teams.SendMEAuthResponse"
-            ],
-            "nonInteractive": true
-        }
-    ]
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendMEAttachmentsResponse",
+            "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+    }
 }
