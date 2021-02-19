@@ -354,6 +354,7 @@ namespace Microsoft.Bot.Builder.Parsers.LU.Tests.Parser
         [InlineData("testLU307")]
         [InlineData("testLU308")]
         [InlineData("testLU309")]
+        [InlineData("testLU310")]
         public void ParseLuContentAutomated(string fileName)
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Fixtures", fileName + ".txt");
