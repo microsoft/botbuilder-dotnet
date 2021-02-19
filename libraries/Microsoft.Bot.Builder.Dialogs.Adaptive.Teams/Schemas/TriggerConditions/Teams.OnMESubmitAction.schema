@@ -8,7 +8,7 @@
     ],
     "$policies": {
         "requiresKind": [
-            "SendMEActionResponse"
+            "Teams.SendMEActionResponse"
         ],
         "nonInteractive": true
     }
