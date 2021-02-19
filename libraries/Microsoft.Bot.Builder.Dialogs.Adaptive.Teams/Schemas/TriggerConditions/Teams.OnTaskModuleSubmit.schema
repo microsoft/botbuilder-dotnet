@@ -5,5 +5,13 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/submit'.",
     "type": "object",
     "required": [
-    ]
+    ],
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendTaskModuleCardResponse",
+            "Teams.SendTaskModuleMessageResponse",
+            "Teams.SendTaskModuleUrlResponse"
+        ],
+        "nonInteractive": true
+    }
 }

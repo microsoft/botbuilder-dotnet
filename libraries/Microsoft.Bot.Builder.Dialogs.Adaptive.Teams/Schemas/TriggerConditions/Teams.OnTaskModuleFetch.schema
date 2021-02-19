@@ -6,17 +6,12 @@
     "type": "object",
     "required": [
     ],
-    "policies": [
-        {
-            "type": "triggerNotInteractive"
-        },
-        {
-            "type": "triggerRequiresAction",
-            "kinds": [
-                "Teams.SendTaskModuleCardResponse",
-                "Teams.SendTaskModuleMessageResponse",
-                "Teams.SendTaskModuleUrlResponse"
-            ]
-        }
-    ]
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendTaskModuleCardResponse",
+            "Teams.SendTaskModuleMessageResponse",
+            "Teams.SendTaskModuleUrlResponse"
+        ],
+        "nonInteractive": true
+    }
 }
