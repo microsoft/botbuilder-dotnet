@@ -11,14 +11,11 @@
     ],
     "$policies": [
         {
-            "type": "notInteractive"
-        },
-        {
-            "type": "requiresAction",
-            "kinds": [
+            "requiresKind": [
                 "Teams.SendAppBasedLinkQueryResponse",
                 "Teams.SendMEAuthResponse"
-            ]
+            ],
+            "nonInteractive": true
         }
     ]
 }

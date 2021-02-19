@@ -1080,10 +1080,19 @@
     }
   },
   "Microsoft.SendHandoffActivity": {
+    "flow": {
+      "widget": "ActionHeader"
+    },
     "form": {
       "helpLink": "https://aka.ms/bfc-send-handoff-activity",
       "label": "Send a handoff request",
       "subtitle": "Send Handoff Activity"
+    },
+    "menu": {
+      "label": "Send Handoff Event",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.SetProperties": {

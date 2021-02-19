@@ -8,13 +8,10 @@
     ],
     "$policies": [
         {
-            "type": "notInteractive"
-        },
-        {
-            "type": "requiresAction",
-            "kinds": [
-                "Teams.SendMEActionResponse"
-            ]
+            "requiresKind": [
+                "SendMEActionResponse"
+            ],
+            "nonInteractive": true
         }
     ]
 }

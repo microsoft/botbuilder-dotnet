@@ -9,14 +9,11 @@
     ],
     "$policies": [
         {
-            "type": "notInteractive"
-        },
-        {
-            "type": "requiresAction",
-            "kinds": [
+            "requiresKind": [
                 "Teams.SendMEActionResponse",
                 "Teams.SendMEAuthResponse"
-            ]
+            ],
+            "nonInteractive": true
         }
     ]
 }

@@ -8,15 +8,12 @@
     ],
     "$policies": [
         {
-            "type": "notInteractive"
-        },
-        {
-            "type": "requiresAction",
-            "kinds": [
+            "requiresKind": [
                 "Teams.SendTaskModuleCardResponse",
                 "Teams.SendTaskModuleMessageResponse",
                 "Teams.SendTaskModuleUrlResponse"
-            ]
+            ],
+            "nonInteractive": true
         }
     ]
 }

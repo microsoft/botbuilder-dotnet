@@ -30,7 +30,7 @@
     },
     "$policies": [
         {
-            "type": "lastAction"
+            "lastAction": true
         }
     ]
 }

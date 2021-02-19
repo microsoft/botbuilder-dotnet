@@ -217,7 +217,7 @@
     },
     "$policies": [
         {
-            "type": "interactive"
+            "interactive": true
         }
     ]
 }

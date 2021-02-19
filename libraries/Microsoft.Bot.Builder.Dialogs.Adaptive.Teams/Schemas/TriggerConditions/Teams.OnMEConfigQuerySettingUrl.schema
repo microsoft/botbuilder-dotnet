@@ -8,14 +8,11 @@
     ],
     "$policies": [
         {
-            "type": "notInteractive"
-        },
-        {
-            "type": "requiresAction",
-            "kinds": [
+            "requiresKind": [
                 "Teams.SendMEConfigQuerySettingUrlResponse",
                 "Teams.SendMEAuthResponse"
-            ]
+            ],
+            "nonInteractive": true
         }
     ]
 }
