@@ -10,5 +10,9 @@
         ],
         "label": "Teams messaging extension configuration query setting url",
         "subtitle": "Invoke activity.name='composeExtension/querySettingUrl'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams",
+      "label": "Messaging extension - on config query setting url"
     }
 }

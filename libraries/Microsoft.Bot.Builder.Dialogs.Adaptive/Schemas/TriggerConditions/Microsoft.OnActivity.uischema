@@ -10,5 +10,14 @@
         ],
         "label": "Activities",
         "subtitle": "Activity received"
+    },
+    "trigger": {
+		"label": "Activities (Activity received)",
+		"order": 5.1,
+		"submenu": {
+			"label": "Activities",
+			"prompt": "Which activity type?",
+			"placeholder": "Select an activity type"
+		}
     }
 }

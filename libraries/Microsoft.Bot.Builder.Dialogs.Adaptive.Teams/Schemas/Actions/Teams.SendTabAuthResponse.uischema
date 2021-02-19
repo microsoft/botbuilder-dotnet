@@ -9,5 +9,8 @@
             "resultProperty",
             "*"
         ]
+    },
+    "menu": {
+      "submenu": ["Microsoft Teams", "Response"]
     }
 }

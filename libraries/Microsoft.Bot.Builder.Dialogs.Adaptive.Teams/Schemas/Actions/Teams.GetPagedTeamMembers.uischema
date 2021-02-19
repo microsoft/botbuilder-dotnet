@@ -10,5 +10,8 @@
             "continuationToken",
             "*"
         ]
+    },
+    "menu": {
+      "submenu": ["Microsoft Teams", "Get Microsoft Teams data"]
     }
 }

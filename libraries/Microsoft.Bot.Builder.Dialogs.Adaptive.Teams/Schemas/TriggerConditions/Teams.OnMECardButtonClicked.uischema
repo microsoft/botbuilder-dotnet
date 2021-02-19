@@ -10,5 +10,9 @@
         ],
         "label": "Teams messaging extension card button clicked",
         "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
+    },
+    "trigger": {
+      "submenu": "Microsoft Teams",
+      "label": "Messaging extension - car button clicked"
     }
 }
