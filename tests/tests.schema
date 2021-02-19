@@ -11740,7 +11740,7 @@
       ],
       "$policies": {
         "requiresKind": [
-          "SendMEAttachmentsResponse"
+          "Teams.SendMEAttachmentsResponse"
         ],
         "nonInteractive": true
       },
@@ -11810,7 +11810,7 @@
       ],
       "$policies": {
         "requiresKind": [
-          "SendMEActionResponse"
+          "Teams.SendMEActionResponse"
         ],
         "nonInteractive": true
       },
