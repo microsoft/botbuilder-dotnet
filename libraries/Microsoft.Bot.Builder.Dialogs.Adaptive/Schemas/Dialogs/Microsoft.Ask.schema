@@ -31,9 +31,7 @@
             ]
         }
     },
-    "policies": [
-        {
-            "type": "interactive"
-        }
-    ]
+    "$policies": {
+        "interactive": true
+    }
 }

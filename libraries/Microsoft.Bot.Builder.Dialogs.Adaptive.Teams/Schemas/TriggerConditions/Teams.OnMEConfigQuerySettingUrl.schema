@@ -6,16 +6,11 @@
     "type": "object",
     "required": [
     ],
-    "policies": [
-        {
-            "type": "triggerNotInteractive"
-        },
-        {
-            "type": "triggerRequiresAction",
-            "kinds": [
-                "Teams.SendMEConfigQuerySettingUrlResponse",
-                "Teams.SendMEAuthResponse"
-            ]
-        }
-    ]
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendMEConfigQuerySettingUrlResponse",
+            "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+    }
 }

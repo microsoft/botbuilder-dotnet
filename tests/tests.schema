@@ -816,11 +816,9 @@
       "title": "Send activity to ask a question",
       "description": "This is an action which sends an activity to the user when a response is expected",
       "type": "object",
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -894,11 +892,9 @@
       ],
       "title": "Attachment input dialog",
       "description": "Collect information - Ask for a file or image.",
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "type": "object",
       "required": [
         "$kind"
@@ -1292,11 +1288,9 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -1337,11 +1331,9 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -1402,11 +1394,9 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -1502,11 +1492,9 @@
       "title": "Choice input dialog",
       "description": "Collect information - Pick from a list of choices",
       "type": "object",
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -1902,11 +1890,9 @@
       "title": "Confirm input dialog",
       "description": "Collect information - Ask for confirmation (yes or no).",
       "type": "object",
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -2362,11 +2348,9 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -2527,11 +2511,9 @@
         "description": "Default locale.",
         "default": "en-us"
       },
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -3208,11 +3190,9 @@
       "title": "End dialog",
       "description": "End this dialog.",
       "type": "object",
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -3655,11 +3635,9 @@
         "actionId",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -3895,10 +3873,7 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.ActivityTemplate"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+          "type": "string"
         },
         {
           "$ref": "#/definitions/botframework.json/definitions/Activity",
@@ -3907,7 +3882,10 @@
           ]
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
         }
       ]
     },
@@ -3930,19 +3908,16 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/CustomAction.dialog"
+          "type": "string"
         },
         {
-          "$ref": "#/definitions/CustomAction2.dialog"
+          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
         },
         {
           "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
+          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
           "$ref": "#/definitions/Microsoft.BeginDialog"
@@ -3960,12 +3935,6 @@
           "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ContinueConversation"
         },
         {
@@ -3973,9 +3942,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueLoop"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
         },
         {
           "$ref": "#/definitions/Microsoft.DebugBreak"
@@ -4032,15 +3998,6 @@
           "$ref": "#/definitions/Microsoft.LogAction"
         },
         {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
-        },
-        {
           "$ref": "#/definitions/Microsoft.RepeatDialog"
         },
         {
@@ -4068,12 +4025,6 @@
           "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
         },
         {
-          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ThrowException"
         },
         {
@@ -4081,6 +4032,30 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
@@ -4152,7 +4127,10 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/CustomAction.dialog"
+        },
+        {
+          "$ref": "#/definitions/CustomAction2.dialog"
         }
       ]
     },
@@ -4163,6 +4141,11 @@
       "type": "object",
       "oneOf": [
         {
+          "type": "string",
+          "title": "Reference to Microsoft.IEntityRecognizer",
+          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
+        },
+        {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
@@ -4215,11 +4198,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.IEntityRecognizer",
-          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
         }
       ]
     },
@@ -4229,13 +4207,13 @@
       "$role": "interface",
       "oneOf": [
         {
+          "type": "string"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
         },
         {
           "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
-        },
-        {
-          "type": "string"
         }
       ]
     },
@@ -4244,6 +4222,30 @@
       "description": "Components which derive from Recognizer class",
       "$role": "interface",
       "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
         {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
@@ -4254,9 +4256,6 @@
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
           "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
         },
         {
@@ -4278,22 +4277,13 @@
           "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-        },
-        {
           "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
@@ -4305,25 +4295,13 @@
           "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
           "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string"
         }
       ]
     },
@@ -4333,10 +4311,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.TextTemplate"
+          "type": "string"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.TextTemplate"
         }
       ]
     },
@@ -4345,6 +4323,11 @@
       "title": "Microsoft Triggers",
       "description": "Components which derive from OnCondition class.",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITrigger",
+          "description": "Reference to Microsoft.ITrigger .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
@@ -4506,11 +4489,6 @@
         },
         {
           "$ref": "#/definitions/Teams.OnTeamUnarchived"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITrigger",
-          "description": "Reference to Microsoft.ITrigger .dialog file."
         }
       ]
     },
@@ -4519,6 +4497,11 @@
       "title": "Selectors",
       "description": "Components which derive from TriggerSelector class.",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITriggerSelector",
+          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.ConditionalSelector"
         },
@@ -4533,11 +4516,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TrueSelector"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITriggerSelector",
-          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
     },
@@ -5178,11 +5156,9 @@
       "title": "Number input dialog",
       "description": "Collect information - Ask for a number.",
       "type": "object",
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -5390,11 +5366,9 @@
         "connectionName",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -6347,11 +6321,9 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        }
-      ],
+      "$policies": {
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -8034,11 +8006,9 @@
       "type": "object",
       "title": "Repeat dialog",
       "description": "Repeat current dialog.",
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -8106,11 +8076,9 @@
       "type": "object",
       "title": "Replace dialog",
       "description": "Replace current dialog with another dialog.",
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -9297,12 +9265,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IHttpRequestMock",
           "description": "Reference to Microsoft.Test.IHttpRequestMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
         }
       ]
     },
@@ -9317,12 +9285,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.ISettingMock",
           "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
         }
       ]
     },
@@ -9331,6 +9299,11 @@
       "description": "Components which derive from TestAction class",
       "$role": "interface",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ITestAction",
+          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
         },
@@ -9366,11 +9339,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserTyping"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.Test.ITestAction",
-          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
         }
       ]
     },
@@ -9380,12 +9348,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IUserTokenMock",
           "description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
         }
       ]
     },
@@ -9938,11 +9906,9 @@
       "type": "object",
       "title": "Text input dialog",
       "description": "Collection information - Ask for a word or sentence.",
-      "policies": [
-        {
-          "type": "interactive"
-        }
-      ],
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -10149,11 +10115,9 @@
         "errorValue",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "lastAction"
-        }
-      ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -10840,18 +10804,13 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendAppBasedLinkQueryResponse",
-            "Teams.SendMEAuthResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendAppBasedLinkQueryResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11300,6 +11259,12 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEActionResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11492,18 +11457,13 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendMEConfigQuerySettingUrlResponse",
-            "Teams.SendMEAuthResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEConfigQuerySettingUrlResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11568,18 +11528,9 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendMEConfigQuerySettingUrlResponse",
-            "Teams.SendMEAuthResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11645,18 +11596,13 @@
         "actions",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendMEActionResponse",
-            "Teams.SendMEAuthResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEActionResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11721,6 +11667,13 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendMEAttachmentsResponse",
+          "Teams.SendMEAuthResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11785,6 +11738,12 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "requiresKind": [
+          "SendMEAttachmentsResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11849,17 +11808,12 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendMEActionResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "SendMEActionResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -11988,18 +11942,13 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendTabAuthResponse",
-            "Teams.SendTabCardResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTabAuthResponse",
+          "Teams.SendTabCardResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12064,17 +12013,12 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendTabCardResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTabCardResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12139,19 +12083,14 @@
       "required": [
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "triggerNotInteractive"
-        },
-        {
-          "type": "triggerRequiresAction",
-          "kinds": [
-            "Teams.SendTaskModuleCardResponse",
-            "Teams.SendTaskModuleMessageResponse",
-            "Teams.SendTaskModuleUrlResponse"
-          ]
-        }
-      ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTaskModuleCardResponse",
+          "Teams.SendTaskModuleMessageResponse",
+          "Teams.SendTaskModuleUrlResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12216,6 +12155,14 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "requiresKind": [
+          "Teams.SendTaskModuleCardResponse",
+          "Teams.SendTaskModuleMessageResponse",
+          "Teams.SendTaskModuleUrlResponse"
+        ],
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12662,14 +12609,6 @@
         "card",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnAppBasedLinkQuery"
-          ]
-        }
-      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -12729,15 +12668,6 @@
       "required": [
         "card",
         "$kind"
-      ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnMEFetchTask",
-            "Teams.OnMESubmitAction"
-          ]
-        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -13041,14 +12971,6 @@
       "required": [
         "configUrl",
         "$kind"
-      ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnMEConfigQuerySettingUrl"
-          ]
-        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -13370,15 +13292,6 @@
         "cards",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnTabSubmit",
-            "Teams.OnTabFetch"
-          ]
-        }
-      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -13428,15 +13341,6 @@
       "required": [
         "card",
         "$kind"
-      ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnTaskModuleFetch",
-            "Teams.OnTaskModuleSubmit"
-          ]
-        }
       ],
       "additionalProperties": false,
       "patternProperties": {
@@ -13527,15 +13431,6 @@
         "message",
         "$kind"
       ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnTaskModuleFetch",
-            "Teams.OnTaskModuleSubmit"
-          ]
-        }
-      ],
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -13597,15 +13492,6 @@
       "required": [
         "url",
         "$kind"
-      ],
-      "policies": [
-        {
-          "type": "allowedTrigger",
-          "kinds": [
-            "Teams.OnTaskModuleFetch",
-            "Teams.OnTaskModuleSubmit"
-          ]
-        }
       ],
       "additionalProperties": false,
       "patternProperties": {

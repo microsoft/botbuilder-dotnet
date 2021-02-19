@@ -43,9 +43,7 @@
             "default": true
         }
     },
-    "policies": [
-        {
-            "type": "lastAction"
-        }
-    ]
+    "$policies": {
+        "lastAction": true
+    }
 }
