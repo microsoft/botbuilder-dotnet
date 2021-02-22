@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
