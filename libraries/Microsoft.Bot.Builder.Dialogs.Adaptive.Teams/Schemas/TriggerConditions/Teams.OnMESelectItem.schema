@@ -5,5 +5,11 @@
     "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
     "type": "object",
     "required": [
-    ]
+    ],
+    "$policies": {
+        "requiresKind": [
+            "Teams.SendMEAttachmentsResponse"
+        ],
+        "nonInteractive": true
+    }
 }
