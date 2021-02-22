@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Language Generator override.
         /// </value>
         [JsonProperty("generator")]
-        public LanguageGenerator Generator { get; set; } = new TemplateEngineLanguageGenerator();
+        public LanguageGenerator Generator { get; set; }
 
         /// <summary>
         /// Gets or sets trigger handlers to respond to conditions which modifying the executing plan. 
@@ -730,6 +730,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Generator != null)
             {
                 dialogContext.Services.Set(this.Generator);
+            }
+            else if (Generator == null && dialogContext.Services.Get<LanguageGenerator>() == null)
+            {
+                dialogContext.Services.Set(new TemplateEngineLanguageGenerator());
             }
         }
 
