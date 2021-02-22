@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext("foo", lg), "${test2()}", null));
         }
 
-        public class TestLanguageGeneratorMiddlewareDialog : AdaptiveDialog
+        public class TestLanguageGeneratorMiddlewareDialog : Dialog
         {
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default)
             {
