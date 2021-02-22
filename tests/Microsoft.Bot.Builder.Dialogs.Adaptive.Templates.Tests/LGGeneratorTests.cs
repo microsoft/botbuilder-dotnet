@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("default2", await lg.GenerateAsync(GetDialogContext("foo", lg), "${test2()}", null));
         }
 
-        public class TestLanguageGeneratorMiddlewareDialog : Dialog
+        public class TestLanguageGeneratorMiddlewareDialog : AdaptiveDialog
         {
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default)
             {
@@ -372,6 +372,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("turn4")
                 .AssertReply("ContinueDialog test3:subDialog.lg")
                 .AssertReply("Done")
+            .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task TestLGWithDefaultGenerator()
+        {
+            var dialog = new AdaptiveDialog()
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("hi ${titleCase('jack')}")
+                        }
+                    }
+                }
+            };
+
+            DialogManager dm = new DialogManager(dialog);
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hi")
+                .AssertReply("hi Jack")
             .StartTestAsync();
         }
 
