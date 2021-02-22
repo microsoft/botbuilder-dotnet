@@ -731,10 +731,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 dialogContext.Services.Set(this.Generator);
             }
-            else if (Generator == null && dialogContext.Services.Get<LanguageGenerator>() == null)
-            {
-                dialogContext.Services.Set(new TemplateEngineLanguageGenerator());
-            }
         }
 
         /// <summary>
