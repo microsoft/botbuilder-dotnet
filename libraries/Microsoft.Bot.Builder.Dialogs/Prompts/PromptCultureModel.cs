@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// Gets or Sets Culture Model's Locale.
         /// </summary>
         /// <value>
-        /// Ex: Locale. Example: "en-US".
+        /// Example: "en-US".
         /// </value>
         public string Locale { get; set; }
 
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// Gets or Sets Culture Model's InlineSeparator.
         /// </summary>
         /// <value>
-        /// Ex: Locale. Example: ", ".
+        /// Example: ", ".
         /// </value>
         public string Separator { get; set; }
 
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// Gets or Sets Culture Model's InlineOr.
         /// </summary>
         /// <value>
-        /// Ex: Locale. Example: " or ".
+        /// Example: " or ".
         /// </value>
         public string InlineOr { get; set; }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// Gets or Sets Culture Model's InlineOrMore.
         /// </summary>
         /// <value>
-        /// Ex: Locale. Example: ", or ".
+        /// Example: ", or ".
         /// </value>
         public string InlineOrMore { get; set; }
 
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// Gets or Sets Equivalent of "Yes" in Culture Model's Language.
         /// </summary>
         /// <value>
-        /// Ex: Locale. Example: "Yes".
+        /// Example: "Yes".
         /// </value>
         public string YesInLanguage { get; set; }
 
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// Gets or Sets Equivalent of "No" in Culture Model's Language.
         /// </summary>
         /// <value>
-        /// Ex: Locale. Example: "No".
+        /// Example: "No".
         /// </value>
         public string NoInLanguage { get; set; }
     }
