@@ -22,7 +22,7 @@
             }
         },
         "priority": {
-            "$ref": "schema:#/definitions/integerExpression",
+            "$ref": "schema:#/definitions/numberExpression",
             "title": "Priority",
             "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
