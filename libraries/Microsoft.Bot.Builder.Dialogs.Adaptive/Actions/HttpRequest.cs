@@ -242,9 +242,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             try
             {
-                // Single command running with a copy of the original data
-                client.DefaultRequestHeaders.Clear();
-
                 JToken instanceBody = null;
                 if (this.Body != null)
                 {
@@ -268,20 +265,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 // Bind each string token to the data in state
                 instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
 
+                using HttpRequestMessage request = new HttpRequestMessage(new System.Net.Http.HttpMethod(this.Method.ToString()), instanceUrl);
+            
                 // Set headers
                 if (instanceHeaders != null)
                 {
                     foreach (var unit in instanceHeaders)
                     {
-                        client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
+                        request.Headers.TryAddWithoutValidation(unit.Key, unit.Value);
                     }
                 }
 
-                // if there no usr-agent in the header, set the user-agent to Mozzila/5.0
-                if (!client.DefaultRequestHeaders.Contains("user-agent"))
-                {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
-                }
+                request.Headers.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
 
                 dynamic traceInfo = new JObject();
 
@@ -297,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     case HttpMethod.POST:
                         if (instanceBody == null)
                         {
-                            response = await client.PostAsync(instanceUrl, content: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
@@ -305,7 +300,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             {
                                 traceInfo.request.content = instanceBody.ToString();
                                 traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                                response = await client.PostAsync(instanceUrl, postContent, cancellationToken).ConfigureAwait(false);
+                                request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
+                                response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                             }
                         }
 
@@ -314,20 +310,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     case HttpMethod.PATCH:
                         if (instanceBody == null)
                         {
-                            using (var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl))
-                            {
-                                response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                            }
+                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
-                            using (var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl))
-                            {
-                                request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                                traceInfo.request.content = instanceBody.ToString();
-                                traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                                response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                            }
+                            request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
+                            traceInfo.request.content = instanceBody.ToString();
+                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         }
 
                         break;
@@ -335,7 +325,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     case HttpMethod.PUT:
                         if (instanceBody == null)
                         {
-                            response = await client.PutAsync(instanceUrl, content: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
@@ -343,18 +333,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             {
                                 traceInfo.request.content = instanceBody.ToString();
                                 traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                                response = await client.PutAsync(instanceUrl, putContent, cancellationToken).ConfigureAwait(false);
+                                request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
+                                response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                             }
                         }
 
                         break;
 
                     case HttpMethod.DELETE:
-                        response = await client.DeleteAsync(instanceUrl, cancellationToken).ConfigureAwait(false);
+                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         break;
 
                     case HttpMethod.GET:
-                        response = await client.GetAsync(instanceUrl, cancellationToken).ConfigureAwait(false);
+                        response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         break;
                 }
 
