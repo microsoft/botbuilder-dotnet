@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
+using System.Dynamic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -228,13 +227,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-#pragma warning disable CA2000 // Dispose objects before losing scope (excluding for now, to fix this we would need to understand better how HttpClient gets into turn state and determine if we should dispose it or not, this should also be analyzed once we start using HttpClientFactory).
-            var client = dc.Context.TurnState.Get<HttpClient>() ?? new HttpClient();
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
-            // Single command running with a copy of the original data
-            client.DefaultRequestHeaders.Clear();
-
             JToken instanceBody = null;
             if (this.Body != null)
             {
@@ -258,163 +250,132 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Bind each string token to the data in state
             instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
 
-            // Set headers
-            if (instanceHeaders != null)
+            using (HttpRequestMessage request = new HttpRequestMessage(new System.Net.Http.HttpMethod(this.Method.ToString()), instanceUrl))
             {
-                foreach (var unit in instanceHeaders)
+                // Set headers
+                if (instanceHeaders != null)
                 {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation(unit.Key, unit.Value);
+                    foreach (var unit in instanceHeaders)
+                    {
+                        request.Headers.TryAddWithoutValidation(unit.Key, unit.Value);
+                    }
                 }
-            }
 
-            // if there no usr-agent in the header, set the user-agent to Mozzila/5.0
-            if (!client.DefaultRequestHeaders.Contains("user-agent"))
-            {
-                client.DefaultRequestHeaders.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
-            }
+                dynamic traceInfo = new ExpandoObject();
+                traceInfo.request = new ExpandoObject();
+                traceInfo.request.method = this.Method.ToString();
+                traceInfo.request.url = instanceUrl;
+                string contentType = ContentType?.GetValue(dc.State) ?? "application/json";
 
-            dynamic traceInfo = new JObject();
+                if (this.Method == HttpMethod.PATCH || this.Method == HttpMethod.POST || this.Method == HttpMethod.PUT)
+                {
+                    var contentString = instanceBody.ToString();
+                    request.Content = new StringContent(contentString, Encoding.UTF8, contentType);
+                    traceInfo.request.content = contentString;
+                }
 
-            traceInfo.request = new JObject();
-            traceInfo.request.method = this.Method.ToString();
-            traceInfo.request.url = instanceUrl;
+                HttpResponseMessage response = await SendRequestAsync(dc, request, cancellationToken).ConfigureAwait(false);
+                traceInfo.request.headers = JObject.FromObject(request.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
 
-            HttpResponseMessage response = null;
-            string contentType = ContentType?.GetValue(dc.State) ?? "application/json";
+                var requestResult = new Result(response.Headers)
+                {
+                    StatusCode = (int)response.StatusCode,
+                    ReasonPhrase = response.ReasonPhrase,
+                };
 
-            switch (this.Method)
-            {
-                case HttpMethod.POST:
-                    if (instanceBody == null)
-                    {
-                        response = await client.PostAsync(instanceUrl, content: null, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        using (var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType))
-                        {
-                            traceInfo.request.content = instanceBody.ToString();
-                            traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                            response = await client.PostAsync(instanceUrl, postContent, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-
-                    break;
-
-                case HttpMethod.PATCH:
-                    if (instanceBody == null)
-                    {
-                        using (var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl))
-                        {
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-                    else
-                    {
-                        using (var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl))
-                        {
-                            request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
-                            traceInfo.request.content = instanceBody.ToString();
-                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                            response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-
-                    break;
-
-                case HttpMethod.PUT:
-                    if (instanceBody == null)
-                    {
-                        response = await client.PutAsync(instanceUrl, content: null, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        using (var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType))
-                        {
-                            traceInfo.request.content = instanceBody.ToString();
-                            traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                            response = await client.PutAsync(instanceUrl, putContent, cancellationToken).ConfigureAwait(false);
-                        }
-                    }
-
-                    break;
-
-                case HttpMethod.DELETE:
-                    response = await client.DeleteAsync(instanceUrl, cancellationToken).ConfigureAwait(false);
-                    break;
-
-                case HttpMethod.GET:
-                    response = await client.GetAsync(instanceUrl, cancellationToken).ConfigureAwait(false);
-                    break;
-            }
-
-            var requestResult = new Result(response.Headers)
-            {
-                StatusCode = (int)response.StatusCode,
-                ReasonPhrase = response.ReasonPhrase,
-            };
-
-            object content = (object)await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            switch (this.ResponseType.GetValue(dc.State))
-            {
-                case ResponseTypes.Activity:
-                    var activity = JsonConvert.DeserializeObject<Activity>((string)content);
-                    requestResult.Content = JObject.FromObject(activity);
-                    await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    break;
-
-                case ResponseTypes.Activities:
-                    var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
-                    requestResult.Content = JArray.FromObject(activities);
-                    await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    break;
-
-                case ResponseTypes.Json:
-                    // Try set with JOjbect for further retrieving
-                    try
-                    {
-                        content = JToken.Parse((string)content);
-                    }
-#pragma warning disable CA1031 // Do not catch general exception types (just stringify the content if we can't parse the content).
-                    catch
-#pragma warning restore CA1031 // Do not catch general exception types
-                    {
-                        content = content.ToString();
-                    }
-
-                    requestResult.Content = content;
-                    break;
-
-                case ResponseTypes.Binary:
-                    // Try to resolve binary data
+                var responseType = this.ResponseType.GetValue(dc.State);
+                if (responseType == ResponseTypes.Binary)
+                {
                     var bytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     requestResult.Content = bytes;
-                    break;
-                   
-                case ResponseTypes.None:
-                default:
-                    break;
+                }
+                else
+                {
+                    string content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    switch (this.ResponseType.GetValue(dc.State))
+                    {
+                        case ResponseTypes.Activity:
+                            var activity = JsonConvert.DeserializeObject<Activity>(content);
+                            requestResult.Content = JObject.FromObject(activity);
+                            await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            break;
+
+                        case ResponseTypes.Activities:
+                            var activities = JsonConvert.DeserializeObject<Activity[]>(content);
+                            requestResult.Content = JArray.FromObject(activities);
+                            await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            break;
+
+                        case ResponseTypes.Json:
+                            // Try set with JOjbect for further retrieving
+                            try
+                            {
+                                requestResult.Content = JToken.Parse(content);
+                            }
+#pragma warning disable CA1031 // Do not catch general exception types (just stringify the content if we can't parse the content).
+                            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+                            {
+                                requestResult.Content = content;
+                            }
+
+                            break;
+
+                        case ResponseTypes.None:
+                        default:
+                            break;
+                    }
+                }
+
+                traceInfo.response = JObject.FromObject(requestResult);
+
+                // Write Trace Activity for the http request and response values
+                await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: this.Id).ConfigureAwait(false);
+
+                if (this.ResultProperty != null)
+                {
+                    dc.State.SetValue(this.ResultProperty.GetValue(dc.State), requestResult);
+                }
+
+                // return the actionResult as the result of this operation
+                return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-
-            traceInfo.response = JObject.FromObject(requestResult);
-
-            // Write Trace Activity for the http request and response values
-            await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: this.Id).ConfigureAwait(false);
-
-            if (this.ResultProperty != null)
-            {
-                dc.State.SetValue(this.ResultProperty.GetValue(dc.State), requestResult);
-            }
-
-            // return the actionResult as the result of this operation
-            return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"{GetType().Name}[{Method} {Url?.ToString()}]";
+        }
+
+        /// <summary>
+        /// Sends the request. It uses the HttpClient from the TurnState. If TurnState doesn't have HttpClient, creates a new instance of HttpClient.
+        /// </summary>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="message">The http request message to send. Method mutates this object to add the user-agent if needed.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The http response.</returns>
+        protected virtual async Task<HttpResponseMessage> SendRequestAsync(DialogContext dc, HttpRequestMessage message, CancellationToken cancellationToken)
+        {
+            var client = dc.Context.TurnState.Get<HttpClient>();
+
+            // if there no user-agent in the header, set the user-agent to Mozzila/5.0
+            if (client == null || !client.DefaultRequestHeaders.Contains("user-agent"))
+            {
+                message.Headers.TryAddWithoutValidation("user-agent", "Mozilla/5.0");
+            }
+
+            if (client != null)
+            {
+                return await client.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                using (client = new HttpClient())
+                {
+                    return await client.SendAsync(message, cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
 
         /// <summary>
