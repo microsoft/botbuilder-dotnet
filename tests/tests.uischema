@@ -288,6 +288,14 @@
       "subtitle": "Confirm Input"
     }
   },
+  "Microsoft.ContinueConversation": {
+    "menu": {
+      "label": "Continue conversation",
+      "submenu": [
+        "Dialog management"
+      ]
+    }
+  },
   "Microsoft.ContinueLoop": {
     "form": {
       "label": "Continue loop",
@@ -560,6 +568,14 @@
         "widget": "PropertyDescription"
       },
       "widget": "ActionCard"
+    }
+  },
+  "Microsoft.GetConversationReference": {
+    "menu": {
+      "label": "Get conversation reference",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.HttpRequest": {
