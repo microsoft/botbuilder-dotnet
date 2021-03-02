@@ -36,10 +36,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string ResultProperty = "result";
 
+        /// <summary>
+        /// Property key used when storing extracted entities in a custom event within telemetry.
+        /// </summary>
+        public const string EntitiesProperty = "entities";
+
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
         private string _modelFolder;
         private string _snapshotFile;
+        private bool _scoreEntities = false;
         private ILabelResolver _resolver = null;
 
         /// <summary>
@@ -152,13 +158,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 return recognizerResult;
             }
 
-            if (ExternalEntityRecognizer != null)
-            {
-                // Run external recognition
-                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                recognizerResult.Entities = externalResults.Entities;
-            }
-
             // Score with orchestrator
             var results = _resolver.Score(text);
 
@@ -215,11 +214,50 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Return 'None' if no intent matched.
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
-
+            
             await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
             TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
+            ScoreEntities(text, recognizerResult);
+
+            if (recognizerResult.Entities != null && ExternalEntityRecognizer != null)
+            {
+                // Run external recognition
+                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                recognizerResult.Entities = externalResults.Entities;
+            }
 
             return recognizerResult;
+        }
+
+        private void ScoreEntities(string text, RecognizerResult recognizerResult)
+        {
+            if (!_scoreEntities)
+            {
+                return;
+            }
+
+            var results = _resolver.Score(text, LabelType.Entity);
+            recognizerResult.Properties.Add(EntitiesProperty, results);
+
+            if (results.Any())
+            {
+                var entities = new JArray();
+                foreach (var result in results)
+                {
+                    entities.Add(EntityToJObject(text, result));
+                }
+
+                recognizerResult.Entities = new JObject(new JProperty("entities", entities));
+            }
+        }
+
+        private JToken EntityToJObject(string text, Result result)
+        {
+            Span span = result.Label.Span;
+            return new JObject(
+                new JProperty("name", result.Label.Name),
+                new JProperty("score", result.Score),
+                new JProperty("value", text.Substring((int)span.Offset, (int)span.Length)));
         }
 
         private void InitializeModel()
@@ -246,7 +284,15 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Create Orchestrator
                 try
                 {
-                    return new BotFramework.Orchestrator.Orchestrator(path);
+                    string entityModelFolder = Path.Combine(path, "entity");
+                    if (Directory.Exists(entityModelFolder))
+                    {
+                        _scoreEntities = true;
+                    }
+
+                    return _scoreEntities ?
+                        new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
+                        new BotFramework.Orchestrator.Orchestrator(path);
                 }
                 catch (Exception ex)
                 {
