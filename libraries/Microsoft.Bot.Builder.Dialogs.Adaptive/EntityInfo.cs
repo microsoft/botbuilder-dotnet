@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <value>Relative priority of entity.</value>
         [JsonProperty("priority")]
-        public int Priority { get; set; }
+        public float Priority { get; set; }
 
         /// <summary>
         /// Gets or sets how much 0-1.0 of the original utterance is covered by entity.

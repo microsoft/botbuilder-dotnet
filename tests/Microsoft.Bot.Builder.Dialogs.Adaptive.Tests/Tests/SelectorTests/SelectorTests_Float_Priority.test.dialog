@@ -1,0 +1,80 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "$kind": "Microsoft.IntentPattern",
+                    "intent": "a",
+                    "pattern": "a"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "a",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "rule1"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.a",
+                        "value": "=1.2"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "a",
+                "priority": "=user.a + 1.1",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "rule2"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "a",
+                "priority": "=user.a",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "rule3"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": false,
+        "selector": {
+            "$kind": "Microsoft.FirstSelector"
+        },
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "en-us",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "a"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "rule1"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "a"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "rule3"
+        }
+    ]
+}
