@@ -153,12 +153,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             var pagedResult = new PagedResult<IActivity>();
@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             string token = null;
@@ -291,12 +291,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         {
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             string token = null;
