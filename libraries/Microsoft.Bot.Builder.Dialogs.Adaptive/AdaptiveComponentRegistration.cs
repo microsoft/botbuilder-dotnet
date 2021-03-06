@@ -118,6 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<TelemetryTrackEventAction>(TelemetryTrackEventAction.Kind);
             yield return new DeclarativeType<ContinueConversation>(ContinueConversation.Kind);
             yield return new DeclarativeType<ContinueConversationLater>(ContinueConversationLater.Kind);
+            yield return new DeclarativeType<SendHandoffActivity>(SendHandoffActivity.Kind);
 
             // Inputs
             yield return new DeclarativeType<AttachmentInput>(AttachmentInput.Kind);
