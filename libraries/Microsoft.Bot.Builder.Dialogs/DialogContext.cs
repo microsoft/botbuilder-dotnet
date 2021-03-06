@@ -692,11 +692,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Set the context for the next input from the user.
         /// </summary>
         /// <param name="expected">Description of the expected intents and entities.</param>
-        public async Task SetInputContextAsync(Recognizers.RecognizerDescription expected)
+        /// <returns>Async task.</returns>
+        public Task SetInputContextAsync(Recognizers.RecognizerDescription expected)
         {
             // TODO: chrimc, walk the stack to build up possible and send back command
+
+            // Update EntityRecognizer, EntityRecognizerSet, TestEntity in EntityRecognizers
+            // Update tests to check for expected
+            // Does datetime return multiple entity types?
+            // Call LUIS
             var context = new Recognizers.InputContext(expected: expected);
-            return;
+            return Task.CompletedTask;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

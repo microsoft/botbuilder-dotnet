@@ -13,9 +13,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// Initializes a new instance of the <see cref="EntityDescription"/> class.
         /// </summary>
         /// <param name="name">Entity name.</param>
-        public EntityDescription(string name)
+        /// <param name="resolutionType">Type of resolution returned.</param>
+        public EntityDescription(string name, Type resolutionType = null)
         {
             Name = name;
+            ResolutionType = resolutionType ?? typeof(string);
         }
 
         /// <summary>

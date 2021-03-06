@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// </summary>
         /// <param name="intents">Intents.</param>
         /// <param name="entities">Entities.</param>
-        /// <param name="dynamicLists">Dynamically defined entities</param>
+        /// <param name="dynamicLists">Dynamically defined entities.</param>
         public RecognizerDescription(IEnumerable<IntentDescription> intents = null, IEnumerable<EntityDescription> entities = null, IEnumerable<DynamicList> dynamicLists = null)
         {
             Intents = intents != null ? intents.ToList() : new List<IntentDescription>();

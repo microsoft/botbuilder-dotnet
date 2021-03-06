@@ -30,6 +30,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// </summary>
         /// <value><see cref="RecognizerDescription"/> of the possible intents and entities.</value>
         public RecognizerDescription Possible { get; }
-
     }
 }

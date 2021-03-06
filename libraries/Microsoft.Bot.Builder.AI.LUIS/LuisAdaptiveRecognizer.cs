@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -118,6 +119,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
             TrackRecognizerResult(dialogContext, "LuisResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        {
+            // TODO: chrimc, call the LUIS API
+            return Task.FromResult(new RecognizerDescription());
         }
 
         /// <summary>

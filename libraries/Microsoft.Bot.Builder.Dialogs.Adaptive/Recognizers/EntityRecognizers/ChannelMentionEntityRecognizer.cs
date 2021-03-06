@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -139,6 +140,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             return Task.FromResult(result);
+        }
+
+        /// <inheritdoc/>
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        {
+            return Task.FromResult(new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription("channelMention") }));
         }
     }
 }

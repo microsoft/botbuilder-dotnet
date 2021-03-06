@@ -127,9 +127,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         // 2) Recognziers have method for intents/entities
         // 3) Dialogs have method for give me expected. Expected/possible and then walks the stack to generate the command.
         // 4) dc.SetExpectedInput helper which takes expected and walks the dialog tree for possible
-        public virtual Task<RecognizerDescription> RecognizerDescriptionAsync()
+        public virtual Task<Recognizers.RecognizerDescription> GetRecognizerDescriptionAsync()
         {
-            return Task.FromResult(new RecognizerDescription());
+            return Task.FromResult(new Recognizers.RecognizerDescription());
         }
 
         /// <summary>

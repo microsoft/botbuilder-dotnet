@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Recognizers.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -64,6 +66,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 this.pattern = value;
                 this.regex = new Regex(value, RegexOptions.Compiled);
             }
+        }
+
+        /// <inheritdoc/>
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        {
+            return Task.FromResult(new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription(Name) }));
         }
 
         /// <summary>

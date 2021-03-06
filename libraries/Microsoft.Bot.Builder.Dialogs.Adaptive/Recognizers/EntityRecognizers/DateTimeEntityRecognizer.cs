@@ -27,7 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public DateTimeEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(callerPath, callerLine)
+            
+            // TODO: chrimc, should this be an array of entity types like datetimeV2.datetime
+            : base(callerPath, callerLine, "datetimeV2")
         {
         }
 
