@@ -688,6 +688,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Set the context for the next input from the user.
+        /// </summary>
+        /// <param name="expected">Description of the expected intents and entities.</param>
+        public async Task SetInputContextAsync(Recognizers.RecognizerDescription expected)
+        {
+            // TODO: chrimc, walk the stack to build up possible and send back command
+            var context = new Recognizers.InputContext(expected: expected);
+            return;
+        }
+
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)

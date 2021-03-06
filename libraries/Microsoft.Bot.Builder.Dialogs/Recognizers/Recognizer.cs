@@ -119,6 +119,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Return a description of the intents and entities the recognizer can return.
+        /// </summary>
+        /// <returns>Description of the recognizer.</returns>
+        //
+        // 1) Use commands without ack to send priming info
+        // 2) Recognziers have method for intents/entities
+        // 3) Dialogs have method for give me expected. Expected/possible and then walks the stack to generate the command.
+        // 4) dc.SetExpectedInput helper which takes expected and walks the dialog tree for possible
+        public virtual Task<RecognizerDescription> RecognizerDescriptionAsync()
+        {
+            return Task.FromResult(new RecognizerDescription());
+        }
+
+        /// <summary>
         /// CreateChooseIntentResult - returns ChooseIntent between multiple recognizer results.
         /// </summary>
         /// <param name="recognizerResults">recognizer Id => recognizer results map.</param>
