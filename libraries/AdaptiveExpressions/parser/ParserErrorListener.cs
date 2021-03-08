@@ -29,7 +29,8 @@ namespace AdaptiveExpressions
         /// <param name="e">The RecognitionException.</param>
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            throw new SyntaxErrorException(msg) { Source = $"({line}:{charPositionInLine})", };
+            var syntaxErrorMessage = "Invalid expression format.";
+            throw new SyntaxErrorException(syntaxErrorMessage) { Source = $"({line}:{charPositionInLine})", };
         }
     }
 }
