@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Slack.Model;
 using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 #if SIGNASSEMBLY
