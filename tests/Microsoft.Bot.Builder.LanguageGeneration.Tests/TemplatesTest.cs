@@ -844,6 +844,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestProperties()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
+            Assert.Null(templates[0].Properties);
+
+            templates = Templates.ParseFile(GetExampleFilePath("StructuredTemplate.lg"));
+            Assert.Equal("${GetAge()}", templates[0].Properties["Text"].ToString());
+            Assert.Equal("${GetAge()}", templates[0].Properties["Speak"].ToString());
+            Assert.Equal("Activity", templates[0].Properties["$type"].ToString());
+        }
+
+        [Fact]
         public void TemplateCRUD_Normal()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("CrudInit.lg"));
