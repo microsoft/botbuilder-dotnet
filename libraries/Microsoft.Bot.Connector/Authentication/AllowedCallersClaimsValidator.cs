@@ -3,18 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector.Authentication;
 
-namespace Microsoft.Bot.Builder.Integration.Runtime.Skills
+namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
     /// Claims validator that adds application level authorization based on a simple list
     /// of application Ids that are allowed to call. 
     /// </summary>
-    internal class AllowedCallersClaimsValidator : ClaimsValidator
+    public class AllowedCallersClaimsValidator : ClaimsValidator
     {
         private readonly IList<string> _allowedCallers;
 
@@ -48,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Skills
                 if (!_allowedCallers.Contains(applicationId))
                 {
                     throw new UnauthorizedAccessException(
-                        $"Received a request from a bot with an app ID of \"{applicationId}\". To enable requests from this caller, add the app ID to your \"${ConfigurationConstants.RuntimeSettingsKey}:skill:allowedCallers\" configuration.");
+                        $"Received a request from a bot with an app ID of \"{applicationId}\". To enable requests from this caller, add the app ID to the configured set of allowedCallers.");
                 }
             }
 
