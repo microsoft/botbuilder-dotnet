@@ -34,6 +34,12 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
+            // map TurnState into root dialog context.services
+            foreach (var service in turnContext.TurnState)
+            {
+                dialogContext.Services[service.Key] = service.Value;
+            }
+
             // Handle EoC and Reprompt event from a parent bot (can be root bot to skill or skill to skill)
             if (IsFromParentToSkill(turnContext))
             {
