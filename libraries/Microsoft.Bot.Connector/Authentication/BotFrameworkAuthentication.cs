@@ -15,6 +15,28 @@ namespace Microsoft.Bot.Connector.Authentication
     public abstract class BotFrameworkAuthentication
     {
         /// <summary>
+        /// Check whether the channel is Government.
+        /// </summary>
+        /// <returns>true if Government; false otherwise.</returns>
+        public abstract bool IsGovernment();
+
+        /// <summary>
+        /// Gets the App password for given App id.
+        /// </summary>
+        /// <param name="appId">The App id.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>The App password.</returns>
+        public abstract Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Validate Bot Framework Protocol requests.
+        /// </summary>
+        /// <param name="authHeader">The http auth header.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
+        public abstract Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Validate Bot Framework Protocol requests.
         /// </summary>
         /// <param name="activity">The inbound Activity.</param>

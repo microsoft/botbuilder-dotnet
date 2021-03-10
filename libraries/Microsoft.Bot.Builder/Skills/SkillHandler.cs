@@ -62,6 +62,28 @@ namespace Microsoft.Bot.Builder.Skills
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SkillHandler"/> class using BotFrameworkAuth.
+        /// </summary>
+        /// <param name="adapter">An instance of the <see cref="BotAdapter"/> that will handle the request.</param>
+        /// <param name="bot">The <see cref="IBot"/> instance.</param>
+        /// <param name="conversationIdFactory">A <see cref="SkillConversationIdFactoryBase"/> to unpack the conversation ID and map it to the calling bot.</param>
+        /// <param name="auth">auth.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        public SkillHandler(
+            BotAdapter adapter,
+            IBot bot,
+            SkillConversationIdFactoryBase conversationIdFactory,
+            BotFrameworkAuthentication auth,
+            ILogger logger = null)
+            : base(auth)
+        {
+            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
+            _logger = logger ?? NullLogger.Instance;
+        }
+
+        /// <summary>
         /// SendToConversation() API for Skill.
         /// </summary>
         /// <remarks>

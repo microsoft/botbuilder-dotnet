@@ -28,6 +28,14 @@ namespace Microsoft.Bot.Connector.Authentication
         public abstract Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Get App password for given App id.
+        /// </summary>
+        /// <param name="appId">The App id.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>The App password.</returns>
+        public abstract Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Checks whether bot authentication is disabled.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token.</param>

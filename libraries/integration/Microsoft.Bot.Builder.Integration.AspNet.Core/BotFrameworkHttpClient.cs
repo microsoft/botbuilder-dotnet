@@ -30,6 +30,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class BotFrameworkHttpClient : BotFrameworkClient
     {
         /// <summary>
+        /// Gets the Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired).
+        /// AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill).
+        /// </summary>
+        /// <value>ConcurrentDictionary of <see cref="AppCredentials"/>.</value>
+        private static readonly ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache = new ();
+
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
+
+        private readonly Func<string, string, Task<AppCredentials>> _buildCredentialsAsyncImpl;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpClient"/> class.
         /// </summary>
         /// <param name="httpClient">A <see cref="HttpClient"/>.</param>
@@ -42,51 +54,61 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             IChannelProvider channelProvider = null,
             ILogger logger = null)
         {
-            HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            CredentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            ChannelProvider = channelProvider;
-            Logger = logger ?? NullLogger.Instance;
-            ConnectorClient.AddDefaultRequestHeaders(HttpClient);
+            if (credentialProvider == null)
+            {
+                throw new ArgumentNullException(nameof(credentialProvider));
+            }
+
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _logger = logger ?? NullLogger.Instance;
+
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+
+            OriginatingAudience = channelProvider != null && channelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+            _buildCredentialsAsyncImpl = async (appId, oAuthScope) =>
+            {
+                var appPassword = await credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
+                return channelProvider != null && channelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
+            };
         }
 
         /// <summary>
-        /// Gets the Cache for appCredentials to speed up token acquisition (a token is not requested unless is expired).
-        /// AppCredentials are cached using appId + scope (this last parameter is only used if the app credentials are used to call a skill).
+        /// Initializes a new instance of the <see cref="BotFrameworkHttpClient"/> class.
         /// </summary>
-        /// <value>ConcurrentDictionary of <see cref="AppCredentials"/>.</value>
-        protected static ConcurrentDictionary<string, AppCredentials> AppCredentialMapCache { get; } = new ConcurrentDictionary<string, AppCredentials>();
+        /// <param name="httpClient">A <see cref="HttpClient"/>.</param>
+        /// <param name="auth">An instance of <see cref="BotFrameworkAuthentication"/>.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
+        public BotFrameworkHttpClient(HttpClient httpClient, BotFrameworkAuthentication auth, ILogger logger = null)
+        {
+            if (auth == null)
+            {
+                throw new ArgumentNullException(nameof(auth));
+            }
+
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _logger = logger ?? NullLogger.Instance;
+
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+
+            OriginatingAudience = auth.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
+
+            _buildCredentialsAsyncImpl = async (appId, oAuthScope) =>
+            {
+                var appPassword = await auth.GetAppPasswordAsync(appId, new CancellationToken()).ConfigureAwait(false);
+                return auth.IsGovernment()
+                    ? new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope)
+                    : new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger, oAuthScope);
+            };
+        }
 
         /// <summary>
-        /// Gets the channel provider for this adapter.
+        /// Gets the OAuth audience scope, used during token retrieval.
         /// </summary>
         /// <value>
-        /// The channel provider for this adapter.
+        /// Either https://api.botframework.com or bot app id.
         /// </value>
-        protected IChannelProvider ChannelProvider { get; }
-
-        /// <summary>
-        /// Gets the credential provider for this adapter.
-        /// </summary>
-        /// <value>
-        /// The credential provider for this adapter.
-        /// </value>
-        protected ICredentialProvider CredentialProvider { get; }
-
-        /// <summary>
-        /// Gets the HttpClient for this adapter.
-        /// </summary>
-        /// <value>
-        /// The HttpClient for this adapter.
-        /// </value>
-        protected HttpClient HttpClient { get; }
-
-        /// <summary>
-        /// Gets the logger for this adapter.
-        /// </summary>
-        /// <value>
-        /// The logger for this adapter.
-        /// </value>
-        protected ILogger Logger { get; }
+        protected string OriginatingAudience { get; }
 
         /// <summary>
         /// Forwards an activity to a skill (bot).
@@ -123,7 +145,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var appCredentials = await GetAppCredentialsAsync(fromBotId, toBotId).ConfigureAwait(false);
             if (appCredentials == null)
             {
-                Logger.LogError("Unable to get appCredentials to connect to the skill");
+                _logger.LogError("Unable to get appCredentials to connect to the skill");
                 throw new InvalidOperationException("Unable to get appCredentials to connect to the skill");
             }
 
@@ -193,7 +215,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var token = appCredentials == MicrosoftAppCredentials.Empty ? null : await appCredentials.GetTokenAsync().ConfigureAwait(false);
 
             // post the activity to the url using the bot's credentials.
-            Logger.LogInformation($"Posting activity. ActivityId: {activity.Id} from BotId: {botId}");
+            _logger.LogInformation($"Posting activity. ActivityId: {activity.Id} from BotId: {botId}");
             return await SecurePostActivityAsync<T>(botEndpoint, activity, token, cancellationToken).ConfigureAwait(false);
         }
 
@@ -206,8 +228,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <returns>The app credentials to be used to acquire tokens.</returns>
         protected virtual async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
         {
-            var appPassword = await CredentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
-            return ChannelProvider != null && ChannelProvider.IsGovernment() ? new MicrosoftGovernmentAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope) : new MicrosoftAppCredentials(appId, appPassword, HttpClient, Logger, oAuthScope);
+            return await _buildCredentialsAsyncImpl(appId, oAuthScope).ConfigureAwait(false);
         }
 
         private static T GetBodyContent<T>(string content)
@@ -237,7 +258,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     }
 
                     httpRequestMessage.Content = jsonContent;
-                    using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
+                    using (var response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                     {
                         var content = response.Content != null ? await response.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
                         return new InvokeResponse<T>

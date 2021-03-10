@@ -55,6 +55,24 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 logger);
         }
 
+        /// <inheritdoc />
+        public override bool IsGovernment()
+        {
+            return _inner.IsGovernment();
+        }
+
+        /// <inheritdoc />
+        public override Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken)
+        {
+            return _inner.GetAppPasswordAsync(appId, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            return _inner.ValidateAuthHeaderAsync(authHeader, cancellationToken);
+        }
+
         /// <inheritdoc/>
         public override Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {

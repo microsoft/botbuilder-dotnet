@@ -34,6 +34,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SkillHttpClient"/> class.
+        /// </summary>
+        /// <param name="httpClient">A HttpClient.</param>
+        /// <param name="auth">An instance of <see cref="BotFrameworkAuthentication"/>.</param>
+        /// <param name="conversationIdFactory">An instance of a class derived from <see cref="SkillConversationIdFactoryBase"/>.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
+        public SkillHttpClient(HttpClient httpClient, BotFrameworkAuthentication auth, SkillConversationIdFactoryBase conversationIdFactory, ILogger logger = null)
+            : base(httpClient, auth, logger)
+        {
+            _conversationIdFactory = conversationIdFactory;
+        }
+
+        /// <summary>
         /// Uses the SkillConversationIdFactory to create or retrieve a Skill Conversation Id, and sends the activity.
         /// </summary>
         /// <typeparam name="T">The type of body in the InvokeResponse.</typeparam>
@@ -95,8 +108,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
         /// <returns>Async task with optional invokeResponse of type T.</returns>
         public virtual async Task<InvokeResponse<T>> PostActivityAsync<T>(string fromBotId, BotFrameworkSkill toSkill, Uri callbackUrl, Activity activity, CancellationToken cancellationToken)
         {
-            var originatingAudience = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope;
-            return await PostActivityAsync<T>(originatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
+            return await PostActivityAsync<T>(OriginatingAudience, fromBotId, toSkill, callbackUrl, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

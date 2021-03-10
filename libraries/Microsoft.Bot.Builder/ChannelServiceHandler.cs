@@ -17,8 +17,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class ChannelServiceHandler
     {
-        private readonly AuthenticationConfiguration _authConfiguration;
-        private readonly ICredentialProvider _credentialProvider;
+        private readonly Func<string, Task<ClaimsIdentity>> _authenticateAsyncImpl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelServiceHandler"/> class,
@@ -33,9 +32,55 @@ namespace Microsoft.Bot.Builder
             AuthenticationConfiguration authConfiguration,
             IChannelProvider channelProvider = null)
         {
-            _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
-            _authConfiguration = authConfiguration ?? throw new ArgumentNullException(nameof(authConfiguration));
+            if (credentialProvider == null)
+            {
+                throw new ArgumentNullException(nameof(credentialProvider));
+            }
+
+            if (authConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(authConfiguration));
+            }
+
+            _authenticateAsyncImpl = async authHeader =>
+            {
+                if (string.IsNullOrWhiteSpace(authHeader))
+                {
+                    var isAuthDisabled = await credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                    if (!isAuthDisabled)
+                    {
+                        // No auth header. Auth is required. Request is not authorized.
+                        throw new UnauthorizedAccessException();
+                    }
+
+                    // In the scenario where auth is disabled, we still want to have the
+                    // IsAuthenticated flag set in the ClaimsIdentity.
+                    // To do this requires adding in an empty claim.
+                    // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
+                    return SkillValidation.CreateAnonymousSkillClaim();
+                }
+
+                // Validate the header and extract claims.
+                return await JwtTokenValidation.ValidateAuthHeader(authHeader, credentialProvider, ChannelProvider, "unknown", authConfiguration).ConfigureAwait(false);
+            };
+
             ChannelProvider = channelProvider;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChannelServiceHandler"/> class,
+        /// using a Bot Framework Auth.
+        /// </summary>
+        /// <param name="auth">auth.</param>
+        protected ChannelServiceHandler(BotFrameworkAuthentication auth)
+        {
+            if (auth == null)
+            {
+                throw new ArgumentNullException(nameof(auth));
+            }
+
+            _authenticateAsyncImpl = async authHeader =>
+                await auth.ValidateAuthHeaderAsync(authHeader, new CancellationToken()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -520,24 +565,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         private async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
         {
-            if (string.IsNullOrWhiteSpace(authHeader))
-            {
-                var isAuthDisabled = await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false);
-                if (!isAuthDisabled)
-                {
-                    // No auth header. Auth is required. Request is not authorized.
-                    throw new UnauthorizedAccessException();
-                }
-
-                // In the scenario where auth is disabled, we still want to have the
-                // IsAuthenticated flag set in the ClaimsIdentity.
-                // To do this requires adding in an empty claim.
-                // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
-                return SkillValidation.CreateAnonymousSkillClaim();
-            }
-
-            // Validate the header and extract claims.
-            return await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, ChannelProvider, "unknown", _authConfiguration).ConfigureAwait(false);
+            return await _authenticateAsyncImpl(authHeader).ConfigureAwait(false);
         }
     }
 }

@@ -60,6 +60,22 @@ namespace Microsoft.Bot.Connector.Authentication
             _logger = logger ?? NullLogger.Instance;
         }
 
+        public override bool IsGovernment()
+        {
+            return _callerId == CallerIdConstants.USGovChannel;
+        }
+
+        public override async Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken)
+        {
+            var credentials = new DelegatingCredentialProvider(_credentialFactory);
+            return await credentials.GetAppPasswordAsync(appId).ConfigureAwait(false);
+        }
+
+        public override async Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
+        }
+
         public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);

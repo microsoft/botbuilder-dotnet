@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
         public Task<string> GetAppPasswordAsync(string appId)
         {
-            throw new NotImplementedException();
+            return _credentialFactory.GetAppPasswordAsync(appId, CancellationToken.None);
         }
 
         public Task<bool> IsAuthenticationDisabledAsync()
