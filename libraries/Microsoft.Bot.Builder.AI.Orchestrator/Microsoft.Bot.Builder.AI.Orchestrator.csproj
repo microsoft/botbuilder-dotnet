@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.12.0-*" />
+    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.12.0-preview" />
   </ItemGroup>
 
   <ItemGroup>
