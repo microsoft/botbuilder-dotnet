@@ -1,0 +1,11 @@
+﻿# FromFileWithoutEvaluation
+- ${fromFile('./TestFile.txt', 'raw')}
+
+# FromFileWithEvaluation1
+- ${fromFile('./TestFile.txt', 'evaluated')}
+
+# FromFileWithEvaluation2
+- ${fromFile('./TestFile.txt')}
+
+# FromFileBinary
+- ${string(fromFile('./TestFile.txt', 'binary'))}
