@@ -138,8 +138,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                                 var scope = new StackedMemory();
                                 scope.Push(state);
                                 scope.Push(new SimpleObjectMemory(newScope));
-
-                                result = localAndTemplates.templates.Evaluate(templateName, scope);
+                                var lgOpt = new EvaluationOptions() { Locale = locale, NullSubstitution = options.NullSubstitution };
+                                result = localAndTemplates.templates.Evaluate(templateName, scope, lgOpt);
                             }
                         }
                         else
