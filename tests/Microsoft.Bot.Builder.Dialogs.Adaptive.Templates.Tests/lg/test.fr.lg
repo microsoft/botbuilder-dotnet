@@ -1,2 +1,5 @@
 # test
 - french
+
+# MySum(a, b)
+- fr: ${a+b}

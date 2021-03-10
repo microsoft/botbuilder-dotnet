@@ -1,3 +1,5 @@
 # test
 - english-gb
 
+# MySum(a, b)
+- en-GB: ${a+b}

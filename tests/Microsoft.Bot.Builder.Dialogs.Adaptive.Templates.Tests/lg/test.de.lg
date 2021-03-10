@@ -1,2 +1,5 @@
 # test
 - german
+
+# MySum(a, b)
+- de: ${a+b}

@@ -6,6 +6,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
@@ -41,7 +43,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             // listen for resource changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
+
+            RegisterTemplateFunctions();
         }
+
+        /// <summary>
+        /// Gets or sets TemplatesMapping.
+        /// </summary>
+        /// <value>
+        /// TemplatesMapping.
+        /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only
+        public static ConcurrentDictionary<string, List<(string locale, LanguageGeneration.Templates templates)>> TemplatesMapping { get; set; } = new ConcurrentDictionary<string, List<(string locale, LanguageGeneration.Templates templates)>>(StringComparer.OrdinalIgnoreCase);
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets generators.
@@ -93,6 +107,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(Resource resource)
         {
             return new TemplateEngineLanguageGenerator(resource, multilanguageResources);
+        }
+
+        private void RegisterTemplateFunctions()
+        {
+            foreach (var templateMapping in TemplatesMapping)
+            {
+                var templateName = templateMapping.Key;
+                var localAndTemplatesList = templateMapping.Value;
+                Expression.Functions.Add(templateName, new ExpressionEvaluator(
+                    templateName,
+                    (expression, state, options) =>
+                    {
+                        object result = null;
+                        string error = null;
+                        IReadOnlyList<object> args;
+                        var locale = options.Locale;
+                        if (localAndTemplatesList.Exists(u => u.locale == locale))
+                        {
+                            var localAndTemplates = localAndTemplatesList.First(u => u.locale == locale);
+                            (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                            if (error == null)
+                            {
+                                var parameters = localAndTemplates.templates.First(u => u.Name == templateName).Parameters;
+                                var newScope = parameters.Zip(args, (k, v) => new { k, v })
+                                    .ToDictionary(x => x.k, x => x.v);
+                                var scope = new StackedMemory();
+                                scope.Push(state);
+                                scope.Push(new SimpleObjectMemory(newScope));
+
+                                result = localAndTemplates.templates.Evaluate(templateName, scope);
+                            }
+                        }
+                        else
+                        {
+                            error = "Sorry, there is no template for this function.";
+                        }
+
+                        return (result, error);
+                    }));
+            }
         }
     }
 }

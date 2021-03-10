@@ -4,3 +4,6 @@
 
 # test2
 - default2
+
+# MySum(a, b)
+- default: ${a+b}

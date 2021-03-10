@@ -24,3 +24,6 @@
 
 # x_property2
 - test2 x
+
+# MySum(a, b)
+- en: ${a+b}
