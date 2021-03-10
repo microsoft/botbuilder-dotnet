@@ -29,8 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
+        /// <param name="injectLG">Inject LG into expression.</param>
         /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
-        public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
+        public LanguageGeneratorManager(ResourceExplorer resourceExplorer, bool injectLG = false)
         {
             this.resourceExplorer = resourceExplorer;
             multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
@@ -43,8 +44,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             // listen for resource changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
-
-            RegisterTemplateFunctions();
+            if (injectLG)
+            {
+                RegisterTemplateFunctions();
+            }
         }
 
         /// <summary>

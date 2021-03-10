@@ -21,10 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dialogManager">The <see cref="BotAdapter"/> to add services to.</param>
         /// <param name="defaultLg">Default LG Resource Id (default: main.lg).</param>
+        /// <param name="injectLG">Inject LG into expression.</param>
         /// <returns>The BotAdapter.</returns>
         public static DialogManager UseLanguageGeneration(
             this DialogManager dialogManager,
-            string defaultLg = null)
+            string defaultLg = null,
+            bool injectLG = false)
         {
             if (defaultLg == null)
             {
@@ -35,11 +37,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (resourceExplorer.TryGetResource(defaultLg, out var resource))
             {
-                dialogManager.UseLanguageGeneration(new ResourceMultiLanguageGenerator(defaultLg));
+                dialogManager.UseLanguageGeneration(new ResourceMultiLanguageGenerator(defaultLg), injectLG);
             }
             else
             {
-                dialogManager.UseLanguageGeneration(new TemplateEngineLanguageGenerator());
+                dialogManager.UseLanguageGeneration(new TemplateEngineLanguageGenerator(), injectLG);
             }
 
             return dialogManager;
@@ -50,8 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dialogManager">botAdapter to add services to.</param>
         /// <param name="languageGenerator">LanguageGenerator to use.</param>
+        /// <param name="injectLG">Inject LG into expression.</param>
         /// <returns>botAdapter.</returns>
-        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, LanguageGenerator languageGenerator)
+        public static DialogManager UseLanguageGeneration(this DialogManager dialogManager, LanguageGenerator languageGenerator, bool injectLG = false)
         {
             var resourceExplorer = dialogManager.InitialTurnState.Get<ResourceExplorer>();
 
@@ -59,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 if (!languageGeneratorManagers.TryGetValue(resourceExplorer ?? throw new InvalidOperationException($"Unable to get an instance of {nameof(resourceExplorer)}."), out var lgm))
                 {
-                    lgm = new LanguageGeneratorManager(resourceExplorer);
+                    lgm = new LanguageGeneratorManager(resourceExplorer, injectLG);
                     languageGeneratorManagers[resourceExplorer] = lgm;
                 }
 

@@ -6,4 +6,4 @@
 - default2
 
 # MySum(a, b)
-- default: ${a+b}
+- ${a+b}

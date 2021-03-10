@@ -439,25 +439,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public async Task TestLGInjectionAll()
-        {
-            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
-            DialogManager dm = new DialogManager()
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("test.lg");
-            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("injectAll.dialog");
-
-            await CreateFlow(
-                async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }, locale: "en-GB")
-            .Send("hello")
-                .AssertReply("en-GB: 3")
-            .StartTestAsync();
-        }
-
-        [Fact]
         public async Task TestLocaleInExpression()
         {
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
