@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 

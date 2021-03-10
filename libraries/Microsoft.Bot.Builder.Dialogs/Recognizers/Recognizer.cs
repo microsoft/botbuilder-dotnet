@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -119,17 +120,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Return a description of the intents and entities the recognizer can return.
+        /// Return a description of the intents and entities the dialog can recognize.
         /// </summary>
-        /// <returns>Description of the recognizer.</returns>
-        //
-        // 1) Use commands without ack to send priming info
-        // 2) Recognziers have method for intents/entities
-        // 3) Dialogs have method for give me expected. Expected/possible and then walks the stack to generate the command.
-        // 4) dc.SetExpectedInput helper which takes expected and walks the dialog tree for possible
-        public virtual Task<Recognizers.RecognizerDescription> GetRecognizerDescriptionAsync()
+        /// <returns>A <see cref="RecognizerDescription"/>.</returns>
+        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync()
         {
-            return Task.FromResult(new Recognizers.RecognizerDescription());
+            return Task.FromResult(new RecognizerDescription());
         }
 
         /// <summary>

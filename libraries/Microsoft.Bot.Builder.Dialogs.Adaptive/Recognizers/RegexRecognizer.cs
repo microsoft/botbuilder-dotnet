@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -199,6 +200,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             TrackRecognizerResult(dialogContext, "RegexRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
             return recognizerResult;
+        }
+
+        /// <inheritdoc/>
+        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        {
+            var descriptions = new List<RecognizerDescription>();
+            foreach (var recognizer in Entities)
+            {
+                var description = await recognizer.GetRecognizerDescriptionAsync().ConfigureAwait(false);
+                descriptions.Add(description);
+            }
+
+            return RecognizerDescription.MergeDescriptions(descriptions);
         }
     }
 }

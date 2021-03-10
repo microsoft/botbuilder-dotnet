@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -363,6 +364,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             yield break;
+        }
+
+        /// <inheritdoc/>
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        {
+            return Recognizer == null ? Task.FromResult(new RecognizerDescription()) : Recognizer.GetRecognizerDescriptionAsync();
         }
 
         /// <summary>

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Newtonsoft.Json;
+
 namespace Microsoft.Bot.Builder.Dialogs.Recognizers
 {
     /// <summary>
@@ -17,18 +19,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         {
             Expected = expected ?? new RecognizerDescription();
             Possible = possible ?? new RecognizerDescription();
-        } 
-        
+        }
+
         /// <summary>
         /// Gets the description of the expected intents and entities for the next turn.
         /// </summary>
         /// <value><see cref="RecognizerDescription"/> of the expected intents and entities.</value>
+        [JsonProperty("expected")]
         public RecognizerDescription Expected { get; }
 
         /// <summary>
         /// Gets the description of the possible intents and entities for the next turn.
         /// </summary>
         /// <value><see cref="RecognizerDescription"/> of the possible intents and entities.</value>
+        [JsonProperty("possible")]
         public RecognizerDescription Possible { get; }
     }
 }

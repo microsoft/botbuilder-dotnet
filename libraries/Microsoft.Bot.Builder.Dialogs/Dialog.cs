@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -216,6 +217,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return handled;
+        }
+
+        /// <summary>
+        /// Return a description of the intents and entities the dialog can recognize.
+        /// </summary>
+        /// <returns>A <see cref="RecognizerDescription"/>.</returns>
+        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        {
+            return Task.FromResult(new RecognizerDescription());
         }
 
         /// <summary>

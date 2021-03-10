@@ -9,6 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
+using Microsoft.Bot.Builder.TraceExtensions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -20,6 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs
     [System.Diagnostics.DebuggerDisplay("{GetType().Name}[{ActiveDialog?.Id}]")]
     public class DialogContext
     {
+        /// <summary>
+        /// The value type for a LUIS trace activity.
+        /// </summary>
+        public const string InputContextTraceType = "https://www.luis.ai/schemas/trace";
+
+        /// <summary>
+        /// The context label for a LUIS trace activity.
+        /// </summary>
+        public const string LuisTraceLabel = "LuisV3 Trace";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class from the turn context.
         /// </summary>
@@ -692,17 +705,33 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Set the context for the next input from the user.
         /// </summary>
         /// <param name="expected">Description of the expected intents and entities.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Async task.</returns>
-        public Task SetInputContextAsync(Recognizers.RecognizerDescription expected)
+        public async Task SetInputContextAsync(RecognizerDescription expected, CancellationToken cancellationToken = default(CancellationToken))
         {
             // TODO: chrimc, walk the stack to build up possible and send back command
 
-            // Update EntityRecognizer, EntityRecognizerSet, TestEntity in EntityRecognizers
+            // Update EntityRecognizer, EntityRecognizerSet in EntityRecognizers
             // Update tests to check for expected
             // Does datetime return multiple entity types?
             // Call LUIS
-            var context = new Recognizers.InputContext(expected: expected);
-            return Task.CompletedTask;
+            //
+            // 1) Use commands without ack to send priming info
+            // 2) Recognziers have method for intents/entities
+            // 3) Dialogs have method for give me expected. Expected/possible and then walks the stack to generate the command.
+            // 4) dc.SetExpectedInput helper which takes expected and walks the dialog tree for possible
+
+            // Should be emitting a trace activity.
+            // 1) Method for SetInputContext which emits trace activity and command
+            // 2) Method for walking the stack and then calling SetInputContext.
+            // Add intents/entities to adaptive luis recognizer and default to getting from settings
+            // Add intents/entities to luis recognizer
+            // Do I need async?
+
+            var context = new InputContext(expected: expected);
+            await Services.Get<ITurnContext>().TraceActivityAsync("InputContext", context, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
+
+            return;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
