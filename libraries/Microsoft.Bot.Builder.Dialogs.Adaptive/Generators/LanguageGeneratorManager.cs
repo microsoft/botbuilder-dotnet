@@ -29,9 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
-        /// <param name="injectLG">Inject LG into expression.</param>
         /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
-        public LanguageGeneratorManager(ResourceExplorer resourceExplorer, bool injectLG = false)
+        public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
             multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
@@ -44,20 +43,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             // listen for resource changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
-            if (injectLG)
-            {
-                RegisterTemplateFunctions();
-            }
+            RegisterTemplateFunctions();
         }
 
         /// <summary>
-        /// Gets or sets TemplatesMapping.
+        /// Gets or sets TemplatesMapping from a resourceName and locale pair.
         /// </summary>
         /// <value>
-        /// TemplatesMapping.
+        /// TemplatesMapping of a resourceName and locale pair.
         /// </value>
 #pragma warning disable CA2227 // Collection properties should be read only
-        public static ConcurrentDictionary<string, List<(string locale, LanguageGeneration.Templates templates)>> TemplatesMapping { get; set; } = new ConcurrentDictionary<string, List<(string locale, LanguageGeneration.Templates templates)>>(StringComparer.OrdinalIgnoreCase);
+        public static ConcurrentDictionary<(string resourceName, string locale), LanguageGeneration.Templates> TemplatesMapping { get; set; } = new ConcurrentDictionary<(string resourceId, string locale), LanguageGeneration.Templates>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
@@ -114,10 +110,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
         private void RegisterTemplateFunctions()
         {
-            foreach (var templateMapping in TemplatesMapping)
+            var allTemplateNames = new List<string>();
+            TemplatesMapping.Values.ToList().ForEach(u => allTemplateNames.AddRange(u.AllTemplates.Select(t => t.Name)));
+            allTemplateNames = allTemplateNames.Distinct().ToList();
+
+            foreach (var templateName in allTemplateNames)
             {
-                var templateName = templateMapping.Key;
-                var localAndTemplatesList = templateMapping.Value;
                 Expression.Functions.Add(templateName, new ExpressionEvaluator(
                     templateName,
                     (expression, state, options) =>
@@ -126,25 +124,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         string error = null;
                         IReadOnlyList<object> args;
                         var locale = options.Locale;
-                        if (localAndTemplatesList.Exists(u => u.locale == locale))
+                        var getGenerator = state.TryGetValue("dialog.generator", out var resourceId);
+                        if (getGenerator)
                         {
-                            var localAndTemplates = localAndTemplatesList.First(u => u.locale == locale);
-                            (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
-                            if (error == null)
+                            var (resourceName, _) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
+                            var templatesExist = TemplatesMapping.TryGetValue((resourceName, locale), out var templates);
+                            if (templatesExist)
                             {
-                                var parameters = localAndTemplates.templates.First(u => u.Name == templateName).Parameters;
-                                var newScope = parameters.Zip(args, (k, v) => new { k, v })
-                                    .ToDictionary(x => x.k, x => x.v);
-                                var scope = new StackedMemory();
-                                scope.Push(state);
-                                scope.Push(new SimpleObjectMemory(newScope));
-                                var lgOpt = new EvaluationOptions() { Locale = locale, NullSubstitution = options.NullSubstitution };
-                                result = localAndTemplates.templates.Evaluate(templateName, scope, lgOpt);
+                                (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                                if (error == null)
+                                {
+                                    var parameters = templates.First(u => u.Name == templateName).Parameters;
+                                    var newScope = parameters.Zip(args, (k, v) => new { k, v })
+                                        .ToDictionary(x => x.k, x => x.v);
+                                    var scope = new StackedMemory();
+                                    scope.Push(state);
+                                    scope.Push(new SimpleObjectMemory(newScope));
+                                    var lgOpt = new EvaluationOptions() { Locale = locale, NullSubstitution = options.NullSubstitution };
+                                    result = templates.Evaluate(templateName, scope, lgOpt);
+                                }
+                            }
+                            else
+                            {
+                                error = $"Resource {resourceName} does not exist.";
                             }
                         }
                         else
                         {
-                            error = "Sorry, there is no template for this function.";
+                            error = $"there is no generator for locale {locale}.";
                         }
 
                         return (result, error);

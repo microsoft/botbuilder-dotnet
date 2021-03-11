@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("test.lg", true);
+                .UseLanguageGeneration();
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("injectAll.dialog");
 
             await CreateFlow(

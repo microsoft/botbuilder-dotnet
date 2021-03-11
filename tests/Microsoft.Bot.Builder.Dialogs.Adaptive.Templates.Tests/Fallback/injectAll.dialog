@@ -1,7 +1,7 @@
 ﻿{
   "$schema": "../../tests.schema",
   "$kind": "Microsoft.AdaptiveDialog",
-  "generator": "inject.lg",
+  "generator": "test.lg",
   "triggers": [
     {
       "$kind": "Microsoft.OnBeginDialog",

@@ -93,21 +93,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             this.Id = resource.Id;
 
-            var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
+            var (resourceName, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var content = resource.ReadTextAsync().GetAwaiter().GetResult();
             var lgResource = new LGResource(Id, resource.FullName, content);
             this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
-            foreach (var template in lg.AllTemplates)
+
+            if (LanguageGeneratorManager.TemplatesMapping.ContainsKey((resourceName, locale)))
             {
-                if (LanguageGeneratorManager.TemplatesMapping.ContainsKey(template.Name))
-                {
-                    LanguageGeneratorManager.TemplatesMapping[template.Name].Add((locale, lg));
-                }
-                else
-                {
-                    LanguageGeneratorManager.TemplatesMapping.TryAdd(template.Name, new List<(string locale, LanguageGeneration.Templates templates)> { (locale, lg) });
-                }
+                LanguageGeneratorManager.TemplatesMapping[(resourceName, locale)] = lg;
+            }
+            else
+            {
+                LanguageGeneratorManager.TemplatesMapping.TryAdd((resourceName, locale), lg);
             }
 
             RegisterSourcemap(lg, resource);
