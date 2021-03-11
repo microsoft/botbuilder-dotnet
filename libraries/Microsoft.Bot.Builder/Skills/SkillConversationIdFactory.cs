@@ -6,16 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Skills;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Integration.Runtime.Skills
+namespace Microsoft.Bot.Builder.Skills
 {
     /// <summary>
     /// A <see cref="SkillConversationIdFactory"/> that uses <see cref="IStorage"/> to store
     /// and retrieve <see cref="SkillConversationReference"/> instances.
     /// </summary>
-    internal class SkillConversationIdFactory : SkillConversationIdFactoryBase
+    public class SkillConversationIdFactory : SkillConversationIdFactoryBase
     {
         private readonly IStorage _storage;
 

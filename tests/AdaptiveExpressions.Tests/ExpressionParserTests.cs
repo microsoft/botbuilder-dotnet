@@ -742,6 +742,7 @@ namespace AdaptiveExpressions.Tests
             Test("createArray()", new List<object> { }),
             Test("[]", new List<object> { }),
             Test("binary(hello)", new byte[] { 104, 101, 108, 108, 111 }),
+            Test("string(binary(hello))", "hello"),
             Test("count(binary(hello))", 5),
             Test("base64(hello)", "aGVsbG8="),
             Test("base64(byteArr)", "AwUBDA=="),

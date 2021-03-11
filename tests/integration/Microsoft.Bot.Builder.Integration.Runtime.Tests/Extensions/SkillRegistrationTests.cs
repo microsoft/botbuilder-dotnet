@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
-using Microsoft.Bot.Builder.Integration.Runtime.Skills;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
