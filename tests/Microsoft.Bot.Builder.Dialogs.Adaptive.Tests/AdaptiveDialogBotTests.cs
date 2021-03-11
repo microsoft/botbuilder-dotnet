@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,22 +35,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var storage = new MemoryStorage();
 
-            var resourceExplorerMock = new Mock<ResourceExplorer>();
-
-            Resource resource = null;
-            resourceExplorerMock.Setup((re) => re.TryGetResource(It.IsAny<string>(), out resource));
-                
-            //    .Returns(true);
-
-            resourceExplorerMock.Setup((re) => re.LoadTypeAsync<AdaptiveDialog>(It.IsAny<Resource>(), It.IsAny<CancellationToken>())).ReturnsAsync(new AdaptiveDialog("main"));
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceProvider.Add("Main.dialog", new MockResource("{ \"$kind\": \"Microsoft.AdaptiveDialog\" }"));
+            resourceExplorer.AddResourceProvider(resourceProvider);
 
             var botFrameworkClientMock = new Mock<BotFrameworkClient>();
             var adapterMock = new Mock<BotAdapter>();
 
-            var turnContext = new TurnContext(adapterMock.Object, new Activity());
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(configuration, logger, resourceExplorerMock.Object, storage, botFrameworkClientMock.Object);
+            var bot = new AdaptiveDialogBot(configuration, logger, resourceExplorer, storage, botFrameworkClientMock.Object);
             await ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None);
 
             // Assert
@@ -59,6 +65,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.NotNull(turnContext.TurnState.Get<LanguageGenerator>());
             Assert.NotNull(turnContext.TurnState.Get<LanguageGeneratorManager>());
             Assert.NotNull(turnContext.TurnState.Get<LanguagePolicy>());
+        }
+
+        private class MockResourceProvider : ResourceProvider
+        {
+            private IDictionary<string, Resource> _resources = new Dictionary<string, Resource>();
+
+            public MockResourceProvider(ResourceExplorer resourceExplorer)
+                : base(resourceExplorer)
+            {
+            }
+
+            public override IEnumerable<Resource> GetResources(string extension) => Enumerable.Empty<Resource>();
+
+            public override void Refresh()
+            {
+            }
+
+            public override bool TryGetResource(string id, out Resource resource) => _resources.TryGetValue(id, out resource);
+
+            public void Add(string id, Resource resource) => _resources.Add(id, resource);
+        }
+
+        private class MockResource : Resource
+        {
+            private string _json;
+
+            public MockResource(string json)
+            {
+                _json = json;
+            }
+
+            public override Task<Stream> OpenStreamAsync() => throw new NotImplementedException();
+
+            public override Task<string> ReadTextAsync() => Task.FromResult(_json);
         }
     }
 }
