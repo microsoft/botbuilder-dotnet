@@ -1029,7 +1029,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Utterance is a special entity that corresponds to the full utterance
                 entities[UtteranceKey] = new List<EntityInfo>
                 {
-                    new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = UtteranceKey, Score = 0.0, Type = "string", Value = utterance, Text = utterance }
+                    new EntityInfo { Priority = float.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = UtteranceKey, Score = 0.0, Type = "string", Value = utterance, Text = utterance }
                 };
                 var recognized = AssignEntities(actionContext, entities, assignments, lastEvent);
                 var unrecognized = SplitUtterance(utterance, recognized);
