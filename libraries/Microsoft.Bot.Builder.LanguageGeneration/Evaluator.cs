@@ -567,7 +567,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
-            // priority: template evaluate -> builtin-function -> LG function
+            // Standard functions have the highest priority.
+            if (ExpressionFunctions.StandardFunctions.ContainsKey(name))
+            {
+                return ExpressionFunctions.StandardFunctions[name];
+            }
+
             if (name.StartsWith("lg.", StringComparison.Ordinal))
             {
                 name = name.Substring(3);

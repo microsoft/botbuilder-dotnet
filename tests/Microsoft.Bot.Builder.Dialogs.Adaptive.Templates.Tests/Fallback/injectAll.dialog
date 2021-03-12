@@ -26,14 +26,23 @@
           "activity": "${user.sum}"
         },
         {
-          "$kind": "Microsoft.SendActivity",
-          "activity": "${length('abc')}"
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.length",
+          "value": "=length('abc')"
         },
         {
           "$kind": "Microsoft.SendActivity",
-          "activity": "${lg.length('abc')}"
+          "activity": "${user.length}"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
+          "property": "user.length",
+          "value": "=lg.length('abc')"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.length}"
         }
-
       ]
     }
   ]

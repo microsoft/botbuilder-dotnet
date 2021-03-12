@@ -502,11 +502,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup, bool isExpander)
         => (string name) =>
         {
-            var standardFunction = baseLookup(name);
-
-            if (standardFunction != null)
+            // Standard functions have the highest priority.
+            if (ExpressionFunctions.StandardFunctions.ContainsKey(name))
             {
-                return standardFunction;
+                return ExpressionFunctions.StandardFunctions[name];
             }
 
             if (name.StartsWith("lg.", StringComparison.Ordinal))
@@ -524,6 +523,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     return new ExpressionEvaluator(name, FunctionUtils.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
                 }
+            }
+
+            var standardFunction = baseLookup(name);
+
+            if (standardFunction != null)
+            {
+                return standardFunction;
             }
 
             const string template = "template";
