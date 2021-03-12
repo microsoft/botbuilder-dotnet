@@ -24,6 +24,14 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${user.sum}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${length('abc')}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${lg.length('abc')}"
         }
 
       ]

@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }, locale: "en-GB")
             .Send("hello")
                 .AssertReply("en-GB: 3")
+                .AssertReply("3") // builtin function
+                .AssertReply("my length function in lg1") // lg template
             .StartTestAsync();
         }
 

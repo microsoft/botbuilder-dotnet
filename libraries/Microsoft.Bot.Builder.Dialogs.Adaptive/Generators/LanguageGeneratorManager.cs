@@ -115,84 +115,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             TemplatesMapping.Values.ToList().ForEach(u => allTemplateNames.AddRange(u.AllTemplates.Select(t => t.Name)));
             allTemplateNames = allTemplateNames.Distinct().ToList();
 
+            var prebuildFunctionNames = Expression.Functions.Values.Select(u => u.Type);
             foreach (var templateName in allTemplateNames)
             {
-                Expression.Functions.Add(templateName, new ExpressionEvaluator(
-                    templateName,
+                var functionType = prebuildFunctionNames.Contains(templateName) ? "lg." + templateName : templateName;
+                Expression.Functions.Add(functionType, new ExpressionEvaluator(
+                    functionType,
                     (expression, state, options) =>
                     {
-                        object result = null;
-                        string error = null;
-                        IReadOnlyList<object> args;
-                        string currentLocale;
-                        if (state.TryGetValue("turn.locale", out var locale))
-                        {
-                            currentLocale = locale.ToString();
-                        }
-                        else
-                        {
-                            currentLocale = options.Locale;
-                        }
+                        var currentLocale = GetCurrentLocale(state, options);
 
-                        var getGenerator = state.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var resourceId);
-                        if (getGenerator)
+                        if (state.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var resourceId))
                         {
                             var (resourceName, _) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
 
-                            var getLanguagePolicy = state.TryGetValue(AdaptiveDialog.LanguagePolicy, out var lp);
-                            LanguagePolicy languagePolicy;
-                            if (!getLanguagePolicy)
-                            {
-                                languagePolicy = new LanguagePolicy();
-                            }
-                            else
-                            {
-                                languagePolicy = JObject.FromObject(lp).ToObject<LanguagePolicy>();
-                            }
+                            var languagePolicy = GetLanguagePolicy(state);
 
-                            var fallbackLocales = new List<string>();
-
-                            if (languagePolicy.ContainsKey(currentLocale))
-                            {
-                                fallbackLocales.AddRange(languagePolicy[currentLocale]);
-                            }
-
-                            // append empty as fallback to end
-                            if (currentLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
-                            {
-                                fallbackLocales.AddRange(languagePolicy[string.Empty]);
-                            }
-
-                            if (fallbackLocales.Count == 0)
-                            {
-                                throw new InvalidOperationException($"No supported language found for {currentLocale}");
-                            }
+                            var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
 
                             foreach (var fallbackLocale in fallbackLocales)
                             {
                                 var templatesExist = TemplatesMapping.TryGetValue((resourceName, fallbackLocale.ToLowerInvariant()), out var templates);
-                                if (!templatesExist)
+                                if (!templatesExist || !templates.Exists(u => u.Name == templateName))
                                 {
                                     continue;
                                 }
 
-                                if (!templates.Exists(u => u.Name == templateName))
-                                {
-                                    continue;
-                                }
-
-                                (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+                                var (result, error) = EvaluateTemplate(templates, templateName, expression, state, options, currentLocale);
                                 if (error == null)
                                 {
-                                    var parameters = templates.First(u => u.Name == templateName).Parameters;
-                                    var newScope = parameters.Zip(args, (k, v) => new { k, v })
-                                        .ToDictionary(x => x.k, x => x.v);
-                                    var scope = new StackedMemory();
-                                    scope.Push(state);
-                                    scope.Push(new SimpleObjectMemory(newScope));
-                                    var lgOpt = new EvaluationOptions() { Locale = currentLocale, NullSubstitution = options.NullSubstitution };
-                                    result = templates.Evaluate(templateName, scope, lgOpt);
-                                    return (result, error);
+                                    return (result, null);
                                 }
                             }
                         }
@@ -200,6 +152,79 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         throw new Exception($"{templateName} does not have an evaluator");
                     }));
             }
+        }
+
+        private (object result, string error) EvaluateTemplate(LanguageGeneration.Templates templates, string templateName, Expression expression, IMemory state, Options options, string currentLocale)
+        {
+            var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
+            if (error == null)
+            {
+                var parameters = templates.First(u => u.Name == templateName).Parameters;
+                var newScope = parameters.Zip(args, (k, v) => new { k, v })
+                    .ToDictionary(x => x.k, x => x.v);
+                var scope = new StackedMemory();
+                scope.Push(state);
+                scope.Push(new SimpleObjectMemory(newScope));
+                var lgOpt = new EvaluationOptions() { Locale = currentLocale, NullSubstitution = options.NullSubstitution };
+                var result = templates.Evaluate(templateName, scope, lgOpt);
+                return (result, error);
+            }
+
+            return (null, error);
+        }
+
+        private LanguagePolicy GetLanguagePolicy(IMemory memory)
+        {
+            var getLanguagePolicy = memory.TryGetValue(AdaptiveDialog.LanguagePolicy, out var lp);
+            LanguagePolicy languagePolicy;
+            if (!getLanguagePolicy)
+            {
+                languagePolicy = new LanguagePolicy();
+            }
+            else
+            {
+                languagePolicy = JObject.FromObject(lp).ToObject<LanguagePolicy>();
+            }
+
+            return languagePolicy;
+        }
+
+        private List<string> GetFallbackLocales(LanguagePolicy languagePolicy, string currentLocale)
+        {
+            var fallbackLocales = new List<string>();
+
+            if (languagePolicy.ContainsKey(currentLocale))
+            {
+                fallbackLocales.AddRange(languagePolicy[currentLocale]);
+            }
+
+            // append empty as fallback to end
+            if (currentLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
+            {
+                fallbackLocales.AddRange(languagePolicy[string.Empty]);
+            }
+
+            if (fallbackLocales.Count == 0)
+            {
+                throw new InvalidOperationException($"No supported language found for {currentLocale}");
+            }
+
+            return fallbackLocales;
+        }
+
+        private string GetCurrentLocale(IMemory memory, Options options)
+        {
+            string currentLocale;
+            if (memory.TryGetValue("turn.locale", out var locale))
+            {
+                currentLocale = locale.ToString();
+            }
+            else
+            {
+                currentLocale = options.Locale;
+            }
+
+            return currentLocale;
         }
     }
 }

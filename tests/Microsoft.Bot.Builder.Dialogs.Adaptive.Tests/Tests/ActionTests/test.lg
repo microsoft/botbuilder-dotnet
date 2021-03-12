@@ -6,3 +6,14 @@
 
 # MyChoices_simple
 - ${['dog', 'cat']}
+
+> CONFIRM INPUT UNIT TEST
+
+# ConfirmInput_Prompt
+- Please select
+
+# ConfirmInput_UnknownPrompt
+- Not yep or nope. Please select
+
+# ConfirmInput_complex
+- ${[{ value: "yep", synonyms: ["yippee","yepster"]  },{value: "nope", synonyms: ["nopee","nopester"]}]}

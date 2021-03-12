@@ -144,6 +144,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_ConfirmInput_ComplexTemplate_en()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task Action_ConfirmInput_ComplexTemplate_es()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_DatetimeInput()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

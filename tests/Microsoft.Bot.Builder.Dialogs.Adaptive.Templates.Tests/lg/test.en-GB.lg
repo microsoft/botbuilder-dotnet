@@ -3,3 +3,8 @@
 
 # MySum(a, b)
 - en-GB: ${a+b}
+
+> lg.length() would output the template evaluation
+> length() would evaluate with built-in function
+# length
+- my length function in lg
