@@ -844,6 +844,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestProperties()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
+            Assert.Null(templates[0].Properties);
+
+            templates = Templates.ParseFile(GetExampleFilePath("StructuredTemplate.lg"));
+            Assert.Equal("${GetAge()}", templates[0].Properties["Text"].ToString());
+            Assert.Equal("${GetAge()}", templates[0].Properties["Speak"].ToString());
+            Assert.Equal("Activity", templates[0].Properties["$type"].ToString());
+        }
+
+        [Fact]
         public void TemplateCRUD_Normal()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("CrudInit.lg"));
@@ -1712,6 +1724,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             (evaled, error) = Expression.Parse("greeting()").TryEvaluate(new { name = "Alice" });
             Assert.Null(error);
             Assert.Equal("hi Alice", evaled.ToString());
+        }
+
+        [Fact]
+        public void TestFileOperation()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+            var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            Assert.Equal("hi ${name}", evaluated);
+
+            evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
+
+            evaluated = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
+
+            evaluated = templates.Evaluate("FromFileBinary");
+            Assert.Equal("hi ${name}", evaluated);
         }
 
         public class LoopClass

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -83,6 +84,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// The parse tree of this template.
         /// </value>
         public LGTemplateParser.BodyContext TemplateBodyParseTree { get; set; }
+
+        /// <summary>
+        /// Gets or sets properties that are not otherwise defined by the <see cref="Template"/> core type.
+        /// </summary>
+        /// <value>The extended properties for the object.</value>
+#pragma warning disable CA2227 // Collection properties should be read only
+        public JObject Properties { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <inheritdoc/>
         public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
