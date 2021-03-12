@@ -124,7 +124,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         object result = null;
                         string error = null;
                         IReadOnlyList<object> args;
-                        var locale = options.Locale;
+                        string currentLocale;
+                        if (state.TryGetValue("turn.locale", out var locale))
+                        {
+                            currentLocale = locale.ToString();
+                        }
+                        else
+                        {
+                            currentLocale = options.Locale;
+                        }
+
                         var getGenerator = state.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var resourceId);
                         if (getGenerator)
                         {
@@ -143,20 +152,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                             var fallbackLocales = new List<string>();
 
-                            if (languagePolicy.ContainsKey(locale))
+                            if (languagePolicy.ContainsKey(currentLocale))
                             {
-                                fallbackLocales.AddRange(languagePolicy[locale]);
+                                fallbackLocales.AddRange(languagePolicy[currentLocale]);
                             }
 
                             // append empty as fallback to end
-                            if (locale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
+                            if (currentLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
                             {
                                 fallbackLocales.AddRange(languagePolicy[string.Empty]);
                             }
 
                             if (fallbackLocales.Count == 0)
                             {
-                                throw new InvalidOperationException($"No supported language found for {locale}");
+                                throw new InvalidOperationException($"No supported language found for {currentLocale}");
                             }
 
                             foreach (var fallbackLocale in fallbackLocales)
@@ -181,14 +190,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                                     var scope = new StackedMemory();
                                     scope.Push(state);
                                     scope.Push(new SimpleObjectMemory(newScope));
-                                    var lgOpt = new EvaluationOptions() { Locale = locale, NullSubstitution = options.NullSubstitution };
+                                    var lgOpt = new EvaluationOptions() { Locale = currentLocale, NullSubstitution = options.NullSubstitution };
                                     result = templates.Evaluate(templateName, scope, lgOpt);
                                     return (result, error);
                                 }
                             }
                         }
 
-                        return (result, error);
+                        throw new Exception($"{templateName} does not have an evaluator");
                     }));
             }
         }

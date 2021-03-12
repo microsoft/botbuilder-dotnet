@@ -784,11 +784,7 @@ namespace AdaptiveExpressions
 
                 set
                 {
-                    if (ExpressionFunctions.StandardFunctions.ContainsKey(key))
-                    {
-                        throw new NotSupportedException("You can't overwrite a built in function.");
-                    }
-
+                    // now it is possible to override the built-in function.
                     _customFunctions[key] = value;
                 }
             }

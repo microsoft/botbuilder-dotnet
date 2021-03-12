@@ -567,13 +567,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
-            var standardFunction = baseLookup(name);
-
-            if (standardFunction != null)
-            {
-                return standardFunction;
-            }
-
+            // priority: template evaluate -> builtin-function -> LG function
             if (name.StartsWith("lg.", StringComparison.Ordinal))
             {
                 name = name.Substring(3);
@@ -584,6 +578,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (this.TemplateMap.ContainsKey(templateName))
             {
                 return new ExpressionEvaluator(templateName, FunctionUtils.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
+            }
+
+            var standardFunction = baseLookup(name);
+
+            if (standardFunction != null)
+            {
+                return standardFunction;
             }
 
             const string template = "template";

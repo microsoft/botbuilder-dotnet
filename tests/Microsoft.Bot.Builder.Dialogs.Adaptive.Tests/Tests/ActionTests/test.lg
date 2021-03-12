@@ -1,0 +1,8 @@
+﻿# MyChoices_Prompt
+- Please select
+
+# MyChoices_UnknownPrompt
+- Not a dog or cat. Please select
+
+# MyChoices_simple
+- ${['dog', 'cat']}

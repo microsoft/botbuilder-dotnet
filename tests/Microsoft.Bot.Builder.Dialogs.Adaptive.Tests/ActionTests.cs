@@ -114,6 +114,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_ChoiceInput_With_Template_en()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task Action_ChoiceInput_With_Template_es()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_ChoicesInMemory()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

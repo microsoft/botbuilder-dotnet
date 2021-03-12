@@ -455,8 +455,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             Assert.Equal("hello world", evaled.Trim());
 
+            // template name would have the higher priority.
             evaled = templates.Evaluate("dupNameWithTemplate").ToString();
-            Assert.Equal("2", evaled);
+            Assert.Equal("calculate length of ms by user's template", evaled);
 
             evaled = templates.Evaluate("foo", new { property = "Show" }).ToString();
             Assert.Equal("you made it!", evaled);

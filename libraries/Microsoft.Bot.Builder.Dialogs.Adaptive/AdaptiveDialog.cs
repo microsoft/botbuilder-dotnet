@@ -735,8 +735,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (this.Generator is ResourceMultiLanguageGenerator generator)
                 {
                     dialogContext.State.SetValue(GeneratorIdKey, generator.ResourceId);
-                    var languagePolicy = dialogContext.Services.Get<LanguagePolicy>() ??
-                                generator.LanguagePolicy ??
+                    var languagePolicy = generator.LanguagePolicy ??
+                                dialogContext.Services.Get<LanguagePolicy>() ??
                                 new LanguagePolicy();
                     dialogContext.State.SetValue(LanguagePolicy, languagePolicy);
                 }
