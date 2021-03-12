@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
@@ -14,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
@@ -41,8 +38,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             resourceExplorer.AddResourceProvider(resourceProvider);
 
             var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
             var adapterMock = new Mock<BotAdapter>();
 
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
             var activity = new Activity
             {
                 ChannelId = "test-channel",

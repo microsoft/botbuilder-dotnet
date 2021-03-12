@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(new ConversationState(_storage));
             turnContext.TurnState.Add(new UserState(_storage));
             turnContext.TurnState.Add(_resourceExplorer);
-            turnContext.TurnState.Add<LanguageGenerator>(_resourceExplorer.TryGetResource(DefaultLg, out var resource) ? new ResourceMultiLanguageGenerator(DefaultLg) : new TemplateEngineLanguageGenerator());
+            turnContext.TurnState.Add(_resourceExplorer.TryGetResource(DefaultLg, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(DefaultLg) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             turnContext.TurnState.Add(new LanguagePolicy(_defaultLocale));
         }
