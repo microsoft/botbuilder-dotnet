@@ -1598,7 +1598,7 @@
               ]
             },
             {
-              "$ref": "#/definitions/equalsExpression"
+              "$ref": "#/definitions/stringExpression"
             }
           ]
         },
@@ -2055,7 +2055,7 @@
               ]
             },
             {
-              "$ref": "#/definitions/equalsExpression"
+              "$ref": "#/definitions/stringExpression"
             }
           ]
         },
@@ -4229,10 +4229,10 @@
           "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
@@ -5536,7 +5536,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5615,7 +5615,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5679,7 +5679,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5743,7 +5743,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5822,7 +5822,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5896,7 +5896,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5960,7 +5960,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6021,7 +6021,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6085,7 +6085,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6149,7 +6149,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6219,7 +6219,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6283,7 +6283,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6350,7 +6350,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6414,7 +6414,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6478,7 +6478,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6542,7 +6542,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6606,7 +6606,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6685,7 +6685,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6749,7 +6749,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6813,7 +6813,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6877,7 +6877,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6941,7 +6941,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -7005,7 +7005,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -7069,7 +7069,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -7133,7 +7133,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -7197,7 +7197,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -7261,7 +7261,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -10837,7 +10837,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -10901,7 +10901,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -10965,7 +10965,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11029,7 +11029,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11093,7 +11093,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11157,7 +11157,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11221,7 +11221,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11291,7 +11291,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11355,7 +11355,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11419,7 +11419,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11490,7 +11490,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11557,7 +11557,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11629,7 +11629,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11700,7 +11700,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11770,7 +11770,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11840,7 +11840,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11904,7 +11904,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -11975,7 +11975,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12045,7 +12045,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12117,7 +12117,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12189,7 +12189,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12253,7 +12253,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12317,7 +12317,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12381,7 +12381,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12445,7 +12445,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12509,7 +12509,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -12573,7 +12573,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
