@@ -97,10 +97,7 @@
                     ]
                 },
                 {
-                    "$ref": "schema:#/definitions/equalsExpression"
-                },
-                {
-                    "type": "string"
+                    "$ref": "schema:#/definitions/stringExpression"
                 }
             ]
         },
