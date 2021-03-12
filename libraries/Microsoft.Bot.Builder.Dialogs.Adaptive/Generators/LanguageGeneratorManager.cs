@@ -10,6 +10,7 @@ using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -124,13 +125,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         string error = null;
                         IReadOnlyList<object> args;
                         var locale = options.Locale;
-                        var getGenerator = state.TryGetValue("dialog.generator", out var resourceId);
+                        var getGenerator = state.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var resourceId);
                         if (getGenerator)
                         {
                             var (resourceName, _) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
-                            var templatesExist = TemplatesMapping.TryGetValue((resourceName, locale), out var templates);
-                            if (templatesExist)
+
+                            var getLanguagePolicy = state.TryGetValue(AdaptiveDialog.LanguagePolicy, out var lp);
+                            LanguagePolicy languagePolicy;
+                            if (!getLanguagePolicy)
                             {
+                                languagePolicy = new LanguagePolicy();
+                            }
+                            else
+                            {
+                                languagePolicy = JObject.FromObject(lp).ToObject<LanguagePolicy>();
+                            }
+
+                            var fallbackLocales = new List<string>();
+
+                            if (languagePolicy.ContainsKey(locale))
+                            {
+                                fallbackLocales.AddRange(languagePolicy[locale]);
+                            }
+
+                            // append empty as fallback to end
+                            if (locale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
+                            {
+                                fallbackLocales.AddRange(languagePolicy[string.Empty]);
+                            }
+
+                            if (fallbackLocales.Count == 0)
+                            {
+                                throw new InvalidOperationException($"No supported language found for {locale}");
+                            }
+
+                            foreach (var fallbackLocale in fallbackLocales)
+                            {
+                                var templatesExist = TemplatesMapping.TryGetValue((resourceName, fallbackLocale.ToLowerInvariant()), out var templates);
+                                if (!templatesExist)
+                                {
+                                    continue;
+                                }
+
+                                if (!templates.Exists(u => u.Name == templateName))
+                                {
+                                    continue;
+                                }
+
                                 (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
                                 if (error == null)
                                 {
@@ -142,16 +183,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                                     scope.Push(new SimpleObjectMemory(newScope));
                                     var lgOpt = new EvaluationOptions() { Locale = locale, NullSubstitution = options.NullSubstitution };
                                     result = templates.Evaluate(templateName, scope, lgOpt);
+                                    return (result, error);
                                 }
                             }
-                            else
-                            {
-                                error = $"Resource {resourceName} does not exist.";
-                            }
-                        }
-                        else
-                        {
-                            error = $"there is no generator for locale {locale}.";
                         }
 
                         return (result, error);

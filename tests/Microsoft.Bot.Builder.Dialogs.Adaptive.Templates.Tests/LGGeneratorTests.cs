@@ -381,7 +381,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
             DialogManager dm = new DialogManager()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration("test.lg")
+                .UseLanguageGeneration()
                 .UseLanguagePolicy(new LanguagePolicy("fr-fr"));
             dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("test.dialog");
 

@@ -35,6 +35,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public const string Kind = "Microsoft.AdaptiveDialog";
 
         internal const string ConditionTracker = "dialog._tracker.conditions";
+        internal const string GeneratorIdKey = "dialog.generatorId";
+        internal const string LanguagePolicy = "dialog.languagePolicy";
 
         private const string AdaptiveKey = "_adaptive";
         private const string DefaultOperationKey = "$defaultOperation";
@@ -732,7 +734,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 dialogContext.Services.Set(this.Generator);
                 if (this.Generator is ResourceMultiLanguageGenerator generator)
                 {
-                    dialogContext.State.SetValue("dialog.generator", generator.ResourceId);
+                    dialogContext.State.SetValue(GeneratorIdKey, generator.ResourceId);
+                    var languagePolicy = dialogContext.Services.Get<LanguagePolicy>() ??
+                                generator.LanguagePolicy ??
+                                new LanguagePolicy();
+                    dialogContext.State.SetValue(LanguagePolicy, languagePolicy);
                 }
             }
         }

@@ -101,11 +101,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             if (LanguageGeneratorManager.TemplatesMapping.ContainsKey((resourceName, locale)))
             {
-                LanguageGeneratorManager.TemplatesMapping[(resourceName, locale)] = lg;
+                LanguageGeneratorManager.TemplatesMapping[(resourceName, locale.ToLowerInvariant())] = lg;
             }
             else
             {
-                LanguageGeneratorManager.TemplatesMapping.TryAdd((resourceName, locale), lg);
+                LanguageGeneratorManager.TemplatesMapping.TryAdd((resourceName, locale.ToLowerInvariant()), lg);
             }
 
             RegisterSourcemap(lg, resource);
