@@ -255,9 +255,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         {
             Span span = result.Label.Span;
             return new JObject(
-                new JProperty("name", result.Label.Name),
+                new JProperty("type", result.Label.Name),
                 new JProperty("score", result.Score),
-                new JProperty("value", text.Substring((int)span.Offset, (int)span.Length)));
+                new JProperty("text", text.Substring((int)span.Offset, (int)span.Length)));
         }
 
         private void InitializeModel()
