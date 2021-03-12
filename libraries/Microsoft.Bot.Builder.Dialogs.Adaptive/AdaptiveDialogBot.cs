@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var msg = $"The ResourceExplorer could not find a resourced with id '{_rootDialogId}'";
                 _logger.LogError(msg);
-                throw new Exception(msg);
+                throw new InvalidOperationException(msg);
             }
 
             return await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(rootDialogResource, cancellationToken).ConfigureAwait(false);
