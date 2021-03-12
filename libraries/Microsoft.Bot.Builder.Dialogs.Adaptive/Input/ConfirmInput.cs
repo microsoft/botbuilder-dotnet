@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">Optional, the <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>InputState which reflects whether input was recognized as valid or not.</returns>
-        protected override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        protected async override Task<InputState> OnRecognizeInputAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
             if (dc.Context.Activity.Type == ActivityTypes.Message)
@@ -120,11 +120,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             }
                         }
 
-                        return Task.FromResult(InputState.Valid);
+                        return InputState.Valid;
                     }
                     else
                     {
-                        return Task.FromResult(InputState.Unrecognized);
+                        return InputState.Unrecognized;
                     }
                 }
                 else
@@ -137,7 +137,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     if (!choiceOptions.IncludeNumbers.HasValue || choiceOptions.IncludeNumbers.Value)
                     {
                         // The text may be a number in which case we will interpret that as a choice.
-                        var confirmChoices = ConfirmChoices?.GetValue(dc.State) ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
+                        var confirmChoices = await GetConfirmChoicesAsync(dc, defaults).ConfigureAwait(false);
+
                         var secondAttemptResults = ChoiceRecognizers.RecognizeChoices(input.ToString(), confirmChoices);
                         if (secondAttemptResults.Count > 0)
                         {
@@ -146,13 +147,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         }
                         else
                         {
-                            return Task.FromResult(InputState.Unrecognized);
+                            return InputState.Unrecognized;
                         }
                     }
                 }
             }
 
-            return Task.FromResult(InputState.Valid);
+            return InputState.Valid;
         }
 
         /// <summary>
@@ -169,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var culture = DetermineCulture(dc);
             var defaults = DefaultChoiceOptions[culture];
             var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? defaults.Item3;
-            var confirmChoices = ConfirmChoices?.GetValue(dc.State) ?? new List<Choice>() { defaults.Item1, defaults.Item2 };
+            var confirmChoices = await GetConfirmChoicesAsync(dc, defaults).ConfigureAwait(false);
 
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var (style, _) = Style.TryGetValue(dc.State);
@@ -188,6 +189,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return culture;
+        }
+
+        private async Task<ChoiceSet> GetConfirmChoicesAsync(DialogContext dc, (Choice, Choice, ChoiceFactoryOptions) defaults)
+        {
+            ChoiceSet confirmChoices = null;
+            if (ConfirmChoices != null)
+            {
+                if (ConfirmChoices.ExpressionText != null && ConfirmChoices.ExpressionText.TrimStart().StartsWith("${", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // use ITemplate<ChocieSet> to bind (aka LG)
+                    confirmChoices = await new ChoiceSet(ConfirmChoices.ExpressionText).BindAsync(dc, dc.State).ConfigureAwait(false);
+                }
+                else
+                {
+                    // use expression to bind
+                    confirmChoices = ConfirmChoices.TryGetValue(dc.State).Value;
+                }
+            }
+            else
+            {
+                confirmChoices = new ChoiceSet(new List<Choice>() { defaults.Item1, defaults.Item2 });
+            }
+
+            return confirmChoices;
         }
     }
 }

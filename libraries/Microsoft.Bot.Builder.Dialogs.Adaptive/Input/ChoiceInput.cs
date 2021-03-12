@@ -155,13 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     op = new ChoiceInputOptions();
                 }
 
-                var (choices, error) = Choices.TryGetValue(dc.State);
-                if (error != null)
-                {
-                    throw new InvalidOperationException(error);
-                }
-
-                op.Choices = choices;
+                op.Choices = GetChoiceSetAsync(dc).GetAwaiter().GetResult();
             }
 
             return base.OnInitializeOptions(dc, op);
@@ -219,14 +213,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var channelId = dc.Context.Activity.ChannelId;
             var choiceOptions = ChoiceOptions?.GetValue(dc.State) ?? DefaultChoiceOptions[locale];
+            var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
 
-            var (choices, error) = Choices.TryGetValue(dc.State);
-            if (error != null)
+            return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions);
+        }
+
+        private async Task<ChoiceSet> GetChoiceSetAsync(DialogContext dc)
+        {
+            if (Choices.ExpressionText != null && Choices.ExpressionText.TrimStart().StartsWith("${", StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new InvalidOperationException(error);
+                // use ITemplate<ChocieSet> to bind (aka LG)
+                return await new ChoiceSet(Choices.ExpressionText).BindAsync(dc, dc.State).ConfigureAwait(false);
             }
-
-            return AppendChoices(prompt.AsMessageActivity(), channelId, choices, Style.GetValue(dc.State), choiceOptions);
+            else
+            {
+                // use Expression to bind
+                return Choices.TryGetValue(dc.State).Value;
+            }
         }
 
         private string DetermineCulture(DialogContext dc, FindChoicesOptions opt = null)
