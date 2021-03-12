@@ -395,6 +395,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .StartTestAsync();
         }
 
+        [Fact]
+        public async Task TestInjectScope()
+        {
+            var resourceExplorer = new ResourceExplorer().LoadProject(GetProjectFolder(), monitorChanges: false);
+            DialogManager dm = new DialogManager()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration()
+                .UseLanguagePolicy(new LanguagePolicy("fr-fr"));
+            dm.RootDialog = (AdaptiveDialog)resourceExplorer.LoadType<Dialog>("testInjectScope.dialog");
+
+            await CreateFlow(async (dialogContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(dialogContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hello")
+                .AssertReply("root")
+                .AssertReply("overriden in fr")
+                .AssertReply("root")
+            .StartTestAsync();
+        }
+
         public class TestNoResourceExplorerDialog : Dialog
         {
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dialogContext, object options = null, CancellationToken cancellationToken = default)

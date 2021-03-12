@@ -1,0 +1,59 @@
+﻿{
+    "$schema": "../../tests.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "generator": {
+        "$kind": "Microsoft.ResourceMultiLanguageGenerator",
+        "resourceId": "root.lg",
+        "languagePolicy": {
+            "en-us": [
+                "en-us",
+                ""
+            ]
+        }
+    },
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+          "actions": [
+            {
+              "$kind": "Microsoft.SetProperty",
+              "property": "dialog.testString",
+              "value": "=test()"
+            },
+            {
+              "$kind": "Microsoft.SendActivity",
+              "activity": "${dialog.testString}"
+            },
+            {
+              "$kind": "Microsoft.AdaptiveDialog",
+              "generator": "subDialog.lg",
+              "triggers": [
+                {
+                  "$kind": "Microsoft.OnBeginDialog",
+                  "actions": [
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "dialog.testString",
+                      "value": "=test()"
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "${dialog.testString}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "$kind": "Microsoft.SetProperty",
+              "property": "dialog.testString",
+              "value": "=test()"
+            },
+            {
+              "$kind": "Microsoft.SendActivity",
+              "activity": "${dialog.testString}"
+            }
+          ]
+        }
+    ]
+}
