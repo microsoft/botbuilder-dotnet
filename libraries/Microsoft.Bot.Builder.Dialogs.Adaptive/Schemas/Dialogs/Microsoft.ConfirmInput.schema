@@ -157,6 +157,9 @@
                 },
                 {
                     "$ref": "schema:#/definitions/equalsExpression"
+                },
+                {
+                    "type": "string"
                 }
             ]
         }
