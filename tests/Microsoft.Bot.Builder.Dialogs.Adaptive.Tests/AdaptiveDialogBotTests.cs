@@ -24,10 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task AdaptiveDialogBotTurnState()
         {
             // Arrange
-            var configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>())
-                .Build();
-
             var logger = NullLogger<AdaptiveDialogBot>.Instance;
 
             var storage = new MemoryStorage();
@@ -54,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(configuration, logger, resourceExplorer, storage, botFrameworkClientMock.Object);
+            var bot = new AdaptiveDialogBot(resourceExplorer, "Main.dialog", "defaultLocale", logger, storage, botFrameworkClientMock.Object);
             await ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None);
 
             // Assert

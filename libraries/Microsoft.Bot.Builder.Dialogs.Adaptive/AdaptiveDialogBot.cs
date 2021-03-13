@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -18,9 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialogBot : IBot
     {
-        private const string DefaultLocaleKey = "defaultLocale";
-        private const string RootDialogKey = "defaultRootDialog";
-
         private const string DefaultLocale = "en-US";
         private const string DefaultLg = "main.lg";
 
@@ -37,23 +35,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
         /// </summary>
-        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="Dialog"/> from.</param>
+        /// <param name="rootDialogId">The id of the dialog to load from the <see cref="ResourceExplorer"/>.</param>
+        /// <param name="defaultLocale">The default locale for this bot.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         /// <param name="storage">The <see cref="IStorage"/> implementation to use for this <see cref="Dialog"/>.</param>
-        /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="Dialog"/> from.</param>
         /// <param name="botFrameworkClient">A <see cref="BotFrameworkClient"/> for making calls to Bot Builder Skills.</param>
         public AdaptiveDialogBot(
-            IConfiguration configuration,
-            ILogger<AdaptiveDialogBot> logger,
             ResourceExplorer resourceExplorer,
+            string rootDialogId,
+            string defaultLocale,
+            ILogger<AdaptiveDialogBot> logger = null,
             IStorage storage = null,
             BotFrameworkClient botFrameworkClient = null)
         {
-            _defaultLocale = configuration.GetSection(DefaultLocaleKey).Value ?? DefaultLocale;
-            _rootDialogId = configuration.GetSection(RootDialogKey).Value ?? "Main.dialog";
-
-            _logger = logger;
             _resourceExplorer = resourceExplorer;
+            _rootDialogId = rootDialogId ?? "Main.dialog";
+            _defaultLocale = defaultLocale ?? DefaultLocale;
+            _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
             _storage = storage ?? new MemoryStorage();
             _botFrameworkClient = botFrameworkClient;
         }
