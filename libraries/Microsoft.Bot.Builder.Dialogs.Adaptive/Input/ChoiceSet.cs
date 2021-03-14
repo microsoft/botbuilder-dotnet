@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -9,8 +14,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     /// Defines ChoiceSet collection.
     /// </summary>
     [JsonConverter(typeof(ChoiceSetConverter))]
-    public class ChoiceSet : List<Choice>
+    public class ChoiceSet : List<Choice>, ITemplate<ChoiceSet>
     {
+        private string template;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChoiceSet"/> class.
         /// </summary>
@@ -33,18 +40,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="obj">Choice values.</param>
         public ChoiceSet(object obj)
         {
-            // support string[] => choice[]
-            if (obj is IEnumerable<string> strings)
+            if (obj is string template)
             {
+                this.template = template;
+            }
+            else if (obj is IEnumerable<string> strings)
+            {
+                // support string[] => choice[]
                 foreach (var str in strings)
                 {
                     this.Add(new Choice(str));
                 }
             }
-
-            // support JArray to => choice
-            if (obj is JArray array)
+            else if (obj is JArray array)
             {
+                // support JArray to => choice
                 if (array.HasValues)
                 {
                     foreach (var element in array)
@@ -79,5 +89,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         /// <param name="value"><see cref="JToken"/> expression.</param>
         public static implicit operator ChoiceSet(JToken value) => new ChoiceSet(value);
+
+        /// <inheritdoc/>
+        public async Task<ChoiceSet> BindAsync(DialogContext dialogContext, object data = null, CancellationToken cancellationToken = default)
+        {
+            if (this.template == null)
+            {
+                return this;
+            }
+
+            var languageGenerator = dialogContext.Services.Get<LanguageGenerator>() ?? throw new MissingMemberException(nameof(LanguageGeneration));
+            var lgResult = await languageGenerator.GenerateAsync(dialogContext, this.template, dialogContext.State).ConfigureAwait(false);
+            if (lgResult is ChoiceSet cs)
+            {
+                return cs;
+            }
+            else if (lgResult is string str)
+            {
+                try
+                {
+                    var jObj = (JToken)JsonConvert.DeserializeObject(str);
+
+                    if (jObj is JArray jarr)
+                    {
+                        return new ChoiceSet(jarr);
+                    }
+
+                    return jObj.ToObject<ChoiceSet>();
+                }
+                catch (JsonReaderException)
+                {
+                    return new ChoiceSet(str.Split('|').Select(t => t.Trim()));
+                }
+            }
+
+            return new ChoiceSet(lgResult);
+        }
     }
 }

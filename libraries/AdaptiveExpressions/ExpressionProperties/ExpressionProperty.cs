@@ -134,7 +134,16 @@ namespace AdaptiveExpressions.Properties
         {
             if (_expression == null && ExpressionText != null)
             {
-                _expression = Expression.Parse(this.ExpressionText.TrimStart('='));
+                try
+                {
+                    _expression = Expression.Parse(this.ExpressionText.TrimStart('='));
+                }
+#pragma warning disable CA1031 // Do not catch general exception types
+                catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    return (default(T), err.Message);
+                }
             }
 
             if (_expression != null)
