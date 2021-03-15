@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 default:
                     var blobName = GetBlobName(activity);
                     var blobClient = _containerClient.Value.GetBlobClient(blobName);
-                    await LogActivityToBlobClientAsync(activity, blobClient).ConfigureAwait(false);
+                    await LogActivityToBlobClientAsync(activity, blobClient, false).ConfigureAwait(false);
                     return;
             }
         }
@@ -396,7 +396,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
         }
 
-        private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient)
+        private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient, bool overwrite = true)
         {
             using var memoryStream = new MemoryStream();
             using var streamWriter = new StreamWriter(memoryStream);
@@ -415,6 +415,11 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 Metadata = metaData,
                 TransferOptions = _storageTransferOptions
             };
+
+            if (!overwrite)
+            {
+                options.Conditions = new BlobRequestConditions { IfNoneMatch = new ETag("*") };
+            }
 
             _jsonSerializer.Serialize(jsonWriter, activity);
             await streamWriter.FlushAsync().ConfigureAwait(false);
