@@ -167,12 +167,13 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                     }
                     else
                     {
-                        var splitedStr = trimedItemStr.Split('-');
-                        bodyElement.Synonyms.Add(splitedStr[1].Trim());
+                        var index = trimedItemStr.IndexOf('-');
+                        var synonym = trimedItemStr.Remove(index, 1);
+                        bodyElement.Synonyms.Add(synonym.Trim());
 
                         if (bodyElement.NormalizedValue == null) 
                         {
-                            bodyElement.NormalizedValue = splitedStr[1].Trim();
+                            bodyElement.NormalizedValue = synonym.Trim();
                         }
                     }
                 }

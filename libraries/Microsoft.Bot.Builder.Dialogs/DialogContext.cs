@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -658,9 +658,34 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Obtain the CultureInfo in DialogContext.
         /// </summary>
         /// <returns>A string representing the current locale.</returns>
+        /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            return Context.TurnState.Get<JObject>("turn")["locale"]?.ToString();
+            const string TurnLocaleProperty = "turn.locale";
+            string locale;
+
+            try
+            {
+                // turn.locale is the highest precedence.
+                if (State.TryGetValue<string>(TurnLocaleProperty, out locale) && !string.IsNullOrEmpty(locale))
+                {
+                    return new CultureInfo(locale).Name;
+                }
+
+                // If turn.locale was not populated, fall back to activity locale
+                locale = Context.Activity?.Locale;
+
+                if (!string.IsNullOrEmpty(locale))
+                {
+                    return new CultureInfo(locale).Name;
+                }
+
+                return Thread.CurrentThread.CurrentCulture.Name;
+            }
+            catch (CultureNotFoundException)
+            {
+                return Thread.CurrentThread.CurrentCulture.Name;
+            }
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -96,7 +96,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             date = date.ToUniversalTime();
             if (date <= DateTime.UtcNow)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(Date)} must be in the future");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentOutOfRangeException(nameof(Date), $"{nameof(Date)} must be in the future");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             // create ContinuationActivity from the conversation reference.
@@ -116,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({Date?.ToString()}s)";
+            return $"{GetType().Name}({Date?.ToString()}s)";
         }
     }
 }

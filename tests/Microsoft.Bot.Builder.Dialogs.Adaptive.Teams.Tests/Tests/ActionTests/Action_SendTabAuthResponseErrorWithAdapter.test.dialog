@@ -1,0 +1,88 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "NoConnectionName",
+                    "pattern": "NoConnectionName"
+                },
+                {
+                    "intent": "NoTitle",
+                    "pattern": "NoTitle"
+                }
+            ]
+        },
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoConnectionName",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendTabAuthResponse",
+                        "connectionName": "=turn.channelData.DoesNotExist"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoTitle",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendTabAuthResponse",
+                        "connectionName": "testConnection",
+                        "title": "=turn.channelData.doesNotExist"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "NoAttachments",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendTabAuthResponse"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnError",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${turn.dialogEvent.value.message}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "NoConnectionName",
+                "name": "tab/fetch"
+            }
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "A valid ConnectionName is required for auth responses."
+        },
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "NoTitle",
+                "name": "tab/fetch"
+            }
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "A valid Title is required for auth responses."
+        }
+    ]
+}

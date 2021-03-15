@@ -4,6 +4,9 @@
     "title": "Send task module message response",
     "description": "Send a message response to a Task Module request.",
     "type": "object",
+    "required": [
+        "message"
+    ],
     "properties": {
         "id": {
             "type": "string",
@@ -36,14 +39,5 @@
                 "=user.age > 3"
             ]
         }
-    },
-    "policies": [
-        {
-            "type": "allowedTrigger",
-            "kinds": [
-                "Teams.OnTaskModuleFetch",
-                "Teams.OnTaskModuleSubmit"
-            ]
-        }
-    ]
+    }
 }

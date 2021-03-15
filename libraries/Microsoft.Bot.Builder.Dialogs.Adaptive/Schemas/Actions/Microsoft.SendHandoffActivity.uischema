@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Send a handoff request",
+        "subtitle": "Send Handoff Activity",
+        "helpLink": "https://aka.ms/bfc-send-handoff-activity"
+    },
+    "menu": {
+        "submenu": [ "Access external resources" ],
+        "label": "Send Handoff Event"
+    },
+    "flow": {
+        "widget": "ActionHeader"
+    }
+}

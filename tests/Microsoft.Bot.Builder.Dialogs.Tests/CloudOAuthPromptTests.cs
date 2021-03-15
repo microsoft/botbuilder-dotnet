@@ -408,7 +408,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(0, new DialogInstance { Id = "OAuthPrompt", State = new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddHours(8) } } });
+                dialogContext.Stack.Insert(
+                    0,
+                    new DialogInstance
+                    {
+                        Id = "OAuthPrompt",
+                        State = new Dictionary<string, object>
+                        {
+                            { "expires", DateTime.UtcNow.AddHours(8) },
+                            { "caller", null },
+                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                            { "options", new PromptOptions() }
+                        }
+                    });
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -489,7 +501,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     new DialogInstance
                     {
                         Id = "OAuthPrompt",
-                        State = new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddHours(8) }, { "caller", null }, }
+                        State = new Dictionary<string, object>
+                        {
+                            { "expires", DateTime.UtcNow.AddHours(8) },
+                            { "caller", null },
+                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                            { "options", new PromptOptions() }
+                        }
                     });
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
@@ -580,7 +598,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(0, new DialogInstance { Id = "OAuthPrompt", State = new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddHours(8) } } });
+                dialogContext.Stack.Insert(
+                    0,
+                    new DialogInstance
+                    {
+                        Id = "OAuthPrompt",
+                        State = new Dictionary<string, object>
+                        {
+                            { "expires", DateTime.UtcNow.AddHours(8) },
+                            { "caller", null },
+                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                            { "options", new PromptOptions() }
+                        }
+                    });
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -662,7 +692,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler callback = async (turnContext, cancellationToken) =>
             {
                 var dialogContext = await dialogs.CreateContextAsync(turnContext);
-                dialogContext.Stack.Insert(0, new DialogInstance { Id = "OAuthPrompt", State = new Dictionary<string, object> { { "expires", DateTime.UtcNow.AddHours(8) } } });
+                dialogContext.Stack.Insert(
+                    0,
+                    new DialogInstance
+                    {
+                        Id = "OAuthPrompt",
+                        State = new Dictionary<string, object>
+                        {
+                            { "expires", DateTime.UtcNow.AddHours(8) },
+                            { "caller", null },
+                            { "state", new Dictionary<string, object> { { "AttemptCount", 0 } } },
+                            { "options", new PromptOptions() }
+                        }
+                    });
 
                 dialogTurnResult = await dialogContext.ContinueDialogAsync();
             };
@@ -755,7 +797,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.Message,
-                Name = SignInConstants.TokenExchangeOperationName,
                 From = new ChannelAccount { Id = userId },
                 Conversation = new ConversationAccount { Id = "conversation-id" },
                 ChannelId = channelId,

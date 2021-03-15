@@ -55,7 +55,7 @@
         "$kind": "Microsoft.OnAssignEntity",
         "operation": "Add()",
         "property": "Meat",
-        "entity": "MeatEntity",
+        "value": "MeatEntity",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",

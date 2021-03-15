@@ -46,7 +46,7 @@
                 "$kind": "Microsoft.OnAssignEntity",
                 "operation": "Add()",
                 "property": "Bread",
-                "entity": "BreadEntity",
+                "value": "BreadEntity",
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",

@@ -16,7 +16,6 @@ namespace AdaptiveExpressions.Tests
             Test("fun(a, b, c"),
             Test("func(A,b,b,)"),
             Test("\"hello'"),
-            Test("'hello'.length()"), // not supported currently
             Test("user.lists.{dialog.listName}"),
             Test("`hi` world")
         };
@@ -29,6 +28,7 @@ namespace AdaptiveExpressions.Tests
             Test("a.func()"), // no such function
             Test("(1.foreach)()"), // error func
             Test("('str'.foreach)()"), // error func
+            Test("'hello'.length()"), // not supported currently
             #endregion
 
             #region Operators test
@@ -466,6 +466,12 @@ namespace AdaptiveExpressions.Tests
             // optional throws because it's a placeholder only interpreted by trigger tree and is removed before evaluation
             Test("optional(true)"), 
             #endregion
+
+            #region StringOrValue
+            Test("stringOrValue()"), // should have 1 parameter
+            Test("stringOrValue(1)"), // should have string parameter
+            Test("stringOrValue('${1/0} item')"), // throw error in evaluation stage
+            #endregion
         };
 
         /// <summary>
@@ -480,7 +486,8 @@ namespace AdaptiveExpressions.Tests
         [MemberData(nameof(SyntaxErrorExpressions))]
         public void ParseSyntaxErrors(string exp)
         {
-            Assert.Throws<SyntaxErrorException>(() => Expression.Parse(exp));
+            var exception = Assert.Throws<SyntaxErrorException>(() => Expression.Parse(exp));
+            Assert.Equal("Invalid expression format.", exception.Message);
         }
 
         [Theory]

@@ -14,7 +14,6 @@ using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Schema;
 using Microsoft.BotFramework.Orchestrator;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     /// <summary>
     /// Class that represents an adaptive Orchestrator recognizer.
     /// </summary>
-    public class OrchestratorAdaptiveRecognizer : Recognizer
+    public class OrchestratorAdaptiveRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// The Kind name for this recognizer.
@@ -65,12 +64,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             _resolver = resolver;
             if (modelFolder == null)
             {
-                throw new ArgumentNullException($"Missing `ModelFolder` information.");
+                throw new ArgumentNullException(nameof(modelFolder));
             }
 
             if (snapshotFile == null)
             {
-                throw new ArgumentNullException($"Missing `SnapshotFile` information.");
+                throw new ArgumentNullException(nameof(snapshotFile));
             }
 
             _modelFolder = modelFolder;
@@ -217,8 +216,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
 
-            await dc.Context.TraceActivityAsync(nameof(OrchestratorAdaptiveRecognizer), JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition ", cancellationToken).ConfigureAwait(false);
-            TrackRecognizerResult(dc, nameof(OrchestratorAdaptiveRecognizer), FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
+            TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
 
             return recognizerResult;
         }
@@ -227,12 +226,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         {
             if (_modelFolder == null)
             {
-                throw new ArgumentNullException($"Missing `ModelFolder` information.");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentNullException("ModelFolder");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             if (_snapshotFile == null)
             {
-                throw new ArgumentNullException($"Missing `SnapshotFile` information.");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentNullException("SnapshotFile");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             if (_resolver != null)

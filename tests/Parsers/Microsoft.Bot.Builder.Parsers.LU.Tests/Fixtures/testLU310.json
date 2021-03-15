@@ -1,0 +1,38 @@
+{
+  "sections": [
+    {
+      "Errors": [
+
+      ],
+      "SectionType": "NewEntitySection",
+      "Id": "newEntitySection_l_new_customtype",
+      "Body": "",
+      "Name": "l_new_customtype",
+      "Range": {
+        "Start": {
+          "Line": 2,
+          "Character": 0
+        },
+        "End": {
+          "Line": 6,
+          "Character": 21
+        }
+      },
+      "Type": "list",
+      "SynonymsList": [
+        {
+          "NormalizedValue": "o_32b332a7",
+          "Synonyms": [
+            "Power Apps",
+            "Model - driven app",
+            "Canvas App"
+          ]
+        }
+      ]
+    }
+  ],
+  "content": "> Power Platform Product\n@ list l_new_customtype =\n    -o_32b332a7 :\n        - Power Apps\n        - Model - driven app\n        - Canvas App\n",
+  "errors": [
+
+  ]
+}

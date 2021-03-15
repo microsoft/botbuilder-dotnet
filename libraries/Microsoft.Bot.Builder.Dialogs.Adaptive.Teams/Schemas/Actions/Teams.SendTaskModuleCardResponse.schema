@@ -4,6 +4,9 @@
     "title": "Send task module card response",
     "description": "Send a card response to a Task Module request.",
     "type": "object",
+    "required": [
+        "card"
+    ],
     "properties": {
         "id": {
             "type": "string",
@@ -62,14 +65,5 @@
                 "=user.age > 3"
             ]
         }
-    },
-    "policies": [
-        {
-            "type": "allowedTrigger",
-            "kinds": [
-                "Teams.OnTaskModuleFetch",
-                "Teams.OnTaskModuleSubmit"
-            ]
-        }
-    ]
+    }
 }

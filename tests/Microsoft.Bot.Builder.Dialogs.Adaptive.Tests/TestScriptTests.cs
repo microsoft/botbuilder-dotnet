@@ -158,6 +158,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task TestScriptTests_OAuthInputMockProperties()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestScriptTests_OAuthInputLG()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task TestScriptTests_UserTokenMock()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);

@@ -36,9 +36,7 @@
             "additionalProperties": true
         }
     },
-    "policies": [
-        {
-            "type": "lastAction"
-        }
-    ]
+    "$policies": {
+        "lastAction": true
+    }
 }

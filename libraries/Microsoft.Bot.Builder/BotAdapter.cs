@@ -32,6 +32,11 @@ namespace Microsoft.Bot.Builder
     public abstract class BotAdapter
     {
         /// <summary>
+        /// The key value for any InvokeResponseActivity that would be on the TurnState.
+        /// </summary>
+        public const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
+
+        /// <summary>
         /// The string value for the bot identity key.
         /// </summary>
         public const string BotIdentityKey = "BotIdentity";
@@ -287,7 +292,10 @@ namespace Microsoft.Bot.Builder
                     try
                     {
                         Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
-                        (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                        if (turnContext is TurnContext ctx)
+                        {
+                            ctx.Locale = turnContext.Activity.Locale;
+                        }
                     }
                     catch (CultureNotFoundException)
                     {

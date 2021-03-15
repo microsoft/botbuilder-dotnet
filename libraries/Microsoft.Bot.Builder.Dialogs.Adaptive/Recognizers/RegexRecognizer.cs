@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// <summary>
     /// Recognizer implementation which uses regex expressions to identify intents.
     /// </summary>
-    public class RegexRecognizer : Recognizer
+    public class RegexRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// Class identifier.
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             entityPool.Add(textEntity);
 
-            foreach (var intentPattern in this.Intents)
+            foreach (var intentPattern in Intents)
             {
                 var matches = intentPattern.Regex.Matches(text);
 
@@ -137,10 +137,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 }
             }
 
-            if (this.Entities != null)
+            if (Entities != null)
             {
                 // process entities using EntityRecognizerSet
-                var entitySet = new EntityRecognizerSet(this.Entities);
+                var entitySet = new EntityRecognizerSet(Entities);
                 var newEntities = await entitySet.RecognizeEntitiesAsync(dialogContext, text, locale, entityPool).ConfigureAwait(false);
                 if (newEntities.Any())
                 {
@@ -154,8 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             foreach (var entityResult in entityPool.Where(entity => entity != textEntity))
             {
                 // add value
-                JToken values;
-                if (!recognizerResult.Entities.TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out values))
+                if (!recognizerResult.Entities.TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out var values))
                 {
                     values = new JArray();
                     recognizerResult.Entities[entityResult.Type] = values;
@@ -166,16 +165,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 ((JArray)values).Add(entity.text);
 
                 // get/create $instance
-                JToken instanceRoot;
-                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out var instanceRoot))
                 {
                     instanceRoot = new JObject();
                     recognizerResult.Entities["$instance"] = instanceRoot;
                 }
 
                 // add instanceData
-                JToken instanceData;
-                if (!((JObject)instanceRoot).TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out instanceData))
+                if (!((JObject)instanceRoot).TryGetValue(entityResult.Type, StringComparison.OrdinalIgnoreCase, out var instanceData))
                 {
                     instanceData = new JArray();
                     instanceRoot[entityResult.Type] = instanceData;
@@ -199,7 +196,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             await dialogContext.Context.TraceActivityAsync(nameof(RegexRecognizer), JObject.FromObject(recognizerResult), "RecognizerResult", "Regex RecognizerResult", cancellationToken).ConfigureAwait(false);
 
-            this.TrackRecognizerResult(dialogContext, "RegexRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "RegexRecognizerResult", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dialogContext), telemetryMetrics);
 
             return recognizerResult;
         }

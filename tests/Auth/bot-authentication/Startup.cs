@@ -17,6 +17,9 @@ namespace Microsoft.BotBuilderSamples
         {
             services.AddControllers().AddNewtonsoftJson();
 
+            // Add this line to get an IHttpClientFactory in the services collection
+            //services.AddHttpClient();
+
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
@@ -33,7 +36,8 @@ namespace Microsoft.BotBuilderSamples
             services.AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, AuthBot<MainDialog>>();
+            //services.AddTransient<IBot, AuthBot<MainDialog>>();
+            services.AddTransient<IBot, EchoBot>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +48,9 @@ namespace Microsoft.BotBuilderSamples
                 app.UseDeveloperExceptionPage();
             }
 
+            // Add either of these to play with streaming
+            //.UseNamedPipes()
+            //.UseWebSockets()
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseRouting()

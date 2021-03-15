@@ -1,0 +1,43 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Teams.SendMEAuthResponse",
+                        "connectionName": "someConnection",
+                        "title": "someTitle"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnError",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${turn.dialogEvent.value.message}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserActivity",
+            "activity": {
+                "type": "message",
+                "text": "NoConnectionName",
+                "name": "composeExtension/queryLink"
+            }
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Teams.SendMEAuthResponse: not supported by the current adapter."
+        }
+    ]
+}

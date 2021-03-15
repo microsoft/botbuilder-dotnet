@@ -1,0 +1,45 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Test UserTokenMock set Property",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "dialog.textProperty",
+                      "value": "Set the text!"
+                    },
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "dialog.titleProperty",
+                      "value": "Set the title!"
+                    },
+                    {
+                        "$kind": "Microsoft.OAuthInput",
+                        "connectionName": "magiccode x",
+                        "text": "=dialog.textProperty",
+                        "title": "=dialog.titleProperty",
+                        "property": "dialog.token"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+              "attachments[0].content.text == 'Set the text!'",
+              "attachments[0].content.buttons[0].title == 'Set the title!'"
+            ]
+        }
+    ]
+}

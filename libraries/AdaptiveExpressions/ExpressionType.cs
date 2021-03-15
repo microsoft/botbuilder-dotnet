@@ -83,6 +83,8 @@ namespace AdaptiveExpressions
         public const string Flatten = "flatten";
         public const string Unique = "unique";
         public const string Reverse = "reverse";
+        public const string Any = "any";
+        public const string All = "all";
 
         // DateTime
         public const string AddDays = "addDays";
@@ -196,6 +198,9 @@ namespace AdaptiveExpressions
         public const string IsObject = "isObject";
         public const string IsBoolean = "isBoolean";
         public const string IsDateTime = "isDateTime";
+
+        // StringOrValue
+        public const string StringOrValue = "stringOrValue";
 
         // trigger tree 
 

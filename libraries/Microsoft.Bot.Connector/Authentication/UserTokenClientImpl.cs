@@ -19,17 +19,20 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _appId;
         private readonly OAuthClient _client;
         private readonly ILogger _logger;
+        private readonly HttpClient _httpClient;
         private bool _disposed;
 
         public UserTokenClientImpl(
             string appId,
             ServiceClientCredentials credentials,
             string oauthEndpoint,
-            HttpClient httpClient = null,
-            ILogger logger = null)
+            HttpClient httpClient,
+            ILogger logger)
         {
             _appId = appId;
-            _client = new OAuthClient(credentials, httpClient, disposeHttpClient: httpClient == null) { BaseUri = new Uri(oauthEndpoint) };
+            _httpClient = httpClient ?? new HttpClient();
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+            _client = new OAuthClient(credentials, _httpClient, true) { BaseUri = new Uri(oauthEndpoint) };
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -140,6 +143,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             _client.Dispose();
+            _httpClient?.Dispose();
             base.Dispose(disposing);
             _disposed = true;
         }

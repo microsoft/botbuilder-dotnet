@@ -656,6 +656,31 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task TestOnAdaptiveCardInvokeAsync()
+        {
+            var value = JObject.FromObject(new AdaptiveCardInvokeValue { Action = new AdaptiveCardInvokeAction { Type = "Action.Execute" } });
+
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "adaptiveCard/action",
+                Value = value
+            };
+
+            var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.Equal("OnAdaptiveCardInvokeAsync", bot.Record[1]);
+        }
+
+        [Fact]
         public async Task TestUnrecognizedActivityType()
         {
             // Arrange
@@ -859,6 +884,12 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnInstallationUpdateRemoveAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task<AdaptiveCardInvokeResponse> OnAdaptiveCardInvokeAsync(ITurnContext<IInvokeActivity> turnContext, AdaptiveCardInvokeValue invokeValue, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return Task.FromResult(new AdaptiveCardInvokeResponse());
             }
         }
 

@@ -328,10 +328,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.BeginDialogAsync(action.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             return $"ActionScope[{StringUtils.EllipsisHash(string.Join(",", Actions.Select(a => a.Id)), 50)}]";

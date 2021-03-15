@@ -10,5 +10,10 @@
         ],
         "label": "Conversation invoked",
         "subtitle": "Invoke activity"
+    },
+    "trigger": {
+		"label": "Conversation invoked (Invoke activity)",
+		"order": 5.6,
+		"submenu": "Activities"
     }
 }

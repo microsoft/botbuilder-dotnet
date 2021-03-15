@@ -10,5 +10,10 @@
         ],
         "label": "Message received",
         "subtitle": "Message received activity"
+    },
+    "trigger": {
+		"label": "Message received (Message received activity)",
+		"order": 5.81,
+		"submenu": "Activities"
     }
 }

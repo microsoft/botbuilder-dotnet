@@ -10,5 +10,9 @@
         ],
         "label": "Dialog events",
         "subtitle": "Dialog event"
+    },
+    "trigger": {
+		"label": "Custom events",
+		"order": 7
     }
 }

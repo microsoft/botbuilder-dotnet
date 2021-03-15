@@ -10,5 +10,10 @@
         ],
         "label": "Message deleted",
         "subtitle": "Message deleted activity"
+    },
+    "trigger": {
+		"label": "Message deleted (Message deleted activity)",
+		"order": 5.82,
+		"submenu": "Activities"
     }
 }

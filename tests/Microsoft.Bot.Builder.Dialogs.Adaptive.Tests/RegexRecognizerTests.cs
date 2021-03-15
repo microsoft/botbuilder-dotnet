@@ -2,14 +2,15 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
+using Moq;
 using Xunit;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.IntentValidations;
+using static Microsoft.Bot.Builder.Dialogs.Adaptive.Tests.RecognizerTelemetryUtils;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
@@ -32,40 +33,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         [Fact]
         public async Task RegexRecognizerTests_Intents()
         {
-            var recognizer = new RegexRecognizer()
-            {
-                Intents = new List<IntentPattern>()
-                {
-                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
-                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
-                },
-                Entities = new EntityRecognizerSet()
-                {
-                    new AgeEntityRecognizer(),
-                    new ConfirmationEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
-                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
-                }
-            };
+            var recognizer = GetRecognizer();
 
             // test with DC
-            var dc = CreateContext("intent a1 b2");
+            var dc = TestUtils.CreateContext(CodeIntentText);
             var result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             ValidateCodeIntent(result);
 
@@ -74,13 +45,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             Assert.Null(entities.text);
             Assert.NotNull(entities.code);
 
-            dc = CreateContext("I would like color red and orange");
+            dc = TestUtils.CreateContext(ColorIntentText);
             result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
             ValidateColorIntent(result);
 
-            dc = CreateContext(string.Empty);
-
             // test custom activity
+            dc = TestUtils.CreateContext(string.Empty);
             var activity = Activity.CreateMessageActivity();
             activity.Text = "intent a1 b2";
             activity.Locale = Culture.English;
@@ -92,40 +62,82 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             ValidateColorIntent(result);
         }
 
-        private static void ValidateColorIntent(RecognizerResult result)
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task LogsTelemetry(bool logPersonalInformation)
         {
-            Assert.Single(result.Intents);
-            Assert.Equal("colorIntent", result.Intents.Select(i => i.Key).First());
+            var telemetryClient = new Mock<IBotTelemetryClient>();
 
-            // entity assertions from capture group
-            dynamic entities = result.Entities;
-            Assert.NotNull(entities.color);
-            Assert.Null(entities.code);
-            Assert.Equal(2, entities.color.Count);
-            Assert.Equal("red", (string)entities.color[0]);
-            Assert.Equal("orange", (string)entities.color[1]);
+            var recognizer = GetRecognizer();
+            recognizer.TelemetryClient = telemetryClient.Object;
+            recognizer.LogPersonalInformation = logPersonalInformation;
+
+            // Test with DC
+            await RecognizeIntentAndValidateTelemetry(CodeIntentText, recognizer, telemetryClient, callCount: 1);
+            await RecognizeIntentAndValidateTelemetry(ColorIntentText, recognizer, telemetryClient, callCount: 2);
+
+            // Test custom activity
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(CodeIntentText, recognizer, telemetryClient, callCount: 3);
+            await RecognizeIntentAndValidateTelemetry_WithCustomActivity(ColorIntentText, recognizer, telemetryClient, callCount: 4);
         }
 
-        private static void ValidateCodeIntent(RecognizerResult result)
+        [Fact]
+        public async Task LogPiiFalseByDefault()
         {
-            // intent assertions
-            Assert.Single(result.Intents);
-            Assert.Equal("codeIntent", result.Intents.Select(i => i.Key).First());
+            var telemetryClient = new Mock<IBotTelemetryClient>();
+            var recognizer = new RegexRecognizer { TelemetryClient = telemetryClient.Object };
+            var dc = TestUtils.CreateContext("Salutations!");
+            var (logPersonalInformation, _) = recognizer.LogPersonalInformation.TryGetValue(dc.State);
 
-            // entity assertions from capture group
-            dynamic entities = result.Entities;
-            Assert.NotNull(entities.code);
-            Assert.Null(entities.color);
-            Assert.Equal(2, entities.code.Count);
-            Assert.Equal("a1", (string)entities.code[0]);
-            Assert.Equal("b2", (string)entities.code[1]);
+            Assert.False(logPersonalInformation);
+
+            var result = await recognizer.RecognizeAsync(dc, dc.Context.Activity, CancellationToken.None);
+            Assert.NotNull(result);
         }
 
-        private static DialogContext CreateContext(string text)
+        private static RegexRecognizer GetRecognizer() => new RegexRecognizer
         {
-            var activity = Activity.CreateMessageActivity();
-            activity.Text = text;
-            return new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), (Activity)activity), new DialogState());
-        }
+            Intents = new List<IntentPattern>
+            {
+                new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                new IntentPattern("colorIntent", "(?i)(color|colour)"),
+            },
+            Entities = new EntityRecognizerSet
+            {
+                new AgeEntityRecognizer(),
+                new ConfirmationEntityRecognizer(),
+                new CurrencyEntityRecognizer(),
+                new DateTimeEntityRecognizer(),
+                new DimensionEntityRecognizer(),
+                new EmailEntityRecognizer(),
+                new GuidEntityRecognizer(),
+                new HashtagEntityRecognizer(),
+                new IpEntityRecognizer(),
+                new MentionEntityRecognizer(),
+                new NumberEntityRecognizer(),
+                new NumberRangeEntityRecognizer(),
+                new OrdinalEntityRecognizer(),
+                new PercentageEntityRecognizer(),
+                new PhoneNumberEntityRecognizer(),
+                new TemperatureEntityRecognizer(),
+                new UrlEntityRecognizer(),
+                new RegexEntityRecognizer
+                {
+                    Name = "color",
+                    Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)"
+                },
+                new RegexEntityRecognizer
+                {
+                    Name = "backgroundColor",
+                    Pattern = "(?i)(back|background) {color}"
+                },
+                new RegexEntityRecognizer
+                {
+                    Name = "foregroundColor",
+                    Pattern = "(?i)(foreground|front) {color}"
+                },
+            }
+        };
     }
 }

@@ -991,52 +991,75 @@ namespace AdaptiveExpressions
             }
             else if (error == null)
             {
-                IList list = null;
-                if (TryParseList(instance, out IList ilist))
+                var list = ConvertToList(instance);
+                if (list == null)
                 {
-                    list = ilist;
-                }
-                else if (instance is JObject jobj)
-                {
-                    list = Object2KVPairList(jobj);
-                }
-                else if (ConvertToJToken(instance) is JObject jobject)
-                {
-                    list = Object2KVPairList(jobject);
+                    error = $"{expression.Children[0]} is not a collection or structure object to run Foreach";
                 }
                 else
                 {
-                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
-                }
-
-                if (error == null)
-                {
-                    var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
-                    var stackedMemory = StackedMemory.Wrap(state);
                     result = new List<object>();
-                    for (var idx = 0; idx < list.Count; idx++)
+                    LambdaEvaluator(expression, state, options, list, (object currentItem, object r, string e) =>
                     {
-                        var local = new Dictionary<string, object>
-                        {
-                            { iteratorName, AccessIndex(list, idx).value },
-                        };
-
-                        // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(new SimpleObjectMemory(local));
-                        (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory, options);
-                        stackedMemory.Pop();
-
                         if (e != null)
                         {
-                            return (null, e);
+                            error = e;
+                            return true;
                         }
-
-                        ((List<object>)result).Add(r);
-                    }
+                        else
+                        {
+                            ((List<object>)result).Add(r);
+                            return false;
+                        }
+                    });
                 }
             }
 
             return (result, error);
+        }
+
+        internal static void LambdaEvaluator(Expression expression, IMemory state, Options options, IList list, Func<object, object, string, bool> callback)
+        {
+            var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+            var stackedMemory = StackedMemory.Wrap(state);
+            for (var idx = 0; idx < list.Count; idx++)
+            {
+                var currentItem = AccessIndex(list, idx).value;
+                var local = new Dictionary<string, object>
+                {
+                    { iteratorName, currentItem },
+                };
+
+                // the local iterator is pushed as one memory layer in the memory stack
+                stackedMemory.Push(new SimpleObjectMemory(local));
+                (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory, options);
+                stackedMemory.Pop();
+
+                var shouldBreak = callback(currentItem, r, e);
+                if (shouldBreak)
+                {
+                    break;
+                }
+            }
+        }
+
+        internal static IList ConvertToList(object instance)
+        {
+            IList list = null;
+            if (TryParseList(instance, out IList ilist))
+            {
+                list = ilist;
+            }
+            else if (instance is JObject jobj)
+            {
+                list = Object2KVPairList(jobj);
+            }
+            else if (ConvertToJToken(instance) is JObject jobject)
+            {
+                list = Object2KVPairList(jobject);
+            }
+
+            return list;
         }
 
         internal static List<object> Object2KVPairList(JObject jobj)
@@ -1050,18 +1073,18 @@ namespace AdaptiveExpressions
             return tempList;
         }
 
-        internal static void ValidateForeach(Expression expression)
+        internal static void ValidateLambdaExpression(Expression expression)
         {
             if (expression.Children.Length != 3)
             {
-                throw new ArgumentException($"foreach expects 3 parameters, found {expression.Children.Length}");
+                throw new ArgumentException($"Lambda expression expects 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
 
             if (!(second.Type == ExpressionType.Accessor && second.Children.Length == 1))
             {
-                throw new ArgumentException($"Second parameter of foreach is not an identifier : {second}");
+                throw new ArgumentException($"Second parameter is not an identifier : {second}");
             }
         }
 

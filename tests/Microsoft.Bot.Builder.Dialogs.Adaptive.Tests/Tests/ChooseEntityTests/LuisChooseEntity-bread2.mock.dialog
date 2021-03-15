@@ -1,0 +1,51 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "https://westus.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/00000000-0000-0000-0000-000000000000/*",
+    "body": "\"query\": \"bread2\"",
+    "responses": [
+        {
+          "content": {
+            "query": "bread2",
+            "prediction": {
+              "topIntent": "sandwich",
+              "intents": { "sandwich": { "score": 0.9939042 } },
+              "entities": {
+                "Bread2Property": [
+                  {
+                    "BreadEntity": [ [ "multiGrainWheat", "wholeWheat" ] ],
+                    "$instance": {
+                      "BreadEntity": [
+                        {
+                          "type": "BreadEntity",
+                          "text": "bread2",
+                          "startIndex": 0,
+                          "length": 6,
+                          "modelTypeId": 1,
+                          "modelType": "Entity Extractor",
+                          "recognitionSources": [ "model" ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "$instance": {
+                  "Bread2Property": [
+                    {
+                      "type": "Bread2Property",
+                      "text": "bread2",
+                      "startIndex": 0,
+                      "length": 6,
+                      "modelTypeId": 1,
+                      "modelType": "Entity Extractor",
+                      "recognitionSources": [ "model" ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+    ]
+}

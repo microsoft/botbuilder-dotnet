@@ -40,6 +40,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -64,6 +65,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateInvokeActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -87,11 +89,102 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             }
         }
 
-        [Fact]
-        public async Task WebSocketRequest()
+        [Theory]
+        [InlineData("DELETE")]
+        [InlineData("PUT")]
+        [InlineData("GET")]
+        [InlineData("HEAD")]
+        [InlineData("PATCH")]
+        public async Task MethodNotAllowed(string httpMethod)
         {
-            // TODO: add web socket code into CloudAdapter
-            await Task.CompletedTask;
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
+
+            var webSocketManagerMock = new Mock<WebSocketManager>();
+            webSocketManagerMock.Setup(w => w.IsWebSocketRequest).Returns(false);
+            var httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(c => c.WebSockets).Returns(webSocketManagerMock.Object);
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(httpMethod);
+            httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.HttpContext).Returns(httpContextMock.Object);
+
+            var httpResponseMock = new Mock<HttpResponse>().SetupAllProperties();
+
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => Task.FromResult(CreateInternalHttpResponse()));
+
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
+
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            var bot = new MessageBot();
+
+            // Act
+            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClientFactoryMock.Object, null);
+            var adapter = new CloudAdapter(cloudEnvironment);
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
+
+            // Assert
+            Assert.Equal((int)HttpStatusCode.MethodNotAllowed, httpResponseMock.Object.StatusCode);
+            mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Never(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
+        }
+
+        [Fact]
+        public async Task WebSocketRequestShouldCallAuthenticateStreamingRequestAsync()
+        {
+            // Note this test only checks that a GET request will result in an auth call and a socket accept
+            // it doesn't valid that activities over that socket get to the bot or back
+
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
+
+            var webSocketReceiveResult = new Mock<WebSocketReceiveResult>(MockBehavior.Strict, new object[] { 1, WebSocketMessageType.Binary, false });
+
+            var webSocketMock = new Mock<WebSocket>();
+            webSocketMock.Setup(ws => ws.State).Returns(WebSocketState.Open);
+            webSocketMock.Setup(ws => ws.ReceiveAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webSocketReceiveResult.Object));
+            webSocketMock.Setup(ws => ws.SendAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<WebSocketMessageType>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            webSocketMock.Setup(ws => ws.CloseAsync(It.IsAny<WebSocketCloseStatus>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            webSocketMock.Setup(ws => ws.Dispose());
+
+            var webSocketManagerMock = new Mock<WebSocketManager>();
+            webSocketManagerMock.Setup(w => w.IsWebSocketRequest).Returns(true);
+            webSocketManagerMock.Setup(w => w.AcceptWebSocketAsync()).Returns(Task.FromResult(webSocketMock.Object));
+            var httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(c => c.WebSockets).Returns(webSocketManagerMock.Object);
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns("GET");
+            httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.HttpContext).Returns(httpContextMock.Object);
+
+            var httpResponseMock = new Mock<HttpResponse>().SetupAllProperties();
+
+            var authenticateRequestResult = new AuthenticateRequestResult
+            {
+                Audience = "audience",
+            };
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(
+                x => x.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(authenticateRequestResult);
+
+            var bot = new MessageBot();
+
+            // Act
+            var adapter = new CloudAdapter(botFrameworkAuthenticationMock.Object);
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
+
+            // Assert
+            botFrameworkAuthenticationMock.Verify(x => x.AuthenticateStreamingRequestAsync(It.Is<string>(v => true), It.Is<string>(v => true), It.Is<CancellationToken>(ct => true)), Times.Once());
         }
 
         [Fact]
@@ -102,6 +195,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -114,10 +208,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
             var bot = new MessageBot();
 
             // Act
-            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClient, null);
+            var cloudEnvironment = BotFrameworkAuthenticationFactory.Create(null, false, null, null, null, null, null, null, null, new PasswordServiceClientCredentialFactory(), new AuthenticationConfiguration(), httpClientFactoryMock.Object, null);
             var adapter = new CloudAdapter(cloudEnvironment);
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
@@ -156,6 +253,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateBadRequestStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -182,6 +280,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -194,7 +293,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = new ClaimsIdentity(),
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 
@@ -234,6 +333,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream(userId, channelId, conversationId, recipientId, relatesToActivityId));
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -243,7 +343,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = new ClaimsIdentity(),
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 
@@ -316,6 +416,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
 
             var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Post);
             httpRequestMock.Setup(r => r.Body).Returns(CreateMessageActivityStream());
             httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
 
@@ -327,7 +428,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 
@@ -345,7 +446,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, bot);
 
             // Assert
-            Assert.Equal("scope", bot.Authorization.Parameter);
+            Assert.Equal("audience", bot.Authorization.Parameter);
             Assert.Equal(claimsIdentity, bot.Identity);
             Assert.Equal(userTokenClient, bot.UserTokenClient);
             Assert.True(bot.ConnectorClient != null);
@@ -362,7 +463,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 ClaimsIdentity = claimsIdentity,
                 ConnectorFactory = new TestConnectorFactory(),
-                Scope = "scope",
+                Audience = "audience",
                 CallerId = "callerId"
             };
 

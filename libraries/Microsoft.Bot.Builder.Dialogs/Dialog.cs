@@ -252,12 +252,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Computes an unique ID for a dialog.
+        /// Builds the compute Id for the dialog.
         /// </summary>
-        /// <returns>An unique ID.</returns>
+        /// <returns>A string representing the compute Id.</returns>
         protected virtual string OnComputeId()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         /// <summary>

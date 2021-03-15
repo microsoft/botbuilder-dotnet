@@ -156,14 +156,12 @@
                     ]
                 },
                 {
-                    "$ref": "schema:#/definitions/equalsExpression"
+                    "$ref": "schema:#/definitions/stringExpression"
                 }
             ]
         }
     },
-    "policies": [
-        {
-            "type": "interactive"
-        }
-    ]
+    "$policies": {
+        "interactive": true
+    }
 }
