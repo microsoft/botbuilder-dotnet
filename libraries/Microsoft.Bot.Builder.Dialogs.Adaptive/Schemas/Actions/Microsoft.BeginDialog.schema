@@ -22,10 +22,11 @@
             "oneOf": [
                 {
                     "$kind": "Microsoft.IDialog",
+                    "pattern": "^(?!(=)).*",
                     "title": "Dialog"
                 },
                 {
-                    "$ref": "schema:#/definitions/stringExpression"
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ],
             "title": "Dialog name",

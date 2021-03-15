@@ -7,6 +7,7 @@
     "properties": {
         "id": {
             "type": "string",
+            "pattern": "^(?!(=)).*",
             "title": "Id",
             "description": "Optional dialog ID."
         },
