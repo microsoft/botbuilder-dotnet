@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 
             // Configuration
             string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
-            string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocale).Value;
+            string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value;
             string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
             
             // Runtime settings. If no config is provided, we create basic runtime config with defaults.

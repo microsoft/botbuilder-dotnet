@@ -32,6 +32,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <summary>
         /// The configuration key mapping to the value representing the default locale.
         /// </summary>
-        public const string DefaultLocale = "defaultLocale";
+        public const string DefaultLocaleKey = "defaultLocale";
     }
 }
