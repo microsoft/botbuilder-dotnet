@@ -452,7 +452,7 @@ namespace Microsoft.Bot.Schema
         {
             var reference = new ConversationReference
             {
-                ActivityId = this.Id,
+                ActivityId = this.Type != ActivityTypes.ConversationUpdate ? this.Id : null,
                 User = this.From,
                 Bot = this.Recipient,
                 Conversation = this.Conversation,

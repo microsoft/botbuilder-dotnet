@@ -343,6 +343,33 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
+        /// Adds an assertion that the turn processing logic responds as expected.
+        /// </summary>
+        /// <param name="replyToIdExpectedNull">The ReplyToId is expected to be null or not.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
+        public TestFlow AssertReply(bool replyToIdExpectedNull = false, uint timeout = 3000)
+        {
+            return AssertReply(
+                (reply) =>
+                {
+                    if (replyToIdExpectedNull && reply.ReplyToId != null)
+                    {
+                        throw new InvalidOperationException("The ReplyToId of the first conversation activity from bot to user should be null.");
+                    }
+
+                    if (!replyToIdExpectedNull && reply.ReplyToId == null)
+                    {
+                        throw new InvalidOperationException("The ReplyToId of the activity from bot to user should not be null.");
+                    }
+                },
+                null,
+                timeout);
+        }
+
+        /// <summary>
         /// Adds an assertion that the turn processing logic finishes responding as expected.
         /// </summary>
         /// <param name="description">A message to send if the turn still responds.</param>
