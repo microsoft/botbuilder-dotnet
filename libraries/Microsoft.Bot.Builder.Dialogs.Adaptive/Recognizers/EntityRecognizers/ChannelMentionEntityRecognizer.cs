@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
         {
             return Task.FromResult(new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription("channelMention") }));
         }

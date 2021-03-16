@@ -109,6 +109,20 @@ namespace Microsoft.Bot.Builder.AI.Luis
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
 
+        /// <summary>
+        /// Gets or sets the intents that are possible to surface from this recognizer.
+        /// </summary>
+        /// <value>List of <see cref="IntentDescription"/>.</value>
+        [JsonProperty("possibleIntents")]
+        public ArrayExpression<IntentDescription> PossibleIntents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entities that are possible to surface from this recognizer.
+        /// </summary>
+        /// <value>List of <see cref="EntityDescription"/>.</value>
+        [JsonProperty("possibleEntities")]
+        public ArrayExpression<EntityDescription> PossibleEntities { get; set; }
+
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
@@ -122,10 +136,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
         {
-            // TODO: chrimc, call the LUIS API
-            return Task.FromResult(new RecognizerDescription());
+            // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
+            return Task.FromResult(new RecognizerDescription(
+                PossibleIntents.GetValue(dialogContext.State),
+                PossibleEntities.GetValue(dialogContext.State),
+                JsonConvert.DeserializeObject<List<Microsoft.Bot.Builder.Dialogs.Recognizers.DynamicList>>(JsonConvert.SerializeObject(DynamicLists))));
         }
 
         /// <summary>

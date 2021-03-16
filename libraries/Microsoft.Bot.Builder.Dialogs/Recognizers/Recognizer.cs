@@ -122,8 +122,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Return a description of the intents and entities the dialog can recognize.
         /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
         /// <returns>A <see cref="RecognizerDescription"/>.</returns>
-        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
         {
             return Task.FromResult(new RecognizerDescription());
         }

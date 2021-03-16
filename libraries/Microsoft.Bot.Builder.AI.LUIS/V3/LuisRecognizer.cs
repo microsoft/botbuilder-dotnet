@@ -216,41 +216,6 @@ namespace Microsoft.Bot.Builder.AI.LuisV3
             return result;
         }
 
-        /// <inheritdoc/>
-        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
-        {
-            var uri = new UriBuilder(_application.Endpoint);
-
-            // Determine version
-            string version = _predictionOptions.Version;
-            if (version == null)
-            {
-                var appURI = new UriBuilder(_application.Endpoint);
-                appURI.Path += $"luis/authoring/v3.0-preview/apps/{_application.ApplicationId}";
-
-                // https://{endpoint}/luis/authoring/v3.0-preview/apps/{appId}
-            }
-            // https://westus.api.cognitive.microsoft.com/luis/authoring/v3.0-preview/apps/38d43f13-3e8d-45f3-b23f-ef8a0b9d98ac/versions/0.1/models
-            uri.Path += $"luis/authoring/v3.0-preview/apps/{_application.ApplicationId}/versions/{this._predictionOptions.Version}/models";
-
-            var query = AddParam(null, "verbose", options.IncludeInstanceData);
-            query = AddParam(query, "log", options.Log);
-            query = AddParam(query, "show-all-intents", options.IncludeAllIntents);
-            uri.Query = query;
-
-            var content = new JObject
-                {
-                    { "query", utterance },
-                };
-            var queryOptions = new JObject
-                {
-                    { "overridePredictions", options.PreferExternalEntities },
-                };
-            content.Add("options", queryOptions);
-
-            return Task.FromResult(new RecognizerDescription());
-        }
-
         /// <summary>
         /// Invoked prior to a LuisResult being logged.
         /// </summary>

@@ -367,9 +367,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync()
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
         {
-            return Recognizer == null ? Task.FromResult(new RecognizerDescription()) : Recognizer.GetRecognizerDescriptionAsync();
+            return Recognizer == null ? Task.FromResult(new RecognizerDescription()) : Recognizer.GetRecognizerDescriptionAsync(dialogContext);
         }
 
         /// <summary>
