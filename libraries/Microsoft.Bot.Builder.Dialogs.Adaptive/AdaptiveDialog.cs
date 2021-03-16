@@ -1770,36 +1770,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
 
+                            var generators = new List<LanguageGenerator>();
                             foreach (var fallbackLocale in fallbackLocales)
                             {
-                                LanguageGenerator generator = null;
-                                if (lgm.LanguageGenerators.ContainsKey(resourceId.ToString()))
+                                var fallbacklocaleName = string.IsNullOrEmpty(fallbackLocale) ? string.Empty : "." + fallbackLocale;
+                                var id = $"{resourceName}{fallbacklocaleName}.lg";
+                                if (lgm.LanguageGenerators.ContainsKey(id))
                                 {
-                                    generator = lgm.LanguageGenerators[resourceId.ToString()];
+                                    generators.Add(lgm.LanguageGenerators[id]);
                                 }
-                                else
+                            }
+
+                            if (lgm.LanguageGenerators.ContainsKey(resourceId.ToString()))
+                            {
+                                generators.Add(lgm.LanguageGenerators[resourceId.ToString()]);
+                            }
+
+                            foreach (var generator in generators)
+                            {
+                                if (generator is not TemplateEngineLanguageGenerator templateGenerator
+                            || templateGenerator.LG.AllTemplates.ToList().All(u => u.Name != templateName))
                                 {
-                                    var fallbacklocaleName = string.IsNullOrEmpty(fallbackLocale) ? string.Empty : "." + fallbackLocale;
-                                    var id = $"{resourceName}{fallbacklocaleName}.lg";
-                                    if (lgm.LanguageGenerators.ContainsKey(id))
-                                    {
-                                        generator = lgm.LanguageGenerators[id];
-                                    }
+                                    continue;
                                 }
 
-                                if (generator != null)
+                                var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
+                                if (error == null)
                                 {
-                                    if (generator is not TemplateEngineLanguageGenerator templateGenerator
-                                || templateGenerator.LG.AllTemplates.ToList().All(u => u.Name != templateName))
-                                    {
-                                        continue;
-                                    }
-
-                                    var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
-                                    if (error == null)
-                                    {
-                                        return (result, null);
-                                    }
+                                    return (result, null);
                                 }
                             }
                         }
