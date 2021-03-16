@@ -38,8 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public const string Kind = "Microsoft.AdaptiveDialog";
 
         internal const string ConditionTracker = "dialog._tracker.conditions";
-        internal const string GeneratorIdKey = "dialog.generatorId";
-        internal const string LanguagePolicy = "dialog.languagePolicy";
 
         private const string AdaptiveKey = "_adaptive";
         private const string DefaultOperationKey = "$defaultOperation";
@@ -50,6 +48,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string PropertyEnding = "Property";
         private const string RequiresValueKey = "$requiresValue";
         private const string UtteranceKey = "utterance";
+        private const string GeneratorIdKey = "dialog.generatorId";
+        private const string LanguagePolicyKey = "dialog.languagePolicy";
 
         // unique key for change tracking of the turn state (TURN STATE ONLY)
         private readonly string changeTurnKey = Guid.NewGuid().ToString();
@@ -744,7 +744,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     var languagePolicy = generator.LanguagePolicy ??
                                 dialogContext.Services.Get<LanguagePolicy>() ??
                                 new LanguagePolicy();
-                    dialogContext.State.SetValue(LanguagePolicy, languagePolicy);
+                    dialogContext.State.SetValue(LanguagePolicyKey, languagePolicy);
                     RegisterTemplateFunctions();
                 }
             }
@@ -1772,7 +1772,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             foreach (var fallbackLocale in fallbackLocales)
                             {
                                 var templatesExist = LanguageGeneratorManager.TemplatesMapping.TryGetValue((resourceName, fallbackLocale.ToLowerInvariant()), out var templates);
-                                if (!templatesExist || !templates.Exists(u => u.Name == templateName))
+                                if (!templatesExist || !templates.AllTemplates.ToList().Exists(u => u.Name == templateName))
                                 {
                                     continue;
                                 }
@@ -1795,7 +1795,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
             if (error == null)
             {
-                var parameters = templates.First(u => u.Name == templateName).Parameters;
+                var parameters = templates.AllTemplates.ToList().First(u => u.Name == templateName).Parameters;
                 var newScope = parameters.Zip(args, (k, v) => new { k, v })
                     .ToDictionary(x => x.k, x => x.v);
                 var scope = new StackedMemory();
@@ -1811,7 +1811,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private LanguagePolicy GetLanguagePolicy(IMemory memory)
         {
-            var getLanguagePolicy = memory.TryGetValue(AdaptiveDialog.LanguagePolicy, out var lp);
+            var getLanguagePolicy = memory.TryGetValue(LanguagePolicyKey, out var lp);
             LanguagePolicy languagePolicy;
             if (!getLanguagePolicy)
             {
