@@ -745,7 +745,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 dialogContext.Services.Get<LanguagePolicy>() ??
                                 new LanguagePolicy();
                     dialogContext.State.SetValue(LanguagePolicyKey, languagePolicy);
-                    RegisterTemplateFunctions();
+                    RegisterTemplateFunctions(dialogContext);
                 }
             }
         }
@@ -1745,14 +1745,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             list.Sort(comparer);
         }
 
-        private void RegisterTemplateFunctions()
+        private void RegisterTemplateFunctions(DialogContext dialogContext)
         {
-            var allTemplateNames = new List<string>();
-            LanguageGeneratorManager.TemplatesMapping.Values.ToList().ForEach(u => allTemplateNames.AddRange(u.AllTemplates.Select(t => t.Name)));
-            allTemplateNames = allTemplateNames.Distinct().ToList();
+            var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
+            var generators = lgm.LanguageGenerators;
+
+            var templateNames = GetTemplates(Generator, dialogContext).Select(u => u.Name).Distinct();
 
             var prebuildFunctionNames = Expression.Functions.Values.Select(u => u.Type);
-            foreach (var templateName in allTemplateNames)
+            foreach (var templateName in templateNames)
             {
                 var functionType = prebuildFunctionNames.Contains(templateName) ? "lg." + templateName : templateName;
                 Expression.Functions.Add(functionType, new ExpressionEvaluator(
@@ -1771,13 +1772,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             foreach (var fallbackLocale in fallbackLocales)
                             {
-                                var templatesExist = LanguageGeneratorManager.TemplatesMapping.TryGetValue((resourceName, fallbackLocale.ToLowerInvariant()), out var templates);
-                                if (!templatesExist || !templates.AllTemplates.ToList().Exists(u => u.Name == templateName))
+                                var fallbacklocaleName = string.IsNullOrEmpty(fallbackLocale) ? string.Empty : "." + fallbackLocale;
+                                var id = $"{resourceName}{fallbacklocaleName}.lg";
+                                if (!lgm.LanguageGenerators.ContainsKey(id))
                                 {
                                     continue;
                                 }
 
-                                var (result, error) = EvaluateTemplate(templates, templateName, expression, state, options, currentLocale);
+                                var generator = lgm.LanguageGenerators[id];
+                                if (generator is not TemplateEngineLanguageGenerator templateGenerator
+                                || templateGenerator.LG.AllTemplates.ToList().All(u => u.Name != templateName))
+                                {
+                                    continue;
+                                }
+
+                                var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
                                 if (error == null)
                                 {
                                     return (result, null);
@@ -1788,6 +1797,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         throw new Exception($"{templateName} does not have an evaluator");
                     }));
             }
+        }
+
+        private List<Template> GetTemplates(LanguageGenerator languageGenerator, DialogContext dialogContext)
+        {
+            if (languageGenerator is TemplateEngineLanguageGenerator templateGenerator)
+            {
+                return templateGenerator.LG.AllTemplates.ToList();
+            }
+
+            if (languageGenerator is ResourceMultiLanguageGenerator resourceGenerator)
+            {
+                var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
+                if (lgm != null)
+                {
+                    var generators = lgm.LanguageGenerators;
+                    var result = new List<Template>();
+                    foreach (var generator in generators)
+                    {
+                        var (targetResourceName, _) = LGResourceLoader.ParseLGFileName(generator.Key);
+                        var (currentResourceName, _) = LGResourceLoader.ParseLGFileName(resourceGenerator.ResourceId);
+                        if (targetResourceName == currentResourceName)
+                        {
+                            result.AddRange(GetTemplates(generator.Value, dialogContext));
+                        }
+                    }
+
+                    return result;
+                }
+            }
+
+            return new List<Template>();
         }
 
         private (object result, string error) EvaluateTemplate(LanguageGeneration.Templates templates, string templateName, Expression expression, IMemory state, Options options, string currentLocale)

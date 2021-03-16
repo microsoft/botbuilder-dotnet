@@ -35,7 +35,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             this.resourceExplorer = resourceExplorer;
             multilanguageResources = LGResourceLoader.GroupByLocale(resourceExplorer);
-            TemplatesMapping = new ConcurrentDictionary<(string resourceId, string locale), LanguageGeneration.Templates>();
 
             // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
@@ -46,16 +45,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             // listen for resource changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
         }
-
-        /// <summary>
-        /// Gets or sets TemplatesMapping from a resourceName and locale pair.
-        /// </summary>
-        /// <value>
-        /// TemplatesMapping of a resourceName and locale pair.
-        /// </value>
-#pragma warning disable CA2227 // Collection properties should be read only
-        public static ConcurrentDictionary<(string resourceName, string locale), LanguageGeneration.Templates> TemplatesMapping { get; set; } = new ConcurrentDictionary<(string resourceId, string locale), LanguageGeneration.Templates>();
-#pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
         /// Gets or sets generators.
