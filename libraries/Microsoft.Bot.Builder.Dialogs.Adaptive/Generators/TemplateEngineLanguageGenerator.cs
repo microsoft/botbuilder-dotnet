@@ -91,12 +91,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         {
             this.Id = resource.Id;
 
-            var (resourceName, locale) = LGResourceLoader.ParseLGFileName(Id);
+            var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var content = resource.ReadTextAsync().GetAwaiter().GetResult();
             var lgResource = new LGResource(Id, resource.FullName, content);
             this.LG = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
-
             RegisterSourcemap(LG, resource);
         }
 
