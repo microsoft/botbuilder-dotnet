@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.AI.QnA.Dialogs;
