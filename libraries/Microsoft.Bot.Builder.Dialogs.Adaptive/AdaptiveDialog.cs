@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -1748,8 +1749,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private void RegisterTemplateFunctions(DialogContext dialogContext)
         {
             var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
-            var generators = lgm.LanguageGenerators;
-
             var templateNames = GetTemplates(Generator, dialogContext).Select(u => u.Name).Distinct();
 
             var prebuildFunctionNames = Expression.Functions.Values.Select(u => u.Type);
@@ -1764,26 +1763,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                         if (state.TryGetValue(GeneratorIdKey, out var resourceId))
                         {
-                            var (resourceName, _) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
+                            var (resourceName, locale) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
 
                             var languagePolicy = GetLanguagePolicy(state);
 
                             var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
 
                             var generators = new List<LanguageGenerator>();
-                            foreach (var fallbackLocale in fallbackLocales)
-                            {
-                                var fallbacklocaleName = string.IsNullOrEmpty(fallbackLocale) ? string.Empty : "." + fallbackLocale;
-                                var id = $"{resourceName}{fallbacklocaleName}.lg";
-                                if (lgm.LanguageGenerators.ContainsKey(id))
-                                {
-                                    generators.Add(lgm.LanguageGenerators[id]);
-                                }
-                            }
+                            generators.AddRange(GetGenerators(lgm.LanguageGenerators, fallbackLocales, resourceName + ".lg"));
 
-                            if (lgm.LanguageGenerators.ContainsKey(resourceId.ToString()))
+                            if (!string.IsNullOrEmpty(locale))
                             {
-                                generators.Add(lgm.LanguageGenerators[resourceId.ToString()]);
+                                generators.AddRange(GetGenerators(lgm.LanguageGenerators, fallbackLocales, resourceId.ToString()));
                             }
 
                             foreach (var generator in generators)
@@ -1805,6 +1796,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         throw new Exception($"{templateName} does not have an evaluator");
                     }));
             }
+        }
+
+        private List<LanguageGenerator> GetGenerators(ConcurrentDictionary<string, LanguageGenerator> generators, List<string> fallbackLocales, string resourceId)
+        {
+            var result = new List<LanguageGenerator>();
+            foreach (var fallbackLocale in fallbackLocales)
+            {
+                var id = string.IsNullOrEmpty(fallbackLocale) ? resourceId : resourceId.Replace(".lg", $".{fallbackLocale}.lg");
+                if (generators.ContainsKey(id))
+                {
+                    result.Add(generators[id]);
+                }
+            }
+
+            return result;
         }
 
         private List<Template> GetTemplates(LanguageGenerator languageGenerator, DialogContext dialogContext)
