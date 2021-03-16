@@ -41,6 +41,8 @@
                 "oneOf": [
                     {
                         "type": "object",
+                        "title": "Intent description",
+                        "description": "Description of an intent.",
                         "properties": {
                             "name": {
                                 "type": "string",
@@ -58,7 +60,7 @@
             }
         },
         "possibleEntities": {
-            "$ref": "schema:#/definitions/ArrayExpression",
+            "$ref": "schema:#/definitions/arrayExpression",
             "title": "Possible entities",
             "description": "Entities that can be recognized.",
             "items": {
@@ -67,6 +69,8 @@
                 "oneOf": [
                     {
                         "type": "object",
+                        "title": "Entity description",
+                        "description": "Description of an entity.",
                         "properties": {
                             "name": {
                                 "type": "string",
