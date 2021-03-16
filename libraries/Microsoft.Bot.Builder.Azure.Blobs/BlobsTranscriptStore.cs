@@ -91,14 +91,20 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 case ActivityTypes.MessageUpdate:
                     {
+                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
+
                         var activityAndBlob = await InnerReadBlobAsync(activity).ConfigureAwait(false);
-                        if (activityAndBlob.Item1 != null)
+                        if (activityAndBlob != default && activityAndBlob.Item1 != null)
                         {
-                            var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
-                            updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
                             updatedActivity.LocalTimestamp = activityAndBlob.Item1.LocalTimestamp;
                             updatedActivity.Timestamp = activityAndBlob.Item1.Timestamp;
                             await LogActivityToBlobClientAsync(updatedActivity, activityAndBlob.Item2, true).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // The activity was not found, so just add a record of this update.
+                            await InnerLogActivityAsync(updatedActivity).ConfigureAwait(false);
                         }
 
                         return;
@@ -107,7 +113,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 case ActivityTypes.MessageDelete:
                     {
                         var activityAndBlob = await InnerReadBlobAsync(activity).ConfigureAwait(false);
-                        if (activityAndBlob.Item1 != null)
+                        if (activityAndBlob != default && activityAndBlob.Item1 != null)
                         {
                             // tombstone the original message
                             var tombstonedActivity = new Activity()
@@ -132,9 +138,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     }
 
                 default:
-                    var blobName = GetBlobName(activity);
-                    var blobClient = _containerClient.Value.GetBlobClient(blobName);
-                    await LogActivityToBlobClientAsync(activity, blobClient).ConfigureAwait(false);
+                    await InnerLogActivityAsync(activity).ConfigureAwait(false);
                     return;
             }
         }
@@ -352,6 +356,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         }
                     } 
                     while (!string.IsNullOrEmpty(token));
+                    return default;
                 }
                 catch (RequestFailedException ex)
                     when ((HttpStatusCode)ex.Status == HttpStatusCode.PreconditionFailed)
@@ -373,6 +378,13 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             using BlobDownloadInfo download = await blobClient.DownloadAsync().ConfigureAwait(false);
             using var jsonReader = new JsonTextReader(new StreamReader(download.Content));
             return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
+        }
+
+        private Task InnerLogActivityAsync(IActivity activity)
+        {
+            var blobName = GetBlobName(activity);
+            var blobClient = _containerClient.Value.GetBlobClient(blobName);
+            return LogActivityToBlobClientAsync(activity, blobClient);
         }
 
         private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient, bool overwrite = false)
