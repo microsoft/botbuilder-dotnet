@@ -1772,24 +1772,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             foreach (var fallbackLocale in fallbackLocales)
                             {
-                                var fallbacklocaleName = string.IsNullOrEmpty(fallbackLocale) ? string.Empty : "." + fallbackLocale;
-                                var id = $"{resourceName}{fallbacklocaleName}.lg";
-                                if (!lgm.LanguageGenerators.ContainsKey(id))
+                                LanguageGenerator generator = null;
+                                if (lgm.LanguageGenerators.ContainsKey(resourceId.ToString()))
                                 {
-                                    continue;
+                                    generator = lgm.LanguageGenerators[resourceId.ToString()];
+                                }
+                                else
+                                {
+                                    var fallbacklocaleName = string.IsNullOrEmpty(fallbackLocale) ? string.Empty : "." + fallbackLocale;
+                                    var id = $"{resourceName}{fallbacklocaleName}.lg";
+                                    if (lgm.LanguageGenerators.ContainsKey(id))
+                                    {
+                                        generator = lgm.LanguageGenerators[id];
+                                    }
                                 }
 
-                                var generator = lgm.LanguageGenerators[id];
-                                if (generator is not TemplateEngineLanguageGenerator templateGenerator
+                                if (generator != null)
+                                {
+                                    if (generator is not TemplateEngineLanguageGenerator templateGenerator
                                 || templateGenerator.LG.AllTemplates.ToList().All(u => u.Name != templateName))
-                                {
-                                    continue;
-                                }
+                                    {
+                                        continue;
+                                    }
 
-                                var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
-                                if (error == null)
-                                {
-                                    return (result, null);
+                                    var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
+                                    if (error == null)
+                                    {
+                                        return (result, null);
+                                    }
                                 }
                             }
                         }
