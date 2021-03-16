@@ -1,0 +1,38 @@
+﻿> CHOICE INPUT UNIT TEST
+
+# MyChoices_Prompt
+- Seleccione 
+
+# MyChoices_UnknownPrompt
+- Ni un perro ni un gato. Seleccione 
+
+# MyChoices_simple
+- perro | gato
+
+# MyChoices_complex
+- ```
+[
+  { "value": "perro", "synonyms": ["perrito","lobo"] },
+  { "value": "gato", "synonyms": ["gatito","minino"] }
+]
+```
+
+> CONFIRM INPUT UNIT TEST
+# ConfirmInput_Prompt
+- Seleccione 
+
+# ConfirmInput_UnknownPrompt
+- Ni si! o ni!. Seleccione
+
+# ConfirmInput_simple
+- si! | ni!
+
+# ConfirmInput_complex
+- ```
+[
+  { "value": "si!", "synonyms": ["sí", "si"]  },
+  { "value": "ni!", "synonyms": ["ni"] }
+]
+```
+
+
