@@ -687,6 +687,8 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.Command,
+                Name = "application/test",
+                Value = new CommandValue { CommandId = "Test", Data = new { test = true } }
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -706,7 +708,10 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.CommandResult,
+                Name = "application/test",
+                Value = new CommandResultValue { CommandId = "Test", Data = new { test = true } }
             };
+
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
             // Act
