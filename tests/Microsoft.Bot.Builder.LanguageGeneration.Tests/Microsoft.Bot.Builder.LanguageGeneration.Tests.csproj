@@ -76,6 +76,8 @@
     <None Remove="Examples\RecursiveTemplate.lg" />
     <None Remove="Examples\CrudInit.lg" />
     <None Remove="Examples\ExpandText.lg" />
+    <None Remove="Examples\FileOperation.lg" />
+    <None Remove="Examples\TestFile.txt" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
@@ -294,6 +296,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\RecursiveTemplate.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\FileOperation.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\TestFile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">

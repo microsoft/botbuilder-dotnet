@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         {
             if (dialogContext == null)
             {
-                throw new ArgumentNullException($"{nameof(dialogContext)} is null");
+                throw new ArgumentNullException(nameof(dialogContext));
             }
 
             var botState = GetBotState(dialogContext);
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         {
             if (dialogContext == null)
             {
-                throw new ArgumentNullException($"{nameof(dialogContext)} is null");
+                throw new ArgumentNullException(nameof(dialogContext));
             }
 
             var botState = GetBotState(dialogContext);

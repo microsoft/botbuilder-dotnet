@@ -91,15 +91,22 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 case ActivityTypes.MessageUpdate:
                     {
+                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
+
                         var blob = await FindActivityBlobAsync(activity).ConfigureAwait(false);
                         if (blob != null)
                         {
                             var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
-                            var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
-                            updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
+
                             updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
                             updatedActivity.Timestamp = originalActivity.Timestamp;
                             await LogActivityAsync(updatedActivity, blob).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // The activity was not found, so just add a record of this update.
+                            await InnerLogActivityAsync(updatedActivity).ConfigureAwait(false);
                         }
 
                         return;
@@ -135,9 +142,7 @@ namespace Microsoft.Bot.Builder.Azure
                     }
 
                 default:
-                    var blobName = GetBlobName(activity);
-                    var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
-                    await LogActivityAsync(activity, blobReference).ConfigureAwait(false);
+                    await InnerLogActivityAsync(activity).ConfigureAwait(false);
                     return;
             }
         }
@@ -154,12 +159,12 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             var pagedResult = new PagedResult<IActivity>();
@@ -227,7 +232,7 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             var dirName = GetDirName(channelId);
@@ -291,12 +296,12 @@ namespace Microsoft.Bot.Builder.Azure
         {
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             var dirName = GetDirName(channelId, conversationId);
@@ -364,6 +369,13 @@ namespace Microsoft.Bot.Builder.Azure
         {
             // Blob Name rules: case-sensitive any url char
             return Uri.EscapeDataString(key);
+        }
+
+        private Task InnerLogActivityAsync(IActivity activity)
+        {
+            var blobName = GetBlobName(activity);
+            var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
+            return LogActivityAsync(activity, blobReference);
         }
 
         private async Task<CloudBlockBlob> FindActivityBlobAsync(IActivity activity)

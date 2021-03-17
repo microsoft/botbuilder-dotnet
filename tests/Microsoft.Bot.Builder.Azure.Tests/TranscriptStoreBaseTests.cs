@@ -292,6 +292,37 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         [Fact]
         [Trait("TestCategory", "Middleware")]
+        public async Task LogMissingUpdateActivity()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
+                var adapter = new TestAdapter(conversation)
+                    .Use(new TranscriptLoggerMiddleware(TranscriptStore));
+                string fooId = string.Empty;
+                await new TestFlow(adapter, async (context, cancellationToken) =>
+                {
+                    fooId = context.Activity.Id;
+                    var updateActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(context.Activity));
+                    updateActivity.Text = "updated response";
+                    var response = await context.UpdateActivityAsync(updateActivity);
+                })
+                    .Send("foo")
+                    .StartTestAsync();
+
+                await Task.Delay(3000);
+
+                var pagedResult = await GetPagedResultAsync(conversation, 2);
+                Assert.Equal(2, pagedResult.Items.Length);
+                Assert.Equal(fooId, pagedResult.Items[0].AsMessageActivity().Id);
+                Assert.Equal("foo", pagedResult.Items[0].AsMessageActivity().Text);
+                Assert.StartsWith("g_", pagedResult.Items[1].AsMessageActivity().Id);
+                Assert.Equal("updated response", pagedResult.Items[1].AsMessageActivity().Text);
+            }
+        }
+
+        [Fact]
+        [Trait("TestCategory", "Middleware")]
         public async Task TestDateLogUpdateActivities()
         {
             if (StorageEmulatorHelper.CheckEmulator())
