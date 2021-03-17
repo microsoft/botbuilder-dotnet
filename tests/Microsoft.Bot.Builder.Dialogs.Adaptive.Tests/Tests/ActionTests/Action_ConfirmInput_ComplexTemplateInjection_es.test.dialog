@@ -4,20 +4,20 @@
     "dialog": {
         "$kind": "Microsoft.AdaptiveDialog",
         "id": "planningTest",
-        "generator": "test.lg",
+        "generator": "InjectionTest.lg",
         "triggers": [
             {
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
-                    {
-                        "$kind": "Microsoft.ConfirmInput",
-                        "style": "auto",
-                        "alwaysPrompt": true,
-                        "property": "user.confirmed",
-                        "prompt": "${ConfirmInput_Prompt()}",
-                        "unrecognizedPrompt": "${ConfirmInput_UnknownPrompt()}",
-                        "confirmChoices": "=ConfirmInput_complex()"
-                    },
+                  {
+                    "$kind": "Microsoft.ConfirmInput",
+                    "style": "auto",
+                    "alwaysPrompt": true,
+                    "property": "user.confirmed",
+                    "prompt": "${ConfirmInput_Prompt()}",
+                    "unrecognizedPrompt": "${ConfirmInput_UnknownPrompt()}",
+                    "confirmChoices": "=ConfirmInput_complex()"
+                  },
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "confirmation: ${user.confirmed}"
@@ -27,15 +27,15 @@
         ],
         "defaultResultProperty": "dialog.result"
     },
-    "locale": "en",
+    "locale": "es",
     "script": [
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "hi"
+            "text": "hola"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Please select (1) yep or (2) nope"
+            "text": "Seleccione (1) si! o (2) ni!"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -43,11 +43,11 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Not yep or nope. Please select (1) yep or (2) nope"
+            "text": "Ni si! o ni!. Seleccione (1) si! o (2) ni!"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
-            "text": "yepster"
+            "text": "si"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
