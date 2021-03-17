@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             else
             {
                 // If no storage is configured, default to memory storage
-                services.AddSingleton<IStorage, MemoryStorage>();
+                services.AddSingleton<IStorage>(sp => new MemoryStorage());
             }
         }
 
