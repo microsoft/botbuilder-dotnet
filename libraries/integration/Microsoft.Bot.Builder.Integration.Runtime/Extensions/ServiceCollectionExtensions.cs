@@ -116,6 +116,10 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             else
             {
                 // If no storage is configured, default to memory storage
+                // Originally this was:
+                //    services.AddSingleton<IStorage, MemoryStorage>();
+                // Which causes a problem with the wrong MemoryStorage constructor
+                // being used by DI when running in an Azure Function project.
                 services.AddSingleton<IStorage>(sp => new MemoryStorage());
             }
         }
