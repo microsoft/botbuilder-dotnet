@@ -4,6 +4,7 @@
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -18,20 +19,20 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         /// <param name="storage">The <see cref="IStorage"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="AdaptiveDialog"/> from.</param>
-        /// <param name="botFrameworkClient">A <see cref="BotFrameworkClient"/> for making calls to Bot Builder Skills.</param>
+        /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> for making calls to Bot Builder Skills.</param>
         public ConfigurationAdaptiveDialogBot(
             IConfiguration configuration,
             ILogger<AdaptiveDialogBot> logger,
             ResourceExplorer resourceExplorer,
             IStorage storage = null,
-            BotFrameworkClient botFrameworkClient = null)
+            BotFrameworkAuthentication botFrameworkAuthentication = null)
             : base(
                 resourceExplorer,
                 configuration.GetSection(ConfigurationConstants.RootDialogKey).Value,
                 configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value,
                 logger,
                 storage,
-                botFrameworkClient)
+                botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create())
         {
         }
     }

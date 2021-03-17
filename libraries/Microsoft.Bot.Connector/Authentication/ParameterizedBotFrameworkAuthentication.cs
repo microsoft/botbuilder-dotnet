@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly string _toBotFromChannelOpenIdMetadataUrl;
         private readonly string _toBotFromEmulatorOpenIdMetadataUrl;
         private readonly string _callerId;
-        private readonly ServiceClientCredentialsFactory _credentialFactory;
+        private readonly ServiceClientCredentialsFactory _credentialsFactory;
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Connector.Authentication
             string toBotFromChannelOpenIdMetadataUrl,
             string toBotFromEmulatorOpenIdMetadataUrl,
             string callerId,
-            ServiceClientCredentialsFactory credentialFactory,
+            ServiceClientCredentialsFactory credentialsFactory,
             AuthenticationConfiguration authConfiguration,
             IHttpClientFactory httpClientFactory,
             ILogger logger)
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Connector.Authentication
             _toBotFromChannelOpenIdMetadataUrl = toBotFromChannelOpenIdMetadataUrl;
             _toBotFromEmulatorOpenIdMetadataUrl = toBotFromEmulatorOpenIdMetadataUrl;
             _callerId = callerId;
-            _credentialFactory = credentialFactory;
+            _credentialsFactory = credentialsFactory;
             _authConfiguration = authConfiguration;
             _httpClientFactory = httpClientFactory;
             _logger = logger ?? NullLogger.Instance;
@@ -66,16 +67,16 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
 
-            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
-            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialFactory, _httpClientFactory, _logger);
+            var connectorFactory = new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
         }
 
         public override async Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(channelIdHeader) && !await _credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
+            if (string.IsNullOrWhiteSpace(channelIdHeader) && !await _credentialsFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
             {
                 throw new UnauthorizedAccessException();
             }
@@ -84,23 +85,28 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
 
-            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
+            var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
 
             return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId };
         }
 
         public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
         {
-            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialFactory, _httpClientFactory, _logger);
+            return new ConnectorFactoryImpl(BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, _credentialsFactory, _httpClientFactory, _logger);
         }
 
         public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             var appId = BuiltinBotFrameworkAuthentication.GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, cancellationToken).ConfigureAwait(false);
+            var credentials = await _credentialsFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _toChannelFromBotLoginUrl, _validateAuthority, cancellationToken).ConfigureAwait(false);
 
             return new UserTokenClientImpl(appId, credentials, _oAuthUrl, _httpClientFactory?.CreateClient(), _logger);
+        }
+
+        public override BotFrameworkClient CreateBotFrameworkClient()
+        {
+            return new BotFrameworkClientImpl(_credentialsFactory, _httpClientFactory, _toChannelFromBotLoginUrl, _logger);
         }
 
         // The following code is based on JwtTokenValidation.AuthenticateRequest
@@ -108,7 +114,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
-                var isAuthDisabled = await _credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
+                var isAuthDisabled = await _credentialsFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false);
                 if (!isAuthDisabled)
                 {
                     // No Auth Header. Auth is required. Request is not authorized.
@@ -237,7 +243,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"'{AuthenticationConstants.AudienceClaim}' claim is required on skill Tokens.");
             }
 
-            if (!await _credentialFactory.IsValidAppIdAsync(audienceClaim, cancellationToken).ConfigureAwait(false))
+            if (!await _credentialsFactory.IsValidAppIdAsync(audienceClaim, cancellationToken).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException("Invalid audience.");
@@ -339,7 +345,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException($"Unknown Emulator Token version '{tokenVersion}'.");
             }
 
-            if (!await _credentialFactory.IsValidAppIdAsync(appID, cancellationToken).ConfigureAwait(false))
+            if (!await _credentialsFactory.IsValidAppIdAsync(appID, cancellationToken).ConfigureAwait(false))
             {
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appID}");
             }
@@ -420,7 +426,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            if (!await _credentialFactory.IsValidAppIdAsync(appIdFromClaim, cancellationToken).ConfigureAwait(false))
+            if (!await _credentialsFactory.IsValidAppIdAsync(appIdFromClaim, cancellationToken).ConfigureAwait(false))
             {
                 // The AppId is not valid. Not Authorized.
                 throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appIdFromClaim}");

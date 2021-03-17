@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             resourceProvider.Add("Main.dialog", new MockResource("{ \"$kind\": \"Microsoft.AdaptiveDialog\" }"));
             resourceExplorer.AddResourceProvider(resourceProvider);
 
-            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
 
             // The test dialog being used here happens to not send anything so we only need to mock the type.
             var adapterMock = new Mock<BotAdapter>();
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(resourceExplorer, "Main.dialog", "defaultLocale", logger, storage, botFrameworkClientMock.Object);
+            var bot = new AdaptiveDialogBot(resourceExplorer, "Main.dialog", "defaultLocale", logger, storage, botFrameworkAuthenticationMock.Object);
             await ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None);
 
             // Assert

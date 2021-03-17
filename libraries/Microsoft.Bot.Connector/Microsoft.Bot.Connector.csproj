@@ -27,8 +27,11 @@
 
   <ItemGroup>
     <Compile Remove="node_modules\**" />
+    <Compile Remove="Skills\**" />
     <EmbeddedResource Remove="node_modules\**" />
+    <EmbeddedResource Remove="Skills\**" />
     <None Remove="node_modules\**" />
+    <None Remove="Skills\**" />
   </ItemGroup>
 
   <ItemGroup>
