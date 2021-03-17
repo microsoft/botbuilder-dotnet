@@ -231,6 +231,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public async Task TestResourceMultiLanguageGenerator()
         {
+            Expression.Functions.Clear();
             var lg = new ResourceMultiLanguageGenerator("test.lg");
 
             // Configure last locale fallback to be non-overlapping with the explicitly set languages so we can
