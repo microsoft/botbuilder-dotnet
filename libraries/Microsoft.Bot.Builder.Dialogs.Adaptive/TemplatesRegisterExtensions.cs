@@ -54,16 +54,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             foreach (var generator in generators)
                             {
-                                if (generator is not TemplateEngineLanguageGenerator templateGenerator
-                            || templateGenerator.LG.AllTemplates.ToList().All(u => u.Name != templateName))
+                                if (generator is TemplateEngineLanguageGenerator templateGenerator)
                                 {
-                                    continue;
-                                }
-
-                                var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
-                                if (error == null)
-                                {
-                                    return (result, null);
+                                    if (templateGenerator.LG.AllTemplates.Any(u => u.Name == templateName))
+                                    {
+                                        var (result, error) = EvaluateTemplate(templateGenerator.LG, templateName, expression, state, options, currentLocale);
+                                        if (error == null)
+                                        {
+                                            return (result, null);
+                                        }
+                                    }
                                 }
                             }
                         }
