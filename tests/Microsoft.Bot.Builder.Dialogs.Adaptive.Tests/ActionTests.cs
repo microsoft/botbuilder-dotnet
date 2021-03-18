@@ -378,6 +378,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_TextInput_WithEmptyPrompt()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_TextInputWithInvalidPrompt()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
