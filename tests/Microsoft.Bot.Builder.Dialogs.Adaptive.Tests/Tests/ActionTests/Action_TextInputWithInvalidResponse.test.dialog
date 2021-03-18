@@ -16,7 +16,7 @@
                     "invalidPrompt": "That does not soud like a name",
                     "defaultValue": "somevalue",
                     "defaultValueResponse": "",
-                    "MaxTurnCount": 1,
+                    "maxTurnCount": 1,
                     "validations": [
                       "this.value.Length > 3"
                     ]
