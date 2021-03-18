@@ -366,6 +366,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_Switch_Empty()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_Switch_Number()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
