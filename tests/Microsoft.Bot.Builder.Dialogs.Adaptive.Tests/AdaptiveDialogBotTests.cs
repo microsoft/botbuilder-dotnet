@@ -68,6 +68,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.NotNull(turnContext.TurnState.Get<LanguagePolicy>());
         }
 
+        [Fact]
+        public async Task AdaptiveDialogBotExceptionWhenNoResource()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            // Act
+            var bot = new AdaptiveDialogBot(resourceExplorer, "main.dialog", "defaultLocale", logger, storage, botFrameworkAuthenticationMock.Object);
+            
+            var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
+
+            // Assert
+            Assert.NotNull(exception);
+            Assert.IsType<InvalidOperationException>(exception);
+        }
+
         private class MockResourceProvider : ResourceProvider
         {
             private IDictionary<string, Resource> _resources = new Dictionary<string, Resource>();
