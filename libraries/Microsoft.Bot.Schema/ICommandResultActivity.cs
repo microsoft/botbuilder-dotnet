@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Schema
         string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets command result value.  This will be of type <see cref="CommandResultValue"/>.
+        /// Gets or sets command result value.  This will be of type <see cref="CommandResultValue{T}"/>.
         /// </summary>
         /// <value>
         /// Open-ended value.

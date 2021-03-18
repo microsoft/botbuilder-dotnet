@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Schema
         string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the command value.  This will be of type <see cref="CommandValue"/>.
+        /// Gets or sets the command value.  This will be of type <see cref="CommandValue{T}"/>.
         /// </summary>
         /// <value>
         /// Value for this command.

@@ -9,7 +9,8 @@ namespace Microsoft.Bot.Schema
     /// The value field of a <see cref="ICommandActivity"/> contains metadata related to a command.
     /// An optional extensible data payload may be included if defined by the command activity name.
     /// </summary>
-    public class CommandValue
+    /// <typeparam name="T">Type for Data feild.</typeparam>
+    public class CommandValue<T>
     {
         /// <summary>
         /// Gets or sets the id of the command.
@@ -28,6 +29,6 @@ namespace Microsoft.Bot.Schema
         /// Open-ended value.
         /// </value>
         [JsonProperty(PropertyName = "data")]
-        public object Data { get; set; }
+        public T Data { get; set; }
     }
 }

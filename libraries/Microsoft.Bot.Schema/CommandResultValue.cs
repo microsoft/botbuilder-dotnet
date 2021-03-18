@@ -10,7 +10,8 @@ namespace Microsoft.Bot.Schema
     /// An optional extensible data payload may be included if defined by the command result activity name. 
     /// The presence of an error field indicates that the original command failed to complete.
     /// </summary>
-    public class CommandResultValue
+    /// <typeparam name="T">Type for data field.</typeparam>
+    public class CommandResultValue<T>
     {
         /// <summary>
         /// Gets or sets the id of the command.
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Schema
         /// Open-ended value.
         /// </value>
         [JsonProperty(PropertyName = "data")]
-        public object Data { get; set; }
+        public T Data { get; set; }
 
         /// <summary>
         /// Gets or sets the optional error, if the command result indicates a failure.

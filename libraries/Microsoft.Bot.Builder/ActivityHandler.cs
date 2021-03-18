@@ -669,16 +669,6 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/>
         protected virtual Task OnCommandActivityAsync(ITurnContext<ICommandActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(turnContext.Activity.Name))
-            {
-                throw new NotSupportedException($"{turnContext.Activity.Name} is required for {ActivityTypes.Command}");
-            }
-
-            if (turnContext.Activity.Value == null)
-            {
-                throw new NotSupportedException($"{turnContext.Activity.Value} is required for {ActivityTypes.Command}");
-            }
-
             return Task.CompletedTask;
         }
 
@@ -709,16 +699,6 @@ namespace Microsoft.Bot.Builder
         /// <seealso cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/>
         protected virtual Task OnCommandResultActivityAsync(ITurnContext<ICommandResultActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(turnContext.Activity.Name))
-            {
-                throw new NotSupportedException($"{turnContext.Activity.Name} is required for {ActivityTypes.CommandResult}");
-            }
-
-            if (turnContext.Activity.Value == null)
-            {
-                throw new NotSupportedException($"{turnContext.Activity.Value} is required for {ActivityTypes.CommandResult}");
-            }
-
             return Task.CompletedTask;
         }
 
