@@ -20,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Functions;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -231,6 +232,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new JObjectConverter(resourceExplorer, sourceContext);
             yield return new ActivityTemplateConverter();
             yield return new StaticActivityTemplateConverter();
+
+            yield return new ArrayExpressionConverter<EntityDescription>();
+            yield return new ArrayExpressionConverter<IntentDescription>();
         }
     }
 }

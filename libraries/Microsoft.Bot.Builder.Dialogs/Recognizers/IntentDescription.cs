@@ -21,5 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// </summary>
         /// <value>Intent name.</value>
         public string Name { get; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

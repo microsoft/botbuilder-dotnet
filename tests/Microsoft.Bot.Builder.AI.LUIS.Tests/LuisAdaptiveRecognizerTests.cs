@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -61,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             'endpoint': '=settings.luis.endpoint',
             'endpointKey': '=settings.luis.endpointKey', 
             'possibleIntents': '=intents',
-            'possibleEntities': ['entity1', {'name': 'entity2'}],
+            'possibleEntities': [{'name': 'entity1'}, {'name': 'entity2'}],
             'dynamicLists': " + DynamicListJSon + "}";
 
         private readonly LuisAdaptiveRecognizerFixture _luisAdaptiveRecognizerFixture;
@@ -122,10 +123,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public void DeserializeLuisAdaptiveRecognizer()
         {
-            var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(RecognizerJson, new ArrayExpressionConverter<DynamicList>());
+            var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(
+                RecognizerJson,
+                new ArrayExpressionConverter<DynamicList>(),
+                new ArrayExpressionConverter<Dialogs.Recognizers.EntityDescription>(),
+                new ArrayExpressionConverter<Dialogs.Recognizers.IntentDescription>());
             var dl = recognizer.DynamicLists.GetValue(null);
             var state = new JObject(
-                new JProperty("intents", new JArray("intent1", new JObject(new JProperty("name", "intent2")))));
+                new JProperty("intents", new JArray(new JObject(new JProperty("name", "intent1")), new JObject(new JProperty("name", "intent2")))));
             Assert.Equal(2, dl.Count);
             Assert.Equal("alphaEntity", dl[0].Entity);
             Assert.Equal(2, dl[0].List.Count);

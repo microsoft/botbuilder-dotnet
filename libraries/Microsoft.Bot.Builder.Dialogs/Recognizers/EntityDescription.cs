@@ -13,11 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// Initializes a new instance of the <see cref="EntityDescription"/> class.
         /// </summary>
         /// <param name="name">Entity name.</param>
-        /// <param name="resolutionType">Type of resolution returned.</param>
-        public EntityDescription(string name, Type resolutionType = null)
+        public EntityDescription(string name)
         {
             Name = name;
-            ResolutionType = resolutionType ?? typeof(string);
         }
 
         /// <summary>
@@ -26,12 +24,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <value>Entity name.</value>
         public string Name { get; }
 
-        // TODO: chrimc, not sure we really need this.
-
-        /// <summary>
-        /// Gets the type of the resolution for the entity.
-        /// </summary>
-        /// <value>Type description for entity resolution.</value>
-        public Type ResolutionType { get; }
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
