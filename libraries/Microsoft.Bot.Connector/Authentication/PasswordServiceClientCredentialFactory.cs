@@ -64,18 +64,6 @@ namespace Microsoft.Bot.Connector.Authentication
             return Task.FromResult(appId == AppId);
         }
 
-        /// <inheritdoc />
-        public override async Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken)
-        {
-            var valid = await IsValidAppIdAsync(appId, cancellationToken).ConfigureAwait(false);
-            if (!valid)
-            {
-                throw new ArgumentException($"Invalid App id: {appId}");
-            }
-
-            return Password;
-        }
-
         /// <inheritdoc/>
         public override Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken)
         {

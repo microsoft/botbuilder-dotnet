@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -61,19 +62,40 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
-        public override bool IsGovernment()
+        public override string GetOriginatingAudience()
         {
-            return _callerId == CallerIdConstants.USGovChannel;
+            return _toChannelFromBotOAuthScope;
         }
 
-        public override async Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken)
+        public override Task<AppCredentials> GetAppCredentialsAsync(string appId, HttpClient client, string oAuthScope, CancellationToken cancellationToken)
         {
-            var credentials = new DelegatingCredentialProvider(_credentialFactory);
-            return await credentials.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            // TODO: fix hack
+            var factory = _credentialFactory as PasswordServiceClientCredentialFactory;
+            AppCredentials credentials = _callerId == CallerIdConstants.USGovChannel
+                ? new MicrosoftGovernmentAppCredentials(appId, factory?.Password, client, NullLogger.Instance, oAuthScope)
+                : new MicrosoftAppCredentials(appId, factory?.Password, client, NullLogger.Instance, oAuthScope);
+            return Task.FromResult(credentials);
         }
 
-        public override async Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        public override async Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                var isAuthDisabled = await new DelegatingCredentialProvider(_credentialFactory).IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                if (!isAuthDisabled)
+                {
+                    // No auth header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
+                }
+
+                // In the scenario where auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity.
+                // To do this requires adding in an empty claim.
+                return isSkillCallback
+                    ? SkillValidation.CreateAnonymousSkillClaim()
+                    : new ClaimsIdentity(new List<Claim>(), AuthenticationConstants.AnonymousAuthType);
+            }
+
             return await JwtTokenValidation
                 .ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), "unknown", _authConfiguration)
                 .ConfigureAwait(false);

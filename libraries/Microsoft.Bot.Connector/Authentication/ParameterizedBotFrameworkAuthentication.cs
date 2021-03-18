@@ -60,18 +60,22 @@ namespace Microsoft.Bot.Connector.Authentication
             _logger = logger ?? NullLogger.Instance;
         }
 
-        public override bool IsGovernment()
+        public override string GetOriginatingAudience()
         {
-            return _callerId == CallerIdConstants.USGovChannel;
+            return _toChannelFromBotOAuthScope;
         }
 
-        public override async Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken)
+        public override Task<AppCredentials> GetAppCredentialsAsync(string appId, HttpClient client, string oAuthScope, CancellationToken cancellationToken)
         {
-            var credentials = new DelegatingCredentialProvider(_credentialFactory);
-            return await credentials.GetAppPasswordAsync(appId).ConfigureAwait(false);
+            // TODO: fix hack
+            var factory = _credentialFactory as PasswordServiceClientCredentialFactory;
+            AppCredentials credentials = _callerId == CallerIdConstants.USGovChannel
+                ? new MicrosoftGovernmentAppCredentials(appId, factory?.Password, client, NullLogger.Instance, oAuthScope)
+                : new MicrosoftAppCredentials(appId, factory?.Password, client, NullLogger.Instance, oAuthScope);
+            return Task.FromResult(credentials);
         }
 
-        public override async Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        public override async Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken)
         {
             return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
         }

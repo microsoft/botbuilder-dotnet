@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,22 +10,21 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     /// <summary>
-    /// A <see cref="BotFrameworkHttpClient"/>specialized for Skills that encapsulates Conversation ID generation.
+    /// A <see cref="CloudSkillClient"/>specialized for Skills that encapsulates Conversation ID generation.
     /// </summary>
-    public class SkillHttpClient : BotFrameworkHttpClient
+    public class CloudSkillClient : CloudBotFrameworkClient
     {
         private readonly SkillConversationIdFactoryBase _conversationIdFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SkillHttpClient"/> class.
+        /// Initializes a new instance of the <see cref="CloudSkillClient"/> class.
         /// </summary>
         /// <param name="httpClient">A HttpClient.</param>
-        /// <param name="credentialProvider">An instance of <see cref="ICredentialProvider"/>.</param>
+        /// <param name="auth">An instance of <see cref="BotFrameworkAuthentication"/>.</param>
         /// <param name="conversationIdFactory">An instance of a class derived from <see cref="SkillConversationIdFactoryBase"/>.</param>
-        /// <param name="channelProvider">An instance of <see cref="IChannelProvider"/>.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
-        public SkillHttpClient(HttpClient httpClient, ICredentialProvider credentialProvider, SkillConversationIdFactoryBase conversationIdFactory, IChannelProvider channelProvider = null, ILogger logger = null)
-            : base(httpClient, credentialProvider, channelProvider, logger)
+        public CloudSkillClient(HttpClient httpClient, BotFrameworkAuthentication auth, SkillConversationIdFactoryBase conversationIdFactory, ILogger logger = null)
+            : base(httpClient, auth, logger)
         {
             _conversationIdFactory = conversationIdFactory;
         }

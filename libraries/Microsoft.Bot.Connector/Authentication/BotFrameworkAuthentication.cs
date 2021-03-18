@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,26 +16,29 @@ namespace Microsoft.Bot.Connector.Authentication
     public abstract class BotFrameworkAuthentication
     {
         /// <summary>
-        /// Check whether the channel is Government.
+        /// Gets the originating audience from Bot OAuth scope.
         /// </summary>
-        /// <returns>true if Government; false otherwise.</returns>
-        public abstract bool IsGovernment();
+        /// <returns>The originating audience.</returns>
+        public abstract string GetOriginatingAudience();
 
         /// <summary>
-        /// Gets the App password for given App id.
+        /// Gets the AAD app credentials for Bot Framework protocol requests.
         /// </summary>
-        /// <param name="appId">The App id.</param>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="client">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="oAuthScope">The scope for the token.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>The App password.</returns>
-        public abstract Task<string> GetAppPasswordAsync(string appId, CancellationToken cancellationToken);
+        /// <returns>The app credentials.</returns>
+        public abstract Task<AppCredentials> GetAppCredentialsAsync(string appId, HttpClient client, string oAuthScope, CancellationToken cancellationToken);
 
         /// <summary>
         /// Validate Bot Framework Protocol requests.
         /// </summary>
         /// <param name="authHeader">The http auth header.</param>
+        /// <param name="isSkillCallback">Whether this is call is from a skill callback.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
-        public abstract Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, CancellationToken cancellationToken);
+        public abstract Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken);
 
         /// <summary>
         /// Validate Bot Framework Protocol requests.

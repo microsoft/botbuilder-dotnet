@@ -14,13 +14,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     [ChannelServiceExceptionFilter]
     public abstract class ChannelServiceController : ControllerBase
     {
-        private readonly ChannelServiceHandler _handler;
+        private readonly ChannelServiceHandlerBase _handler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelServiceController"/> class.
         /// </summary>
         /// <param name="handler">A <see cref="ChannelServiceHandler"/> that will handle the incoming request.</param>
-        protected ChannelServiceController(ChannelServiceHandler handler)
+        protected ChannelServiceController(ChannelServiceHandlerBase handler)
         {
             _handler = handler;
         }
