@@ -194,6 +194,12 @@
       "$ref": "#/definitions/Microsoft.OnChooseProperty"
     },
     {
+      "$ref": "#/definitions/Microsoft.OnCommandActivity"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.OnCommandResultActivity"
+    },
+    {
       "$ref": "#/definitions/Microsoft.OnCondition"
     },
     {
@@ -3873,10 +3879,7 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.ActivityTemplate"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+          "type": "string"
         },
         {
           "$ref": "#/definitions/botframework.json/definitions/Activity",
@@ -3885,7 +3888,10 @@
           ]
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
         }
       ]
     },
@@ -3908,19 +3914,16 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/CustomAction.dialog"
+          "type": "string"
         },
         {
-          "$ref": "#/definitions/CustomAction2.dialog"
+          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
         },
         {
           "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
+          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
         },
         {
           "$ref": "#/definitions/Microsoft.BeginDialog"
@@ -3938,12 +3941,6 @@
           "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ContinueConversation"
         },
         {
@@ -3951,9 +3948,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueLoop"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
         },
         {
           "$ref": "#/definitions/Microsoft.DebugBreak"
@@ -4010,15 +4004,6 @@
           "$ref": "#/definitions/Microsoft.LogAction"
         },
         {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
-        },
-        {
           "$ref": "#/definitions/Microsoft.RepeatDialog"
         },
         {
@@ -4046,12 +4031,6 @@
           "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
         },
         {
-          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ThrowException"
         },
         {
@@ -4059,6 +4038,30 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UpdateActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
         },
         {
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
@@ -4130,7 +4133,10 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/CustomAction.dialog"
+        },
+        {
+          "$ref": "#/definitions/CustomAction2.dialog"
         }
       ]
     },
@@ -4141,6 +4147,11 @@
       "type": "object",
       "oneOf": [
         {
+          "type": "string",
+          "title": "Reference to Microsoft.IEntityRecognizer",
+          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
+        },
+        {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
@@ -4193,11 +4204,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.IEntityRecognizer",
-          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
         }
       ]
     },
@@ -4207,13 +4213,13 @@
       "$role": "interface",
       "oneOf": [
         {
+          "type": "string"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
         },
         {
           "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
-        },
-        {
-          "type": "string"
         }
       ]
     },
@@ -4222,6 +4228,30 @@
       "description": "Components which derive from Recognizer class",
       "$role": "interface",
       "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
         {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
@@ -4232,9 +4262,6 @@
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
           "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
         },
         {
@@ -4256,22 +4283,13 @@
           "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-        },
-        {
           "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
@@ -4283,25 +4301,13 @@
           "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
           "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string"
         }
       ]
     },
@@ -4311,10 +4317,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.TextTemplate"
+          "type": "string"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.TextTemplate"
         }
       ]
     },
@@ -4323,6 +4329,11 @@
       "title": "Microsoft Triggers",
       "description": "Components which derive from OnCondition class.",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITrigger",
+          "description": "Reference to Microsoft.ITrigger .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
@@ -4343,6 +4354,12 @@
         },
         {
           "$ref": "#/definitions/Microsoft.OnChooseProperty"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCommandActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCommandResultActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.OnCondition"
@@ -4484,11 +4501,6 @@
         },
         {
           "$ref": "#/definitions/Teams.OnTeamUnarchived"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITrigger",
-          "description": "Reference to Microsoft.ITrigger .dialog file."
         }
       ]
     },
@@ -4497,6 +4509,11 @@
       "title": "Selectors",
       "description": "Components which derive from TriggerSelector class.",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITriggerSelector",
+          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.ConditionalSelector"
         },
@@ -4511,11 +4528,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TrueSelector"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITriggerSelector",
-          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
     },
@@ -5979,6 +5991,134 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.OnChooseProperty"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.OnCommandActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Command activity",
+      "description": "Actions to perform on receipt of an activity with type 'Command'. Overrides Intent trigger.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnCommandActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.OnCommandResultActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Command Result activity",
+      "description": "Actions to perform on receipt of an activity with type 'CommandResult'. Overrides Intent trigger.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnCommandResultActivity"
         },
         "$designer": {
           "title": "Designer information",
@@ -9265,12 +9405,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IHttpRequestMock",
           "description": "Reference to Microsoft.Test.IHttpRequestMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
         }
       ]
     },
@@ -9285,12 +9425,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.ISettingMock",
           "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
         }
       ]
     },
@@ -9299,6 +9439,11 @@
       "description": "Components which derive from TestAction class",
       "$role": "interface",
       "oneOf": [
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ITestAction",
+          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
+        },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
         },
@@ -9334,11 +9479,6 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserTyping"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.Test.ITestAction",
-          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
         }
       ]
     },
@@ -9348,12 +9488,12 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
-        },
-        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IUserTokenMock",
           "description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
         }
       ]
     },
