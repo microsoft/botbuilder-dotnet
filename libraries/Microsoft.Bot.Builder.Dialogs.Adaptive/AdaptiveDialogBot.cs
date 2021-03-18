@@ -21,8 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private const string DefaultLocale = "en-US";
         private const string DefaultLg = "main.lg";
+        private const string DefaultDialogName = "main.dialog";
 
-        private static ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
+        private static readonly ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
 
         private readonly string _defaultLocale;
         private readonly string _rootDialogId;
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             BotFrameworkAuthentication botFrameworkAuthentication = null)
             : this(
                   resourceExplorer,
-                  rootDialogId ?? "Main.dialog",
+                  rootDialogId ?? DefaultDialogName,
                   defaultLocale ?? DefaultLocale,
                   logger ?? NullLogger<AdaptiveDialogBot>.Instance,
                   botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),

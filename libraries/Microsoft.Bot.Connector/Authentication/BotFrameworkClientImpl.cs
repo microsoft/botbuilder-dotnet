@@ -92,12 +92,27 @@ namespace Microsoft.Bot.Connector.Authentication
                     {
                         var content = httpResponseMessage.Content != null ? await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false) : null;
 
-                        // Capture the HTTP response, assuming JSON in the response body, otherwise make it NULL.
-                        return new InvokeResponse<T>
+                        if (httpResponseMessage.IsSuccessStatusCode)
                         {
-                            Status = (int)httpResponseMessage.StatusCode,
-                            Body = content?.Length > 0 ? GetBodyContent<T>(content) : default
-                        };
+                            // On success assuming either JSON that can be deserialized to T or empty.
+                            return new InvokeResponse<T>
+                            {
+                                Status = (int)httpResponseMessage.StatusCode,
+                                Body = content?.Length > 0 ? JsonConvert.DeserializeObject<T>(content) : default
+                            };
+                        }
+                        else
+                        {
+                            // Otherwise we can assume we don't have a T to deserialize - so just log the content so it's not lost.
+                            _logger.LogError($"Bot Framework call failed to '{toUrl}' returning '{(int)httpResponseMessage.StatusCode}' and '{content}'");
+
+                            // We want to at least propogate the status code because that is what InvokeResponse expects.
+                            return new InvokeResponse<T>
+                            {
+                                Status = (int)httpResponseMessage.StatusCode,
+                                Body = typeof(T) == typeof(object) ? (T)(object)content : default,
+                            };
+                        }
                     }
                 }
             }
@@ -113,19 +128,6 @@ namespace Microsoft.Bot.Connector.Authentication
             _httpClient.Dispose();
             base.Dispose(disposing);
             _disposed = true;
-        }
-
-        private static T GetBodyContent<T>(string content)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<T>(content);
-            }
-            catch (JsonException)
-            {
-                // This will only happen when the skill didn't return valid json in the content (e.g. when the status code is 500 or there's a bug in the skill)
-                return default;
-            }
         }
     }
 }

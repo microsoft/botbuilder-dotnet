@@ -31,10 +31,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
-            resourceProvider.Add("Main.dialog", new MockResource("{ \"$kind\": \"Microsoft.AdaptiveDialog\" }"));
+            resourceProvider.Add("main.dialog", new MockResource("{ \"$kind\": \"Microsoft.AdaptiveDialog\" }"));
             resourceExplorer.AddResourceProvider(resourceProvider);
 
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
             var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
 
             // The test dialog being used here happens to not send anything so we only need to mock the type.
             var adapterMock = new Mock<BotAdapter>();
@@ -51,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(resourceExplorer, "Main.dialog", "defaultLocale", logger, storage, botFrameworkAuthenticationMock.Object);
+            var bot = new AdaptiveDialogBot(resourceExplorer, "main.dialog", "defaultLocale", logger, storage, botFrameworkAuthenticationMock.Object);
             await ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None);
 
             // Assert

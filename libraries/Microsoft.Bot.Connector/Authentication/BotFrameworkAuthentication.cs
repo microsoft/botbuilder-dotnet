@@ -54,7 +54,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Creates a <see cref="BotFrameworkClient"/> used for calling Skills.
         /// </summary>
         /// <returns>A <see cref="BotFrameworkClient"/> instance to call Skills.</returns>
-        public abstract BotFrameworkClient CreateBotFrameworkClient();
+        public virtual BotFrameworkClient CreateBotFrameworkClient()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Generates the appropriate callerId to write onto the activity, this might be null.
