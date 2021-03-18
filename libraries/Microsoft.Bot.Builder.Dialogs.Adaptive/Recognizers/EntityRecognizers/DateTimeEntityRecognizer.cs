@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public DateTimeEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             
             // TODO: chrimc, should this be an array of entity types like datetimeV2.datetime
-            : base(callerPath, callerLine, "datetimeV2")
+            // Also how does this relate to LUIS datetimeV2?
+            : base(callerPath, callerLine, "datetime")
         {
         }
 
