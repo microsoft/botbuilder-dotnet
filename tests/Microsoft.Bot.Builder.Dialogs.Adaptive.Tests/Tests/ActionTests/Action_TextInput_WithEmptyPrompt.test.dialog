@@ -16,10 +16,6 @@
                             "this.value.Length > 3"
                         ],
                         "outputFormat": "${toUpper(this.value)}"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "Hello ${user.name}, nice to meet you!"
                     }
                 ]
             }
@@ -33,12 +29,8 @@
             "text": "hi"
         },
         {
-            "$kind": "Microsoft.Test.UserSays",
-            "text": "Carlos"
-        },
-        {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Hello CARLOS, nice to meet you!"
+            "text": "Value cannot be null.\r\nParameter name: prompt"
         }
     ]
 }
