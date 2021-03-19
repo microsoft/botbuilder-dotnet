@@ -4138,8 +4138,7 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string",
-          "pattern": "^(?!(=)).*"
+          "type": "string"
         }
       ]
     },
