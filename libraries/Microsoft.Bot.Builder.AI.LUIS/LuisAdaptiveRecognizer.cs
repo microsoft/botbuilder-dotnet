@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return Task.FromResult(new RecognizerDescription(
                 PossibleIntents.GetValue(dialogContext.State),
                 PossibleEntities.GetValue(dialogContext.State),
-                JsonConvert.DeserializeObject<List<Microsoft.Bot.Builder.Dialogs.Recognizers.DynamicList>>(JsonConvert.SerializeObject(DynamicLists))));
+                JsonConvert.DeserializeObject<List<Dialogs.Recognizers.DynamicList>>(JsonConvert.SerializeObject(DynamicLists.GetValue(dialogContext.State)))));
         }
 
         /// <summary>

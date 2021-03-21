@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
@@ -18,6 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public static IEnumerable<object[]> Expected
             => new[]
             {
+                /*
+                // Entity recognizers
                 new object[] { new AgeEntityRecognizer(), null, new[] { "age" }, null },
                 new object[] { new ChannelMentionEntityRecognizer(), null, new[] { "channelMention" }, null },
                 new object[] { new ConfirmationEntityRecognizer(), null, new[] { "boolean" }, null },
@@ -37,8 +40,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 new object[] { new RegexEntityRecognizer() { Name = "pattern" }, null, new[] { "pattern" }, null },
                 new object[] { new TemperatureEntityRecognizer(), null, new[] { "temperature" }, null },
                 new object[] { new UrlEntityRecognizer(), null, new[] { "url" }, null },
+                */
 
                 // TODO: chrimc, still need LUIS, QnA and recognizer sets
+                new object[] 
+                {
+                    new AI.Luis.LuisAdaptiveRecognizer() 
+                    {
+                        PossibleIntents = new[] { new IntentDescription("intent1") },
+                        PossibleEntities = new[] { new EntityDescription("entity1"), new EntityDescription("dlist") },
+                        DynamicLists = new[] 
+                        {
+                                new AI.Luis.DynamicList()
+                                {
+                                    Entity = "dlist",
+                                    List = new List<AI.LuisV3.ListElement>
+                                    {
+                                        new AI.LuisV3.ListElement("value", new List<string> { "synonym1", "synonym2" })
+                                    }
+                                }
+                        }
+                    },
+                    new[] { "intent1" },
+                    new[] { "entity1", "dlist" },
+                    new[] { "dlist" }
+                }
             };
 
         [Theory]
