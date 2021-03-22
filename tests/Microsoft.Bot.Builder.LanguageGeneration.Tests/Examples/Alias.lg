@@ -3,5 +3,8 @@
 # welcome(theName)
 - ${base.welcome(theName)}
 
+# callLength
+- ${length('name')}
+
 # callBaseLength
 - ${base.length()}
