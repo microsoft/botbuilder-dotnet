@@ -3917,6 +3917,19 @@
         }
       ]
     },
+    "Microsoft.IAdapter": {
+      "$role": "interface",
+      "title": "Bot adapter",
+      "description": "Component that enables connecting bots to chat clients and applications.",
+      "type": "object",
+      "properties": {
+        "route": {
+          "type": "string",
+          "title": "Adapter http route",
+          "description": "Route where to expose the adapter."
+        }
+      }
+    },
     "Microsoft.IDialog": {
       "title": "Microsoft dialogs",
       "description": "Components which derive from Dialog",
@@ -3957,6 +3970,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ContinueConversation"
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueConversationLater"
@@ -4076,13 +4092,74 @@
           "$ref": "#/definitions/Teams.GetMeetingParticipant"
         },
         {
+          "$ref": "#/definitions/Teams.GetMember"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetPagedMembers"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetPagedTeamMembers"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamChannels"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamDetails"
+        },
+        {
+          "$ref": "#/definitions/Teams.GetTeamMember"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendAppBasedLinkQueryResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEActionResponse"
+        },
+        {
           "$ref": "#/definitions/Teams.SendMEAttachmentsResponse"
         },
         {
           "$ref": "#/definitions/Teams.SendMEAuthResponse"
         },
         {
-          "type": "string"
+          "$ref": "#/definitions/Teams.SendMEBotMessagePreviewResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEConfigQuerySettingUrlResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMEMessageResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMESelectItemResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendMessageToTeamsChannel"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTabAuthResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTabCardResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleCardResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleMessageResponse"
+        },
+        {
+          "$ref": "#/definitions/Teams.SendTaskModuleUrlResponse"
+        },
+        {
+          "$ref": "#/definitions/Testbot.JavascriptAction"
+        },
+        {
+          "$ref": "#/definitions/Testbot.Multiply"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?!(=)).*"
         }
       ]
     },
@@ -4175,7 +4252,7 @@
       "$role": "interface",
       "oneOf": [
         {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+          "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.ChannelMentionEntityRecognizer"
@@ -4211,7 +4288,16 @@
           "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
           "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
@@ -4220,10 +4306,28 @@
           "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
           "$ref": "#/definitions/Microsoft.RecognizerSet"
         },
         {
+          "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+        },
+        {
           "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         },
         {
           "type": "string"
