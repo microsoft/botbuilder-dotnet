@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <returns>Asynchronous Task with <see cref="UserTokenClient" /> instance.</returns>
         public abstract Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken);
 
-                /// <summary>
+        /// <summary>
         /// Gets the originating audience from Bot OAuth scope.
         /// </summary>
         /// <returns>The originating audience.</returns>
