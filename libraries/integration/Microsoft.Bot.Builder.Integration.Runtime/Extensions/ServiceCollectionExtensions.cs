@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
-            services.AddSingleton<ResourceExplorer, ConfigurationFolderResourceExplorer>();
+            services.AddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
             services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
 
             // TODO: add CloudAdapter derived class - including telemetry and middleware and transcripts

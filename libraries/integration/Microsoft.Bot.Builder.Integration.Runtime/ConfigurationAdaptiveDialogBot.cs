@@ -13,8 +13,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
 {
     internal class ConfigurationAdaptiveDialogBot : AdaptiveDialogBot
     {
-        private const string DefaultAdaptiveDialogId = "main.dialog";
-        private const string DefaultLanguageGeneratorId = "main.ld";
+        private const string DefaultLanguageGeneratorId = "main.lg";
         private const string DefaultLocale = "en-US";
 
         /// <summary>
@@ -32,7 +31,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
             BotFrameworkAuthentication botFrameworkAuthentication = null,
             ILogger logger = null)
             : base(
-                configuration.GetSection(ConfigurationConstants.RootDialogKey).Value ?? DefaultAdaptiveDialogId,
+                configuration.GetSection(ConfigurationConstants.RootDialogKey).Value,
                 configuration.GetSection(ConfigurationConstants.LanguageGeneratorKey).Value ?? DefaultLanguageGeneratorId,
                 configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value ?? DefaultLocale,
                 resourceExplorer,

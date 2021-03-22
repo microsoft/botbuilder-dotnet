@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
@@ -54,14 +55,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             BotFrameworkAuthentication botFrameworkAuthentication,
             ILogger logger)
         {
-            _resourceExplorer = resourceExplorer;
-            _adaptiveDialogId = adaptiveDialogId;
-            _languageGeneratorId = languageGeneratorId;
-            _defaultLocale = defaultLocale;
-            _conversationState = conversationState;
-            _userState = userState;
-            _skillConversationIdFactoryBase = skillConversationIdFactoryBase;
-            _botFrameworkAuthentication = botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create();
+            _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
+            _adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
+            _languageGeneratorId = languageGeneratorId ?? throw new ArgumentNullException(nameof(languageGeneratorId));
+            _defaultLocale = defaultLocale ?? throw new ArgumentNullException(nameof(defaultLocale));
+            _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
+            _userState = userState ?? throw new ArgumentNullException(nameof(userState));
+            _skillConversationIdFactoryBase = skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase));
+            _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
         }
 
