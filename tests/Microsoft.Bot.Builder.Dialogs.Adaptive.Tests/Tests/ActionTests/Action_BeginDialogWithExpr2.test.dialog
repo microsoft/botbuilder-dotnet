@@ -1,0 +1,152 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "dialogs": [{
+                "$schema": "../../../tests.schema",
+                "$kind": "Microsoft.AdaptiveDialog",
+                "id": "AskNameDialog",
+                "dialogs": ["TellJokeDialog"],
+                "triggers": [
+                    {
+                        "$kind": "Microsoft.OnBeginDialog",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "(user.name == null)",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.TextInput",
+                                        "property": "user.name",
+                                        "prompt": "Hello, what is your name?",
+                                        "unrecognizedPrompt": "How should I call you?",
+                                        "invalidPrompt": "That does not soud like a name"
+                                    }
+                                ]
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Hello ${user.name}, nice to meet you!"
+                            }
+                        ]
+                    }
+                ],
+                "autoEndDialog": true,
+                "defaultResultProperty": "dialog.result"
+            },
+            {
+                "$schema": "../../../tests.schema",
+                "$kind": "Microsoft.AdaptiveDialog",
+                "id": "TellJokeDialog",
+                "triggers": [
+                    {
+                        "$kind": "Microsoft.OnBeginDialog",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "Why did the chicken cross the road?"
+                            },
+                            {
+                                "$kind": "Microsoft.EndTurn",
+                                "id": "EndTurn"
+                            },
+                            {
+                                "$kind": "Microsoft.SendActivity",
+                                "activity": "To get to the other side"
+                            }
+                        ]
+                    }
+                ],
+                "autoEndDialog": true,
+                "defaultResultProperty": "dialog.result"
+            }
+        ],
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I'm a dialog bot."
+                    },
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "user.dialog",
+                        "prompt": "Hello, what is your dialog?",
+                        "unrecognizedPrompt": "Which dialog you want to call?",
+                        "invalidPrompt": "That is not a valid dialog"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "options": {},
+                        "dialog": "=concat(user.dialog, 'Dialog')"
+                    },
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "user.newdialog",
+                        "prompt": "Hello, what is your dialog?",
+                        "unrecognizedPrompt": "Which dialog you want to call?",
+                        "invalidPrompt": "That is not a valid dialog"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "options": {},
+                        "dialog": "=concat(user.newdialog, 'Dialog')"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I'm a dialog bot."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your dialog?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "AskName"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your name?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Carlos"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello Carlos, nice to meet you!"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, what is your dialog?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "TellJoke"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Why did the chicken cross the road?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "I don't know."
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "To get to the other side"
+        }
+    ]
+}

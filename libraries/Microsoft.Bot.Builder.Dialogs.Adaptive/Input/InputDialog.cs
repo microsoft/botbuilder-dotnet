@@ -274,8 +274,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
                         };
                         TelemetryClient.TrackEvent("GeneratorResult", properties);
-
-                        await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
+                        if (response != null)
+                        {
+                            await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     // set output property
