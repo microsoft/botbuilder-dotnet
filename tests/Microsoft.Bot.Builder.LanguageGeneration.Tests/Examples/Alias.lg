@@ -1,10 +1,17 @@
-﻿[import from base lg](AliasBase.lg) as base
+﻿[import from base lg 1](AliasBase1.lg) as base
+[import from base lg 2](AliasBase2.lg) as base2
 
 # welcome(theName)
 - ${base.welcome(theName)}
 
+# welcome2(theName)
+- ${base2.welcome(theName)}
+
 # callLength
 - ${length('name')}
 
-# callBaseLength
+# callBase1Length
 - ${base.length()}
+
+# callBase2Length
+- ${base2.length()}

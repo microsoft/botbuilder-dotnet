@@ -62,11 +62,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = templates.Evaluate("welcome", new { theName = "Jack" });
             Assert.Equal("hi Jack", evaled);
 
+            evaled = templates.Evaluate("welcome2", new { theName = "Jack" });
+            Assert.Equal("hello Jack", evaled);
+
             evaled = templates.Evaluate("callLength");
             Assert.Equal(4, evaled);
 
-            evaled = templates.Evaluate("callBaseLength");
+            evaled = templates.Evaluate("callBase1Length");
             Assert.Equal("my length", evaled);
+
+            evaled = templates.Evaluate("callBase2Length");
+            Assert.Equal("my length2", evaled);
         }
 
         [Fact]
