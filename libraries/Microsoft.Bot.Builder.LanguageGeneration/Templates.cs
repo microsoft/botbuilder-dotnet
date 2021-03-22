@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ImportResolverDelegate importResolver = null,
             IList<string> options = null,
             string source = null,
-            string namedReferences = null)
+            IDictionary<string, Templates> namedReferences = null)
         {
             if (templates != null)
             {
@@ -174,6 +174,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
 #pragma warning disable CA2227 // Collection properties should be read only (we can't remove the setter without breaking binary compat)
         public IList<string> Options { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
+        /// Gets or sets alias of templates references.
+        /// </summary>
+        /// <value>
+        /// Alias of templates references.
+        /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only
+        public IDictionary<string, Templates> NamedReferences { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>

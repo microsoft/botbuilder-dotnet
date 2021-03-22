@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Import regex.
         /// </summary>
-        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)");
+        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)\s*((as)?\s*([a-zA-Z_][0-9a-zA-Z_]*)\s*)?");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -337,15 +337,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var importStr = context.IMPORT().GetText();
 
                 var matchResult = ImportRegex.Match(importStr);
-                if (matchResult.Success && matchResult.Groups.Count == 3)
+                if (matchResult.Success && matchResult.Groups.Count != 3 && matchResult.Groups.Count != 6)
                 {
-                    var description = matchResult.Groups[1].Value?.Trim();
-                    var id = matchResult.Groups[2].Value?.Trim();
-
-                    var sourceRange = new SourceRange(context, _templates.Source);
-                    var import = new TemplateImport(description, id, sourceRange);
-                    _templates.Imports.Add(import);
+                    _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: Invalid import format."), context));
+                    return null;
                 }
+
+                var description = matchResult.Groups[1].Value?.Trim();
+                var id = matchResult.Groups[2].Value?.Trim();
+
+                var sourceRange = new SourceRange(context, _templates.Source);
+                var import = new TemplateImport(description, id, sourceRange);
+                if (matchResult.Groups.Count == 6)
+                {
+                    var alias = matchResult.Groups[5].Value?.Trim();
+                    import.Alias = alias;
+                }
+
+                _templates.Imports.Add(import);
 
                 return null;
             }
