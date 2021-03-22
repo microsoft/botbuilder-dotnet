@@ -40,6 +40,8 @@
     <None Remove="Examples\5.lg" />
     <None Remove="Examples\6.lg" />
     <None Remove="Examples\8.lg" />
+    <None Remove="Examples\Alias.lg" />
+    <None Remove="Examples\AliasBase.lg" />
     <None Remove="Examples\AdaptiveCardActivity.lg" />
     <None Remove="Examples\analyzer.lg" />
     <None Remove="Examples\BasicActivity.lg" />
@@ -106,6 +108,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Examples\Alias.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\AliasBase.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\Event.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

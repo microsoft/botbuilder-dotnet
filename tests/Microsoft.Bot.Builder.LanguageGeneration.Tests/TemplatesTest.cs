@@ -55,6 +55,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestImportAlias()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Alias.lg"));
+
+            var evaled = templates.Evaluate("welcome", new { theName = "Jack" });
+            Assert.Equal("hi Jack", evaled);
+
+            evaled = templates.Evaluate("callBaseLength");
+            Assert.Equal("my length", evaled);
+        }
+
+        [Fact]
         public void TestIfElseTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));

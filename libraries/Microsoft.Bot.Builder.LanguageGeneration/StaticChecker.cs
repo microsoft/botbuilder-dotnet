@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(_templates.AllTemplates.ToList(), _baseExpressionParser);
+                    var evaluator = new Evaluator(_templates.AllTemplates.ToList(), _baseExpressionParser, _templates.LgOptions, _templates.NamedReferences);
                     _expressionParser = evaluator.ExpressionParser;
                 }
 

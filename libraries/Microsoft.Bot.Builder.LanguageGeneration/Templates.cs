@@ -250,12 +250,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">State visible in the evaluation.</param>
         /// <param name="opt">EvaluationOptions in evaluating a template.</param>
+        /// <param name="namedReferences">NamedReferences. </param>
         /// <returns>Evaluate result.</returns>
-        public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null)
+        public object Evaluate(string templateName, object scope = null, EvaluationOptions opt = null, IDictionary<string, Templates> namedReferences = null)
         {
             CheckErrors();
             var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
+            var namedRef = NamedReferences.ToDictionary(k => k.Key, v => v.Value);
+            foreach (var item in namedReferences ?? new Dictionary<string, Templates>())
+            {
+                namedRef[item.Key] = item.Value;
+            }
+
+            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt, namedRef);
             var result = evaluator.EvaluateTemplate(templateName, scope);
             if (evalOpt.LineBreakStyle == LGLineBreakStyle.Markdown && result is string str)
             {

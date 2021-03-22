@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
         private readonly EvaluationOptions _lgOptions;
         private readonly ExpressionParser _expressionParser;
+        private readonly IDictionary<string, Templates> _namedReferences;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Expander"/> class.
@@ -30,13 +31,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Given expression parser.</param>
         /// <param name="opt">Options for LG. including strictMode, replaceNull and lineBreakStyle.</param>
-        public Expander(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
+        /// <param name="namedReferences">NamedReferences. </param>
+        public Expander(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null, IDictionary<string, Templates> namedReferences = null)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
             _lgOptions = opt;
 
             _expressionParser = expressionParser;
+            _namedReferences = namedReferences ?? new Dictionary<string, Templates>();
 
             // generate a new customized expression parser by injecting the template as functions
             ExpanderExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup, true));
@@ -333,14 +336,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">The template name to evaluate.</param>
         /// <param name="args">Arguments to map to the template parameters.</param>
+        /// <param name="allTemplates">All templates.</param>
         /// <returns>
         /// An object.
         /// If the number of arguments is 0, returns the current scope.
         /// Otherwise, returns an CustomizedMemory that the mapping of the parameter name to the argument value added to the scope.
         /// </returns>
-        public object ConstructScope(string templateName, List<object> args)
+        public object ConstructScope(string templateName, List<object> args, List<Template> allTemplates)
         {
-            var parameters = TemplateMap[templateName].Parameters;
+            var templateMap = allTemplates.ToDictionary(x => x.Name);
+            var parameters = templateMap[templateName].Parameters;
 
             if (args.Count == 0)
             {
@@ -509,6 +514,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return standardFunction;
             }
 
+            var pointIndex = name.IndexOf('.');
+            if (pointIndex > 0)
+            {
+                var alias = name.Substring(0, pointIndex);
+                if (_namedReferences.ContainsKey(alias))
+                {
+                    var realTemplateName = name.Substring(pointIndex + 1);
+                    return new ExpressionEvaluator(realTemplateName, FunctionUtils.Apply(this.EvaluateWithTemplates(realTemplateName, _namedReferences[alias])), ReturnType.Object);
+                }
+            }
+
             if (name.StartsWith("lg.", StringComparison.Ordinal))
             {
                 name = name.Substring(3);
@@ -580,14 +596,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
             (IReadOnlyList<object> args) =>
             {
-                var newScope = this.ConstructScope(templateName, args.ToList());
+                var newScope = this.ConstructScope(templateName, args.ToList(), Templates);
                 return this.ExpandTemplate(templateName, newScope);
             };
+
+        private Func<IReadOnlyList<object>, object> EvaluateWithTemplates(string templateName, Templates templates)
+        => (IReadOnlyList<object> args) =>
+        {
+            var newScope = this.ConstructScope(templateName, args.ToList(), templates.AllTemplates.ToList());
+            var evaluator = new Evaluator(templates.AllTemplates.ToList(), _expressionParser, _lgOptions, templates.NamedReferences);
+            return evaluator.EvaluateTemplate(templateName, newScope);
+        };
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
             (IReadOnlyList<object> args) =>
             {
-                var newScope = this.ConstructScope(templateName, args.ToList());
+                var newScope = this.ConstructScope(templateName, args.ToList(), Templates);
 
                 var value = this.ExpandTemplate(templateName, newScope);
                 var randomValue = CurrentTarget().Scope.RandomNext(0, value.Count);
@@ -600,7 +624,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         => (IReadOnlyList<object> args) =>
         {
             var templateName = args[0].ToString();
-            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
+            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList(), Templates);
             return this.ExpandTemplate(templateName, newScope);
         };
 

@@ -25,13 +25,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">Template list.</param>
         /// <param name="expressionParser">Expression parser.</param>
-        public Analyzer(List<Template> templates, ExpressionParser expressionParser)
+        /// <param name="opt">Options for LG. </param>
+        /// <param name="namedReferences">NamedReferences. </param>
+        public Analyzer(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null, IDictionary<string, Templates> namedReferences = null)
         {
             Templates = templates;
             _templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
-            var evaluator = new Evaluator(Templates, expressionParser);
+            var evaluator = new Evaluator(Templates, expressionParser, opt, namedReferences ?? new Dictionary<string, Templates>());
             _expressionParser = evaluator.ExpressionParser;
         }
 

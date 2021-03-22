@@ -1,0 +1,7 @@
+﻿[import from base lg](AliasBase.lg) as base
+
+# welcome(theName)
+- ${base.welcome(theName)}
+
+# callBaseLength
+- ${base.length()}
