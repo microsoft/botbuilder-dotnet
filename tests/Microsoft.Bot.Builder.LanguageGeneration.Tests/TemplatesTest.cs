@@ -59,11 +59,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var templates = Templates.ParseFile(GetExampleFilePath("Alias.lg"));
 
-            var evaled = templates.Evaluate("welcome", new { theName = "Jack" });
+            var evaled = templates.Evaluate("callWelcome1", new { theName = "Jack" });
             Assert.Equal("hi Jack", evaled);
 
-            evaled = templates.Evaluate("welcome2", new { theName = "Jack" });
+            evaled = templates.Evaluate("callWelcome2", new { theName = "Jack" });
             Assert.Equal("hello Jack", evaled);
+
+            evaled = templates.Evaluate("callWelcome3", new { theName = "Jack" });
+            Assert.Equal("welcome Jack", evaled);
 
             evaled = templates.Evaluate("callLength");
             Assert.Equal(4, evaled);
@@ -73,6 +76,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("callBase2Length");
             Assert.Equal("my length2", evaled);
+
+            evaled = templates.Evaluate("callBase3Length");
+            Assert.Equal("my base length", evaled);
         }
 
         [Fact]

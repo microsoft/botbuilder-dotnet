@@ -13,6 +13,7 @@
   <ItemGroup>
     <None Remove="Examples\AliasBase1.lg" />
     <None Remove="Examples\AliasBase2.lg" />
+    <None Remove="Examples\AliasBase3.lg" />
     <None Remove="Examples\EmptyArrayAndObject.lg" />
     <None Remove="Examples\EvaluationOptions\a1.lg" />
     <None Remove="Examples\EvaluationOptions\a2.lg" />
@@ -116,6 +117,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\AliasBase2.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\AliasBase3.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\Event.lg">
