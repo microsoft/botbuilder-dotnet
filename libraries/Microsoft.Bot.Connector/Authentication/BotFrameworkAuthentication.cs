@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,31 +14,6 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public abstract class BotFrameworkAuthentication
     {
-        /// <summary>
-        /// Gets the originating audience from Bot OAuth scope.
-        /// </summary>
-        /// <returns>The originating audience.</returns>
-        public abstract string GetOriginatingAudience();
-
-        /// <summary>
-        /// Gets the AAD app credentials for Bot Framework protocol requests.
-        /// </summary>
-        /// <param name="appId">The Microsoft app ID.</param>
-        /// <param name="client">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
-        /// <param name="oAuthScope">The scope for the token.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>The app credentials.</returns>
-        public abstract Task<AppCredentials> GetAppCredentialsAsync(string appId, HttpClient client, string oAuthScope, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Validate Bot Framework Protocol requests.
-        /// </summary>
-        /// <param name="authHeader">The http auth header.</param>
-        /// <param name="isSkillCallback">Whether this is call is from a skill callback.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
-        public abstract Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken);
-
         /// <summary>
         /// Validate Bot Framework Protocol requests.
         /// </summary>
@@ -74,6 +48,26 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with <see cref="UserTokenClient" /> instance.</returns>
         public abstract Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken);
+
+                /// <summary>
+        /// Gets the originating audience from Bot OAuth scope.
+        /// </summary>
+        /// <returns>The originating audience.</returns>
+        public virtual string GetOriginatingAudience()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Validate Bot Framework Protocol requests.
+        /// </summary>
+        /// <param name="authHeader">The http auth header.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
+        public virtual Task<ClaimsIdentity> ValidateSkillsAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Generates the appropriate callerId to write onto the activity, this might be null.

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +28,7 @@ namespace Microsoft.Bot.Builder
         /// <inheritdoc/>
         protected override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
         {
-            return await _auth.ValidateAuthHeaderAsync(authHeader, true, new CancellationToken()).ConfigureAwait(false);
+            return await _auth.ValidateSkillsAuthHeaderAsync(authHeader, new CancellationToken()).ConfigureAwait(false);
         }
     }
 }

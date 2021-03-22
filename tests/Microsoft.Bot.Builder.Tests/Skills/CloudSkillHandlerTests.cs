@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
         private class TestSkillConversationIdFactory : SkillConversationIdFactoryBase
         {
-            private readonly ConcurrentDictionary<string, string> _conversationRefs = new ();
+            private readonly ConcurrentDictionary<string, string> _conversationRefs = new ConcurrentDictionary<string, string>();
 
             public override Task<string> CreateSkillConversationIdAsync(SkillConversationIdFactoryOptions options, CancellationToken cancellationToken)
             {

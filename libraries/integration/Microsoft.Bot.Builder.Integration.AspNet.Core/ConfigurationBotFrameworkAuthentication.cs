@@ -62,15 +62,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc />
-        public override Task<AppCredentials> GetAppCredentialsAsync(string appId, HttpClient client, string oAuthScope, CancellationToken cancellationToken)
+        public override Task<ClaimsIdentity> ValidateSkillsAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
         {
-            return _inner.GetAppCredentialsAsync(appId, client, oAuthScope, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public override Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken)
-        {
-            return _inner.ValidateAuthHeaderAsync(authHeader, isSkillCallback, cancellationToken);
+            return _inner.ValidateSkillsAuthHeaderAsync(authHeader, cancellationToken);
         }
 
         /// <inheritdoc/>

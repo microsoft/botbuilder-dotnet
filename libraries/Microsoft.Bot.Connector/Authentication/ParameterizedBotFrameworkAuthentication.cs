@@ -65,17 +65,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return _toChannelFromBotOAuthScope;
         }
 
-        public override Task<AppCredentials> GetAppCredentialsAsync(string appId, HttpClient client, string oAuthScope, CancellationToken cancellationToken)
-        {
-            // TODO: fix hack
-            var factory = _credentialFactory as PasswordServiceClientCredentialFactory;
-            AppCredentials credentials = _callerId == CallerIdConstants.USGovChannel
-                ? new MicrosoftGovernmentAppCredentials(appId, factory?.Password, client, NullLogger.Instance, oAuthScope)
-                : new MicrosoftAppCredentials(appId, factory?.Password, client, NullLogger.Instance, oAuthScope);
-            return Task.FromResult(credentials);
-        }
-
-        public override async Task<ClaimsIdentity> ValidateAuthHeaderAsync(string authHeader, bool isSkillCallback, CancellationToken cancellationToken)
+        public override async Task<ClaimsIdentity> ValidateSkillsAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
         {
             return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
         }
