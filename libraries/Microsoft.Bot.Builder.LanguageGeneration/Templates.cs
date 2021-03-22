@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="options">List of strings representing the options during evaluating the templates.</param>
         /// <param name="source">Templates source.</param>
+        /// <param name="namedReferences">Alias of templates references.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,
@@ -55,7 +56,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null,
             ImportResolverDelegate importResolver = null,
             IList<string> options = null,
-            string source = null)
+            string source = null,
+            string namedReferences = null)
         {
             if (templates != null)
             {
@@ -71,6 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Source = source;
             ExpressionParser = expressionParser ?? new ExpressionParser();
             Options = options ?? new List<string>();
+            NamedReferences = namedReferences ?? new Dictionary<string, Templates>();
             InjectToExpressionFunction();
         }
 
