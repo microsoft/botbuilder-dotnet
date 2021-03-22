@@ -4,6 +4,7 @@
 using System;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -53,8 +54,9 @@ namespace Microsoft.Bot.Builder
         /// functions that we will need to deprecate later.
         /// </remarks>
         /// <param name="authHeader">The auth header containing JWT token.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="ClaimsIdentity"/> representing the claims associated with given header.</returns>
-        protected override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
+        protected override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {

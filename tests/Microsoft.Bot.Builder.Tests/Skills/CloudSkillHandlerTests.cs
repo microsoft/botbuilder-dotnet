@@ -238,7 +238,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             {
             }
 
-            protected override Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
+            protected override Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
             {
                 var token = new ClaimsIdentity();
 

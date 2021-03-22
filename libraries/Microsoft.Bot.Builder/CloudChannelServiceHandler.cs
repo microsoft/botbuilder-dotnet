@@ -26,9 +26,9 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <inheritdoc/>
-        protected override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader)
+        protected override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
         {
-            return await _auth.ValidateSkillsAuthHeaderAsync(authHeader, new CancellationToken()).ConfigureAwait(false);
+            return await _auth.ValidateSkillsAuthHeaderAsync(authHeader, cancellationToken).ConfigureAwait(false);
         }
     }
 }
