@@ -5,7 +5,8 @@
     "$role": "interface",
     "oneOf": [
         {
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?!(=)).*"
         }
     ]
 }

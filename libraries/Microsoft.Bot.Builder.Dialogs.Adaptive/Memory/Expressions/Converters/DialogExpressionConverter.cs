@@ -150,15 +150,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Converters
                 throw new ArgumentException("Expected non-empty dialog id in expression.", nameof(id));
             }
 
-            if (cache.ContainsKey(id))
+            if (cache.ContainsKey(id) && !id.StartsWith("=", StringComparison.Ordinal))
             {
                 cache[id].SetValue(dialog);
                 return cache[id];
             }
             else
             {
-                var result = new DialogExpression((Dialog)dialog);
-                cache.Add(id, result);
+                DialogExpression result;
+                if (id.StartsWith("=", StringComparison.Ordinal))
+                {
+                    result = new DialogExpression(id);
+                }
+                else
+                {
+                    result = new DialogExpression((Dialog)dialog);
+                    cache.Add(id, result);
+                }
+                
                 return result;
             }
         }
