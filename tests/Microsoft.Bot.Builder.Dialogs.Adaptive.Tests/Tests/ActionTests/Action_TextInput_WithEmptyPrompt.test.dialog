@@ -30,7 +30,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Value cannot be null.\r\nParameter name: prompt"
+            "text": "Value cannot be null. (Parameter 'prompt')"
         }
     ]
 }
