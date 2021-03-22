@@ -23,6 +23,86 @@
       }
     }
   },
+  "Microsoft.Ask": {
+    "flow": {
+      "body": {
+        "field": "activity",
+        "widget": "LgWidget"
+      },
+      "footer": {
+        "description": "= Default operation",
+        "property": "=action.defaultOperation",
+        "widget": "PropertyDescription"
+      },
+      "header": {
+        "colors": {
+          "icon": "#5C2E91",
+          "theme": "#EEEAF4"
+        },
+        "icon": "MessageBot",
+        "widget": "ActionHeader"
+      },
+      "hideFooter": "=!action.defaultOperation",
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response to ask a question",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Ask Activity"
+    }
+  },
+  "Microsoft.AttachmentInput": {
+    "flow": {
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
+        },
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "widget": "PromptWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for a file or an attachment",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Attachment Input"
+    }
+  },
   "Microsoft.BeginDialog": {
     "flow": {
       "body": {
@@ -112,10 +192,154 @@
       "subtitle": "Cancel All Dialogs"
     }
   },
+  "Microsoft.ChoiceInput": {
+    "flow": {
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
+        },
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "widget": "PromptWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt with multi-choice",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Choice Input"
+    }
+  },
+  "Microsoft.ConfirmInput": {
+    "flow": {
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
+        },
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "widget": "PromptWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for confirmation",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Confirm Input"
+    }
+  },
   "Microsoft.ContinueLoop": {
     "form": {
       "label": "Continue loop",
       "subtitle": "Continue loop"
+    }
+  },
+  "Microsoft.DateTimeInput": {
+    "flow": {
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
+        },
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "widget": "PromptWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for a date or a time",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Date Time Input"
     }
   },
   "Microsoft.DebugBreak": {
@@ -400,180 +624,6 @@
       "subtitle": "Log Action"
     }
   },
-  "Microsoft.RepeatDialog": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Repeat this dialog",
-      "order": [
-        "options",
-        "*"
-      ],
-      "subtitle": "Repeat Dialog"
-    }
-  },
-  "Microsoft.ReplaceDialog": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Replace this dialog",
-      "order": [
-        "dialog",
-        "options",
-        "*"
-      ],
-      "subtitle": "Replace Dialog"
-    }
-  },
-  "Microsoft.SendActivity": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-send-activity",
-      "label": "Send a response",
-      "order": [
-        "activity",
-        "*"
-      ],
-      "subtitle": "Send Activity"
-    }
-  },
-  "Microsoft.SetProperties": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-using-memory",
-      "label": "Set properties",
-      "properties": {
-        "assignments": {
-          "properties": {
-            "property": {
-              "intellisenseScopes": [
-                "variable-scopes"
-              ]
-            }
-          }
-        }
-      },
-      "subtitle": "Set Properties"
-    }
-  },
-  "Microsoft.SetProperty": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-using-memory",
-      "label": "Set a property",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Set Property"
-    }
-  },
-  "Microsoft.SignOutUser": {
-    "form": {
-      "label": "Sign out user",
-      "subtitle": "Signout User"
-    }
-  },
-  "Microsoft.SwitchCondition": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
-      "hidden": [
-        "default"
-      ],
-      "label": "Branch: Switch (multiple options)",
-      "properties": {
-        "cases": {
-          "hidden": [
-            "actions"
-          ]
-        },
-        "condition": {
-          "intellisenseScopes": [
-            "user-variables"
-          ]
-        }
-      },
-      "subtitle": "Switch Condition"
-    }
-  },
-  "Microsoft.ThrowException": {
-    "form": {
-      "label": "Throw an exception",
-      "subtitle": "Throw an exception"
-    }
-  },
-  "Microsoft.TraceActivity": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-debugging-bots",
-      "label": "Emit a trace event",
-      "subtitle": "Trace Activity"
-    }
-  },
-  "Microsoft.Ask": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-send-activity",
-      "label": "Send a response to ask a question",
-      "order": [
-        "activity",
-        "*"
-      ],
-      "subtitle": "Ask Activity"
-    }
-  },
-  "Microsoft.AttachmentInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for a file or an attachment",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Attachment Input"
-    }
-  },
-  "Microsoft.ChoiceInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt with multi-choice",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Choice Input"
-    }
-  },
-  "Microsoft.ConfirmInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for confirmation",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Confirm Input"
-    }
-  },
-  "Microsoft.DateTimeInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for a date or a time",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Date Time Input"
-    }
-  },
   "Microsoft.NumberInput": {
     "flow": {
       "body": "=action.prompt",
@@ -646,27 +696,6 @@
         "*"
       ],
       "subtitle": "OAuth Input"
-    }
-  },
-  "Microsoft.TextInput": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for text",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Text Input"
-    }
-  },
-  "Microsoft.RegexRecognizer": {
-    "form": {
-      "hidden": [
-        "entities"
-      ]
     }
   },
   "Microsoft.OnActivity": {
@@ -1084,6 +1113,662 @@
     "trigger": {
       "label": "Unknown intent",
       "order": 3
+    }
+  },
+  "Microsoft.QnAMakerDialog": {
+    "flow": {
+      "body": "=action.hostname",
+      "widget": "ActionCard"
+    }
+  },
+  "Microsoft.RegexRecognizer": {
+    "form": {
+      "hidden": [
+        "entities"
+      ]
+    }
+  },
+  "Microsoft.RepeatDialog": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Repeat this dialog",
+      "order": [
+        "options",
+        "*"
+      ],
+      "subtitle": "Repeat Dialog"
+    }
+  },
+  "Microsoft.ReplaceDialog": {
+    "flow": {
+      "body": {
+        "dialog": "=action.dialog",
+        "widget": "DialogRef"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Replace this dialog",
+      "order": [
+        "dialog",
+        "options",
+        "*"
+      ],
+      "subtitle": "Replace Dialog"
+    }
+  },
+  "Microsoft.SendActivity": {
+    "flow": {
+      "body": {
+        "field": "activity",
+        "widget": "LgWidget"
+      },
+      "header": {
+        "colors": {
+          "icon": "#5C2E91",
+          "theme": "#EEEAF4"
+        },
+        "icon": "MessageBot",
+        "widget": "ActionHeader"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Send Activity"
+    }
+  },
+  "Microsoft.SendHandoffActivity": {
+    "flow": {
+      "widget": "ActionHeader"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-handoff-activity",
+      "label": "Send a handoff request",
+      "subtitle": "Send Handoff Activity"
+    },
+    "menu": {
+      "label": "Send Handoff Event",
+      "submenu": [
+        "Access external resources"
+      ]
+    }
+  },
+  "Microsoft.SetProperties": {
+    "flow": {
+      "body": {
+        "items": "=foreach(action.assignments, x => concat(coalesce(x.property, \"?\"), \" : \", coalesce(x.value, \"?\")))",
+        "widget": "ListOverview"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-using-memory",
+      "label": "Set properties",
+      "properties": {
+        "assignments": {
+          "properties": {
+            "property": {
+              "intellisenseScopes": [
+                "variable-scopes"
+              ]
+            }
+          }
+        }
+      },
+      "subtitle": "Set Properties"
+    }
+  },
+  "Microsoft.SetProperty": {
+    "flow": {
+      "body": "${coalesce(action.property, \"?\")} : ${coalesce(action.value, \"?\")}",
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-using-memory",
+      "label": "Set a property",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Set Property"
+    }
+  },
+  "Microsoft.SignOutUser": {
+    "form": {
+      "label": "Sign out user",
+      "subtitle": "Signout User"
+    }
+  },
+  "Microsoft.SwitchCondition": {
+    "flow": {
+      "judgement": {
+        "body": "=coalesce(action.condition, \"<condition>\")",
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "widget": "SwitchConditionWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
+      "hidden": [
+        "default"
+      ],
+      "label": "Branch: Switch (multiple options)",
+      "properties": {
+        "cases": {
+          "hidden": [
+            "actions"
+          ]
+        },
+        "condition": {
+          "intellisenseScopes": [
+            "user-variables"
+          ]
+        }
+      },
+      "subtitle": "Switch Condition"
+    }
+  },
+  "Microsoft.TextInput": {
+    "flow": {
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
+        },
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "widget": "PromptWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for text",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Text Input"
+    }
+  },
+  "Microsoft.ThrowException": {
+    "flow": {
+      "body": {
+        "description": "= ErrorValue",
+        "property": "=coalesce(action.errorValue, \"?\")",
+        "widget": "PropertyDescription"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "label": "Throw an exception",
+      "subtitle": "Throw an exception"
+    }
+  },
+  "Microsoft.TraceActivity": {
+    "form": {
+      "helpLink": "https://aka.ms/composer-telemetry",
+      "label": "Emit a trace event",
+      "subtitle": "Trace Activity"
+    }
+  },
+  "Microsoft.UpdateActivity": {
+    "flow": {
+      "body": {
+        "field": "activity",
+        "widget": "LgWidget"
+      },
+      "header": {
+        "colors": {
+          "icon": "#656565",
+          "theme": "#D7D7D7"
+        },
+        "icon": "MessageBot",
+        "title": "Update activity",
+        "widget": "ActionHeader"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "label": "Update an activity",
+      "subtitle": "Update Activity"
+    }
+  },
+  "Teams.GetPagedMembers": {
+    "form": {
+      "label": "Get paged members",
+      "order": [
+        "property",
+        "pageSize",
+        "continuationToken",
+        "*"
+      ],
+      "subtitle": "Gets members of a one-on-one, group, or team conversation."
+    }
+  },
+  "Teams.GetPagedTeamMembers": {
+    "form": {
+      "label": "Get paged team members",
+      "order": [
+        "property",
+        "teamId",
+        "pageSize",
+        "continuationToken",
+        "*"
+      ],
+      "subtitle": "Gets members for a team conversation."
+    }
+  },
+  "Teams.OnAppBasedLinkQuery": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams app based link query",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/queryLink'"
+    }
+  },
+  "Teams.OnCardAction": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams card action invoke",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity with no activity.name"
+    }
+  },
+  "Teams.OnMEBotMessagePreviewEdit": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension preview edit submit action",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'edit'"
+    }
+  },
+  "Teams.OnMEBotMessagePreviewSend": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension preview send submit action",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
+    }
+  },
+  "Teams.OnMECardButtonClicked": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension card button clicked",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
+    }
+  },
+  "Teams.OnMEConfigQuerySettingUrl": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension configuration query setting url",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/querySettingUrl'"
+    }
+  },
+  "Teams.OnMEConfigSetting": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension configuration setting",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/setting'"
+    }
+  },
+  "Teams.OnMEFetchTask": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension fetch task",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/fetchTask'"
+    }
+  },
+  "Teams.OnMEQuery": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension query",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/query'"
+    }
+  },
+  "Teams.OnMESelectItem": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension select item",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/selectItem'"
+    }
+  },
+  "Teams.OnMESubmitAction": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams messaging extension submit action",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='composeExtension/submitAction'"
+    }
+  },
+  "Teams.OnO365ConnectorCardAction": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams O365 connector card action",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='actionableMessage/executeAction'"
+    }
+  },
+  "Teams.OnTabFetch": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams tab fetch",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='tab/fetch'"
+    }
+  },
+  "Teams.OnTaskModuleFetch": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams task module fetch",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='task/fetch'"
+    }
+  },
+  "Teams.OnTaskModuleSubmit": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Teams task module submit",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Invoke activity.name='task/submit'"
+    }
+  },
+  "Teams.SendAppBasedLinkQueryResponse": {
+    "form": {
+      "label": "Send a query link response",
+      "order": [
+        "card",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a response to a query link request."
+    }
+  },
+  "Teams.SendMEActionResponse": {
+    "form": {
+      "label": "Messaging extension action response",
+      "order": [
+        "card",
+        "title",
+        "height",
+        "width",
+        "cacheType",
+        "cacheDuration",
+        "completionBotId",
+        "*"
+      ],
+      "subtitle": "Send a response for a messaging extension request."
+    }
+  },
+  "Teams.SendMEAttachmentsResponse": {
+    "form": {
+      "label": "Send messaging extensions attachment(s) response",
+      "order": [
+        "attachments",
+        "attachmentLayout",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send an invoke response containing one or more attachments to a messaging extension request."
+    }
+  },
+  "Teams.SendMEAuthResponse": {
+    "form": {
+      "label": "Messaging Extension auth response",
+      "order": [
+        "connectionName",
+        "title",
+        "resultProperty",
+        "*"
+      ],
+      "subtitle": "Send a response to a messaging extensin requiring auth."
+    }
+  },
+  "Teams.SendMEBotMessagePreviewResponse": {
+    "form": {
+      "label": "Send a bot message preview response",
+      "order": [
+        "card",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a bot message preview response to a messaging extension request."
+    }
+  },
+  "Teams.SendMEConfigQuerySettingUrlResponse": {
+    "form": {
+      "label": "Send a configuration query setting response",
+      "order": [
+        "configUrl",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a response to a query setting config url request."
+    }
+  },
+  "Teams.SendMEMessageResponse": {
+    "form": {
+      "label": "Send messaging extension message response",
+      "order": [
+        "message",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a message response containing text only."
+    }
+  },
+  "Teams.SendMESelectItemResponse": {
+    "form": {
+      "label": "Send a card response on item selection",
+      "order": [
+        "card",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a messaging extension response when an item is selected"
+    }
+  },
+  "Teams.SendMessageToTeamsChannel": {
+    "form": {
+      "label": "Send a message to a teams channel",
+      "order": [
+        "activity",
+        "teamsChannelId",
+        "activityIdProperty",
+        "conversationReferenceProperty",
+        "*"
+      ],
+      "subtitle": "Create a thread and send a message to a teams channel."
+    }
+  },
+  "Teams.SendTabAuthResponse": {
+    "form": {
+      "label": "Tab auth response",
+      "order": [
+        "connectionName",
+        "title",
+        "resultProperty",
+        "*"
+      ],
+      "subtitle": "Send a response to a cards tab requiring auth."
+    }
+  },
+  "Teams.SendTabCardResponse": {
+    "form": {
+      "label": "Send tab card response",
+      "order": [
+        "cards",
+        "*"
+      ],
+      "subtitle": "Send a tab continue response containing adaptive cards."
+    }
+  },
+  "Teams.SendTaskModuleCardResponse": {
+    "form": {
+      "label": "Send task module card response",
+      "order": [
+        "card",
+        "title",
+        "height",
+        "width",
+        "cacheType",
+        "cacheDuration",
+        "completionBotId",
+        "*"
+      ],
+      "subtitle": "Send a continue response containing a card."
+    }
+  },
+  "Teams.SendTaskModuleMessageResponse": {
+    "form": {
+      "label": "Send task module message response",
+      "order": [
+        "message",
+        "cacheType",
+        "cacheDuration",
+        "*"
+      ],
+      "subtitle": "Send a message response containing text only."
+    }
+  },
+  "Teams.SendTaskModuleUrlResponse": {
+    "form": {
+      "label": "Send task module url response",
+      "order": [
+        "title",
+        "url",
+        "fallbackUrl",
+        "height",
+        "width",
+        "cacheType",
+        "cacheDuration",
+        "completionBotId",
+        "*"
+      ],
+      "subtitle": "Send a continue response containing a url."
     }
   }
 }
