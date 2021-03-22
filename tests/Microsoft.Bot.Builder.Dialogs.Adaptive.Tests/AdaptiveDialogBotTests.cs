@@ -12,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
@@ -28,6 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var logger = NullLogger<AdaptiveDialogBot>.Instance;
 
             var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
@@ -54,8 +56,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(resourceExplorer, "main.dialog", "defaultLocale", logger, storage, botFrameworkAuthenticationMock.Object);
-            await ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None);
+            var bot = new AdaptiveDialogBot(
+                "main.dialog", 
+                "main.lg",
+                "defaultLocale",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                botFrameworkAuthenticationMock.Object,
+                logger);
+            
+            await bot.OnTurnAsync(turnContext, CancellationToken.None);
 
             // Assert
             Assert.NotNull(turnContext.TurnState.Get<BotFrameworkClient>());
@@ -75,6 +87,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var logger = NullLogger<AdaptiveDialogBot>.Instance;
 
             var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
@@ -100,7 +115,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(resourceExplorer, "main.dialog", "defaultLocale", logger, storage, botFrameworkAuthenticationMock.Object);
+            var bot = new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                "defaultLocale",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                botFrameworkAuthenticationMock.Object,
+                logger);
             
             var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
 

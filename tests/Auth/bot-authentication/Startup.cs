@@ -9,6 +9,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.Runtime;
+using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,10 +50,7 @@ namespace Microsoft.BotBuilderSamples
             //services.AddTransient<IBot, AuthBot<MainDialog>>();
             //services.AddTransient<IBot, EchoBot>();
 
-            services.AddSingleton<ResourceExplorer, FolderResourceExplorer>();
-            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
-            services.AddHttpClient<BotFrameworkClient, BotFrameworkHttpClient>();
-            services.AddTransient<IBot, AdaptiveDialogBot>();
+            services.AddAdaptiveRuntime();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
