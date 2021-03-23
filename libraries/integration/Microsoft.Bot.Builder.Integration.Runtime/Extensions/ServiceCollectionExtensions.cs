@@ -33,6 +33,22 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         /// Adds bot runtime-related services to the application's service collection.
         /// </summary>
         /// <param name="services">The application's collection of registered services.</param>
+        public static void AddAdaptiveRuntime(this IServiceCollection services)
+        {
+            _ = services ?? throw new ArgumentNullException(nameof(services));
+
+            services.AddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
+            services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
+
+            // TODO: add CloudAdapter derived class - including telemetry and middleware and transcripts
+            // TODO: add Azure storage defaults
+            // TODO: add Skills
+        }
+
+        /// <summary>
+        /// Adds bot runtime-related services to the application's service collection.
+        /// </summary>
+        /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">The application configuration.</param>
         public static void AddBotRuntime(this IServiceCollection services, IConfiguration configuration)
         {
@@ -53,7 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 
             // Configuration
             string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
-            string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocale).Value;
+            string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value;
             string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
             
             // Runtime settings. If no config is provided, we create basic runtime config with defaults.
