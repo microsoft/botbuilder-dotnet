@@ -384,10 +384,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 try
                 {
                     string entityModelFolder = Path.Combine(path, "entity");
-                    if (Directory.Exists(entityModelFolder))
-                    {
-                        ScoreEntities = true;
-                    }
+                    ScoreEntities = Directory.Exists(entityModelFolder);
 
                     return ScoreEntities ?
                         new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
