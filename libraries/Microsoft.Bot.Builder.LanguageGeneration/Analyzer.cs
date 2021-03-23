@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private readonly Dictionary<string, Template> _templateMap;
 
+        private readonly IExpressionParser _expressionParser;
+
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // create an evaluator to leverage it's customized function look up for checking
             var evaluator = new Evaluator(Templates, opt);
+            _expressionParser = evaluator.ExpressionParser;
         }
 
         /// <summary>
@@ -230,7 +233,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new AnalyzerResult();
             exp = exp.TrimExpression();
-            var parsed = Templates.ExpressionParser.Parse(exp);
+            var parsed = _expressionParser.Parse(exp);
 
             var references = parsed.References();
 
