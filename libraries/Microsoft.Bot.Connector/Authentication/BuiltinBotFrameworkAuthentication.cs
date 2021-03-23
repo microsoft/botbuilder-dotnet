@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {
-                var isAuthDisabled = await new DelegatingCredentialProvider(_credentialFactory).IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                var isAuthDisabled = await new DelegatingCredentialProvider(_credentialsFactory).IsAuthenticationDisabledAsync().ConfigureAwait(false);
                 if (!isAuthDisabled)
                 {
                     // No auth header. Auth is required. Request is not authorized.
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return await JwtTokenValidation
-                .ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), "unknown", _authConfiguration)
+                .ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialsFactory), GetChannelProvider(), "unknown", _authConfiguration)
                 .ConfigureAwait(false);
         }
 
