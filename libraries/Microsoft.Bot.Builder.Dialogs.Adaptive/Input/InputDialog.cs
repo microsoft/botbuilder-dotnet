@@ -568,19 +568,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var prompt = await this.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
-            CheckPrompt(prompt);
+
+            if (prompt == null)
+            {
+                throw new InvalidOperationException($"Call to OnRenderPromptAsync() returned a null activity for state {state}.");
+            }
 
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
 
             return Dialog.EndOfTurn;
-        }
-
-        private void CheckPrompt(IActivity prompt)
-        {
-            if (prompt == null)
-            {
-                throw new ArgumentNullException(nameof(prompt));
-            }
         }
     }
 }

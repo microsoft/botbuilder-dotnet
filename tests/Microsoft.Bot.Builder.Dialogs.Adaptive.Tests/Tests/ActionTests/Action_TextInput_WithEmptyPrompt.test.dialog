@@ -30,7 +30,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "Value cannot be null. (Parameter 'prompt')"
+            "text": "Call to OnRenderPromptAsync() returned a null activity for state Missing."
         }
     ]
 }
