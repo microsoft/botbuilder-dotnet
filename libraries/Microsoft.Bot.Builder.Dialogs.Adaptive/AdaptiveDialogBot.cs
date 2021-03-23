@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             BotFrameworkAuthentication botFrameworkAuthentication,
-            ILogger logger)
+            ILogger logger = null)
         {
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             _adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
