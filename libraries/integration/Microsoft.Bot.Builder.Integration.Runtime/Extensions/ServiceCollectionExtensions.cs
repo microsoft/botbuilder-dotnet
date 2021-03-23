@@ -244,6 +244,14 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             {
                 services.AddSingleton<ShowTypingMiddleware>();
             }
+
+            if (featureSettings.Speak != null)
+            {
+                services.AddSingleton<IMiddleware>(sp => new SetSpeakMiddleware(
+                    featureSettings.Speak.VoiceFontName, 
+                    featureSettings.Speak.Lang, 
+                    featureSettings.Speak.FallbackToTextForSpeechIfEmpty));
+            }
         }
     }
 }
