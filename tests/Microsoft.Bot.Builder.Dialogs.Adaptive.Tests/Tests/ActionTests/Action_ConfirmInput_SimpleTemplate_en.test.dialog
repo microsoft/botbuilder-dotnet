@@ -1,0 +1,57 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "test.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.ConfirmInput",
+                        "style": "auto",
+                        "alwaysPrompt": true,
+                        "property": "user.confirmed",
+                        "prompt": "${ConfirmInput_Prompt()}",
+                        "unrecognizedPrompt": "${ConfirmInput_UnknownPrompt()}",
+                        "confirmChoices": "${ConfirmInput_simple()}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "confirmation: ${user.confirmed}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "en",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please select (1) yep or (2) nope"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "asdasd"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Not yep or nope. Please select (1) yep or (2) nope"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "yep"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "confirmation: True"
+        }
+    ]
+}

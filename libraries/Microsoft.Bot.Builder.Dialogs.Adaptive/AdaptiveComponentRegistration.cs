@@ -231,6 +231,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new JObjectConverter(resourceExplorer, sourceContext);
             yield return new ActivityTemplateConverter();
             yield return new StaticActivityTemplateConverter();
+
+            yield return new DialogSetConverter(resourceExplorer);
         }
     }
 }

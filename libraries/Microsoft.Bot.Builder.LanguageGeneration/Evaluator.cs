@@ -46,6 +46,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
         }
 
+        internal enum FileFormat
+        {
+            /// <summary>
+            /// Get the evaluated result from the <see cref="FileFormat.Raw"/> Result.
+            /// </summary>
+            Evaluated,
+
+            /// <summary>
+            /// Get raw text content of the file.
+            /// </summary>
+            Raw,
+
+            /// <summary>
+            /// Get binary result from the file.
+            /// </summary>
+            Binary
+        }
+
         /// <summary>
         /// Gets templates.
         /// </summary>
@@ -579,7 +597,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(fromFile, StringComparison.Ordinal))
             {
-                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, FunctionUtils.ValidateUnaryString);
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(FromFile()), ReturnType.String, ValidateFromFile);
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -642,14 +660,44 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
        => (IReadOnlyList<object> args) =>
        {
            var filePath = args[0].ToString().NormalizePath();
-
            var resourcePath = GetResourcePath(filePath);
-           var stringContent = File.ReadAllText(resourcePath);
+           var format = FileFormat.Evaluated;
+           if (args.Count > 1)
+           {
+               foreach (FileFormat item in Enum.GetValues(typeof(FileFormat)))
+               {
+                   if (args[1].ToString().Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
+                   {
+                       format = item;
+                       break;
+                   }
+               }
+           }
 
-           var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
-           return newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+           object result;
+           if (format == FileFormat.Binary)
+           {
+               result = File.ReadAllBytes(resourcePath);
+           }
+           else if (format == FileFormat.Raw)
+           {
+               result = File.ReadAllText(resourcePath);
+           }
+           else
+           {
+               var stringContent = File.ReadAllText(resourcePath);
+               var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
+               var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+               result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+           }
+
+           return result;
        };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String);
+        }
 
         private string GetResourcePath(string filePath)
         {

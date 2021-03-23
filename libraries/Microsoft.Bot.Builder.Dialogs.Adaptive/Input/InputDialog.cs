@@ -274,8 +274,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
                         };
                         TelemetryClient.TrackEvent("GeneratorResult", properties);
-
-                        await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
+                        if (response != null)
+                        {
+                            await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     // set output property
@@ -473,7 +475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 msg = await this.Prompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            if (string.IsNullOrEmpty(msg?.InputHint))
+            if (msg != null && string.IsNullOrEmpty(msg.InputHint))
             {
                 msg.InputHint = InputHints.ExpectingInput;
             }
@@ -568,7 +570,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var prompt = await this.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
+
+            if (prompt == null)
+            {
+                throw new InvalidOperationException($"Call to OnRenderPromptAsync() returned a null activity for state {state}.");
+            }
+
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
+
             return Dialog.EndOfTurn;
         }
     }
