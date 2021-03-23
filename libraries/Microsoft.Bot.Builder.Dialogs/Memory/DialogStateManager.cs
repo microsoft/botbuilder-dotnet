@@ -48,22 +48,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 Configuration = new DialogStateManagerConfiguration();
 
-                // get all of the component memory scopes
-                foreach (var component in ComponentRegistration.Components.OfType<IComponentMemoryScopes>())
+                // Legacy memory scopes from static ComponentRegistration which is now obsolete.
+                var memoryScopes = ComponentRegistration.Components
+                    .OfType<IComponentMemoryScopes>()
+                    .SelectMany(c => c.GetMemoryScopes())
+                    .ToList();
+
+                // Merge new registrations from turn state
+                memoryScopes.AddRange(dc.Context.TurnState.Get<IEnumerable<MemoryScope>>() ?? Enumerable.Empty<MemoryScope>());
+
+                // Get all of the component memory scopes.
+                foreach (var scope in memoryScopes)
                 {
-                    foreach (var memoryScope in component.GetMemoryScopes())
-                    {
-                        Configuration.MemoryScopes.Add(memoryScope);
-                    }
+                    Configuration.MemoryScopes.Add(scope);
                 }
 
-                // get all of the component path resolvers
-                foreach (var component in ComponentRegistration.Components.OfType<IComponentPathResolvers>())
+                // Legacy memory scopes from static ComponentRegistration which is now obsolete.
+                var pathResolvers = ComponentRegistration.Components
+                    .OfType<IComponentPathResolvers>()
+                    .SelectMany(c => c.GetPathResolvers())
+                    .ToList();
+
+                // Merge new registrations from turn state
+                pathResolvers.AddRange(dc.Context.TurnState.Get<IEnumerable<IPathResolver>>() ?? Enumerable.Empty<IPathResolver>());
+
+                // Get all of the component path resolvers.
+                foreach (var pathResolver in pathResolvers)
                 {
-                    foreach (var pathResolver in component.GetPathResolvers())
-                    {
-                        Configuration.PathResolvers.Add(pathResolver);
-                    }
+                    Configuration.PathResolvers.Add(pathResolver);
                 }
             }
 

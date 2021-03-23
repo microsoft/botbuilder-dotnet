@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -14,6 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// JsonConverter which understands how to deal with strings when assigning to ILanguageGenerator.
     /// </summary>
+    [SuppressMessage("Performance", "CA1812", Justification = "The class gets instantiated by dependency injection.")]
     internal class LanguageGeneratorConverter : InterfaceConverter<LanguageGenerator>
     {
         /// <summary>

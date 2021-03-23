@@ -9,12 +9,13 @@ using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
-using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
+using Microsoft.Bot.Builder.Integration.Runtime.Component;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -46,11 +47,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            // Component registrations must be added before the resource explorer is instantiated to ensure
-            // that all types are correctly registered. Any types that are registered after the resource explorer
-            // is instantiated will not be picked up otherwise.
-            ComponentRegistrations.Add();
-
             // Configuration
             string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
             string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocale).Value;
@@ -68,12 +64,11 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                     o.RootDialog = rootDialog;
                 });
 
-            // ResourceExplorer. TryAddSingleton will only add if there is no other registration for resource explorer.
-            // Tests use this to inject custom resource explorers but could also be used for advanced runtime customization scenarios.
-            services.TryAddSingleton<ResourceExplorer>(serviceProvider =>
-                new ResourceExplorer()
-                    .AddFolder(applicationRoot)
-                    .RegisterType<OnQnAMatch>(OnQnAMatch.Kind));
+            // Resource explorer
+            //services.AddSingleton<ResourceProvider>(sp => new FolderResourceProvider(sp.GetRequiredService<ResourceExplorer>(), applicationRoot));
+            
+            services.AddSingleton<ResourceExplorerOptions>();
+            services.TryAddSingleton<ResourceExplorer>(sp => new ResourceExplorer(sp.GetRequiredService<ResourceExplorerOptions>()).AddFolder(applicationRoot));
             
             // Runtime set up
             services.AddBotRuntimeSkills(runtimeSettings.Skills);
@@ -81,7 +76,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
             services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
             services.AddBotRuntimeFeatures(runtimeSettings.Features);
-            services.AddBotRuntimePlugins(configuration, runtimeSettings);
+            services.AddBotRuntimeComponents(configuration, runtimeSettings);
             services.AddBotRuntimeAdapters(runtimeSettings);
         }
 
@@ -120,16 +115,28 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             }
         }
 
-        internal static void AddBotRuntimePlugins(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
+        internal static void AddBotRuntimeComponents(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
         {
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
-                var pluginEnumerator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
+                var componentEnumenator = serviceScope.ServiceProvider.GetService<IBotComponentEnumerator>() ?? new AssemblyBotComponentEnumerator(AssemblyLoadContext.Default);
 
-                // Iterate through configured plugins and load each one
-                foreach (BotPluginDefinition plugin in runtimeSettings.Plugins)
+                // Iterate through configured components and load each one
+                foreach (BotComponentDefinition component in runtimeSettings.Plugins)
                 {
-                    plugin.Load(pluginEnumerator, services, configuration);
+                    component.Load(componentEnumenator, services, configuration);
+                }
+            }
+
+            foreach (BotComponent component in BuiltInBotComponents.GetComponents())
+            {
+                var componentServices = new ServiceCollection();
+
+                component.Startup(componentServices, configuration, null /*for now*/);
+
+                foreach (var serviceDescriptor in componentServices)
+                {
+                    services.Add(serviceDescriptor);
                 }
             }
         }
