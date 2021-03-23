@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
     public class OrchestratorAdaptiveRecognizerTests
     {
         [Fact]
-
         public async Task TestIntentRecognize()
         {
             var mockResult = new Result
@@ -29,24 +28,21 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 
             var mockScore = new List<Result> { mockResult };
             var mockResolver = new MockResolver(mockScore);
-            var recognizer = new OrchestratorAdaptiveRecognizer(
-                "D:\\src\\botbuilder-dotnet\\libraries\\dispatchbot\\model",
-                "D:\\src\\botbuilder-dotnet\\libraries\\dispatchbot\\generated\\orchestrator.blu")
+            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
             {
-                ModelFolder = new StringExpression("D:\\src\\botbuilder-dotnet\\libraries\\dispatchbot\\model"),
-                SnapshotFile = new StringExpression("D:\\src\\botbuilder-dotnet\\libraries\\dispatchbot\\generated\\orchestrator.blu")
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath")
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
-            var activity = MessageFactory.Text("start master bedroom light");
+            var activity = MessageFactory.Text("hi");
             var context = new TurnContext(adapter, activity);
 
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
             var result = await recognizer.RecognizeAsync(dc, activity, default);
-            Assert.True(result.Intents.Count > 0);
-
-            // Assert.True(result.Intents.ContainsKey("mockLabel"));
-            // Assert.Equal(0.9, result.Intents["mockLabel"].Score);
+            Assert.Equal(1, result.Intents.Count);
+            Assert.True(result.Intents.ContainsKey("mockLabel"));
+            Assert.Equal(0.9, result.Intents["mockLabel"].Score);
         }
 
         [Theory]
@@ -106,16 +102,24 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             };
 
             var mockScore = new List<Result> { mockResult };
-            var mockResolver = new MockResolver(mockScore);
+            var mockEntityResult = new Result
+            {
+                Score = 0.75,
+                Label = new Label { Name = "mockEntityLabel", Type = LabelType.Entity, Span = new Span { Offset = 17, Length = 7 } },
+            };
+
+            var mockEntityScore = new List<Result> { mockEntityResult };
+            var mockResolver = new MockResolver(mockScore, mockEntityScore);
             var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
+                ScoreEntities = true,
                 ExternalEntityRecognizer = new NumberEntityRecognizer()
             };
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
-            var activity = MessageFactory.Text("12");
+            var activity = MessageFactory.Text("turn on light in room 12");
             var context = new TurnContext(adapter, activity);
 
             var dc = new DialogContext(new DialogSet(), context, new DialogState());
@@ -125,6 +129,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var resolution = result.Entities["$instance"]["number"][0]["resolution"];
             Assert.Equal(new JValue("integer"), resolution["subtype"]);
             Assert.Equal(new JValue("12"), resolution["value"]);
+
+            Assert.True(result.Entities.ContainsKey("mockEntityLabel"));
+            Assert.Equal(0.75, result.Entities["mockEntityLabel"][0]["score"]);
+            Assert.Equal("room 12", result.Entities["mockEntityLabel"][0]["text"]);
+            Assert.Equal(17, result.Entities["mockEntityLabel"][0]["start"]);
+            Assert.Equal(24, result.Entities["mockEntityLabel"][0]["end"]);
         }
 
         [Fact]
