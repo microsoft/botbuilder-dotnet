@@ -12,7 +12,6 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Definition of a <see cref="BotComponent"/> that allows registration of services, custom actions, memory scopes and adapters.
     /// </summary>
-    /// <remarks>
     /// To make your components available to the system you derive from BotComponent and register services to add functionality.
     /// These components then are consumed in appropriate places by the systems that need them. When using Composer, Startup gets called
     /// automatically on the components by the bot runtime, as long as the components are registered in the configuration.
