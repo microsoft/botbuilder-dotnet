@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -30,6 +31,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var conversationState = new ConversationState(storage);
             var userState = new UserState(storage);
             var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+
+            var settings = new Dictionary<string, object>().ToImmutableDictionary();
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
@@ -60,6 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 "main.dialog", 
                 "main.lg",
                 "defaultLocale",
+                settings,
                 resourceExplorer,
                 conversationState,
                 userState,
@@ -78,6 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.NotNull(turnContext.TurnState.Get<LanguageGenerator>());
             Assert.NotNull(turnContext.TurnState.Get<LanguageGeneratorManager>());
             Assert.NotNull(turnContext.TurnState.Get<LanguagePolicy>());
+            Assert.True(turnContext.TurnState.TryGetValue(ScopePath.Settings, out object value));
         }
 
         [Fact]
@@ -90,6 +95,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var conversationState = new ConversationState(storage);
             var userState = new UserState(storage);
             var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+
+            var settings = new Dictionary<string, object>().ToImmutableDictionary();
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
@@ -119,6 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 "main.dialog",
                 "main.lg",
                 "defaultLocale",
+                settings,
                 resourceExplorer,
                 conversationState,
                 userState,

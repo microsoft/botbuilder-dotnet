@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -22,9 +23,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private static readonly ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
 
-        private readonly string _defaultLocale;
         private readonly string _adaptiveDialogId;
         private readonly string _languageGeneratorId;
+        private readonly string _defaultLocale;
+        private readonly ImmutableDictionary<string, object> _settings;
         private readonly ResourceExplorer _resourceExplorer;
         private readonly SkillConversationIdFactoryBase _skillConversationIdFactoryBase;
         private readonly ConversationState _conversationState;
@@ -38,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="adaptiveDialogId">The id of the <see cref="AdaptiveDialog"/> to load from the <see cref="ResourceExplorer"/>.</param>
         /// <param name="languageGeneratorId">The id of the <see cref="LanguageGenerator"/> to load from the <see cref="ResourceExplorer"/>.</param>
         /// <param name="defaultLocale">The default locale for this bot.</param>
+        /// <param name="settings">The <see cref="AdaptiveDialog"/> view of configuration.</param>
         /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="Dialog"/> from.</param>
         /// <param name="conversationState">A <see cref="ConversationState"/> implementation.</param>
         /// <param name="userState">A <see cref="UserState"/> implementation.</param>
@@ -48,6 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             string adaptiveDialogId,
             string languageGeneratorId,
             string defaultLocale,
+            ImmutableDictionary<string, object> settings,
             ResourceExplorer resourceExplorer,
             ConversationState conversationState,
             UserState userState,
@@ -55,10 +59,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             BotFrameworkAuthentication botFrameworkAuthentication,
             ILogger logger = null)
         {
-            _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             _adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
             _languageGeneratorId = languageGeneratorId ?? throw new ArgumentNullException(nameof(languageGeneratorId));
             _defaultLocale = defaultLocale ?? throw new ArgumentNullException(nameof(defaultLocale));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             _userState = userState ?? throw new ArgumentNullException(nameof(userState));
             _skillConversationIdFactoryBase = skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase));
@@ -94,6 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_skillConversationIdFactoryBase);
             turnContext.TurnState.Add(_conversationState);
             turnContext.TurnState.Add(_userState);
+            turnContext.TurnState.Add(ScopePath.Settings, _settings);
             turnContext.TurnState.Add(_resourceExplorer);
             turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));

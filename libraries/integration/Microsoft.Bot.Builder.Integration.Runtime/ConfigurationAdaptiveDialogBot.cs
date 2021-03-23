@@ -31,9 +31,10 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
             BotFrameworkAuthentication botFrameworkAuthentication = null,
             ILogger logger = null)
             : base(
-                configuration.GetSection(ConfigurationConstants.RootDialogKey).Value,
-                configuration.GetSection(ConfigurationConstants.LanguageGeneratorKey).Value ?? DefaultLanguageGeneratorId,
-                configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value ?? DefaultLocale,
+                configuration?.GetSection(ConfigurationConstants.RootDialogKey).Value,
+                configuration?.GetSection(ConfigurationConstants.LanguageGeneratorKey).Value ?? DefaultLanguageGeneratorId,
+                configuration?.GetSection(ConfigurationConstants.DefaultLocaleKey).Value ?? DefaultLocale,
+                ConfigurationSettingsMemoryScope.LoadSettings(configuration),
                 resourceExplorer,
                 new ConversationState(storage ?? new MemoryStorage()),
                 new UserState(storage ?? new MemoryStorage()),
