@@ -19,7 +19,7 @@ namespace Microsoft.BotBuilderSamples
     public class AdapterWithErrorHandler : CloudAdapter
     {
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<CloudAdapter> logger, ConversationState conversationState = null)
-            : this(configuration, httpClientFactory: null, logger: logger)
+            : this(configuration, httpClientFactory: null, logger: logger, conversationState)
         {
         }
 
@@ -38,14 +38,15 @@ namespace Microsoft.BotBuilderSamples
                 await turnContext.SendActivityAsync("The bot encountered an error or bug.");
                 await turnContext.SendActivityAsync("To continue to run this bot, please fix the bot source code.");
 
-                if (conversationState != null)
+                var state = conversationState ?? turnContext.TurnState.Get<ConversationState>();
+                if (state != null)
                 {
                     try
                     {
                         // Delete the conversationState for the current conversation to prevent the
                         // bot from getting stuck in a error-loop caused by being in a bad state.
                         // ConversationState should be thought of as similar to "cookie-state" in a Web pages.
-                        await conversationState.DeleteAsync(turnContext);
+                        await state.DeleteAsync(turnContext);
                     }
                     catch (Exception e)
                     {

@@ -38,7 +38,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // Check if there were any errors or if the new schema file has changed.
                 var newSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
-                if (error.Length != 0 || !newSchema.Equals(oldSchema))
+                if (Environment.GetEnvironmentVariable("IsBuildServer") != null)
+                {
+                    if (error.Length != 0)
+                    {
+                        throw new InvalidOperationException(error);
+                    }
+                    else if (!newSchema.Equals(oldSchema))
+                    {
+                        throw new InvalidOperationException("tests.schema has changed when running tests on the build server.");
+                    }
+                }
+                else if (error.Length != 0 || !newSchema.Equals(oldSchema))
                 {
                     // We may get there because there was an error running bf dialog:merge or because 
                     // the generated file is different than the one that is in source control.

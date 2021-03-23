@@ -32,10 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static async Task RunAsync(this Dialog dialog, ITurnContext turnContext, IStatePropertyAccessor<DialogState> accessor, CancellationToken cancellationToken)
         {
             var dialogSet = new DialogSet(accessor);
-            dialogSet.Add(dialog);
 
             // look for the IBotTelemetryClient on the TurnState, if not there take it from the Dialog, if not there fall back to the "null" default
             dialogSet.TelemetryClient = turnContext.TurnState.Get<IBotTelemetryClient>() ?? dialog.TelemetryClient ?? NullBotTelemetryClient.Instance;
+
+            dialogSet.Add(dialog);
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
