@@ -167,13 +167,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public void TestInvalidImportFormat()
+        public void TestInvalidLGFileImportPath()
         {
-            var diagnostics = GetDiagnostics("InvalidImportFormat.lg");
+            var diagnostics = GetDiagnostics("InvalidLGFileImportPath.lg");
 
             Assert.Equal(1, diagnostics.Count);
             Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.Equal(TemplateErrors.SyntaxError("Import format should follow '[x](y)' or '[x](y) as z'"), diagnostics[0].Message);
+            Assert.Contains("Could not find file", diagnostics[0].Message);
         }
 
         [Fact]
