@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="options">List of strings representing the options during evaluating the templates.</param>
         /// <param name="source">Templates source.</param>
-        /// <param name="namedReferences">Alias of templates references.</param>
+        /// <param name="namedReferences">References that imported with the "as" syntax，for example: [import](path.lg) as myAlias.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,

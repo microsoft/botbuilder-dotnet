@@ -177,6 +177,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestInvalidImportFormat()
+        {
+            var diagnostics = GetDiagnostics("InvalidImportFormat.lg");
+
+            Assert.Equal(1, diagnostics.Count);
+            Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
+            Assert.Equal(TemplateErrors.SyntaxError("Import format should follow '[x](y)' or '[x](y) as z'"), diagnostics[0].Message);
+        }
+
+        [Fact]
         public void TestLgTemplateFunctionError()
         {
             var diagnostics = GetDiagnostics("LgTemplateFunctionError.lg");

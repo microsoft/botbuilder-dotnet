@@ -7,6 +7,10 @@
 > static import
 [import from base lg 3](AliasBase3.lg)
 
+> call duplicate name 
+# wPhrase
+- ${base1.wPhrase()}
+
 > call welcome in AliasBase1.lg
 # callWelcome1(theName)
 - ${base1.welcome(theName)}

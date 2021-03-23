@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Import regex.
         /// </summary>
-        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)\s*((as)?\s*([a-zA-Z_][0-9a-zA-Z_]*)\s*)?");
+        public static readonly Regex ImportRegex = new Regex(@"^\s*\[([^]]*)\]\(([^)]*)\)\s*(as\s*([a-zA-Z_][0-9a-zA-Z_]*)\s*)?$");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new ArgumentNullException(nameof(lg));
             }
 
-            var newLG = new Templates(content: content, id: InlineContentId, source: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options);
+            var newLG = new Templates(content: content, id: InlineContentId, source: InlineContentId, importResolver: lg.ImportResolver, options: lg.Options, namedReferences: lg.NamedReferences);
             try
             {
                 var resource = new LGResource(InlineContentId, InlineContentId, content);
@@ -212,6 +212,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath
+
+            // If the import id contains "#", we would cut it to use the left path.
+            // for example: [import](a.b.c#d.lg), after convertion, id would be d.lg
+            var hashIndex = resourceId.IndexOf('#');
+            if (hashIndex > 0)
+            {
+                resourceId = resourceId.Substring(hashIndex + 1);
+            }
+            
             var importPath = resourceId.NormalizePath();
 
             if (!Path.IsPathRooted(importPath))
@@ -347,9 +356,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var importStr = context.IMPORT().GetText();
 
                 var matchResult = ImportRegex.Match(importStr);
-                if (matchResult.Success && matchResult.Groups.Count != 3 && matchResult.Groups.Count != 6)
+                if (!matchResult.Success || (matchResult.Groups.Count != 3 && matchResult.Groups.Count != 5))
                 {
-                    _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Unexpected content: Invalid import format."), context));
+                    _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Import format should follow '[x](y)' or '[x](y) as z'"), context));
                     return null;
                 }
 
@@ -358,9 +367,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var sourceRange = new SourceRange(context, _templates.Source);
                 var import = new TemplateImport(description, id, sourceRange);
-                if (matchResult.Groups.Count == 6)
+                if (matchResult.Groups.Count == 5)
                 {
-                    var alias = matchResult.Groups[5].Value?.Trim();
+                    var alias = matchResult.Groups[4].Value?.Trim();
                     import.Alias = alias;
                 }
 
