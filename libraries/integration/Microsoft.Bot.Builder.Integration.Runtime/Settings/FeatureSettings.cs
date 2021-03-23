@@ -54,6 +54,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         /// <value>
         /// The SetSpeakMiddleware settings.
         /// </value>
-        public SpeakSettings Speak { get; set; }
+        public SpeakSettings SetSpeak { get; set; }
     }
 }
