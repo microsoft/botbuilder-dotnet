@@ -51,13 +51,18 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         [InlineData(null)]
         public async Task TestIntentRecognizeLogsTelemetry(bool? logPersonalInformation)
         {
-            var mockResult = new Result
+            var mockResult1 = new Result
             {
                 Score = 0.9,
                 Label = new Label { Name = "mockLabel" }
             };
+            var mockResult2 = new Result
+            {
+                Score = 0.8,
+                Label = new Label { Name = "mockLabel2" }
+            };
 
-            var mockScore = new List<Result> { mockResult };
+            var mockScore = new List<Result> { mockResult1, mockResult2 };
             var mockResolver = new MockResolver(mockScore);
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
@@ -86,7 +91,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Assert.False(logPersonalInfo);
             }
 
-            Assert.Equal(1, result.Intents.Count);
+            Assert.Equal(2, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
             ValidateTelemetry(recognizer, telemetryClient, dc, activity, result, callCount: 1);
@@ -196,9 +201,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             {
                 { "TopIntent", "mockLabel" },
                 { "TopIntentScore", "0.9" },
-                { "Intents", "{\"mockLabel\":{\"score\":0.9}}" },
+                { "NextIntent", "mockLabel2" },
+                { "NextIntentScore", "0.8" },
+                { "Intents", "{\"mockLabel\":{\"score\":0.9},\"mockLabel2\":{\"score\":0.8}}" },
                 { "Entities", "{}" },
-                { "AdditionalProperties", "{\"result\":[{\"Label\":{\"Type\":0,\"Name\":\"mockLabel\",\"Span\":{\"Offset\":0,\"Length\":0}},\"Score\":0.9,\"ClosestText\":null}]}" }
+                { "AdditionalProperties", "{\"result\":[{\"Label\":{\"Type\":0,\"Name\":\"mockLabel\",\"Span\":{\"Offset\":0,\"Length\":0}},\"Score\":0.9,\"ClosestText\":null},{\"Label\":{\"Type\":0,\"Name\":\"mockLabel2\",\"Span\":{\"Offset\":0,\"Length\":0}},\"Score\":0.8,\"ClosestText\":null}]}" }
             };
 
             if (logPersonalInformation)
