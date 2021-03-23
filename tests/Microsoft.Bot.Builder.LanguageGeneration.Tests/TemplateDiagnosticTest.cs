@@ -167,16 +167,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
-        public void TestInvalidLGFileImportPath()
-        {
-            var diagnostics = GetDiagnostics("InvalidLGFileImportPath.lg");
-
-            Assert.Equal(1, diagnostics.Count);
-            Assert.Equal(DiagnosticSeverity.Error, diagnostics[0].Severity);
-            Assert.Contains("Could not find file", diagnostics[0].Message);
-        }
-
-        [Fact]
         public void TestInvalidImportFormat()
         {
             var diagnostics = GetDiagnostics("InvalidImportFormat.lg");

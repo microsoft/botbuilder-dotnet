@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Import regex.
         /// </summary>
-        public static readonly Regex ImportRegex = new Regex(@"^\s*\[([^]]*)\]\(([^)]*)\)\s*(as\s*([a-zA-Z_][0-9a-zA-Z_]*)\s*)?$");
+        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)\s*(as\s*([a-zA-Z_][0-9a-zA-Z_]*)\s*)?");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
