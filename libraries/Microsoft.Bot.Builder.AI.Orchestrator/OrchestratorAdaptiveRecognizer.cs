@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -179,10 +180,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 else
                 {
                     // add top score
-                    recognizerResult.Intents.Add(results[0].Label.Name, new IntentScore()
+                    foreach (var result in results)
                     {
-                        Score = results[0].Score
-                    });
+                        recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
+                        {
+                            Score = result.Score
+                        });
+                    }
 
                     // Disambiguate if configured
                     if (detectAmbiguity)
@@ -230,6 +234,51 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             TryScoreEntities(text, recognizerResult);
             return recognizerResult;
+        }
+
+        /// <summary>
+        /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.
+        /// </summary>
+        /// <param name="recognizerResult">Recognizer Result.</param>
+        /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <returns>A dictionary that can be included when calling the TrackEvent method on the TelemetryClient.</returns>
+        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext), "DialogContext needed for state in AdaptiveRecognizer.FillRecognizerResultTelemetryProperties method.");
+            }
+
+            var orderedIntents = recognizerResult.Intents.Any() ? recognizerResult.Intents.OrderByDescending(key => key.Value.Score) : null;
+            var properties = new Dictionary<string, string>
+            {
+                { "TopIntent", recognizerResult.Intents.Any() ? orderedIntents.First().Key : null },
+                { "TopIntentScore", recognizerResult.Intents.Any() ? orderedIntents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
+                { "NextIntent", recognizerResult.Intents.Count > 1 ? orderedIntents.ElementAtOrDefault(1).Key : null },
+                { "NextIntentScore", recognizerResult.Intents.Count > 1 ? orderedIntents.ElementAtOrDefault(1).Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Entities", recognizerResult.Entities?.ToString() },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+            };
+
+            var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
+
+            if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
+            {
+                properties.Add("Text", recognizerResult.Text);
+                properties.Add("AlteredText", recognizerResult.AlteredText);
+            }
+
+            // Additional Properties can override "stock" properties.
+            if (telemetryProperties != null)
+            {
+                return telemetryProperties.Concat(properties)
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value);
+            }
+
+            return properties;
         }
 
         private static JToken EntityResultToJObject(string text, Result result)
