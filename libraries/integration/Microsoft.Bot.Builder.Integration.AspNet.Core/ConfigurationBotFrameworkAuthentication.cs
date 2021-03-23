@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -77,6 +78,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         public override Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
         {
             return _inner.CreateUserTokenClientAsync(claimsIdentity, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override BotFrameworkClient CreateBotFrameworkClient()
+        {
+            return _inner.CreateBotFrameworkClient();
         }
     }
 }

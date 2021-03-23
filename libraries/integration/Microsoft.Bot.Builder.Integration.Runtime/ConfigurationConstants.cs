@@ -20,9 +20,15 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
 
         /// <summary>
         /// The configuration key mapping to the value representing the default resource identifier
-        /// of the dialog to be utilized as the root dialog of the bot.
+        /// of the dialog to be used as the root dialog of the bot.
         /// </summary>
         public const string RootDialogKey = "defaultRootDialog";
+
+        /// <summary>
+        /// The configuration key mapping to the value representing the default resource identifier
+        /// of the LanguageGenerator to be used by the bot.
+        /// </summary>
+        public const string LanguageGeneratorKey = "defaultLg";
 
         /// <summary>
         /// Default configuration location for runtime settings.
@@ -32,6 +38,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <summary>
         /// The configuration key mapping to the value representing the default locale.
         /// </summary>
-        public const string DefaultLocale = "defaultLocale";
+        public const string DefaultLocaleKey = "defaultLocale";
     }
 }

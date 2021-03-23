@@ -5,6 +5,7 @@ using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -48,6 +49,15 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with <see cref="UserTokenClient" /> instance.</returns>
         public abstract Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Creates a <see cref="BotFrameworkClient"/> used for calling Skills.
+        /// </summary>
+        /// <returns>A <see cref="BotFrameworkClient"/> instance to call Skills.</returns>
+        public virtual BotFrameworkClient CreateBotFrameworkClient()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Generates the appropriate callerId to write onto the activity, this might be null.
