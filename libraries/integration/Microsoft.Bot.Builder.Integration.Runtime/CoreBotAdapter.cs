@@ -87,10 +87,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
                 // this should not be done in production.
                 await turnContext.TraceActivityAsync("OnTurnError Trace", exception.ToString(), "https://www.botframework.com/schemas/error", "TurnError").ConfigureAwait(false);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Exception caught in SendErrorMessageAsync : {ex}");
             }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         private async Task SendEoCToParentIfSkillAsync(ITurnContext turnContext, Exception exception)
@@ -106,10 +108,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
                     endOfConversation.Text = exception.Message;
                     await turnContext.SendActivityAsync(endOfConversation).ConfigureAwait(false);
                 }
+#pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, $"Exception caught in SendEoCToParentAsync : {ex}");
+                    Logger.LogError(ex, $"Exception caught in SendEoCToParentIfSkillAsync : {ex}");
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
             }
         }
 
@@ -122,10 +126,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
                 // ConversationState should be thought of as similar to "cookie-state" for a Web page.
                 await _conversationState.DeleteAsync(turnContext).ConfigureAwait(false);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"Exception caught on attempting to Delete ConversationState : {ex}");
             }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         private bool IsSkillBot(ITurnContext turnContext)
