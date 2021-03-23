@@ -16,25 +16,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private readonly Dictionary<string, Template> _templateMap;
 
-        private readonly IExpressionParser _expressionParser;
-
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
-        /// <param name="templates">Template list.</param>
-        /// <param name="expressionParser">Expression parser.</param>
+        /// <param name="templates">Templates.</param>
         /// <param name="opt">Options for LG. </param>
-        /// <param name="namedReferences">NamedReferences. </param>
-        public Analyzer(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null, IDictionary<string, Templates> namedReferences = null)
+        public Analyzer(Templates templates, EvaluationOptions opt = null)
         {
             Templates = templates;
             _templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
-            var evaluator = new Evaluator(Templates, expressionParser, opt, namedReferences ?? new Dictionary<string, Templates>());
-            _expressionParser = evaluator.ExpressionParser;
+            var evaluator = new Evaluator(Templates, opt);
         }
 
         /// <summary>
@@ -43,7 +38,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<Template> Templates { get; }
+        public Templates Templates { get; }
 
         /// <summary>
         /// Analyzes a template to get the static analyzer results. 
@@ -235,7 +230,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new AnalyzerResult();
             exp = exp.TrimExpression();
-            var parsed = _expressionParser.Parse(exp);
+            var parsed = Templates.ExpressionParser.Parse(exp);
 
             var references = parsed.References();
 
