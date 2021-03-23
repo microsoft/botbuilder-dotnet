@@ -15,7 +15,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -24,7 +23,6 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -195,6 +193,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             services.AddSingleton<JsonConverterFactory>(
                 sp => new LambdaJsonConverterFactory((r, s) => new DialogExpressionConverter(r, s)));
+
+            services.AddSingleton<JsonConverterFactory>(
+                sp => new LambdaJsonConverterFactory((r, s) => new DialogSetConverter(r)));
 
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<ChoiceSet>>>();
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<ChoiceFactoryOptions>>>();
