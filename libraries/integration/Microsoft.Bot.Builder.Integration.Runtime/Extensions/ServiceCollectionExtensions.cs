@@ -81,8 +81,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                 });
 
             // Resource explorer
-            //services.AddSingleton<ResourceProvider>(sp => new FolderResourceProvider(sp.GetRequiredService<ResourceExplorer>(), applicationRoot));
-            
             services.AddSingleton<ResourceExplorerOptions>();
             services.TryAddSingleton<ResourceExplorer>(sp => new ResourceExplorer(sp.GetRequiredService<ResourceExplorerOptions>()).AddFolder(applicationRoot));
             
