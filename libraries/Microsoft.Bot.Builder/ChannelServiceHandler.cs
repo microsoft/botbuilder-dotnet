@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="authHeader">The auth header containing JWT token.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="ClaimsIdentity"/> representing the claims associated with given header.</returns>
-        protected override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
+        internal override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(authHeader))
             {

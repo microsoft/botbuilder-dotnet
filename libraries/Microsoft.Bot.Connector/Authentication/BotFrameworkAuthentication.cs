@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="authHeader">The http auth header.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
-        public virtual Task<ClaimsIdentity> ValidateSkillsAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        public virtual Task<ClaimsIdentity> ValidateChannelRequestAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

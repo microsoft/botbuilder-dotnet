@@ -187,6 +187,14 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Helper to authenticate the header token and extract the claims.
+        /// </summary>
+        /// <param name="authHeader">The auth header containing JWT token.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>A <see cref="ClaimsIdentity"/> representing the claims associated with given header.</returns>
+        internal abstract Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken);
+
+        /// <summary>
         /// SendToConversation() API for Skill.
         /// </summary>
         /// <remarks>
@@ -478,13 +486,5 @@ namespace Microsoft.Bot.Builder
         {
             throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Helper to authenticate the header token and extract the claims.
-        /// </summary>
-        /// <param name="authHeader">The auth header containing JWT token.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>A <see cref="ClaimsIdentity"/> representing the claims associated with given header.</returns>
-        protected abstract Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken);
     }
 }

@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return _toChannelFromBotOAuthScope;
         }
 
-        public override async Task<ClaimsIdentity> ValidateSkillsAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        public override async Task<ClaimsIdentity> ValidateChannelRequestAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
         {
             return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
         }

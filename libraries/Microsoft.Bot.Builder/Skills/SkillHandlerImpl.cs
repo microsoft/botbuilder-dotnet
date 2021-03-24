@@ -14,6 +14,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Skills
 {
+    /// <summary>
+    /// This class inherited all the implementations of <see cref="SkillHandler"/> class since we needed similar code for <see cref="CloudSkillHandler"/>.
+    /// The <see cref="CloudSkillHandler"/> class differs from <see cref="SkillHandler"/> class only in authentication by making use of <see cref="BotFrameworkAuthentication"/> class.
+    /// This class is internal since it is only used in skill handler classes.
+    /// </summary>
     internal class SkillHandlerImpl
     {
         private readonly string _skillConversationReferenceKey;
@@ -31,7 +36,12 @@ namespace Microsoft.Bot.Builder.Skills
             Func<string> getOAuthScope,
             ILogger logger = null)
         {
-            _skillConversationReferenceKey = skillConversationReferenceKey ?? throw new ArgumentNullException(nameof(skillConversationReferenceKey));
+            if (string.IsNullOrWhiteSpace(skillConversationReferenceKey))
+            {
+                throw new ArgumentNullException(nameof(skillConversationReferenceKey));
+            }
+
+            _skillConversationReferenceKey = skillConversationReferenceKey;
             _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));

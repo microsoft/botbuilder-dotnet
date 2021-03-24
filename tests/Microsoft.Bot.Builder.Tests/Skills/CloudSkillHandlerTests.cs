@@ -61,9 +61,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
+            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
 
             // Act
-            var sut = new TestCloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
+            var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
             var response = await sut.HandleSendToConversationAsync(TestAuthHeader, conversationId, activity);
 
             // Assert
@@ -115,9 +117,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
+            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
 
             // Act
-            var sut = new TestCloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
+            var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
             var response = await sut.HandleReplyToActivityAsync(TestAuthHeader, conversationId, TestActivityId, activity);
 
             // Assert
@@ -158,9 +162,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
+            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
 
             // Act
-            var sut = new TestCloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
+            var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
             await sut.HandleDeleteActivityAsync(TestAuthHeader, conversationId, TestActivityId);
 
             // Assert
@@ -197,9 +203,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
+            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
 
             // Act
-            var sut = new TestCloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
+            var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
             ResourceResponse response = await sut.HandleUpdateActivityAsync(TestAuthHeader, conversationId, TestActivityId, activity);
 
             // Assert
@@ -234,23 +242,15 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             return await conversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None);
         }
 
-        private class TestCloudSkillHandler : CloudSkillHandler
+        private Task<ClaimsIdentity> ValidateChannelRequestAuthHeader(string authHeader, CancellationToken cancellationToken)
         {
-            public TestCloudSkillHandler(BotAdapter adapter, IBot bot, SkillConversationIdFactoryBase conversationIdFactory, BotFrameworkAuthentication auth, ILogger logger = null)
-                : base(adapter, bot, conversationIdFactory, auth, logger)
-            {
-            }
+            var token = new ClaimsIdentity();
 
-            protected override Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
-            {
-                var token = new ClaimsIdentity();
+            token.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, TestBotId));
+            token.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, TestSkillId));
+            token.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, TestBotEndpoint));
 
-                token.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, TestBotId));
-                token.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, TestSkillId));
-                token.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, TestBotEndpoint));
-
-                return Task.FromResult(token);
-            }
+            return Task.FromResult(token);
         }
 
         private class TestSkillConversationIdFactory : SkillConversationIdFactoryBase
