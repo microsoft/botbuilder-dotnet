@@ -1,5 +1,6 @@
 ﻿> import as base1
-[import from base lg 1](AliasBase1.lg) as base1
+> the nameSpace would be ignored in the default import resolver
+[import from base lg 1](NameSpace#AliasBase1.lg) as base1
 
 > import as base2
 [import from base lg 2](AliasBase2.lg) as base2
@@ -7,7 +8,7 @@
 > static import
 [import from base lg 3](AliasBase3.lg)
 
-> call duplicate name 
+> call duplicate name
 # wPhrase
 - ${base1.wPhrase()}
 

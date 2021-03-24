@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// If the number of arguments is 0, returns the current scope.
         /// Otherwise, returns an CustomizedMemory that the mapping of the parameter name to the argument value added to the scope.
         /// </returns>
-        public object ConstructScope(string templateName, List<object> args, List<Template> allTemplates)
+        public object ConstructScope(string templateName, List<object> args, IList<Template> allTemplates)
         {
             var templateMap = allTemplates.ToDictionary(x => x.Name);
             var parameters = templateMap[templateName].Parameters;
@@ -582,21 +582,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
        {
            var stringContent = args[0].ToString();
            var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-           var newTemplates = new Templates(templates: Templates.AllTemplates, expressionParser: Templates.ExpressionParser);
+           var newTemplates = new Templates(templates: Templates.AllTemplates, expressionParser: Templates.ExpressionParser, namedReferences: Templates.NamedReferences);
            return newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
        };
 
         private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
             (IReadOnlyList<object> args) =>
             {
-                var newScope = this.ConstructScope(templateName, args.ToList(), Templates.AllTemplates.ToList());
+                var newScope = this.ConstructScope(templateName, args.ToList(), Templates.AllTemplates);
                 return this.ExpandTemplate(templateName, newScope);
             };
 
         private Func<IReadOnlyList<object>, object> EvaluateWithTemplates(string templateName, Templates templates)
         => (IReadOnlyList<object> args) =>
         {
-            var newScope = this.ConstructScope(templateName, args.ToList(), templates.AllTemplates.ToList());
+            var newScope = this.ConstructScope(templateName, args.ToList(), templates.AllTemplates);
             var evaluator = new Evaluator(templates, _lgOptions);
             return evaluator.EvaluateTemplate(templateName, newScope);
         };
@@ -604,7 +604,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
             (IReadOnlyList<object> args) =>
             {
-                var newScope = this.ConstructScope(templateName, args.ToList(), Templates.AllTemplates.ToList());
+                var newScope = this.ConstructScope(templateName, args.ToList(), Templates.AllTemplates);
 
                 var value = this.ExpandTemplate(templateName, newScope);
                 var randomValue = CurrentTarget().Scope.RandomNext(0, value.Count);
@@ -617,7 +617,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         => (IReadOnlyList<object> args) =>
         {
             var templateName = args[0].ToString();
-            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList(), Templates.AllTemplates.ToList());
+            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList(), Templates.AllTemplates);
             return this.ExpandTemplate(templateName, newScope);
         };
 
@@ -739,7 +739,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    {
                        var stringContent = File.ReadAllText(resourcePath);
                        var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-                       var newTemplates = new Templates(templates: Templates.AllTemplates, expressionParser: Templates.ExpressionParser);
+                       var newTemplates = new Templates(templates: Templates.AllTemplates, expressionParser: Templates.ExpressionParser, namedReferences: Templates.NamedReferences);
                        result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
                    }
 

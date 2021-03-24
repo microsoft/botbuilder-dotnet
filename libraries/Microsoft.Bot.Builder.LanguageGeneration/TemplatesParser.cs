@@ -259,39 +259,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     throw new TemplateException(e.Message, new List<Diagnostic>() { diagnostic });
                 }
 
-                // normal import
-                if (string.IsNullOrEmpty(import.Alias))
+                // Cycle reference would throw exception to avoid infinite Loop.
+                // Import self is allowed, and would ignore it.
+                if (parentTemplates.Peek().Id != resource.Id && parentTemplates.Any(u => u.Id == resource.Id))
                 {
-                    // Cycle reference would throw exception to avoid infinite Loop.
-                    // Import self is allowed, and would ignore it.
-                    if (parentTemplates.Peek().Id != resource.Id && parentTemplates.Any(u => u.Id == resource.Id))
-                    {
-                        var errorMsg = $"{TemplateErrors.LoopDetected} {resource.Id} => {start.Id}";
-                        var diagnostic = new Diagnostic(import.SourceRange.Range, errorMsg, DiagnosticSeverity.Error, start.Source);
-                        throw new TemplateException(errorMsg, new List<Diagnostic>() { diagnostic });
-                    }
-
-                    if (resourcesFound.All(u => u.Id != resource.Id))
-                    {
-                        Templates childResource;
-                        if (cachedTemplates.ContainsKey(resource.Id))
-                        {
-                            childResource = cachedTemplates[resource.Id];
-                        }
-                        else
-                        {
-                            childResource = InnerParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, parentTemplates);
-                            cachedTemplates.Add(resource.Id, childResource);
-                        }
-
-                        ResolveImportResources(childResource, resourcesFound, cachedTemplates, parentTemplates);
-                    }
+                    var errorMsg = $"{TemplateErrors.LoopDetected} {resource.Id} => {start.Id}";
+                    var diagnostic = new Diagnostic(import.SourceRange.Range, errorMsg, DiagnosticSeverity.Error, start.Source);
+                    throw new TemplateException(errorMsg, new List<Diagnostic>() { diagnostic });
                 }
-                else
+
+                if (!string.IsNullOrEmpty(import.Alias))
                 {
-                    // import as alias
+                    // Import as alias
+                    // Append import templates into namedReferences property
                     var childResource = InnerParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, parentTemplates);
                     start.NamedReferences[import.Alias] = childResource;
+                    continue;
+                }
+
+                // Normal import
+                if (resourcesFound.All(u => u.Id != resource.Id))
+                {
+                    Templates childResource;
+                    if (cachedTemplates.ContainsKey(resource.Id))
+                    {
+                        childResource = cachedTemplates[resource.Id];
+                    }
+                    else
+                    {
+                        childResource = InnerParseResource(resource, start.ImportResolver, start.ExpressionParser, cachedTemplates, parentTemplates);
+                        cachedTemplates.Add(resource.Id, childResource);
+                    }
+
+                    ResolveImportResources(childResource, resourcesFound, cachedTemplates, parentTemplates);
                 }
             }
 

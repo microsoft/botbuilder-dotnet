@@ -354,7 +354,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     template.SourceRange.Range.End.Line - 1,
                     content);
 
-                var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+                var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser, namedReferences: NamedReferences);
                 var resource = new LGResource(Id, Id, content);
                 updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(resource));
 
@@ -398,7 +398,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // update content
             Content = $"{Content}{_newLine}{templateNameLine}{_newLine}{newTemplateBody}";
 
-            var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+            var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser, namedReferences: NamedReferences);
             var resource = new LGResource(Id, Id, content);
             newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(resource));
 

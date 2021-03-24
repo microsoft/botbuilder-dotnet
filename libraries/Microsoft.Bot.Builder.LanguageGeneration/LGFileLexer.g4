@@ -8,6 +8,9 @@ lexer grammar LGFileLexer;
 }
 
 fragment WHITESPACE : ' '|'\t'|'\ufeff'|'\u00a0';
+fragment LETTER: 'a'..'z' | 'A'..'Z';
+fragment NUMBER: '0'..'9';
+fragment IDENTIFIER : (LETTER | '_') (LETTER | NUMBER | '_')*;
 
 NEWLINE : '\r'? '\n';
 
@@ -15,7 +18,7 @@ OPTION : WHITESPACE* '>' WHITESPACE* '!#' ~('\r'|'\n')+ { !startTemplate }?;
 
 COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !startTemplate }?;
 
-IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' ~('\r'|'\n')* { !startTemplate }?;
+IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* ('as' WHITESPACE* IDENTIFIER WHITESPACE*)? { !startTemplate }?;
 
 TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { TokenStartColumn == 0}? { startTemplate = true; };
 
