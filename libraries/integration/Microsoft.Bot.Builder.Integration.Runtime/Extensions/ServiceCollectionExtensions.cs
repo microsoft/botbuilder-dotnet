@@ -37,11 +37,14 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
-            services.AddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
+            services.TryAddSingleton(ServiceFactory.Storage);
+            services.TryAddSingleton<UserState>();
+            services.TryAddSingleton<ConversationState>();
+            services.TryAddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+            services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
             services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
 
-            // TODO: add CloudAdapter derived class - including telemetry and middleware and transcripts
-            // TODO: add Azure storage defaults
+            // TODO: add CloudAdapter derived class - including telemetry and features middleware and transcripts
             // TODO: add Skills
         }
 
