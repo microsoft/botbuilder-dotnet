@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.Runtime;
 using Microsoft.Bot.Builder.Integration.Runtime.Component;
 using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
@@ -84,6 +85,8 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             IServiceCollection services = new ServiceCollection();
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "applicationRoot", "." } }).Build();
 
+            services.AddSingleton<IConfiguration>(configuration);
+
             const string activityJson = "pirateActivity";
 
             // Test 
@@ -118,6 +121,8 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // This guarantees that the custom converter was called since it's the only code that is passing the json data to the
             // SendActivityAsPirate constructor.
             Assert.Equal(activityJson, declarativeType.Data);
+
+            Assert.IsType<ConfigurationResourceExplorer>(resourceExplorer);
         }
 
         [Fact]
@@ -126,6 +131,8 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "applicationRoot", "." } }).Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
 
             // Test 
 
@@ -151,7 +158,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             Assert.Contains(pathResolvers, pr => pr.GetType().Equals(typeof(DoubleCaratPathResolver)));
         }
 
-        private class SimpleMemoryResource : Resource
+        internal class SimpleMemoryResource : Resource
         {
             private readonly string _json;
 
