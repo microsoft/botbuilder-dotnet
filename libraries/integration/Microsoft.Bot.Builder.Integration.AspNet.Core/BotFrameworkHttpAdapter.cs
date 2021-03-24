@@ -194,6 +194,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <returns>Returns a new <see cref="StreamingRequestHandler"/> implementation.</returns>
         public virtual StreamingRequestHandler CreateStreamingRequestHandler(IBot bot, WebSocket socket, string audience)
         {
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
+            if (socket == null)
+            {
+                throw new ArgumentNullException(nameof(socket));
+            }
+
             return new StreamingRequestHandler(bot, this, socket, audience, Logger);
         }
 
