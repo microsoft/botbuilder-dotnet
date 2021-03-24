@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Import regex.
         /// </summary>
-        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)\s*(as\s*([a-zA-Z_][0-9a-zA-Z_]*)\s*)?");
+        public static readonly Regex ImportRegex = new Regex(@"\[([^]]*)\]\(([^)]*)\)([\w\s]*)");
 
         /// <summary>
         /// Parser to turn lg content into a <see cref="Templates"/>.
@@ -356,9 +356,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var importStr = context.IMPORT().GetText();
 
                 var matchResult = ImportRegex.Match(importStr);
-                if (!matchResult.Success || (matchResult.Groups.Count != 3 && matchResult.Groups.Count != 5))
+                if (!matchResult.Success || (matchResult.Groups.Count != 3 && matchResult.Groups.Count != 4))
                 {
-                    _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.SyntaxError($"Import format should follow '[x](y)' or '[x](y) as z'"), context));
+                    _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.ImportFormatError, context));
                     return null;
                 }
 
@@ -367,10 +367,22 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var sourceRange = new SourceRange(context, _templates.Source);
                 var import = new TemplateImport(description, id, sourceRange);
-                if (matchResult.Groups.Count == 5)
+                if (matchResult.Groups.Count == 4)
                 {
-                    var alias = matchResult.Groups[4].Value?.Trim();
-                    import.Alias = alias;
+                    var asAlias = matchResult.Groups[3].Value?.Trim();
+                    if (!string.IsNullOrWhiteSpace(asAlias))
+                    {
+                        var asAliasArray = Regex.Split(asAlias, @"\s+");
+                        if (asAliasArray.Length != 2 || asAliasArray[0] != "as")
+                        {
+                            _templates.Diagnostics.Add(BuildTemplatesDiagnostic(TemplateErrors.ImportFormatError, context));
+                            return null;
+                        }
+                        else
+                        {
+                            import.Alias = asAliasArray[1].Trim();
+                        }
+                    }
                 }
 
                 _templates.Imports.Add(import);
