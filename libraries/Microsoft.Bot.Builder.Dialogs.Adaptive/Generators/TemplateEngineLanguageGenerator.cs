@@ -100,10 +100,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         }
 
         /// <summary>
-        /// Gets templates.
+        /// Gets language generation templates.
         /// </summary>
         /// <value>
-        /// Templates.
+        /// Language generation templates.
         /// </value>
         public LanguageGeneration.Templates LG { get; }
 
