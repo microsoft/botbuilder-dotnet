@@ -61,8 +61,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
+            auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(AuthenticateChannelRequest);
 
             // Act
             var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
@@ -117,8 +117,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
+            auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(AuthenticateChannelRequest);
 
             // Act
             var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
@@ -162,8 +162,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
+            auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(AuthenticateChannelRequest);
 
             // Act
             var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
@@ -203,8 +203,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             var bot = new Mock<IBot>();
             var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.ValidateChannelRequestAuthHeaderAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(ValidateChannelRequestAuthHeader);
+            auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns<string, CancellationToken>(AuthenticateChannelRequest);
 
             // Act
             var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             return await conversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None);
         }
 
-        private Task<ClaimsIdentity> ValidateChannelRequestAuthHeader(string authHeader, CancellationToken cancellationToken)
+        private Task<ClaimsIdentity> AuthenticateChannelRequest(string authHeader, CancellationToken cancellationToken)
         {
             var token = new ClaimsIdentity();
 

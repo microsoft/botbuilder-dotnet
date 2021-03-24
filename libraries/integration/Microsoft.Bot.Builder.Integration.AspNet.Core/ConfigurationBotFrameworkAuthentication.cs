@@ -63,9 +63,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc />
-        public override Task<ClaimsIdentity> ValidateChannelRequestAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        public override Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
         {
-            return _inner.ValidateChannelRequestAuthHeaderAsync(authHeader, cancellationToken);
+            return _inner.AuthenticateChannelRequestAsync(authHeader, cancellationToken);
         }
 
         /// <inheritdoc/>

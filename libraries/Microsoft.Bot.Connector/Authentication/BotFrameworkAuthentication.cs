@@ -69,12 +69,12 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Validate Bot Framework Protocol requests.
+        /// Authenticate Bot Framework Protocol requests to Skills.
         /// </summary>
-        /// <param name="authHeader">The http auth header.</param>
+        /// <param name="authHeader">The http auth header received in the skill request.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
-        public virtual Task<ClaimsIdentity> ValidateChannelRequestAuthHeaderAsync(string authHeader, CancellationToken cancellationToken)
+        public virtual Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder
         /// <inheritdoc/>
         internal override async Task<ClaimsIdentity> AuthenticateAsync(string authHeader, CancellationToken cancellationToken)
         {
-            return await _auth.ValidateChannelRequestAuthHeaderAsync(authHeader, cancellationToken).ConfigureAwait(false);
+            return await _auth.AuthenticateChannelRequestAsync(authHeader, cancellationToken).ConfigureAwait(false);
         }
     }
 }
