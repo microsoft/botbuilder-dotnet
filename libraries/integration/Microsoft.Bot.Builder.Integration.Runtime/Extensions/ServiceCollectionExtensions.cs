@@ -30,22 +30,36 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds bot runtime-related services to the application's service collection.
+        /// THIS IS TEMPORARY TEST CODE. Adds bot runtime-related services to the application's service collection.
         /// </summary>
         /// <param name="services">The application's collection of registered services.</param>
         public static void AddAdaptiveRuntime(this IServiceCollection services)
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
+            // Storage
             services.TryAddSingleton(ServiceFactory.Storage);
             services.TryAddSingleton<UserState>();
             services.TryAddSingleton<ConversationState>();
             services.TryAddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+
+            // ResourceExplorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
+
+            // All things auth
+            services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
+
+            // IBot
             services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
 
-            // TODO: add CloudAdapter derived class - including telemetry and features middleware and transcripts
-            // TODO: add Skills
+            // BotAdapter (this registration probably needs refining)
+            services.AddSingleton<CoreBotAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+
+            // TODO: telemetry
+
+            // TODO: Skills
         }
 
         /// <summary>
@@ -158,15 +172,22 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             const string defaultRoute = "messages";
 
             // CoreAdapter dependencies registration
+            
+            // TODO: remove these when Skills classes are updated
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
             services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
 
+            // Temporary Note: The above two lines are replaced with this. (The configuration is compatible.)
+            services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
+
+            // Temporary Note: That the following also fixes the big where this code was accidentally adding *three* instances of the adapter
+
             // CoreAdapter registration
             services.AddSingleton<CoreBotAdapter>();
-            services.AddSingleton<IBotFrameworkHttpAdapter, CoreBotAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
 
             // Needed for SkillsHttpClient which depends on BotAdapter
-            services.AddSingleton<BotAdapter, CoreBotAdapter>(); 
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>()); 
             
             // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
             services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
