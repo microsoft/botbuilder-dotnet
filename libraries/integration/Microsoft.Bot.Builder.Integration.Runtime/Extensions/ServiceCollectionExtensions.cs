@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             }
 
             // Configuration
-            string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
             string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value;
             string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
             
