@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                 var componentEnumenator = serviceScope.ServiceProvider.GetService<IBotComponentEnumerator>() ?? new AssemblyBotComponentEnumerator(AssemblyLoadContext.Default);
 
                 // Iterate through configured components and load each one
-                foreach (BotComponentDefinition component in runtimeSettings.Plugins)
+                foreach (BotComponentDefinition component in runtimeSettings.Components)
                 {
                     component.Load(componentEnumenator, services, configuration);
                 }

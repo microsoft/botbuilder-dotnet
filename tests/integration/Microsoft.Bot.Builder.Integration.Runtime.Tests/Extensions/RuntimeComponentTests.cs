@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             var runtimeSettings = new RuntimeSettings()
             {
                 // Declare plugin
-                Plugins = new[]
+                Components = new[]
                 {
                     new BotComponentDefinition()
                     {

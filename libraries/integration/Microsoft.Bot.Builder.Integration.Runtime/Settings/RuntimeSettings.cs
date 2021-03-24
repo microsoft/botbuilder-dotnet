@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         /// <value>
         /// The list of components registered for the runtime.
         /// </value>
-        public IList<BotComponentDefinition> Plugins { get; set; } = new List<BotComponentDefinition>();
+        public IList<BotComponentDefinition> Components { get; set; } = new List<BotComponentDefinition>();
 
         /// <summary>
         /// Gets or sets the list of adapters to expose in the runtime.
