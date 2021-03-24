@@ -799,6 +799,42 @@
       "order": 6
     }
   },
+  "Microsoft.OnCommandActivity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Command received",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Command activity received"
+    },
+    "trigger": {
+      "label": "Command received (Command activity received)",
+      "order": 5.81,
+      "submenu": "Activities"
+    }
+  },
+  "Microsoft.OnCommandResultActivity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Command Result received",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Command Result activity received"
+    },
+    "trigger": {
+      "label": "Command Result received (Command Result activity received)",
+      "order": 5.81,
+      "submenu": "Activities"
+    }
+  },
   "Microsoft.OnCondition": {
     "form": {
       "hidden": [
@@ -994,10 +1030,10 @@
         "condition",
         "*"
       ],
-      "subtitle": "Message received activity"
+      "subtitle": "Message activity received"
     },
     "trigger": {
-      "label": "Message received (Message received activity)",
+      "label": "Message received (Message activity received)",
       "order": 5.81,
       "submenu": "Activities"
     }
