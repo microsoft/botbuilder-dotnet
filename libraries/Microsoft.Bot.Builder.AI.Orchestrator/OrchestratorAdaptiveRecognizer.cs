@@ -36,11 +36,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Property key in RecognizerResult that holds the full recognition result from Orchestrator core.
         /// </summary>
         public const string ResultProperty = "result";
-
-        /// <summary>
-        /// Property key used when storing extracted entities in a custom event within telemetry.
-        /// </summary>
-        public const string EntitiesProperty = "entities";
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
         private string _modelFolder;
@@ -164,10 +159,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             // Score with orchestrator
             var results = _resolver.Score(text);
-
-            // Add full recognition result as a 'result' property
-            recognizerResult.Properties.Add(ResultProperty, results);
-
             if (results.Any())
             {
                 var topScore = results[0].Score;
@@ -222,9 +213,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
             
-            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
-            TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
-
             if (ExternalEntityRecognizer != null)
             {
                 // Run external recognition
@@ -232,7 +220,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 recognizerResult.Entities = externalResults.Entities;
             }
 
-            TryScoreEntities(text, recognizerResult);
+            var entityResults = TryScoreEntities(text, recognizerResult);
+            
+            // Add full recognition result as a 'result' property
+            recognizerResult.Properties.Add(ResultProperty, results.Concat(entityResults));
+            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
+            TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
+
             return recognizerResult;
         }
 
@@ -304,16 +298,14 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             return instance;
         }
 
-        private void TryScoreEntities(string text, RecognizerResult recognizerResult)
+        private IReadOnlyList<Result> TryScoreEntities(string text, RecognizerResult recognizerResult)
         {
             if (!this.ScoreEntities)
             {
-                return;
+                return new List<Result>();
             }
 
             var results = _resolver.Score(text, LabelType.Entity);
-            recognizerResult.Properties.Add(EntitiesProperty, results);
-
             if (results.Any())
             {
                 if (recognizerResult.Entities == null)
@@ -353,6 +345,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     ((JArray)instanceData).Add(EntityResultToInstanceJObject(text, result));
                 }
             }
+
+            return results;
         }
 
         private void InitializeModel()
