@@ -16,6 +16,7 @@
     <Description>This library implements .NET support for Orchestrator</Description>
     <Summary>This library implements .NET support for Orchestrator</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <PackageTags>bf-component</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
