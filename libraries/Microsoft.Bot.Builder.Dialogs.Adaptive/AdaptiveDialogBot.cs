@@ -101,7 +101,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private void SetUpTurnState(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
         {
-            turnContext.TurnState.Add<BotCallbackHandler>(OnTurnAsync);
             turnContext.TurnState.Add(botFrameworkClient);
             turnContext.TurnState.Add(_skillConversationIdFactoryBase);
             turnContext.TurnState.Add(_conversationState);
@@ -112,6 +111,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             turnContext.TurnState.Add(new LanguagePolicy(_defaultLocale));
+
+            // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
+            turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
         private async Task<Dialog> CreateDialogAsync(CancellationToken cancellationToken)
