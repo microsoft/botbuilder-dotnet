@@ -29,6 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Explicitly set dependency to the latest version, because we have a transient dependency brought by Microsoft.ApplicationInsights.AspNetCore and can't fix by updating runtime, since it's not a framework reference"-->
+    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
