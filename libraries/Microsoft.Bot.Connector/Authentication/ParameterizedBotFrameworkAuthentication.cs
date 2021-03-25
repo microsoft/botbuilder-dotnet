@@ -61,6 +61,16 @@ namespace Microsoft.Bot.Connector.Authentication
             _logger = logger ?? NullLogger.Instance;
         }
 
+        public override string GetOriginatingAudience()
+        {
+            return _toChannelFromBotOAuthScope;
+        }
+
+        public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            return await JwtTokenValidation_ValidateAuthHeaderAsync(authHeader, "unknown", null, cancellationToken).ConfigureAwait(false);
+        }
+
         public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             var claimsIdentity = await JwtTokenValidation_AuthenticateRequestAsync(activity, authHeader, cancellationToken).ConfigureAwait(false);

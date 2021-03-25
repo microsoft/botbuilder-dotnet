@@ -60,6 +60,26 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
+        /// Gets the originating audience from Bot OAuth scope.
+        /// </summary>
+        /// <returns>The originating audience.</returns>
+        public virtual string GetOriginatingAudience()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Authenticate Bot Framework Protocol requests to Skills.
+        /// </summary>
+        /// <param name="authHeader">The http auth header received in the skill request.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>Asynchronous Task with <see cref="ClaimsIdentity"/>.</returns>
+        public virtual Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Generates the appropriate callerId to write onto the activity, this might be null.
         /// </summary>
         /// <param name="credentialFactory">A <see cref="ServiceClientCredentialsFactory"/> to use.</param>

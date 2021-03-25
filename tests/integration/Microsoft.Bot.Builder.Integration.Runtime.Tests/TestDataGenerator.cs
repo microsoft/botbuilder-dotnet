@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests
                 resources ?? Array.Empty<MemoryResource>());
 
             resourceExplorer.AddResourceProvider(resourceProvider);
-            resourceExplorer.RegisterType<OnQnAMatch>(OnQnAMatch.Kind);
 
             return resourceExplorer;
         }

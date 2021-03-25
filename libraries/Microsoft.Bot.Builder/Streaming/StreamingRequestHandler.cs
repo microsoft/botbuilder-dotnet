@@ -239,6 +239,7 @@ namespace Microsoft.Bot.Builder.Streaming
 #pragma warning restore CA1031 // Do not catch general exception types
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.SetBody($"Request body missing or malformed");
                 _logger.LogError("Request body missing or malformed: " + ex.Message);
 
                 return response;
@@ -253,6 +254,15 @@ namespace Microsoft.Bot.Builder.Streaming
                 if (activity == null || string.IsNullOrEmpty(conversationId))
                 {
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    if (activity == null)
+                    {
+                        response.SetBody($"activity is null. Body: {body}");
+                    }
+                    else
+                    {
+                        response.SetBody($"conversationId is null. Body: {body}");
+                    }
+
                     return response;
                 }
 

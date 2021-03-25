@@ -9,12 +9,13 @@ using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.BotFramework;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
-using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
+using Microsoft.Bot.Builder.Integration.Runtime.Component;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
@@ -30,19 +31,36 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds bot runtime-related services to the application's service collection.
+        /// THIS IS TEMPORARY TEST CODE. Adds bot runtime-related services to the application's service collection.
         /// </summary>
         /// <param name="services">The application's collection of registered services.</param>
         public static void AddAdaptiveRuntime(this IServiceCollection services)
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
 
-            services.AddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
+            // Storage
+            services.TryAddSingleton(ServiceFactory.Storage);
+            services.TryAddSingleton<UserState>();
+            services.TryAddSingleton<ConversationState>();
+            services.TryAddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+
+            // ResourceExplorer
+            services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
+
+            // All things auth
+            services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
+
+            // IBot
             services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
 
-            // TODO: add CloudAdapter derived class - including telemetry and middleware and transcripts
-            // TODO: add Azure storage defaults
-            // TODO: add Skills
+            // BotAdapter (this registration probably needs refining)
+            services.AddSingleton<CoreBotAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+
+            // TODO: telemetry
+
+            // TODO: Skills
         }
 
         /// <summary>
@@ -62,13 +80,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            // Component registrations must be added before the resource explorer is instantiated to ensure
-            // that all types are correctly registered. Any types that are registered after the resource explorer
-            // is instantiated will not be picked up otherwise.
-            ComponentRegistrations.Add();
-
             // Configuration
-            string applicationRoot = configuration.GetSection(ConfigurationConstants.ApplicationRootKey).Value;
             string defaultLocale = configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value;
             string rootDialog = configuration.GetSection(ConfigurationConstants.RootDialogKey).Value;
             
@@ -84,12 +96,8 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
                     o.RootDialog = rootDialog;
                 });
 
-            // ResourceExplorer. TryAddSingleton will only add if there is no other registration for resource explorer.
-            // Tests use this to inject custom resource explorers but could also be used for advanced runtime customization scenarios.
-            services.TryAddSingleton<ResourceExplorer>(serviceProvider =>
-                new ResourceExplorer()
-                    .AddFolder(applicationRoot)
-                    .RegisterType<OnQnAMatch>(OnQnAMatch.Kind));
+            // Resource explorer
+            services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
             
             // Runtime set up
             services.AddBotRuntimeSkills(runtimeSettings.Skills);
@@ -97,7 +105,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
             services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
             services.AddBotRuntimeFeatures(runtimeSettings.Features);
-            services.AddBotRuntimePlugins(configuration, runtimeSettings);
+            services.AddBotRuntimeComponents(configuration, runtimeSettings);
             services.AddBotRuntimeAdapters(runtimeSettings);
         }
 
@@ -136,16 +144,28 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             }
         }
 
-        internal static void AddBotRuntimePlugins(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
+        internal static void AddBotRuntimeComponents(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
         {
             using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
             {
-                var pluginEnumerator = serviceScope.ServiceProvider.GetService<IBotPluginEnumerator>() ?? new AssemblyBotPluginEnumerator(AssemblyLoadContext.Default);
+                var componentEnumenator = serviceScope.ServiceProvider.GetService<IBotComponentEnumerator>() ?? new AssemblyBotComponentEnumerator(AssemblyLoadContext.Default);
 
-                // Iterate through configured plugins and load each one
-                foreach (BotPluginDefinition plugin in runtimeSettings.Plugins)
+                // Iterate through configured components and load each one
+                foreach (BotComponentDefinition component in runtimeSettings.Components)
                 {
-                    plugin.Load(pluginEnumerator, services, configuration);
+                    component.Load(componentEnumenator, services, configuration);
+                }
+            }
+
+            foreach (BotComponent component in BuiltInBotComponents.GetComponents())
+            {
+                var componentServices = new ServiceCollection();
+
+                component.ConfigureServices(componentServices, configuration, null /*for now*/);
+
+                foreach (var serviceDescriptor in componentServices)
+                {
+                    services.Add(serviceDescriptor);
                 }
             }
         }
@@ -155,15 +175,22 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             const string defaultRoute = "messages";
 
             // CoreAdapter dependencies registration
+            
+            // TODO: remove these when Skills classes are updated
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
             services.AddSingleton<IChannelProvider, ConfigurationChannelProvider>();
 
+            // Temporary Note: The above two lines are replaced with this. (The configuration is compatible.)
+            services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
+
+            // Temporary Note: That the following also fixes the big where this code was accidentally adding *three* instances of the adapter
+
             // CoreAdapter registration
             services.AddSingleton<CoreBotAdapter>();
-            services.AddSingleton<IBotFrameworkHttpAdapter, CoreBotAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
 
             // Needed for SkillsHttpClient which depends on BotAdapter
-            services.AddSingleton<BotAdapter, CoreBotAdapter>(); 
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>()); 
             
             // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
             services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
@@ -237,12 +264,20 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 
             if (featureSettings.RemoveRecipientMentions)
             {
-                services.AddSingleton<NormalizeMentionsMiddleware>();
+                services.AddSingleton<IMiddleware, NormalizeMentionsMiddleware>();
             }
 
             if (featureSettings.ShowTyping)
             {
-                services.AddSingleton<ShowTypingMiddleware>();
+                services.AddSingleton<IMiddleware, ShowTypingMiddleware>();
+            }
+
+            if (featureSettings.SetSpeak != null)
+            {
+                services.AddSingleton<IMiddleware>(sp => new SetSpeakMiddleware(
+                    featureSettings.SetSpeak.VoiceFontName, 
+                    featureSettings.SetSpeak.Lang, 
+                    featureSettings.SetSpeak.FallbackToTextForSpeechIfEmpty));
             }
         }
     }
