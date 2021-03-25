@@ -155,6 +155,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var activity = SlackHelper.EventToActivity(slackBody, slackApi.Object);
 
+            Assert.Equal(ActivityTypes.Message, activity.Type);
+            Assert.Equal(slackBody.Event.Type, activity.Type);
             Assert.Equal(slackBody.Event.AdditionalProperties["text"].ToString(), activity.Text);
             Assert.Equal(slackBody.Event.AdditionalProperties["files"][0]["mimetype"].ToString(), activity.Attachments[0].ContentType);
             Assert.Equal(slackBody.Event.AdditionalProperties["files"][0]["url_private_download"].ToString(), activity.Attachments[0].ContentUrl);
