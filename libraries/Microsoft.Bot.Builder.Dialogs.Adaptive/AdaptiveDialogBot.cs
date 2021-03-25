@@ -101,6 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private void SetUpTurnState(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
         {
+            turnContext.TurnState.Add<BotCallbackHandler>(OnTurnAsync);
             turnContext.TurnState.Add(botFrameworkClient);
             turnContext.TurnState.Add(_skillConversationIdFactoryBase);
             turnContext.TurnState.Add(_conversationState);
