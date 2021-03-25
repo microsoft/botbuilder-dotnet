@@ -360,9 +360,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         {
                             return await this.ReplaceDialogAsync(rootDialog.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
-#pragma warning disable CS0168 // Variable is declared but never used
-                        catch (Exception err)
-#pragma warning restore CS0168 // Variable is declared but never used
+                        catch (Exception)
                         {
                             throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
                         }                         
