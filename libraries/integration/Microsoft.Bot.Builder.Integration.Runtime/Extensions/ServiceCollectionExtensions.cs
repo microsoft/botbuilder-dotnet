@@ -261,12 +261,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 
             if (featureSettings.RemoveRecipientMentions)
             {
-                services.AddSingleton<NormalizeMentionsMiddleware>();
+                services.AddSingleton<IMiddleware, NormalizeMentionsMiddleware>();
             }
 
             if (featureSettings.ShowTyping)
             {
-                services.AddSingleton<ShowTypingMiddleware>();
+                services.AddSingleton<IMiddleware, ShowTypingMiddleware>();
             }
 
             if (featureSettings.SetSpeak != null)
