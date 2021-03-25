@@ -16,22 +16,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {
-        private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
-        private readonly ImmutableDictionary<string, object> _settings;
+        private IDictionary<string, object> _settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
         /// </summary>
         /// <param name="configuration">The <see cref="IConfiguration"/> from which to create these settings.</param>
-        public SettingsMemoryScope(IConfiguration configuration = null)
+        public SettingsMemoryScope(IConfiguration configuration)
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
 
-            if (configuration != null)
-            {
-                _settings = LoadSettings(configuration);
-            }
+            _settings = LoadSettings(configuration);
         }
 
         /// <summary>
@@ -46,27 +42,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out var settings))
+            // Handle legacy behavior where the configuration was found on the TurnState.
+            var configuration = dc.Context.TurnState.Get<IConfiguration>();
+            if (configuration != null)
             {
-                // If this instance was created from IConfiguration we have the settings here.
-                if (_settings != null)
-                {
-                    settings = _settings;
-                    dc.Context.TurnState[ScopePath.Settings] = settings;
-                }
-                else
-                {
-                    // Keep the following legacy implementation for back compatibility.
-                    var configuration = dc.Context.TurnState.Get<IConfiguration>();
-                    if (configuration != null)
-                    {
-                        settings = LoadSettings(configuration);
-                        dc.Context.TurnState[ScopePath.Settings] = settings;
-                    }
-                }
+                _settings = LoadSettings(configuration);
             }
 
-            return settings ?? _emptySettings;
+            dc.Context.TurnState[ScopePath.Settings] = _settings;
+            return _settings;
         }
 
         /// <summary>
@@ -85,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// </summary>
         /// <param name="configuration">IConfiguration that we are running with.</param>
         /// <returns>projected dictionary for settings.</returns>
-        protected static ImmutableDictionary<string, object> LoadSettings(IConfiguration configuration)
+        protected static IDictionary<string, object> LoadSettings(IConfiguration configuration)
         {
             var settings = new Dictionary<string, object>();
 
@@ -96,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 root.Children.ForEach(u => settings.Add(u.Value, ConvertNodeToObject(u)));
             }
 
-            return settings.ToImmutableDictionary();
+            return settings;
         }
 
         /// <summary>
