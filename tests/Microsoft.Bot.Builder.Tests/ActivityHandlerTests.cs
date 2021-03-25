@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -409,127 +408,6 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
-        public async Task TestHealthCheckAsyncOverride()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "healthCheck",
-            };
-            var turnContext = new TurnContext(new TestInvokeAdapter(), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.Equal(2, bot.Record.Count);
-            Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.Equal("OnHealthCheckAsync", bot.Record[1]);
-        }
-
-        [Fact]
-        public async Task TestHealthCheckAsync()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "healthCheck"
-            };
-
-            Activity[] activitiesToSend = null;
-            void CaptureSend(Activity[] arg)
-            {
-                activitiesToSend = arg;
-            }
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
-
-            // Act
-            var bot = new ActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.NotNull(activitiesToSend);
-            Assert.Single(activitiesToSend);
-            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
-            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
-
-            using (var writer = new StringWriter())
-            {
-                using (var jsonWriter = new JsonTextWriter(writer))
-                {
-                    var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-                    var serializer = JsonSerializer.Create(settings);
-
-                    serializer.Serialize(jsonWriter, ((InvokeResponse)activitiesToSend[0].Value).Body);
-                }
-
-                await writer.FlushAsync();
-
-                var obj = JObject.Parse(writer.ToString());
-
-                Assert.True(obj["healthResults"]["success"].Value<bool>());
-                Assert.Equal("Health check succeeded.", obj["healthResults"]["messages"][0].ToString());
-            }
-        }
-
-        [Fact]
-        public async Task TestHealthCheckWithConnectorAsync()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "healthCheck"
-            };
-
-            Activity[] activitiesToSend = null;
-            void CaptureSend(Activity[] arg)
-            {
-                activitiesToSend = arg;
-            }
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
-
-            IConnectorClient connector = new MockConnectorClient();
-
-            turnContext.TurnState.Add(connector);
-
-            // Act
-            var bot = new ActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.NotNull(activitiesToSend);
-            Assert.Single(activitiesToSend);
-            Assert.IsType<InvokeResponse>(activitiesToSend[0].Value);
-            Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
-
-            using (var writer = new StringWriter())
-            {
-                using (var jsonWriter = new JsonTextWriter(writer))
-                {
-                    var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-                    var serializer = JsonSerializer.Create(settings);
-
-                    serializer.Serialize(jsonWriter, ((InvokeResponse)activitiesToSend[0].Value).Body);
-                }
-
-                await writer.FlushAsync();
-
-                var obj = JObject.Parse(writer.ToString());
-
-                Assert.True(obj["healthResults"]["success"].Value<bool>());
-                Assert.Equal("awesome", obj["healthResults"]["authorization"].ToString());
-                Assert.Equal("Windows/3.1", obj["healthResults"]["user-agent"].ToString());
-                Assert.Equal("Health check succeeded.", obj["healthResults"]["messages"][0].ToString());
-            }
-        }
-
-        [Fact]
         public async Task TestInvokeShouldNotMatchAsync()
         {
             // Arrange
@@ -921,12 +799,6 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.CompletedTask;
-            }
-
-            protected override Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-            {
-                Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.FromResult(new HealthCheckResponse());
             }
 
             protected override Task OnInstallationUpdateAddAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
