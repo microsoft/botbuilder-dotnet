@@ -220,6 +220,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
             yield return new ObjectExpressionConverter<FindChoicesOptions>();
             yield return new ObjectExpressionConverter<ConversationReference>();
+            yield return new ObjectExpressionConverter<object>();
+            yield return new ObjectExpressionConverter<Transcript>();
 
             yield return new ArrayExpressionConverter<string>();
             yield return new ArrayExpressionConverter<Choice>();

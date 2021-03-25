@@ -21,13 +21,17 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// </summary>
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="AdaptiveDialog"/> from.</param>
-        /// <param name="storage">The <see cref="IStorage"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
+        /// <param name="conversationState">The <see cref="ConversationState"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
+        /// <param name="userState">The <see cref="UserState"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
+        /// <param name="skillConversationIdFactoryBase">The <see cref="SkillConversationIdFactoryBase"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> for making calls to Bot Builder Skills.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         public ConfigurationAdaptiveDialogBot(
             IConfiguration configuration,
             ResourceExplorer resourceExplorer,
-            IStorage storage = null,
+            ConversationState conversationState,
+            UserState userState,
+            SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             BotFrameworkAuthentication botFrameworkAuthentication = null,
             ILogger logger = null)
             : base(
@@ -35,9 +39,9 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
                 configuration.GetSection(ConfigurationConstants.LanguageGeneratorKey).Value ?? DefaultLanguageGeneratorId,
                 configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value ?? DefaultLocale,
                 resourceExplorer,
-                new ConversationState(storage ?? new MemoryStorage()),
-                new UserState(storage ?? new MemoryStorage()),
-                new SkillConversationIdFactory(storage ?? new MemoryStorage()),
+                conversationState,
+                userState,
+                skillConversationIdFactoryBase,
                 botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),
                 logger ?? NullLogger<AdaptiveDialogBot>.Instance)
         {

@@ -47,5 +47,13 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         /// The blob transcript store settings.
         /// </value>
         public BlobsStorageSettings BlobTranscript { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SetSpeakMiddleware settings.
+        /// </summary>
+        /// <value>
+        /// The SetSpeakMiddleware settings.
+        /// </value>
+        public SpeakSettings SetSpeak { get; set; }
     }
 }
