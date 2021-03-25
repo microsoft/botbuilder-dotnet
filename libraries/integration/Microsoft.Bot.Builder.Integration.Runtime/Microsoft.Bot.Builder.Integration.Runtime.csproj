@@ -39,10 +39,6 @@
     <PackageReference Include="Microsoft.Bot.Builder.Integration.ApplicationInsights.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive.Teams" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive.Teams" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Runtime.Plugins" Condition=" '$(PreviewPackageVersion)' == '' " Version="$(LocalPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Runtime.Plugins" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.8" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.8" />
@@ -58,8 +54,6 @@
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.Azure.Blobs\Microsoft.Bot.Builder.Azure.Blobs.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams\Microsoft.Bot.Builder.Dialogs.Adaptive.Teams.csproj" />
-    <ProjectReference Include="..\..\Microsoft.Bot.Builder.Runtime.Plugins\Microsoft.Bot.Builder.Runtime.Plugins.csproj" />
   </ItemGroup>
 
   <ItemGroup>

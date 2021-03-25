@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -781,6 +782,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }).StartTestAsync();
         }
 
+        [Fact]
+        public async Task TestMemoryScope_PathResolver_Registration()
+        {
+            const string key = "testKey";
+            string fullKey = $"test.{key}";
+            string shortKey = $"^^{key}";
+            const string testValue = "testValue";
+
+            await CreateDialogContext(async (dc, ct) =>
+            {
+                var state = dc.State;
+                state.SetValue(fullKey, testValue);
+                Assert.Equal(testValue, state.GetValue<string>(fullKey));
+                Assert.Equal(testValue, state.GetValue<string>(shortKey));
+            }).StartTestAsync();
+        }
+
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName), sendTrace)
@@ -807,7 +825,58 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dm = new DialogManager(new LamdaDialog(handler));
             dm.InitialTurnState.Set(new ResourceExplorer());
+            dm.InitialTurnState.Set<IEnumerable<MemoryScope>>(new MemoryScope[] { new TestMemoryScope() });
+            dm.InitialTurnState.Set<IEnumerable<IPathResolver>>(new IPathResolver[] { new DoubleCaratPathResolver() });
             return new TestFlow(adapter, dm.OnTurnAsync).SendConversationUpdate();
+        }
+
+        private class DoubleCaratPathResolver : AliasPathResolver
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="DoubleCaratPathResolver"/> class.
+            /// </summary>
+            public DoubleCaratPathResolver()
+                : base(alias: "^^", prefix: "test.")
+            {
+            }
+        }
+
+        private class TestMemoryScope : MemoryScope
+        {
+            private const string Scope = "test";
+
+            public TestMemoryScope()
+                : base(Scope)
+            {
+            }
+
+            public override object GetMemory(DialogContext dc)
+            {
+                if (dc == null)
+                {
+                    throw new ArgumentNullException(nameof(dc));
+                }
+
+                if (!dc.Context.TurnState.TryGetValue(ScopePath.Turn, out object val))
+                {
+                    val = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                    dc.Context.TurnState[ScopePath.Turn] = val;
+                }
+
+                return val;
+            }
+
+            public override void SetMemory(DialogContext dc, object memory)
+            {
+                {
+                    if (dc == null)
+                    {
+                        throw new ArgumentNullException(nameof(dc));
+                    }
+
+                    dc.Context.TurnState[ScopePath.Turn] = memory;
+                }
+            }
         }
     }
 

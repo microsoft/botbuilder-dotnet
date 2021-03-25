@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Integration.Runtime.Plugins;
-using Microsoft.Bot.Builder.Runtime.Plugins;
+using Microsoft.Bot.Builder.Integration.Runtime.Component;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
 {
@@ -37,12 +36,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         public SkillSettings Skills { get; set; } = new SkillSettings();
 
         /// <summary>
-        /// Gets or sets the list of plugins registered for the runtime.
+        /// Gets or sets the list of components registered for the runtime.
         /// </summary>
         /// <value>
-        /// The list of plugins registered for the runtime.
+        /// The list of components registered for the runtime.
         /// </value>
-        public IList<BotPluginDefinition> Plugins { get; set; } = new List<BotPluginDefinition>();
+        public IList<BotComponentDefinition> Components { get; set; } = new List<BotComponentDefinition>();
 
         /// <summary>
         /// Gets or sets the list of adapters to expose in the runtime.

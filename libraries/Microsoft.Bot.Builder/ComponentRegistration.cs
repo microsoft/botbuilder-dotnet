@@ -4,6 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -29,6 +34,7 @@ namespace Microsoft.Bot.Builder
     ///      ComponentRegistration.Add(new MyComponentRegistration());
     /// </code>
     /// </remarks>
+    [Obsolete("Use `BotComponent` for new components.")]
 #pragma warning disable CA1052 // Static holder types should be Static or NotInheritable (we can't change this without breaking binary compat)
     public class ComponentRegistration
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
@@ -41,6 +47,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// A numeration of ComponentRegistration objects.
         /// </value>
+        [Obsolete("Use resource explorer")]
         public static IEnumerable<object> Components => _components.Values;
 
         /// <summary>
@@ -48,6 +55,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <remarks>Only one instance per type is allowed for components.</remarks>
         /// <param name="componentRegistration">componentRegistration.</param>
+        [Obsolete("Use resource explorer")]
         public static void Add(ComponentRegistration componentRegistration)
         {
             _components[componentRegistration.GetType()] = componentRegistration;

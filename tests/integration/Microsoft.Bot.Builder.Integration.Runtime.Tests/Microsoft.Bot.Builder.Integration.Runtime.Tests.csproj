@@ -20,5 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.Runtime\Microsoft.Bot.Builder.Integration.Runtime.csproj" />
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
   </ItemGroup>
   </Project>

@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
@@ -30,6 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
+        private readonly IEnumerable<MemoryScope> _memoryScopes;
+        private readonly IEnumerable<IPathResolver> _pathResolvers;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -43,6 +48,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="userState">A <see cref="UserState"/> implementation.</param>
         /// <param name="skillConversationIdFactoryBase">A <see cref="SkillConversationIdFactoryBase"/> implementation.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
+        /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
+        /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         public AdaptiveDialogBot(
             string adaptiveDialogId,
@@ -53,6 +60,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             BotFrameworkAuthentication botFrameworkAuthentication,
+            IEnumerable<MemoryScope> scopes = default,
+            IEnumerable<IPathResolver> pathResolvers = default,
             ILogger logger = null)
         {
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
@@ -63,6 +72,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             _userState = userState ?? throw new ArgumentNullException(nameof(userState));
             _skillConversationIdFactoryBase = skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase));
             _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
+            _memoryScopes = scopes ?? Enumerable.Empty<MemoryScope>();
+            _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
             _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
         }
 
@@ -95,6 +106,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_conversationState);
             turnContext.TurnState.Add(_userState);
             turnContext.TurnState.Add(_resourceExplorer);
+            turnContext.TurnState.Add(_memoryScopes);
+            turnContext.TurnState.Add(_pathResolvers);
             turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             turnContext.TurnState.Add(new LanguagePolicy(_defaultLocale));

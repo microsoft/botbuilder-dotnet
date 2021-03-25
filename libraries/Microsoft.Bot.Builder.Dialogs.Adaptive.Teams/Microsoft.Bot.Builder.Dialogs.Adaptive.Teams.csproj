@@ -15,6 +15,7 @@
     <Description>This library implements .NET support for adaptive dialogs with Microsoft Teams</Description>
     <Summary>This library implements .NET support for adaptive dialogs with Microsoft Teams</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <PackageTags>bf-component</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

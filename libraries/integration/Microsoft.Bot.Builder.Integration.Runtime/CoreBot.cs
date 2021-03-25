@@ -2,15 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime
@@ -36,6 +39,8 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
         /// <param name="telemetryClient"><see cref="IBotTelemetryClient"/> for the bot.</param>
         /// <param name="botFrameworkClient"><see cref="BotFrameworkClient"/> instance for the bot.</param>
         /// <param name="conversationIdfactory"><see cref="SkillConversationIdFactoryBase"/> instance for the bot.</param>
+        /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
+        /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
         public CoreBot(
             IOptions<CoreBotOptions> options,
             ConversationState conversationState,
@@ -43,7 +48,9 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
             ResourceExplorer resourceExplorer,
             IBotTelemetryClient telemetryClient,
             BotFrameworkClient botFrameworkClient,
-            SkillConversationIdFactoryBase conversationIdfactory)
+            SkillConversationIdFactoryBase conversationIdfactory,
+            IEnumerable<MemoryScope> scopes = default,
+            IEnumerable<IPathResolver> pathResolvers = default)
         {
             _conversationState = conversationState;
             _userState = userState;
@@ -65,6 +72,16 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
             _dialogManager.InitialTurnState.Set(conversationIdfactory);
             _dialogManager.InitialTurnState.Set(_userState);
             _dialogManager.InitialTurnState.Set(_conversationState);
+
+            if (scopes != null)
+            {
+                _dialogManager.InitialTurnState.Set(scopes);
+            }
+
+            if (pathResolvers != null)
+            {
+                _dialogManager.InitialTurnState.Set(pathResolvers);
+            }
         }
 
         /// <summary>

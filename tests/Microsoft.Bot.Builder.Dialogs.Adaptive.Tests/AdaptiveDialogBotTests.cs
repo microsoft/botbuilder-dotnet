@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 userState,
                 skillConversationIdFactory,
                 botFrameworkAuthenticationMock.Object,
-                logger);
+                logger: logger);
             
             await bot.OnTurnAsync(turnContext, CancellationToken.None);
 
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 userState,
                 skillConversationIdFactory,
                 botFrameworkAuthenticationMock.Object,
-                logger);
+                logger: logger);
             
             var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
 

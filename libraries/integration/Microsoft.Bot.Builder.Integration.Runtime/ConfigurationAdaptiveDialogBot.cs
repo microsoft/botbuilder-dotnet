@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime
                 userState,
                 skillConversationIdFactoryBase,
                 botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),
-                logger ?? NullLogger<AdaptiveDialogBot>.Instance)
+                logger: logger ?? NullLogger<AdaptiveDialogBot>.Instance)
         {
         }
     }
