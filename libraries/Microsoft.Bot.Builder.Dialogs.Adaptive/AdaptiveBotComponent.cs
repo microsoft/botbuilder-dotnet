@@ -75,6 +75,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<OnChooseEntity>(OnChooseEntity.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<OnAssignEntity>(OnAssignEntity.Kind));
 
+            services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<OnCommandActivity>(OnCommandActivity.Kind));
+            services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<OnCommandResultActivity>(OnCommandResultActivity.Kind));
+
             // Actions
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<BeginDialog>(BeginDialog.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<BeginSkill>(BeginSkill.Kind));
