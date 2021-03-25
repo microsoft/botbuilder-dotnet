@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public class AdaptiveBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void Startup(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
         {
             // Adaptive dialog functions.
             Expression.Functions.Add(IsDialogActiveFunction.Name, new IsDialogActiveFunction());

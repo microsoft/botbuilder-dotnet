@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
             _loadAction = loadAction ?? throw new ArgumentNullException(nameof(loadAction));
         }
 
-        public override void Startup(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
         {
             _loadAction(services, configuration, logger);
         }

@@ -77,14 +77,14 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
 
         protected class ProtectedBotComponent : BotComponent
         {
-            public override void Startup(IServiceCollection services, IConfiguration configuration, ILogger logger)
+            public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
             {
             }
         }
 
         private class PrivateBotBotComponent : BotComponent
         {
-            public override void Startup(IServiceCollection services, IConfiguration configuration, ILogger logger)
+            public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
             {
             }
         }

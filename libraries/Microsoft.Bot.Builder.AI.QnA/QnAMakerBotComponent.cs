@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class QnAMakerBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void Startup(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
         {
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<QnAMakerDialog>(QnAMakerDialog.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.Kind));

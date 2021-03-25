@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components.Implementations
 {
     public class ContosoAdapterComponent : BotComponent
     {
-        public override void Startup(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
         {
             services.AddSingleton<IBotFrameworkHttpAdapter, ContosoAdapter>();
         }

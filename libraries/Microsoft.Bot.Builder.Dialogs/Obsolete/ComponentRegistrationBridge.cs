@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Obsolete
         protected IEnumerable<TRegistration> GetFromComponent<TRegistration>(IServiceCollection services = null)
         {
             services = services ?? new ServiceCollection();
-            BotComponent.Startup(services, _configuration, _logger);
+            BotComponent.ConfigureServices(services, _configuration, _logger);
             return services.BuildServiceProvider().GetServices<TRegistration>();
         }
     }

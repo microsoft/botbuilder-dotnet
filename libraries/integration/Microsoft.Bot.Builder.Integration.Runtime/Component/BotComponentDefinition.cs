@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Component
             {
                 var componentServices = new ServiceCollection();
 
-                component.Startup(componentServices, GetPluginConfiguration(configuration), null /*for now*/);
+                component.ConfigureServices(componentServices, GetPluginConfiguration(configuration), null /*for now*/);
 
                 foreach (var serviceDescriptor in componentServices)
                 {

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components.Implementations
 {
     public class PirateBotComponent : BotComponent
     {
-        public override void Startup(
+        public override void ConfigureServices(
             IServiceCollection services, 
             IConfiguration componentConfiguration, 
             ILogger logger)

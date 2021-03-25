@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Test 
 
             // Register a declarative component
-            new PirateBotComponent().Startup(services, configuration, null);
+            new PirateBotComponent().ConfigureServices(services, configuration, null);
 
             services.AddBotRuntime(configuration);
 
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Test 
 
             // Register a declarative component
-            new PirateBotComponent().Startup(services, configuration, null);
+            new PirateBotComponent().ConfigureServices(services, configuration, null);
 
             services.AddBotRuntime(configuration);
 

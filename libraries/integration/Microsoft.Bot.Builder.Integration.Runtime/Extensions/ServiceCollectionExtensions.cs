@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             {
                 var componentServices = new ServiceCollection();
 
-                component.Startup(componentServices, configuration, null /*for now*/);
+                component.ConfigureServices(componentServices, configuration, null /*for now*/);
 
                 foreach (var serviceDescriptor in componentServices)
                 {
