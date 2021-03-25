@@ -62,6 +62,34 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
+        public override string GetOriginatingAudience()
+        {
+            return _toChannelFromBotOAuthScope;
+        }
+
+        public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                var isAuthDisabled = await new DelegatingCredentialProvider(_credentialsFactory).IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                if (!isAuthDisabled)
+                {
+                    // No auth header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
+                }
+
+                // In the scenario where auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity.
+                // To do this requires adding in an empty claim.
+                // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
+                return SkillValidation.CreateAnonymousSkillClaim();
+            }
+
+            return await JwtTokenValidation
+                .ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialsFactory), GetChannelProvider(), "unknown", _authConfiguration)
+                .ConfigureAwait(false);
+        }
+
         public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
         {
             var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialsFactory), GetChannelProvider(), _authConfiguration, _authHttpClient).ConfigureAwait(false);

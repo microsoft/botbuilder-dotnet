@@ -15,40 +15,30 @@ namespace Microsoft.Bot.Builder.Skills
     /// <summary>
     /// A Bot Framework Handler for skills.
     /// </summary>
-    public class SkillHandler : ChannelServiceHandler
+    public class CloudSkillHandler : CloudChannelServiceHandler
     {
         /// <summary>
         /// The skill conversation reference.
         /// </summary>
-        public static readonly string SkillConversationReferenceKey = $"{typeof(SkillHandler).Namespace}.SkillConversationReference";
+        public static readonly string SkillConversationReferenceKey = $"{typeof(CloudSkillHandler).Namespace}.SkillConversationReference";
 
         private readonly SkillHandlerImpl _inner;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SkillHandler"/> class,
-        /// using a credential provider.
+        /// Initializes a new instance of the <see cref="CloudSkillHandler"/> class using BotFrameworkAuth.
         /// </summary>
         /// <param name="adapter">An instance of the <see cref="BotAdapter"/> that will handle the request.</param>
         /// <param name="bot">The <see cref="IBot"/> instance.</param>
         /// <param name="conversationIdFactory">A <see cref="SkillConversationIdFactoryBase"/> to unpack the conversation ID and map it to the calling bot.</param>
-        /// <param name="credentialProvider">The credential provider.</param>
-        /// <param name="authConfig">The authentication configuration.</param>
-        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="auth">auth.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        /// <exception cref="ArgumentNullException">throw ArgumentNullException.</exception>
-        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
-        /// components in the constructor. Use the Use(<see cref="IMiddleware"/>) method to
-        /// add additional middleware to the adapter after construction.
-        /// </remarks>
-        public SkillHandler(
+        public CloudSkillHandler(
             BotAdapter adapter,
             IBot bot,
             SkillConversationIdFactoryBase conversationIdFactory,
-            ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig,
-            IChannelProvider channelProvider = null,
+            BotFrameworkAuthentication auth,
             ILogger logger = null)
-            : base(credentialProvider, authConfig, channelProvider)
+            : base(auth)
         {
             if (adapter == null)
             {
@@ -70,9 +60,7 @@ namespace Microsoft.Bot.Builder.Skills
                 adapter,
                 bot,
                 conversationIdFactory,
-                () => ChannelProvider != null && ChannelProvider.IsGovernment()
-                    ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
-                    : AuthenticationConstants.ToChannelFromBotOAuthScope,
+                auth.GetOriginatingAudience,
                 logger ?? NullLogger.Instance);
         }
 
