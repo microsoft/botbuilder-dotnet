@@ -24,6 +24,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
@@ -36,18 +37,19 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         /// THIS IS TEMPORARY TEST CODE. Adds bot runtime-related services to the application's service collection.
         /// </summary>
         /// <param name="services">The application's collection of registered services.</param>
-        public static void AddAdaptiveRuntime(this IServiceCollection services)
+        /// <param name="configuration">IConfiguration.</param>
+        public static void AddAdaptiveRuntime(this IServiceCollection services, IConfiguration configuration)
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
+
+            var component = new Dialogs.DialogsBotComponent();
+            component.ConfigureServices(services, configuration, NullLogger.Instance);
 
             // Storage
             services.TryAddSingleton(ServiceFactory.Storage);
             services.TryAddSingleton<UserState>();
             services.TryAddSingleton<ConversationState>();
             services.TryAddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
-
-            // SettingsMemoryScope
-            services.AddSingleton<MemoryScope, ConfigurationSettingsMemoryScope>();
 
             // ResourceExplorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();

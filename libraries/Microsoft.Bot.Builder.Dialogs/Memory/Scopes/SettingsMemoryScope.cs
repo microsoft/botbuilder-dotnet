@@ -17,14 +17,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class SettingsMemoryScope : MemoryScope
     {
         private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
+        private readonly ImmutableDictionary<string, object> _settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
         /// </summary>
-        public SettingsMemoryScope()
+        /// <param name="configuration">The <see cref="IConfiguration"/> from which to create these settings.</param>
+        public SettingsMemoryScope(IConfiguration configuration = null)
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
+
+            if (configuration != null)
+            {
+                _settings = LoadSettings(configuration);
+            }
         }
 
         /// <summary>
@@ -41,11 +48,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out var settings))
             {
-                var configuration = dc.Context.TurnState.Get<IConfiguration>();
-                if (configuration != null)
+                // If this instance was created from IConfiguration we have the settings here.
+                if (_settings != null)
                 {
-                    settings = LoadSettings(configuration);
+                    settings = _settings;
                     dc.Context.TurnState[ScopePath.Settings] = settings;
+                }
+                else
+                {
+                    // Keep the following legacy implementation for back compatibility.
+                    var configuration = dc.Context.TurnState.Get<IConfiguration>();
+                    if (configuration != null)
+                    {
+                        settings = LoadSettings(configuration);
+                        dc.Context.TurnState[ScopePath.Settings] = settings;
+                    }
                 }
             }
 
