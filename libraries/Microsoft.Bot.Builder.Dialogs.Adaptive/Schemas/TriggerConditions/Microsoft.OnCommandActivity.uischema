@@ -8,11 +8,11 @@
         "hidden": [
             "actions"
         ],
-        "label": "Message received",
-        "subtitle": "Message activity received"
+        "label": "Command received",
+        "subtitle": "Command activity received"
     },
     "trigger": {
-        "label": "Message received (Message activity received)",
+        "label": "Command received (Command activity received)",
         "order": 5.81,
         "submenu": "Activities"
     }

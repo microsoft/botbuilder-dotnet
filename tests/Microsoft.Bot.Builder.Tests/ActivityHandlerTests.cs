@@ -681,6 +681,49 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task TestCommandActivityType()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Command,
+                Name = "application/test",
+                Value = new CommandValue<object> { CommandId = "Test", Data = new { test = true } }
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnCommandActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+        public async Task TestCommandResultActivityType()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.CommandResult,
+                Name = "application/test",
+                Value = new CommandResultValue<object> { CommandId = "Test", Data = new { test = true } }
+            };
+
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnCommandResultActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
         public async Task TestUnrecognizedActivityType()
         {
             // Arrange
@@ -843,6 +886,18 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnInstallationUpdateActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnCommandActivityAsync(ITurnContext<ICommandActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnCommandActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnCommandResultActivityAsync(ITurnContext<ICommandResultActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnCommandResultActivityAsync(turnContext, cancellationToken);
             }
 
             protected override Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
