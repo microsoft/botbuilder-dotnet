@@ -12,6 +12,8 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
@@ -43,6 +45,9 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.TryAddSingleton<UserState>();
             services.TryAddSingleton<ConversationState>();
             services.TryAddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
+
+            // SettingsMemoryScope
+            services.AddSingleton<MemoryScope, ConfigurationSettingsMemoryScope>();
 
             // ResourceExplorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
