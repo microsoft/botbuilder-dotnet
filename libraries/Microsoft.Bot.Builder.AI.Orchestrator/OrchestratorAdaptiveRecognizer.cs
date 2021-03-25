@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -36,6 +37,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string ResultProperty = "result";
 
+        /// <summary>
+        /// Property key used when storing extracted entities in a custom event within telemetry.
+        /// </summary>
+        public const string EntitiesProperty = "entities";
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
         private string _modelFolder;
@@ -76,6 +81,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             _snapshotFile = snapshotFile;
             InitializeModel();
         }
+
+        [JsonIgnore]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        public bool ScoreEntities { get; set; } = false;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         /// <summary>
         /// Gets or sets the folder path to Orchestrator base model to use.
@@ -152,13 +162,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 return recognizerResult;
             }
 
-            if (ExternalEntityRecognizer != null)
-            {
-                // Run external recognition
-                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
-                recognizerResult.Entities = externalResults.Entities;
-            }
-
             // Score with orchestrator
             var results = _resolver.Score(text);
 
@@ -177,10 +180,13 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 else
                 {
                     // add top score
-                    recognizerResult.Intents.Add(results[0].Label.Name, new IntentScore()
+                    foreach (var result in results)
                     {
-                        Score = results[0].Score
-                    });
+                        recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
+                        {
+                            Score = result.Score
+                        });
+                    }
 
                     // Disambiguate if configured
                     if (detectAmbiguity)
@@ -215,11 +221,138 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Return 'None' if no intent matched.
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
-
+            
             await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
             TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
 
+            if (ExternalEntityRecognizer != null)
+            {
+                // Run external recognition
+                var externalResults = await ExternalEntityRecognizer.RecognizeAsync(dc, activity, cancellationToken, telemetryProperties, telemetryMetrics).ConfigureAwait(false);
+                recognizerResult.Entities = externalResults.Entities;
+            }
+
+            TryScoreEntities(text, recognizerResult);
             return recognizerResult;
+        }
+
+        /// <summary>
+        /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.
+        /// </summary>
+        /// <param name="recognizerResult">Recognizer Result.</param>
+        /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
+        /// <param name="dialogContext">Dialog Context.</param>
+        /// <returns>A dictionary that can be included when calling the TrackEvent method on the TelemetryClient.</returns>
+        protected override Dictionary<string, string> FillRecognizerResultTelemetryProperties(RecognizerResult recognizerResult, Dictionary<string, string> telemetryProperties, DialogContext dialogContext = null)
+        {
+            if (dialogContext == null)
+            {
+                throw new ArgumentNullException(nameof(dialogContext), "DialogContext needed for state in AdaptiveRecognizer.FillRecognizerResultTelemetryProperties method.");
+            }
+
+            var orderedIntents = recognizerResult.Intents.Any() ? recognizerResult.Intents.OrderByDescending(key => key.Value.Score) : null;
+            var properties = new Dictionary<string, string>
+            {
+                { "TopIntent", recognizerResult.Intents.Any() ? orderedIntents.First().Key : null },
+                { "TopIntentScore", recognizerResult.Intents.Any() ? orderedIntents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
+                { "NextIntent", recognizerResult.Intents.Count > 1 ? orderedIntents.ElementAtOrDefault(1).Key : null },
+                { "NextIntentScore", recognizerResult.Intents.Count > 1 ? orderedIntents.ElementAtOrDefault(1).Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
+                { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
+                { "Entities", recognizerResult.Entities?.ToString() },
+                { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
+            };
+
+            var (logPersonalInfo, error) = LogPersonalInformation.TryGetValue(dialogContext.State);
+
+            if (logPersonalInfo && !string.IsNullOrEmpty(recognizerResult.Text))
+            {
+                properties.Add("Text", recognizerResult.Text);
+                properties.Add("AlteredText", recognizerResult.AlteredText);
+            }
+
+            // Additional Properties can override "stock" properties.
+            if (telemetryProperties != null)
+            {
+                return telemetryProperties.Concat(properties)
+                    .GroupBy(kv => kv.Key)
+                    .ToDictionary(g => g.Key, g => g.First().Value);
+            }
+
+            return properties;
+        }
+
+        private static JToken EntityResultToJObject(string text, Result result)
+        {
+            Span span = result.Label.Span;
+            return new JObject(
+                new JProperty("type", result.Label.Name),
+                new JProperty("score", result.Score),
+                new JProperty("text", text.Substring((int)span.Offset, (int)span.Length)),
+                new JProperty("start", (int)span.Offset),
+                new JProperty("end", (int)(span.Offset + span.Length)));
+        }
+
+        private static JToken EntityResultToInstanceJObject(string text, Result result)
+        {
+            Span span = result.Label.Span;
+            dynamic instance = new JObject();
+            instance.startIndex = (int)span.Offset;
+            instance.endIndex = (int)(span.Offset + span.Length);
+            instance.score = result.Score;
+            instance.text = text.Substring((int)span.Offset, (int)span.Length);
+            instance.type = result.Label.Name;
+            return instance;
+        }
+
+        private void TryScoreEntities(string text, RecognizerResult recognizerResult)
+        {
+            if (!this.ScoreEntities)
+            {
+                return;
+            }
+
+            var results = _resolver.Score(text, LabelType.Entity);
+            recognizerResult.Properties.Add(EntitiesProperty, results);
+
+            if (results.Any())
+            {
+                if (recognizerResult.Entities == null)
+                {
+                    recognizerResult.Entities = new JObject();
+                }
+
+                var entitiesResult = recognizerResult.Entities;
+                foreach (var result in results)
+                {
+                    // add value
+                    JToken values;
+                    if (!entitiesResult.TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out values))
+                    {
+                        values = new JArray();
+                        entitiesResult[result.Label.Name] = values;
+                    }
+
+                    ((JArray)values).Add(EntityResultToJObject(text, result));
+
+                    // get/create $instance
+                    JToken instanceRoot;
+                    if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                    {
+                        instanceRoot = new JObject();
+                        recognizerResult.Entities["$instance"] = instanceRoot;
+                    }
+
+                    // add instanceData
+                    JToken instanceData;
+                    if (!((JObject)instanceRoot).TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out instanceData))
+                    {
+                        instanceData = new JArray();
+                        instanceRoot[result.Label.Name] = instanceData;
+                    }
+
+                    ((JArray)instanceData).Add(EntityResultToInstanceJObject(text, result));
+                }
+            }
         }
 
         private void InitializeModel()
@@ -250,7 +383,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Create Orchestrator
                 try
                 {
-                    return new BotFramework.Orchestrator.Orchestrator(path);
+                    string entityModelFolder = Path.Combine(path, "entity");
+                    ScoreEntities = Directory.Exists(entityModelFolder);
+
+                    return ScoreEntities ?
+                        new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
+                        new BotFramework.Orchestrator.Orchestrator(path);
                 }
                 catch (Exception ex)
                 {

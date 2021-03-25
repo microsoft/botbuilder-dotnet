@@ -10,10 +10,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
     public class MockResolver : ILabelResolver
     {
         private readonly IReadOnlyList<Result> _score;
+        private readonly IReadOnlyList<Result> _entityScore;
 
-        public MockResolver(IReadOnlyList<Result> score)
+        public MockResolver(IReadOnlyList<Result> score, IReadOnlyList<Result> entityScore = null)
         {
             this._score = score;
+            this._entityScore = entityScore;
         }
 
         public bool AddExample(in Example example)
@@ -53,7 +55,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 
         public IReadOnlyList<Result> Score(in string text, in LabelType labelType)
         {
-            throw new NotImplementedException();
+            if (labelType != LabelType.Entity)
+            {
+                throw new NotImplementedException();
+            }
+
+            return _entityScore;
         }
 
         public void SetRuntimeParams(in string config_or_path, bool reset_all)

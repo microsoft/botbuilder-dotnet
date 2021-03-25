@@ -56,6 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnQnAMatch(),
                 new OnRepromptDialog(),
                 new OnUnknownIntent(),
+                new OnCommandActivity(),
+                new OnCommandResultActivity(),
             };
             foreach (var condition in conditions)
             {
@@ -225,6 +227,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Condition = "turn.test == 1"
                 },
                 "(turn.test == 1)");
+
+            AssertExpression(
+                new OnCommandActivity()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.activity.type == '{ActivityTypes.Command}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
+
+            AssertExpression(
+                new OnCommandResultActivity()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.activity.type == '{ActivityTypes.CommandResult}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
         }
 
         private void AssertExpression(OnCondition condition, string expectedExpression)

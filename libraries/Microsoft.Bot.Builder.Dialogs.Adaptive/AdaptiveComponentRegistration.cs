@@ -80,6 +80,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new DeclarativeType<OnChooseEntity>(OnChooseEntity.Kind);
             yield return new DeclarativeType<OnAssignEntity>(OnAssignEntity.Kind);
 
+            yield return new DeclarativeType<OnCommandActivity>(OnCommandActivity.Kind);
+            yield return new DeclarativeType<OnCommandResultActivity>(OnCommandResultActivity.Kind);
+
             // Actions
             yield return new DeclarativeType<BeginDialog>(BeginDialog.Kind);
             yield return new DeclarativeType<BeginSkill>(BeginSkill.Kind);
@@ -217,6 +220,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new ObjectExpressionConverter<ChoiceFactoryOptions>();
             yield return new ObjectExpressionConverter<FindChoicesOptions>();
             yield return new ObjectExpressionConverter<ConversationReference>();
+            yield return new ObjectExpressionConverter<object>();
+            yield return new ObjectExpressionConverter<Transcript>();
 
             yield return new ArrayExpressionConverter<string>();
             yield return new ArrayExpressionConverter<Choice>();
