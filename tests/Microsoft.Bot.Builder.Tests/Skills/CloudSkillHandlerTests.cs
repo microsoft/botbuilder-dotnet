@@ -17,14 +17,8 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 {
     public class CloudSkillHandlerTests
     {
-        private static readonly string TestBotId = Guid.NewGuid().ToString("N");
-        private static readonly string TestBotEndpoint = "http://testbot.com/api/messages";
-
         private static readonly string TestSkillId = Guid.NewGuid().ToString("N");
-        private static readonly string TestSkillEndpoint = "http://testskill.com/api/messages";
-
         private static readonly string TestAuthHeader = string.Empty; // Empty since claims extraction is being mocked
-        private static readonly string TestActivityId = Guid.NewGuid().ToString("N");
 
         [Theory]
         [InlineData(ActivityTypes.Message, null)]
@@ -138,86 +132,27 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
             // Assert
             Assert.NotNull(mockObjects.TurnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey));
-            Assert.Equal(activityToDelete, mockObjects.ActivityIdToUpdateOrDelete);
+            Assert.Equal(activityToDelete, mockObjects.ActivityIdToDelete);
         }
 
         [Fact]
         public async void TestUpdateActivityAsync()
         {
             // Arrange
-            var activity = (Activity)Activity.CreateMessageActivity();
-            var message = activity.Text = $"TestUpdate {DateTime.Now}.";
-            var conversationIdFactory = new TestSkillConversationIdFactory();
-            var conversationId = await CreateTestSkillConversationIdAsync(conversationIdFactory, activity);
-
-            var adapter = new Mock<BotAdapter>();
-            adapter.Setup(a => a.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (token, conv, audience, callback, cancel) =>
-                {
-                    var turn = new TurnContext(adapter.Object, conv.GetContinuationActivity());
-                    await callback(turn, cancel);
-
-                    // Assert the callback set the right properties.
-                    Assert.Equal($"{CallerIdConstants.BotToBotPrefix}{TestSkillId}", turn.Activity.CallerId);
-                });
-            adapter.Setup(a => a.UpdateActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
-                .Callback<ITurnContext, Activity, CancellationToken>((turn, newActivity, cancel) =>
-                {
-                    Assert.Equal(TestActivityId, newActivity.ReplyToId);
-                    Assert.Equal(message, newActivity.Text);
-                })
-                .Returns(Task.FromResult(new ResourceResponse("resourceId")));
-
-            var bot = new Mock<IBot>();
-            var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(AuthenticateChannelRequest);
+            var mockObjects = new CloudSkillHandlerTestMocks();
+            var activity = new Activity(ActivityTypes.Message) { Text = $"TestUpdate {DateTime.Now}." };
+            var conversationId = await mockObjects.CreateAndApplyConversationIdAsync(activity);
+            var activityToUpdate = Guid.NewGuid().ToString();
 
             // Act
-            var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
-            var response = await sut.HandleUpdateActivityAsync(TestAuthHeader, conversationId, TestActivityId, activity);
+            var sut = new CloudSkillHandler(mockObjects.Adapter.Object, mockObjects.Bot.Object, mockObjects.ConversationIdFactory, mockObjects.Auth.Object);
+            var response = await sut.HandleUpdateActivityAsync(TestAuthHeader, conversationId, activityToUpdate, activity);
 
             // Assert
-            adapter.Verify(a => a.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
-            adapter.Verify(a => a.UpdateActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
             Assert.Equal("resourceId", response.Id);
-        }
-
-        private async Task<string> CreateTestSkillConversationIdAsync(SkillConversationIdFactoryBase conversationIdFactory, Activity activity)
-        {
-            activity.ApplyConversationReference(new ConversationReference
-            {
-                Conversation = new ConversationAccount(id: TestBotId),
-                ServiceUrl = TestBotEndpoint
-            });
-
-            var skill = new BotFrameworkSkill
-            {
-                AppId = TestSkillId,
-                Id = "skill",
-                SkillEndpoint = new Uri(TestSkillEndpoint)
-            };
-
-            var options = new SkillConversationIdFactoryOptions
-            {
-                FromBotOAuthScope = TestBotId,
-                FromBotId = TestBotId,
-                Activity = activity,
-                BotFrameworkSkill = skill
-            };
-
-            return await conversationIdFactory.CreateSkillConversationIdAsync(options, CancellationToken.None);
-        }
-
-        private Task<ClaimsIdentity> AuthenticateChannelRequest(string authHeader, CancellationToken cancellationToken)
-        {
-            var token = new ClaimsIdentity();
-
-            token.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, TestBotId));
-            token.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, TestSkillId));
-            token.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, TestBotEndpoint));
-
-            return Task.FromResult(token);
+            Assert.NotNull(mockObjects.TurnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey));
+            Assert.Equal(activityToUpdate, mockObjects.TurnContext.Activity.Id);
+            Assert.Equal(activity.Text, mockObjects.UpdateActivity.Text);
         }
 
         /// <summary>
@@ -226,6 +161,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         /// </summary>
         private class CloudSkillHandlerTestMocks
         {
+            private static readonly string TestBotId = Guid.NewGuid().ToString("N");
+            private static readonly string TestBotEndpoint = "http://testbot.com/api/messages";
+
+            private static readonly string TestSkillEndpoint = "http://testskill.com/api/messages";
+
             public CloudSkillHandlerTestMocks()
             {
                 Adapter = CreateMockAdapter();
@@ -256,9 +196,14 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             public Activity BotActivity { get; private set; }
 
             /// <summary>
+            /// Gets the update activity.
+            /// </summary>
+            public Activity UpdateActivity { get; private set; }
+
+            /// <summary>
             /// Gets the Activity sent to the Bot.
             /// </summary>
-            public string ActivityIdToUpdateOrDelete { get; private set; }
+            public string ActivityIdToDelete { get; private set; }
 
             public async Task<string> CreateAndApplyConversationIdAsync(Activity activity)
             {
@@ -320,8 +265,17 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                     .Callback<ITurnContext, ConversationReference, CancellationToken>((turn, conv, cancel) =>
                     {
                         // Capture the activity id to delete so we can assert it. 
-                        ActivityIdToUpdateOrDelete = conv.ActivityId;
+                        ActivityIdToDelete = conv.ActivityId;
                     });
+
+                // Mock the UpdateActivityAsync method
+                adapter.Setup(a => a.UpdateActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<Activity>(), It.IsAny<CancellationToken>()))
+                    .Callback<ITurnContext, Activity, CancellationToken>((turn, newActivity, cancel) =>
+                    {
+                        // Capture the activity to update.
+                        UpdateActivity = newActivity;
+                    })
+                    .Returns(Task.FromResult(new ResourceResponse("resourceId")));
 
                 return adapter;
             }
