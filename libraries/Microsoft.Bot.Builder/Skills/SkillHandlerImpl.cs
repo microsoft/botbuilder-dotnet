@@ -175,14 +175,27 @@ namespace Microsoft.Bot.Builder.Skills
                 {
                     case ActivityTypes.EndOfConversation:
                         await _conversationIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-                        ApplyEoCToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        await SendToBotAsync(activity, turnContext, ct).ConfigureAwait(false);
                         break;
                     case ActivityTypes.Event:
-                        ApplyEventToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        await SendToBotAsync(activity, turnContext, ct).ConfigureAwait(false);
                         break;
+                    case ActivityTypes.Command:
+                    case ActivityTypes.CommandResult:
+                        if (activity.Name.StartsWith("application/", StringComparison.Ordinal))
+                        {
+                            // Send to channel and capture the resource response for the SendActivityCall so we can return it.
+                            resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await SendToBotAsync(activity, turnContext, ct).ConfigureAwait(false);
+                        }
+
+                        break;
+
                     default:
+                        // Capture the resource response for the SendActivityCall so we can return it.
                         resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         break;
                 }
@@ -191,6 +204,12 @@ namespace Microsoft.Bot.Builder.Skills
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
 
             return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+        }
+
+        private async Task SendToBotAsync(Activity activity, ITurnContext turnContext, CancellationToken ct)
+        {
+            ApplyEoCToTurnContextActivity(turnContext, activity);
+            await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
         }
     }
 }
