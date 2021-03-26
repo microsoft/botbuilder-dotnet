@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             var runtimeSettings = configuration.GetSection(ConfigurationConstants.RuntimeSettingsKey).Get<RuntimeSettings>() ?? new RuntimeSettings();
 
             // Ensure the IConfiguration is available. (Azure Functions don't do this.)
-            services.TryAddSingleton(sp => configuration);
+            services.TryAddSingleton(configuration);
 
             // All things auth
             services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
