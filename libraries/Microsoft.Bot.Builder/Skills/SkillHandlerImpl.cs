@@ -106,6 +106,7 @@ namespace Microsoft.Bot.Builder.Skills
             turnContext.Activity.RelatesTo = activity.RelatesTo;
             turnContext.Activity.ReplyToId = activity.ReplyToId;
             turnContext.Activity.Timestamp = activity.Timestamp;
+            turnContext.Activity.Text = activity.Text;
             turnContext.Activity.Type = activity.Type;
             turnContext.Activity.Value = activity.Value;
         }
