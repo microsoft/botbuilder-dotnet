@@ -17,14 +17,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class SettingsMemoryScope : MemoryScope
     {
         private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
+        private readonly ImmutableDictionary<string, object> _initialSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
         /// </summary>
-        public SettingsMemoryScope()
+        /// <param name="configuration">The <see cref="IConfiguration"/> from which to create these settings.</param>
+        public SettingsMemoryScope(IConfiguration configuration)
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
+
+            _initialSettings = LoadSettings(configuration);
         }
 
         /// <summary>
@@ -41,14 +45,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out var settings))
             {
+                // legacy behavior is to look for IConfiguration on the TurnState - some tests case rely on this
                 var configuration = dc.Context.TurnState.Get<IConfiguration>();
                 if (configuration != null)
                 {
                     settings = LoadSettings(configuration);
                     dc.Context.TurnState[ScopePath.Settings] = settings;
                 }
+
+                // there is an inconsistent behavior in that empty settings result in a mutable return value
+                // Dialog.Tests rely on this behavior
+                else if (!_initialSettings.IsEmpty)
+                {
+                    // initialSettings comes from an IConfiguration given to the constructor
+                    settings = _initialSettings;
+                }
             }
 
+            // settings is immutable and AdaptiveDialog.Tests rely on that, oddly _emptySettings are mutable
             return settings ?? _emptySettings;
         }
 

@@ -16,6 +16,7 @@
     <Description>This library implements .NET support for Orchestrator</Description>
     <Summary>This library implements .NET support for Orchestrator</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <PackageTags>bf-component</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.12.0-preview" />
+    <PackageReference Include="Microsoft.BotFramework.Orchestrator" Version="4.13.0-daily.20210325.227495" />
   </ItemGroup>
 
   <ItemGroup>

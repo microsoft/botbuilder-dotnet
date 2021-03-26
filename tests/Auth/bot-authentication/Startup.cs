@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Integration.Runtime;
 using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -20,12 +21,16 @@ namespace Microsoft.BotBuilderSamples
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ComponentRegistration.Add(new DeclarativeComponentRegistration());
-            ComponentRegistration.Add(new AdaptiveComponentRegistration());
-
             services.AddControllers().AddNewtonsoftJson();
 
             // Add this line to get an IHttpClientFactory in the services collection
@@ -50,7 +55,7 @@ namespace Microsoft.BotBuilderSamples
             //services.AddTransient<IBot, AuthBot<MainDialog>>();
             //services.AddTransient<IBot, EchoBot>();
 
-            services.AddAdaptiveRuntime();
+            services.AddBotRuntime(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
