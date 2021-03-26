@@ -31,9 +31,6 @@ namespace Microsoft.BotBuilderSamples
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ComponentRegistration.Add(new DeclarativeComponentRegistration());
-            ComponentRegistration.Add(new AdaptiveComponentRegistration());
-
             services.AddControllers().AddNewtonsoftJson();
 
             // Add this line to get an IHttpClientFactory in the services collection
@@ -58,7 +55,7 @@ namespace Microsoft.BotBuilderSamples
             //services.AddTransient<IBot, AuthBot<MainDialog>>();
             //services.AddTransient<IBot, EchoBot>();
 
-            services.AddAdaptiveRuntime(Configuration);
+            services.AddBotRuntime(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
