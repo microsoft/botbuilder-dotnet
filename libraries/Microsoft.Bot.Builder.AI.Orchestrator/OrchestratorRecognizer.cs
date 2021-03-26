@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     /// <summary>
     /// Class that represents an adaptive Orchestrator recognizer.
     /// </summary>
-    public class OrchestratorAdaptiveRecognizer : AdaptiveRecognizer
+    public class OrchestratorRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// The Kind name for this recognizer.
@@ -48,23 +48,23 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         private ILabelResolver _resolver = null;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrchestratorAdaptiveRecognizer"/> class.
+        /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
         /// </summary>
         /// <param name="callerLine">Caller line.</param>
         /// <param name="callerPath">Caller path.</param>
         [JsonConstructor]
-        public OrchestratorAdaptiveRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OrchestratorRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(callerPath, callerLine)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrchestratorAdaptiveRecognizer"/> class.
+        /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
         /// </summary>
         /// <param name="modelFolder">Specifies the base model folder.</param>
         /// <param name="snapshotFile">Specifies full path to the snapshot file.</param>
         /// <param name="resolver">Label resolver.</param>
-        public OrchestratorAdaptiveRecognizer(string modelFolder, string snapshotFile, ILabelResolver resolver = null)
+        public OrchestratorRecognizer(string modelFolder, string snapshotFile, ILabelResolver resolver = null)
         {
             _resolver = resolver;
             if (modelFolder == null)
@@ -232,8 +232,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             TryScoreEntities(text, recognizerResult);
             
             // Add full recognition result as a 'result' property
-            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
-            TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
+            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
+            TrackRecognizerResult(dc, $"{nameof(OrchestratorRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
 
             return recognizerResult;
         }
