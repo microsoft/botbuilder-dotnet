@@ -16,7 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {
-        private IDictionary<string, object> _settings;
+        private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
+        private readonly ImmutableDictionary<string, object> _initialSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         {
             IncludeInSnapshot = false;
 
-            _settings = LoadSettings(configuration);
+            _initialSettings = LoadSettings(configuration);
         }
 
         /// <summary>
@@ -42,15 +43,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // Handle legacy behavior where the configuration was found on the TurnState.
-            var configuration = dc.Context.TurnState.Get<IConfiguration>();
-            if (configuration != null)
+            if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out var settings))
             {
-                _settings = LoadSettings(configuration);
+                // legacy behavior is to look for IConfiguration on the TurnState - some tests case rely on this
+                var configuration = dc.Context.TurnState.Get<IConfiguration>();
+                if (configuration != null)
+                {
+                    settings = LoadSettings(configuration);
+                    dc.Context.TurnState[ScopePath.Settings] = settings;
+                }
+
+                // there is an inconsistent behavior in that empty settings result in a mutable return value
+                // Dialog.Tests rely on this behavior
+                else if (!_initialSettings.IsEmpty)
+                {
+                    // initialSettings comes from an IConfiguration given to the constructor
+                    settings = _initialSettings;
+                }
             }
 
-            dc.Context.TurnState[ScopePath.Settings] = _settings;
-            return _settings;
+            // settings is immutable and AdaptiveDialog.Tests rely on that, oddly _emptySettings are mutable
+            return settings ?? _emptySettings;
         }
 
         /// <summary>
@@ -69,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// </summary>
         /// <param name="configuration">IConfiguration that we are running with.</param>
         /// <returns>projected dictionary for settings.</returns>
-        protected static IDictionary<string, object> LoadSettings(IConfiguration configuration)
+        protected static ImmutableDictionary<string, object> LoadSettings(IConfiguration configuration)
         {
             var settings = new Dictionary<string, object>();
 
@@ -80,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 root.Children.ForEach(u => settings.Add(u.Value, ConvertNodeToObject(u)));
             }
 
-            return settings;
+            return settings.ToImmutableDictionary();
         }
 
         /// <summary>
