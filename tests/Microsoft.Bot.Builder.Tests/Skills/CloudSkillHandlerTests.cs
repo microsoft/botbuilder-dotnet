@@ -52,11 +52,12 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             // Assert based on activity type,
             if (activityType == ActivityTypes.Message)
             {
+                // Should be sent to the channel and not to the bot.
+                Assert.NotNull(mockObjects.ChannelActivity);
+                Assert.Null(mockObjects.BotActivity);
+
                 // We should get the resourceId returned by the mock.
                 Assert.Equal("resourceId", response.Id);
-
-                // The activity should not be sent to the bot
-                Assert.Null(mockObjects.BotActivity);
 
                 // Assert the activity sent to the channel.
                 Assert.Equal(activityType, mockObjects.ChannelActivity.Type);
@@ -65,16 +66,16 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             }
             else
             {
+                // Should be sent to the bot and not to the channel.
+                Assert.Null(mockObjects.ChannelActivity);
+                Assert.NotNull(mockObjects.BotActivity);
+
                 // If the activity is bounced back to the bot we will get a GUID and not the mocked resourceId.
                 Assert.NotEqual("resourceId", response.Id);
 
                 // Assert the activity sent back to the bot.
-                Assert.NotNull(mockObjects.BotActivity);
                 Assert.Equal(activityType, mockObjects.BotActivity.Type);
                 Assert.Equal(replyToId, mockObjects.BotActivity.ReplyToId);
-
-                // The activity should not be sent back to the channel.
-                Assert.Null(mockObjects.ChannelActivity);
             }
         }
 
@@ -107,12 +108,18 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 // Should be sent to the channel and not to the bot.
                 Assert.NotNull(mockObjects.ChannelActivity);
                 Assert.Null(mockObjects.BotActivity);
+
+                // We should get the resourceId returned by the mock.
+                Assert.Equal("resourceId", response.Id);
             }
             else
             {
                 // Should be sent to the bot and not to the channel.
                 Assert.Null(mockObjects.ChannelActivity);
                 Assert.NotNull(mockObjects.BotActivity);
+
+                // If the activity is bounced back to the bot we will get a GUID and not the mocked resourceId.
+                Assert.NotEqual("resourceId", response.Id);
             }
         }
 
@@ -120,35 +127,18 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         public async Task TestDeleteActivityAsync()
         {
             // Arrange
-            var activity = (Activity)Activity.CreateMessageActivity();
-            var conversationIdFactory = new TestSkillConversationIdFactory();
-            var conversationId = await CreateTestSkillConversationIdAsync(conversationIdFactory, activity);
-
-            var adapter = new Mock<BotAdapter>();
-            adapter.Setup(a => a.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()))
-                .Callback<ClaimsIdentity, ConversationReference, string, BotCallbackHandler, CancellationToken>(async (token, conv, audience, callback, cancel) =>
-                {
-                    var turn = new TurnContext(adapter.Object, conv.GetContinuationActivity());
-                    await callback(turn, cancel);
-                });
-            adapter.Setup(a => a.DeleteActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>()))
-                .Callback<ITurnContext, ConversationReference, CancellationToken>((turn, conv, cancel) =>
-                {
-                    Assert.Equal(TestActivityId, conv.ActivityId);
-                });
-
-            var bot = new Mock<IBot>();
-            var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.AuthenticateChannelRequestAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns<string, CancellationToken>(AuthenticateChannelRequest);
+            var mockObjects = new CloudSkillHandlerTestMocks();
+            var activity = new Activity(ActivityTypes.Message);
+            var conversationId = await mockObjects.CreateAndApplyConversationIdAsync(activity);
+            var activityToDelete = Guid.NewGuid().ToString();
 
             // Act
-            var sut = new CloudSkillHandler(adapter.Object, bot.Object, conversationIdFactory, auth.Object);
-            await sut.HandleDeleteActivityAsync(TestAuthHeader, conversationId, TestActivityId);
+            var sut = new CloudSkillHandler(mockObjects.Adapter.Object, mockObjects.Bot.Object, mockObjects.ConversationIdFactory, mockObjects.Auth.Object);
+            await sut.HandleDeleteActivityAsync(TestAuthHeader, conversationId, activityToDelete);
 
             // Assert
-            adapter.Verify(a => a.ContinueConversationAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<ConversationReference>(), It.IsAny<string>(), It.IsAny<BotCallbackHandler>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
-            adapter.Verify(a => a.DeleteActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>()), Times.Exactly(1));
+            Assert.NotNull(mockObjects.TurnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey));
+            Assert.Equal(activityToDelete, mockObjects.ActivityIdToUpdateOrDelete);
         }
 
         [Fact]
@@ -232,7 +222,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
 
         /// <summary>
         /// Helper class with mocks for adapter, bot and auth needed to instantiate CloudSkillHandler and run tests.
-        /// This class also captures the activities sent back to the turn and the channel so we can run asserts on them.
+        /// This class also captures the turnContext and activities sent back to the bot and the channel so we can run asserts on them.
         /// </summary>
         private class CloudSkillHandlerTestMocks
         {
@@ -264,6 +254,11 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             /// Gets the Activity sent to the Bot.
             /// </summary>
             public Activity BotActivity { get; private set; }
+
+            /// <summary>
+            /// Gets the Activity sent to the Bot.
+            /// </summary>
+            public string ActivityIdToUpdateOrDelete { get; private set; }
 
             public async Task<string> CreateAndApplyConversationIdAsync(Activity activity)
             {
@@ -319,6 +314,15 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                         // Return a well known resourceId so we can assert we capture the right return value.
                         new ResourceResponse("resourceId")
                     }));
+
+                // Mock the DeleteActivityAsync method
+                adapter.Setup(a => a.DeleteActivityAsync(It.IsAny<ITurnContext>(), It.IsAny<ConversationReference>(), It.IsAny<CancellationToken>()))
+                    .Callback<ITurnContext, ConversationReference, CancellationToken>((turn, conv, cancel) =>
+                    {
+                        // Capture the activity id to delete so we can assert it. 
+                        ActivityIdToUpdateOrDelete = conv.ActivityId;
+                    });
+
                 return adapter;
             }
 
