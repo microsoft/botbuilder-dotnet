@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         {
             // Arrange
             var mockObjects = new CloudSkillHandlerTestMocks();
-            var activity = new Activity(activityType);
+            var activity = new Activity(activityType) { ReplyToId = replyToId };
             var conversationId = await mockObjects.CreateAndApplyConversationIdAsync(activity);
 
             // Act
@@ -59,9 +59,9 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 Assert.Null(mockObjects.BotActivity);
 
                 // Assert the activity sent to the channel.
-                Assert.Equal(activityType, mockObjects.SentActivity.Type);
-                Assert.Null(mockObjects.SentActivity.CallerId);
-                Assert.Equal(replyToId, mockObjects.SentActivity.ReplyToId);
+                Assert.Equal(activityType, mockObjects.ChannelActivity.Type);
+                Assert.Null(mockObjects.ChannelActivity.CallerId);
+                Assert.Equal(replyToId, mockObjects.ChannelActivity.ReplyToId);
             }
             else
             {
@@ -71,9 +71,10 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                 // Assert the activity sent back to the bot.
                 Assert.NotNull(mockObjects.BotActivity);
                 Assert.Equal(activityType, mockObjects.BotActivity.Type);
+                Assert.Equal(replyToId, mockObjects.BotActivity.ReplyToId);
 
                 // The activity should not be sent back to the channel.
-                Assert.Null(mockObjects.SentActivity);
+                Assert.Null(mockObjects.ChannelActivity);
             }
         }
 
@@ -90,7 +91,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         {
             // Arrange
             var mockObjects = new CloudSkillHandlerTestMocks();
-            var activity = new Activity(commandActivityType) { Name = name };
+            var activity = new Activity(commandActivityType) { Name = name, ReplyToId = replyToId };
             var conversationId = await mockObjects.CreateAndApplyConversationIdAsync(activity);
 
             // Act
@@ -103,12 +104,14 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             Assert.NotNull(mockObjects.TurnContext.TurnState.Get<SkillConversationReference>(CloudSkillHandler.SkillConversationReferenceKey));
             if (name.StartsWith("application/"))
             {
-                Assert.NotNull(mockObjects.SentActivity);
+                // Should be sent to the channel and not to the bot.
+                Assert.NotNull(mockObjects.ChannelActivity);
                 Assert.Null(mockObjects.BotActivity);
             }
             else
             {
-                Assert.Null(mockObjects.SentActivity);
+                // Should be sent to the bot and not to the channel.
+                Assert.Null(mockObjects.ChannelActivity);
                 Assert.NotNull(mockObjects.BotActivity);
             }
         }
@@ -255,7 +258,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             /// <summary>
             /// Gets the Activity sent to the channel.
             /// </summary>
-            public Activity SentActivity { get; private set; }
+            public Activity ChannelActivity { get; private set; }
 
             /// <summary>
             /// Gets the Activity sent to the Bot.
@@ -307,7 +310,7 @@ namespace Microsoft.Bot.Builder.Tests.Skills
                     .Callback<ITurnContext, Activity[], CancellationToken>((turn, activities, cancel) =>
                     {
                         // Capture the activity sent to the channel
-                        SentActivity = activities[0];
+                        ChannelActivity = activities[0];
 
                         // Do nothing, we don't want the activities sent to the channel in the tests.
                     })
