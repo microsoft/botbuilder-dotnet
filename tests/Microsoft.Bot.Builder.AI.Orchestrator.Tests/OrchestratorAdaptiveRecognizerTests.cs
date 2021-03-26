@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 
             var mockScore = new List<Result> { mockResult };
             var mockResolver = new MockResolver(mockScore);
-            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath")
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             var mockScore = new List<Result> { mockResult1, mockResult2 };
             var mockResolver = new MockResolver(mockScore);
             var telemetryClient = new Mock<IBotTelemetryClient>();
-            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 
             var mockEntityScore = new List<Result> { mockEntityResult };
             var mockResolver = new MockResolver(mockScore, mockEntityScore);
-            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 mockResult2
             };
             var mockResolver = new MockResolver(mockScore);
-            var recognizer = new OrchestratorAdaptiveRecognizer(string.Empty, string.Empty, mockResolver)
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
