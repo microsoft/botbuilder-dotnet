@@ -84,18 +84,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             using (var botFrameworkClient = _botFrameworkAuthentication.CreateBotFrameworkClient())
             {
-                // Set up the TurnState the Dialog is expecting
-                SetUpTurnState(turnContext, botFrameworkClient);
+                try
+                {
+                    // Set up the TurnState the Dialog is expecting
+                    SetUpTurnState(turnContext, botFrameworkClient);
 
-                // Load the Dialog from the ResourceExplorer
-                var rootDialog = await CreateDialogAsync(cancellationToken).ConfigureAwait(false);
+                    // Load the Dialog from the ResourceExplorer
+                    var rootDialog = await CreateDialogAsync(cancellationToken).ConfigureAwait(false);
 
-                // Run the Dialog
-                await rootDialog.RunAsync(turnContext, turnContext.TurnState.Get<ConversationState>().CreateProperty<DialogState>("DialogState"), cancellationToken).ConfigureAwait(false);
+                    // Run the Dialog
+                    await rootDialog.RunAsync(turnContext, turnContext.TurnState.Get<ConversationState>().CreateProperty<DialogState>("DialogState"), cancellationToken).ConfigureAwait(false);
 
-                // Save any updates that have been made
-                await turnContext.TurnState.Get<ConversationState>().SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
-                await turnContext.TurnState.Get<UserState>().SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+                    // Save any updates that have been made
+                    await turnContext.TurnState.Get<ConversationState>().SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+                    await turnContext.TurnState.Get<UserState>().SaveChangesAsync(turnContext, false, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"IBot.OnTurnContext for AdaptiveDialog '{e.Message}'");
+
+                    await EndSkillConversationAsync(turnContext, botFrameworkClient, cancellationToken).ConfigureAwait(false);
+
+                    await _conversationState.DeleteAsync(turnContext, cancellationToken).ConfigureAwait(false);
+
+                    throw;
+                }
             }
         }
 
@@ -126,6 +139,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, cancellationToken).ConfigureAwait(false);
+        }
+
+        private Task EndSkillConversationAsync(ITurnContext turnContext, BotFrameworkClient botFrameworkClient, CancellationToken cancellationToken)
+        {
+            // Inform the active skill that the conversation is ended so that it has
+            // a chance to clean up.
+            // Note: ActiveSkillPropertyName is set by the RooBot while messages are being
+            // forwarded to a Skill.
+
+            _ = turnContext;
+            _ = botFrameworkClient;
+            _ = cancellationToken;
+
+            return Task.CompletedTask;
         }
     }
 }
