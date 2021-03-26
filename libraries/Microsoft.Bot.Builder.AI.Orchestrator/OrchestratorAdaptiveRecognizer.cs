@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <summary>
         /// Property key used when storing extracted entities in a custom event within telemetry.
         /// </summary>
-        public const string EntitiesProperty = "entities";
+        public const string EntitiesProperty = "entityResult";
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
         private string _modelFolder;
@@ -222,9 +222,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
             
-            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
-            TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
-
             if (ExternalEntityRecognizer != null)
             {
                 // Run external recognition
@@ -233,6 +230,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             TryScoreEntities(text, recognizerResult);
+            
+            // Add full recognition result as a 'result' property
+            await dc.Context.TraceActivityAsync($"{nameof(OrchestratorAdaptiveRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorAdaptiveRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
+            TrackRecognizerResult(dc, $"{nameof(OrchestratorAdaptiveRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
+
             return recognizerResult;
         }
 

@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Register memory scopes
             services.AddSingleton<MemoryScope, TurnMemoryScope>();
-            services.AddSingleton<MemoryScope, SettingsMemoryScope>();
+            services.AddSingleton<MemoryScope>(sp => new SettingsMemoryScope(configuration));
             services.AddSingleton<MemoryScope, DialogMemoryScope>();
             services.AddSingleton<MemoryScope, DialogContextMemoryScope>();
             services.AddSingleton<MemoryScope, DialogClassMemoryScope>();

@@ -12,6 +12,8 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
@@ -22,6 +24,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
@@ -34,9 +37,13 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
         /// THIS IS TEMPORARY TEST CODE. Adds bot runtime-related services to the application's service collection.
         /// </summary>
         /// <param name="services">The application's collection of registered services.</param>
-        public static void AddAdaptiveRuntime(this IServiceCollection services)
+        /// <param name="configuration">IConfiguration.</param>
+        public static void AddAdaptiveRuntime(this IServiceCollection services, IConfiguration configuration)
         {
             _ = services ?? throw new ArgumentNullException(nameof(services));
+
+            var component = new Dialogs.DialogsBotComponent();
+            component.ConfigureServices(services, configuration, NullLogger.Instance);
 
             // Storage
             services.TryAddSingleton(ServiceFactory.Storage);

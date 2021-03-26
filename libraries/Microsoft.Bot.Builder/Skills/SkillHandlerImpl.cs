@@ -91,39 +91,24 @@ namespace Microsoft.Bot.Builder.Skills
             return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
         }
 
-        private static void ApplyEoCToTurnContextActivity(ITurnContext turnContext, Activity endOfConversationActivity)
+        private static void ApplySkillActivityToTurnContext(ITurnContext turnContext, Activity activity)
         {
-            // transform the turnContext.Activity to be the EndOfConversation.
-            turnContext.Activity.Type = endOfConversationActivity.Type;
-            turnContext.Activity.Text = endOfConversationActivity.Text;
-            turnContext.Activity.Code = endOfConversationActivity.Code;
-
-            turnContext.Activity.ReplyToId = endOfConversationActivity.ReplyToId;
-            turnContext.Activity.Value = endOfConversationActivity.Value;
-            turnContext.Activity.Entities = endOfConversationActivity.Entities;
-            turnContext.Activity.Locale = endOfConversationActivity.Locale;
-            turnContext.Activity.LocalTimestamp = endOfConversationActivity.LocalTimestamp;
-            turnContext.Activity.Timestamp = endOfConversationActivity.Timestamp;
-            turnContext.Activity.ChannelData = endOfConversationActivity.ChannelData;
-            turnContext.Activity.Properties = endOfConversationActivity.Properties;
-        }
-
-        private static void ApplyEventToTurnContextActivity(ITurnContext turnContext, Activity eventActivity)
-        {
-            // transform the turnContext.Activity to be the EventActivity.
-            turnContext.Activity.Type = eventActivity.Type;
-            turnContext.Activity.Name = eventActivity.Name;
-            turnContext.Activity.Value = eventActivity.Value;
-            turnContext.Activity.RelatesTo = eventActivity.RelatesTo;
-
-            turnContext.Activity.ReplyToId = eventActivity.ReplyToId;
-            turnContext.Activity.Value = eventActivity.Value;
-            turnContext.Activity.Entities = eventActivity.Entities;
-            turnContext.Activity.Locale = eventActivity.Locale;
-            turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
-            turnContext.Activity.Timestamp = eventActivity.Timestamp;
-            turnContext.Activity.ChannelData = eventActivity.ChannelData;
-            turnContext.Activity.Properties = eventActivity.Properties;
+            // adapter.ContinueConversation() sends an event activity with ContinueConversation in the name.
+            // this warms up the incoming middlewares but once that's done and we hit the custom callback,
+            // we need to swap the values back to the ones received from the skill so the bot gets the actual activity.
+            turnContext.Activity.ChannelData = activity.ChannelData;
+            turnContext.Activity.Code = activity.Code;
+            turnContext.Activity.Entities = activity.Entities;
+            turnContext.Activity.Locale = activity.Locale;
+            turnContext.Activity.LocalTimestamp = activity.LocalTimestamp;
+            turnContext.Activity.Name = activity.Name;
+            turnContext.Activity.Properties = activity.Properties;
+            turnContext.Activity.RelatesTo = activity.RelatesTo;
+            turnContext.Activity.ReplyToId = activity.ReplyToId;
+            turnContext.Activity.Timestamp = activity.Timestamp;
+            turnContext.Activity.Text = activity.Text;
+            turnContext.Activity.Type = activity.Type;
+            turnContext.Activity.Value = activity.Value;
         }
 
         private async Task<SkillConversationReference> GetSkillConversationReferenceAsync(string conversationId, CancellationToken cancellationToken)
@@ -175,14 +160,27 @@ namespace Microsoft.Bot.Builder.Skills
                 {
                     case ActivityTypes.EndOfConversation:
                         await _conversationIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-                        ApplyEoCToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        await SendToBotAsync(activity, turnContext, ct).ConfigureAwait(false);
                         break;
                     case ActivityTypes.Event:
-                        ApplyEventToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
+                        await SendToBotAsync(activity, turnContext, ct).ConfigureAwait(false);
                         break;
+                    case ActivityTypes.Command:
+                    case ActivityTypes.CommandResult:
+                        if (activity.Name.StartsWith("application/", StringComparison.Ordinal))
+                        {
+                            // Send to channel and capture the resource response for the SendActivityCall so we can return it.
+                            resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await SendToBotAsync(activity, turnContext, ct).ConfigureAwait(false);
+                        }
+
+                        break;
+
                     default:
+                        // Capture the resource response for the SendActivityCall so we can return it.
                         resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                         break;
                 }
@@ -191,6 +189,12 @@ namespace Microsoft.Bot.Builder.Skills
             await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
 
             return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+        }
+
+        private async Task SendToBotAsync(Activity activity, ITurnContext turnContext, CancellationToken ct)
+        {
+            ApplySkillActivityToTurnContext(turnContext, activity);
+            await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
         }
     }
 }
