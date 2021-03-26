@@ -493,6 +493,21 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <summary>
+        /// Return results of the analysis (Suggested actions and intents).
+        /// </summary>
+        /// <remarks>No telemetry is provided when using this method.</remarks>
+        /// <param name="utterance">utterance to recognize.</param>
+        /// <param name="recognizerOptions">A <see cref="LuisRecognizerOptions"/> instance to be used by the call.
+        /// This parameter overrides the default <see cref="LuisRecognizerOptions"/> passed in the constructor.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        public virtual async Task<RecognizerResult> RecognizeAsync(string utterance, LuisRecognizerOptions recognizerOptions = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            recognizerOptions ??= _luisRecognizerOptions;
+            return await RecognizeInternalAsync(utterance, recognizerOptions, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Invoked prior to a LuisResult being logged.
         /// </summary>
         /// <param name="recognizerResult">The Luis Results for the call.</param>
@@ -634,6 +649,20 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
             var result = await recognizer.RecognizeInternalAsync(dialogContext, activity, HttpClient, cancellationToken).ConfigureAwait(false);
             await OnRecognizerResultAsync(result, dialogContext.Context, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns a RecognizerResult object.
+        /// </summary>
+        /// <param name="utterance">utterance to recognize.</param>
+        /// <param name="predictionOptions">LuisRecognizerOptions implementation to override current properties.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>RecognizerResult object.</returns>
+        private async Task<RecognizerResult> RecognizeInternalAsync(string utterance, LuisRecognizerOptions predictionOptions, CancellationToken cancellationToken)
+        {
+            var recognizer = predictionOptions ?? _luisRecognizerOptions;
+            var result = await recognizer.RecognizeInternalAsync(utterance, HttpClient, cancellationToken).ConfigureAwait(false);
             return result;
         }
 

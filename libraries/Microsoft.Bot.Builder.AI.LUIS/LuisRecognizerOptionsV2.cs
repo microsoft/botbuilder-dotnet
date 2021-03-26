@@ -65,33 +65,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
             else
             {
-                var credentials = new ApiKeyServiceClientCredentials(Application.EndpointKey);
-                using (var runtime = new LUISRuntimeClient(credentials, httpClient, false) { Endpoint = Application.Endpoint })
-                {
-                    luisResult = await runtime.Prediction.ResolveAsync(
-                        Application.ApplicationId,
-                        utterance,
-                        timezoneOffset: PredictionOptions.TimezoneOffset,
-                        verbose: PredictionOptions.IncludeAllIntents,
-                        staging: PredictionOptions.Staging,
-                        spellCheck: PredictionOptions.SpellCheck,
-                        bingSpellCheckSubscriptionKey: PredictionOptions.BingSpellCheckSubscriptionKey,
-                        log: PredictionOptions.Log ?? true,
-                        cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
+                luisResult = await GetLuisResultAsync(utterance, httpClient, cancellationToken).ConfigureAwait(false);
 
-                recognizerResult = new RecognizerResult
-                {
-                    Text = utterance,
-                    AlteredText = luisResult.AlteredQuery,
-                    Intents = LuisUtil.GetIntents(luisResult),
-                    Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, PredictionOptions.IncludeInstanceData ?? true, utterance),
-                };
-                LuisUtil.AddProperties(luisResult, recognizerResult);
-                if (IncludeAPIResults)
-                {
-                    recognizerResult.Properties.Add("luisResult", luisResult);
-                }
+                recognizerResult = BuildRecognizerResultFromLuisResult(luisResult, utterance);
             }
 
             var traceInfo = JObject.FromObject(
@@ -107,6 +83,47 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 });
 
             await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
+            return recognizerResult;
+        }
+
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(string utterance, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var luisResult = await GetLuisResultAsync(utterance, httpClient, cancellationToken).ConfigureAwait(false);
+
+            return BuildRecognizerResultFromLuisResult(luisResult, utterance);
+        }
+
+        private async Task<LuisResult> GetLuisResultAsync(string utterance, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var credentials = new ApiKeyServiceClientCredentials(Application.EndpointKey);
+            using var runtime = new LUISRuntimeClient(credentials, httpClient, false) { Endpoint = Application.Endpoint };
+            return await runtime.Prediction.ResolveAsync(
+                Application.ApplicationId,
+                utterance,
+                timezoneOffset: PredictionOptions.TimezoneOffset,
+                verbose: PredictionOptions.IncludeAllIntents,
+                staging: PredictionOptions.Staging,
+                spellCheck: PredictionOptions.SpellCheck,
+                bingSpellCheckSubscriptionKey: PredictionOptions.BingSpellCheckSubscriptionKey,
+                log: PredictionOptions.Log ?? true,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        private RecognizerResult BuildRecognizerResultFromLuisResult(LuisResult luisResult, string utterance)
+        {
+            var recognizerResult = new RecognizerResult
+            {
+                Text = utterance,
+                AlteredText = luisResult.AlteredQuery,
+                Intents = LuisUtil.GetIntents(luisResult),
+                Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, PredictionOptions.IncludeInstanceData ?? true, utterance),
+            };
+            LuisUtil.AddProperties(luisResult, recognizerResult);
+            if (IncludeAPIResults)
+            {
+                recognizerResult.Properties.Add("luisResult", luisResult);
+            }
+
             return recognizerResult;
         }
     }

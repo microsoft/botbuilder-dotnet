@@ -106,6 +106,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return await RecognizeAsync(turnContext, turnContext?.Activity?.AsMessageActivity()?.Text, PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
         }
 
+        internal override async Task<RecognizerResult> RecognizeInternalAsync(string utterance, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            return await RecognizeAsync(utterance, PredictionOptions, httpClient, cancellationToken).ConfigureAwait(false);
+        }
+
         private static JObject BuildRequestBody(string utterance, LuisV3.LuisPredictionOptions options)
         {
             var content = new JObject
@@ -162,45 +167,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
             else
             {
-                var uri = BuildUri(options);
-                var content = BuildRequestBody(utterance, options);
-
-                using (var request = new HttpRequestMessage(HttpMethod.Post, uri.Uri))
-                {
-                    using (var stringContent = new StringContent(content.ToString(), Encoding.UTF8, "application/json"))
-                    {
-                        request.Content = stringContent;
-                        request.Headers.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
-
-                        var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-                        response.EnsureSuccessStatusCode();
-
-                        luisResponse = (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    }
-                }
-
-                var prediction = (JObject)luisResponse["prediction"];
-                recognizerResult = new RecognizerResult();
-
-                recognizerResult.Text = utterance;
-                recognizerResult.AlteredText = prediction["alteredQuery"]?.Value<string>();
-                recognizerResult.Intents = LuisV3.LuisUtil.GetIntents(prediction);
-                recognizerResult.Entities = LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction);
-
-                LuisV3.LuisUtil.AddProperties(prediction, recognizerResult);
-                if (IncludeAPIResults)
-                {
-                    recognizerResult.Properties.Add("luisResult", luisResponse);
-                }
-
-                if (PredictionOptions.IncludeInstanceData)
-                {
-                    var instanceObject = recognizerResult.Entities["$instance"];
-                    if (instanceObject == null)
-                    {
-                        recognizerResult.Entities.Add("$instance", new JObject());
-                    }
-                }
+                luisResponse = await GetLuisResponseAsync(utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
+                recognizerResult = BuildRecognizerResultFromLuisResponse(luisResponse, utterance);
             }
 
             var traceInfo = JObject.FromObject(
@@ -216,6 +184,67 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 });
 
             await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
+            return recognizerResult;
+        }
+
+        private async Task<RecognizerResult> RecognizeAsync(string utterance, LuisV3.LuisPredictionOptions options, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(utterance))
+            {
+                return new RecognizerResult
+                {
+                    Text = utterance
+                };
+            }
+            else
+            {
+                var luisResponse = await GetLuisResponseAsync(utterance, options, httpClient, cancellationToken).ConfigureAwait(false);
+                return BuildRecognizerResultFromLuisResponse(luisResponse, utterance);
+            }
+        }
+
+        private async Task<JObject> GetLuisResponseAsync(string utterance, LuisV3.LuisPredictionOptions options, HttpClient httpClient, CancellationToken cancellationToken)
+        {
+            var uri = BuildUri(options);
+            var content = BuildRequestBody(utterance, options);
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, uri.Uri);
+            using var stringContent = new StringContent(content.ToString(), Encoding.UTF8, "application/json");
+            request.Content = stringContent;
+            request.Headers.Add("Ocp-Apim-Subscription-Key", Application.EndpointKey);
+
+            var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            return (JObject)JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        }
+
+        private RecognizerResult BuildRecognizerResultFromLuisResponse(JObject luisResponse, string utterance)
+        {
+            var prediction = (JObject)luisResponse["prediction"];
+            var recognizerResult = new RecognizerResult
+            {
+                Text = utterance,
+                AlteredText = prediction["alteredQuery"]?.Value<string>(),
+                Intents = LuisV3.LuisUtil.GetIntents(prediction),
+                Entities = LuisV3.LuisUtil.ExtractEntitiesAndMetadata(prediction)
+            };
+
+            LuisV3.LuisUtil.AddProperties(prediction, recognizerResult);
+            if (IncludeAPIResults)
+            {
+                recognizerResult.Properties.Add("luisResult", luisResponse);
+            }
+
+            if (PredictionOptions.IncludeInstanceData)
+            {
+                var instanceObject = recognizerResult.Entities["$instance"];
+                if (instanceObject == null)
+                {
+                    recognizerResult.Entities.Add("$instance", new JObject());
+                }
+            }
+
             return recognizerResult;
         }
 
