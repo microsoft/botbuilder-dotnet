@@ -204,6 +204,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<ChoiceFactoryOptions>>>();
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<FindChoicesOptions>>>();
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<ConversationReference>>>();
+            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<Transcript>>>();
+            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<object>>>();
 
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<string>>>();
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<Choice>>>();
