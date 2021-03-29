@@ -35,7 +35,7 @@
     },
     "required": [
         "SlackVerificationToken",
-        "SlackBotTokenKey",
+        "SlackBotToken",
         "SlackClientSigningSecret"
     ]
 }

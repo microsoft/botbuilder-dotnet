@@ -354,7 +354,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
         }
 
-
         /// <summary>
         /// Determines whether the provided <see cref="IConfiguration"/> has the settings needed to
         /// configure a <see cref="SlackAdapter"/>.

@@ -6,7 +6,7 @@
         "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
         "order": [
             "SlackVerificationToken",
-            "SlackBotTokenKey",
+            "SlackBotToken",
             "SlackClientSigningSecret",
             "*"
         ],
