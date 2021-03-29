@@ -225,9 +225,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auth", "Auth", "{C40A300C-8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationBot", "tests\Auth\bot-authentication\AuthenticationBot.csproj", "{0BF5E92D-D034-4D80-8921-07627F55F412}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.Runtime.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.Runtime.Tests\Microsoft.Bot.Builder.Integration.Runtime.Tests.csproj", "{D611AC03-9859-4EB6-BAB9-C26F493DFDB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests.csproj", "{D611AC03-9859-4EB6-BAB9-C26F493DFDB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.Runtime", "libraries\integration\Microsoft.Bot.Builder.Integration.Runtime\Microsoft.Bot.Builder.Integration.Runtime.csproj", "{2DB4E5B0-3209-425E-A912-005A330CC66A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.csproj", "{2DB4E5B0-3209-425E-A912-005A330CC66A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -999,8 +999,8 @@ Global
 		{FCAFAC5B-3B49-4106-9CC2-8E3B328D2D68} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{C40A300C-8988-4733-A760-A776C6309B57} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{0BF5E92D-D034-4D80-8921-07627F55F412} = {C40A300C-8988-4733-A760-A776C6309B57}
-		{D611AC03-9859-4EB6-BAB9-C26F493DFDB3} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
-		{2DB4E5B0-3209-425E-A912-005A330CC66A} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
+		{D611AC03-9859-4EB6-BAB9-C26F493DFDB3} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{2DB4E5B0-3209-425E-A912-005A330CC66A} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
