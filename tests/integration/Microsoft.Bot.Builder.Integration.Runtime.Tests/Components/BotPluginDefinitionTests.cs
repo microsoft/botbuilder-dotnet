@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
                     { "other", "setting" }
                 }).Build();
 
-            Action<IServiceCollection, IConfiguration, ILogger> assertEmptyConfiguration = (services, config, logger) =>
+            Action<IServiceCollection, IConfiguration> assertEmptyConfiguration = (services, config) =>
             {
                 Assert.NotNull(config);
                 var settings = new Dictionary<string, string>(config.AsEnumerable());
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
             {
                 configuration,
                 "foo",
-                (Action<IServiceCollection, IConfiguration, ILogger>)((services, configuration, logger) =>
+                (Action<IServiceCollection, IConfiguration>)((services, configuration) =>
                 {
                     Assert.NotNull(configuration);
 
