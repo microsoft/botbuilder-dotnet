@@ -17,6 +17,20 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         public static string AdapterSettingsKey => $"{ConfigurationConstants.RuntimeSettingsKey}:adapters";
 
         /// <summary>
+        /// Gets the default adapter route settings.
+        /// </summary>
+        /// <value>
+        /// Default adapter route settings.
+        /// </value>
+        public static AdapterSettings CoreBotAdapterSettings => new AdapterSettings()
+        {
+            Enabled = true,
+            Route = "messages",
+            Name = nameof(CoreBotAdapter),
+            Type = typeof(CoreBotAdapter).FullName
+        };
+
+        /// <summary>
         /// Gets or sets the name of the adapter.
         /// </summary>
         /// <value>
@@ -47,13 +61,5 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         /// Value indicating whether the adapter is enabled.
         /// </value>
         public bool Enabled { get; set; } = true;
-
-        internal static AdapterSettings CoreBotAdapterSettings => new AdapterSettings()
-        {
-            Enabled = true,
-            Route = "messages",
-            Name = nameof(CoreBotAdapter),
-            Type = typeof(CoreBotAdapter).FullName
-        };
     }
 }
