@@ -458,6 +458,22 @@
       "subtitle": "End Turn"
     }
   },
+  "Microsoft.FacebookAdapter": {
+    "form": {
+      "description": "Connects a bot to Facebook.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Facebook",
+      "hidden": [
+        "type"
+      ],
+      "label": "Facebook connection.",
+      "order": [
+        "FacebookVerifyToken",
+        "FacebookAppSecret",
+        "FacebookAccessToken",
+        "*"
+      ]
+    }
+  },
   "Microsoft.Foreach": {
     "flow": {
       "loop": {
@@ -1285,6 +1301,22 @@
       "subtitle": "Signout User"
     }
   },
+  "Microsoft.SlackAdapter": {
+    "form": {
+      "description": "Connects a bot to Slack.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
+      "hidden": [
+        "type"
+      ],
+      "label": "Slack connection.",
+      "order": [
+        "SlackVerificationToken",
+        "SlackBotToken",
+        "SlackClientSigningSecret",
+        "*"
+      ]
+    }
+  },
   "Microsoft.SwitchCondition": {
     "flow": {
       "judgement": {
@@ -1384,6 +1416,23 @@
       "subtitle": "Trace Activity"
     }
   },
+  "Microsoft.TwilioAdapter": {
+    "form": {
+      "description": "Connects a bot to Twilio.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Twilio",
+      "hidden": [
+        "type"
+      ],
+      "label": "Twilio connection.",
+      "order": [
+        "TwilioNumber",
+        "TwilioAccountSid",
+        "TwilioAuthToken",
+        "TwilioValidationUrl",
+        "*"
+      ]
+    }
+  },
   "Microsoft.UpdateActivity": {
     "flow": {
       "body": {
@@ -1404,6 +1453,23 @@
     "form": {
       "label": "Update an activity",
       "subtitle": "Update Activity"
+    }
+  },
+  "Microsoft.WebexAdapter": {
+    "form": {
+      "description": "Connects a bot to Webex.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Webex",
+      "hidden": [
+        "type"
+      ],
+      "label": "Webex connection.",
+      "order": [
+        "WebexAccessToken",
+        "WebexPublicAddress",
+        "WebexSecret",
+        "WebexWebhookName",
+        "*"
+      ]
     }
   },
   "Teams.GetPagedMembers": {
