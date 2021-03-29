@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libraries\integration\Microsoft.Bot.Builder.Integration.Runtime\Microsoft.Bot.Builder.Integration.Runtime.csproj" />
+    <ProjectReference Include="..\..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup>
