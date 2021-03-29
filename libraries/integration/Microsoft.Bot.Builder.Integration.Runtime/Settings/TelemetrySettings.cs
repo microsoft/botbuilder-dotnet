@@ -9,6 +9,14 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
     internal class TelemetrySettings
     {
         /// <summary>
+        /// Gets the configuration key for <see cref="TelemetrySettings"/>.
+        /// </summary>
+        /// <value>
+        /// Configuration key for <see cref="TelemetrySettings"/>.
+        /// </value>
+        public static string TelemetrySettingsKey => $"{ConfigurationConstants.RuntimeSettingsKey}:telemetry";
+
+        /// <summary>
         /// Gets or sets the telemetry instrumentation key.
         /// </summary>
         /// <value>

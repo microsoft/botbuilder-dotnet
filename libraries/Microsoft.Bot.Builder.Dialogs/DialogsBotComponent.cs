@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogsBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // Register memory scopes
             services.AddSingleton<MemoryScope, TurnMemoryScope>();

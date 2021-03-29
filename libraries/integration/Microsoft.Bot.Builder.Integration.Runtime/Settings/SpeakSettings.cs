@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
     /// <summary>
     /// Speak settings for the runtim.  This is used by SetSpeakMiddleware.
     /// </summary>
-    public class SpeakSettings
+    internal class SpeakSettings
     {
         /// <summary>
         /// Gets or sets the SSML voice name attribute value.

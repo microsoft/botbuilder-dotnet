@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Integration.ApplicationInsights.Core;
 using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -42,10 +43,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         {
             // Setup
             IServiceCollection services = new ServiceCollection();
+
             var telemetrySettings = settings as TelemetrySettings;
+            IConfiguration configuration = new ConfigurationBuilder().AddRuntimeSettings(new RuntimeSettings() { Telemetry = telemetrySettings }).Build();
 
             // Test
-            services.AddBotRuntimeTelemetry(telemetrySettings);
+            services.AddBotRuntimeTelemetry(configuration);
 
             // Assert
             IServiceProvider provider = services.BuildServiceProvider();
@@ -58,7 +61,9 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         {
             // Setup
             IServiceCollection services = new ServiceCollection();
+
             var telemetrySettings = new TelemetrySettings() { InstrumentationKey = Guid.NewGuid().ToString() };
+            IConfiguration configuration = new ConfigurationBuilder().AddRuntimeSettings(new RuntimeSettings() { Telemetry = telemetrySettings }).Build();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 #if NETCOREAPP2_1
@@ -68,7 +73,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 #endif
 
             // Test
-            services.AddBotRuntimeTelemetry(telemetrySettings);
+            services.AddBotRuntimeTelemetry(configuration);
             
             // Assert
             IServiceProvider provider = services.BuildServiceProvider();

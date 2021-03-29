@@ -9,6 +9,14 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
     internal class FeatureSettings
     {
         /// <summary>
+        /// Gets the configuration key for <see cref="FeatureSettings"/>.
+        /// </summary>
+        /// <value>
+        /// Configuration key for <see cref="FeatureSettings"/>.
+        /// </value>
+        public static string FeaturesSettingsKey => $"{ConfigurationConstants.RuntimeSettingsKey}:features";
+
+        /// <summary>
         /// Gets or sets a value indicating whether the runtime should remove recipient mentions.
         /// </summary>
         /// <value>

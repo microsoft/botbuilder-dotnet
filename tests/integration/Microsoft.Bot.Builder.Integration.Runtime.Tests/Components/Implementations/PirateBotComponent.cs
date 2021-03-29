@@ -18,8 +18,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components.Implementations
     {
         public override void ConfigureServices(
             IServiceCollection services, 
-            IConfiguration componentConfiguration, 
-            ILogger logger)
+            IConfiguration componentConfiguration)
         {
             // Component type
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<SendActivityAsPirate>(SendActivityAsPirate.Kind));

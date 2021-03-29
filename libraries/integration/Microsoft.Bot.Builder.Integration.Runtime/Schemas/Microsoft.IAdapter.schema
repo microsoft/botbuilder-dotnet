@@ -9,6 +9,11 @@
             "type": "string",
             "title": "Adapter http route",
             "description": "Route where to expose the adapter."
+        },
+        "type": {
+            "type": "string",
+            "title": "Adapter type name",
+            "description": "Adapter type name"
         }
     }
 }

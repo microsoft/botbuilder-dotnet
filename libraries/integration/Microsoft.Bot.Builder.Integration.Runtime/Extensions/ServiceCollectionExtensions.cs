@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Loader;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
@@ -41,9 +43,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
-          
-            // Runtime settings. If no config is provided, we create basic runtime config with defaults.
-            var runtimeSettings = configuration.GetSection(ConfigurationConstants.RuntimeSettingsKey).Get<RuntimeSettings>() ?? new RuntimeSettings();
 
             // Ensure the IConfiguration is available. (Azure Functions don't do this.)
             services.TryAddSingleton(configuration);
@@ -57,20 +56,28 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
 
+            // CoreBotAdapter registration
+            services.AddSingleton<CoreBotAdapter>();
+            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+
+            // Needed for SkillsHttpClient which depends on BotAdapter
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+
             // Runtime set up
-            services.AddBotRuntimeSkills(runtimeSettings.Skills);
+            services.AddBotRuntimeSkills(configuration);
             services.AddBotRuntimeStorage();
-            services.AddBotRuntimeAdapters(runtimeSettings);
-            services.AddBotRuntimeTelemetry(runtimeSettings.Telemetry);
-            services.AddBotRuntimeTranscriptLogging(configuration, runtimeSettings.Features);
-            services.AddBotRuntimeFeatures(runtimeSettings.Features);
-            services.AddBotRuntimeComponents(configuration, runtimeSettings);
+            services.AddBotRuntimeTelemetry(configuration);
+            services.AddBotRuntimeTranscriptLogging(configuration);
+            services.AddBotRuntimeFeatures(configuration);
+            services.AddBotRuntimeComponents(configuration);
         }
 
-        internal static void AddBotRuntimeSkills(this IServiceCollection services, SkillSettings skillSettings)
+        internal static void AddBotRuntimeSkills(this IServiceCollection services, IConfiguration configuration)
         {
+            var skillSettings = configuration.GetSection(SkillSettings.SkillSettingsKey).Get<SkillSettings>();
+
             services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(skillSettings?.AllowedCallers) });
-            services.AddSingleton<ChannelServiceHandlerBase, CloudSkillHandler>();
+            services.TryAddSingleton<ChannelServiceHandlerBase, CloudSkillHandler>();
         }
 
         internal static void AddBotRuntimeStorage(this IServiceCollection services)
@@ -81,55 +88,44 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.TryAddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
         }
 
-        internal static void AddBotRuntimeComponents(this IServiceCollection services, IConfiguration configuration, RuntimeSettings runtimeSettings)
+        internal static void AddBotRuntimeComponents(this IServiceCollection services, IConfiguration configuration)
         {
-            using (IServiceScope serviceScope = services.BuildServiceProvider().CreateScope())
-            {
-                var componentEnumenator = serviceScope.ServiceProvider.GetService<IBotComponentEnumerator>() ?? new AssemblyBotComponentEnumerator(AssemblyLoadContext.Default);
+            var componentDefinitions = configuration
+                .GetSection($"{ConfigurationConstants.RuntimeSettingsKey}:components")
+                .Get<List<BotComponentDefinition>>() ?? Enumerable.Empty<BotComponentDefinition>();
 
-                // Iterate through configured components and load each one
-                foreach (BotComponentDefinition component in runtimeSettings.Components)
+            var componentEnumerator = new AssemblyBotComponentEnumerator(AssemblyLoadContext.Default);
+
+            var exceptions = new List<Exception>();
+
+            // Iterate through configured components and load each one
+            foreach (BotComponentDefinition component in componentDefinitions)
+            {
+                try
                 {
-                    component.Load(componentEnumenator, services, configuration);
+                    component.Load(componentEnumerator, services, configuration);
+                }
+#pragma warning disable CA1031 // Do not catch general exception types. We want to capture all exceptions from components and throw them all at once.
+                catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    exceptions.Add(ex);
                 }
             }
 
-            foreach (BotComponent component in BuiltInBotComponents.GetComponents())
+            if (exceptions.Any())
             {
-                var componentServices = new ServiceCollection();
-
-                component.ConfigureServices(componentServices, configuration, null /*for now*/);
-
-                foreach (var serviceDescriptor in componentServices)
-                {
-                    services.Add(serviceDescriptor);
-                }
+                throw new AggregateException("Encountered exceptions while loading bot components.", exceptions);
             }
+
+            // Load internal built-in components
+            BuiltInBotComponents.LoadAll(services, configuration);
         }
 
-        internal static void AddBotRuntimeAdapters(this IServiceCollection services, RuntimeSettings runtimeSettings)
+        internal static void AddBotRuntimeTelemetry(this IServiceCollection services, IConfiguration configuration)
         {
-            const string defaultRoute = "messages";
+            var telemetrySettings = configuration.GetSection(TelemetrySettings.TelemetrySettingsKey).Get<TelemetrySettings>();
 
-            // CoreBotAdapter registration
-            services.AddSingleton<CoreBotAdapter>();
-            services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
-
-            // Needed for SkillsHttpClient which depends on BotAdapter
-            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>()); 
-            
-            // Adapter settings so the default adapter is homogeneous with the configured adapters at the controller / registration level
-            services.AddSingleton(new AdapterSettings() { Route = defaultRoute, Enabled = true, Name = typeof(CoreBotAdapter).FullName });
-
-            // Adapter settings for configurable adapters. Runtime controllers pick up this config to get info on adapters and routes.
-            foreach (var adapterSetting in runtimeSettings.Adapters)
-            {
-                services.AddSingleton(adapterSetting);
-            }
-        }
-
-        internal static void AddBotRuntimeTelemetry(this IServiceCollection services, TelemetrySettings telemetrySettings = null)
-        {
             if (string.IsNullOrEmpty(telemetrySettings?.InstrumentationKey))
             {
                 services.AddSingleton<IBotTelemetryClient, NullBotTelemetryClient>();
@@ -158,12 +154,14 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             }
         }
 
-        internal static void AddBotRuntimeTranscriptLogging(this IServiceCollection services, IConfiguration configuration, FeatureSettings featureSettings)
+        internal static void AddBotRuntimeTranscriptLogging(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
+
+            var featureSettings = configuration.GetSection(FeatureSettings.FeaturesSettingsKey).Get<FeatureSettings>() ?? new FeatureSettings();
 
             // Trace Transcript
             if (featureSettings.TraceTranscript)
@@ -180,8 +178,10 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             }
         }
 
-        internal static void AddBotRuntimeFeatures(this IServiceCollection services, FeatureSettings featureSettings)
+        internal static void AddBotRuntimeFeatures(this IServiceCollection services, IConfiguration configuration)
         {
+            var featureSettings = configuration.GetSection(FeatureSettings.FeaturesSettingsKey).Get<FeatureSettings>() ?? new FeatureSettings();
+
             if (featureSettings.UseInspection)
             {
                 services.AddSingleton<InspectionState>();

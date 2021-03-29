@@ -9,12 +9,28 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
     public class AdapterSettings
     {
         /// <summary>
+        /// Gets the configuration key for <see cref="AdapterSettings"/>.
+        /// </summary>
+        /// <value>
+        /// Configuration key for <see cref="AdapterSettings"/>.
+        /// </value>
+        public static string AdapterSettingsKey => $"{ConfigurationConstants.RuntimeSettingsKey}:adapters";
+
+        /// <summary>
+        /// Gets or sets the name of the adapter.
+        /// </summary>
+        /// <value>
+        /// Name of the adapter.
+        /// </value>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the type name of the adapter.
         /// </summary>
         /// <value>
         /// Fully qualified name of the adapter.
         /// </value>
-        public string Name { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the route in which to expose the adapter exposed over http.
@@ -31,5 +47,13 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
         /// Value indicating whether the adapter is enabled.
         /// </value>
         public bool Enabled { get; set; } = true;
+
+        internal static AdapterSettings CoreBotAdapterSettings => new AdapterSettings()
+        {
+            Enabled = true,
+            Route = "messages",
+            Name = nameof(CoreBotAdapter),
+            Type = typeof(CoreBotAdapter).FullName
+        };
     }
 }

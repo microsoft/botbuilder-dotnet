@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests.TestComponents
 {
     internal class TestBotComponent : BotComponent
     {
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // Declarative type
             services.AddSingleton<DeclarativeType>(
