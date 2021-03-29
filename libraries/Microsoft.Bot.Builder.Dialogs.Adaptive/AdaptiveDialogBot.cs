@@ -35,6 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
         private readonly IEnumerable<MemoryScope> _memoryScopes;
         private readonly IEnumerable<IPathResolver> _pathResolvers;
+        private readonly IEnumerable<Dialog> _dialogs;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
         /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
+        /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         public AdaptiveDialogBot(
             string adaptiveDialogId,
@@ -62,6 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             BotFrameworkAuthentication botFrameworkAuthentication,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
+            IEnumerable<Dialog> dialogs = default,
             ILogger logger = null)
         {
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
@@ -74,6 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             _memoryScopes = scopes ?? Enumerable.Empty<MemoryScope>();
             _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
+            _dialogs = dialogs ?? Enumerable.Empty<Dialog>();
             _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
         }
 
@@ -125,7 +129,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new InvalidOperationException(msg);
             }
 
-            return await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, cancellationToken).ConfigureAwait(false);
+            var adaptiveDialog = await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, cancellationToken).ConfigureAwait(false);
+
+            // if we were passed any Dialogs then add them to the AdaptiveDialog's DialogSet so they can be invoked from any other Dialog
+            foreach (var dialog in _dialogs)
+            {
+                adaptiveDialog.Dialogs.Add(dialog);
+            }
+
+            return adaptiveDialog;
         }
     }
 }
