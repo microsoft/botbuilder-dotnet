@@ -37,18 +37,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 
             // Core adapter should be register for as BotAdapter for Skill HttpClient
             Assertions.AssertService<BotAdapter, CoreBotAdapter>(services, provider, ServiceLifetime.Singleton);
-
-            // Adapter settings should be registered for multi-adapter controllers.
-            Assertions.AssertService<AdapterSettings>(
-                services, 
-                provider, 
-                ServiceLifetime.Singleton, 
-                adapterSettings =>
-                {
-                    Assert.Equal("messages", adapterSettings.Route);
-                    Assert.Equal(typeof(CoreBotAdapter).FullName, adapterSettings.Name);
-                    Assert.True(adapterSettings.Enabled);
-                });
         }
     }
 }

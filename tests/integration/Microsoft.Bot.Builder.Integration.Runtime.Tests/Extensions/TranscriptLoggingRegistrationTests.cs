@@ -21,36 +21,24 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 
         public static IEnumerable<object[]> GetAddBotRuntimeTranscriptLoggerData()
         {
-            var settings = new Dictionary<string, string>
-            {
-                { "blobTranscript:connectionString", LocalConnectionString },
-                { "blobTranscript:containerName", "containerName" },
-            };
-
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
-
-            // params: IConfiguration configuration, FeatureSettings settings, int expectedRegistrationCount
+            // params: IConfigurationBuilder configuration, FeatureSettings settings, int expectedRegistrationCount
             yield return new object[]
             {
-                configuration,
                 new FeatureSettings() { TraceTranscript = true, BlobTranscript = LocalBlobSettings },
                 2
             };
             yield return new object[]
             {
-                configuration,
                 new FeatureSettings() { TraceTranscript = true, BlobTranscript = null },
                 1
             };
             yield return new object[]
             {
-                configuration,
                 new FeatureSettings() { TraceTranscript = false, BlobTranscript = LocalBlobSettings },
                 1
             };
             yield return new object[]
             {
-                configuration,
                 new FeatureSettings() { TraceTranscript = false, BlobTranscript = null },
                 0
             };
@@ -71,9 +59,11 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         public void AddBotRuntimeTranscriptLogger_ErrorCases(string connectionString, string containerNAme)
         {
             IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = new ConfigurationBuilder().Build();
+
             var featureSettings = new FeatureSettings() { BlobTranscript = new BlobsStorageSettings() { ConnectionString = connectionString, ContainerName = containerNAme } };
-            Assert.Throws<ArgumentNullException>(() => services.AddBotRuntimeTranscriptLogging(configuration, featureSettings));
+            IConfiguration configuration = new ConfigurationBuilder().AddRuntimeSettings(new RuntimeSettings() { Features = featureSettings }).Build();
+
+            Assert.Throws<ArgumentNullException>(() => services.AddBotRuntimeTranscriptLogging(configuration));
         }
 
         [Fact]
@@ -81,17 +71,19 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         {
             IServiceCollection services = new ServiceCollection();
             var featureSettings = new FeatureSettings() { BlobTranscript = LocalBlobSettings };
-            Assert.Throws<ArgumentNullException>(() => services.AddBotRuntimeTranscriptLogging(null, featureSettings));
+            Assert.Throws<ArgumentNullException>(() => services.AddBotRuntimeTranscriptLogging(null));
         }
 
         [Theory]
         [MemberData(nameof(GetAddBotRuntimeTranscriptLoggerData))]
-        public void AddBotRuntimeTranscriptLogger(IConfiguration configuration, object settings, int middlewareCount)
+        public void AddBotRuntimeTranscriptLogger(object settings, int middlewareCount)
         {
             IServiceCollection services = new ServiceCollection();
-            var featureSettings = settings as FeatureSettings;
 
-            services.AddBotRuntimeTranscriptLogging(configuration, featureSettings);
+            var featureSettings = settings as FeatureSettings;
+            IConfiguration configuration = new ConfigurationBuilder().AddRuntimeSettings(new RuntimeSettings() { Features = featureSettings }).Build();
+
+            services.AddBotRuntimeTranscriptLogging(configuration);
 
             var serviceProvider = services.BuildServiceProvider();
 

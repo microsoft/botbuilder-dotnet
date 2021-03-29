@@ -11,6 +11,14 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Settings
     internal class SkillSettings
     {
         /// <summary>
+        /// Gets the configuration key for <see cref="AdapterSettings"/>.
+        /// </summary>
+        /// <value>
+        /// Configuration key for <see cref="SkillSettings"/>.
+        /// </value>
+        public static string SkillSettingsKey => $"{ConfigurationConstants.RuntimeSettingsKey}:skills";
+
+        /// <summary>
         /// Gets or sets the list of application Ids that are allowed to call this bot.
         /// </summary>
         /// <value>

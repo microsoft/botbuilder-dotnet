@@ -8,13 +8,16 @@ using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime.Component
 {
     /// <summary>
     /// Retrieve the built-in enumeration of <see cref="BotComponent"/> instances.
     /// </summary>
-    internal class BuiltInBotComponents
+    internal static class BuiltInBotComponents
     {
         private static readonly List<BotComponent> _components = new List<BotComponent>()
         {
@@ -26,13 +29,12 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Component
             new LuisBotComponent(),
         };
 
-        /// <summary>
-        /// Get available bot components.
-        /// </summary>
-        /// <returns>A collection of available bot plugins for the specified plugin name.</returns>
-        public static IEnumerable<BotComponent> GetComponents()
+        internal static void LoadAll(IServiceCollection services, IConfiguration configuration)
         {
-            return _components;
+            foreach (var component in _components)
+            {
+                component.ConfigureServices(services, configuration);
+            }
         }
     }
 }

@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
 {
@@ -99,7 +101,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             var settings = new Dictionary<string, string>
             {
                 { ConfigurationConstants.ApplicationRootKey, applicationRoot },
-                { ConfigurationConstants.RootDialogKey, GetDefaultRootDialog(applicationRoot) }
+                { ConfigurationConstants.RootDialogKey, GetDefaultRootDialog(applicationRoot) },
             };
 
             builder.AddInMemoryCollection(settings);

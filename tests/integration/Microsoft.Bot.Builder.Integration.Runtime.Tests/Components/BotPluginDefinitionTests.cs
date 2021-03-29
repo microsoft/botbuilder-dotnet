@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
                     { "other", "setting" }
                 }).Build();
 
-            Action<IServiceCollection, IConfiguration, ILogger> assertEmptyConfiguration = (services, config, logger) =>
+            Action<IServiceCollection, IConfiguration> assertEmptyConfiguration = (services, config) =>
             {
                 Assert.NotNull(config);
                 var settings = new Dictionary<string, string>(config.AsEnumerable());
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
             {
                 configuration,
                 "foo",
-                (Action<IServiceCollection, IConfiguration, ILogger>)((services, configuration, logger) =>
+                (Action<IServiceCollection, IConfiguration>)((services, configuration) =>
                 {
                     Assert.NotNull(configuration);
 
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
         public void Load_Succeeds_Configuration(
             IConfiguration configuration,
             string settingsPrefix,
-            Action<IServiceCollection, IConfiguration, ILogger> loadAction)
+            Action<IServiceCollection, IConfiguration> loadAction)
         {
             var plugins = new Dictionary<string, ICollection<BotComponent>>(StringComparer.OrdinalIgnoreCase)
             {
@@ -135,13 +135,13 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
                 {
                     "TestPlugin", new[]
                     {
-                        new TestBotComponent(loadAction: (services, configuration, logger) =>
+                        new TestBotComponent(loadAction: (services, configuration) =>
                         {
                             Assert.NotNull(services);
                             Assert.Empty(services);
                             services.AddSingleton<IStorage, MemoryStorage>();
                         }),
-                        new TestBotComponent(loadAction: (services, configuration, logger) =>
+                        new TestBotComponent(loadAction: (services, configuration) =>
                         {
                             Assert.NotNull(services);
                             Assert.Empty(services);

@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components.Implementations
 {
     public class PublicBotComponent : BotComponent
     {
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
         }
     }

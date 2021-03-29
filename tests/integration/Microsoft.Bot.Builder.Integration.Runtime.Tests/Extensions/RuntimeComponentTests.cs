@@ -40,11 +40,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                     { $"{assemblyName}:AdventureWorksSecret", adventureWorksSecret },
                 };
 
-            IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
-
-            services.AddSingleton<IConfiguration>(configuration);
-
             // Full component settings
             var runtimeSettings = new RuntimeSettings()
             {
@@ -55,7 +50,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                     {
                         Name = assemblyName,
                         SettingsPrefix = assemblyName
-                    } 
+                    }
                 },
 
                 // Adapters
@@ -66,8 +61,16 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 }
             };
 
+            IServiceCollection services = new ServiceCollection();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(settings)
+                .AddRuntimeSettings(runtimeSettings)
+                .Build();
+
+            services.AddSingleton<IConfiguration>(configuration);
+
             // Test
-            services.AddBotRuntimeComponents(configuration, runtimeSettings);
+            services.AddBotRuntimeComponents(configuration);
 
             // Assert 
             var provider = services.BuildServiceProvider();
@@ -92,7 +95,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Test 
 
             // Register a declarative component
-            new PirateBotComponent().ConfigureServices(services, configuration, null);
+            new PirateBotComponent().ConfigureServices(services, configuration);
 
             services.AddBotRuntime(configuration);
 
@@ -137,7 +140,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Test 
 
             // Register a declarative component
-            new PirateBotComponent().ConfigureServices(services, configuration, null);
+            new PirateBotComponent().ConfigureServices(services, configuration);
 
             services.AddBotRuntime(configuration);
 

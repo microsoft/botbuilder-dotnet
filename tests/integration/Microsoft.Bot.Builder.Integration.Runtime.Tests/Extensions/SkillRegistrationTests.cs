@@ -11,6 +11,7 @@ using Microsoft.Bot.Builder.Integration.Runtime.Extensions;
 using Microsoft.Bot.Builder.Integration.Runtime.Settings;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -61,7 +62,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
         {
             // Setup
             IServiceCollection services = new ServiceCollection();
-            var skillSettings = settings as SkillSettings;
 
             services.AddSingleton<IStorage, MemoryStorage>();
             services.AddSingleton<SkillConversationIdFactoryBase, SkillConversationIdFactory>();
@@ -69,8 +69,11 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             services.AddSingleton<BotAdapter, CloudAdapter>();
             services.AddSingleton<IBot, ActivityHandler>();
 
+            var skillSettings = settings as SkillSettings;
+            IConfiguration configuration = new ConfigurationBuilder().AddRuntimeSettings(new RuntimeSettings() { Skills = skillSettings }).Build();
+
             // Test
-            services.AddBotRuntimeSkills(skillSettings);
+            services.AddBotRuntimeSkills(configuration);
 
             // Assert
             var provider = services.BuildServiceProvider();

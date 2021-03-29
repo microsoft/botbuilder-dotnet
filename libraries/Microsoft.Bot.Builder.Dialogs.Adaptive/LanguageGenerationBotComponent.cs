@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     public class LanguageGenerationBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<TextTemplate>(TextTemplate.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<ActivityTemplate>(ActivityTemplate.Kind));

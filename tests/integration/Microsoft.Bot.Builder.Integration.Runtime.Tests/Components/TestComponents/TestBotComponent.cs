@@ -10,16 +10,16 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
 {
     public class TestBotComponent : BotComponent
     {
-        private readonly Action<IServiceCollection, IConfiguration, ILogger> _loadAction;
+        private readonly Action<IServiceCollection, IConfiguration> _loadAction;
 
-        public TestBotComponent(Action<IServiceCollection, IConfiguration, ILogger> loadAction)
+        public TestBotComponent(Action<IServiceCollection, IConfiguration> loadAction)
         {
             _loadAction = loadAction ?? throw new ArgumentNullException(nameof(loadAction));
         }
 
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            _loadAction(services, configuration, logger);
+            _loadAction(services, configuration);
         }
     }
 }
