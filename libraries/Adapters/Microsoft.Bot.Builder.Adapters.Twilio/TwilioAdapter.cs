@@ -26,6 +26,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     /// </summary>
     public class TwilioAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
+        private const string TwilioNumberKey = "TwilioNumber";
+        private const string TwilioAccountSidKey = "TwilioAccountSid";
+        private const string TwilioAuthTokenKey = "TwilioAuthToken";
+        private const string TwilioValidationUrlKey = "TwilioValidationUrl";
+
         private readonly TwilioClientWrapper _twilioClient;
         private readonly ILogger _logger;
         private readonly TwilioAdapterOptions _options;
@@ -45,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public TwilioAdapter(IConfiguration configuration, TwilioAdapterOptions adapterOptions = null, ILogger logger = null)
             : this(
-                new TwilioClientWrapper(new TwilioClientWrapperOptions(configuration["TwilioNumber"], configuration["TwilioAccountSid"], configuration["TwilioAuthToken"], new Uri(configuration["TwilioValidationUrl"]))), adapterOptions, logger)
+                new TwilioClientWrapper(new TwilioClientWrapperOptions(configuration[TwilioNumberKey], configuration[TwilioAccountSidKey], configuration[TwilioAuthTokenKey], new Uri(configuration[TwilioValidationUrlKey]))), adapterOptions, logger)
         {
         }
 
@@ -254,6 +259,21 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 context.TurnState.Add<BotCallbackHandler>(callback);
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Determines whether the provided <see cref="IConfiguration"/> has the settings needed to
+        /// configure a <see cref="TwilioAdapter"/>.
+        /// </summary>
+        /// <param name="configuration"><see cref="IConfiguration"/> to verify for settings.</param>
+        /// <returns>A value indicating whether the configuration has the necessary settings required to create a <see cref="TwilioAdapter"/>.</returns>
+        internal static bool HasConfiguration(IConfiguration configuration)
+        {
+            // Do we have the config needed to create an adapter?
+            return !string.IsNullOrEmpty(configuration.GetValue<string>(TwilioNumberKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(TwilioAccountSidKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(TwilioAuthTokenKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(TwilioValidationUrlKey));
         }
     }
 }
