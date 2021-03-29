@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -113,10 +114,11 @@ namespace Microsoft.Bot.Builder
                     }
                 }
 #pragma warning disable CA1031 // Do not catch general exception types (we ignore the exception and we retry)
-                catch (Exception)
+                catch (Exception e)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
                     // try again
+                    Trace.TraceError($"Try {i + 1} - Failed to log activity because: {e.GetType()} : {e.Message}");
                 }
             }
         }
@@ -285,6 +287,18 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+        private static string SanitizeString(string str, char[] invalidChars)
+        {
+            var sb = new StringBuilder(str);
+
+            foreach (var invalidChar in invalidChars)
+            {
+                sb.Replace(invalidChar.ToString(), string.Empty);
+            }
+
+            return sb.ToString();
+        }
+
         private string GetTranscriptFile(string channelId, string conversationId)
         {
             if (channelId == null)
@@ -298,8 +312,10 @@ namespace Microsoft.Bot.Builder
             }
 
             var channelFolder = GetChannelFolder(channelId);
-            string transcriptFile = Path.Combine(channelFolder, conversationId + ".transcript");
-            return transcriptFile;
+
+            var fileName = SanitizeString(conversationId, Path.GetInvalidFileNameChars());
+
+            return Path.Combine(channelFolder, fileName + ".transcript");
         }
 
         private string GetChannelFolder(string channelId)
@@ -309,7 +325,9 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(channelId);
             }
 
-            var channelFolder = Path.Combine(_folder, channelId);
+            var folderName = SanitizeString(channelId, Path.GetInvalidPathChars());
+
+            var channelFolder = Path.Combine(_folder, folderName);
             if (!Directory.Exists(channelFolder))
             {
                 Directory.CreateDirectory(channelFolder);
