@@ -58,7 +58,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
                 {
                     new AdapterSettings() { Name = assemblyName, Route = "contoso", Enabled = true },
                     new AdapterSettings() { Name = assemblyName, Route = "adventureworks", Enabled = true },
-                    AdapterSettings.CoreBotAdapterSettings,
                 }
             };
 

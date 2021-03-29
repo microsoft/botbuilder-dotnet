@@ -102,9 +102,6 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             {
                 { ConfigurationConstants.ApplicationRootKey, applicationRoot },
                 { ConfigurationConstants.RootDialogKey, GetDefaultRootDialog(applicationRoot) },
-
-                // Enable default adapter route
-                { AdapterSettings.AdapterSettingsKey, JsonConvert.SerializeObject(new AdapterSettings[] { AdapterSettings.CoreBotAdapterSettings }) }
             };
 
             builder.AddInMemoryCollection(settings);
