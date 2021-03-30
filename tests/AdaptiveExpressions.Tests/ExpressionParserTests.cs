@@ -968,6 +968,7 @@ namespace AdaptiveExpressions.Tests
             Test("count(createArray('h', 'e', 'l', 'l', 'o'))", 5),
             Test("reverse(split(hello,'e'))", new List<object> { "llo", "h" }),
             Test("reverse(createArray('h', 'e', 'l', 'l', 'o'))", new List<object> { "o", "l", "l", "e", "h" }),
+            Test("empty(null)", true),
             Test("empty('')", true),
             Test("empty('a')", false),
             Test("empty(bag)", false),
