@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Integration.Runtime.Extensions
             services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
             // IBot
-            services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
+            services.AddSingleton<IBot, ConfigurationAdaptiveDialogManager>();
 
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();

@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Class which runs the dialog system.
     /// </summary>
-    public class DialogManager
+    public class DialogManager : IBot
     {
         private const string LastAccess = "_lastAccess";
         private string _rootDialogId;
@@ -117,12 +117,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         public int? ExpireAfter { get; set; }
 
         /// <summary>
+        /// IBot on turn method.
+        /// </summary>
+        /// <param name="turnContext">turn context.</param>
+        /// <param name="cancellationToken">cancellationToken.</param>
+        /// <returns>task.</returns>
+        Task IBot.OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            return this.OnTurnAsync(turnContext, cancellationToken);
+        }
+
+        /// <summary>
         /// Runs dialog system in the context of an ITurnContext.
         /// </summary>
         /// <param name="context">turn context.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default)
+        public virtual async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default)
         {
             var botStateSet = new BotStateSet();
 

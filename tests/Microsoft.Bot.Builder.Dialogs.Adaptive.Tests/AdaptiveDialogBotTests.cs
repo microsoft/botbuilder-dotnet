@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task AdaptiveDialogBotTurnState()
         {
             // Arrange
-            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+            var logger = NullLogger<AdaptiveDialogManager>.Instance;
 
             var storage = new MemoryStorage();
             var conversationState = new ConversationState(storage);
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(
+            var bot = new AdaptiveDialogManager(
                 "main.dialog", 
                 "main.lg",
                 "defaultLocale",
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task AdaptiveDialogBotExceptionWhenNoResource()
         {
             // Arrange
-            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+            var logger = NullLogger<AdaptiveDialogManager>.Instance;
 
             var storage = new MemoryStorage();
             var conversationState = new ConversationState(storage);
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogBot(
+            var bot = new AdaptiveDialogManager(
                 "main.dialog",
                 "main.lg",
                 "defaultLocale",
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             // Assert
             Assert.NotNull(exception);
-            Assert.IsType<InvalidOperationException>(exception);
+            Assert.IsType<ArgumentException>(exception);
         }
 
         private class MockResourceProvider : ResourceProvider
