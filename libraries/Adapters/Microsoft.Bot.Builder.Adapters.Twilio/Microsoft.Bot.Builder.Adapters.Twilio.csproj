@@ -12,6 +12,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Library for connecting bots with Twilio SMS API.</Description>
     <Summary>This library implements C# classes for Twilio adapter.</Summary>
+    <PackageTags>msbot-component;msbot-adapter</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

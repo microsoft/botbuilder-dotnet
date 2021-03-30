@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     public class DeclarativeBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<JsonConverterFactory, InterfaceConverterFactory<IStorage>>();
             services.AddSingleton<JsonConverterFactory, InterfaceConverterFactory<IRecognizer>>();

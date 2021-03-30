@@ -21,19 +21,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Obsolete
         where TComponent : BotComponent, new()
     {
         private readonly IConfiguration _configuration;
-        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentRegistrationBridge{TComponent}"/> class.
         /// </summary>
         /// <param name="botComponent"><see cref="BotComponent"/> to be exposed as a legacy <see cref="ComponentRegistration"/>.</param>
         /// <param name="configuration">Optional <see cref="IConfiguration"/> for the target <see cref="BotComponent"/>.</param>
-        /// <param name="logger">Optional <see cref="ILogger"/> for the target <see cref="BotComponent"/>.</param>
-        public ComponentRegistrationBridge(TComponent botComponent, IConfiguration configuration = null, ILogger logger = null)
+        public ComponentRegistrationBridge(TComponent botComponent, IConfiguration configuration = null)
         {
             BotComponent = botComponent ?? throw new ArgumentNullException(nameof(botComponent));
             _configuration = configuration ?? new ConfigurationBuilder().Build();
-            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -73,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Obsolete
         protected IEnumerable<TRegistration> GetFromComponent<TRegistration>(IServiceCollection services = null)
         {
             services = services ?? new ServiceCollection();
-            BotComponent.ConfigureServices(services, _configuration, _logger);
+            BotComponent.ConfigureServices(services, _configuration);
             return services.BuildServiceProvider().GetServices<TRegistration>();
         }
     }

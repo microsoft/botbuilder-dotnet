@@ -23,10 +23,8 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="services">Services collection to register dependency injection.</param>
         /// <param name="configuration">Configuration for the bot component.</param>
-        /// <param name="logger">Logger.</param>
         public abstract void ConfigureServices(
             IServiceCollection services,
-            IConfiguration configuration,
-            ILogger logger);
+            IConfiguration configuration);
     }
 }

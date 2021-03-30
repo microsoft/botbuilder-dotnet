@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
     public class OrchestratorBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<DeclarativeType>(
                 sp => new DeclarativeType<OrchestratorRecognizer>(OrchestratorRecognizer.Kind));
