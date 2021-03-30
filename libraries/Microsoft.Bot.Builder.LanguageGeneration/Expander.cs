@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public Expander(Templates templates, EvaluationOptions opt = null)
         {
             Templates = templates;
-            TemplateMap = templates.ToDictionary(x => x.Name);
+            TemplateMap = templates.AllTemplates.ToDictionary(x => x.Name);
             _lgOptions = opt;
 
             // generate a new customized expression parser by injecting the template as functions
