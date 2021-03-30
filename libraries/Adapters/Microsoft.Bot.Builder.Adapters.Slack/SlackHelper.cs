@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 },
                 From = new ChannelAccount()
                 {
-                    Id = slackPayload.Message?.BotId ?? slackPayload.User.id,
+                    Id = slackPayload.User.id ?? slackPayload.Message?.BotId,
                 },
                 Recipient = new ChannelAccount()
                 {
