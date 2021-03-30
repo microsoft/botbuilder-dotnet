@@ -55,6 +55,68 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestImportAlias()
+        {
+            var templates = Templates.ParseFile(GetExampleFilePath("Alias.lg"));
+
+            // duplicated template name.
+            var evaled = templates.Evaluate("wPhrase");
+            Assert.Equal("hi", evaled);
+
+            // import from AliasBase1.lg
+            evaled = templates.Evaluate("callWelcome1", new { theName = "Jack" });
+            Assert.Equal("hi Jack", evaled);
+
+            // import from AliasBase1.lg
+            evaled = templates.Evaluate("callWelcome2", new { theName = "Jack" });
+            Assert.Equal("hello Jack", evaled);
+
+            // static/all import
+            evaled = templates.Evaluate("callWelcome3", new { theName = "Jack" });
+            Assert.Equal("welcome Jack", evaled);
+
+            // builtin function as the first place
+            evaled = templates.Evaluate("callLength");
+            Assert.Equal(4, evaled);
+
+            // import from AliasBase1.lg
+            evaled = templates.Evaluate("callBase1Length");
+            Assert.Equal("my length", evaled);
+
+            // import from AliasBase2.lg
+            evaled = templates.Evaluate("callBase2Length");
+            Assert.Equal("my length2", evaled);
+
+            // static/all import. (use lg as the prefix)
+            evaled = templates.Evaluate("callBase3Length");
+            Assert.Equal("my base length", evaled);
+
+            ///////////inline evaluation//////////////////
+            // call normal template in current lg file
+            evaled = templates.EvaluateText("${wPhrase()}");
+            Assert.Equal("hi", evaled);
+
+            evaled = templates.EvaluateText("${callBase1Length()}");
+            Assert.Equal("my length", evaled);
+
+            // import from AliasBase1.lg
+            evaled = templates.EvaluateText("${base1.welcome()}", new { name = "Jack" });
+            Assert.Equal("hi Jack", evaled);
+
+            // call builtin function
+            evaled = templates.EvaluateText("${length('hello')}");
+            Assert.Equal(5, evaled);
+
+            // call template length form import
+            evaled = templates.EvaluateText("${lg.length()}");
+            Assert.Equal("my base length", evaled);
+
+            // call length template in AliasBase1.lg
+            evaled = templates.EvaluateText("${base1.length()}");
+            Assert.Equal("my length", evaled);
+        }
+
+        [Fact]
         public void TestIfElseTemplate()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("5.lg"));

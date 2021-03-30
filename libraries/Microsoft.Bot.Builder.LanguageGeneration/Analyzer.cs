@@ -23,15 +23,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
-        /// <param name="templates">Template list.</param>
-        /// <param name="expressionParser">Expression parser.</param>
-        public Analyzer(List<Template> templates, ExpressionParser expressionParser)
+        /// <param name="templates">Templates.</param>
+        /// <param name="opt">Options for LG. </param>
+        public Analyzer(Templates templates, EvaluationOptions opt = null)
         {
             Templates = templates;
             _templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
-            var evaluator = new Evaluator(Templates, expressionParser);
+            var evaluator = new Evaluator(Templates, opt);
             _expressionParser = evaluator.ExpressionParser;
         }
 
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<Template> Templates { get; }
+        public Templates Templates { get; }
 
         /// <summary>
         /// Analyzes a template to get the static analyzer results. 

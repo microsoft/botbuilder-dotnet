@@ -1,0 +1,93 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "main.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+              "actions": [
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${wPhrase()}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${callWelcome('Jack')}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${callLength()}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${callBaseLength()}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${length('hi')}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${lg.length()}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${base.welcome('Jack')}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${base.length()}"
+                },
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "activity": "${base.wPhrase()}"
+                }
+              ]
+            }
+        ]
+    },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "hi"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "hi Jack"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "4"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "length in base"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "2"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "length in main"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "hi Jack"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "length in base"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "hi"
+    }
+  ]
+}
