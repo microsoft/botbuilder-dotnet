@@ -18,10 +18,10 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    public class AdaptiveDialogBotTests
+    public class AdaptiveDialogManagerTests
     {
         [Fact]
-        public async Task AdaptiveDialogBotTurnState()
+        public async Task AdaptiveDialogManagerTurnState()
         {
             // Arrange
             var logger = NullLogger<AdaptiveDialogManager>.Instance;
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public async Task AdaptiveDialogBotExceptionWhenNoResource()
+        public async Task AdaptiveDialogManagerExceptionWhenNoResource()
         {
             // Arrange
             var logger = NullLogger<AdaptiveDialogManager>.Instance;
