@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.Builder.Integration.Runtime
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
 {
     internal class ConfigurationAdaptiveDialogManager : AdaptiveDialogManager
     {

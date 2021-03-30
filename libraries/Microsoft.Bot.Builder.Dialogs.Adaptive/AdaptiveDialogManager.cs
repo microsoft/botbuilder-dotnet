@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
         /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
+        /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         public AdaptiveDialogManager(
             string adaptiveDialogId,
@@ -55,6 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             BotFrameworkAuthentication botFrameworkAuthentication,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
+            IEnumerable<Dialog> dialogs = default,
             ILogger logger = null)
         {
             this._defaultLocale = defaultLocale ?? "en";
@@ -74,6 +76,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             this.InitialTurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             this.InitialTurnState.Add(_resourceExplorer.TryGetResource(languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(languageGeneratorId) : new TemplateEngineLanguageGenerator());
             this.InitialTurnState.Add(new LanguagePolicy(defaultLocale));
+
+            if (dialogs != null)
+            {
+                foreach (var dialog in dialogs)
+                {
+                    this.Dialogs.Add(dialog);
+                }
+            }
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             this.InitialTurnState.Set<BotCallbackHandler>(OnTurnAsync);
