@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -21,11 +20,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// An <see cref="IBot"/> implementation that manages the execution of an <see cref="AdaptiveDialog"/>.
     /// </summary>
-    public class AdaptiveDialogManager : DialogManager
+    public class AdaptiveDialogManager : DialogManager, IBot
     {
-        private static readonly ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
         private readonly string _adaptiveDialogId;
-        private readonly string _defaultLocale;
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
         private readonly ResourceExplorer _resourceExplorer;
         private readonly ILogger _logger;
@@ -45,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
         /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
+        /// <param name="languagePolicy">Optional language policy.</param>
         public AdaptiveDialogManager(
             string adaptiveDialogId,
             string languageGeneratorId,
@@ -57,14 +55,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
             IEnumerable<Dialog> dialogs = default,
-            ILogger logger = null)
+            ILogger logger = null,
+            LanguagePolicy languagePolicy = null)
         {
-            this._defaultLocale = defaultLocale ?? "en";
+            defaultLocale = defaultLocale ?? "en";
             this._adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
             this._botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             this._resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             this._logger = logger ?? NullLogger<AdaptiveDialogManager>.Instance;
-
             this.InitialTurnState.Add(this._resourceExplorer);
             this.InitialTurnState.Add(this._botFrameworkAuthentication);
             this.InitialTurnState.Add(this._logger);
@@ -73,9 +71,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             this.InitialTurnState.Add(skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase)));
             this.InitialTurnState.Add(scopes ?? Enumerable.Empty<MemoryScope>());
             this.InitialTurnState.Add(pathResolvers ?? Enumerable.Empty<IPathResolver>());
-            this.InitialTurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
-            this.InitialTurnState.Add(_resourceExplorer.TryGetResource(languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(languageGeneratorId) : new TemplateEngineLanguageGenerator());
-            this.InitialTurnState.Add(new LanguagePolicy(defaultLocale));
+            this.UseLanguageGeneration(languageGeneratorId);
+            this.UseLanguagePolicy(languagePolicy ?? new LanguagePolicy(defaultLocale));
 
             if (dialogs != null)
             {
@@ -104,6 +101,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // call dialog manager base class.
                 return await base.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        Task IBot.OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            return this.OnTurnAsync(turnContext, cancellationToken);
         }
     }
 }
