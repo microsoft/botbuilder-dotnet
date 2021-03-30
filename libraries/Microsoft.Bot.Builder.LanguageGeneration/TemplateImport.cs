@@ -50,10 +50,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public SourceRange SourceRange { get; set; }
 
         /// <summary>
-        /// Gets or sets the "as" syntax. For example: [import](path) as myAlias.
+        /// Gets or sets alias for templates. For example: [import](path) as myAlias.
         /// </summary>
         /// <value>
-        /// Imported with the "as" syntax. For example: [import](path) as myAlias.
+        /// Alias for templates. For example: [import](path) as myAlias.
         /// </value>
         public string Alias { get; set; }
 

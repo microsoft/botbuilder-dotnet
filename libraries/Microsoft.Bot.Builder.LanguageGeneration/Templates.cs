@@ -177,10 +177,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
-        /// Gets or sets alias of templates references.
+        /// Gets or sets map from import alias to templates.
         /// </summary>
         /// <value>
-        /// Alias of templates references.
+        /// Map from import alias to templates.
         /// </value>
 #pragma warning disable CA2227 // Collection properties should be read only
         public IDictionary<string, Templates> NamedReferences { get; set; }
