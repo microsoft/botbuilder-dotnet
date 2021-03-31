@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
             // IBot
-            services.AddSingleton<IBot, ConfigurationAdaptiveDialogManager>();
+            services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
 
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();

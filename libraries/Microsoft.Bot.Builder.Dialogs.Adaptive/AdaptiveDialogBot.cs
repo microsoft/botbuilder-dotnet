@@ -20,15 +20,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// An <see cref="IBot"/> implementation that manages the execution of an <see cref="AdaptiveDialog"/>.
     /// </summary>
-    public class AdaptiveDialogManager : DialogManager, IBot
+    public class AdaptiveDialogBot : IBot
     {
-        private readonly string _adaptiveDialogId;
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
-        private readonly ResourceExplorer _resourceExplorer;
-        private readonly ILogger _logger;
+        private readonly DialogManager _dialogManager;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AdaptiveDialogManager"/> class.
+        /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
         /// </summary>
         /// <param name="adaptiveDialogId">The id of the <see cref="AdaptiveDialog"/> to load from the <see cref="ResourceExplorer"/>.</param>
         /// <param name="languageGeneratorId">The id of the <see cref="LanguageGenerator"/> to load from the <see cref="ResourceExplorer"/>.</param>
@@ -43,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         /// <param name="languagePolicy">Optional language policy.</param>
-        public AdaptiveDialogManager(
+        public AdaptiveDialogBot(
             string adaptiveDialogId,
             string languageGeneratorId,
             string defaultLocale,
@@ -59,53 +57,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             LanguagePolicy languagePolicy = null)
         {
             defaultLocale = defaultLocale ?? "en";
-            this._adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
+
+            if (adaptiveDialogId == null)
+            {
+                throw new ArgumentNullException(nameof(adaptiveDialogId));
+            }
+
+            if (resourceExplorer == null)
+            {
+                throw new ArgumentNullException(nameof(resourceExplorer));
+            }
+
             this._botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
-            this._resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
-            this._logger = logger ?? NullLogger<AdaptiveDialogManager>.Instance;
-            this.InitialTurnState.Add(this._resourceExplorer);
-            this.InitialTurnState.Add(this._botFrameworkAuthentication);
-            this.InitialTurnState.Add(this._logger);
-            this.InitialTurnState.Add(conversationState ?? throw new ArgumentNullException(nameof(conversationState)));
-            this.InitialTurnState.Add(userState ?? throw new ArgumentNullException(nameof(userState)));
-            this.InitialTurnState.Add(skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase)));
-            this.InitialTurnState.Add(scopes ?? Enumerable.Empty<MemoryScope>());
-            this.InitialTurnState.Add(pathResolvers ?? Enumerable.Empty<IPathResolver>());
-            this.UseLanguageGeneration(languageGeneratorId);
-            this.UseLanguagePolicy(languagePolicy ?? new LanguagePolicy(defaultLocale));
+
+            this._dialogManager = new DialogManager();
+            this._dialogManager.InitialTurnState.Add(resourceExplorer);
+            this._dialogManager.InitialTurnState.Add(this._botFrameworkAuthentication);
+            this._dialogManager.InitialTurnState.Add(logger ?? NullLogger<AdaptiveDialogBot>.Instance);
+            this._dialogManager.InitialTurnState.Add(conversationState ?? throw new ArgumentNullException(nameof(conversationState)));
+            this._dialogManager.InitialTurnState.Add(userState ?? throw new ArgumentNullException(nameof(userState)));
+            this._dialogManager.InitialTurnState.Add(skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase)));
+            this._dialogManager.InitialTurnState.Add(scopes ?? Enumerable.Empty<MemoryScope>());
+            this._dialogManager.InitialTurnState.Add(pathResolvers ?? Enumerable.Empty<IPathResolver>());
+            this._dialogManager.UseLanguageGeneration(languageGeneratorId);
+            this._dialogManager.UseLanguagePolicy(languagePolicy ?? new LanguagePolicy(defaultLocale));
+
+            this._dialogManager.RootDialog = resourceExplorer.LoadType<AdaptiveDialog>(adaptiveDialogId);
 
             if (dialogs != null)
             {
                 foreach (var dialog in dialogs)
                 {
-                    this.Dialogs.Add(dialog);
+                    this._dialogManager.Dialogs.Add(dialog);
                 }
             }
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
-            this.InitialTurnState.Set<BotCallbackHandler>(OnTurnAsync);
+            this._dialogManager.InitialTurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
         /// <inheritdoc/>
-        public override async Task<DialogManagerResult> OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (this.RootDialog == null)
-            {
-                this.RootDialog = await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(_resourceExplorer.GetResource(this._adaptiveDialogId), cancellationToken).ConfigureAwait(false);
-            }
-
             using (var botFrameworkClient = _botFrameworkAuthentication.CreateBotFrameworkClient())
             {
                 turnContext.TurnState.Add(botFrameworkClient);
 
                 // call dialog manager base class.
-                return await base.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                await this._dialogManager.OnTurnAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                return;
             }
-        }
-
-        Task IBot.OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            return this.OnTurnAsync(turnContext, cancellationToken);
         }
     }
 }

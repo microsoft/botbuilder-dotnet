@@ -18,13 +18,13 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    public class AdaptiveDialogManagerTests
+    public class AdaptiveDialogBotTests
     {
         [Fact]
-        public async Task AdaptiveDialogManagerTurnState()
+        public async Task AdaptiveDialogBotTurnState()
         {
             // Arrange
-            var logger = NullLogger<AdaptiveDialogManager>.Instance;
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
 
             var storage = new MemoryStorage();
             var conversationState = new ConversationState(storage);
@@ -56,8 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogManager(
-                "main.dialog", 
+            var bot = new AdaptiveDialogBot(
+                "main.dialog",
                 "main.lg",
                 "defaultLocale",
                 resourceExplorer,
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 skillConversationIdFactory,
                 botFrameworkAuthenticationMock.Object,
                 logger: logger);
-            
+
             await bot.OnTurnAsync(turnContext, CancellationToken.None);
 
             // Assert
@@ -81,10 +81,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public async Task AdaptiveDialogManagerExceptionWhenNoResource()
+        public async Task AdaptiveDialogBotExceptionWhenNoResource()
         {
             // Arrange
-            var logger = NullLogger<AdaptiveDialogManager>.Instance;
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
 
             var storage = new MemoryStorage();
             var conversationState = new ConversationState(storage);
@@ -115,18 +115,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
             // Act
-            var bot = new AdaptiveDialogManager(
-                "main.dialog",
-                "main.lg",
-                "defaultLocale",
-                resourceExplorer,
-                conversationState,
-                userState,
-                skillConversationIdFactory,
-                botFrameworkAuthenticationMock.Object,
-                logger: logger);
-            
-            var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
+            var exception = await Record.ExceptionAsync(() =>
+            {
+                var bot = new AdaptiveDialogBot(
+                    "main.dialog",
+                    "main.lg",
+                    "defaultLocale",
+                    resourceExplorer,
+                    conversationState,
+                    userState,
+                    skillConversationIdFactory,
+                    botFrameworkAuthenticationMock.Object,
+                    logger: logger);
+                return Task.CompletedTask;
+            });
 
             // Assert
             Assert.NotNull(exception);

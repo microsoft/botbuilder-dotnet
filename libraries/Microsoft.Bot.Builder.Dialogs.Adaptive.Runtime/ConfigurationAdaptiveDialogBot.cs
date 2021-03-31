@@ -15,13 +15,13 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
 {
-    internal class ConfigurationAdaptiveDialogManager : AdaptiveDialogManager
+    internal class ConfigurationAdaptiveDialogBot : AdaptiveDialogBot
     {
         private const string DefaultLanguageGeneratorId = "main.lg";
         private const string DefaultLocale = "en-US";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationAdaptiveDialogManager"/> class using <see cref="IConfiguration"/>.
+        /// Initializes a new instance of the <see cref="ConfigurationAdaptiveDialogBot"/> class using <see cref="IConfiguration"/>.
         /// </summary>
         /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
         /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="AdaptiveDialog"/> from.</param>
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
         /// <param name="scopes">A set of <see cref="MemoryScope"/> that will be added to the <see cref="ITurnContext"/>.</param>
         /// <param name="pathResolvers">A set of <see cref="IPathResolver"/> that will be added to the <see cref="ITurnContext"/>.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
-        public ConfigurationAdaptiveDialogManager(
+        public ConfigurationAdaptiveDialogBot(
             IConfiguration configuration,
             ResourceExplorer resourceExplorer,
             ConversationState conversationState,
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
                 botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),
                 scopes ?? Enumerable.Empty<MemoryScope>(),
                 pathResolvers ?? Enumerable.Empty<IPathResolver>(),
-                logger: logger ?? NullLogger<AdaptiveDialogManager>.Instance)
+                logger: logger ?? NullLogger<AdaptiveDialogBot>.Instance)
         {
         }
     }
