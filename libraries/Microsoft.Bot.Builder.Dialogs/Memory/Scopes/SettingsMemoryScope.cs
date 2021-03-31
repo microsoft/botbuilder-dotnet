@@ -29,11 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
-
-            if (configuration != null)
-            {
-                _initialSettings = LoadSettings(configuration);
-            }
+            _initialSettings = LoadSettings(configuration);
         }
 
         /// <summary>

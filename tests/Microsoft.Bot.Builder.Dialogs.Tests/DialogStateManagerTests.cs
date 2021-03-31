@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -797,6 +798,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(testValue, state.GetValue<string>(fullKey));
                 Assert.Equal(testValue, state.GetValue<string>(shortKey));
             }).StartTestAsync();
+        }
+
+        [Fact]
+        public async Task TestMemoryScope_LegacySettings()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>() { { "foo", "bar" } })
+                .Build();
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(_testName));
+            adapter
+                .UseStorage(new MemoryStorage())
+                .UseBotState(new UserState(new MemoryStorage()))
+                .UseBotState(new ConversationState(new MemoryStorage()));
+
+            var dm = new DialogManager(new LamdaDialog(async (dc, ct) =>
+            {
+                Assert.Equal("bar", dc.State.GetValue<string>("settings.foo"));
+            }));
+
+            dm.InitialTurnState.Set(new ResourceExplorer());
+            dm.InitialTurnState.Set<IEnumerable<MemoryScope>>(new MemoryScope[] { new SettingsMemoryScope(), new SettingsMemoryScope(configuration) });
+            dm.InitialTurnState.Set<IEnumerable<IPathResolver>>(new IPathResolver[] { new DoubleCaratPathResolver() });
+
+            await new TestFlow(adapter, dm.OnTurnAsync).SendConversationUpdate().StartTestAsync();
         }
 
         private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
