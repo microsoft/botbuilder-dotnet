@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public ActivityFactoryTests()
         {
+            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
