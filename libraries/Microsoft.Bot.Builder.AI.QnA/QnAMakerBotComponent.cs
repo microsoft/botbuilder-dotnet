@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<QnAMakerRecognizer>(QnAMakerRecognizer.Kind));
 
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<Metadata>>>();
-            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<QnARequestContext>>>();
+            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ObjectExpressionConverter<QnARequestContext>>>();
         }
     }
 }

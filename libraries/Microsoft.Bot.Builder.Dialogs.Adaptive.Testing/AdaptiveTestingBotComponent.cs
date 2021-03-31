@@ -23,10 +23,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // Converters
-            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<TestAction>>>();
-            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<HttpRequestMock>>>();
-            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<SettingMock>>>();
-            services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<UserTokenMock>>>();
+            services.AddSingleton<JsonConverterFactory, InterfaceConverterFactory<TestAction>>();
+            services.AddSingleton<JsonConverterFactory, InterfaceConverterFactory<HttpRequestMock>>();
+            services.AddSingleton<JsonConverterFactory, InterfaceConverterFactory<SettingMock>>();
+            services.AddSingleton<JsonConverterFactory, InterfaceConverterFactory<UserTokenMock>>();
 
             // Actions for within normal bot flow
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<AssertCondition>(AssertCondition.Kind));
