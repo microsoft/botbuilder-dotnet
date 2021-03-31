@@ -40,8 +40,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="configuration">Configuration for the dialog state manager. Default is <c>null</c>.</param>
         public DialogStateManager(DialogContext dc, DialogStateManagerConfiguration configuration = null)
         {
-            ComponentRegistration.Add(new DialogsComponentRegistration());
-
             _dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             Configuration = configuration ?? dc.Context.TurnState.Get<DialogStateManagerConfiguration>();
             if (Configuration == null)
