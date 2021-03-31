@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         public LGGeneratorTests()
         {
+            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());

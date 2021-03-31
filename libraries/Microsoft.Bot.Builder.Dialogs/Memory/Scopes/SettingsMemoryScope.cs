@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
@@ -23,11 +25,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
         /// </summary>
         /// <param name="configuration">The <see cref="IConfiguration"/> from which to create these settings.</param>
-        public SettingsMemoryScope(IConfiguration configuration)
+        public SettingsMemoryScope(IConfiguration configuration = null)
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
-
             _initialSettings = LoadSettings(configuration);
         }
 
@@ -52,18 +53,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                     settings = LoadSettings(configuration);
                     dc.Context.TurnState[ScopePath.Settings] = settings;
                 }
-
-                // there is an inconsistent behavior in that empty settings result in a mutable return value
-                // Dialog.Tests rely on this behavior
-                else if (!_initialSettings.IsEmpty)
-                {
-                    // initialSettings comes from an IConfiguration given to the constructor
-                    settings = _initialSettings;
-                }
             }
 
             // settings is immutable and AdaptiveDialog.Tests rely on that, oddly _emptySettings are mutable
             return settings ?? _emptySettings;
+        }
+
+        /// <inheritdoc/>
+        public async override Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
+        {
+            if (!_initialSettings.IsEmpty)
+            {
+                dialogContext.Context.TurnState[ScopePath.Settings] = _initialSettings;
+            }
+
+            await base.LoadAsync(dialogContext, force, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
