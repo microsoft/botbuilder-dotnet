@@ -3,8 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -19,7 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
     internal class ConfigurationAdaptiveDialogBot : AdaptiveDialogBot
     {
         private const string DefaultLanguageGeneratorId = "main.lg";
-        private const string DefaultLocale = "en-US";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationAdaptiveDialogBot"/> class using <see cref="IConfiguration"/>.
@@ -29,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
         /// <param name="conversationState">The <see cref="ConversationState"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="userState">The <see cref="UserState"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="skillConversationIdFactoryBase">The <see cref="SkillConversationIdFactoryBase"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
+        /// <param name="languagePolicy">The <see cref="LanguagePolicy"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> for making calls to Bot Builder Skills.</param>
         /// <param name="scopes">A set of <see cref="MemoryScope"/> that will be added to the <see cref="ITurnContext"/>.</param>
         /// <param name="pathResolvers">A set of <see cref="IPathResolver"/> that will be added to the <see cref="ITurnContext"/>.</param>
@@ -40,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
             ConversationState conversationState,
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
+            LanguagePolicy languagePolicy,
             BotFrameworkAuthentication botFrameworkAuthentication = null,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
@@ -48,11 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
             : base(
                 configuration.GetSection(ConfigurationConstants.RootDialogKey).Value,
                 configuration.GetSection(ConfigurationConstants.LanguageGeneratorKey).Value ?? DefaultLanguageGeneratorId,
-                configuration.GetSection(ConfigurationConstants.DefaultLocaleKey).Value ?? DefaultLocale,
                 resourceExplorer,
                 conversationState,
                 userState,
                 skillConversationIdFactoryBase,
+                languagePolicy,
                 botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),
                 scopes ?? Enumerable.Empty<MemoryScope>(),
                 pathResolvers ?? Enumerable.Empty<IPathResolver>(),
