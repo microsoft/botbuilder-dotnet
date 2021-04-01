@@ -56,6 +56,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
 
+            // Language policy
+            services.TryAddSingleton<LanguagePolicy, ConfigurationLanguagePolicy>();
+
             // CoreBotAdapter registration
             services.AddSingleton<CoreBotAdapter>();
             services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
