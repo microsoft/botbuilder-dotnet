@@ -20,19 +20,16 @@ namespace Microsoft.Bot.Builder
     {
         private readonly string _voiceName;
         private readonly bool _fallbackToTextForSpeak;
-        private readonly string _lang;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SetSpeakMiddleware"/> class.
         /// </summary>
         /// <param name="voiceName">The SSML voice name attribute value.</param>
-        /// <param name="lang">The xml:lang value.</param>
         /// <param name="fallbackToTextForSpeak">true if an empt Activity.Speak is populated with Activity.Text.</param>
-        public SetSpeakMiddleware(string voiceName, string lang, bool fallbackToTextForSpeak)
+        public SetSpeakMiddleware(string voiceName, bool fallbackToTextForSpeak)
         {
             _voiceName = voiceName;
             _fallbackToTextForSpeak = fallbackToTextForSpeak;
-            _lang = lang ?? throw new ArgumentNullException(nameof(lang));
         }
 
         /// <summary>
@@ -62,7 +59,7 @@ namespace Microsoft.Bot.Builder
                             && !string.IsNullOrEmpty(_voiceName)
                             && (string.Equals(turnContext.Activity.ChannelId, Channels.DirectlineSpeech, StringComparison.OrdinalIgnoreCase)
                                 || string.Equals(turnContext.Activity.ChannelId, Channels.Emulator, StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(turnContext.Activity.ChannelId, "telephony", StringComparison.OrdinalIgnoreCase)))
+                                || string.Equals(turnContext.Activity.ChannelId, Channels.Telephony, StringComparison.OrdinalIgnoreCase)))
                         {
                             if (!HasTag("speak", activity.Speak))
                             {
@@ -71,7 +68,7 @@ namespace Microsoft.Bot.Builder
                                     activity.Speak = $"<voice name='{_voiceName}'>{activity.Speak}</voice>";
                                 }
 
-                                activity.Speak = $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{_lang}'>{activity.Speak}</speak>";
+                                activity.Speak = $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{activity.Locale ?? "en-US"}'>{activity.Speak}</speak>";
                             }
                         }
                     }
