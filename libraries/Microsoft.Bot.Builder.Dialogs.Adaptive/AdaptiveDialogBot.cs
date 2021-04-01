@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private static readonly ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
 
-        private readonly string _defaultLocale;
         private readonly string _adaptiveDialogId;
         private readonly string _languageGeneratorId;
         private readonly ResourceExplorer _resourceExplorer;
@@ -33,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
+        private readonly LanguagePolicy _languagePolicy;
         private readonly IEnumerable<MemoryScope> _memoryScopes;
         private readonly IEnumerable<IPathResolver> _pathResolvers;
         private readonly IEnumerable<Dialog> _dialogs;
@@ -45,11 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="adaptiveDialogId">The id of the <see cref="AdaptiveDialog"/> to load from the <see cref="ResourceExplorer"/>.</param>
         /// <param name="languageGeneratorId">The id of the <see cref="LanguageGenerator"/> to load from the <see cref="ResourceExplorer"/>.</param>
-        /// <param name="defaultLocale">The default locale for this bot.</param>
         /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="Dialog"/> from.</param>
         /// <param name="conversationState">A <see cref="ConversationState"/> implementation.</param>
         /// <param name="userState">A <see cref="UserState"/> implementation.</param>
         /// <param name="skillConversationIdFactoryBase">A <see cref="SkillConversationIdFactoryBase"/> implementation.</param>
+        /// <param name="languagePolicy">A <see cref="LanguagePolicy"/> to use.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
         /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
@@ -58,11 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public AdaptiveDialogBot(
             string adaptiveDialogId,
             string languageGeneratorId,
-            string defaultLocale,
             ResourceExplorer resourceExplorer,
             ConversationState conversationState,
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
+            LanguagePolicy languagePolicy,
             BotFrameworkAuthentication botFrameworkAuthentication,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
@@ -72,10 +72,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             _adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
             _languageGeneratorId = languageGeneratorId ?? throw new ArgumentNullException(nameof(languageGeneratorId));
-            _defaultLocale = defaultLocale ?? throw new ArgumentNullException(nameof(defaultLocale));
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             _userState = userState ?? throw new ArgumentNullException(nameof(userState));
             _skillConversationIdFactoryBase = skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase));
+            _languagePolicy = languagePolicy ?? throw new ArgumentNullException(nameof(languagePolicy));
             _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             _memoryScopes = scopes ?? Enumerable.Empty<MemoryScope>();
             _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
@@ -118,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_pathResolvers);
             turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
-            turnContext.TurnState.Add(new LanguagePolicy(_defaultLocale));
+            turnContext.TurnState.Add(_languagePolicy);
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
