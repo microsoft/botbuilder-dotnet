@@ -160,7 +160,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The root dialogManager that was used to create this dialog context chain.
         /// </value>
-        public DialogManager DialogManager => this.Context.TurnState.Get<DialogManager>();
+        [Obsolete("DialogManager is not accessible via this method anymore.")]
+        public DialogManager DialogManager => null;
 
         /// <summary>
         /// Starts a new dialog and pushes it onto the dialog stack.
