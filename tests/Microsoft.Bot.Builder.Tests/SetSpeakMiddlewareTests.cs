@@ -13,17 +13,10 @@ namespace Microsoft.Bot.Builder.Tests
     public class SetSpeakMiddlewareTests
     {
         [Fact]
-        public void ConstructorValidation()
-        {
-            // no 'lang'
-            Assert.Throws<ArgumentNullException>(() => new SetSpeakMiddleware("voice", null, false));
-        }
-
-        [Fact]
         public async Task NoFallback()
         {
             var adapter = new TestAdapter(CreateConversation("NoFallback"))
-                .Use(new SetSpeakMiddleware("male", "en-us", false));
+                .Use(new SetSpeakMiddleware("male", false));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -46,7 +39,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task FallbackNullSpeak()
         {
             var adapter = new TestAdapter(CreateConversation("Fallback"))
-                .Use(new SetSpeakMiddleware("male", "en-us", true));
+                .Use(new SetSpeakMiddleware("male", true));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -69,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task FallbackWithSpeak()
         {
             var adapter = new TestAdapter(CreateConversation("Fallback"))
-                .Use(new SetSpeakMiddleware("male", "en-us", true));
+                .Use(new SetSpeakMiddleware("male", true));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -95,7 +88,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task AddVoice(string channelId)
         {
             var adapter = new TestAdapter(CreateConversation("Fallback", channelId: channelId))
-                .Use(new SetSpeakMiddleware("male", "en-us", true));
+                .Use(new SetSpeakMiddleware("male", true));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {
@@ -122,7 +115,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task AddNoVoice(string channelId)
         {
             var adapter = new TestAdapter(CreateConversation("Fallback", channelId: channelId))
-                .Use(new SetSpeakMiddleware(null, "en-us", true));
+                .Use(new SetSpeakMiddleware(null, true));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {

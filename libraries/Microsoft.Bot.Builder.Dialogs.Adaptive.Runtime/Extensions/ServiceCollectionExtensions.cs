@@ -201,8 +201,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             if (featureSettings.SetSpeak != null)
             {
                 services.AddSingleton<IMiddleware>(sp => new SetSpeakMiddleware(
-                    featureSettings.SetSpeak.VoiceFontName, 
-                    featureSettings.SetSpeak.Lang, 
+                    featureSettings.SetSpeak.VoiceFontName,
                     featureSettings.SetSpeak.FallbackToTextForSpeechIfEmpty));
             }
         }
