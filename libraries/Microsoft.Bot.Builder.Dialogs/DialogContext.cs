@@ -155,11 +155,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public TurnContextStateCollection Services { get; private set; }
 
         /// <summary>
-        /// Gets the current DialogManager for this dialogContext.
+        /// Gets the current DialogManager for this dialogContext. This property is obsolete.
         /// </summary>
         /// <value>
         /// The root dialogManager that was used to create this dialog context chain.
         /// </value>
+        [Obsolete("The DialogManager property serves no function.")]
         public DialogManager DialogManager => this.Context.TurnState.Get<DialogManager>();
 
         /// <summary>
