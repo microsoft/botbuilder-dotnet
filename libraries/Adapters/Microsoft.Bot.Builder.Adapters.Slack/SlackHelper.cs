@@ -57,6 +57,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     {
                         message.Blocks = att.Content;
                     }
+                    else if (att.ContentType == HeroCard.ContentType)
+                    {
+                        message.Blocks = HeroCardToBlockKit((HeroCard)att.Content);
+                    }
                     else
                     {
                         var newAttachment = new SlackAttachment()
@@ -278,7 +282,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             }
 
                             attachments.Add(new Attachment
-                            { 
+                            {
                                 ContentType = contentType,
                                 ContentUrl = contentUrl,
                                 Name = name
@@ -368,6 +372,76 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             return values;
+        }
+
+        private static object HeroCardToBlockKit(HeroCard heroCard)
+        {
+            List<string> blockKitContent = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(heroCard.Title))
+            {
+                blockKitContent.Add(@"{
+                                                    ""type"": ""header"",
+                                                    ""text"": {
+                                                        ""type"": ""plain_text"",
+                                                        ""text"": """ + heroCard.Title + @"""
+                                                    }
+                                                }");
+            }
+
+            if (!string.IsNullOrWhiteSpace(heroCard.Subtitle))
+            {
+                blockKitContent.Add(@"{
+                                                    ""type"": ""context"",
+                                                    ""elements"": [
+                                                        {
+                                                            ""text"": """ + heroCard.Subtitle + @""",
+                                                            ""type"": ""mrkdwn""
+                                                        }
+                                                    ]
+                                                }");
+            }
+
+            if (heroCard.Images?.Any() == false)
+            {
+                blockKitContent.Add(@"{
+                                                    ""type"": ""image"",
+                                                    ""image_url"": """ + heroCard.Images.First().Url + @""",
+                                                    ""alt_text"": """ + heroCard.Images.First().Alt + @"""
+                                                    }
+                                                ");
+            }
+
+            if (!string.IsNullOrWhiteSpace(heroCard.Text))
+            {
+                blockKitContent.Add(@"{
+                                                    ""type"": ""section"",
+                                                    ""text"": {
+                                                    ""type"": ""mrkdwn"",
+                                                                ""text"": """ + heroCard.Text + @"""
+                                                    }
+                                                }");
+            }
+
+            if (heroCard.Buttons?.Any() != false)
+            {
+                var actions = heroCard.Buttons
+                                .Select(b => $"{{\"type\": \"button\", \"text\": {{\"type\": \"plain_text\",\"text\": \"{b.Title}\",\"emoji\": true}},\"value\": \"{b.Value}\"}}");
+
+                blockKitContent.Add(@"{
+                                                    ""type"": ""divider""
+                                                },
+                                                {
+                                                    ""type"": ""actions"",
+                                                    ""elements"": ["
+                                            + string.Join(",", actions) +
+                                        @"]
+                                                }");
+            }
+
+            string cardInBlockKit = "[" + string.Join(",", blockKitContent) + "]";
+
+            return Newtonsoft.Json.JsonConvert.DeserializeObject(cardInBlockKit);
         }
     }
 }
