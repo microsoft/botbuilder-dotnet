@@ -38,6 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly IEnumerable<Dialog> _dialogs;
         private readonly ILogger _logger;
 
+        private readonly Lazy<Task<Dialog>> _lazyRootDialog;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
         /// </summary>
@@ -79,6 +81,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
             _dialogs = dialogs ?? Enumerable.Empty<Dialog>();
             _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
+
+            _lazyRootDialog = new Lazy<Task<Dialog>>(CreateDialogAsync);
         }
 
         /// <inheritdoc/>
@@ -91,8 +95,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Set up the TurnState the Dialog is expecting
                 SetUpTurnState(turnContext, botFrameworkClient);
 
-                // Load the Dialog from the ResourceExplorer
-                var rootDialog = await CreateDialogAsync(cancellationToken).ConfigureAwait(false);
+                // Load the Dialog from the ResourceExplorer - the actual load should only happen once
+                var rootDialog = await _lazyRootDialog.Value.ConfigureAwait(false);
 
                 // Run the Dialog
                 await rootDialog.RunAsync(turnContext, turnContext.TurnState.Get<ConversationState>().CreateProperty<DialogState>("DialogState"), cancellationToken).ConfigureAwait(false);
@@ -120,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
-        private async Task<Dialog> CreateDialogAsync(CancellationToken cancellationToken)
+        private async Task<Dialog> CreateDialogAsync()
         {
             if (!_resourceExplorer.TryGetResource(_adaptiveDialogId, out var adaptiveDialogResource))
             {
@@ -129,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new InvalidOperationException(msg);
             }
 
-            var adaptiveDialog = await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, cancellationToken).ConfigureAwait(false);
+            var adaptiveDialog = await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, CancellationToken.None).ConfigureAwait(false);
 
             // if we were passed any Dialogs then add them to the AdaptiveDialog's DialogSet so they can be invoked from any other Dialog
             foreach (var dialog in _dialogs)
