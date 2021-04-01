@@ -30,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var conversationState = new ConversationState(storage);
             var userState = new UserState(storage);
             var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
@@ -59,11 +60,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var bot = new AdaptiveDialogBot(
                 "main.dialog", 
                 "main.lg",
-                "defaultLocale",
                 resourceExplorer,
                 conversationState,
                 userState,
                 skillConversationIdFactory,
+                languagePolicy,
                 botFrameworkAuthenticationMock.Object,
                 logger: logger);
             
@@ -90,6 +91,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var conversationState = new ConversationState(storage);
             var userState = new UserState(storage);
             var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
 
             var resourceExplorer = new ResourceExplorer();
             var resourceProvider = new MockResourceProvider(resourceExplorer);
@@ -118,11 +120,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var bot = new AdaptiveDialogBot(
                 "main.dialog",
                 "main.lg",
-                "defaultLocale",
                 resourceExplorer,
                 conversationState,
                 userState,
                 skillConversationIdFactory,
+                languagePolicy,
                 botFrameworkAuthenticationMock.Object,
                 logger: logger);
             
