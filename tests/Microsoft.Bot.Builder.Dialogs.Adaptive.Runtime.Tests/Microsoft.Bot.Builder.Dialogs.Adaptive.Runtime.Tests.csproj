@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />
   </ItemGroup>
-  </Project>
+
+  <ItemGroup>
+    <None Update="Extensions\ConfigurationBuilderExtensionsFiles\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
