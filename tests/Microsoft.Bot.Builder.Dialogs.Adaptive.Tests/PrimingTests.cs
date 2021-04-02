@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -19,7 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public static IEnumerable<object[]> Expected
             => new[]
             {
-                /*
                 // Entity recognizers
                 new object[] { new AgeEntityRecognizer(), null, new[] { "age" }, null },
                 new object[] { new ChannelMentionEntityRecognizer(), null, new[] { "channelMention" }, null },
@@ -40,9 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 new object[] { new RegexEntityRecognizer() { Name = "pattern" }, null, new[] { "pattern" }, null },
                 new object[] { new TemperatureEntityRecognizer(), null, new[] { "temperature" }, null },
                 new object[] { new UrlEntityRecognizer(), null, new[] { "url" }, null },
-                */
 
-                // TODO: chrimc, still need LUIS, QnA and recognizer sets
+                // TODO: chrimc, still need QnA and recognizer sets
                 new object[] 
                 {
                     new AI.Luis.LuisAdaptiveRecognizer() 
@@ -76,19 +73,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             if (intents != null)
             {
                 Assert.Equal(intents.Length, description.Intents.Count);
-                Assert.Collection(description.Intents, (intent) => Assert.Contains(intent.Name, intents));
+                Assert.All(description.Intents, (intent) => Assert.Contains(intent.Name, intents));
+            }
+            else
+            {
+                Assert.Empty(description.Intents);
             }
 
             if (entities != null)
             {
                 Assert.Equal(entities.Length, description.Entities.Count);
-                Assert.Collection(description.Entities, (entity) => Assert.Contains(entity.Name, entities));
+                Assert.All(description.Entities, (entity) => Assert.Contains(entity.Name, entities));
+            }
+            else
+            {
+                Assert.Empty(description.Entities);
             }
 
             if (lists != null)
             {
                 Assert.Equal(lists.Length, description.DynamicLists.Count);
-                Assert.Collection(description.DynamicLists, (list) => Assert.Contains(list.Entity, lists));
+                Assert.All(description.DynamicLists, (list) => Assert.Contains(list.Entity, lists));
+            }
+            else
+            {
+                Assert.Empty(description.DynamicLists);
             }
         }
 
