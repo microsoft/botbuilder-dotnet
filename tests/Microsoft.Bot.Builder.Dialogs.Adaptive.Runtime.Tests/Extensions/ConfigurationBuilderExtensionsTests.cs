@@ -61,10 +61,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests.Extensions
             Assert.Equal(expectedSetting, actualConfig["testSetting"]);
         }
 
+#if NETCOREAPP2_1
         /// <summary>
-        /// Help implementation of <see cref="IHostEnvironment"/> use for testing.
+        /// Help implementation of <see cref="Microsoft.Extensions.Hosting.IHostEnvironment"/> use for testing.
         /// </summary>
+        private class TestHostingEnvironment : Microsoft.Extensions.Hosting.IHostingEnvironment
+#else
         private class TestHostingEnvironment : IHostEnvironment
+#endif
         {
             public string EnvironmentName { get; set; }
 
