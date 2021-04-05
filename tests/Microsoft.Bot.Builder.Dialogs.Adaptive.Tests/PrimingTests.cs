@@ -19,34 +19,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             => new[]
             {
                 // Entity recognizers
-                new object[] { new AgeEntityRecognizer(), null, new[] { "age" }, null },
-                new object[] { new ChannelMentionEntityRecognizer(), null, new[] { "channelMention" }, null },
-                new object[] { new ConfirmationEntityRecognizer(), null, new[] { "boolean" }, null },
-                new object[] { new CurrencyEntityRecognizer(), null, new[] { "currency" }, null },
-                new object[] { new DateTimeEntityRecognizer(), null, new[] { "datetime" }, null },
-                new object[] { new DimensionEntityRecognizer(), null, new[] { "dimension" }, null },
-                new object[] { new EmailEntityRecognizer(), null, new[] { "email" }, null },
-                new object[] { new GuidEntityRecognizer(), null, new[] { "guid" }, null },
-                new object[] { new HashtagEntityRecognizer(), null, new[] { "hashtag" }, null },
-                new object[] { new IpEntityRecognizer(), null, new[] { "ip" }, null },
-                new object[] { new MentionEntityRecognizer(), null, new[] { "mention" }, null },
-                new object[] { new NumberEntityRecognizer(), null, new[] { "number" }, null },
-                new object[] { new NumberRangeEntityRecognizer(), null, new[] { "numberrange" }, null },
-                new object[] { new OrdinalEntityRecognizer(), null, new[] { "ordinal" }, null },
-                new object[] { new PercentageEntityRecognizer(), null, new[] { "percentage" }, null },
-                new object[] { new PhoneNumberEntityRecognizer(), null, new[] { "phonenumber" }, null },
-                new object[] { new RegexEntityRecognizer() { Name = "pattern" }, null, new[] { "pattern" }, null },
-                new object[] { new TemperatureEntityRecognizer(), null, new[] { "temperature" }, null },
-                new object[] { new UrlEntityRecognizer(), null, new[] { "url" }, null },
+                new object[] { new AgeEntityRecognizer(), null, new[] { new EntityDescription("age") }, null },
+                new object[] { new ChannelMentionEntityRecognizer(), null, new[] { new EntityDescription("channelMention") }, null },
+                new object[] { new ConfirmationEntityRecognizer(), null, new[] { new EntityDescription("boolean") }, null },
+                new object[] { new CurrencyEntityRecognizer(), null, new[] { new EntityDescription("currency") }, null },
+                new object[] { new DateTimeEntityRecognizer(), null, new[] { new EntityDescription("datetime") }, null },
+                new object[] { new DimensionEntityRecognizer(), null, new[] { new EntityDescription("dimension") }, null },
+                new object[] { new EmailEntityRecognizer(), null, new[] { new EntityDescription("email") }, null },
+                new object[] { new GuidEntityRecognizer(), null, new[] { new EntityDescription("guid") }, null },
+                new object[] { new HashtagEntityRecognizer(), null, new[] { new EntityDescription("hashtag") }, null },
+                new object[] { new IpEntityRecognizer(), null, new[] { new EntityDescription("ip") }, null },
+                new object[] { new MentionEntityRecognizer(), null, new[] { new EntityDescription("mention") }, null },
+                new object[] { new NumberEntityRecognizer(), null, new[] { new EntityDescription("number") }, null },
+                new object[] { new NumberRangeEntityRecognizer(), null, new[] { new EntityDescription("numberrange") }, null },
+                new object[] { new OrdinalEntityRecognizer(), null, new[] { new EntityDescription("ordinal") }, null },
+                new object[] { new PercentageEntityRecognizer(), null, new[] { new EntityDescription("percentage") }, null },
+                new object[] { new PhoneNumberEntityRecognizer(), null, new[] { new EntityDescription("phonenumber") }, null },
+                new object[] { new RegexEntityRecognizer() { Id = "somePattern", Name = "pattern" }, null, new[] { new EntityDescription("pattern", "somePattern") }, null },
+                new object[] { new TemperatureEntityRecognizer(), null, new[] { new EntityDescription("temperature") }, null },
+                new object[] { new UrlEntityRecognizer(), null, new[] { new EntityDescription("url") }, null },
 
-                // TODO: chrimc, still need QnA and recognizer sets
-                new object[] 
+                // LUIS
+                new object[]
                 {
-                    new AI.Luis.LuisAdaptiveRecognizer() 
+                    new AI.Luis.LuisAdaptiveRecognizer()
                     {
-                        PossibleIntents = new[] { new IntentDescription("intent1") },
-                        PossibleEntities = new[] { new EntityDescription("entity1"), new EntityDescription("dlist") },
-                        DynamicLists = new[] 
+                        // The source would be generated by tooling and this is to distinguish the intent/entity across applications.
+                        // With package namespacing a component should name it with the package prefix, i.e. Microsoft.Welcome#foo.lu.
+                        PossibleIntents = new[] { new IntentDescription("intent1", "foo.lu") },
+                        PossibleEntities = new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
+                        DynamicLists = new[]
                         {
                                 new AI.Luis.DynamicList()
                                 {
@@ -58,22 +60,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                                 }
                         }
                     },
-                    new[] { "intent1" },
-                    new[] { "entity1", "dlist" },
+                    new[] { new IntentDescription("intent1", "foo.lu") },
+                    new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
                     new[] { "dlist" }
+                },
+
+                // QnA doesn't have any priming information
+                new object[]
+                {
+                    new AI.QnA.Recognizers.QnAMakerRecognizer(),
+                    null, null, null
                 }
             };
 
         [Theory]
         [MemberData(nameof(Expected))]
-        public async Task RecognizerDescriptionTests(Recognizer recognizer, string[] intents, string[] entities, string[] lists)
+        public async Task RecognizerDescriptionTests(Recognizer recognizer, IntentDescription[] intents, EntityDescription[] entities, string[] lists)
         {
             var description = await recognizer.GetRecognizerDescriptionAsync(GetTurnContext(recognizer));
 
             if (intents != null)
             {
                 Assert.Equal(intents.Length, description.Intents.Count);
-                Assert.All(description.Intents, (intent) => Assert.Contains(intent.Name, intents));
+                Assert.All(description.Intents, (intent) => Assert.Contains(intent, intents));
             }
             else
             {
@@ -83,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             if (entities != null)
             {
                 Assert.Equal(entities.Length, description.Entities.Count);
-                Assert.All(description.Entities, (entity) => Assert.Contains(entity.Name, entities));
+                Assert.All(description.Entities, (entity) => Assert.Contains(entity, entities));
             }
             else
             {
