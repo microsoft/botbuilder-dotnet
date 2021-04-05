@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Antlr4.Runtime;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.NumberWithUnit;
 using Newtonsoft.Json;
@@ -83,6 +84,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             TrackRecognizerResult(dialogContext, "RecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
+        {
+            return RecognizerDescription.MergeDescriptions(await Task.WhenAll(Recognizers.Select(r => r.GetRecognizerDescriptionAsync(dialogContext))).ConfigureAwait(false));
         }
 
         private RecognizerResult MergeResults(RecognizerResult[] results)

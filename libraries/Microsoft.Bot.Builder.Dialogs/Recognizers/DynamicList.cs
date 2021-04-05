@@ -29,14 +29,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         public string Entity { get; set; }
 
         /// <summary>
-        /// Gets or sets the lists to append on the extended list entity.
+        /// Gets the list of canonical forms and synonyms.
         /// </summary>
         /// <value>
-        /// The lists to append on the extended list entity.
+        /// List of canonical forms and synonyms.
         /// </value>
         [JsonProperty(PropertyName = "list")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<ListElement> List { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
+        public IList<ListElement> List { get; } = new List<ListElement>();
     }
 }
