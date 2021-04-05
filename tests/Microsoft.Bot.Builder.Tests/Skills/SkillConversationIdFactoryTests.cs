@@ -23,10 +23,10 @@ namespace Microsoft.Bot.Builder.Tests.Skills
         [Fact]
         public async Task SkillConversationIdFactoryHappyPath()
         {
-            ConversationReference conversationReference = BuildConversationReference();
+            var conversationReference = BuildConversationReference();
 
             // Create skill conversation
-            string skillConversationId = await _skillConversationIdFactory.CreateSkillConversationIdAsync(
+            var skillConversationId = await _skillConversationIdFactory.CreateSkillConversationIdAsync(
                 options: new SkillConversationIdFactoryOptions
                 {
                     Activity = BuildMessageActivity(conversationReference),
@@ -51,6 +51,36 @@ namespace Microsoft.Bot.Builder.Tests.Skills
             Assert.NotNull(retrievedConversationReference.ConversationReference);
             Assert.Equal(conversationReference, retrievedConversationReference.ConversationReference, new ConversationReferenceEqualityComparer());
             Assert.Null(deletedConversationReference);
+        }
+
+        [Fact]
+        public async Task IdIsUniqueEachTime()
+        {
+            var conversationReference = BuildConversationReference();
+
+            // Create skill conversation
+            var firstId = await _skillConversationIdFactory.CreateSkillConversationIdAsync(
+                options: new SkillConversationIdFactoryOptions
+                {
+                    Activity = BuildMessageActivity(conversationReference),
+                    BotFrameworkSkill = this.BuildBotFrameworkSkill(),
+                    FromBotId = _botId,
+                    FromBotOAuthScope = _botId,
+                },
+                cancellationToken: CancellationToken.None);
+            
+            var secondId = await _skillConversationIdFactory.CreateSkillConversationIdAsync(
+                options: new SkillConversationIdFactoryOptions
+                {
+                    Activity = BuildMessageActivity(conversationReference),
+                    BotFrameworkSkill = this.BuildBotFrameworkSkill(),
+                    FromBotId = _botId,
+                    FromBotOAuthScope = _botId,
+                },
+                cancellationToken: CancellationToken.None);
+
+            // Ensure that we get a different conversationId each time we call CreateSkillConversationIdAsync
+            Assert.NotEqual(firstId, secondId);
         }
 
         private static ConversationReference BuildConversationReference()

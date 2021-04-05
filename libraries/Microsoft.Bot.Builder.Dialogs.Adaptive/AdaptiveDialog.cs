@@ -655,7 +655,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Initialize local interruption detection
             // - Any steps containing a dialog stack after the first step indicates the action was interrupted. We
-            //   want to force a re-prompt and then end the turn when we encouter an interrupted step.
+            //   want to force a re-prompt and then end the turn when we encounter an interrupted step.
             var interrupted = false;
 
             // Execute queued actions
@@ -674,7 +674,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 else
                 {
                     // Set interrupted flag
-                    if (interrupted && !actionDC.State.ContainsKey(TurnPath.Interrupted))
+                    if (interrupted && !actionDC.State.TryGetValue(TurnPath.Interrupted, out _))
                     {
                         actionDC.State.SetValue(TurnPath.Interrupted, true);
                     }
