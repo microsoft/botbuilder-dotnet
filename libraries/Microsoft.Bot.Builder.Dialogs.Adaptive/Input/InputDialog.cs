@@ -230,16 +230,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var activity = dc.Context.Activity;
-            if (activity.Type != ActivityTypes.Message)
+
+            // Interrupted dialogs reprompt so we can ignore the incoming activity. 
+            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
+            if (!interrupted && activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return EndOfTurn;
             }
 
-            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
+            var state = await RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
 
             if (state == InputState.Valid)
             {
