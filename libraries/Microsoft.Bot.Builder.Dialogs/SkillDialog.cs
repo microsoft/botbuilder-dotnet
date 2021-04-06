@@ -91,6 +91,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// return value.</remarks>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
+            // with adaptive dialogs, ResumeDialog is not called directly.  Instead the Interrupted flag is set, which
+            // acts as the signal to the SkillDialog to resume the skill.
+            if (dc.State.TryGetValue<bool>(TurnPath.Interrupted, out bool interrupted) && interrupted)
+            {
+                // resume dialog execution
+                dc.State.SetValue(TurnPath.Interrupted, false);
+                return await this.ResumeDialogAsync(dc, DialogReason.EndCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
             if (!OnValidateActivity(dc.Context.Activity))
             {
                 return EndOfTurn;
