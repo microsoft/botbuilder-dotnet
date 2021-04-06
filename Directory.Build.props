@@ -2,6 +2,7 @@
   
   <PropertyGroup>
     <LocalPackageVersion>4.11.0-local</LocalPackageVersion>
+    <ApiCompatVersion>6.0.0-beta.21168.3</ApiCompatVersion>
   </PropertyGroup>
 
   <PropertyGroup>

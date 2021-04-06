@@ -27,6 +27,9 @@ bld/
 ecf/
 rcf/
 
+# Api Compat result directories
+ApiCompat/
+
 # Visual Studio 2015 cache/options directory
 .vs/
 
