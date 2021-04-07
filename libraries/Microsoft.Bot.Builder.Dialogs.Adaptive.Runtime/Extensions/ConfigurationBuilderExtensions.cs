@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
 {
@@ -22,26 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// <param name="builder">
         /// The <see cref="IConfigurationBuilder"/> to supply with additional in-memory configuration settings.
         /// </param>
-        /// <param name="hostBuilderContext">A <see cref="HostBuilderContext"/> instance with information about the host.</param>
-        /// <param name="applicationRoot">
-        /// The application root directory. When running in local development mode from Composer, this is determined
-        /// to be three directory levels above where the runtime application project is ejected, i.e. '../../..'.
-        /// </param>
-        /// <returns>
-        /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
-        /// </returns>
-        public static IConfigurationBuilder AddBotRuntimeConfiguration(this IConfigurationBuilder builder, HostBuilderContext hostBuilderContext, string applicationRoot)
-        {
-            return AddBotRuntimeConfiguration(builder, hostBuilderContext, applicationRoot, null);
-        }
-
-        /// <summary>
-        /// Setup the provided <see cref="IConfigurationBuilder"/> with the required Runtime configuration.
-        /// </summary>
-        /// <param name="builder">
-        /// The <see cref="IConfigurationBuilder"/> to supply with additional in-memory configuration settings.
-        /// </param>
-        /// <param name="hostBuilderContext">A <see cref="HostBuilderContext"/> instance with information about the host.</param>
         /// <param name="applicationRoot">
         /// The application root directory. When running in local development mode from Composer, this is determined
         /// to be three directory levels above where the runtime application project is ejected, i.e. '../../..'.
@@ -50,18 +29,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// The relative path to the directory containing the appsettings.json file to add as a configuration source.
         /// If null is specified, appsettings.json will be located within the application root directory.
         /// </param>
+        /// <param name="environmentName">The name for the environment used to load appsettings.[EnvironmentName].json.</param>
         /// <returns>
         /// Supplied <see cref="IConfigurationBuilder"/> instance with additional in-memory configuration provider.
         /// </returns>
         public static IConfigurationBuilder AddBotRuntimeConfiguration(
             this IConfigurationBuilder builder,
-            HostBuilderContext hostBuilderContext,
             string applicationRoot,
-            string settingsDirectory)
+            string settingsDirectory = null,
+            string environmentName = null)
         {
-            if (hostBuilderContext == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(hostBuilderContext));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (string.IsNullOrWhiteSpace(applicationRoot))
@@ -73,10 +53,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             AddBotRuntimeProperties(builder, applicationRoot);
 
             // Load appsettings.
-            var appSettingsConfigFilePath = Path.Combine(applicationRoot, settingsDirectory, "appsettings.json");
-            var developerSettingsConfigFilePath = Path.Combine(applicationRoot, settingsDirectory, $"appsettings.{hostBuilderContext.HostingEnvironment.EnvironmentName}.json");
-            builder.AddJsonFile(appSettingsConfigFilePath, optional: true, reloadOnChange: true)
-                .AddJsonFile(developerSettingsConfigFilePath, optional: true, reloadOnChange: true);
+            var appSettingsConfigFilePath = Path.Combine(applicationRoot, settingsDirectory ?? string.Empty, "appsettings.json");
+            builder.AddJsonFile(appSettingsConfigFilePath, optional: true, reloadOnChange: true);
+
+            if (!string.IsNullOrWhiteSpace(environmentName))
+            {
+                var developerSettingsConfigFilePath = Path.Combine(applicationRoot, settingsDirectory ?? string.Empty, $"appsettings.{environmentName}.json");
+                builder.AddJsonFile(developerSettingsConfigFilePath, optional: true, reloadOnChange: true);
+            }
 
             // Use Composer luis and qna settings extensions
             builder.AddComposerConfiguration();
@@ -125,8 +109,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             var configuration = builder.Build();
             var botRoot = configuration.GetValue<string>("bot") ?? ".";
             var luisRegion = configuration.GetValue<string>("LUIS_AUTHORING_REGION")
-                ?? configuration.GetValue<string>("luis:authoringRegion")
-                ?? configuration.GetValue<string>("luis:region") ?? "westus";
+                             ?? configuration.GetValue<string>("luis:authoringRegion")
+                             ?? configuration.GetValue<string>("luis:region") ?? "westus";
             var qnaRegion = configuration.GetValue<string>("qna:qnaRegion") ?? "westus";
             var environment = configuration.GetValue<string>("luis:environment") ?? Environment.UserName;
             var settings = new Dictionary<string, string>();
