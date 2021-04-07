@@ -40,10 +40,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-            await InternalRunAsync(turnContext, dialog.Id, dialogContext, cancellationToken).ConfigureAwait(false);
+            await InternalRunAsync(turnContext, dialog.Id, dialogContext, null, cancellationToken).ConfigureAwait(false);
         }
 
-        internal static async Task<DialogTurnResult> InternalRunAsync(ITurnContext turnContext, string dialogId, DialogContext dialogContext, CancellationToken cancellationToken)
+        internal static async Task<DialogTurnResult> InternalRunAsync(ITurnContext turnContext, string dialogId, DialogContext dialogContext, DialogStateManagerConfiguration stateConfiguration, CancellationToken cancellationToken)
         {
             // map TurnState into root dialog context.services
             foreach (var service in turnContext.TurnState)
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 dialogContext.Services[service.Key] = service.Value;
             }
 
-            var dialogStateManager = new DialogStateManager(dialogContext);
+            var dialogStateManager = new DialogStateManager(dialogContext, stateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
             dialogContext.Context.TurnState.Add(dialogStateManager);
 
