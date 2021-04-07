@@ -73,6 +73,13 @@ if ($DebugBuild -eq $True) {
     $BuildConfiguration = 'Debug'
 }
 
+try {
+    nuget > $null
+} catch {
+    Write-Error "The term 'nuget' is not recognized. Check if the path was included as an environment variable. If not, download nuget from here: https://www.nuget.org/downloads"
+    exit 3
+}
+
 $ApiCompatPath = "$Path\ApiCompat"
 
 $ZipFile = "ApiCompat.zip"
