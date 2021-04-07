@@ -3816,7 +3816,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
         },
         {
           "$ref": "#/definitions/botframework.json/definitions/Activity",
@@ -3825,10 +3828,7 @@
           ]
         },
         {
-          "$ref": "#/definitions/Microsoft.ActivityTemplate"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+          "type": "string"
         }
       ]
     },
@@ -3838,11 +3838,6 @@
       "description": "Component that enables connecting bots to chat clients and applications.",
       "type": "object",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.IAdapter",
-          "description": "Reference to Microsoft.IAdapter .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.FacebookAdapter"
         },
@@ -3854,6 +3849,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.WebexAdapter"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.IAdapter",
+          "description": "Reference to Microsoft.IAdapter .dialog file."
         }
       ],
       "properties": {
@@ -3875,17 +3875,19 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string",
-          "pattern": "^(?!(=)).*"
+          "$ref": "#/definitions/CustomAction.dialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+          "$ref": "#/definitions/CustomAction2.dialog"
         },
         {
           "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
-          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
+          "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.AttachmentInput"
         },
         {
           "$ref": "#/definitions/Microsoft.BeginDialog"
@@ -3903,6 +3905,12 @@
           "$ref": "#/definitions/Microsoft.CancelDialog"
         },
         {
+          "$ref": "#/definitions/Microsoft.ChoiceInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ContinueConversation"
         },
         {
@@ -3910,6 +3918,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueLoop"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeInput"
         },
         {
           "$ref": "#/definitions/Microsoft.DebugBreak"
@@ -3966,6 +3977,15 @@
           "$ref": "#/definitions/Microsoft.LogAction"
         },
         {
+          "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+        },
+        {
           "$ref": "#/definitions/Microsoft.RepeatDialog"
         },
         {
@@ -3993,6 +4013,12 @@
           "$ref": "#/definitions/Microsoft.TelemetryTrackEventAction"
         },
         {
+          "$ref": "#/definitions/Microsoft.Test.AssertCondition"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
           "$ref": "#/definitions/Microsoft.ThrowException"
         },
         {
@@ -4002,40 +4028,14 @@
           "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
-          "$ref": "#/definitions/Microsoft.Ask"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.AttachmentInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChoiceInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OAuthInput"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TextInput"
-        },
-        {
           "$ref": "#/definitions/Testbot.JavascriptAction"
         },
         {
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "$ref": "#/definitions/CustomAction.dialog"
-        },
-        {
-          "$ref": "#/definitions/CustomAction2.dialog"
+          "type": "string",
+          "pattern": "^(?!(=)).*"
         }
       ]
     },
@@ -4046,11 +4046,6 @@
       "type": "object",
       "oneOf": [
         {
-          "type": "string",
-          "title": "Reference to Microsoft.IEntityRecognizer",
-          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
-        },
-        {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
@@ -4103,6 +4098,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.IEntityRecognizer",
+          "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
         }
       ]
     },
@@ -4112,13 +4112,13 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
-        },
-        {
           "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
         },
         {
           "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
+        },
+        {
+          "type": "string"
         }
       ]
     },
@@ -4127,30 +4127,6 @@
       "description": "Components which derive from Recognizer class",
       "$role": "interface",
       "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
-        },
         {
           "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
@@ -4161,6 +4137,9 @@
           "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
           "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
         },
         {
@@ -4182,13 +4161,22 @@
           "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
           "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
@@ -4200,13 +4188,25 @@
           "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
         },
         {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RecognizerSet"
+        },
+        {
           "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
         },
         {
           "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+          "type": "string"
         }
       ]
     },
@@ -4216,10 +4216,10 @@
       "$role": "interface",
       "oneOf": [
         {
-          "type": "string"
+          "$ref": "#/definitions/Microsoft.TextTemplate"
         },
         {
-          "$ref": "#/definitions/Microsoft.TextTemplate"
+          "type": "string"
         }
       ]
     },
@@ -4228,11 +4228,6 @@
       "title": "Microsoft Triggers",
       "description": "Components which derive from OnCondition class.",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITrigger",
-          "description": "Reference to Microsoft.ITrigger .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.OnActivity"
         },
@@ -4319,6 +4314,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.OnUnknownIntent"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITrigger",
+          "description": "Reference to Microsoft.ITrigger .dialog file."
         }
       ]
     },
@@ -4327,11 +4327,6 @@
       "title": "Selectors",
       "description": "Components which derive from TriggerSelector class.",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITriggerSelector",
-          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.ConditionalSelector"
         },
@@ -4346,6 +4341,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITriggerSelector",
+          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
     },
@@ -9284,12 +9284,12 @@
       "$role": "interface",
       "oneOf": [
         {
+          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
+        },
+        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IHttpRequestMock",
           "description": "Reference to Microsoft.Test.IHttpRequestMock .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.HttpRequestSequenceMock"
         }
       ]
     },
@@ -9304,12 +9304,12 @@
       "$role": "interface",
       "oneOf": [
         {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+        },
+        {
           "type": "string",
           "title": "Reference to Microsoft.Test.ISettingMock",
           "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
         }
       ]
     },
@@ -9318,11 +9318,6 @@
       "description": "Components which derive from TestAction class",
       "$role": "interface",
       "oneOf": [
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.Test.ITestAction",
-          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
-        },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertNoActivity"
         },
@@ -9358,6 +9353,11 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.UserTyping"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ITestAction",
+          "description": "Reference to Microsoft.Test.ITestAction .dialog file."
         }
       ]
     },
@@ -9367,12 +9367,12 @@
       "$role": "interface",
       "oneOf": [
         {
+          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
+        },
+        {
           "type": "string",
           "title": "Reference to Microsoft.Test.IUserTokenMock",
           "description": "Reference to Microsoft.Test.IUserTokenMock .dialog file."
-        },
-        {
-          "$ref": "#/definitions/Microsoft.Test.UserTokenBasicMock"
         }
       ]
     },
