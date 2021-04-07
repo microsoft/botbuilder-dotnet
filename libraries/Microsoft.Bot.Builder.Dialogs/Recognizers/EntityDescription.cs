@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// Initializes a new instance of the <see cref="EntityDescription"/> class.
         /// </summary>
         /// <param name="name">Entity name.</param>
-        /// <param name="source">Source of intent definition.</param>
+        /// <param name="source">Source of entity definition.</param>
         public EntityDescription(string name, string source = null)
         {
             Name = name;
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         public string Name { get; }
 
         /// <summary>
-        /// Gets source of the intent.
+        /// Gets source of the entity.
         /// </summary>
         /// <remarks>This is usually either the id of the recognizer or a reference to the source LU file like foo.lu or MyPackage#foo.lu.</remarks>
         /// <value>Source of the intent definition.</value>
@@ -45,8 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            var description = obj as EntityDescription;
-            return description != null && description.Name == Name && description.Source == Source;
+            return obj is EntityDescription description
+                && description.Name == Name
+                && description.Source == Source;
         }
 
         /// <inheritdoc/>

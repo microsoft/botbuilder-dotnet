@@ -44,8 +44,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            var description = obj as IntentDescription;
-            return description != null && description.Name == Name && description.Source == Source;
+            return obj is IntentDescription description
+                && description.Name == Name
+                && description.Source == Source;
         }
 
         /// <inheritdoc/>

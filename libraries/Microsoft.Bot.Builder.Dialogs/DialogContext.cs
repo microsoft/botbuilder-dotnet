@@ -704,10 +704,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Set the context for the next input from the user.
         /// </summary>
+        /// <param name="locale">Expected locale.</param>
         /// <param name="expected">Description of the expected intents and entities.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Async task.</returns>
-        public async Task SetInputContextAsync(RecognizerDescription expected, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SetInputContextAsync(string locale, RecognizerDescription expected, CancellationToken cancellationToken = default(CancellationToken))
         {
             // TODO: chrimc, walk the stack to build up possible and send back command
 
@@ -728,7 +729,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Add intents/entities to luis recognizer
             // Do I need async?
 
-            var context = new InputContext(expected: expected);
+            var context = new InputContext(locale, expected: expected);
             await Services.Get<ITurnContext>().TraceActivityAsync("InputContext", context, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
 
             return;

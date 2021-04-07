@@ -13,13 +13,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="InputContext"/> class.
         /// </summary>
+        /// <param name="locale">Expected locale.</param>
         /// <param name="expected">Expected intents and entities.</param>
         /// <param name="possible">Possible intents and entities.</param>
-        public InputContext(RecognizerDescription expected = null, RecognizerDescription possible = null)
+        public InputContext(string locale, RecognizerDescription expected = null, RecognizerDescription possible = null)
         {
+            Locale = locale;
             Expected = expected ?? new RecognizerDescription();
             Possible = possible ?? new RecognizerDescription();
         }
+
+        /// <summary>
+        /// Gets the expected locale.
+        /// </summary>
+        /// <value>Locale.</value>
+        public string Locale { get; }
 
         /// <summary>
         /// Gets the description of the expected intents and entities for the next turn.
