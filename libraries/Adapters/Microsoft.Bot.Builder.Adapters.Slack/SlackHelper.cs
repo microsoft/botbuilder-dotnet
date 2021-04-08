@@ -227,7 +227,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     Id = innerEvent.User ?? innerEvent.BotId ?? eventRequest.TeamId
                 },
                 ChannelData = eventRequest,
-                Type = ActivityTypes.Event
+                Type = ActivityTypes.Event,
+                ServiceUrl = "https://slack.botframework.com/"
             };
 
             activity.Recipient = new ChannelAccount()
