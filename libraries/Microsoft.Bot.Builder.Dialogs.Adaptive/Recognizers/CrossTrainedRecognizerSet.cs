@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -107,6 +108,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             TrackRecognizerResult(dialogContext, "CrossTrainedRecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
+        {
+            return RecognizerDescription.MergeDescriptions(await Task.WhenAll(Recognizers.Select(r => r.GetRecognizerDescriptionAsync(dialogContext, expectedLocale))).ConfigureAwait(false));
         }
 
         private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)

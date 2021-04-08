@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
         {
             // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
             return Task.FromResult(new RecognizerDescription(

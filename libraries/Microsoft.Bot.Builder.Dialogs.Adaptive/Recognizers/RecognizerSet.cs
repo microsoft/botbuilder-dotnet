@@ -5,13 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.NumberWithUnit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -87,9 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
+        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
         {
-            return RecognizerDescription.MergeDescriptions(await Task.WhenAll(Recognizers.Select(r => r.GetRecognizerDescriptionAsync(dialogContext))).ConfigureAwait(false));
+            return RecognizerDescription.MergeDescriptions(await Task.WhenAll(Recognizers.Select(r => r.GetRecognizerDescriptionAsync(dialogContext, expectedLocale))).ConfigureAwait(false));
         }
 
         private RecognizerResult MergeResults(RecognizerResult[] results)

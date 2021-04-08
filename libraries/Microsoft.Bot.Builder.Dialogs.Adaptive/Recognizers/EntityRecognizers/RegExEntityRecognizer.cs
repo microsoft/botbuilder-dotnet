@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
+        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
         {
             return Task.FromResult(new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription(Name, Id) }));
         }

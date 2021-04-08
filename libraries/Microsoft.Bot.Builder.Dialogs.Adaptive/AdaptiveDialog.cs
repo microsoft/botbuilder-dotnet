@@ -366,12 +366,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield break;
         }
 
-        /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
-        {
-            return Recognizer == null ? Task.FromResult(new RecognizerDescription()) : Recognizer.GetRecognizerDescriptionAsync(dialogContext);
-        }
-
         /// <summary>
         /// Gets the internal version string.
         /// </summary>

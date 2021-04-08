@@ -31,6 +31,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
         }
 
+        /// <summary>
+        /// Returns the language policy for a specific locale.
+        /// </summary>
+        /// <param name="locale">Desired locale.</param>
+        /// <returns>Locales to use in order.</returns>
+        public IEnumerable<string> Policy(string locale)
+        {
+            if (locale != null && TryGetValue(locale, out var targetPolicy))
+            {
+                foreach (var policy in targetPolicy)
+                {
+                    yield return policy;
+                }
+            }
+
+            if (TryGetValue(string.Empty, out var defaultPolicy))
+            {
+                // we now explictly add defaultPolicy instead of coding that into target's policy
+                foreach (var policy in defaultPolicy)
+                {
+                    yield return policy;
+                }
+            }
+        }
+
         // walk through all of the cultures and create a dictionary map with most specific to least specific
         // Example output "en-us" will generate fallback rule like this:
         //   "en-us" -> "en" -> "" 

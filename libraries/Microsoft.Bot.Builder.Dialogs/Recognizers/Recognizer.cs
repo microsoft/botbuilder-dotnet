@@ -123,8 +123,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Return a description of the intents and entities the dialog can recognize.
         /// </summary>
         /// <param name="dialogContext">Dialog context.</param>
+        /// <param name="expectedLocale">Expected locale.</param>
         /// <returns>A <see cref="RecognizerDescription"/>.</returns>
-        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext)
+        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
         {
             return Task.FromResult(new RecognizerDescription());
         }
