@@ -1,9 +1,0 @@
-{
-    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
-    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
-    "title": "On Teams O365 connector card action",
-    "description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
-    "type": "object",
-    "required": [
-    ]
-}
