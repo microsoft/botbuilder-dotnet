@@ -136,13 +136,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <inheritdoc/>
-        public override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
             // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
-            return Task.FromResult(new RecognizerDescription(
+            return new RecognizerDescription(
                 PossibleIntents.GetValue(dialogContext.State),
                 PossibleEntities.GetValue(dialogContext.State),
-                JsonConvert.DeserializeObject<List<Dialogs.Recognizers.DynamicList>>(JsonConvert.SerializeObject(DynamicLists.GetValue(dialogContext.State)))));
+                JsonConvert.DeserializeObject<List<Dialogs.Recognizers.DynamicList>>(JsonConvert.SerializeObject(DynamicLists.GetValue(dialogContext.State))));
         }
 
         /// <summary>

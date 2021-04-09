@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Prompts;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
 using Newtonsoft.Json;
@@ -176,6 +177,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var (style, _) = Style.TryGetValue(dc.State);
             return AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
         }
+
+        /// <inheritdoc/>
+        protected async override Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            => await dc.SetInputContextAsync(DetermineCulture(dc), new RecognizerDescription(entities: new[] { new EntityDescription("confirmation") }), cancellationToken: cancellationToken).ConfigureAwait(false);
 
         private string DetermineCulture(DialogContext dc)
         {

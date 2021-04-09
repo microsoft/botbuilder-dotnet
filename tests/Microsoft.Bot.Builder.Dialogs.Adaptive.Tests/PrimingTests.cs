@@ -135,9 +135,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         [Theory]
         [MemberData(nameof(Expected))]
-        public async Task RecognizerDescriptionTests(Recognizer recognizer, IntentDescription[] intents, EntityDescription[] entities, string[] lists, string locale = null)
+        public void RecognizerDescriptionTests(Recognizer recognizer, IntentDescription[] intents, EntityDescription[] entities, string[] lists, string locale = null)
         {
-            var description = await recognizer.GetRecognizerDescriptionAsync(GetTurnContext(recognizer), locale);
+            var description = recognizer.GetRecognizerDescription(GetTurnContext(recognizer), locale);
 
             if (intents != null)
             {

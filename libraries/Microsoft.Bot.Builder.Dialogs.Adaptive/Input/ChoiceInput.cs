@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Prompts;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
@@ -216,6 +217,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
 
             return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions);
+        }
+
+        /// <inheritdoc/>
+        protected async override Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        {
+            // TODO: chrimc create dynamic list
+            // findOptions allow numbers/ordinals so pick that up.
+            var locale = DetermineCulture(dc);
+            var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
+            var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+            await dc.SetInputContextAsync(locale, new RecognizerDescription(entities: new[] { new EntityDescription("confirmation") }), cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<ChoiceSet> GetChoiceSetAsync(DialogContext dc)

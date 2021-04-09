@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
             var languagePolicy = LanguagePolicy ??
                     dialogContext.Services.Get<LanguagePolicy>() ??
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             {
                 if (Recognizers.TryGetValue(option, out var recognizer))
                 {
-                    return await recognizer.GetRecognizerDescriptionAsync(dialogContext, expectedLocale).ConfigureAwait(false);
+                    return recognizer.GetRecognizerDescription(dialogContext, expectedLocale);
                 }
             }
 

@@ -2,10 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
 
@@ -104,6 +106,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return Task.FromResult(InputState.Valid);
+        }
+
+        /// <inheritdoc/>
+        protected override async Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
+        {
+            await dc.SetInputContextAsync(GetCulture(dc), new RecognizerDescription(entities: new[] { new EntityDescription("number") }), cancellationToken).ConfigureAwait(false);
         }
 
         private string GetCulture(DialogContext dc)

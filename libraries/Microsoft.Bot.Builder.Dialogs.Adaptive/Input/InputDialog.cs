@@ -20,16 +20,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public abstract class InputDialog : Dialog
     {
 #pragma warning disable SA1310 // Field should not contain underscore.
-#pragma warning disable CA1707 // Identifiers should not contain underscores (we shouldn't use screaming caps, but we can't change this without breaking binary compat)
+#pragma warning disable CA1707 // Identifiers should not contain underscores (we shouldn't use screaming caps, but we can't change without breaking binary compat)
         /// <summary>
         /// Defines dialog context turn count property value.
         /// </summary>
-        protected const string TURN_COUNT_PROPERTY = "this.turnCount";
+        protected const string TURN_COUNT_PROPERTY = "turnCount";
 
         /// <summary>
         /// Defines dialog context state property value.
         /// </summary>
-        protected const string VALUE_PROPERTY = "this.value";
+        protected const string VALUE_PROPERTY = "value";
 #pragma warning restore CA1707 // Identifiers should not contain underscores
 #pragma warning restore SA1310 // Field should not contain underscore.
 
@@ -52,9 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public BoolExpression AllowInterruptions { get; set; }
 
         /// <summary>
-        /// Gets or sets whether this action should be disabled.
+        /// Gets or sets whether action should be disabled.
         /// </summary>
-        /// <remarks>If this is set to true, then this action will be skipped.</remarks>
+        /// <remarks>If is set to true, then action will be skipped.</remarks>
         /// <value>
         /// Bool or expression which evalutes to bool.
         /// </value>
@@ -65,8 +65,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets the memory property path which the value will be bound to.
         /// </summary>
         /// <remarks>
-        /// This property will be used as the initial value for the input dialog.  The result of this
-        /// dialog will be placed into this property path in the callers memory scope.
+        /// property will be used as the initial value for the input dialog.  The result of 
+        /// dialog will be placed into property path in the callers memory scope.
         /// </remarks>
         /// <value>
         /// A string or expression which evaluates to string.
@@ -78,13 +78,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets a the expression to use to bind input to the dialog.  
         /// </summary>
         /// <remarks>
-        /// This expression is evaluated on every turn to define mapping user input to the dialog. 
+        /// expression is evaluated on every turn to define mapping user input to the dialog. 
         /// 
         /// If the expression returns null, the input dialog may attempt to pull data from the input directly.
         /// 
         /// If the expression is a value then it will be used as the input.
         /// 
-        /// This property allows you to define how data such as Recognizer results is bound to the input dialog.
+        /// property allows you to define how data such as Recognizer results is bound to the input dialog.
         /// Examples:
         /// * "=@age" => bind to the input to any age entity recognized in the input. 
         /// * "=coalesce(@age, @number)" => which means use @age or @number as the input.
@@ -138,12 +138,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// The expressions to run to validate the input.
         /// </value>
         [JsonProperty("validations")]
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
+#pragma warning disable CA2227 // Collection properties should be read only (we can't change without breaking binary compat)
         public List<BoolExpression> Validations { get; set; } = new List<BoolExpression>();
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
-        /// Gets or sets maximum number of times to ask the user for this value before the dialog gives up.
+        /// Gets or sets maximum number of times to ask the user for value before the dialog gives up.
         /// </summary>
         /// <value>
         /// Integer or expression which evaluates to integer.
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default)
         {
             if (dc == null)
             {
@@ -186,19 +186,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(ThisPath.Options, op);
+            dc.State.SetValue(ath.Options, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
-            var alwaysPrompt = this.AlwaysPrompt?.GetValue(dc.State) ?? false;
+            var alwaysPrompt = AlwaysPrompt?.GetValue(dc.State) ?? false;
 
             // If AlwaysPrompt is set to true, then clear Property value for turn 0.
-            var property = this.Property?.GetValue(dc.State);
+            var property = Property?.GetValue(dc.State);
             if (property != null && alwaysPrompt)
             {
                 dc.State.SetValue(property, null);
             }
 
-            var state = alwaysPrompt ? InputState.Missing : await this.RecognizeInputAsync(dc, 0, cancellationToken).ConfigureAwait(false);
+            var state = alwaysPrompt ? InputState.Missing : await RecognizeInputAsync(dc, 0, cancellationToken).ConfigureAwait(false);
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // We will set the turn count to 1 so the input will not pick from "dialog.value"
                 // and instead go with "turn.activity.text"
                 dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
-                return await this.PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
+                return await PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             var activity = dc.Context.Activity;
             if (activity.Type != ActivityTypes.Message)
@@ -239,34 +239,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
+            var state = await RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
 
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
 
                 // set output property
-                if (this.Property != null)
+                if (Property != null)
                 {
-                    dc.State.SetValue(this.Property.GetValue(dc.State), input);
+                    dc.State.SetValue(Property.GetValue(dc.State), input);
                 }
 
                 return await dc.EndDialogAsync(input, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.GetValue(dc.State))
+            else if (MaxTurnCount == null || turnCount < MaxTurnCount.GetValue(dc.State))
             {
                 // increase the turnCount as last step
                 dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                return await this.PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
+                return await PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                if (this.DefaultValue != null)
+                if (DefaultValue != null)
                 {
-                    var (value, error) = this.DefaultValue.TryGetValue(dc.State);
-                    if (this.DefaultValueResponse != null)
+                    var (value, error) = DefaultValue.TryGetValue(dc.State);
+                    if (DefaultValueResponse != null)
                     {
-                        var response = await this.DefaultValueResponse.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        var response = await DefaultValueResponse.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                         var properties = new Dictionary<string, string>()
                         {
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
 
                     // set output property
-                    dc.State.SetValue(this.Property.GetValue(dc.State), value);
+                    dc.State.SetValue(Property.GetValue(dc.State), value);
 
                     return await dc.EndDialogAsync(value, cancellationToken).ConfigureAwait(false);
                 }
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Called when a child dialog completes its turn, returning control to this dialog.
+        /// Called when a child dialog completes its turn, returning control to dialog.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
@@ -298,13 +298,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="cancellationToken">Optional, a <see cref="CancellationToken"/> that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
-            return await this.PromptUserAsync(dc, InputState.Missing, cancellationToken).ConfigureAwait(false);
+            return await PromptUserAsync(dc, InputState.Missing, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Called when input has been received, override this method to customize recognition of the input.
+        /// Called when input has been received, override method to customize recognition of the input.
         /// </summary>
         /// <param name="dc">dialogContext.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
@@ -327,9 +327,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                 // Should we allow interruptions
                 var canInterrupt = true;
-                if (this.AllowInterruptions != null)
+                if (AllowInterruptions != null)
                 {
-                    var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dc.State);
+                    var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dc.State);
                     canInterrupt = error == null && allowInterruptions;
                 }
 
@@ -350,7 +350,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <param name="options">options to control the choice rendering.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>bound activity ready to send to the user.</returns>
-        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual IMessageActivity AppendChoices(IMessageActivity prompt, string channelId, IList<Choice> choices, ListStyle style, ChoiceFactoryOptions options = null, CancellationToken cancellationToken = default)
         {
             // Get base prompt text (if any)
             var text = prompt != null && !string.IsNullOrEmpty(prompt.Text) ? prompt.Text : string.Empty;
@@ -388,7 +388,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // Update prompt with text, actions and attachments
             if (prompt != null)
             {
-                // clone the prompt the set in the options (note ActivityEx has Properties so this is the safest mechanism)
+                // clone the prompt the set in the options (note ActivityEx has Properties so is the safest mechanism)
                 prompt = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(prompt));
 
                 prompt.Text = msg.Text;
@@ -415,7 +415,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Method which processes options.
         /// </summary>
-        /// <remarks>Override this method to inject additional option.</remarks>
+        /// <remarks>Override method to inject additional option.</remarks>
         /// <param name="dc">dialogContext.</param>
         /// <param name="options">options.</param>
         /// <returns>modified options.</returns>
@@ -427,41 +427,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Method which renders the prompt to the user give n the current input state.
         /// </summary>
-        /// <remarks>Override this to customize the output sent to the user.</remarks>
+        /// <remarks>Override to customize the output sent to the user.</remarks>
         /// <param name="dc">dialogcontext.</param>
         /// <param name="state">inputState.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
-        /// <returns>activity to send to the user.</returns>
-        protected virtual async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
+        /// <returns>Activity to send to the user.</returns>
+        protected virtual async Task<IActivity> OnRenderPromptAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default)
         {
             IMessageActivity msg = null;
             ITemplate<Activity> template = null;
             switch (state)
             {
                 case InputState.Unrecognized:
-                    if (this.UnrecognizedPrompt != null)
+                    if (UnrecognizedPrompt != null)
                     {
-                        template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        template = UnrecognizedPrompt;
+                        msg = await UnrecognizedPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
-                    else if (this.InvalidPrompt != null)
+                    else if (InvalidPrompt != null)
                     {
-                        template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        template = InvalidPrompt;
+                        msg = await InvalidPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
 
                 case InputState.Invalid:
-                    if (this.InvalidPrompt != null)
+                    if (InvalidPrompt != null)
                     {
-                        template = this.InvalidPrompt;
-                        msg = await this.InvalidPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        template = InvalidPrompt;
+                        msg = await InvalidPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
-                    else if (this.UnrecognizedPrompt != null)
+                    else if (UnrecognizedPrompt != null)
                     {
-                        template = this.UnrecognizedPrompt;
-                        msg = await this.UnrecognizedPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        template = UnrecognizedPrompt;
+                        msg = await UnrecognizedPrompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
                     }
 
                     break;
@@ -469,8 +469,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (msg == null)
             {
-                template = this.Prompt ?? throw new InvalidOperationException($"InputDialog is missing Prompt.");
-                msg = await this.Prompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
+                template = Prompt ?? throw new InvalidOperationException($"InputDialog is missing Prompt.");
+                msg = await Prompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
             if (string.IsNullOrEmpty(msg?.InputHint))
@@ -488,14 +488,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return msg;
         }
 
-        private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Set input context.
+        /// </summary>
+        /// <param name="dc">Dialog context.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Task.</returns>
+        protected virtual async Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
+            => await dc.SetInputContextAsync(dc.GetLocale() ?? string.Empty, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount, CancellationToken cancellationToken = default)
         {
             dynamic input = null;
 
             // Use Property expression for input first
-            if (this.Property != null)
+            if (Property != null)
             {
-                var property = this.Property.GetValue(dc.State);
+                var property = Property.GetValue(dc.State);
                 dc.State.TryGetValue(property, out input);
 
                 // Clear property to avoid it being stuck on the next turn. It will get written 
@@ -504,12 +513,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Use Value expression for input second
-            if (input == null && this.Value != null)
+            if (input == null && Value != null)
             {
-                var (value, valueError) = this.Value.TryGetValue(dc.State);
+                var (value, valueError) = Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
-                    throw new InvalidOperationException($"In InputDialog, this.Value expression evaluation resulted in an error. Expression: {this.Value}. Error: {valueError}");
+                    throw new InvalidOperationException($"In InputDialog, Value expression evaluation resulted in an error. Expression: {Value}. Error: {valueError}");
                 }
 
                 input = value;
@@ -519,7 +528,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             bool activityProcessed = dc.State.GetBoolValue(TurnPath.ActivityProcessed);
             if (!activityProcessed && input == null && turnCount > 0)
             {
-                if (typeof(AttachmentInput).IsAssignableFrom(this.GetType()))
+                if (typeof(AttachmentInput).IsAssignableFrom(GetType()))
                 {
                     input = dc.Context.Activity.Attachments ?? new List<Attachment>();
                 }
@@ -535,14 +544,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            // Update "this.value" and perform additional recognition and validations
+            // Update "value" and perform additional recognition and validations
             dc.State.SetValue(VALUE_PROPERTY, input);
             if (input != null)
             {
-                var state = await this.OnRecognizeInputAsync(dc, cancellationToken).ConfigureAwait(false);
+                var state = await OnRecognizeInputAsync(dc, cancellationToken).ConfigureAwait(false);
                 if (state == InputState.Valid)
                 {
-                    foreach (var validation in this.Validations)
+                    foreach (var validation in Validations)
                     {
                         var value = validation.GetValue(dc.State);
                         if (value == false)
@@ -565,9 +574,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
         }
 
-        private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default)
         {
-            var prompt = await this.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
+            var prompt = await OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
+            await SetInputContextAsync(dc, cancellationToken).ConfigureAwait(false);
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }

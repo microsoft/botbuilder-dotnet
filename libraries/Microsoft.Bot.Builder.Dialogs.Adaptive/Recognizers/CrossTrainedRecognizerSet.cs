@@ -111,9 +111,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
-            return RecognizerDescription.MergeDescriptions(await Task.WhenAll(Recognizers.Select(r => r.GetRecognizerDescriptionAsync(dialogContext, expectedLocale))).ConfigureAwait(false));
+            return RecognizerDescription.MergeDescriptions(Recognizers.Select(r => r.GetRecognizerDescription(dialogContext, expectedLocale)));
         }
 
         private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)

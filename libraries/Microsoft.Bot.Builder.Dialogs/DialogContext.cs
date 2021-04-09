@@ -708,7 +708,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="expected">Description of the expected intents and entities.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Async task.</returns>
-        public async Task SetInputContextAsync(string locale, RecognizerDescription expected, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SetInputContextAsync(string locale, RecognizerDescription expected = null, CancellationToken cancellationToken = default)
         {
             // TODO: chrimc, walk the stack to build up possible and send back command
 

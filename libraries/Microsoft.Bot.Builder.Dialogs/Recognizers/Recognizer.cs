@@ -125,9 +125,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogContext">Dialog context.</param>
         /// <param name="expectedLocale">Expected locale.</param>
         /// <returns>A <see cref="RecognizerDescription"/>.</returns>
-        public virtual Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
+        public virtual RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
-            return Task.FromResult(new RecognizerDescription());
+            return new RecognizerDescription();
         }
 
         /// <summary>

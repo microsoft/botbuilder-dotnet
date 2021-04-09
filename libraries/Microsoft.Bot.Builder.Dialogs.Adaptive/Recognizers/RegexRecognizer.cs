@@ -203,12 +203,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public async override Task<RecognizerDescription> GetRecognizerDescriptionAsync(DialogContext dialogContext, string expectedLocale)
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
             var descriptions = new List<RecognizerDescription>();
             foreach (var recognizer in Entities)
             {
-                var description = await recognizer.GetRecognizerDescriptionAsync(dialogContext, expectedLocale).ConfigureAwait(false);
+                var description = recognizer.GetRecognizerDescription(dialogContext, expectedLocale);
                 descriptions.Add(description);
             }
 
