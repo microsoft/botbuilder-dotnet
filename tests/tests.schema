@@ -110,6 +110,9 @@
       "$ref": "#/definitions/Microsoft.EndTurn"
     },
     {
+      "$ref": "#/definitions/Microsoft.FacebookAdapter"
+    },
+    {
       "$ref": "#/definitions/Microsoft.FirstSelector"
     },
     {
@@ -192,6 +195,12 @@
     },
     {
       "$ref": "#/definitions/Microsoft.OnChooseProperty"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.OnCommandActivity"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.OnCommandResultActivity"
     },
     {
       "$ref": "#/definitions/Microsoft.OnCondition"
@@ -308,6 +317,9 @@
       "$ref": "#/definitions/Microsoft.SignOutUser"
     },
     {
+      "$ref": "#/definitions/Microsoft.SlackAdapter"
+    },
+    {
       "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
     },
     {
@@ -389,10 +401,16 @@
       "$ref": "#/definitions/Microsoft.TrueSelector"
     },
     {
+      "$ref": "#/definitions/Microsoft.TwilioAdapter"
+    },
+    {
       "$ref": "#/definitions/Microsoft.UpdateActivity"
     },
     {
       "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.WebexAdapter"
     },
     {
       "$ref": "#/definitions/Teams.GetMeetingParticipant"
@@ -703,6 +721,7 @@
       "properties": {
         "id": {
           "type": "string",
+          "pattern": "^(?!(=)).*",
           "title": "Id",
           "description": "Optional dialog ID."
         },
@@ -717,6 +736,16 @@
           "title": "Default result property",
           "description": "Value that will be passed back to the parent dialog.",
           "default": "dialog.result"
+        },
+        "dialogs": {
+          "type": "array",
+          "title": "Dialogs added to DialogSet",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "Dialogs will be added to DialogSet.",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
         },
         "recognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -1116,10 +1145,7 @@
               "$ref": "#/definitions/Microsoft.IDialog"
             },
             {
-              "$ref": "#/definitions/equalsExpression",
-              "examples": [
-                "=settings.dialogId"
-              ]
+              "$ref": "#/definitions/equalsExpression"
             }
           ],
           "title": "Dialog name",
@@ -3283,6 +3309,66 @@
         }
       }
     },
+    "Microsoft.FacebookAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Facebook connection",
+      "description": "Connects a bot to Facebook.",
+      "type": "object",
+      "required": [
+        "FacebookVerifyToken",
+        "FacebookAppSecret",
+        "FacebookAccessToken",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "FacebookVerifyToken": {
+          "type": "string",
+          "title": "Verification token",
+          "description": "The verify token obtained from Facebook portal while setting up the application."
+        },
+        "FacebookAppSecret": {
+          "type": "string",
+          "title": "App secret",
+          "description": "The app secret obtained from Facebook portal while setting up the application."
+        },
+        "FacebookAccessToken": {
+          "type": "string",
+          "title": "Access token",
+          "description": "The access token obtained from Facebook portal while setting up the application."
+        },
+        "route": {
+          "type": "string",
+          "title": "route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "facebook"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Facebook.FacebookAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.FacebookAdapter"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.FirstSelector": {
       "$role": "implements(Microsoft.ITriggerSelector)",
       "title": "First trigger selector",
@@ -3809,6 +3895,7 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Result property",
           "description": "A property to store the result of this action. The result can include any of the 4 properties from the HTTP response: statusCode, reasonPhrase, content, and headers. If the content is JSON it will be a deserialized object. The values can be accessed via .content for example.",
+          "default": "turn.results",
           "examples": [
             "dialog.contosodata"
           ]
@@ -3894,11 +3981,35 @@
       "title": "Bot adapter",
       "description": "Component that enables connecting bots to chat clients and applications.",
       "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.FacebookAdapter"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.SlackAdapter"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TwilioAdapter"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.WebexAdapter"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.IAdapter",
+          "description": "Reference to Microsoft.IAdapter .dialog file."
+        }
+      ],
       "properties": {
         "route": {
           "type": "string",
           "title": "Adapter http route",
           "description": "Route where to expose the adapter."
+        },
+        "type": {
+          "type": "string",
+          "title": "Adapter type name",
+          "description": "Adapter type name"
         }
       }
     },
@@ -4130,7 +4241,8 @@
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?!(=)).*"
         }
       ]
     },
@@ -4343,6 +4455,12 @@
         },
         {
           "$ref": "#/definitions/Microsoft.OnChooseProperty"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCommandActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCommandResultActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.OnCondition"
@@ -4900,62 +5018,6 @@
           "title": "LUIS prediction key",
           "description": "LUIS prediction key used to call endpoint."
         },
-        "possibleIntents": {
-          "$ref": "#/definitions/arrayExpression",
-          "title": "Possible intents",
-          "description": "Intents that can be recognized.",
-          "items": {
-            "title": "Possible intents",
-            "description": "List of intents that are possible to recognize.",
-            "oneOf": [
-              {
-                "type": "object",
-                "title": "Intent description",
-                "description": "Description of an intent.",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "title": "Intent name",
-                    "description": "Name of intent."
-                  }
-                }
-              },
-              {
-                "type": "string",
-                "title": "Intent name",
-                "description": "Name of intent."
-              }
-            ]
-          }
-        },
-        "possibleEntities": {
-          "$ref": "#/definitions/arrayExpression",
-          "title": "Possible entities",
-          "description": "Entities that can be recognized.",
-          "items": {
-            "title": "Possible entities",
-            "description": "List of entities that are possible to recognize.",
-            "oneOf": [
-              {
-                "type": "object",
-                "title": "Entity description",
-                "description": "Description of an entity.",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "title": "Entity name",
-                    "description": "Name of entity."
-                  }
-                }
-              },
-              {
-                "type": "string",
-                "title": "Entity name",
-                "description": "Name of entity."
-              }
-            ]
-          }
-        },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
           "title": "External entity recognizer",
@@ -5416,7 +5478,7 @@
     "Microsoft.OAuthInput": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "OAuthInput Dialog",
-      "description": "Collect login information.",
+      "description": "Collect login information before each request.",
       "type": "object",
       "required": [
         "connectionName",
@@ -5476,7 +5538,8 @@
         "property": {
           "$ref": "#/definitions/stringExpression",
           "title": "Token property",
-          "description": "Property to store the OAuth token result.",
+          "description": "Property to store the OAuth token result. WARNING: Changing this location is not recommended as you should call OAuthInput immediately before each use of the token.",
+          "default": "turn.token",
           "examples": [
             "dialog.token"
           ]
@@ -6035,6 +6098,134 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.OnChooseProperty"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.OnCommandActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Command activity",
+      "description": "Actions to perform on receipt of an activity with type 'Command'. Overrides Intent trigger.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnCommandActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.OnCommandResultActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Command Result activity",
+      "description": "Actions to perform on receipt of an activity with type 'CommandResult'. Overrides Intent trigger.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnCommandResultActivity"
         },
         "$designer": {
           "title": "Designer information",
@@ -8533,6 +8724,66 @@
         }
       }
     },
+    "Microsoft.SlackAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Slack connection",
+      "description": "Connects a bot to Slack.",
+      "type": "object",
+      "required": [
+        "SlackVerificationToken",
+        "SlackBotToken",
+        "SlackClientSigningSecret",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "SlackVerificationToken": {
+          "type": "string",
+          "title": "Verification token",
+          "description": "Verification token obtained from the Slack set-up steps."
+        },
+        "SlackBotToken": {
+          "type": "string",
+          "title": "Bot token",
+          "description": "Bot token obtained from the Slack set-up steps."
+        },
+        "SlackClientSigningSecret": {
+          "type": "string",
+          "title": "Client signing secret",
+          "description": "Client signing secret obtained from the Slack set-up steps."
+        },
+        "route": {
+          "type": "string",
+          "title": "Route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "slack"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Slack.SlackAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.SlackAdapter"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.StaticActivityTemplate": {
       "$role": "implements(Microsoft.IActivityTemplate)",
       "title": "Microsoft static activity template",
@@ -10308,6 +10559,72 @@
         }
       }
     },
+    "Microsoft.TwilioAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Twilio connection",
+      "description": "Connects a bot to Twilio.",
+      "type": "object",
+      "required": [
+        "TwilioNumber",
+        "TwilioAccountSid",
+        "TwilioAuthToken",
+        "TwilioValidationUrl",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "TwilioNumber": {
+          "type": "string",
+          "title": "Number key",
+          "description": "Number key obtained from Twilio set-up."
+        },
+        "TwilioAccountSid": {
+          "type": "string",
+          "title": "Account SID key",
+          "description": "Account SID obtained from Twilio set-up."
+        },
+        "TwilioAuthToken": {
+          "type": "string",
+          "title": "Authentication token",
+          "description": "Authentication token obtained from Twilio set-up."
+        },
+        "TwilioValidationUrl": {
+          "type": "string",
+          "title": "Validation url",
+          "description": "Validation url obtained from Twilio set-up."
+        },
+        "route": {
+          "type": "string",
+          "title": "Route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "twilio"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Twilio.TwilioAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.TwilioAdapter"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.UpdateActivity": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Update an activity",
@@ -10391,6 +10708,72 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.UrlEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.WebexAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Webex connection",
+      "description": "Connects a bot to Webex.",
+      "type": "object",
+      "required": [
+        "WebexAccessToken",
+        "WebexPublicAddress",
+        "WebexSecret",
+        "WebexWebhookName",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "WebexAccessToken": {
+          "type": "string",
+          "title": "Access token",
+          "description": "Access token obtained during Webex set-up."
+        },
+        "WebexPublicAddress": {
+          "type": "string",
+          "title": "Public address",
+          "description": "Public address obtained during Webex set-up."
+        },
+        "WebexSecret": {
+          "type": "string",
+          "title": "Secret",
+          "description": "Secret obtained during Webex set-up."
+        },
+        "WebexWebhookName": {
+          "type": "string",
+          "title": "Webhook name",
+          "description": "Webhook name obtained during Webex set-up."
+        },
+        "route": {
+          "type": "string",
+          "title": "Route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "webex"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Webex.WebexAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.WebexAdapter"
         },
         "$designer": {
           "title": "Designer information",

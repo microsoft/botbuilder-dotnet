@@ -320,6 +320,26 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
+        /// Verify value contains elements or null.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
+        /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
+        public static string VerifyContainerOrNull(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
+        {
+            string error = null;
+            if (value != null && !(value is string) && !(value is IList) && !(value is IEnumerable))
+            {
+                error = $"{expression} must be a string or list or a null object.";
+            }
+
+            return error;
+        }
+
+        /// <summary>
         /// Verify value contains elements.
         /// </summary>
         /// <param name="value">Value to check.</param>

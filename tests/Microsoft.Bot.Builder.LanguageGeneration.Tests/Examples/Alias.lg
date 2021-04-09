@@ -1,0 +1,39 @@
+﻿> import as base1
+> the nameSpace would be ignored in the default import resolver
+[import from base lg 1](NameSpace#AliasBase1.lg) as base1
+
+> import as base2
+[import from base lg 2](AliasBase2.lg) as base2
+
+> static import
+[import from base lg 3](AliasBase3.lg)
+
+> call duplicate name
+# wPhrase
+- ${base1.wPhrase()}
+
+> call welcome in AliasBase1.lg
+# callWelcome1(theName)
+- ${base1.welcome(theName)}
+
+> call welcome in AliasBase2.lg
+# callWelcome2(theName)
+- ${base2.welcome(theName)}
+
+> call welcome in AliasBase3.lg
+# callWelcome3(theName)
+- ${welcome(theName)}
+
+> call builtin-function
+# callLength
+- ${length('name')}
+
+# callBase1Length
+- ${base1.length()}
+
+# callBase2Length
+- ${base2.length()}
+
+> use prefix lg. to evaluate the template
+# callBase3Length
+- ${lg.length()}

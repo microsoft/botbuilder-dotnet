@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.AI.QnA;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -15,6 +16,7 @@ namespace Microsoft.Bot.Builder
         public Startup(IMessageSink messageSink)
             : base(messageSink)
         {
+            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());

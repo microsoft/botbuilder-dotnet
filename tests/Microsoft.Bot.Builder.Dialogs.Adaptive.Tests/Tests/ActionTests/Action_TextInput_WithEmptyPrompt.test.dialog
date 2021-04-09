@@ -1,0 +1,36 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "user.name",
+                        "prompt": "",
+                        "validations": [
+                            "this.value.Length > 3"
+                        ],
+                        "outputFormat": "${toUpper(this.value)}"
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Call to OnRenderPromptAsync() returned a null activity for state Missing."
+        }
+    ]
+}

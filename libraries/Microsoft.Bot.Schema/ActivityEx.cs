@@ -34,7 +34,9 @@ namespace Microsoft.Bot.Schema
         IEventActivity,
         IInvokeActivity,
         ITraceActivity,
-        IHandoffActivity
+        IHandoffActivity,
+        ICommandActivity,
+        ICommandResultActivity
     {
         /// <summary>
         /// The HTTP <c>Content-Type</c> entity header that identifies an <see cref="Activity"/> media type resource.

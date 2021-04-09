@@ -26,6 +26,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
+        private const string SlackVerificationTokenKey = "SlackVerificationToken";
+        private const string SlackBotTokenKey = "SlackBotToken";
+        private const string SlackClientSigningSecretKey = "SlackClientSigningSecret";
+
         private readonly SlackClientWrapper _slackClient;
         private readonly ILogger _logger;
         private readonly SlackAdapterOptions _options;
@@ -43,7 +47,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="options">An instance of <see cref="SlackAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public SlackAdapter(IConfiguration configuration, SlackAdapterOptions options = null, ILogger logger = null)
-            : this(new SlackClientWrapper(new SlackClientWrapperOptions(configuration["SlackVerificationToken"], configuration["SlackBotToken"], configuration["SlackClientSigningSecret"])), options, logger)
+            : this(new SlackClientWrapper(new SlackClientWrapperOptions(configuration[SlackVerificationTokenKey], configuration[SlackBotTokenKey], configuration[SlackClientSigningSecretKey])), options, logger)
         {
         }
 
@@ -348,6 +352,20 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines whether the provided <see cref="IConfiguration"/> has the settings needed to
+        /// configure a <see cref="SlackAdapter"/>.
+        /// </summary>
+        /// <param name="configuration"><see cref="IConfiguration"/> to verify for settings.</param>
+        /// <returns>A value indicating whether the configuration has the necessary settings required to create a <see cref="SlackAdapter"/>.</returns>
+        internal static bool HasConfiguration(IConfiguration configuration)
+        {
+            // Do we have the config needed to create an adapter?
+            return !string.IsNullOrEmpty(configuration.GetValue<string>(SlackBotTokenKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(SlackClientSigningSecretKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(SlackVerificationTokenKey));
         }
     }
 }

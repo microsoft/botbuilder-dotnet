@@ -12,6 +12,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Library for connecting bots with Webex Teams API.</Description>
     <Summary>This library implements C# classes for the Webex Adapter</Summary>
+    <PackageTags>msbot-component;msbot-adapter</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
