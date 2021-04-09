@@ -129,13 +129,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         {
             var telemetrySettings = configuration.GetSection(TelemetrySettings.TelemetrySettingsKey).Get<TelemetrySettings>();
 
-            if (string.IsNullOrEmpty(telemetrySettings?.InstrumentationKey))
+            if (string.IsNullOrEmpty(telemetrySettings?.Options?.ConnectionString) && string.IsNullOrEmpty(telemetrySettings?.Options?.InstrumentationKey))
             {
                 services.AddSingleton<IBotTelemetryClient, NullBotTelemetryClient>();
             }
             else
             {
-                services.AddApplicationInsightsTelemetry(telemetrySettings.InstrumentationKey);
+                services.AddApplicationInsightsTelemetry(telemetrySettings.Options);
                 services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
 
                 services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
