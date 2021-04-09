@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 #if NETCOREAPP2_1
@@ -33,7 +34,10 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             };
             yield return new object[]
             {
-                new TelemetrySettings() { InstrumentationKey = string.Empty }
+                new TelemetrySettings()
+                {
+                    Options = new ApplicationInsightsServiceOptions() { ConnectionString = null }
+                }
             };
         }
 
@@ -62,7 +66,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             // Setup
             IServiceCollection services = new ServiceCollection();
 
-            var telemetrySettings = new TelemetrySettings() { InstrumentationKey = Guid.NewGuid().ToString() };
+            var telemetrySettings = new TelemetrySettings() { Options = new ApplicationInsightsServiceOptions() { ConnectionString = Guid.NewGuid().ToString() } };
             IConfiguration configuration = new ConfigurationBuilder().AddRuntimeSettings(new RuntimeSettings() { Telemetry = telemetrySettings }).Build();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
