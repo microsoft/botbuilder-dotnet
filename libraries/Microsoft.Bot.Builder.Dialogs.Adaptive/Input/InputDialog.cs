@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(ath.Options, op);
+            dc.State.SetValue(ThisPath.Options, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
             var alwaysPrompt = AlwaysPrompt?.GetValue(dc.State) ?? false;
