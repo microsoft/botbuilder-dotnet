@@ -340,6 +340,24 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
+        /// Returns this activity as an <see cref="ICommandActivity"/> object; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>This activity as a command activity; or null.</returns>
+        public ICommandActivity AsCommandActivity()
+        {
+            return IsActivity(ActivityTypes.Command) ? this : null;
+        }
+
+        /// <summary>
+        /// Returns this activity as an <see cref="ICommandResultActivity"/> object; or null, if this is not that type of activity.
+        /// </summary>
+        /// <returns>This activity as a command result activity; or null.</returns>
+        public ICommandResultActivity AsCommandResultActivity()
+        {
+            return IsActivity(ActivityTypes.CommandResult) ? this : null;
+        }
+
+        /// <summary>
         /// Indicates whether this activity has content.
         /// </summary>
         /// <returns>True, if this activity has any content to send; otherwise, false.</returns>
