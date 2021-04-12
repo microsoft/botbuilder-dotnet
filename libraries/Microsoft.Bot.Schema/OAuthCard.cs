@@ -54,6 +54,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets the resource to try to perform token exchange with.
         /// </summary>
         /// <value>The resource to try to perform token exchange with.</value>
+        [JsonProperty(PropertyName = "tokenExchangeResource")]
         public TokenExchangeResource TokenExchangeResource { get; set; }
 
         /// <summary>
