@@ -366,6 +366,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield break;
         }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return Recognizer.GetRecognizerDescription(dialogContext, expectedLocale);
+        }
+
         /// <summary>
         /// Gets the internal version string.
         /// </summary>

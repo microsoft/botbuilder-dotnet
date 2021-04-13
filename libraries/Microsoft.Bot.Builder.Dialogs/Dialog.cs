@@ -224,9 +224,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogContext">Dialog context.</param>
         /// <param name="expectedLocale">Expected input locale.</param>
-        /// <param name="cancellation">Cancellation token.</param>
         /// <returns>A <see cref="RecognizerDescription"/>.</returns>
-        public virtual RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale, CancellationToken cancellation = default)
+        public virtual RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
             return new RecognizerDescription();
         }

@@ -713,10 +713,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // TODO: chrimc, walk the stack to build up possible and send back command
 
-            // Update EntityRecognizer, EntityRecognizerSet in EntityRecognizers
-            // Update tests to check for expected
             // Does datetime return multiple entity types?
-            // Call LUIS
+            //
+            // For LUIS enhance luis:build to create the metadata for intents/entities
             //
             // 1) Use commands without ack to send priming info
             // 2) Recognziers have method for intents/entities
