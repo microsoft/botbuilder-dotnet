@@ -31,6 +31,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     {
         private const string HubModeSubscribe = "subscribe";
 
+        private const string FacebookVerifyTokenSettingKey = "FacebookVerifyToken";
+        private const string FacebookAppSecretSettingKey = "FacebookAppSecret";
+        private const string FacebookAccessTokenSettingKey = "FacebookAccessToken";
+
         /// <summary>
         /// An instance of the FacebookClientWrapper class.
         /// </summary>
@@ -51,7 +55,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="options">An instance of <see cref="FacebookAdapterOptions"/>.</param>
         /// <param name="logger">The logger this adapter should use.</param>
         public FacebookAdapter(IConfiguration configuration, FacebookAdapterOptions options = null, ILogger logger = null)
-            : this(new FacebookClientWrapper(new FacebookClientWrapperOptions(configuration["FacebookVerifyToken"], configuration["FacebookAppSecret"], configuration["FacebookAccessToken"])), options, logger)
+            : this(new FacebookClientWrapper(new FacebookClientWrapperOptions(configuration[FacebookVerifyTokenSettingKey], configuration[FacebookAppSecretSettingKey], configuration[FacebookAccessTokenSettingKey])), options, logger)
         {
         }
 
@@ -265,6 +269,20 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines whether the provided <see cref="IConfiguration"/> has the settings needed to
+        /// configure a <see cref="FacebookAdapter"/>.
+        /// </summary>
+        /// <param name="configuration"><see cref="IConfiguration"/> to verify for settings.</param>
+        /// <returns>A value indicating whether the configuration has the necessary settings required to create a <see cref="FacebookAdapter"/>.</returns>
+        internal static bool HasConfiguration(IConfiguration configuration)
+        {
+            // Do we have the config needed to create a facebook adapter?
+            return !string.IsNullOrEmpty(configuration.GetValue<string>(FacebookVerifyTokenSettingKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(FacebookAccessTokenSettingKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(FacebookAppSecretSettingKey));
         }
 
         /// <summary>

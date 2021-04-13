@@ -26,10 +26,7 @@
                     "title": "Dialog"
                 },
                 {
-                    "$ref": "schema:#/definitions/equalsExpression",
-                    "examples": [
-                        "=settings.dialogId"
-                    ]
+                    "$ref": "schema:#/definitions/equalsExpression"
                 }
             ],
             "title": "Dialog name",

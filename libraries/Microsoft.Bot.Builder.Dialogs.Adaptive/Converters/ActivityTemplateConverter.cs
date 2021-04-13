@@ -2,16 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// JsonConverter to load ITemplate&lt;Activity&gt;.
     /// </summary>
+    [SuppressMessage("Performance", "CA1812", Justification = "The class gets instantiated by dependency injection.")]
     internal class ActivityTemplateConverter : JsonConverter<ActivityTemplate>
     {
         public override bool CanRead => false;

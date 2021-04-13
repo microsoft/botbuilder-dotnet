@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IAdapter)",
+    "title": "Webex connection",
+    "description": "Connects a bot to Webex.",
+    "type": "object",
+    "properties": {
+        "WebexAccessToken": {
+            "type": "string",
+            "title": "Access token",
+            "description": "Access token obtained during Webex set-up."
+        },
+        "WebexPublicAddress": {
+            "type": "string",
+            "title": "Public address",
+            "description": "Public address obtained during Webex set-up."
+        },
+        "WebexSecret": {
+            "type": "string",
+            "title": "Secret",
+            "description": "Secret obtained during Webex set-up."
+        },
+        "WebexWebhookName": {
+            "type": "string",
+            "title": "Webhook name",
+            "description": "Webhook name obtained during Webex set-up."
+        },
+        "route": {
+            "type": "string",
+            "title": "Route",
+            "description": "Optional route where the adapter is exposed.",
+            "default": "webex"
+        },
+        "type": {
+            "type": "string",
+            "title": "type",
+            "description": "Adapter full type name.",
+            "default": "Microsoft.Bot.Builder.Adapters.Webex.WebexAdapter"
+        }
+    },
+    "required": [
+        "WebexAccessToken",
+        "WebexPublicAddress",
+        "WebexSecret",
+        "WebexWebhookName"
+    ]
+}

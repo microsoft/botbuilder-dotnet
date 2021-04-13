@@ -47,13 +47,7 @@ namespace Microsoft.Bot.Builder.Skills
             // Create the storage key based on the SkillConversationIdFactoryOptions.
             var conversationReference = options.Activity.GetConversationReference();
 
-            string skillConversationId = string.Join(
-                "-",
-                options.FromBotId,
-                options.BotFrameworkSkill.AppId,
-                conversationReference.Conversation.Id,
-                conversationReference.ChannelId,
-                "skillconvo");
+            var skillConversationId = Guid.NewGuid().ToString();
 
             // Create the SkillConversationReference instance.
             var skillConversationReference = new SkillConversationReference

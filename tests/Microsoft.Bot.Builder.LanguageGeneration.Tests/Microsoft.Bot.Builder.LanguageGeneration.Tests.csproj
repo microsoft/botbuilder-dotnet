@@ -11,6 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Examples\AliasBase1.lg" />
+    <None Remove="Examples\AliasBase2.lg" />
+    <None Remove="Examples\AliasBase3.lg" />
     <None Remove="Examples\EmptyArrayAndObject.lg" />
     <None Remove="Examples\EvaluationOptions\a1.lg" />
     <None Remove="Examples\EvaluationOptions\a2.lg" />
@@ -40,6 +43,7 @@
     <None Remove="Examples\5.lg" />
     <None Remove="Examples\6.lg" />
     <None Remove="Examples\8.lg" />
+    <None Remove="Examples\Alias.lg" />
     <None Remove="Examples\AdaptiveCardActivity.lg" />
     <None Remove="Examples\analyzer.lg" />
     <None Remove="Examples\BasicActivity.lg" />
@@ -101,11 +105,24 @@
     <None Remove="ExceptionExamples\ErrorLine.lg" />
     <None Remove="ExceptionExamples\CycleRef1.lg" />
     <None Remove="ExceptionExamples\CycleRef2.lg" />
+    <None Remove="ExceptionExamples\InvalidImportFormat.lg" />
     <None Remove="MultiLanguage\a.lg" />
     <None Remove="MultiLanguage\a.en.lg" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Examples\Alias.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\AliasBase1.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\AliasBase2.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Examples\AliasBase3.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Examples\Event.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -371,6 +388,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\CycleRef2.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\InvalidImportFormat.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MultiLanguage\a.lg">

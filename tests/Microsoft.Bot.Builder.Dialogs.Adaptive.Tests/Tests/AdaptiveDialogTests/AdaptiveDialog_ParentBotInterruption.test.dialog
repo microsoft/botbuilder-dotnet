@@ -1,0 +1,148 @@
+{
+  "$schema": "../../../tests.schema", 
+  "$kind": "Microsoft.Test.Script",
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "id": "AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.RegexRecognizer",
+      "intents": [
+        {
+          "intent": "dialoga",
+          "pattern": "(?i)dialoga"
+        },
+        {
+          "intent": "dialogb",
+          "pattern": "(?i)dialogb"
+        }
+      ]
+    },
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "dialoga",
+        "actions": [
+          {
+            "$kind": "Microsoft.BeginDialog",
+            "dialog": {
+              "id": "dialogA",
+              "$kind": "Microsoft.AdaptiveDialog",
+              "recognizer": {
+                "$kind": "Microsoft.RegexRecognizer"
+              },
+              "triggers": [
+                {
+                  "$kind": "Microsoft.OnBeginDialog",
+                  "actions": [
+                    {
+                      "$kind": "Microsoft.TextInput",
+                      "allowInterruptions": true,
+                      "property": "dialog.value",
+                      "prompt": "DialogA Prompt"
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "DialogA: ${dialog.value}"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "dialogb",
+        "actions": [
+          {
+            "$kind": "Microsoft.BeginDialog",
+            "dialog": {
+              "$kind": "Microsoft.AdaptiveDialog",
+              "id": "dialogB",
+              "recognizer": {
+                "$kind": "Microsoft.RegexRecognizer"
+              },
+              "triggers": [
+                {
+                  "$kind": "Microsoft.OnBeginDialog",
+                  "actions": [
+                    {
+                      "$kind": "Microsoft.TextInput",
+                      "allowInterruptions": true,
+                      "property": "dialog.value",
+                      "prompt": "DialogB Prompt"
+                    },
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "activity": "DialogB: ${dialog.value}"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnIntent",
+        "intent": "Santa",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "I love you santa."
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnUnknownIntent",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "In None..."
+          }
+        ]
+      }
+    ],
+    "autoEndDialog": false,
+    "defaultResultProperty": "dialog.result"
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "dialoga"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "DialogA Prompt"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "dialogb"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "DialogB Prompt"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "testb"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "DialogB: testb"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "DialogA Prompt"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "testa"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "DialogA: testa"
+    }
+  ]
+}
