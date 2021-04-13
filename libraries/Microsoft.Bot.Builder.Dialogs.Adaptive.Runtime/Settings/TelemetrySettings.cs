@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Settings
 {
     /// <summary>
@@ -17,12 +19,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Settings
         public static string TelemetrySettingsKey => $"{ConfigurationConstants.RuntimeSettingsKey}:telemetry";
 
         /// <summary>
-        /// Gets or sets the telemetry instrumentation key.
+        /// Gets or sets the telemetry <see cref="ApplicationInsightsServiceOptions"/>.
         /// </summary>
         /// <value>
-        /// Telemetry instrumentation key.
+        /// <see cref="ApplicationInsightsServiceOptions"/>.
         /// </value>
-        public string InstrumentationKey { get; set; }
+        public ApplicationInsightsServiceOptions Options { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to log personal information to the telemetry system.
