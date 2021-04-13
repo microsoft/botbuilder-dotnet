@@ -207,7 +207,7 @@ $DownloadApiCompat = {
 }
 
 $WriteToLog = {
-    $ResultMessage = " Binary Compatibility compared against version: $Version => $ApiCompatResult"
+    $ResultMessage = " '$DllName': Binary Compatibility compared against version: $Version => $ApiCompatResult"
     Write-Host $ResultMessage -ForegroundColor green
     
     # Create a Mutex for all process to be able to share same log file
