@@ -139,10 +139,13 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal(conversationReference.ActivityId, activity.Id);
         }
 
-        [Fact]
-        public void ApplyConversationReference()
+        [Theory]
+        [InlineData("en-uS")] // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+        [InlineData(null)]
+        public void ApplyConversationReference(string convoRefLocale)
         {
             var activity = CreateActivity();
+            activity.Locale = "en-us";
 
             var conversationReference = new ConversationReference
             {
@@ -161,19 +164,27 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "def",
                 },
                 ActivityId = "12345",
-                Locale = "en-uS" // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+                Locale = convoRefLocale 
             };
 
             activity.ApplyConversationReference(conversationReference, false);
 
             Assert.Equal(conversationReference.ChannelId, activity.ChannelId);
-            Assert.Equal(conversationReference.Locale, activity.Locale);
             Assert.Equal(conversationReference.ServiceUrl, activity.ServiceUrl);
             Assert.Equal(conversationReference.Conversation.Id, activity.Conversation.Id);
 
             Assert.Equal(conversationReference.Bot.Id, activity.From.Id);
             Assert.Equal(conversationReference.User.Id, activity.Recipient.Id);
             Assert.Equal(conversationReference.ActivityId, activity.ReplyToId);
+
+            if (convoRefLocale == null)
+            {
+                Assert.NotEqual(conversationReference.Locale, activity.Locale);
+            }
+            else
+            {
+                Assert.Equal(conversationReference.Locale, activity.Locale);
+            }
         }
 
         [Fact]
@@ -222,7 +233,7 @@ namespace Microsoft.Bot.Schema.Tests
             });
         }
 
-        private Activity CreateActivity()
+        private static Activity CreateActivity()
         {
             var account1 = new ChannelAccount
             {

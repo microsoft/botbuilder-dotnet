@@ -512,27 +512,28 @@ namespace Microsoft.Bot.Schema
         /// <returns>This activy, updated with the delivery information.</returns>
         public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
         {
-            this.ChannelId = reference.ChannelId;
-            this.ServiceUrl = reference.ServiceUrl;
-            this.Conversation = reference.Conversation;
-            this.Locale = reference.Locale ?? this.Locale;
+            ChannelId = reference.ChannelId;
+            ServiceUrl = reference.ServiceUrl;
+            Conversation = reference.Conversation;
+            Locale = reference.Locale ?? Locale;
 
             if (isIncoming)
             {
-                this.From = reference.User;
-                this.Recipient = reference.Bot;
+                From = reference.User;
+                Recipient = reference.Bot;
                 if (reference.ActivityId != null)
                 {
-                    this.Id = reference.ActivityId;
+                    Id = reference.ActivityId;
                 }
             }
             else
-            {// Outgoing
-                this.From = reference.Bot;
-                this.Recipient = reference.User;
+            {
+                // Outgoing
+                From = reference.Bot;
+                Recipient = reference.User;
                 if (reference.ActivityId != null)
                 {
-                    this.ReplyToId = reference.ActivityId;
+                    ReplyToId = reference.ActivityId;
                 }
             }
 
