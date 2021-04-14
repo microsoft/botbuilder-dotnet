@@ -13,6 +13,7 @@
     <Description>Library for connecting bots with Facebook.</Description>
     <Summary>This library implements C# classes for the Facebook adapter.</Summary>
     <PackageTags>msbot-component;msbot-adapter</PackageTags>
+    <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,6 +21,11 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="**/*.schema" />
+    <Content Include="**/*.uischema" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
