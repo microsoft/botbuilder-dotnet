@@ -88,6 +88,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public ValueExpression OutputFormat { get; set; }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+            => new RecognizerDescription(entities: new[] { new EntityDescription("boolean") });
+
         /// <summary>
         /// Called when input has been received.
         /// </summary>
@@ -180,7 +184,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         /// <inheritdoc/>
         protected async override Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
-            => await dc.SetInputContextAsync(DetermineCulture(dc), new RecognizerDescription(entities: new[] { new EntityDescription("confirmation") }), cancellationToken: cancellationToken).ConfigureAwait(false);
+        {
+            var locale = DetermineCulture(dc);
+            await dc.SetInputContextAsync(locale, GetRecognizerDescription(dc, locale), cancellationToken).ConfigureAwait(false);
+        }
 
         private string DetermineCulture(DialogContext dc)
         {

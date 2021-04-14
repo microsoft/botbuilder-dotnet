@@ -2,9 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Xunit;
 
@@ -28,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                                     Entity = "dlist",
                                     List = new List<AI.LuisV3.ListElement>
                                     {
-                                        new AI.LuisV3.ListElement("value", new List<string> { "synonym1", "synonym2" })
+                                        new AI.LuisV3.ListElement("value1", new List<string> { "synonym1", "synonym2" })
                                     }
                                 }
                         }
@@ -47,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                                     Entity = "dlist",
                                     List = new List<AI.LuisV3.ListElement>
                                     {
-                                        new AI.LuisV3.ListElement("value", new List<string> { "synonym1", "synonym2" })
+                                        new AI.LuisV3.ListElement("value1", new List<string> { "synonym1", "synonym2" })
                                     }
                                 }
                         }
@@ -56,8 +58,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         private static AI.QnA.Recognizers.QnAMakerRecognizer _qna = new AI.QnA.Recognizers.QnAMakerRecognizer();
 
         private static MultiLanguageRecognizer _multi = new MultiLanguageRecognizer() { Recognizers = new Dictionary<string, Recognizer> { { "en-us", _luisEN }, { string.Empty, _luis } } };
-        
-        public static IEnumerable<object[]> Expected
+
+        private static DynamicList _dlist = new DynamicList("dlist", new List<ListElement>
+            {
+                new ListElement("value1", new List<string> { "synonym1", "synonym2" })
+            });
+
+        public static IEnumerable<object[]> ExpectedRecognizer
             => new[]
             {
                 // Entity recognizers
@@ -87,7 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     _luis,
                     new[] { new IntentDescription("intent1", "foo.lu") },
                     new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
-                    new[] { "dlist" }
+                    new[] { _dlist }
                 },
 
                 // QnA doesn't have any priming information
@@ -103,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     new RecognizerSet() { Recognizers = new List<Recognizer> { new NumberEntityRecognizer(), _luis } },
                     new[] { new IntentDescription("intent1", "foo.lu") },
                     new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu"), new EntityDescription("number") },
-                    new[] { "dlist" }
+                    new[] { _dlist }
                 },
 
                 // Cross-trained recognizer
@@ -112,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     new CrossTrainedRecognizerSet() { Recognizers = new List<Recognizer> { _luis, new NumberEntityRecognizer() } },
                     new[] { new IntentDescription("intent1", "foo.lu") },
                     new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu"), new EntityDescription("number") },
-                    new[] { "dlist" }
+                    new[] { _dlist }
                 },
 
                 // Multi language recognizer
@@ -121,24 +128,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     _multi,
                     new[] { new IntentDescription("intent1", "foo.lu") },
                     new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
-                    new[] { "dlist" }
+                    new[] { _dlist }
                 },
                 new object[]
                 {
                     _multi,
                     new[] { new IntentDescription("intent1", "foo.en-us.lu") },
                     new[] { new EntityDescription("entity1", "foo.en-us.lu"), new EntityDescription("dlist", "foo.en-us.lu") },
-                    new[] { "dlist" },
+                    new[] { _dlist },
                     "en-us"
                 },
             };
 
-        [Theory]
-        [MemberData(nameof(Expected))]
-        public void RecognizerDescriptionTests(Recognizer recognizer, IntentDescription[] intents, EntityDescription[] entities, string[] lists, string locale = null)
-        {
-            var description = recognizer.GetRecognizerDescription(GetTurnContext(recognizer), locale);
+        public static IEnumerable<object[]> ExpectedDialog
+            => new[]
+            {
+                new object[] { new NumberInput(), null, new[] { new EntityDescription("number") }, null },
+                new object[] { new ConfirmInput(), null, new[] { new EntityDescription("boolean") }, null },
+                new object[]
+                    {
+                        new ChoiceInput() 
+                        {
+                            Id = "choiceTest",
+                            Choices = new ChoiceSet(new[]
+                                {
+                                    new Choice("value1") { Synonyms = new List<string> { "synonym1", "synonym2" } }
+                                })
+                        },
+                        null,
+                        null,
+                        new[] { _dlist }
+                    }
+            };
 
+        [Theory]
+        [MemberData(nameof(ExpectedRecognizer))]
+        public void RecognizerDescriptionTests(Recognizer recognizer, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null)
+        {
+            CheckDescription(recognizer.GetRecognizerDescription(GetTurnContext(), locale), intents, entities, lists, locale);
+        }
+
+        [Theory]
+        [MemberData(nameof(ExpectedDialog))]
+        public void DialogRecognizerDescriptionTests(Dialog dialog, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null)
+        {
+            CheckDescription(dialog.GetRecognizerDescription(GetTurnContext(), locale), intents, entities, lists, locale);
+        }
+
+        private void CheckDescription(RecognizerDescription description, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale)
+        {
             if (intents != null)
             {
                 Assert.Equal(intents.Length, description.Intents.Count);
@@ -162,7 +200,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             if (lists != null)
             {
                 Assert.Equal(lists.Length, description.DynamicLists.Count);
-                Assert.All(description.DynamicLists, (list) => Assert.Contains(list.Entity, lists));
+                foreach (var entity in description.DynamicLists)
+                {
+                    var oracleEntity = lists.SingleOrDefault((l) => entity.Entity == l.Entity);
+                    Assert.NotNull(oracleEntity);
+                    Assert.Equal(oracleEntity.List.Count, entity.List.Count);
+                    for (var i = 0; i < oracleEntity.List.Count; ++i)
+                    {
+                        var oracle = oracleEntity.List[i];
+                        var element = entity.List[i];
+                        Assert.Equal(oracle.CanonicalForm, element.CanonicalForm);
+                        Assert.Equal(oracle.Synonyms, element.Synonyms);
+                    }
+                }
             }
             else
             {
@@ -170,12 +220,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             }
         }
 
-        private DialogContext GetTurnContext(Recognizer recognizer)
+        private DialogContext GetTurnContext()
         {
             return new DialogContext(
                 new DialogSet(),
                 new TurnContext(
-                    new TestAdapter(TestAdapter.CreateConversation(recognizer.GetType().ToString())),
+                    new TestAdapter(TestAdapter.CreateConversation("Priming")),
                     new Schema.Activity()),
                 new DialogState());
         }

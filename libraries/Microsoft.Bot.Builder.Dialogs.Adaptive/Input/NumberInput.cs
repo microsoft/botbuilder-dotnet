@@ -52,6 +52,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public NumberExpression OutputFormat { get; set; }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+            => new RecognizerDescription(entities: new[] { new EntityDescription("number") });
+
         /// <summary>
         /// Called when input has been received.
         /// </summary>
@@ -111,7 +115,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <inheritdoc/>
         protected override async Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            await dc.SetInputContextAsync(GetCulture(dc), new RecognizerDescription(entities: new[] { new EntityDescription("number") }), cancellationToken).ConfigureAwait(false);
+            var locale = GetCulture(dc);
+            await dc.SetInputContextAsync(GetCulture(dc), GetRecognizerDescription(dc, locale), cancellationToken).ConfigureAwait(false);
         }
 
         private string GetCulture(DialogContext dc)

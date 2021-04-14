@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 // TODO: chrimc, this is lifted from LUIS.  Should we keep in that namespace?  Mark as obsolete?
@@ -15,18 +16,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicList"/> class.
         /// </summary>
-        public DynamicList()
+        /// <param name="entity">The name of the list entity.</param>
+        /// <param name="list">The lists that define the entity.</param>
+        [JsonConstructor]
+        public DynamicList(string entity, IEnumerable<ListElement> list)
         {
+            Entity = entity;
+            List = (list == null ? new List<ListElement>() : list.ToList()).AsReadOnly();
         }
 
         /// <summary>
-        /// Gets or sets the name of the list entity to extend.
+        /// Gets the name of the list entity to extend.
         /// </summary>
         /// <value>
         /// The name of the list entity to extend.
         /// </value>
         [JsonProperty(PropertyName = "entity")]
-        public string Entity { get; set; }
+        public string Entity { get; }
 
         /// <summary>
         /// Gets the list of canonical forms and synonyms.
@@ -35,6 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// List of canonical forms and synonyms.
         /// </value>
         [JsonProperty(PropertyName = "list")]
-        public IList<ListElement> List { get; } = new List<ListElement>();
+        public IReadOnlyList<ListElement> List { get; }
     }
 }

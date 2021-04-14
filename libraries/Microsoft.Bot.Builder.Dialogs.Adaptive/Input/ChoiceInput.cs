@@ -140,6 +140,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dc, string expectedLocale)
+        {
+            var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
+            var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+            var entries = new List<ListElement>();
+            foreach (var choice in choices.Choices)
+            {
+                var entry = new ListElement(choice.Value);
+                if (!options.NoValue)
+                {
+                    entry.Synonyms.Add(choice.Value);
+                }
+
+                if (!options.NoAction && choice.Action?.Title != null)
+                {
+                    entry.Synonyms.Add(choice.Action.Title);
+                }
+
+                foreach (var synonym in choice.Synonyms)
+                {
+                    entry.Synonyms.Add(synonym);
+                }
+
+                entries.Add(entry);
+            }
+
+            List<EntityDescription> entities = null;
+            if (options.RecognizeOrdinals)
+            {
+                entities = new List<EntityDescription> { new EntityDescription("ordinal") };
+            }
+
+            return new RecognizerDescription(entities: entities, dynamicLists: new List<DynamicList> { new DynamicList(Id, entries) });
+        }
+
         /// <summary>
         /// Method which processes options.
         /// </summary>
@@ -225,9 +261,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // TODO: chrimc create dynamic list
             // findOptions allow numbers/ordinals so pick that up.
             var locale = DetermineCulture(dc);
-            var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
-            var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
-            await dc.SetInputContextAsync(locale, new RecognizerDescription(entities: new[] { new EntityDescription("confirmation") }), cancellationToken: cancellationToken).ConfigureAwait(false);
+            await dc.SetInputContextAsync(locale, GetRecognizerDescription(dc, locale), cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<ChoiceSet> GetChoiceSetAsync(DialogContext dc)
