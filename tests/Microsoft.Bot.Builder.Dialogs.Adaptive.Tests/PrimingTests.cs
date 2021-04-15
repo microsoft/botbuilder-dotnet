@@ -3,11 +3,14 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Recognizers;
+using Microsoft.Bot.Schema;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
@@ -24,16 +27,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             PossibleIntents = new[] { new IntentDescription("intent1", "foo.lu") },
             PossibleEntities = new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
             DynamicLists = new[]
+            {
+                    new AI.Luis.DynamicList()
+                    {
+                        Entity = "dlist",
+                        List = new List<AI.LuisV3.ListElement>
                         {
-                                new AI.Luis.DynamicList()
-                                {
-                                    Entity = "dlist",
-                                    List = new List<AI.LuisV3.ListElement>
-                                    {
-                                        new AI.LuisV3.ListElement("value1", new List<string> { "synonym1", "synonym2" })
-                                    }
-                                }
+                            new AI.LuisV3.ListElement("value1", new List<string> { "synonym1", "synonym2" })
                         }
+                    }
+            }
         };
 
         private static AI.Luis.LuisAdaptiveRecognizer _luisEN = new AI.Luis.LuisAdaptiveRecognizer()
@@ -43,16 +46,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             PossibleIntents = new[] { new IntentDescription("intent1", "foo.en-us.lu") },
             PossibleEntities = new[] { new EntityDescription("entity1", "foo.en-us.lu"), new EntityDescription("dlist", "foo.en-us.lu") },
             DynamicLists = new[]
+            {
+                    new AI.Luis.DynamicList()
+                    {
+                        Entity = "dlist",
+                        List = new List<AI.LuisV3.ListElement>
                         {
-                                new AI.Luis.DynamicList()
-                                {
-                                    Entity = "dlist",
-                                    List = new List<AI.LuisV3.ListElement>
-                                    {
-                                        new AI.LuisV3.ListElement("value1", new List<string> { "synonym1", "synonym2" })
-                                    }
-                                }
+                            new AI.LuisV3.ListElement("value1", new List<string> { "synonym1", "synonym2" })
                         }
+                    }
+            }
         };
 
         private static AI.QnA.Recognizers.QnAMakerRecognizer _qna = new AI.QnA.Recognizers.QnAMakerRecognizer();
@@ -61,8 +64,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         private static DynamicList _dlist = new DynamicList("dlist", new List<ListElement>
             {
-                new ListElement("value1", new List<string> { "synonym1", "synonym2" })
+                new ListElement("value1", new List<string> { "value1", "synonym1", "synonym2" })
             });
+
+        private static ActivityTemplate _prompt = new ActivityTemplate("Prompt");
 
         public static IEnumerable<object[]> ExpectedRecognizer
             => new[]
@@ -143,22 +148,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public static IEnumerable<object[]> ExpectedDialog
             => new[]
             {
-                new object[] { new NumberInput(), null, new[] { new EntityDescription("number") }, null },
-                new object[] { new ConfirmInput(), null, new[] { new EntityDescription("boolean") }, null },
+                new object[] { new NumberInput() { Prompt = _prompt }, null, new[] { new EntityDescription("number") }, null },
+                new object[] { new ConfirmInput() { Prompt = _prompt }, null, new[] { new EntityDescription("boolean") }, null },
                 new object[]
+                {
+                    new ChoiceInput()
                     {
-                        new ChoiceInput() 
+                        Id = "choiceTest",
+                        Prompt = _prompt,
+                        Choices = new ChoiceSet(new[]
                         {
-                            Id = "choiceTest",
-                            Choices = new ChoiceSet(new[]
-                                {
-                                    new Choice("value1") { Synonyms = new List<string> { "synonym1", "synonym2" } }
-                                })
-                        },
-                        null,
-                        null,
-                        new[] { _dlist }
-                    }
+                            new Choice("value1")
+                            {
+                                Action = new CardAction(title: "Action"),
+                                Synonyms = new List<string> { "synonym1", "synonym2" }
+                            }
+                        })
+                    },
+                    null,
+                    new[] { new EntityDescription("number"), new EntityDescription("ordinal") },
+                    new[] { new DynamicList("choiceTest", new List<ListElement> { new ListElement("value1", new List<string> { "value1", "Action", "synonym1", "synonym2" }) }) }
+                },
+                new object[]
+                {
+                    new ChoiceInput()
+                    {
+                        Id = "choiceTest",
+                        Prompt = _prompt,
+                        Choices = new ChoiceSet(new[]
+                        {
+                            new Choice("value1")
+                            {
+                                Action = new CardAction(title: "Action"),
+                                Synonyms = new List<string> { "synonym1", "synonym2" }
+                            }
+                        }),
+                        RecognizerOptions = new FindChoicesOptions() { NoAction = true, NoValue = true, RecognizeNumbers = false, RecognizeOrdinals = false }
+                    },
+                    null,
+                    null,
+                    new[] { new DynamicList("choiceTest", new List<ListElement> { new ListElement("value1", new List<string> { "synonym1", "synonym2" }) }) }
+                }
             };
 
         [Theory]
@@ -170,9 +200,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         [Theory]
         [MemberData(nameof(ExpectedDialog))]
-        public void DialogRecognizerDescriptionTests(Dialog dialog, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null)
+        public async Task DialogRecognizerDescriptionTests(Dialog dialog, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null)
         {
-            CheckDescription(dialog.GetRecognizerDescription(GetTurnContext(), locale), intents, entities, lists, locale);
+            var dc = GetTurnContext(dialog);
+            await dc.BeginDialogAsync(dialog.Id);
+            CheckDescription(dialog.GetRecognizerDescription(dc, locale), intents, entities, lists, locale);
+            await dc.EndDialogAsync();
         }
 
         private void CheckDescription(RecognizerDescription description, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale)
@@ -220,10 +253,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             }
         }
 
-        private DialogContext GetTurnContext()
+        private DialogContext GetTurnContext(Dialog dialog = null)
         {
+            var dialogs = new DialogSet();
+            if (dialog != null)
+            {
+                dialogs.Add(dialog);
+            }
+
             return new DialogContext(
-                new DialogSet(),
+                dialogs,
                 new TurnContext(
                     new TestAdapter(TestAdapter.CreateConversation("Priming")),
                     new Schema.Activity()),

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 // TODO: chrimc, this is lifted from LUIS.  Should we keep in that namespace?  Mark as obsolete?
@@ -24,10 +25,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// </summary>
         /// <param name="canonicalForm">The canonical form of the sub-list.</param>
         /// <param name="synonyms">The synonyms of the canonical form.</param>
-        public ListElement(string canonicalForm, IList<string> synonyms = null)
+        public ListElement(string canonicalForm, IEnumerable<string> synonyms = null)
         {
             CanonicalForm = canonicalForm;
-            Synonyms = synonyms;
+            Synonyms = (synonyms == null ? new List<string>() : synonyms.ToList()).AsReadOnly();
         }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// The synonyms of the canonical form.
         /// </value>
         [JsonProperty(PropertyName = "synonyms")]
-        public IList<string> Synonyms { get; } = new List<string>();
+        public IReadOnlyList<string> Synonyms { get; } 
 
         /// <summary>
         /// Validate the object.

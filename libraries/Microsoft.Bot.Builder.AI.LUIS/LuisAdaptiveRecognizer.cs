@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value>Dynamic lists.</value>
         [JsonProperty("dynamicLists")]
-        public ArrayExpression<Luis.DynamicList> DynamicLists { get; set; }
+        public ArrayExpression<DynamicList> DynamicLists { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS prediction options.
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>Prediction options for backward compat code.</value>
         [JsonIgnore]
         [Obsolete("You should use Options instead as it supports expression properties.")]
-        public AI.LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
+        public LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS Prediction options (with expressions).
@@ -139,10 +139,25 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
             // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
+            // Priming also includes the canonical form in synonyms whereas LUIS lists do not.
+            var lists = new List<Dialogs.Recognizers.DynamicList>();
+            foreach (var list in DynamicLists.GetValue(dialogContext.State))
+            {
+                var elements = new List<Dialogs.Recognizers.ListElement>();
+                foreach (var element in list.List)
+                {
+                    var synonyms = new List<string> { element.CanonicalForm };
+                    synonyms.AddRange(element.Synonyms);
+                    elements.Add(new Dialogs.Recognizers.ListElement(element.CanonicalForm, synonyms));
+                }
+
+                lists.Add(new Dialogs.Recognizers.DynamicList(list.Entity, elements));
+            }
+
             return new RecognizerDescription(
                 PossibleIntents.GetValue(dialogContext.State),
                 PossibleEntities.GetValue(dialogContext.State),
-                JsonConvert.DeserializeObject<List<Dialogs.Recognizers.DynamicList>>(JsonConvert.SerializeObject(DynamicLists.GetValue(dialogContext.State))));
+                lists);
         }
 
         /// <summary>

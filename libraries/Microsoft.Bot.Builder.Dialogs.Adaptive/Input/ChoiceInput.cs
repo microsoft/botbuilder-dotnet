@@ -148,29 +148,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var entries = new List<ListElement>();
             foreach (var choice in choices.Choices)
             {
-                var entry = new ListElement(choice.Value);
+                var synonyms = new List<string>();
                 if (!options.NoValue)
                 {
-                    entry.Synonyms.Add(choice.Value);
+                    synonyms.Add(choice.Value);
                 }
 
                 if (!options.NoAction && choice.Action?.Title != null)
                 {
-                    entry.Synonyms.Add(choice.Action.Title);
+                    synonyms.Add(choice.Action.Title);
                 }
 
-                foreach (var synonym in choice.Synonyms)
-                {
-                    entry.Synonyms.Add(synonym);
-                }
+                synonyms.AddRange(choice.Synonyms);
 
-                entries.Add(entry);
+                entries.Add(new ListElement(choice.Value, synonyms));
             }
 
-            List<EntityDescription> entities = null;
+            List<EntityDescription> entities = new List<EntityDescription>();
             if (options.RecognizeOrdinals)
             {
-                entities = new List<EntityDescription> { new EntityDescription("ordinal") };
+                entities.Add(new EntityDescription("ordinal"));
+            }
+
+            if (options.RecognizeNumbers)
+            {
+                entities.Add(new EntityDescription("number"));
             }
 
             return new RecognizerDescription(entities: entities, dynamicLists: new List<DynamicList> { new DynamicList(Id, entries) });
