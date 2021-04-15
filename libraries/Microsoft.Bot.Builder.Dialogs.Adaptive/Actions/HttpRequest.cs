@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The property expression to store the HTTP response in. 
         /// </value>
         [JsonProperty("resultProperty")]
-        public StringExpression ResultProperty { get; set; }
+        public StringExpression ResultProperty { get; set; } = "turn.results";
 
         /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.

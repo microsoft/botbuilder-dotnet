@@ -25,7 +25,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private static readonly ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager> _languageGeneratorManagers = new ConcurrentDictionary<ResourceExplorer, LanguageGeneratorManager>();
 
-        private readonly string _defaultLocale;
         private readonly string _adaptiveDialogId;
         private readonly string _languageGeneratorId;
         private readonly ResourceExplorer _resourceExplorer;
@@ -33,48 +32,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
+        private readonly LanguagePolicy _languagePolicy;
         private readonly IEnumerable<MemoryScope> _memoryScopes;
         private readonly IEnumerable<IPathResolver> _pathResolvers;
+        private readonly IEnumerable<Dialog> _dialogs;
         private readonly ILogger _logger;
+
+        private readonly Lazy<Task<Dialog>> _lazyRootDialog;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AdaptiveDialogBot"/> class.
         /// </summary>
         /// <param name="adaptiveDialogId">The id of the <see cref="AdaptiveDialog"/> to load from the <see cref="ResourceExplorer"/>.</param>
         /// <param name="languageGeneratorId">The id of the <see cref="LanguageGenerator"/> to load from the <see cref="ResourceExplorer"/>.</param>
-        /// <param name="defaultLocale">The default locale for this bot.</param>
         /// <param name="resourceExplorer">The Bot Builder <see cref="ResourceExplorer"/> to load the <see cref="Dialog"/> from.</param>
         /// <param name="conversationState">A <see cref="ConversationState"/> implementation.</param>
         /// <param name="userState">A <see cref="UserState"/> implementation.</param>
         /// <param name="skillConversationIdFactoryBase">A <see cref="SkillConversationIdFactoryBase"/> implementation.</param>
+        /// <param name="languagePolicy">A <see cref="LanguagePolicy"/> to use.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
         /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
+        /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance.</param>
         public AdaptiveDialogBot(
             string adaptiveDialogId,
             string languageGeneratorId,
-            string defaultLocale,
             ResourceExplorer resourceExplorer,
             ConversationState conversationState,
             UserState userState,
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
+            LanguagePolicy languagePolicy,
             BotFrameworkAuthentication botFrameworkAuthentication,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
+            IEnumerable<Dialog> dialogs = default,
             ILogger logger = null)
         {
             _resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
             _adaptiveDialogId = adaptiveDialogId ?? throw new ArgumentNullException(nameof(adaptiveDialogId));
             _languageGeneratorId = languageGeneratorId ?? throw new ArgumentNullException(nameof(languageGeneratorId));
-            _defaultLocale = defaultLocale ?? throw new ArgumentNullException(nameof(defaultLocale));
             _conversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             _userState = userState ?? throw new ArgumentNullException(nameof(userState));
             _skillConversationIdFactoryBase = skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase));
+            _languagePolicy = languagePolicy ?? throw new ArgumentNullException(nameof(languagePolicy));
             _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
             _memoryScopes = scopes ?? Enumerable.Empty<MemoryScope>();
             _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
+            _dialogs = dialogs ?? Enumerable.Empty<Dialog>();
             _logger = logger ?? NullLogger<AdaptiveDialogBot>.Instance;
+
+            _lazyRootDialog = new Lazy<Task<Dialog>>(CreateDialogAsync);
         }
 
         /// <inheritdoc/>
@@ -87,8 +95,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Set up the TurnState the Dialog is expecting
                 SetUpTurnState(turnContext, botFrameworkClient);
 
-                // Load the Dialog from the ResourceExplorer
-                var rootDialog = await CreateDialogAsync(cancellationToken).ConfigureAwait(false);
+                // Load the Dialog from the ResourceExplorer - the actual load should only happen once
+                var rootDialog = await _lazyRootDialog.Value.ConfigureAwait(false);
 
                 // Run the Dialog
                 await rootDialog.RunAsync(turnContext, turnContext.TurnState.Get<ConversationState>().CreateProperty<DialogState>("DialogState"), cancellationToken).ConfigureAwait(false);
@@ -110,13 +118,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_pathResolvers);
             turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
-            turnContext.TurnState.Add(new LanguagePolicy(_defaultLocale));
+            turnContext.TurnState.Add(_languagePolicy);
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
 
-        private async Task<Dialog> CreateDialogAsync(CancellationToken cancellationToken)
+        private async Task<Dialog> CreateDialogAsync()
         {
             if (!_resourceExplorer.TryGetResource(_adaptiveDialogId, out var adaptiveDialogResource))
             {
@@ -125,7 +133,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new InvalidOperationException(msg);
             }
 
-            return await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, cancellationToken).ConfigureAwait(false);
+            var adaptiveDialog = await _resourceExplorer.LoadTypeAsync<AdaptiveDialog>(adaptiveDialogResource, CancellationToken.None).ConfigureAwait(false);
+
+            // if we were passed any Dialogs then add them to the AdaptiveDialog's DialogSet so they can be invoked from any other Dialog
+            foreach (var dialog in _dialogs)
+            {
+                adaptiveDialog.Dialogs.Add(dialog);
+            }
+
+            return adaptiveDialog;
         }
     }
 }

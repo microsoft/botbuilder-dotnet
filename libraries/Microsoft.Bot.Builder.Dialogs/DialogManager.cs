@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dc = new DialogContext(Dialogs, context, dialogState);
 
             // Call the common dialog "continue/begin" execution pattern shared with the classic RunAsync extension method
-            var turnResult = await DialogExtensions.InternalRunAsync(context, _rootDialogId, dc, cancellationToken).ConfigureAwait(false);
+            var turnResult = await DialogExtensions.InternalRunAsync(context, _rootDialogId, dc, StateConfiguration, cancellationToken).ConfigureAwait(false);
 
             // save BotState changes
             await botStateSet.SaveAllChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);

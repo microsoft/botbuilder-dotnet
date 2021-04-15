@@ -1,0 +1,20 @@
+﻿> import as base
+> the nameSpace would be ignored in the default import resolver
+[import from base](./base.lg) as base
+
+> call duplicate name
+# wPhrase
+- ${base.wPhrase()}
+
+# callWelcome(theName)
+- ${base.welcome(theName)}
+
+> call builtin-function
+# callLength
+- ${length('name')}
+
+# callBaseLength
+- ${base.length()}
+
+# length
+- length in main

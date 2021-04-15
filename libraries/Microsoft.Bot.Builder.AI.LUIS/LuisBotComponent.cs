@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     public class LuisBotComponent : BotComponent
     {
         /// <inheritdoc/>
-        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration, ILogger logger)
+        public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // Converters
             services.AddSingleton<JsonConverterFactory, JsonConverterFactory<ArrayExpressionConverter<DynamicList>>>();

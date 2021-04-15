@@ -43,6 +43,32 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.Equal(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
         }
 
+        public async Task LogActivityWithInvalidIds()
+        {
+            var channelId = "channelWith|invalidChars";
+            var emulatorConversationId = "8b6e9a80-3c94-11eb-83c4-83172d04969b|livechat";
+
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+                Timestamp = DateTime.UtcNow,
+                Id = Guid.NewGuid().ToString(),
+                Text = "text",
+                ChannelId = channelId,
+                From = new ChannelAccount($"User"),
+                Conversation = new ConversationAccount(id: emulatorConversationId),
+                Recipient = new ChannelAccount("Bot1", "2"),
+                ServiceUrl = "http://foo.com/api/messages",
+            };
+
+            await Store.LogActivityAsync(activity);
+
+            var results = await Store.GetTranscriptActivitiesAsync(channelId, emulatorConversationId);
+            Assert.Single(results.Items);
+
+            Assert.Equal(JsonConvert.SerializeObject(activity), JsonConvert.SerializeObject(results.Items[0]));
+        }
+
         public async Task LogMultipleActivities()
         {
             string conversationId = "LogMultipleActivities";

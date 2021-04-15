@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IAdapter)",
+    "title": "Twilio connection",
+    "description": "Connects a bot to Twilio.",
+    "type": "object",
+    "properties": {
+        "TwilioNumber": {
+            "type": "string",
+            "title": "Number key",
+            "description": "Number key obtained from Twilio set-up."
+        },
+        "TwilioAccountSid": {
+            "type": "string",
+            "title": "Account SID key",
+            "description": "Account SID obtained from Twilio set-up."
+        },
+        "TwilioAuthToken": {
+            "type": "string",
+            "title": "Authentication token",
+            "description": "Authentication token obtained from Twilio set-up."
+        },
+        "TwilioValidationUrl": {
+            "type": "string",
+            "title": "Validation url",
+            "description": "Validation url obtained from Twilio set-up."
+        },
+        "route": {
+            "type": "string",
+            "title": "Route",
+            "description": "Optional route where the adapter is exposed.",
+            "default": "twilio"
+        },
+        "type": {
+            "type": "string",
+            "title": "type",
+            "description": "Adapter full type name.",
+            "default": "Microsoft.Bot.Builder.Adapters.Twilio.TwilioAdapter"
+        }
+    },
+    "required": [
+        "TwilioNumber",
+        "TwilioAccountSid",
+        "TwilioAuthToken",
+        "TwilioValidationUrl"
+    ]
+}

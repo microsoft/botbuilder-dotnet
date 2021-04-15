@@ -29,9 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Obsolete
         /// </summary>
         /// <param name="botComponent"><see cref="BotComponent"/> to be exposed as a legacy <see cref="ComponentRegistration"/>.</param>
         /// <param name="configuration">Optional <see cref="IConfiguration"/> for the target <see cref="BotComponent"/>.</param>
-        /// <param name="logger">Optional <see cref="ILogger"/> for the target <see cref="BotComponent"/>.</param>
-        public DeclarativeComponentRegistrationBridge(TComponent botComponent, IConfiguration configuration = null, ILogger logger = null)
-            : base(botComponent, configuration, logger)
+        public DeclarativeComponentRegistrationBridge(TComponent botComponent, IConfiguration configuration = null)
+            : base(botComponent, configuration)
         {
         }
 

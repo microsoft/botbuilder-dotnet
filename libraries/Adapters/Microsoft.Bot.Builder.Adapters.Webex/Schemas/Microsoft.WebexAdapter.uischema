@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Webex connection.",
+        "description": "Connects a bot to Webex.",
+        "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Webex",
+        "order": [
+            "WebexAccessToken",
+            "WebexPublicAddress",
+            "WebexSecret",
+            "WebexWebhookName",
+            "*"
+        ],
+        "hidden": [
+            "type"
+        ]
+    }
+}
