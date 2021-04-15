@@ -1,0 +1,99 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "main.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=wPhrase()"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=callWelcome('Jack')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=callLength()"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=callBaseLength()"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=length('hi')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=lg.length()"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+          "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "hi"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "hi Jack"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "4"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "length in base"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "2"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "length in main"
+        }
+    ]
+}

@@ -498,6 +498,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_SetProperty_With_Template_Inject()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_SetProperties()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
