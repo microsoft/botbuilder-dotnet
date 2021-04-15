@@ -13,7 +13,7 @@
   Specifies the name for the specific project we are building.
 
   .PARAMETER Version
-  Specifies the version of the library to compare the implementation with..
+  Specifies the version of the library to compare the implementation with.
 
   .PARAMETER ApiCompatVersion
   Specifies the version of ApiCompat to use. You can see available versions here https://dev.azure.com/dnceng/public/_packaging?_a=package&feed=dotnet-eng&view=versions&package=Microsoft.DotNet.ApiCompat&protocolType=NuGet
