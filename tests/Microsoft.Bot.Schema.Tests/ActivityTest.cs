@@ -234,34 +234,27 @@ namespace Microsoft.Bot.Schema.Tests
             });
         }
 
-        [Fact]
-        public void CanCreateMessageActivity()
+        [Theory]
+        [InlineData(nameof(ActivityTypes.Handoff))]
+        [InlineData(nameof(ActivityTypes.Typing))]
+        [InlineData(nameof(ActivityTypes.ContactRelationUpdate))]
+        [InlineData(nameof(ActivityTypes.Message))]
+        public void CanCreateActivities(string activityType)
         {
-            var activity = Activity.CreateMessageActivity();
+            var createActivityMethod = typeof(Activity).GetMethod($"Create{activityType}Activity");
+            var activity = (Activity)createActivityMethod.Invoke(null, new object[0]);
+            var expectedActivityType = (string)typeof(ActivityTypes).GetField(activityType).GetValue(null);
+         
             Assert.NotNull(activity);
-            Assert.True(activity.Type == ActivityTypes.Message);
-            Assert.IsType<List<Attachment>>(activity.Attachments);
-            Assert.True(activity.Attachments.Count == 0);
-            Assert.IsType<List<Entity>>(activity.Entities);
-        }
+            Assert.True(activity.Type == expectedActivityType);
 
-        [Fact]
-        public void CanCreateContactRelationUpdateActivity()
-        {
-            var activity = Activity.CreateContactRelationUpdateActivity();
-            Assert.NotNull(activity);
-            Assert.True(activity.Type == ActivityTypes.ContactRelationUpdate);
+            if (expectedActivityType == ActivityTypes.Message)
+            {
+                Assert.IsType<List<Attachment>>(activity.Attachments);
+                Assert.True(activity.Attachments.Count == 0);
+                Assert.IsType<List<Entity>>(activity.Entities);
+            }
         }
-
-        [Fact]
-        public void CanCreateTypingActivity()
-        {
-            var activity = Activity.CreateTypingActivity();
-            Assert.NotNull(activity);
-            Assert.True(activity.Type == ActivityTypes.Typing);
-        }
-
-        // CreateHandoffActivity
 
         private static Activity CreateActivity()
         {
