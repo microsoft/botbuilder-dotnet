@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -232,6 +233,35 @@ namespace Microsoft.Bot.Schema.Tests
                 Assert.True(activity.IsFromStreamingConnection());
             });
         }
+
+        [Fact]
+        public void CanCreateMessageActivity()
+        {
+            var activity = Activity.CreateMessageActivity();
+            Assert.NotNull(activity);
+            Assert.True(activity.Type == ActivityTypes.Message);
+            Assert.IsType<List<Attachment>>(activity.Attachments);
+            Assert.True(activity.Attachments.Count == 0);
+            Assert.IsType<List<Entity>>(activity.Entities);
+        }
+
+        [Fact]
+        public void CanCreateContactRelationUpdateActivity()
+        {
+            var activity = Activity.CreateContactRelationUpdateActivity();
+            Assert.NotNull(activity);
+            Assert.True(activity.Type == ActivityTypes.ContactRelationUpdate);
+        }
+
+        [Fact]
+        public void CanCreateTypingActivity()
+        {
+            var activity = Activity.CreateTypingActivity();
+            Assert.NotNull(activity);
+            Assert.True(activity.Type == ActivityTypes.Typing);
+        }
+
+        // CreateHandoffActivity
 
         private static Activity CreateActivity()
         {
