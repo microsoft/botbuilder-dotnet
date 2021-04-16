@@ -369,7 +369,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <inheritdoc/>
         public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
         {
-            return Recognizer.GetRecognizerDescription(dialogContext, expectedLocale);
+            return Recognizer?.GetRecognizerDescription(dialogContext, expectedLocale) ?? new RecognizerDescription();
         }
 
         /// <summary>
@@ -703,6 +703,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     // Child dialog completed, but wants us to wait for a new activity
                     result.Status = DialogTurnStatus.Waiting;
+                    if (dialogSchema != null && dc.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
+                    {
+                        // We have expected properties so turn that into expected entities
+                        var description = GetRecognizerDescription(dc, dc.GetLocale());
+                        var entities = new List<EntityDescription>();
+                        foreach (var property in expected)
+                        {
+                            var propertyEntities = dialogSchema.PathToSchema(property)?.Entities;
+                            if (propertyEntities != null)
+                            {
+                                foreach (var entity in propertyEntities)
+                                {
+                                    var entityDescription = description.Entities.FirstOrDefault(e => entity == e.Name);
+                                    if (entityDescription != null)
+                                    {
+                                        entities.Add(entityDescription);
+                                    }
+                                }
+                            }
+                        }
+
+                        await dc.SetInputContextAsync(dc.GetLocale(), new RecognizerDescription(null, entities)).ConfigureAwait(false);
+                    }
+
                     return result;
                 }
 

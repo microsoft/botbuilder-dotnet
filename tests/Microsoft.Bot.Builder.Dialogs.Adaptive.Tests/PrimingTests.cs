@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
@@ -188,6 +191,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     null,
                     null,
                     new[] { new DynamicList("choiceTest", new List<ListElement> { new ListElement("value1", new List<string> { "synonym1", "synonym2" }) }) }
+                },
+                new object[]
+                {
+                    new AdaptiveDialog()
+                    {
+                        Recognizer = _luis,
+                        Triggers = new List<Adaptive.Conditions.OnCondition>
+                        {
+                            new OnBeginDialog(new List<Dialog>
+                            {
+                                new Ask() 
+                                {
+                                    Activity = _prompt,
+                                    ExpectedProperties = new[] { "entity1" }
+                                }
+                            })
+                        }
+                    },
+                    null,
+                    new[] { new EntityDescription("entity1") },
+                    null
                 }
             };
 
