@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Schema.Tests
                 From = account1,
                 Recipient = account2,
                 Conversation = conversationAccount,
-                ChannelId = "ChannelId123",
+                ChannelId = "directline",
                 Locale = "en-uS", // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
                 ServiceUrl = "ServiceUrl123",
             };

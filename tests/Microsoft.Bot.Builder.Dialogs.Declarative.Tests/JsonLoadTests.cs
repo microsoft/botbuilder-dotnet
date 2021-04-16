@@ -356,7 +356,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             // The ReplyToId should be null if the activity from bot to user is the first one of the conversation 
             await BuildTestFlow(@"ReplyToId.main.dialog", nameof(JsonDialogLoad_NoReplyToIdForFirstConversationActivityFromBotToUser))
-                .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount> { new ChannelAccount("bot", "Bot") }))
+                .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount> { new ChannelAccount("bot", "Bot") }, channelId: "webchat"))
                     .AssertReply(activity =>
                     {
                         Assert.Null(activity.ReplyToId);
