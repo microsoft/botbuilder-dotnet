@@ -235,10 +235,27 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [InlineData(nameof(ActivityTypes.Handoff))]
-        [InlineData(nameof(ActivityTypes.Typing))]
+        [InlineData("TestTrace", null, null, null)]
+        [InlineData("TestTrace", null, "TestValue", null)]
+        public void CanCreateTraceActivity(string name, string valueType, object value, string label)
+        {
+            var activity = Activity.CreateTraceActivity(name, valueType, value, label);
+            Assert.NotNull(activity);
+            Assert.True(activity.Type == ActivityTypes.Trace);
+            Assert.True(activity.Name == name);
+            Assert.True(activity.ValueType == value?.GetType().Name);
+            Assert.True(activity.Value == value);
+            Assert.True(activity.Label == label);
+        }
+
+        [Theory]
         [InlineData(nameof(ActivityTypes.ContactRelationUpdate))]
+        [InlineData(nameof(ActivityTypes.EndOfConversation))]
+        [InlineData(nameof(ActivityTypes.Event))]
+        [InlineData(nameof(ActivityTypes.Handoff))]
+        [InlineData(nameof(ActivityTypes.Invoke))]
         [InlineData(nameof(ActivityTypes.Message))]
+        [InlineData(nameof(ActivityTypes.Typing))]
         public void CanCreateActivities(string activityType)
         {
             var createActivityMethod = typeof(Activity).GetMethod($"Create{activityType}Activity");

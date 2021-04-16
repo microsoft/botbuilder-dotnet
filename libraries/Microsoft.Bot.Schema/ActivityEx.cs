@@ -199,12 +199,12 @@ namespace Microsoft.Bot.Schema
             {
                 Type = ActivityTypes.Trace,
                 Timestamp = DateTime.UtcNow,
-                From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
-                Recipient = new ChannelAccount(id: this.From?.Id, name: this.From?.Name),
-                ReplyToId = this.Id,
-                ServiceUrl = this.ServiceUrl,
-                ChannelId = this.ChannelId,
-                Conversation = this.Conversation,
+                From = new ChannelAccount(id: Recipient?.Id, name: Recipient?.Name),
+                Recipient = new ChannelAccount(id: From?.Id, name: From?.Name),
+                ReplyToId = Id,
+                ServiceUrl = ServiceUrl,
+                ChannelId = ChannelId,
+                Conversation = Conversation,
                 Name = name,
                 Label = label,
                 ValueType = valueType ?? value?.GetType().Name,
@@ -569,7 +569,7 @@ namespace Microsoft.Bot.Schema
              * "pseudo-cast" the activity based on its type.
              */
 
-            var type = this.Type;
+            var type = Type;
 
             // If there's no type set then we can't tell if it's the type they're looking for
             if (type == null)
