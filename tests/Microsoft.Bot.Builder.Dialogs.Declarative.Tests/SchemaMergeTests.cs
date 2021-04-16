@@ -33,6 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             {
                 PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\EmailBot"),
                 PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\CalendarBot"),
+                PathUtils.NormalizePath(@"Auth\bot-authentication"),
+                PathUtils.NormalizePath(@"Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests"),
                 "bin"
             };
 
