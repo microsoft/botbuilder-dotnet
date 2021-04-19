@@ -62,6 +62,33 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=base.welcome('Jack')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=base.length()"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=base.welcome('Jack')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${base.wPhrase()}"
                     }
                 ]
             }
@@ -94,6 +121,18 @@
         {
           "$kind": "Microsoft.Test.AssertReply",
           "text": "length in main"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "hi Jack"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "length in base"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "hi"
         }
     ]
 }

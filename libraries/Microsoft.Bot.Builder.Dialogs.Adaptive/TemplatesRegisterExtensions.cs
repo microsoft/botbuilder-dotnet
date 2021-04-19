@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public static void RegisterTemplateFunctions(this DialogContext dialogContext, LanguageGenerator generator)
         {
             var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
-            var templateNames = GetTemplates(generator, dialogContext).Select(u => u.Name).Distinct();
+            var templateNames = GetTemplates(generator, dialogContext).Distinct();
 
             var prebuildFunctionNames = Expression.Functions.Values.Select(u => u.Type);
             foreach (var templateName in templateNames)
@@ -64,6 +64,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                             return (result, null);
                                         }
                                     }
+
+                                    // Alias inject
+                                    var pointIndex = templateName.IndexOf('.');
+                                    if (pointIndex > 0)
+                                    {
+                                        var alias = templateName.Substring(0, pointIndex);
+                                        if (templateGenerator.LG.NamedReferences.ContainsKey(alias))
+                                        {
+                                            var realTemplateName = templateName.Substring(pointIndex + 1);
+                                            var (result, error) = EvaluateTemplate(templateGenerator.LG.NamedReferences[alias], realTemplateName, expression, state, options, currentLocale);
+                                            if (error == null)
+                                            {
+                                                return (result, null);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -88,11 +104,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return result;
         }
 
-        private static List<Template> GetTemplates(LanguageGenerator languageGenerator, DialogContext dialogContext)
+        private static List<string> GetTemplates(LanguageGenerator languageGenerator, DialogContext dialogContext)
         {
+            var templateNames = new List<string>();
             if (languageGenerator is TemplateEngineLanguageGenerator templateGenerator)
             {
-                return templateGenerator.LG.AllTemplates.ToList();
+                templateNames.AddRange(templateGenerator.LG.AllTemplates.Select(u => u.Name));
+                var namedReferences = templateGenerator.LG.NamedReferences;
+                foreach (var nemdReference in namedReferences)
+                {
+                    templateNames.AddRange(nemdReference.Value.AllTemplates.Select(u => nemdReference.Key + "." + u.Name));
+                }
+
+                return templateNames;
             }
 
             if (languageGenerator is ResourceMultiLanguageGenerator resourceGenerator)
@@ -101,22 +125,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (lgm != null)
                 {
                     var generators = lgm.LanguageGenerators;
-                    var result = new List<Template>();
                     foreach (var generator in generators)
                     {
                         var (targetResourceName, _) = LGResourceLoader.ParseLGFileName(generator.Key);
                         var (currentResourceName, _) = LGResourceLoader.ParseLGFileName(resourceGenerator.ResourceId);
                         if (targetResourceName == currentResourceName)
                         {
-                            result.AddRange(GetTemplates(generator.Value, dialogContext));
+                            templateNames.AddRange(GetTemplates(generator.Value, dialogContext));
                         }
                     }
-
-                    return result;
                 }
             }
 
-            return new List<Template>();
+            return templateNames;
         }
 
         private static (object result, string error) EvaluateTemplate(LanguageGeneration.Templates templates, string templateName, Expression expression, IMemory state, Options options, string currentLocale)
