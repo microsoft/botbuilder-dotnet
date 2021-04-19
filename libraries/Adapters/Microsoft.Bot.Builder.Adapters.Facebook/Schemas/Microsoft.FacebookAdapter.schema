@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IAdapter)",
+    "title": "Facebook connection",
+    "description": "Connects a bot to Facebook.",
+    "type": "object",
+    "properties": {
+        "FacebookVerifyToken": {
+            "type": "string",
+            "title": "Verification token",
+            "description": "The verify token obtained from Facebook portal while setting up the application."
+        },
+        "FacebookAppSecret": {
+            "type": "string",
+            "title": "App secret",
+            "description": "The app secret obtained from Facebook portal while setting up the application."
+        },
+        "FacebookAccessToken": {
+            "type": "string",
+            "title": "Access token",
+            "description": "The access token obtained from Facebook portal while setting up the application."
+        },
+        "route": {
+            "type": "string",
+            "title": "route",
+            "description": "Optional route where the adapter is exposed.",
+            "default": "facebook"
+        },
+        "type": {
+            "type": "string",
+            "title": "type",
+            "description": "Adapter full type name.",
+            "default": "Microsoft.Bot.Builder.Adapters.Facebook.FacebookAdapter"
+        }
+    },
+    "required": [
+            "FacebookVerifyToken",
+            "FacebookAppSecret",
+            "FacebookAccessToken"
+        ]
+}

@@ -1,0 +1,57 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "test.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.ChoiceInput",
+                        "alwaysPrompt": true,
+                        "choices": "${MyChoices_simple()}",
+                        "style": "inline",
+                        "property": "user.choice",
+                        "prompt": "${MyChoices_Prompt()}",
+                        "unrecognizedPrompt": "${MyChoices_UnknownPrompt()}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.choice}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "es",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hola"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Seleccione (1) perro o (2) gato"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "gatito"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Ni un perro ni un gato. Seleccione (1) perro o (2) gato"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "gato"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "gato"
+        }
+    ]
+}

@@ -16,11 +16,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="description">Import description, which is in [].</param>
         /// <param name="id">Import id, which is a path, in ().</param>
         /// <param name="sourceRange">Source range of template.</param>
-        internal TemplateImport(string description, string id, SourceRange sourceRange)
+        /// <param name="alias">Imports alias.</param>
+        internal TemplateImport(string description, string id, SourceRange sourceRange, string alias = null)
         {
             this.SourceRange = sourceRange;
             this.Description = description;
             this.Id = id;
+            this.Alias = alias;
         }
 
         /// <summary>
@@ -47,10 +49,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public SourceRange SourceRange { get; set; }
 
+        /// <summary>
+        /// Gets or sets alias for templates. For example: [import](path) as myAlias.
+        /// </summary>
+        /// <value>
+        /// Alias for templates. For example: [import](path) as myAlias.
+        /// </value>
+        public string Alias { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"[{Description}]({Id})";
+            var import = $"[{Description}]({Id})";
+            if (!string.IsNullOrEmpty(Alias))
+            {
+                import += $" as {Alias}";
+            }
+
+            return import;
         }
     }
 }

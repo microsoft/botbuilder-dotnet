@@ -1,0 +1,30 @@
+{
+  "token": "VerificationToken",
+  "team_id": "teamId",
+  "api_app_id": "apiAppId",
+  "event": {
+    "type": "message",
+    "text": "Hello",
+    "user": "userId",
+    "display_as_bot": false,
+    "ts": "1568915625.001000",
+    "channel": "channelId",
+    "subtype": "file_share",
+    "event_ts": "1568915625.001000",
+    "channel_type": "im",
+    "files": [
+      {
+        "id": "fileId",
+        "mimetype": "image/png",
+        "name": "fileName",
+        "url_private_download": "https://files.slack.com/files-pri/teamId-fileId/download/fileName.png"
+      }
+    ]
+  },
+  "type": "event_callback",
+  "event_id": "eventId",
+  "event_time": 1568915625,
+  "authed_users": [
+    "userId"
+  ]
+}

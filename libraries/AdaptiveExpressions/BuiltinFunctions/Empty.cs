@@ -22,7 +22,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                   ExpressionType.Empty,
                   Function,
                   FunctionUtils.ValidateUnary,
-                  FunctionUtils.VerifyContainer)
+                  FunctionUtils.VerifyContainerOrNull)
         {
         }
 

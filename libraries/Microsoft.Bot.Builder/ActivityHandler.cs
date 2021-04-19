@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
@@ -104,6 +103,14 @@ namespace Microsoft.Bot.Builder
 
                 case ActivityTypes.InstallationUpdate:
                     await OnInstallationUpdateActivityAsync(new DelegatingTurnContext<IInstallationUpdateActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ActivityTypes.Command:
+                    await OnCommandActivityAsync(new DelegatingTurnContext<ICommandActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ActivityTypes.CommandResult:
+                    await OnCommandResultActivityAsync(new DelegatingTurnContext<ICommandResultActivity>(turnContext), cancellationToken).ConfigureAwait(false);
                     break;
 
                 default:
@@ -456,9 +463,6 @@ namespace Microsoft.Bot.Builder
                         await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
                         return CreateInvokeResponse();
 
-                    case "healthCheck":
-                        return CreateInvokeResponse(await OnHealthCheckAsync(turnContext, cancellationToken).ConfigureAwait(false));
-
                     default:
                         throw new InvokeResponseException(HttpStatusCode.NotImplemented);
                 }
@@ -491,26 +495,6 @@ namespace Microsoft.Bot.Builder
         protected virtual Task OnSignInInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             throw new InvokeResponseException(HttpStatusCode.NotImplemented);
-        }
-
-        /// <summary>
-        /// Invoked when the bot is sent a health check from the hosting infrastructure or, in the case of Skills the parent bot.
-        /// <see cref="OnHealthCheckAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> is used.
-        /// By default, this method acknowledges the health state of the bot.
-        /// </summary>
-        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>
-        /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
-        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `healthCheck`,
-        /// it calls this method.
-        /// </remarks>
-        /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
-        protected virtual Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(HealthCheck.CreateHealthCheckResponse(turnContext.TurnState.Get<IConnectorClient>()));
         }
 
         /// <summary>
@@ -591,7 +575,7 @@ namespace Microsoft.Bot.Builder
                 case "remove":
                 case "remove-upgrade":
                     return OnInstallationUpdateRemoveAsync(turnContext, cancellationToken);
-                default: 
+                default:
                     return Task.CompletedTask;
             }
         }
@@ -628,6 +612,68 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
         protected virtual Task OnInstallationUpdateRemoveAsync(ITurnContext<IInstallationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a command activity is received when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Commands are requests to perform an action and receivers typically respond with
+        /// one or more commandResult activities. Receivers are also expected to explicitly
+        /// reject unsupported command activities.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a command activity, it calls this method.
+        /// 
+        /// In a derived class, override this method to add logic that applies to all comand activities.
+        /// Add logic to apply before the specific command-handling logic before the call to the base class
+        /// <see cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/> method.
+        /// Add logic to apply after the specific command-handling logic after the call to the base class
+        /// <see cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/> method.
+        ///
+        /// Command activities communicate programmatic information from a client or channel to a bot.
+        /// The meaning of an command activity is defined by the <see cref="ICommandActivity.Name"/> property,
+        /// which is meaningful within the scope of a channel.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// <seealso cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/>
+        protected virtual Task OnCommandActivityAsync(ITurnContext<ICommandActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a CommandResult activity is received when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// CommandResult activities can be used to communicate the result of a command execution.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a CommandResult activity, it calls this method.
+        /// 
+        /// In a derived class, override this method to add logic that applies to all comand activities.
+        /// Add logic to apply before the specific CommandResult-handling logic before the call to the base class
+        /// <see cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/> method.
+        /// Add logic to apply after the specific CommandResult-handling logic after the call to the base class
+        /// <see cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/> method.
+        ///
+        /// CommandResult activities communicate programmatic information from a client or channel to a bot.
+        /// The meaning of an CommandResult activity is defined by the <see cref="ICommandResultActivity.Name"/> property,
+        /// which is meaningful within the scope of a channel.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// <seealso cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/>
+        protected virtual Task OnCommandResultActivityAsync(ITurnContext<ICommandResultActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
@@ -760,7 +806,7 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="message">The message that explains the reason for the exception, or an empty string.</param>
             /// <param name="innerException">Gets the System.Exception instance that caused the current exception.</param>
-            public InvokeResponseException(string message, Exception innerException) 
+            public InvokeResponseException(string message, Exception innerException)
                 : base(message, innerException)
             {
             }

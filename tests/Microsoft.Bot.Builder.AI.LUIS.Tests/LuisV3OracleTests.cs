@@ -110,6 +110,34 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         }
 
         [Fact]
+        public async Task UtteranceWithoutTurnContext()
+        {
+            const string utterance = "email about something wicked this way comes from bart simpson and also kb435";
+            const string responsePath = "Patterns.json";
+            var expectedPath = GetFilePath(responsePath);
+            JObject oracle;
+            using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
+            {
+                oracle = (JObject)await JToken.ReadFromAsync(expectedJsonReader);
+            }
+
+            var mockResponse = oracle["v3"]["response"];
+
+            GetEnvironmentVars();
+
+            var mockHttp = GetMockHttpClientHandlerObject(utterance, new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(mockResponse))));
+            var options = new LuisV3.LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true };
+            var luisRecognizer = GetLuisRecognizer(mockHttp, options) as LuisRecognizer;
+            var result = await luisRecognizer.RecognizeAsync(utterance);
+
+            Assert.NotNull(result);
+            Assert.Null(result.AlteredText);
+            Assert.Equal(utterance, result.Text);
+            Assert.NotNull(result.Intents);
+            Assert.NotNull(result.Entities);
+        }
+
+        [Fact]
         public async Task TraceActivity()
         {
             const string utterance = @"My name is Emad";

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Observers;
@@ -29,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<string, ICustomDeserializer> kindDeserializers = new ConcurrentDictionary<string, ICustomDeserializer>();
         private readonly ConcurrentDictionary<string, Type> kindToType = new ConcurrentDictionary<string, Type>();
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
+        private readonly List<JsonConverterFactory> converterFactories = new List<JsonConverterFactory>();
         private readonly ResourceExplorerOptions options;
 
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
@@ -52,6 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// Initializes a new instance of the <see cref="ResourceExplorer"/> class.
         /// </summary>
         /// <param name="providers">The list of resource providers to initialize the current instance.</param>
+        [Obsolete("Use `ResourceExplorer(ResourceExplorerOptions options)` instead.")]
         public ResourceExplorer(IEnumerable<ResourceProvider> providers)
             : this(new ResourceExplorerOptions() { Providers = providers })
         {
@@ -62,6 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <param name="providers">The list of resource providers to initialize the current instance.</param>
         /// <param name="declarativeTypes">A list of declarative types to use. Falls back to <see cref="ComponentRegistration.Components" /> if set to null.</param>
+        [Obsolete("Use `ResourceExplorer(ResourceExplorerOptions options)` instead.")]
         public ResourceExplorer(IEnumerable<ResourceProvider> providers, IEnumerable<IComponentDeclarativeTypes> declarativeTypes)
             : this(new ResourceExplorerOptions() { Providers = providers, DeclarativeTypes = declarativeTypes })
         {
@@ -83,6 +87,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             if (options.DeclarativeTypes != null)
             {
                 this.declarativeTypes = options.DeclarativeTypes.ToList();
+            }
+
+            if (options.TypeRegistrations != null)
+            {
+                foreach (var registration in options.TypeRegistrations)
+                {
+                    RegisterTypeInternal(registration.Kind, registration.Type, registration.CustomDeserializer);
+                }
+            }
+
+            if (options.ConverterFactories != null)
+            {
+                this.converterFactories.AddRange(options.ConverterFactories);
             }
         }
 
@@ -584,6 +601,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     // this can be reentrant, and we only want to do once.
                     this.typesLoaded = true;
 
+                    // Load legacy component registrations
                     foreach (var component in GetComponentRegistrations())
                     {
                         if (component != null)
@@ -603,7 +621,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             var converters = new List<JsonConverter>();
 
-            // Get converters
+            // The current pattern is that converters are registered through calling `resourceExplorer.RegisterConverterFactory()`,
+            // however legacy converters were registered through component registration.
+
+            // Add converters from registered factories to support the new pattern.
+            foreach (var factory in converterFactories)
+            {
+                var converter = factory.Build(this, sourceContext);
+
+                if (converter != null)
+                {
+                    converters.Add(converter);
+                }
+            }
+
+            // Add component registration converters to the converters collection to support legacy patterns.
             foreach (var component in GetComponentRegistrations())
             {
                 var result = component.GetConverters(this, sourceContext);

@@ -15,7 +15,7 @@ OPTION : WHITESPACE* '>' WHITESPACE* '!#' ~('\r'|'\n')+ { !startTemplate }?;
 
 COMMENT : WHITESPACE* '>' ~('\r'|'\n')* { !startTemplate }?;
 
-IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' WHITESPACE* { !startTemplate }?;
+IMPORT : WHITESPACE* '[' ~[\r\n[\]]*? ']' '(' ~[\r\n()]*? ')' ~('\r'|'\n')* { !startTemplate }?;
 
 TEMPLATE_NAME_LINE : WHITESPACE* '#' ~('\r'|'\n')* { TokenStartColumn == 0}? { startTemplate = true; };
 

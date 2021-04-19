@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets the containers <see cref="DialogSet"/>.
         /// </summary>
         /// <value>The containers Dialog Set.</value>
-        [JsonIgnore]
+        [JsonProperty("dialogs")]
         public DialogSet Dialogs { get; set; } = new DialogSet();
 
         /// <summary>

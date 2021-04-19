@@ -56,6 +56,7 @@
             "$ref": "schema:#/definitions/stringExpression",
             "title": "Result property",
             "description": "A property to store the result of this action. The result can include any of the 4 properties from the HTTP response: statusCode, reasonPhrase, content, and headers. If the content is JSON it will be a deserialized object. The values can be accessed via .content for example.",
+            "default":  "turn.results",
             "examples": [
                 "dialog.contosodata"
             ]

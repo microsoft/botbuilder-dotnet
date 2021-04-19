@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="importResolver">Resolver to resolve LG import id to template text.</param>
         /// <param name="options">List of strings representing the options during evaluating the templates.</param>
         /// <param name="source">Templates source.</param>
+        /// <param name="namedReferences">References that imported with the "as" syntax，for example: [import](path.lg) as myAlias.</param>
         public Templates(
             IList<Template> templates = null,
             IList<TemplateImport> imports = null,
@@ -55,7 +56,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             ExpressionParser expressionParser = null,
             ImportResolverDelegate importResolver = null,
             IList<string> options = null,
-            string source = null)
+            string source = null,
+            IDictionary<string, Templates> namedReferences = null)
         {
             if (templates != null)
             {
@@ -71,6 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Source = source;
             ExpressionParser = expressionParser ?? new ExpressionParser();
             Options = options ?? new List<string>();
+            NamedReferences = namedReferences ?? new Dictionary<string, Templates>();
             InjectToExpressionFunction();
         }
 
@@ -174,6 +177,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 #pragma warning restore CA2227 // Collection properties should be read only
 
         /// <summary>
+        /// Gets or sets map from import alias to templates.
+        /// </summary>
+        /// <value>
+        /// Map from import alias to templates.
+        /// </value>
+#pragma warning disable CA2227 // Collection properties should be read only
+        public IDictionary<string, Templates> NamedReferences { get; set; }
+#pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
         /// Gets the evluation options for current LG file.
         /// </summary>
         /// <value>
@@ -242,7 +255,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
             var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
-            var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, evalOpt);
+
+            var evaluator = new Evaluator(this, evalOpt);
             var result = evaluator.EvaluateTemplate(templateName, scope);
             if (evalOpt.LineBreakStyle == LGLineBreakStyle.Markdown && result is string str)
             {
@@ -296,8 +310,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public IList<object> ExpandTemplate(string templateName, object scope = null, EvaluationOptions opt = null)
         {
             CheckErrors();
-            var evalOpt = opt ?? LgOptions;
-            var expander = new Expander(AllTemplates.ToList(), ExpressionParser, evalOpt);
+            var evalOpt = opt != null ? opt.Merge(LgOptions) : LgOptions;
+            var expander = new Expander(this, evalOpt);
             return expander.ExpandTemplate(templateName, scope);
         }
 
@@ -310,7 +324,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             CheckErrors();
-            var analyzer = new Analyzer(AllTemplates.ToList(), ExpressionParser);
+            var analyzer = new Analyzer(this);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
@@ -340,7 +354,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     template.SourceRange.Range.End.Line - 1,
                     content);
 
-                var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+                var updatedTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser, namedReferences: NamedReferences);
                 var resource = new LGResource(Id, Id, content);
                 updatedTemplates = new TemplatesTransformer(updatedTemplates).Transform(AntlrParseTemplates(resource));
 
@@ -384,7 +398,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // update content
             Content = $"{Content}{_newLine}{templateNameLine}{_newLine}{newTemplateBody}";
 
-            var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser);
+            var newTemplates = new Templates(content: string.Empty, id: Id, importResolver: ImportResolver, expressionParser: ExpressionParser, namedReferences: NamedReferences);
             var resource = new LGResource(Id, Id, content);
             newTemplates = new TemplatesTransformer(newTemplates).Transform(AntlrParseTemplates(resource));
 
@@ -459,7 +473,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             (expression, state, options) =>
                             {
                                 object result = null;
-                                var evaluator = new Evaluator(AllTemplates.ToList(), ExpressionParser, LgOptions);
+                                var evaluator = new Evaluator(this, LgOptions);
                                 var (args, error) = FunctionUtils.EvaluateChildren(expression, state, options);
                                 if (error == null)
                                 {

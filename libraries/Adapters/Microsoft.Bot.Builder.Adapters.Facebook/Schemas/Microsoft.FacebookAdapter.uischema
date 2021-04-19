@@ -1,0 +1,17 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Facebook connection.",
+        "description": "Connects a bot to Facebook.",
+        "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Facebook",
+        "order": [
+            "FacebookVerifyToken",
+            "FacebookAppSecret",
+            "FacebookAccessToken",
+            "*"
+        ],
+        "hidden": [
+            "type"
+        ]
+    }
+}

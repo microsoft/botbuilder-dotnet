@@ -26,6 +26,7 @@
     <PackageReference Include="Microsoft.Bot.Streaming" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Connector" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
   </ItemGroup>
 

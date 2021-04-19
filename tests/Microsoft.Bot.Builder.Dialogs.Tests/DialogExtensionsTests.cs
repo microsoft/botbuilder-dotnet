@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -112,6 +113,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
 
             Assert.Equal(DialogReason.BeginCalled, dialog.EndReason);
+        }
+
+        [Fact]
+        public async Task RunAsyncShouldSetTelemetryClient()
+        {
+            var adapter = new Mock<BotAdapter>();
+            var dialog = new SimpleComponentDialog();
+            var conversationState = new ConversationState(new MemoryStorage());
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var telemetryClientMock = new Mock<IBotTelemetryClient>();
+
+            using (var turnContext = new TurnContext(adapter.Object, activity))
+            {
+                turnContext.TurnState.Add(telemetryClientMock.Object);
+
+                await DialogExtensions.RunAsync(dialog, turnContext, conversationState.CreateProperty<DialogState>("DialogState"), CancellationToken.None);
+            }
+
+            Assert.Equal(telemetryClientMock.Object, dialog.TelemetryClient);
         }
 
         /// <summary>
