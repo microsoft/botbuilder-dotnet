@@ -1,0 +1,5 @@
+﻿[import](Base.lg) as base
+
+> conflict with base lg
+# base.template
+- hello

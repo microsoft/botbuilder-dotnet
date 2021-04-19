@@ -375,6 +375,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [Fact]
+        public void TestLGAliasError()
+        {
+            var diagnostics = GetDiagnostics("LGAlias.lg");
+            Assert.Equal(1, diagnostics.Count);
+            Assert.Contains("Duplicated definitions found for template: 'base.template'", diagnostics[0].Message);
+        }
+
+        [Fact]
         public void TestLoopReference()
         {
             var diagnostics = GetDiagnostics("CycleRef1.lg");

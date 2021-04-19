@@ -106,6 +106,8 @@
     <None Remove="ExceptionExamples\CycleRef1.lg" />
     <None Remove="ExceptionExamples\CycleRef2.lg" />
     <None Remove="ExceptionExamples\InvalidImportFormat.lg" />
+    <None Remove="ExceptionExamples\Base.lg" />
+    <None Remove="ExceptionExamples\LGAlias.lg" />
     <None Remove="MultiLanguage\a.lg" />
     <None Remove="MultiLanguage\a.en.lg" />
   </ItemGroup>
@@ -391,6 +393,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\InvalidImportFormat.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\Base.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\LGAlias.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="MultiLanguage\a.lg">

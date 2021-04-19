@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new List<Diagnostic>();
 
-            if (_templates.AllTemplates.Count == 0)
+            if (_templates.AllTemplates.Count == 0 && _templates.NamedReferences.Count == 0)
             {
                 var diagnostic = new Diagnostic(Range.DefaultRange, TemplateErrors.NoTemplate, DiagnosticSeverity.Warning, _templates.Source);
                 result.Add(diagnostic);
@@ -74,6 +74,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var startLine = template.SourceRange.Range.Start.Line;
                         var range = new Range(startLine, 0, startLine, template.Name.Length + 1);
                         var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(sameTemplate.Name, sameTemplate.SourceRange.Source), source: _templates.Source);
+                        templateDiagnostics.Add(diagnostic);
+                    }
+                }
+
+                // Check duplicated in alias import
+                foreach (var nemdReference in _templates.NamedReferences)
+                {
+                    var sameTemplates = nemdReference.Value.Where(u => nemdReference.Key + "." + u.Name == template.Name);
+                    foreach (var sameTemplate in sameTemplates)
+                    {
+                        var startLine = template.SourceRange.Range.Start.Line;
+                        var range = new Range(startLine, 0, startLine, template.Name.Length + 1);
+                        var diagnostic = new Diagnostic(range, TemplateErrors.DuplicatedTemplateInDiffTemplate(template.Name, sameTemplate.SourceRange.Source), source: _templates.Source);
                         templateDiagnostics.Add(diagnostic);
                     }
                 }
