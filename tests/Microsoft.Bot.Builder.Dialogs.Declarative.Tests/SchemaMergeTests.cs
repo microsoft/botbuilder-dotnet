@@ -32,9 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var ignoreFolders = new[]
             {
                 PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\EmailBot"),
-                PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\CalendarBot"),
-                PathUtils.NormalizePath(@"Auth\bot-authentication"),
-                PathUtils.NormalizePath(@"Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests"),
+                PathUtils.NormalizePath(@"Microsoft.Bot.Builder.TestBot.Json\Samples\CalendarBot")
                 "bin"
             };
 
