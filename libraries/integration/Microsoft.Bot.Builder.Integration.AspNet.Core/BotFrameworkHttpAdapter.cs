@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -183,7 +184,29 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Create the <see cref="StreamingRequestHandler"/> for processing for a new Web Socket connection request.
+        /// </summary>
+        /// <param name="bot">The <see cref="IBot"/> implementation which will process the request.</param>
+        /// <param name="socket">The <see cref="WebSocket"/> which the request will be received on.</param>
+        /// <param name="audience">The authorized audience of the incoming connection request.</param>
+        /// <returns>Returns a new <see cref="StreamingRequestHandler"/> implementation.</returns>
+        public virtual StreamingRequestHandler CreateStreamingRequestHandler(IBot bot, WebSocket socket, string audience)
+        {
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
+            if (socket == null)
+            {
+                throw new ArgumentNullException(nameof(socket));
+            }
+
+            return new StreamingRequestHandler(bot, this, socket, audience, Logger);
+        }
+
         private static async Task WriteUnauthorizedResponseAsync(string headerName, HttpRequest httpRequest)
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -235,7 +258,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 // Set ClaimsIdentity on Adapter to enable Skills and User OAuth in WebSocket-based streaming scenarios.
                 var audience = GetAudience(claimsIdentity);
 
-                var requestHandler = new StreamingRequestHandler(bot, this, socket, audience, Logger);
+                var requestHandler = CreateStreamingRequestHandler(bot, socket, audience);
 
                 if (RequestHandlers == null)
                 {

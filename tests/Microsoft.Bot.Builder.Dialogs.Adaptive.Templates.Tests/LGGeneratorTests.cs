@@ -27,6 +27,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         public LGGeneratorTests()
         {
+            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new AdaptiveTestingComponentRegistration());
@@ -372,6 +373,33 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("turn4")
                 .AssertReply("ContinueDialog test3:subDialog.lg")
                 .AssertReply("Done")
+            .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task TestLGWithDefaultGenerator()
+        {
+            var dialog = new AdaptiveDialog()
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("hi ${titleCase('jack')}")
+                        }
+                    }
+                }
+            };
+
+            DialogManager dm = new DialogManager(dialog);
+            await CreateFlow(async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+            .Send("hi")
+                .AssertReply("hi Jack")
             .StartTestAsync();
         }
 

@@ -38,6 +38,12 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [Fact]
+        public async Task FileTranscript_LogActivityWithInvalidIds()
+        {
+            await LogActivityWithInvalidIds();
+        }
+
+        [Fact]
         public async Task FileTranscript_LogMultipleActivities()
         {
             await LogMultipleActivities();

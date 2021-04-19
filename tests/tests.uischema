@@ -458,6 +458,22 @@
       "subtitle": "End Turn"
     }
   },
+  "Microsoft.FacebookAdapter": {
+    "form": {
+      "description": "Connects a bot to Facebook.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Facebook",
+      "hidden": [
+        "type"
+      ],
+      "label": "Facebook connection.",
+      "order": [
+        "FacebookVerifyToken",
+        "FacebookAppSecret",
+        "FacebookAccessToken",
+        "*"
+      ]
+    }
+  },
   "Microsoft.Foreach": {
     "flow": {
       "loop": {
@@ -709,6 +725,15 @@
         "*"
       ],
       "subtitle": "Activity received"
+    },
+    "trigger": {
+      "label": "Activities (Activity received)",
+      "order": 5.1,
+      "submenu": {
+        "label": "Activities",
+        "placeholder": "Select an activity type",
+        "prompt": "Which activity type?"
+      }
     }
   },
   "Microsoft.OnAssignEntity": {
@@ -735,6 +760,15 @@
         "*"
       ],
       "subtitle": "Begin dialog event"
+    },
+    "trigger": {
+      "label": "Dialog started (Begin dialog event)",
+      "order": 4.1,
+      "submenu": {
+        "label": "Dialog events",
+        "placeholder": "Select an event type",
+        "prompt": "Which event?"
+      }
     }
   },
   "Microsoft.OnCancelDialog": {
@@ -748,6 +782,11 @@
         "*"
       ],
       "subtitle": "Cancel dialog event"
+    },
+    "trigger": {
+      "label": "Dialog cancelled (Cancel dialog event)",
+      "order": 4.2,
+      "submenu": "Dialog events"
     }
   },
   "Microsoft.OnChooseEntity": {
@@ -770,6 +809,46 @@
         "condition",
         "*"
       ]
+    },
+    "trigger": {
+      "label": "Duplicated intents recognized",
+      "order": 6
+    }
+  },
+  "Microsoft.OnCommandActivity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Command received",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Command activity received"
+    },
+    "trigger": {
+      "label": "Command received (Command activity received)",
+      "order": 5.81,
+      "submenu": "Activities"
+    }
+  },
+  "Microsoft.OnCommandResultActivity": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Command Result received",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Command Result activity received"
+    },
+    "trigger": {
+      "label": "Command Result received (Command Result activity received)",
+      "order": 5.81,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnCondition": {
@@ -798,6 +877,11 @@
         "*"
       ],
       "subtitle": "ConversationUpdate activity"
+    },
+    "trigger": {
+      "label": "Greeting (ConversationUpdate activity)",
+      "order": 5.2,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnDialogEvent": {
@@ -811,6 +895,10 @@
         "*"
       ],
       "subtitle": "Dialog event"
+    },
+    "trigger": {
+      "label": "Custom events",
+      "order": 7
     }
   },
   "Microsoft.OnEndOfActions": {
@@ -837,6 +925,11 @@
         "*"
       ],
       "subtitle": "EndOfConversation activity"
+    },
+    "trigger": {
+      "label": "Conversation ended (EndOfConversation activity)",
+      "order": 5.3,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnError": {
@@ -850,6 +943,11 @@
         "*"
       ],
       "subtitle": "Error event"
+    },
+    "trigger": {
+      "label": "Error occurred (Error event)",
+      "order": 4.3,
+      "submenu": "Dialog events"
     }
   },
   "Microsoft.OnEventActivity": {
@@ -863,6 +961,11 @@
         "*"
       ],
       "subtitle": "Event activity"
+    },
+    "trigger": {
+      "label": "Event received (Event activity)",
+      "order": 5.4,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnHandoffActivity": {
@@ -876,6 +979,11 @@
         "*"
       ],
       "subtitle": "Handoff activity"
+    },
+    "trigger": {
+      "label": "Handover to human (Handoff activity)",
+      "order": 5.5,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnInstallationUpdateActivity": {
@@ -904,6 +1012,10 @@
         "*"
       ],
       "subtitle": "Intent recognized"
+    },
+    "trigger": {
+      "label": "Intent recognized",
+      "order": 1
     }
   },
   "Microsoft.OnInvokeActivity": {
@@ -917,6 +1029,11 @@
         "*"
       ],
       "subtitle": "Invoke activity"
+    },
+    "trigger": {
+      "label": "Conversation invoked (Invoke activity)",
+      "order": 5.6,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageActivity": {
@@ -929,7 +1046,12 @@
         "condition",
         "*"
       ],
-      "subtitle": "Message received activity"
+      "subtitle": "Message activity received"
+    },
+    "trigger": {
+      "label": "Message received (Message activity received)",
+      "order": 5.81,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageDeleteActivity": {
@@ -943,6 +1065,11 @@
         "*"
       ],
       "subtitle": "Message deleted activity"
+    },
+    "trigger": {
+      "label": "Message deleted (Message deleted activity)",
+      "order": 5.82,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageReactionActivity": {
@@ -956,6 +1083,11 @@
         "*"
       ],
       "subtitle": "Message reaction activity"
+    },
+    "trigger": {
+      "label": "Message reaction (Message reaction activity)",
+      "order": 5.83,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnMessageUpdateActivity": {
@@ -969,6 +1101,17 @@
         "*"
       ],
       "subtitle": "Message updated activity"
+    },
+    "trigger": {
+      "label": "Message updated (Message updated activity)",
+      "order": 5.84,
+      "submenu": "Activities"
+    }
+  },
+  "Microsoft.OnQnAMatch": {
+    "trigger": {
+      "label": "QnA Intent recognized",
+      "order": 2
     }
   },
   "Microsoft.OnRepromptDialog": {
@@ -982,6 +1125,11 @@
         "*"
       ],
       "subtitle": "Reprompt dialog event"
+    },
+    "trigger": {
+      "label": "Re-prompt for input (Reprompt dialog event)",
+      "order": 4.4,
+      "submenu": "Dialog events"
     }
   },
   "Microsoft.OnTypingActivity": {
@@ -995,6 +1143,11 @@
         "*"
       ],
       "subtitle": "Typing activity"
+    },
+    "trigger": {
+      "label": "User is typing (Typing activity)",
+      "order": 5.7,
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnUnknownIntent": {
@@ -1008,6 +1161,10 @@
         "*"
       ],
       "subtitle": "Unknown intent recognized"
+    },
+    "trigger": {
+      "label": "Unknown intent",
+      "order": 3
     }
   },
   "Microsoft.QnAMakerDialog": {
@@ -1080,10 +1237,19 @@
     }
   },
   "Microsoft.SendHandoffActivity": {
+    "flow": {
+      "widget": "ActionHeader"
+    },
     "form": {
       "helpLink": "https://aka.ms/bfc-send-handoff-activity",
       "label": "Send a handoff request",
       "subtitle": "Send Handoff Activity"
+    },
+    "menu": {
+      "label": "Send Handoff Event",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.SetProperties": {
@@ -1133,6 +1299,22 @@
     "form": {
       "label": "Sign out user",
       "subtitle": "Signout User"
+    }
+  },
+  "Microsoft.SlackAdapter": {
+    "form": {
+      "description": "Connects a bot to Slack.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
+      "hidden": [
+        "type"
+      ],
+      "label": "Slack connection.",
+      "order": [
+        "SlackVerificationToken",
+        "SlackBotToken",
+        "SlackClientSigningSecret",
+        "*"
+      ]
     }
   },
   "Microsoft.SwitchCondition": {
@@ -1234,6 +1416,23 @@
       "subtitle": "Trace Activity"
     }
   },
+  "Microsoft.TwilioAdapter": {
+    "form": {
+      "description": "Connects a bot to Twilio.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Twilio",
+      "hidden": [
+        "type"
+      ],
+      "label": "Twilio connection.",
+      "order": [
+        "TwilioNumber",
+        "TwilioAccountSid",
+        "TwilioAuthToken",
+        "TwilioValidationUrl",
+        "*"
+      ]
+    }
+  },
   "Microsoft.UpdateActivity": {
     "flow": {
       "body": {
@@ -1256,405 +1455,21 @@
       "subtitle": "Update Activity"
     }
   },
-  "Teams.GetPagedMembers": {
+  "Microsoft.WebexAdapter": {
     "form": {
-      "label": "Get paged members",
-      "order": [
-        "property",
-        "pageSize",
-        "continuationToken",
-        "*"
-      ],
-      "subtitle": "Gets members of a one-on-one, group, or team conversation."
-    }
-  },
-  "Teams.GetPagedTeamMembers": {
-    "form": {
-      "label": "Get paged team members",
-      "order": [
-        "property",
-        "teamId",
-        "pageSize",
-        "continuationToken",
-        "*"
-      ],
-      "subtitle": "Gets members for a team conversation."
-    }
-  },
-  "Teams.OnAppBasedLinkQuery": {
-    "form": {
+      "description": "Connects a bot to Webex.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Webex",
       "hidden": [
-        "actions"
+        "type"
       ],
-      "label": "Teams app based link query",
+      "label": "Webex connection.",
       "order": [
-        "condition",
+        "WebexAccessToken",
+        "WebexPublicAddress",
+        "WebexSecret",
+        "WebexWebhookName",
         "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/queryLink'"
-    }
-  },
-  "Teams.OnCardAction": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams card action invoke",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity with no activity.name"
-    }
-  },
-  "Teams.OnMEBotMessagePreviewEdit": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension preview edit submit action",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'edit'"
-    }
-  },
-  "Teams.OnMEBotMessagePreviewSend": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension preview send submit action",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke with activity.value.botMessagePreviewAction == 'send'"
-    }
-  },
-  "Teams.OnMECardButtonClicked": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension card button clicked",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/onCardButtonClicked'"
-    }
-  },
-  "Teams.OnMEConfigQuerySettingUrl": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension configuration query setting url",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/querySettingUrl'"
-    }
-  },
-  "Teams.OnMEConfigSetting": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension configuration setting",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/setting'"
-    }
-  },
-  "Teams.OnMEFetchTask": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension fetch task",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/fetchTask'"
-    }
-  },
-  "Teams.OnMEQuery": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension query",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/query'"
-    }
-  },
-  "Teams.OnMESelectItem": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension select item",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/selectItem'"
-    }
-  },
-  "Teams.OnMESubmitAction": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams messaging extension submit action",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='composeExtension/submitAction'"
-    }
-  },
-  "Teams.OnO365ConnectorCardAction": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams O365 connector card action",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='actionableMessage/executeAction'"
-    }
-  },
-  "Teams.OnTabFetch": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams tab fetch",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='tab/fetch'"
-    }
-  },
-  "Teams.OnTaskModuleFetch": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams task module fetch",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='task/fetch'"
-    }
-  },
-  "Teams.OnTaskModuleSubmit": {
-    "form": {
-      "hidden": [
-        "actions"
-      ],
-      "label": "Teams task module submit",
-      "order": [
-        "condition",
-        "*"
-      ],
-      "subtitle": "Invoke activity.name='task/submit'"
-    }
-  },
-  "Teams.SendAppBasedLinkQueryResponse": {
-    "form": {
-      "label": "Send a query link response",
-      "order": [
-        "card",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send a response to a query link request."
-    }
-  },
-  "Teams.SendMEActionResponse": {
-    "form": {
-      "label": "Messaging extension action response",
-      "order": [
-        "card",
-        "title",
-        "height",
-        "width",
-        "cacheType",
-        "cacheDuration",
-        "completionBotId",
-        "*"
-      ],
-      "subtitle": "Send a response for a messaging extension request."
-    }
-  },
-  "Teams.SendMEAttachmentsResponse": {
-    "form": {
-      "label": "Send messaging extensions attachment(s) response",
-      "order": [
-        "attachments",
-        "attachmentLayout",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send an invoke response containing one or more attachments to a messaging extension request."
-    }
-  },
-  "Teams.SendMEAuthResponse": {
-    "form": {
-      "label": "Messaging Extension auth response",
-      "order": [
-        "connectionName",
-        "title",
-        "resultProperty",
-        "*"
-      ],
-      "subtitle": "Send a response to a messaging extensin requiring auth."
-    }
-  },
-  "Teams.SendMEBotMessagePreviewResponse": {
-    "form": {
-      "label": "Send a bot message preview response",
-      "order": [
-        "card",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send a bot message preview response to a messaging extension request."
-    }
-  },
-  "Teams.SendMEConfigQuerySettingUrlResponse": {
-    "form": {
-      "label": "Send a configuration query setting response",
-      "order": [
-        "configUrl",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send a response to a query setting config url request."
-    }
-  },
-  "Teams.SendMEMessageResponse": {
-    "form": {
-      "label": "Send messaging extension message response",
-      "order": [
-        "message",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send a message response containing text only."
-    }
-  },
-  "Teams.SendMESelectItemResponse": {
-    "form": {
-      "label": "Send a card response on item selection",
-      "order": [
-        "card",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send a messaging extension response when an item is selected"
-    }
-  },
-  "Teams.SendMessageToTeamsChannel": {
-    "form": {
-      "label": "Send a message to a teams channel",
-      "order": [
-        "activity",
-        "teamsChannelId",
-        "activityIdProperty",
-        "conversationReferenceProperty",
-        "*"
-      ],
-      "subtitle": "Create a thread and send a message to a teams channel."
-    }
-  },
-  "Teams.SendTabAuthResponse": {
-    "form": {
-      "label": "Tab auth response",
-      "order": [
-        "connectionName",
-        "title",
-        "resultProperty",
-        "*"
-      ],
-      "subtitle": "Send a response to a cards tab requiring auth."
-    }
-  },
-  "Teams.SendTabCardResponse": {
-    "form": {
-      "label": "Send tab card response",
-      "order": [
-        "cards",
-        "*"
-      ],
-      "subtitle": "Send a tab continue response containing adaptive cards."
-    }
-  },
-  "Teams.SendTaskModuleCardResponse": {
-    "form": {
-      "label": "Send task module card response",
-      "order": [
-        "card",
-        "title",
-        "height",
-        "width",
-        "cacheType",
-        "cacheDuration",
-        "completionBotId",
-        "*"
-      ],
-      "subtitle": "Send a continue response containing a card."
-    }
-  },
-  "Teams.SendTaskModuleMessageResponse": {
-    "form": {
-      "label": "Send task module message response",
-      "order": [
-        "message",
-        "cacheType",
-        "cacheDuration",
-        "*"
-      ],
-      "subtitle": "Send a message response containing text only."
-    }
-  },
-  "Teams.SendTaskModuleUrlResponse": {
-    "form": {
-      "label": "Send task module url response",
-      "order": [
-        "title",
-        "url",
-        "fallbackUrl",
-        "height",
-        "width",
-        "cacheType",
-        "cacheDuration",
-        "completionBotId",
-        "*"
-      ],
-      "subtitle": "Send a continue response containing a url."
+      ]
     }
   }
 }

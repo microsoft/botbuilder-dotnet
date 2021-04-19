@@ -89,5 +89,15 @@ namespace Microsoft.Bot.Schema
         /// The type value for typing activities.
         /// </summary>
         public const string Typing = "typing";
+
+        /// <summary>
+        /// The type value for command activities.
+        /// </summary>
+        public const string Command = "command";
+
+        /// <summary>
+        /// The type value for command result activities.
+        /// </summary>
+        public const string CommandResult = "commandResult";
     }
 }

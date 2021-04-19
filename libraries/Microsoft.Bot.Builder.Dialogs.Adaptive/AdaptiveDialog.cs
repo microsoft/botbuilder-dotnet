@@ -653,21 +653,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // from the stack and we want to detect this so we can stop processing actions.
             var instanceId = GetUniqueInstanceId(actionContext);
 
+            // Initialize local interruption detection
+            // - Any steps containing a dialog stack after the first step indicates the action was interrupted. We
+            //   want to force a re-prompt and then end the turn when we encounter an interrupted step.
+            var interrupted = false;
+
             // Execute queued actions
             var actionDC = CreateChildContext(actionContext);
             while (actionDC != null)
             {
-                // Continue current step
                 // DEBUG: To debug step execution set a breakpoint on line below and add a watch 
                 //        statement for actionContext.Actions.
-                var result = await actionDC.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
-
-                // Start step if not continued
-                if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(actionContext) == instanceId)
+                DialogTurnResult result;
+                if (actionDC.Stack.Count == 0)
                 {
-                    // Call begin dialog on our next step, passing the effective options we computed
+                    // Start step
                     var nextAction = actionContext.Actions.First();
                     result = await actionDC.BeginDialogAsync(nextAction.DialogId, nextAction.Options, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Set interrupted flag
+                    if (interrupted && !actionDC.State.TryGetValue(TurnPath.Interrupted, out _))
+                    {
+                        actionDC.State.SetValue(TurnPath.Interrupted, true);
+                    }
+
+                    // Continue step execution
+                    result = await actionDC.ContinueDialogAsync(cancellationToken).ConfigureAwait(false);
                 }
 
                 // Is the step waiting for input or were we cancelled?
@@ -712,6 +725,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Apply any local changes and fetch next action
                 await actionContext.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
                 actionDC = CreateChildContext(actionContext);
+                interrupted = true;
             }
 
             return await OnEndOfActionsAsync(actionContext, cancellationToken).ConfigureAwait(false);

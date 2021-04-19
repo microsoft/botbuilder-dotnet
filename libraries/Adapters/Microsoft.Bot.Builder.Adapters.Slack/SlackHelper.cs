@@ -244,10 +244,49 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 var message = JObject.FromObject(innerEvent).ToObject<MessageEvent>();
 
-                if (message.SubType == null)
+                if (message.SubType == null || message.SubType == "file_share")
                 {
                     activity.Type = ActivityTypes.Message;
                     activity.Text = message.Text;
+                    if (message.AdditionalProperties.ContainsKey("files"))
+                    {
+                        var attachments = new List<Attachment>();
+                        foreach (var attachment in message.AdditionalProperties["files"])
+                        {
+                            var attachmentProperties = attachment.Value<JObject>().Properties();
+
+                            var contentType = string.Empty;
+                            var contentUrl = string.Empty;
+                            var name = string.Empty;
+
+                            foreach (var property in attachmentProperties)
+                            {
+                                if (property.Name == "mimetype")
+                                {
+                                    contentType = property.Value.ToString();
+                                }
+
+                                if (property.Name == "url_private_download")
+                                {
+                                    contentUrl = property.Value.ToString();
+                                }
+
+                                if (property.Name == "name")
+                                {
+                                    name = property.Value.ToString();
+                                }
+                            }
+
+                            attachments.Add(new Attachment
+                            { 
+                                ContentType = contentType,
+                                ContentUrl = contentUrl,
+                                Name = name
+                            });
+                        }
+
+                        activity.Attachments = attachments;
+                    }
                 }
 
                 activity.Conversation.Properties["channel_type"] = message.ChannelType;

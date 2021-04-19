@@ -2,20 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// JsonConverter which understands serializes StaticActiviteTemplates as activity object.
     /// </summary>
+    [SuppressMessage("Performance", "CA1812", Justification = "The class gets instantiated by dependency injection.")]
     internal class StaticActivityTemplateConverter : JsonConverter<StaticActivityTemplate>
     {
         public override bool CanRead => false;

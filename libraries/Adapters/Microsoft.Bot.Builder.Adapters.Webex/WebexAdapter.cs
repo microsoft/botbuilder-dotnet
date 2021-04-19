@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     /// </summary>
     public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
+        private const string WebexAccessTokenKey = "WebexAccessToken";
+        private const string WebexPublicAddressKey = "WebexPublicAddress";
+        private const string WebexSecretKey = "WebexSecret";
+        private const string WebexWebhookNameKey = "WebexWebhookName";
+
         private readonly WebexClientWrapper _webexClient;
         private readonly ILogger _logger;
         private readonly WebexAdapterOptions _options;
@@ -43,7 +48,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="options">An instance of <see cref="WebexAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public WebexAdapter(IConfiguration configuration, WebexAdapterOptions options = null, ILogger logger = null)
-            : this(new WebexClientWrapper(new WebexClientWrapperOptions(configuration["WebexAccessToken"], new Uri(configuration["WebexPublicAddress"]), configuration["WebexSecret"], configuration["WebexWebhookName"])), options, logger)
+            : this(new WebexClientWrapper(new WebexClientWrapperOptions(configuration[WebexAccessTokenKey], new Uri(configuration[WebexPublicAddressKey]), configuration[WebexSecretKey], configuration[WebexWebhookNameKey])), options, logger)
         {
         }
 
@@ -285,6 +290,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Determines whether the provided <see cref="IConfiguration"/> has the settings needed to
+        /// configure a <see cref="WebexAdapter"/>.
+        /// </summary>
+        /// <param name="configuration"><see cref="IConfiguration"/> to verify for settings.</param>
+        /// <returns>A value indicating whether the configuration has the necessary settings required to create a <see cref="WebexAdapter"/>.</returns>
+        internal static bool HasConfiguration(IConfiguration configuration)
+        {
+            // Do we have the config needed to create an adapter?
+            return !string.IsNullOrEmpty(configuration.GetValue<string>(WebexAccessTokenKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(WebexPublicAddressKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(WebexSecretKey))
+                && !string.IsNullOrEmpty(configuration.GetValue<string>(WebexWebhookNameKey));
         }
     }
 }

@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Twilio connection.",
+        "description": "Connects a bot to Twilio.",
+        "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Twilio",
+        "order": [
+            "TwilioNumber",
+            "TwilioAccountSid",
+            "TwilioAuthToken",
+            "TwilioValidationUrl",
+            "*"
+        ],
+        "hidden": [
+            "type"
+        ]
+    }
+}
