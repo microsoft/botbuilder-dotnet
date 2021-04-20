@@ -30,6 +30,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Loop: For each page (multiple items)",
+        "submenu": ["Looping"]
+    },
     "flow": {
         "widget": "ForeachWidget",
         "nowrap": true,

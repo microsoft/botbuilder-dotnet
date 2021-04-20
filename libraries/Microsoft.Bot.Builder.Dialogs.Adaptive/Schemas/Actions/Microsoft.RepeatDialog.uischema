@@ -8,5 +8,9 @@
             "options",
             "*"
         ]
+    },
+    "menu": {
+        "label": "Repeat this dialog",
+        "submenu": ["Dialog management"]
     }
 }

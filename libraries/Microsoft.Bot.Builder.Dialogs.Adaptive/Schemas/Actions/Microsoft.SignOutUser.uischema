@@ -3,5 +3,9 @@
     "form": {
         "label": "Sign out user",
         "subtitle": "Signout User"
+    },
+    "menu": {
+        "label": "Sign out user",
+        "submenu": ["Access external resources"]
     }
 }

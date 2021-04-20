@@ -18,6 +18,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Begin a new dialog",
+        "submenu": ["Dialog management"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

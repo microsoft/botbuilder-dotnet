@@ -16,6 +16,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Set properties",
+        "submenu": ["Manage properties"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

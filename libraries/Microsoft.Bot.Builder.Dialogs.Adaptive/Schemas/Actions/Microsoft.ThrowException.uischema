@@ -4,6 +4,10 @@
         "label": "Throw an exception",
         "subtitle": "Throw an exception"
     },
+    "menu": {
+        "label": "Throw exception",
+        "submenu": ["Debugging options"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

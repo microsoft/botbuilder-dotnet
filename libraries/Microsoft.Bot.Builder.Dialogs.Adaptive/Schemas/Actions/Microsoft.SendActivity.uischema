@@ -9,6 +9,10 @@
             "*"
         ]
     },
+    "menu": {
+        "label": "Send a response",
+        "submenu": false
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

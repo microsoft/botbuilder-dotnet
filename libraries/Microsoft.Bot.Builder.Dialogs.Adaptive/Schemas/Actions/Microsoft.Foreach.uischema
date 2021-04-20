@@ -29,6 +29,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Loop: For each item",
+        "submenu": ["Looping"]
+    },
     "flow": {
         "widget": "ForeachWidget",
         "nowrap": true,

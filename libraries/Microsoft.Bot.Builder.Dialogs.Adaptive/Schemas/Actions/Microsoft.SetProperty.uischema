@@ -12,6 +12,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Set a property",
+        "submenu": ["Manage properties"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": "${coalesce(action.property, \"?\")} : ${coalesce(action.value, \"?\")}"

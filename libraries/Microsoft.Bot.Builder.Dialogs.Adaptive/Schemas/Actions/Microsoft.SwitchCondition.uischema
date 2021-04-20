@@ -20,6 +20,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Branch: Switch (multiple options)",
+        "submenu": ["Create a condition"]
+    },
     "flow": {
         "widget": "SwitchConditionWidget",
         "nowrap": true,

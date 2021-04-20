@@ -9,6 +9,16 @@
             "*"
         ]
     },
+    "menu": [
+        {
+            "label": "OAuth login",
+            "submenu": ["Ask a question"]
+        },
+        {
+            "label": "OAuth login",
+            "submenu": ["Access external resources"]
+        }
+    ],
     "flow": {
         "widget": "ActionCard",
         "body": {

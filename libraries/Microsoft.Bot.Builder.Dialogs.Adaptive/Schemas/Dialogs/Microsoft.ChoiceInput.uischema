@@ -12,6 +12,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Multi-choice",
+        "submenu": ["Ask a question"]
+    },
     "flow": {
         "widget": "PromptWidget",
         "body": "=action.prompt",

@@ -10,6 +10,10 @@
             "*"
         ]
     },
+    "menu": {
+        "label": "Replace this dialog",
+        "submenu": ["Dialog management"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

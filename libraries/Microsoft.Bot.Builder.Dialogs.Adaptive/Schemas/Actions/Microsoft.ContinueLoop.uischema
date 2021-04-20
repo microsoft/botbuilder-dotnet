@@ -3,5 +3,9 @@
     "form": {
         "label": "Continue loop",
         "subtitle": "Continue loop"
+    },
+    "menu": {
+        "label": "Continue loop",
+        "submenu": ["Looping"]
     }
 }

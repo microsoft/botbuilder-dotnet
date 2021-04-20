@@ -4,6 +4,10 @@
         "label": "Update an activity",
         "subtitle": "Update Activity"
     },
+    "menu": {
+        "label": "Update an activity",
+        "submenu": ["Manage properties"]
+    },
     "flow": {
         "widget": "ActionCard",
         "header": {

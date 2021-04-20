@@ -4,5 +4,9 @@
         "label": "End this dialog",
         "subtitle": "End Dialog",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
+    },
+    "menu": {
+        "label": "End this dialog",
+        "submenu": ["Dialog management"]
     }
 }

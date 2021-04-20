@@ -9,6 +9,10 @@
         ],
         "helpLink": "https://aka.ms/bfc-controlling-conversation-flow"
     },
+    "menu": {
+        "label": "Branch: If/else",
+        "submenu": ["Create a condition"]
+    },
     "flow": {
         "widget": "IfConditionWidget",
         "nowrap": true,

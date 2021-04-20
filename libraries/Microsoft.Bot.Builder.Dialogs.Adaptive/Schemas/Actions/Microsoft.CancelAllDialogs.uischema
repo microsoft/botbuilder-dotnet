@@ -5,6 +5,10 @@
         "subtitle": "Cancel All Dialogs",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
     },
+    "menu": {
+        "label": "Cancel all active dialogs",
+        "submenu": ["Dialog management"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {
