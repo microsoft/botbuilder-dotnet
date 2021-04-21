@@ -64,7 +64,17 @@
         "bubbleEvent": {
             "$ref": "schema:#/definitions/booleanExpression",
             "title": "Bubble event",
-            "description": "If true this event is passed on to parent dialogs."
+            "description": "If true this event is passed on to the parent dialogs."
+        },
+        "handledProperty": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Handled Property",
+            "description": "Property to store whether the event was handled or not.",
+            "default":  "turn.eventHandled",
+            "examples": [
+                "turn.eventHandled"
+            ]
         }
+
     }
 }
