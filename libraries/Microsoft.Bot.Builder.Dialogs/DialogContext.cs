@@ -754,7 +754,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             
             InputContext = new InputContext(locale, expected, possible ?? new RecognizerDescription());
-            await Services.Get<ITurnContext>().TraceActivityAsync("InputContext", InputContext, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
+            var turnContext = Services.Get<ITurnContext>();
+            if (turnContext != null)
+            {
+                await turnContext.TraceActivityAsync("InputContext", InputContext, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
+            }
 
             return;
         }

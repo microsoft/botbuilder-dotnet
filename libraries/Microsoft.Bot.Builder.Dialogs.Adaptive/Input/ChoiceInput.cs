@@ -159,7 +159,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     synonyms.Add(choice.Action.Title);
                 }
 
-                synonyms.AddRange(choice.Synonyms);
+                if (choice.Synonyms != null)
+                {
+                    synonyms.AddRange(choice.Synonyms);
+                }
 
                 entries.Add(new ListElement(choice.Value, synonyms));
             }
