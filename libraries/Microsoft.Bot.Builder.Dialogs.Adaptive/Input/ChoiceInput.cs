@@ -260,8 +260,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <inheritdoc/>
         protected async override Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            // TODO: chrimc create dynamic list
-            // findOptions allow numbers/ordinals so pick that up.
             var locale = DetermineCulture(dc);
             await dc.SetInputContextAsync(locale, GetRecognizerDescription(dc, locale), cancellationToken: cancellationToken).ConfigureAwait(false);
         }

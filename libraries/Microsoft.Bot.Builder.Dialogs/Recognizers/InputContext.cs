@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <param name="locale">Expected locale.</param>
         /// <param name="expected">Expected intents and entities.</param>
         /// <param name="possible">Possible intents and entities.</param>
-        public InputContext(string locale, RecognizerDescription expected = null, RecognizerDescription possible = null)
+        public InputContext(string locale = null, RecognizerDescription expected = null, RecognizerDescription possible = null)
         {
             Locale = locale;
             Expected = expected ?? new RecognizerDescription();
@@ -42,5 +42,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// <value><see cref="RecognizerDescription"/> of the possible intents and entities.</value>
         [JsonProperty("possible")]
         public RecognizerDescription Possible { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether or not there is input context beyond locale.
+        /// </summary>
+        /// <value>True if there is input context.</value>
+        public bool HasContext =>
+            Expected.Intents.Count > 0 ||
+            Expected.Entities.Count > 0 ||
+            Expected.DynamicLists.Count > 0 ||
+            Possible.Intents.Count > 0 ||
+            Possible.Entities.Count > 0 ||
+            Possible.DynamicLists.Count > 0;
     }
 }

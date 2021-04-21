@@ -481,6 +481,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 msg.InputHint = InputHints.ExpectingInput;
             }
 
+            await SetInputContextAsync(dc, cancellationToken).ConfigureAwait(false);
+
             var properties = new Dictionary<string, string>()
             {
                 { "template", JsonConvert.SerializeObject(template) },

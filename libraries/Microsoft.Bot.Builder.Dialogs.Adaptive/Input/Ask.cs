@@ -110,5 +110,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;
         }
+
+        /// <inheritdoc/>
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Do not reset input context
+            return Task.CompletedTask;
+        }
     }
 }

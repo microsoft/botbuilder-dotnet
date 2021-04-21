@@ -168,6 +168,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public TurnContextStateCollection Services { get; private set; }
 
         /// <summary>
+        /// Gets current input context.
+        /// </summary>
+        /// <value>Current input context.</value>
+        public InputContext InputContext { get; private set; } = new InputContext();
+
+        /// <summary>
         /// Gets the current DialogManager for this dialogContext. This property is obsolete.
         /// </summary>
         /// <value>
@@ -361,6 +367,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // End the active dialog
                 await EndActiveDialogAsync(DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
 
+                // TODO: chrimc Not sure if this is the right place to do this.
+                // Input context will get set on every end dialog.
+                if (InputContext.HasContext)
+                {
+                    // Reset the input context
+                    await SetInputContextAsync(GetLocale()).ConfigureAwait(false);
+                }
+                
                 // Resume parent dialog
                 if (ActiveDialog != null)
                 {
@@ -728,9 +742,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Add intents/entities to adaptive luis recognizer and default to getting from settings
             // Add intents/entities to luis recognizer
             // Do I need async?
-
-            var context = new InputContext(locale, expected: expected);
-            await Services.Get<ITurnContext>().TraceActivityAsync("InputContext", context, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
+            RecognizerDescription possible = null;
+            if (ActiveDialog != null)
+            {
+                // Lookup dialog
+                var dialog = FindDialog(ActiveDialog.Id);
+                if (dialog != null)
+                {
+                    possible = dialog.GetRecognizerDescription(this, locale);
+                }
+            }
+            
+            InputContext = new InputContext(locale, expected, possible ?? new RecognizerDescription());
+            await Services.Get<ITurnContext>().TraceActivityAsync("InputContext", InputContext, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
 
             return;
         }

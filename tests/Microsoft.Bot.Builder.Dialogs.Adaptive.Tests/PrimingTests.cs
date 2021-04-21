@@ -14,6 +14,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
@@ -71,6 +73,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             });
 
         private static ActivityTemplate _prompt = new ActivityTemplate("Prompt");
+
+        private static JObject _schema = JObject.Parse(@"
+            {
+                'type': 'object',
+                'properties': {
+                    'property1': {
+                        'type': 'string',
+                        '$entities': ['entity1']
+                    }
+                }
+            }");
 
         public static IEnumerable<object[]> ExpectedRecognizer
             => new[]
@@ -201,17 +214,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                         {
                             new OnBeginDialog(new List<Dialog>
                             {
-                                new Ask() 
+                                new Ask()
                                 {
                                     Activity = _prompt,
-                                    ExpectedProperties = new[] { "entity1" }
+                                    ExpectedProperties = new[] { "property1" }
                                 }
                             })
-                        }
+                        },
+                        Schema = _schema
                     },
+                    new[] { new IntentDescription("intent1", "foo.lu") },
+                    new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
+                    new[] { _dlist },
                     null,
-                    new[] { new EntityDescription("entity1") },
-                    null
+                    new InputContext(
+                        "en-us", 
+                        new RecognizerDescription(null, new[] { new EntityDescription("entity1", "foo.lu") }, null), 
+                        new RecognizerDescription(
+                            new[] { new IntentDescription("intent1", "foo.lu") }, 
+                            new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
+                            new[] { _dlist }))
                 }
             };
 
@@ -219,20 +241,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [MemberData(nameof(ExpectedRecognizer))]
         public void RecognizerDescriptionTests(Recognizer recognizer, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null)
         {
-            CheckDescription(recognizer.GetRecognizerDescription(GetTurnContext(), locale), intents, entities, lists, locale);
+            CheckDescription(recognizer.GetRecognizerDescription(GetTurnContext(), locale), intents, entities, lists);
         }
 
         [Theory]
         [MemberData(nameof(ExpectedDialog))]
-        public async Task DialogRecognizerDescriptionTests(Dialog dialog, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null)
+        public async Task DialogRecognizerDescriptionTests(Dialog dialog, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null, InputContext input = null)
         {
             var dc = GetTurnContext(dialog);
             await dc.BeginDialogAsync(dialog.Id);
-            CheckDescription(dialog.GetRecognizerDescription(dc, locale), intents, entities, lists, locale);
+            CheckDescription(dialog.GetRecognizerDescription(dc, locale), intents, entities, lists);
+            if (input == null)
+            {
+                CheckDescription(dc.InputContext.Possible, intents, entities, lists);
+                CheckDescription(dc.InputContext.Expected, intents, entities, lists);
+            }
+            else
+            {
+                CheckDescription(dc.InputContext.Possible, input.Possible.Intents.ToArray(), input.Possible.Entities.ToArray(), input.Possible.DynamicLists.ToArray());
+            }
+
             await dc.EndDialogAsync();
+            Assert.Equal(dc.GetLocale(), dc.InputContext.Locale);
+            CheckDescription(dc.InputContext.Possible, null, null, null);
+            CheckDescription(dc.InputContext.Expected, null, null, null);
         }
 
-        private void CheckDescription(RecognizerDescription description, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale)
+        private void CheckDescription(RecognizerDescription description, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists)
         {
             if (intents != null)
             {
@@ -285,12 +320,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 dialogs.Add(dialog);
             }
 
-            return new DialogContext(
-                dialogs,
-                new TurnContext(
+            var turn = new TurnContext(
                     new TestAdapter(TestAdapter.CreateConversation("Priming")),
-                    new Schema.Activity()),
+                    new Activity());
+            var dc = new DialogContext(
+                dialogs,
+                turn,
                 new DialogState());
+            dc.Services.Add<ITurnContext>(turn);
+            return dc;
         }
     }
 }
