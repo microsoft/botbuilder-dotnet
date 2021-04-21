@@ -88,6 +88,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public BoolExpression BubbleEvent { get; set; }
 
         /// <summary>
+        /// Gets or sets the property path to store whether the event was handled or not.
+        /// </summary>
+        /// <value>
+        /// The property path to store whether the event was handled or not.
+        /// </value>
+        [JsonProperty("handledProperty")]
+        public StringExpression HandledProperty { get; set; } = "turn.eventHandled";
+
+        /// <summary>
         /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
         /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
@@ -124,6 +133,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             else
             {
                 handled = await dc.EmitEventAsync(eventName, value, bubbleEvent, false, cancellationToken).ConfigureAwait(false);
+            }
+
+            // Save results of operation
+            var handledProperty = HandledProperty?.GetValue(dc.State) ?? null;
+            if (!string.IsNullOrEmpty(handledProperty))
+            {
+                dc.State.SetValue(handledProperty, handled);
             }
 
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);

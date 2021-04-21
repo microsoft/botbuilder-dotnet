@@ -25,11 +25,12 @@
         },
         "dialogs": {
             "type": "array",
-            "title": "Dialogs added to DialogSet",
+            "title": "Dialogs",
+            "description": "Dialogs added to DialogSet.",
             "items": {
                 "$kind": "Microsoft.IDialog",
                 "title": "Dialog",
-                "description": "Dialogs will be added to DialogSet."
+                "description": "Dialog to add to DialogSet."
             }
         },
         "recognizer": {
