@@ -56,6 +56,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
+            var telemetryClient = new NullBotTelemetryClient();
+
             // Act
             var bot = new AdaptiveDialogBot(
                 "main.dialog", 
@@ -66,6 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 skillConversationIdFactory,
                 languagePolicy,
                 botFrameworkAuthenticationMock.Object,
+                telemetryClient,
                 logger: logger);
             
             await bot.OnTurnAsync(turnContext, CancellationToken.None);
@@ -116,6 +119,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var turnContext = new TurnContext(adapterMock.Object, activity);
 
+            var telemetryClient = new NullBotTelemetryClient();
+
             // Act
             var bot = new AdaptiveDialogBot(
                 "main.dialog",
@@ -126,6 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 skillConversationIdFactory,
                 languagePolicy,
                 botFrameworkAuthenticationMock.Object,
+                telemetryClient,
                 logger: logger);
             
             var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));

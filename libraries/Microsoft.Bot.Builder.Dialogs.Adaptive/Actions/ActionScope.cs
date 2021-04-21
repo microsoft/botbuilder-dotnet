@@ -315,10 +315,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var action = this.Actions[offset];
             var actionName = action.GetType().Name.ToString();
+            dc.Parent.ActiveDialog.State.TryGetValue("instanceId", out var instanceId);
 
             var properties = new Dictionary<string, string>()
             {
-                { "DialogId", action.Id },
+                { "DialogId", dc.Parent.ActiveDialog.Id },
+                { "InstanceId", instanceId?.ToString() },
                 { "Kind", $"Microsoft.{actionName}" },
                 { "ActionId", $"Microsoft.{action.Id}" },
             };
