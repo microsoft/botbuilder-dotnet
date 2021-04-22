@@ -32,6 +32,12 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             };
             yield return new object[]
             {
+                new Dictionary<string, string>(),
+                new RuntimeSettings() { Storage = "someWeirdValue" },
+                typeof(MemoryStorage)
+            };
+            yield return new object[]
+            {
                 new Dictionary<string, string>
                 {
                     { $"{typeof(CosmosDbPartitionedStorage).Name}:authKey", "authKey" },
@@ -90,13 +96,16 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             };
         }
 
-        //[Theory]
-        //[MemberData(nameof(StorageRegistrationTestData))]
-        public void AddBotRuntimeStorage(Dictionary<string, string> config, Type registeredType)
+        [Theory]
+        [MemberData(nameof(StorageRegistrationTestData))]
+        internal void AddBotRuntimeStorage(Dictionary<string, string> config, RuntimeSettings settings, Type registeredType)
         {
             // Setup
             IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(config)
+                .AddRuntimeSettings(settings)
+                .Build();
 
             services.AddSingleton(configuration);
 
@@ -109,14 +118,18 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             Assert.IsType(registeredType, provider.GetService<IStorage>());
         }
 
-        //[Theory]
-        //[MemberData(nameof(StorageRegistrationTestErrorData))]
-        public void AddBotRuntimeStorage_ErrorCase(Dictionary<string, string> config, object settings, Type expectedException)
+        [Theory]
+        [MemberData(nameof(StorageRegistrationTestErrorData))]
+        internal void AddBotRuntimeStorage_ErrorCase(Dictionary<string, string> config, RuntimeSettings settings, Type expectedException)
         {
             // Setup
             IServiceCollection services = new ServiceCollection();
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(config).Build();
-            var resourcesSettings = settings as RuntimeSettings;
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(config)
+                .AddRuntimeSettings(settings)
+                .Build();
+
+            services.AddSingleton(configuration);
 
             // Test
             services.AddBotRuntimeStorage();
