@@ -751,6 +751,53 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
+        /// Judge if two objects are equal.
+        /// </summary>
+        /// <param name="obj1">First object.</param>
+        /// <param name="obj2">Second object.</param>
+        /// <returns>If two objects are equal.</returns>
+        public static bool CommonEquals(object obj1, object obj2)
+        {
+            if (obj1 == null || obj2 == null)
+            {
+                // null will only equals to null
+                return obj1 == null && obj2 == null;
+            }
+
+            obj1 = ResolveValue(obj1);
+            obj2 = ResolveValue(obj2);
+
+            if (TryParseList(obj1, out IList l0) && l0.Count == 0 && TryParseList(obj2, out IList l1) && l1.Count == 0)
+            {
+                return true;
+            }
+
+            if (GetPropertyCount(obj1) == 0 && GetPropertyCount(obj2) == 0)
+            {
+                return true;
+            }
+
+            if (obj1.IsNumber() && obj2.IsNumber())
+            {
+                if (Math.Abs(CultureInvariantDoubleConvert(obj1) - CultureInvariantDoubleConvert(obj2)) < double.Epsilon)
+                {
+                    return true;
+                }
+            }
+
+            try
+            {
+                return obj1 == obj2 || (obj1 != null && obj1.Equals(obj2));
+            }
+#pragma warning disable CA1031 // Do not catch general exception types (we return false if it fails for whatever reason)
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Lookup an index property of instance.
         /// </summary>
         /// <param name="instance">Instance with property.</param>
@@ -1408,6 +1455,25 @@ namespace AdaptiveExpressions
             }
 
             return result;
+        }
+
+        private static int GetPropertyCount(object obj)
+        {
+            if (obj is IDictionary dictionary)
+            {
+                return dictionary.Count;
+            }
+            else if (obj is JObject jobj)
+            {
+                return jobj.Properties().Count();
+            }
+            else if (!(obj is JValue) && obj.GetType().IsValueType == false && obj.GetType().FullName != "System.String")
+            {
+                // exclude constant type.
+                return obj.GetType().GetProperties().Length;
+            }
+
+            return -1;
         }
     }
 }
