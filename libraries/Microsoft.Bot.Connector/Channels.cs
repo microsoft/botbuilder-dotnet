@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Connector
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
+        /// Alexa channel.
+        /// </summary>
+        public const string Alexa = "alexa";
+
+        /// <summary>
         /// Console channel.
         /// </summary>
         public const string Console = "console";
