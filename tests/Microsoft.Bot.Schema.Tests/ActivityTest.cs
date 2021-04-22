@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void GetConversationReference()
         {
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-us");
 
             var conversationReference = activity.GetConversationReference();
 
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void GetReplyConversationReference()
         {
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-us");
 
             var reply = new ResourceResponse
             {
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void RemoveRecipientMention_forTeams()
         {
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-us");
             activity.Text = "<at>firstName</at> lastName\n";
             var expectedStrippedName = "lastName";
 
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void RemoveRecipientMention_forNonTeamsScenario()
         {
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-us");
             activity.Text = "<at>firstName</at> lastName\n";
             var expectedStrippedName = "lastName";
 
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Fact]
         public void ApplyConversationReference_isIncoming()
         {
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-us");
             var conversationReference = new ConversationReference
             {
                 ChannelId = "cr_123",
@@ -145,8 +145,7 @@ namespace Microsoft.Bot.Schema.Tests
         [InlineData(null)]
         public void ApplyConversationReference(string convoRefLocale)
         {
-            var activity = CreateActivity();
-            activity.Locale = "en-us";
+            var activity = CreateActivity("en-us");
 
             var conversationReference = new ConversationReference
             {
@@ -165,7 +164,7 @@ namespace Microsoft.Bot.Schema.Tests
                     Id = "def",
                 },
                 ActivityId = "12345",
-                Locale = convoRefLocale 
+                Locale = convoRefLocale
             };
 
             activity.ApplyConversationReference(conversationReference, false);
@@ -192,7 +191,7 @@ namespace Microsoft.Bot.Schema.Tests
         public void CreateTraceAllowsNullRecipient()
         {
             // https://github.com/Microsoft/botbuilder-dotnet/issues/1580
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-us");
             activity.Recipient = null;
             var trace = activity.CreateTrace("test");
 
@@ -219,7 +218,7 @@ namespace Microsoft.Bot.Schema.Tests
                 "URN:botframework:WebSocket:http://beep.com",
             };
 
-            var activity = CreateActivity();
+            var activity = CreateActivity("en-uS");
 
             nonStreaming.ForEach(s =>
             {
@@ -235,20 +234,6 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [InlineData("TestTrace", null, null, null)]
-        [InlineData("TestTrace", null, "TestValue", null)]
-        public void CanCreateTraceActivity(string name, string valueType, object value, string label)
-        {
-            var activity = Activity.CreateTraceActivity(name, valueType, value, label);
-            Assert.NotNull(activity);
-            Assert.True(activity.Type == ActivityTypes.Trace);
-            Assert.True(activity.Name == name);
-            Assert.True(activity.ValueType == value?.GetType().Name);
-            Assert.True(activity.Value == value);
-            Assert.True(activity.Label == label);
-        }
-
-        [Theory]
         [InlineData(nameof(ActivityTypes.ContactRelationUpdate))]
         [InlineData(nameof(ActivityTypes.EndOfConversation))]
         [InlineData(nameof(ActivityTypes.Event))]
@@ -261,7 +246,7 @@ namespace Microsoft.Bot.Schema.Tests
             var createActivityMethod = typeof(Activity).GetMethod($"Create{activityType}Activity");
             var activity = (Activity)createActivityMethod.Invoke(null, new object[0]);
             var expectedActivityType = (string)typeof(ActivityTypes).GetField(activityType).GetValue(null);
-         
+
             Assert.NotNull(activity);
             Assert.True(activity.Type == expectedActivityType);
 
@@ -273,7 +258,55 @@ namespace Microsoft.Bot.Schema.Tests
             }
         }
 
-        private static Activity CreateActivity()
+        [Theory]
+        [InlineData("TestTrace", null, null, null)]
+        [InlineData("TestTrace", null, "TestValue", null)]
+        public void CanCreateTraceActivity(string name, string valueType, object value, string label)
+        {
+            var activity = Activity.CreateTraceActivity(name, valueType, value, label);
+
+            Assert.NotNull(activity);
+            Assert.True(activity.Type == ActivityTypes.Trace);
+            Assert.True(activity.Name == name);
+            Assert.True(activity.ValueType == value?.GetType().Name);
+            Assert.True(activity.Value == value);
+            Assert.True(activity.Label == label);
+        }
+
+        [Theory]
+        [InlineData("en-uS", "response")] // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+        [InlineData("en-uS", "response", false)] 
+        [InlineData(null, "")]
+        public void CanCreateReplyActivity(string locale, string text, bool createRecipient = true)
+        {
+            var activity = CreateActivity(locale, createRecipient);
+            var reply = activity.CreateReply(text);
+
+            Assert.NotNull(reply);
+            Assert.True(reply.Type == ActivityTypes.Message);
+            if (createRecipient == true)
+            {
+                Assert.True(reply.From.Id == "ChannelAccount_Id_2");
+                Assert.True(reply.From.Name == "ChannelAccount_Name_2");
+            }
+            else
+            {
+                Assert.Null(reply.From.Id);
+                Assert.Null(reply.From.Name);
+            }
+
+            Assert.True(reply.Recipient.Id == "ChannelAccount_Id_1");
+            Assert.True(reply.Recipient.Name == "ChannelAccount_Name_1");
+            Assert.True(reply.ReplyToId == "123");
+            Assert.True(reply.ServiceUrl == "ServiceUrl123");
+            Assert.True(reply.ChannelId == "ChannelId123");
+            Assert.True(reply.Conversation.IsGroup);
+            Assert.True(reply.Text == text);
+            Assert.True(reply.Locale == locale);
+        }
+
+        // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+        private static Activity CreateActivity(string locale, bool createRecipient = true)
         {
             var account1 = new ChannelAccount
             {
@@ -283,13 +316,14 @@ namespace Microsoft.Bot.Schema.Tests
                 Role = "ChannelAccount_Role_1",
             };
 
-            var account2 = new ChannelAccount
+            var account2 = createRecipient ? new ChannelAccount
             {
                 Id = "ChannelAccount_Id_2",
                 Name = "ChannelAccount_Name_2",
                 Properties = new JObject { { "Name", "Value" } },
                 Role = "ChannelAccount_Role_2",
-            };
+            }
+            : null;
 
             var conversationAccount = new ConversationAccount
             {
@@ -308,7 +342,7 @@ namespace Microsoft.Bot.Schema.Tests
                 Recipient = account2,
                 Conversation = conversationAccount,
                 ChannelId = "ChannelId123",
-                Locale = "en-uS", // Intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+                Locale = locale,
                 ServiceUrl = "ServiceUrl123",
             };
 
