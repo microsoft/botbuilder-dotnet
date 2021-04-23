@@ -383,9 +383,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             var orchestrator = orchestratorMap.GetOrAdd(fullModelFolder, path =>
             {
                 // Create Orchestrator
+                string entityModelFolder = null; 
                 try
                 {
-                    string entityModelFolder = Path.Combine(path, "entity");
+                    entityModelFolder = Path.Combine(path, "entity");
                     ScoreEntities = Directory.Exists(entityModelFolder);
 
                     return ScoreEntities ?
