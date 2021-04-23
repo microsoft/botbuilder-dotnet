@@ -394,7 +394,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException($"Failed to find or load Model with path {path}", ex);
+                    throw new InvalidOperationException(
+                        ScoreEntities ? $"Failed to find or load Model with path {path}, entity model path {entityModelFolder}" : $"Failed to find or load Model with path {path}",
+                        ex);
                 }
             });
 
