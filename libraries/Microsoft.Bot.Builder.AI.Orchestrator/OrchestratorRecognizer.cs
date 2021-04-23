@@ -394,7 +394,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Failed to find or load Model", ex);
+                    throw new InvalidOperationException($"Failed to find or load Model with path {path}", ex);
                 }
             });
 
