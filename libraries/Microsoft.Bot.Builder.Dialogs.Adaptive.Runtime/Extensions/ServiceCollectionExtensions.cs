@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             services.TryAddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
 
             // IBot
-            services.AddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
+            services.TryAddSingleton<IBot, ConfigurationAdaptiveDialogBot>();
 
             // Resource explorer
             services.TryAddSingleton<ResourceExplorer, ConfigurationResourceExplorer>();
@@ -131,12 +131,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
 
             if (string.IsNullOrEmpty(telemetrySettings?.Options?.ConnectionString) && string.IsNullOrEmpty(telemetrySettings?.Options?.InstrumentationKey))
             {
-                services.AddSingleton<IBotTelemetryClient, NullBotTelemetryClient>();
+                services.TryAddSingleton<IBotTelemetryClient, NullBotTelemetryClient>();
             }
             else
             {
                 services.AddApplicationInsightsTelemetry(telemetrySettings.Options);
-                services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
+                services.TryAddSingleton<IBotTelemetryClient, BotTelemetryClient>();
 
                 services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
                 services.AddSingleton<ITelemetryInitializer, OperationCorrelationTelemetryInitializer>();
