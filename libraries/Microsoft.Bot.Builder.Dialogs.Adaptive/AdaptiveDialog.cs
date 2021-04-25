@@ -210,14 +210,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Value = options,
                 Bubble = false
             };
-
-            var instanceId = Guid.NewGuid().ToString();
-            activeDialogState["instanceId"] = instanceId;
-
+            
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
-                    { "InstanceId", instanceId },
                     { "Kind", Kind }
                 };
             TelemetryClient.TrackEvent("AdaptiveDialogStart", properties);
