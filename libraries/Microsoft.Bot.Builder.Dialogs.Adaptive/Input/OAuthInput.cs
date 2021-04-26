@@ -308,8 +308,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private async Task SendOAuthCardAsync(DialogContext dc, IMessageActivity prompt, CancellationToken cancellationToken)
         {
-            var title = await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
-            var text = await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var title = Title == null ? null : await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var text = Text == null ? null : await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
             var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State), Title = title, Text = text };
             await OAuthPrompt.SendOAuthCardAsync(settings, dc.Context, prompt, cancellationToken).ConfigureAwait(false);
         }
