@@ -278,9 +278,9 @@ namespace Microsoft.Bot.Builder
         /// <returns>A <see cref="ClaimsIdentity"/> with the audience and appId claims set to the appId.</returns>
         protected ClaimsIdentity CreateClaimsIdentity(string botAppId)
         {
-            if (string.IsNullOrWhiteSpace(botAppId))
+            if (botAppId == null)
             {
-                throw new ArgumentNullException(nameof(botAppId));
+                botAppId = string.Empty;
             }
 
             // Hand craft Claims Identity.
