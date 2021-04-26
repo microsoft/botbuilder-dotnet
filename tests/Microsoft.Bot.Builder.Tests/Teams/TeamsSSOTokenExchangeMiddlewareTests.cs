@@ -60,7 +60,6 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task TokenExchanged_SecondSendsInvokeResponse()
         {
             // Arrange
-            bool wasCalled = false;
             int calledCount = 0;
             var adapter = new TeamsSSOAdapter(CreateConversationReference())
                .Use(new TeamsSSOTokenExchangeMiddleware(new MemoryStorage(), ConnectionName));
@@ -72,7 +71,6 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 // note the Middleware should not cause the Responded flag to be set
                 Assert.False(context.Responded);
-                wasCalled = true;
                 calledCount++;
                 await context.SendActivityAsync("processed", cancellationToken: cancellationToken);
                 await Task.CompletedTask;
@@ -84,7 +82,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     // When the 2nd message goes through, it is not processed due to deduplication
                     // but an invokeResponse of 200 status with empty body is sent back
-                    Assert.Equal("invokeResponse", activity.Type);
+                    Assert.Equal(ActivityTypesEx.InvokeResponse, activity.Type);
                     var invokeResponse = (activity as Activity).Value as InvokeResponse;
                     Assert.Null(invokeResponse.Body);
                     Assert.Equal(200, invokeResponse.Status);
@@ -92,7 +90,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .StartTestAsync();
 
             // Assert
-            Assert.True(wasCalled, "Delegate was not called");
+            Assert.False(calledCount == 0, "Delegate was not called");
             Assert.True(calledCount == 1, "OnTurn delegate called more than once");
         }
 
@@ -115,7 +113,7 @@ namespace Microsoft.Bot.Builder.Tests
                 .Send("test")
                 .AssertReply((activity) =>
                 {
-                    Assert.Equal("invokeResponse", activity.Type);
+                    Assert.Equal(ActivityTypesEx.InvokeResponse, activity.Type);
                     var invokeResponse = (activity as Activity).Value as InvokeResponse;
                     var tokenExchangeRequest = invokeResponse.Body as TokenExchangeInvokeResponse;
                     Assert.Equal(ConnectionName, tokenExchangeRequest.ConnectionName);
