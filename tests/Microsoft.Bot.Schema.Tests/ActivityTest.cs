@@ -199,9 +199,11 @@ namespace Microsoft.Bot.Schema.Tests
             var activity = CreateActivity("en-us", createRecipient, createFrom);
             var trace = activity.CreateTrace("test", value, valueType, label);
 
-            // CreateTrace flips Recipient and From
-            //Assert.Null(trace.From.Id);
             Assert.NotNull(trace);
+            Assert.True(trace.Type == ActivityTypes.Trace);
+            Assert.True(trace.ValueType == (valueType ?? value?.GetType().Name));
+            Assert.True(trace.Label == label);
+            Assert.True(trace.Name == "test");
         }
 
         [Fact]
@@ -311,6 +313,45 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.True(reply.Locale == (activityLocale ?? createReplyLocale));
         }
 
+        [Fact]
+        public void DoesNotCastToTraceWhenActivityTypeIsNull()
+        {
+            var activity = new Activity();
+            var trace = activity.AsTraceActivity();
+
+            Assert.NotNull(activity);
+            Assert.Null(activity.Type);
+            Assert.Null(trace);
+        }
+
+        [Theory]
+        [InlineData(nameof(ActivityTypes.Command))]
+        [InlineData(nameof(ActivityTypes.CommandResult))]
+        [InlineData(nameof(ActivityTypes.ContactRelationUpdate))]
+        [InlineData(nameof(ActivityTypes.ConversationUpdate))]
+        [InlineData(nameof(ActivityTypes.EndOfConversation))]
+        [InlineData(nameof(ActivityTypes.Event))]
+        [InlineData(nameof(ActivityTypes.Handoff))]
+        [InlineData(nameof(ActivityTypes.InstallationUpdate))]
+        [InlineData(nameof(ActivityTypes.Invoke))]
+        [InlineData(nameof(ActivityTypes.Message))]
+        [InlineData(nameof(ActivityTypes.MessageDelete))]
+        [InlineData(nameof(ActivityTypes.MessageReaction))]
+        [InlineData(nameof(ActivityTypes.MessageUpdate))]
+        [InlineData(nameof(ActivityTypes.Suggestion))]
+        [InlineData(nameof(ActivityTypes.Typing))]
+        public void CanCastToActivityType(string activityType)
+        {
+            var activity = new Activity()
+            {
+                Type = GetActivityType(activityType)
+            };
+            CastToActivityType(activityType, activity);
+
+            Assert.NotNull(activity);
+            Assert.True(activity.Type.ToLowerInvariant() == activityType.ToLowerInvariant());
+        }
+
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
         private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {
@@ -354,6 +395,17 @@ namespace Microsoft.Bot.Schema.Tests
             };
 
             return activity;
+        }
+        
+        private string GetActivityType(string type)
+        {
+            return (string)typeof(ActivityTypes).GetField(type).GetValue(null);
+        }
+
+        private void CastToActivityType(string activityType, IActivity activity)
+        {
+            var castMethod = typeof(Activity).GetMethod($"As{activityType}Activity");
+            castMethod.Invoke(activity, new object[0]);
         }
     }
 }
