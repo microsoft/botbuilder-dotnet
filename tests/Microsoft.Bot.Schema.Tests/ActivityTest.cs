@@ -187,16 +187,21 @@ namespace Microsoft.Bot.Schema.Tests
             }
         }
 
-        [Fact]
-        public void CreateTraceAllowsNullRecipient()
+        [Theory]
+        [InlineData("myValue", null, false, false, null)]
+        [InlineData(null, null, false, false, null)]
+        [InlineData(null, "myValueType", false, false, null)]
+        [InlineData(null, null, true, false, null)]
+        [InlineData(null, null, false, true, "testLabel")]
+        public void TestCreateTrace(string value, string valueType, bool createRecipient, bool createFrom, string label = null)
         {
             // https://github.com/Microsoft/botbuilder-dotnet/issues/1580
-            var activity = CreateActivity("en-us");
-            activity.Recipient = null;
-            var trace = activity.CreateTrace("test");
+            var activity = CreateActivity("en-us", createRecipient, createFrom);
+            var trace = activity.CreateTrace("test", value, valueType, label);
 
             // CreateTrace flips Recipient and From
-            Assert.Null(trace.From.Id);
+            //Assert.Null(trace.From.Id);
+            Assert.NotNull(trace);
         }
 
         [Fact]
@@ -261,7 +266,7 @@ namespace Microsoft.Bot.Schema.Tests
         [Theory]
         [InlineData("TestTrace", null, null, null)]
         [InlineData("TestTrace", null, "TestValue", null)]
-        public void CanCreateTraceActivity(string name, string valueType, object value, string label)
+        public void TestCreateTraceActivity(string name, string valueType, object value, string label)
         {
             var activity = Activity.CreateTraceActivity(name, valueType, value, label);
 
@@ -274,13 +279,14 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [InlineData("en-uS", "response")] // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
-        [InlineData("en-uS", "response", false)] 
-        [InlineData(null, "")]
-        public void CanCreateReplyActivity(string locale, string text, bool createRecipient = true)
+        [InlineData("en-uS", "response", true)] // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+        [InlineData("en-uS", "response", false, null)]
+        [InlineData(null, "", true, "en-us")]
+        [InlineData(null, null, true, null)]
+        public void CanCreateReplyActivity(string activityLocale, string text, bool createRecipient = true, string createReplyLocale = null)
         {
-            var activity = CreateActivity(locale, createRecipient);
-            var reply = activity.CreateReply(text);
+            var activity = CreateActivity(activityLocale, createRecipient);
+            var reply = activity.CreateReply(text, createReplyLocale);
 
             Assert.NotNull(reply);
             Assert.True(reply.Type == ActivityTypes.Message);
@@ -301,20 +307,21 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.True(reply.ServiceUrl == "ServiceUrl123");
             Assert.True(reply.ChannelId == "ChannelId123");
             Assert.True(reply.Conversation.IsGroup);
-            Assert.True(reply.Text == text);
-            Assert.True(reply.Locale == locale);
+            Assert.True(reply.Text == (text ?? string.Empty));
+            Assert.True(reply.Locale == (activityLocale ?? createReplyLocale));
         }
 
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
-        private static Activity CreateActivity(string locale, bool createRecipient = true)
+        private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {
-            var account1 = new ChannelAccount
+            var account1 = createFrom ? new ChannelAccount
             {
                 Id = "ChannelAccount_Id_1",
                 Name = "ChannelAccount_Name_1",
                 Properties = new JObject { { "Name", "Value" } },
                 Role = "ChannelAccount_Role_1",
-            };
+            }
+            : null;
 
             var account2 = createRecipient ? new ChannelAccount
             {
