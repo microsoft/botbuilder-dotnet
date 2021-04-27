@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -60,7 +61,8 @@ namespace Microsoft.Bot.Builder.Teams
         /// <inheritdoc/>
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            if (turnContext.Activity.Name == SignInConstants.TokenExchangeOperationName)
+            if (string.Equals(Channels.Msteams, turnContext.Activity.ChannelId, StringComparison.OrdinalIgnoreCase) 
+                && string.Equals(SignInConstants.TokenExchangeOperationName, turnContext.Activity.Name, StringComparison.OrdinalIgnoreCase))
             {
                 // If the TokenExchange is NOT successful, the response will have already been sent by ExchangedTokenAsync
                 if (!await this.ExchangedTokenAsync(turnContext, cancellationToken).ConfigureAwait(false))
@@ -103,7 +105,7 @@ namespace Microsoft.Bot.Builder.Teams
                 // Do NOT proceed processing this message, some other thread or machine already has processed it.
 
                 // Send 200 invoke response.
-                await SendInvokeResponseAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                await SendInvokeResponseAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return false;
             }
 

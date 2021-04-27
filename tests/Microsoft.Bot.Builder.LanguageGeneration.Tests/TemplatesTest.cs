@@ -244,6 +244,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("greetInAWeek", new { day = "Monday" }).ToString();
             Assert.True(evaled == "Work Hard!");
+
+            evaled = templates.Evaluate("EqualSwitchTest", new { score = 1L }).ToString();
+            Assert.True(evaled == "Low");
         }
 
         [Fact]
@@ -471,6 +474,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     name = "structureTemplate",
                     variableOptions = new string[] { "text", "newText" },
                     templateRefOptions = new string[] { "ST2" }
+                },
+                new
+                {
+                    name = "addEntries",
+                    variableOptions = new string[] { "object", "entries" },
+                    templateRefOptions = new string[] { "addEntry", "addEntries" }
                 },
             };
 

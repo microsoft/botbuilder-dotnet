@@ -50,10 +50,10 @@
       "$ref": "#/definitions/Microsoft.ConditionalSelector"
     },
     {
-      "$ref": "#/definitions/Microsoft.ConfirmInput"
+      "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
     },
     {
-      "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+      "$ref": "#/definitions/Microsoft.ConfirmInput"
     },
     {
       "$ref": "#/definitions/Microsoft.ContinueConversation"
@@ -420,6 +420,87 @@
     }
   ],
   "definitions": {
+    "arrayExpression": {
+      "$role": "expression",
+      "title": "Array or expression",
+      "description": "Array or expression to evaluate.",
+      "oneOf": [
+        {
+          "type": "array",
+          "title": "Array",
+          "description": "Array constant."
+        },
+        {
+          "$ref": "#/definitions/equalsExpression"
+        }
+      ]
+    },
+    "booleanExpression": {
+      "$role": "expression",
+      "title": "Boolean or expression",
+      "description": "Boolean constant or expression to evaluate.",
+      "oneOf": [
+        {
+          "type": "boolean",
+          "title": "Boolean",
+          "description": "Boolean constant.",
+          "default": false,
+          "examples": [
+            false
+          ]
+        },
+        {
+          "$ref": "#/definitions/equalsExpression",
+          "examples": [
+            "=user.isVip"
+          ]
+        }
+      ]
+    },
+    "component": {
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "condition": {
+      "$role": "expression",
+      "title": "Boolean condition",
+      "description": "Boolean constant or expression to evaluate.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/expression"
+        },
+        {
+          "type": "boolean",
+          "title": "Boolean",
+          "description": "Boolean value.",
+          "default": true,
+          "examples": [
+            false
+          ]
+        }
+      ]
+    },
     "CustomAction.dialog": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Custom Action",
@@ -524,6 +605,48 @@
         }
       }
     },
+    "equalsExpression": {
+      "$role": "expression",
+      "type": "string",
+      "title": "Expression",
+      "description": "Expression starting with =.",
+      "pattern": "^=.*\\S.*",
+      "examples": [
+        "=user.name"
+      ]
+    },
+    "expression": {
+      "$role": "expression",
+      "type": "string",
+      "title": "Expression",
+      "description": "Expression to evaluate.",
+      "pattern": "^.*\\S.*",
+      "examples": [
+        "user.age > 13"
+      ]
+    },
+    "integerExpression": {
+      "$role": "expression",
+      "title": "Integer or expression",
+      "description": "Integer constant or expression to evaluate.",
+      "oneOf": [
+        {
+          "type": "integer",
+          "title": "Integer",
+          "description": "Integer constant.",
+          "default": 0,
+          "examples": [
+            15
+          ]
+        },
+        {
+          "$ref": "#/definitions/equalsExpression",
+          "examples": [
+            "=user.age"
+          ]
+        }
+      ]
+    },
     "Microsoft.ActivityTemplate": {
       "$role": "implements(Microsoft.IActivityTemplate)",
       "title": "Microsoft activity template",
@@ -595,11 +718,12 @@
         },
         "dialogs": {
           "type": "array",
-          "title": "Dialogs added to DialogSet",
+          "title": "Dialogs",
+          "description": "Dialogs added to DialogSet.",
           "items": {
             "$kind": "Microsoft.IDialog",
             "title": "Dialog",
-            "description": "Dialogs will be added to DialogSet.",
+            "description": "Dialog to add to DialogSet.",
             "$ref": "#/definitions/Microsoft.IDialog"
           }
         },
@@ -1764,6 +1888,39 @@
         }
       }
     },
+    "Microsoft.ConfirmationEntityRecognizer": {
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
+      "title": "Confirmation entity recognizer",
+      "description": "Recognizer which recognizes confirmation choices (yes/no).",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ConfirmationEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.ConfirmInput": {
       "$role": [
         "implements(Microsoft.IDialog)",
@@ -2054,39 +2211,6 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.ConfirmInput"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Microsoft.ConfirmationEntityRecognizer": {
-      "$role": [
-        "implements(Microsoft.IRecognizer)",
-        "implements(Microsoft.IEntityRecognizer)"
-      ],
-      "title": "Confirmation entity recognizer",
-      "description": "Recognizer which recognizes confirmation choices (yes/no).",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.ConfirmationEntityRecognizer"
         },
         "$designer": {
           "title": "Designer information",
@@ -2787,7 +2911,7 @@
     },
     "Microsoft.EditActions": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Edit actions.",
+      "title": "Edit actions",
       "description": "Edit the current list of actions.",
       "type": "object",
       "required": [
@@ -3051,7 +3175,16 @@
         "bubbleEvent": {
           "$ref": "#/definitions/booleanExpression",
           "title": "Bubble event",
-          "description": "If true this event is passed on to parent dialogs."
+          "description": "If true this event is passed on to the parent dialogs."
+        },
+        "handledProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Handled Property",
+          "description": "Property to store whether the event was handled or not.",
+          "default": "turn.eventHandled",
+          "examples": [
+            "turn.eventHandled"
+          ]
         },
         "$kind": {
           "title": "Kind of dialog object",
@@ -4106,6 +4239,77 @@
         }
       ]
     },
+    "Microsoft.IfCondition": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "If condition",
+      "description": "Two-way branch the conversation flow based on a condition.",
+      "type": "object",
+      "required": [
+        "condition",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Expression to evaluate.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            true,
+            "=user.age > 3"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Actions to execute if condition is true.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "elseActions": {
+          "type": "array",
+          "title": "Else",
+          "description": "Actions to execute if condition is false.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.IfCondition"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.ILanguageGenerator": {
       "title": "Microsoft LanguageGenerator",
       "description": "Components which dervie from the LanguageGenerator class",
@@ -4121,6 +4325,173 @@
           "type": "string"
         }
       ]
+    },
+    "Microsoft.InputDialog": {
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "default": false,
+          "examples": [
+            false,
+            "=user.isVip"
+          ]
+        },
+        "prompt": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Initial prompt",
+          "description": "Message to send to collect information.",
+          "examples": [
+            "What is your birth date?"
+          ],
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "unrecognizedPrompt": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Unrecognized prompt",
+          "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
+          "examples": [
+            "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
+          ],
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "invalidPrompt": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Invalid prompt",
+          "description": "Message to send when the user input does not meet any validation expression.",
+          "examples": [
+            "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
+          ],
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "defaultValueResponse": {
+          "$kind": "Microsoft.IActivityTemplate",
+          "title": "Default value response",
+          "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
+          "examples": [
+            "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
+          ],
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
+        },
+        "maxTurnCount": {
+          "$ref": "#/definitions/integerExpression",
+          "title": "Max turn count",
+          "description": "Maximum number of re-prompt attempts to collect information.",
+          "default": 3,
+          "minimum": 0,
+          "maximum": 2147483647,
+          "examples": [
+            3,
+            "=settings.xyz"
+          ]
+        },
+        "validations": {
+          "type": "array",
+          "title": "Validation expressions",
+          "description": "Expression to validate user input.",
+          "items": {
+            "$ref": "#/definitions/condition",
+            "title": "Condition",
+            "description": "Expression which needs to met for the input to be considered valid",
+            "examples": [
+              "int(this.value) > 1 && int(this.value) <= 150",
+              "count(this.value) < 300"
+            ]
+          }
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
+          "examples": [
+            "$birthday",
+            "dialog.${user.name}",
+            "=f(x)"
+          ]
+        },
+        "alwaysPrompt": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Always prompt",
+          "description": "Collect information even if the specified 'property' is not empty.",
+          "default": false,
+          "examples": [
+            false,
+            "=$val"
+          ]
+        },
+        "allowInterruptions": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Allow Interruptions",
+          "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+          "default": true,
+          "examples": [
+            true,
+            "=user.xyz"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.InputDialog"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.IpEntityRecognizer": {
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
+      "title": "IP entity recognizer",
+      "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.IpEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
     },
     "Microsoft.IRecognizer": {
       "title": "Microsoft recognizer",
@@ -4348,244 +4719,6 @@
           "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
-    },
-    "Microsoft.IfCondition": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "If condition",
-      "description": "Two-way branch the conversation flow based on a condition.",
-      "type": "object",
-      "required": [
-        "condition",
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Expression to evaluate.",
-          "examples": [
-            "user.age > 3"
-          ]
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            true,
-            "=user.age > 3"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Actions to execute if condition is true.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "elseActions": {
-          "type": "array",
-          "title": "Else",
-          "description": "Actions to execute if condition is false.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.IfCondition"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Microsoft.InputDialog": {
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "default": false,
-          "examples": [
-            false,
-            "=user.isVip"
-          ]
-        },
-        "prompt": {
-          "$kind": "Microsoft.IActivityTemplate",
-          "title": "Initial prompt",
-          "description": "Message to send to collect information.",
-          "examples": [
-            "What is your birth date?"
-          ],
-          "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        "unrecognizedPrompt": {
-          "$kind": "Microsoft.IActivityTemplate",
-          "title": "Unrecognized prompt",
-          "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
-          "examples": [
-            "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
-          ],
-          "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        "invalidPrompt": {
-          "$kind": "Microsoft.IActivityTemplate",
-          "title": "Invalid prompt",
-          "description": "Message to send when the user input does not meet any validation expression.",
-          "examples": [
-            "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
-          ],
-          "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        "defaultValueResponse": {
-          "$kind": "Microsoft.IActivityTemplate",
-          "title": "Default value response",
-          "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
-          "examples": [
-            "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
-          ],
-          "$ref": "#/definitions/Microsoft.IActivityTemplate"
-        },
-        "maxTurnCount": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Max turn count",
-          "description": "Maximum number of re-prompt attempts to collect information.",
-          "default": 3,
-          "minimum": 0,
-          "maximum": 2147483647,
-          "examples": [
-            3,
-            "=settings.xyz"
-          ]
-        },
-        "validations": {
-          "type": "array",
-          "title": "Validation expressions",
-          "description": "Expression to validate user input.",
-          "items": {
-            "$ref": "#/definitions/condition",
-            "title": "Condition",
-            "description": "Expression which needs to met for the input to be considered valid",
-            "examples": [
-              "int(this.value) > 1 && int(this.value) <= 150",
-              "count(this.value) < 300"
-            ]
-          }
-        },
-        "property": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Property",
-          "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
-          "examples": [
-            "$birthday",
-            "dialog.${user.name}",
-            "=f(x)"
-          ]
-        },
-        "alwaysPrompt": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Always prompt",
-          "description": "Collect information even if the specified 'property' is not empty.",
-          "default": false,
-          "examples": [
-            false,
-            "=$val"
-          ]
-        },
-        "allowInterruptions": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Allow Interruptions",
-          "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-          "default": true,
-          "examples": [
-            true,
-            "=user.xyz"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.InputDialog"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Microsoft.IpEntityRecognizer": {
-      "$role": [
-        "implements(Microsoft.IRecognizer)",
-        "implements(Microsoft.IEntityRecognizer)"
-      ],
-      "title": "IP entity recognizer",
-      "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.IpEntityRecognizer"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
     },
     "Microsoft.LanguagePolicy": {
       "title": "Language policy",
@@ -10494,241 +10627,6 @@
         }
       }
     },
-    "Testbot.JavascriptAction": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Javascript Action",
-      "description": "This gives you the ability to execute javascript to manipulate memory",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "script": {
-          "type": "string",
-          "title": "Script",
-          "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
-        },
-        "options": {
-          "$ref": "#/definitions/objectExpression",
-          "title": "Options",
-          "description": "One or more options that are passed to the function as args.",
-          "additionalProperties": {
-            "type": "string",
-            "title": "Options",
-            "description": "Options for action."
-          }
-        },
-        "resultProperty": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Property",
-          "description": "Property to store any value returned by the javascript function.",
-          "examples": [
-            "dialog.userName"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Testbot.JavascriptAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Testbot.Multiply": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Multiply",
-      "description": "This will return the result of arg1*arg2",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "arg1": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Arg1",
-          "description": "Value from callers memory to use as arg 1"
-        },
-        "arg2": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Arg2",
-          "description": "Value from callers memory to use as arg 2"
-        },
-        "result": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Result",
-          "description": "Property to store the result in"
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Testbot.Multiply"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "arrayExpression": {
-      "$role": "expression",
-      "title": "Array or expression",
-      "description": "Array or expression to evaluate.",
-      "oneOf": [
-        {
-          "type": "array",
-          "title": "Array",
-          "description": "Array constant."
-        },
-        {
-          "$ref": "#/definitions/equalsExpression"
-        }
-      ]
-    },
-    "booleanExpression": {
-      "$role": "expression",
-      "title": "Boolean or expression",
-      "description": "Boolean constant or expression to evaluate.",
-      "oneOf": [
-        {
-          "type": "boolean",
-          "title": "Boolean",
-          "description": "Boolean constant.",
-          "default": false,
-          "examples": [
-            false
-          ]
-        },
-        {
-          "$ref": "#/definitions/equalsExpression",
-          "examples": [
-            "=user.isVip"
-          ]
-        }
-      ]
-    },
-    "component": {
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "condition": {
-      "$role": "expression",
-      "title": "Boolean condition",
-      "description": "Boolean constant or expression to evaluate.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/expression"
-        },
-        {
-          "type": "boolean",
-          "title": "Boolean",
-          "description": "Boolean value.",
-          "default": true,
-          "examples": [
-            false
-          ]
-        }
-      ]
-    },
-    "equalsExpression": {
-      "$role": "expression",
-      "type": "string",
-      "title": "Expression",
-      "description": "Expression starting with =.",
-      "pattern": "^=.*\\S.*",
-      "examples": [
-        "=user.name"
-      ]
-    },
-    "expression": {
-      "$role": "expression",
-      "type": "string",
-      "title": "Expression",
-      "description": "Expression to evaluate.",
-      "pattern": "^.*\\S.*",
-      "examples": [
-        "user.age > 13"
-      ]
-    },
-    "integerExpression": {
-      "$role": "expression",
-      "title": "Integer or expression",
-      "description": "Integer constant or expression to evaluate.",
-      "oneOf": [
-        {
-          "type": "integer",
-          "title": "Integer",
-          "description": "Integer constant.",
-          "default": 0,
-          "examples": [
-            15
-          ]
-        },
-        {
-          "$ref": "#/definitions/equalsExpression",
-          "examples": [
-            "=user.age"
-          ]
-        }
-      ]
-    },
     "numberExpression": {
       "$role": "expression",
       "title": "Number or expression",
@@ -10840,6 +10738,118 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "test"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Testbot.JavascriptAction": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Javascript Action",
+      "description": "This gives you the ability to execute javascript to manipulate memory",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "script": {
+          "type": "string",
+          "title": "Script",
+          "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
+        },
+        "options": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Options",
+          "description": "One or more options that are passed to the function as args.",
+          "additionalProperties": {
+            "type": "string",
+            "title": "Options",
+            "description": "Options for action."
+          }
+        },
+        "resultProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property to store any value returned by the javascript function.",
+          "examples": [
+            "dialog.userName"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Testbot.JavascriptAction"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Testbot.Multiply": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Multiply",
+      "description": "This will return the result of arg1*arg2",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "arg1": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Arg1",
+          "description": "Value from callers memory to use as arg 1"
+        },
+        "arg2": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Arg2",
+          "description": "Value from callers memory to use as arg 2"
+        },
+        "result": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Result",
+          "description": "Property to store the result in"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Testbot.Multiply"
         },
         "$designer": {
           "title": "Designer information",

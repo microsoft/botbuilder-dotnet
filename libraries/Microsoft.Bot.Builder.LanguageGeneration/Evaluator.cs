@@ -281,7 +281,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
                 var caseExprResult = EvalExpression(caseExprs[0].GetText(), caseExprs[0], switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix);
-                if (switchExprResult == caseExprResult || (switchExprResult != null && switchExprResult.Equals(caseExprResult)))
+                if (FunctionUtils.CommonEquals(switchExprResult, caseExprResult))
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
                 }

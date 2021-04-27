@@ -26,6 +26,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     internal static class SlackHelper
     {
+        private const string SlackServiceUrl = "https://slack.botframework.com/";
+
         /// <summary>
         /// Formats a BotBuilder activity into an outgoing Slack message.
         /// </summary>
@@ -227,7 +229,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     Id = innerEvent.User ?? innerEvent.BotId ?? eventRequest.TeamId
                 },
                 ChannelData = eventRequest,
-                Type = ActivityTypes.Event
+                Type = ActivityTypes.Event,
+                ServiceUrl = SlackServiceUrl
             };
 
             activity.Recipient = new ChannelAccount()
