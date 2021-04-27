@@ -13,6 +13,8 @@
   <ItemGroup>
     <None Remove="Tests\ActionTests\test.en.lg" />
     <None Remove="Tests\ActionTests\test.es.lg" />
+    <None Remove="Tests\ActionTests\base.lg" />
+    <None Remove="Tests\ActionTests\main.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +22,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Tests\ActionTests\test.en.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tests\ActionTests\base.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Tests\ActionTests\main.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

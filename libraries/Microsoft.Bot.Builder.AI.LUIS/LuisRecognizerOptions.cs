@@ -65,5 +65,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         // Support DialogContext
         internal abstract Task<RecognizerResult> RecognizeInternalAsync(DialogContext context, Activity activity, HttpClient httpClient, CancellationToken cancellationToken);
+
+        // Support string utterance
+        internal abstract Task<RecognizerResult> RecognizeInternalAsync(string utterance, HttpClient httpClient, CancellationToken cancellationToken);
     }
 }

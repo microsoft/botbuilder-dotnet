@@ -23,15 +23,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
-        /// <param name="templates">Template list.</param>
-        /// <param name="expressionParser">Expression parser.</param>
-        public Analyzer(List<Template> templates, ExpressionParser expressionParser)
+        /// <param name="templates">Templates.</param>
+        /// <param name="opt">Options for LG. </param>
+        public Analyzer(Templates templates, EvaluationOptions opt = null)
         {
             Templates = templates;
             _templateMap = templates.ToDictionary(t => t.Name);
 
             // create an evaluator to leverage it's customized function look up for checking
-            var evaluator = new Evaluator(Templates, expressionParser);
+            var evaluator = new Evaluator(Templates, opt);
             _expressionParser = evaluator.ExpressionParser;
         }
 
@@ -41,24 +41,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<Template> Templates { get; }
+        public Templates Templates { get; }
 
         /// <summary>
         /// Analyzes a template to get the static analyzer results. 
-        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="templateName">Template name.</param>
         /// <returns>Analyze result including variables and template references.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            if (!_templateMap.ContainsKey(templateName))
+            if (!_templateMap.ContainsKey(templateName) || _evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
-            }
-
-            if (_evaluationTargetStack.Any(e => e.TemplateName == templateName))
-            {
-                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                return new AnalyzerResult();
             }
 
             // Using a stack to track the evaluation trace
@@ -216,8 +210,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    // if template has parameters, just get the template ref without variables.
-                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
+                    if (!result.TemplateReferences.Contains(templateName))
+                    {
+                        // if template has parameters, just get the template ref without variables.
+                        result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
+                    }
                 }
             }
 

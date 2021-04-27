@@ -13,6 +13,11 @@ namespace Microsoft.Bot.Connector
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
+        /// Alexa channel.
+        /// </summary>
+        public const string Alexa = "alexa";
+
+        /// <summary>
         /// Console channel.
         /// </summary>
         public const string Console = "console";
@@ -106,5 +111,10 @@ namespace Microsoft.Bot.Connector
         /// Twilio channel.
         /// </summary>
         public const string Twilio = "twilio-sms";
+
+        /// <summary>
+        /// Telephony channel.
+        /// </summary>
+        public const string Telephony = "telephony";
     }
 }

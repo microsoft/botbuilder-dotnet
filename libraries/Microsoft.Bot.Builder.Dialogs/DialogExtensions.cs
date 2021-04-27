@@ -32,17 +32,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         public static async Task RunAsync(this Dialog dialog, ITurnContext turnContext, IStatePropertyAccessor<DialogState> accessor, CancellationToken cancellationToken)
         {
             var dialogSet = new DialogSet(accessor);
-            dialogSet.Add(dialog);
 
             // look for the IBotTelemetryClient on the TurnState, if not there take it from the Dialog, if not there fall back to the "null" default
             dialogSet.TelemetryClient = turnContext.TurnState.Get<IBotTelemetryClient>() ?? dialog.TelemetryClient ?? NullBotTelemetryClient.Instance;
 
+            dialogSet.Add(dialog);
+
             var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
 
-            await InternalRunAsync(turnContext, dialog.Id, dialogContext, cancellationToken).ConfigureAwait(false);
+            await InternalRunAsync(turnContext, dialog.Id, dialogContext, null, cancellationToken).ConfigureAwait(false);
         }
 
-        internal static async Task<DialogTurnResult> InternalRunAsync(ITurnContext turnContext, string dialogId, DialogContext dialogContext, CancellationToken cancellationToken)
+        internal static async Task<DialogTurnResult> InternalRunAsync(ITurnContext turnContext, string dialogId, DialogContext dialogContext, DialogStateManagerConfiguration stateConfiguration, CancellationToken cancellationToken)
         {
             // map TurnState into root dialog context.services
             foreach (var service in turnContext.TurnState)
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 dialogContext.Services[service.Key] = service.Value;
             }
 
-            var dialogStateManager = new DialogStateManager(dialogContext);
+            var dialogStateManager = new DialogStateManager(dialogContext, stateConfiguration);
             await dialogStateManager.LoadAllScopesAsync(cancellationToken).ConfigureAwait(false);
             dialogContext.Context.TurnState.Add(dialogStateManager);
 

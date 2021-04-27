@@ -177,6 +177,18 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Fact]
+        public void CreateReplyAllowsNullFrom()
+        {
+            // https://github.com/Microsoft/botbuilder-dotnet/issues/5499
+            var activity = CreateActivity();
+            activity.From = null;
+            var reply = activity.CreateReply();
+
+            // CreateReply flips From and Recipient
+            Assert.Null(reply.Recipient.Id);
+        }
+        
+        [Fact]
         public void CreateTraceAllowsNullRecipient()
         {
             // https://github.com/Microsoft/botbuilder-dotnet/issues/1580

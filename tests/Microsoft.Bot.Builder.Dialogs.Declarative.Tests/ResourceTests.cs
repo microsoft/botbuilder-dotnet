@@ -2,20 +2,76 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.TestComponents;
 using Xunit;
 using Xunit.Sdk;
+using static Microsoft.Bot.Builder.Dialogs.Declarative.Tests.ResourceExplorerOptionsTests;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 {
     public class ResourceTests : IClassFixture<DeleteTestResourceFixture>
     {
+        public static IEnumerable<object[]> ResourceExplorerRegistrationTestData()
+        {
+            var testProviders = new ResourceProvider[] { new TestResourceProvider() };
+            var testDeclarativeTypes = new DeclarativeType[] { new DeclarativeType<ResourceExplorerOptionsTests>("test") };
+            var testConverterFactories = new JsonConverterFactory[] { new JsonConverterFactory<TestDeclarativeConverter>() };
+            var testLegacyComponentTypes = new IComponentDeclarativeTypes[] { new TestDeclarativeComponentRegistration() };
+
+            // params: ResourceExplorerOptions options
+            
+            // Initial declarative types only
+            yield return new object[] { new ResourceExplorerOptions(null, testDeclarativeTypes, testConverterFactories) { DeclarativeTypes = null }, null };
+
+            // Initial IComponentDeclarativeTypes only
+            yield return new object[] { new ResourceExplorerOptions(null, null, null) { DeclarativeTypes = testLegacyComponentTypes }, null };
+
+            // Initial declarative types and IComponentDeclarativeTypes
+            yield return new object[] { new ResourceExplorerOptions(null, testDeclarativeTypes, testConverterFactories) { DeclarativeTypes = testLegacyComponentTypes }, null };
+            
+            // Legacy registration only
+            yield return new object[] { new ResourceExplorerOptions(null, null, null) { DeclarativeTypes = null }, new TestDeclarativeComponentRegistration() };
+
+            // Legacy bridged registration only
+            yield return new object[] { new ResourceExplorerOptions(null, null, null) { DeclarativeTypes = null }, new LegacyTestComponentRegistration() };
+
+            // All at once, should to union of all registrations
+            yield return new object[] { new ResourceExplorerOptions(null, testDeclarativeTypes, testConverterFactories) { DeclarativeTypes = testLegacyComponentTypes }, new LegacyTestComponentRegistration() };
+        }
+
+        [Theory]
+        [MemberData(nameof(ResourceExplorerRegistrationTestData))]
+        public void TestResourceExplorerRegistration(ResourceExplorerOptions options, ComponentRegistration legacyRegistration)
+        {
+            // Arrange
+            // Build resourceExplorer
+            using (var explorer = new ResourceExplorer(options))
+            {
+                // Clear component registration
+                if (legacyRegistration != null)
+                {
+                    ComponentRegistration.Add(legacyRegistration);
+                }
+
+                // Test
+                var declarativeType = explorer.LoadType<TestDeclarativeType>(new MemoryResource());
+
+                // Assert
+                Assert.NotNull(declarativeType);
+                Assert.Equal("fromConverter", declarativeType.Data);
+            }
+        }
+
         [Fact]
         public void TestFolderSource()
         {
@@ -381,6 +437,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             text = await resource.ReadTextAsync();
             Assert.Equal(contents, text);
+        }
+
+        private class MemoryResource : Resource
+        {
+            public override Task<Stream> OpenStreamAsync()
+            {
+                byte[] byteArray = Encoding.UTF8.GetBytes("{}");
+                return Task.FromResult<Stream>(new MemoryStream(byteArray));
+            }
         }
     }
 }

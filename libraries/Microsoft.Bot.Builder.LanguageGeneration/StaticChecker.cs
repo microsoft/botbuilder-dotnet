@@ -15,7 +15,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     internal class StaticChecker : LGTemplateParserBaseVisitor<List<Diagnostic>>
     {
-        private readonly ExpressionParser _baseExpressionParser;
         private readonly Templates _templates;
         private Template _currentTemplate;
 
@@ -28,7 +27,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public StaticChecker(Templates templates)
         {
             _templates = templates;
-            _baseExpressionParser = templates.ExpressionParser;
         }
 
         // Create a property because we want this to be lazy loaded
@@ -39,7 +37,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (_expressionParser == null)
                 {
                     // create an evaluator to leverage it's customized function look up for checking
-                    var evaluator = new Evaluator(_templates.AllTemplates.ToList(), _baseExpressionParser);
+                    var evaluator = new Evaluator(_templates, _templates.LgOptions);
                     _expressionParser = evaluator.ExpressionParser;
                 }
 

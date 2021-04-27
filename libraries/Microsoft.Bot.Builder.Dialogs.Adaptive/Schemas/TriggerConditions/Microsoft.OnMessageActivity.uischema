@@ -9,11 +9,11 @@
             "actions"
         ],
         "label": "Message received",
-        "subtitle": "Message received activity"
+        "subtitle": "Message activity received"
     },
     "trigger": {
-		"label": "Message received (Message received activity)",
-		"order": 5.81,
-		"submenu": "Activities"
+        "label": "Message received (Message activity received)",
+        "order": 5.81,
+        "submenu": "Activities"
     }
 }

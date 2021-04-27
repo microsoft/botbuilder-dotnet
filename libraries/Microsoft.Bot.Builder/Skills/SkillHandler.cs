@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,10 +22,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// </summary>
         public static readonly string SkillConversationReferenceKey = $"{typeof(SkillHandler).Namespace}.SkillConversationReference";
 
-        private readonly BotAdapter _adapter;
-        private readonly IBot _bot;
-        private readonly SkillConversationIdFactoryBase _conversationIdFactory;
-        private readonly ILogger _logger;
+        private readonly SkillHandlerImpl _inner;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillHandler"/> class,
@@ -55,10 +50,30 @@ namespace Microsoft.Bot.Builder.Skills
             ILogger logger = null)
             : base(credentialProvider, authConfig, channelProvider)
         {
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _conversationIdFactory = conversationIdFactory ?? throw new ArgumentNullException(nameof(conversationIdFactory));
-            _logger = logger ?? NullLogger.Instance;
+            if (adapter == null)
+            {
+                throw new ArgumentNullException(nameof(adapter));
+            }
+
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
+            if (conversationIdFactory == null)
+            {
+                throw new ArgumentNullException(nameof(conversationIdFactory));
+            }
+
+            _inner = new SkillHandlerImpl(
+                SkillConversationReferenceKey,
+                adapter,
+                bot,
+                conversationIdFactory,
+                () => ChannelProvider != null && ChannelProvider.IsGovernment()
+                    ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope
+                    : AuthenticationConstants.ToChannelFromBotOAuthScope,
+                logger ?? NullLogger.Instance);
         }
 
         /// <summary>
@@ -86,7 +101,7 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response.</returns>
         protected override async Task<ResourceResponse> OnSendToConversationAsync(ClaimsIdentity claimsIdentity, string conversationId, Activity activity, CancellationToken cancellationToken = default)
         {
-            return await ProcessActivityAsync(claimsIdentity, conversationId, null, activity, cancellationToken).ConfigureAwait(false);
+            return await _inner.OnSendToConversationAsync(claimsIdentity, conversationId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -115,143 +130,19 @@ namespace Microsoft.Bot.Builder.Skills
         /// <returns>task for a resource response.</returns>
         protected override async Task<ResourceResponse> OnReplyToActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            return await ProcessActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
+            return await _inner.OnReplyToActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         protected override async Task OnDeleteActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, CancellationToken cancellationToken = default)
         {
-            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-
-            var callback = new BotCallbackHandler(async (turnContext, ct) =>
-            {
-                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
-                await turnContext.DeleteActivityAsync(activityId, cancellationToken).ConfigureAwait(false);
-            });
-
-            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
+            await _inner.OnDeleteActivityAsync(claimsIdentity, conversationId, activityId, cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         protected override async Task<ResourceResponse> OnUpdateActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string activityId, Activity activity, CancellationToken cancellationToken = default)
         {
-            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-
-            ResourceResponse resourceResponse = null;
-            var callback = new BotCallbackHandler(async (turnContext, ct) =>
-            {
-                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
-                activity.ApplyConversationReference(skillConversationReference.ConversationReference);
-                turnContext.Activity.Id = activityId;
-                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
-                resourceResponse = await turnContext.UpdateActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-            });
-
-            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
-
-            return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
-        }
-
-        private static void ApplyEoCToTurnContextActivity(ITurnContext turnContext, Activity endOfConversationActivity)
-        {
-            // transform the turnContext.Activity to be the EndOfConversation.
-            turnContext.Activity.Type = endOfConversationActivity.Type;
-            turnContext.Activity.Text = endOfConversationActivity.Text;
-            turnContext.Activity.Code = endOfConversationActivity.Code;
-
-            turnContext.Activity.ReplyToId = endOfConversationActivity.ReplyToId;
-            turnContext.Activity.Value = endOfConversationActivity.Value;
-            turnContext.Activity.Entities = endOfConversationActivity.Entities;
-            turnContext.Activity.Locale = endOfConversationActivity.Locale;
-            turnContext.Activity.LocalTimestamp = endOfConversationActivity.LocalTimestamp;
-            turnContext.Activity.Timestamp = endOfConversationActivity.Timestamp;
-            turnContext.Activity.ChannelData = endOfConversationActivity.ChannelData;
-            turnContext.Activity.Properties = endOfConversationActivity.Properties;
-        }
-
-        private static void ApplyEventToTurnContextActivity(ITurnContext turnContext, Activity eventActivity)
-        {
-            // transform the turnContext.Activity to be the EventActivity.
-            turnContext.Activity.Type = eventActivity.Type;
-            turnContext.Activity.Name = eventActivity.Name;
-            turnContext.Activity.Value = eventActivity.Value;
-            turnContext.Activity.RelatesTo = eventActivity.RelatesTo;
-
-            turnContext.Activity.ReplyToId = eventActivity.ReplyToId;
-            turnContext.Activity.Value = eventActivity.Value;
-            turnContext.Activity.Entities = eventActivity.Entities;
-            turnContext.Activity.Locale = eventActivity.Locale;
-            turnContext.Activity.LocalTimestamp = eventActivity.LocalTimestamp;
-            turnContext.Activity.Timestamp = eventActivity.Timestamp;
-            turnContext.Activity.ChannelData = eventActivity.ChannelData;
-            turnContext.Activity.Properties = eventActivity.Properties;
-        }
-
-        private async Task<SkillConversationReference> GetSkillConversationReferenceAsync(string conversationId, CancellationToken cancellationToken)
-        {
-            SkillConversationReference skillConversationReference;
-            try
-            {
-                skillConversationReference = await _conversationIdFactory.GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-            }
-            catch (NotImplementedException)
-            {
-                _logger.LogWarning("Got NotImplementedException when trying to call GetSkillConversationReferenceAsync() on the ConversationIdFactory, attempting to use deprecated GetConversationReferenceAsync() method instead.");
-                
-                // Attempt to get SkillConversationReference using deprecated method.
-                // this catch should be removed once we remove the deprecated method. 
-                // We need to use the deprecated method for backward compatibility.
-#pragma warning disable 618
-                var conversationReference = await _conversationIdFactory.GetConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-#pragma warning restore 618
-                skillConversationReference = new SkillConversationReference
-                {
-                    ConversationReference = conversationReference,
-                    OAuthScope = ChannelProvider != null && ChannelProvider.IsGovernment() ? GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope : AuthenticationConstants.ToChannelFromBotOAuthScope
-                };
-            }
-
-            if (skillConversationReference == null)
-            {
-                _logger.LogError($"Unable to get skill conversation reference for conversationId {conversationId}.");
-                throw new KeyNotFoundException();
-            }
-
-            return skillConversationReference;
-        }
-
-        private async Task<ResourceResponse> ProcessActivityAsync(ClaimsIdentity claimsIdentity, string conversationId, string replyToActivityId, Activity activity, CancellationToken cancellationToken)
-        {
-            var skillConversationReference = await GetSkillConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-
-            ResourceResponse resourceResponse = null;
-
-            var callback = new BotCallbackHandler(async (turnContext, ct) =>
-            {
-                turnContext.TurnState.Add(SkillConversationReferenceKey, skillConversationReference);
-                activity.ApplyConversationReference(skillConversationReference.ConversationReference);
-                turnContext.Activity.Id = replyToActivityId;
-                turnContext.Activity.CallerId = $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
-                switch (activity.Type)
-                {
-                    case ActivityTypes.EndOfConversation:
-                        await _conversationIdFactory.DeleteConversationReferenceAsync(conversationId, cancellationToken).ConfigureAwait(false);
-                        ApplyEoCToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
-                        break;
-                    case ActivityTypes.Event:
-                        ApplyEventToTurnContextActivity(turnContext, activity);
-                        await _bot.OnTurnAsync(turnContext, ct).ConfigureAwait(false);
-                        break;
-                    default:
-                        resourceResponse = await turnContext.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-                        break;
-                }
-            });
-
-            await _adapter.ContinueConversationAsync(claimsIdentity, skillConversationReference.ConversationReference, skillConversationReference.OAuthScope, callback, cancellationToken).ConfigureAwait(false);
-
-            return resourceResponse ?? new ResourceResponse(Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture));
+            return await _inner.OnUpdateActivityAsync(claimsIdentity, conversationId, activityId, activity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

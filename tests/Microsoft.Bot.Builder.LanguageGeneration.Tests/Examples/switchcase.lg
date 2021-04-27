@@ -6,3 +6,12 @@
         -Happy Sunday!
     -DEFAULT:  
         -Work Hard!
+
+# EqualSwitchTest
+- SWITCH: ${score}
+  - CASE: ${1}
+    - Low
+  - CASE: ${5}
+    - High
+  - DEFAULT:
+    - Unknown (${score} == 1 ? ${score == 1})

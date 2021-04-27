@@ -66,3 +66,11 @@ ${city} ${template5()}
     Speak = bar
     Text = ${newText}
 ]
+
+> Add entries into object
+# addEntries(object, entries)
+- ${if(count(entries) == 1, addEntry(object, first(entries)), addEntries(addEntry(object, first(entries)), subArray(entries, 1, count(entries))))}
+
+# addEntry(object, entry)
+> Add an {index, value} entry to object
+- ${addProperty(object, entry.index, entry.value)}
