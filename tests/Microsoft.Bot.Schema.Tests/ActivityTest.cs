@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Schema.Tests
         [InlineData(nameof(ActivityTypes.Suggestion))]
         [InlineData(nameof(ActivityTypes.Trace))]
         [InlineData(nameof(ActivityTypes.Typing))]
-        public void CastToActivityType_ReturnNullsWithNoType(string activityType)
+        public void CastToActivityType_ReturnNullsWhenCastUnsuccessful(string activityType)
         {
             var activity = new Activity();
 
