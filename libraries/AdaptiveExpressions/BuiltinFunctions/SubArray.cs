@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
@@ -39,10 +40,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                     (start, error) = startExpr.TryEvaluate<int>(state, options);
                     if (error == null)
                     {
-                        if (error == null && (start < 0 || start > list.Count))
-                        {
-                            error = $"{startExpr}={start} which is out of range for {arr}";
-                        }
+                        start = Math.Max(Math.Min(list.Count, start), 0);
 
                         if (error == null)
                         {
@@ -55,9 +53,9 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             {
                                 var endExpr = expression.Children[2];
                                 (end, error) = endExpr.TryEvaluate<int>(state, options);
-                                if (error == null && (end < 0 || end > list.Count))
+                                if (error == null)
                                 {
-                                    error = $"{endExpr}={end} which is out of range for {arr}";
+                                    end = Math.Min(Math.Max(0, end), list.Count);
                                 }
                             }
 

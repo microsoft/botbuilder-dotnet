@@ -59,9 +59,7 @@ namespace AdaptiveExpressions.Tests
             Test("split(one, 'l')"), // split only accept string parameter
             Test("split(hello, 1)"), // split only accept string parameter
             Test("substring(hello, 0.5)"), // the second parameter of substring must be integer
-            Test("substring(hello, 10)"), // the start index is out of the range of the string length
             Test("substring(hello, 0, hello)"), // length is not integer
-            Test("substring(hello, 0, 10)"), // the length of substring is out of the range of the original string
             Test("substring(hello, 0, 'hello')"), // length is not integer
             Test("toLower(one)"), // the parameter of toLower must be string
             Test("toLower('hi', 1)"), // the second argument must be a locale string
@@ -396,8 +394,6 @@ namespace AdaptiveExpressions.Tests
             Test("take(one, two)"), // should have collection param
             Test("take(createArray('H','e','l','l','0'),items[5])"), // the second param expr is wrong
             Test("subArray(one,1,4)"), // should have collection param
-            Test("subArray(items,-1,4)"), // the second parameter shoule not less than zero
-            Test("subArray(items,1,4)"), // the second parameter shoule  less than the length of the collection
             Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), // the second parameter expression is invalid
             Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), // the second parameter expression is invalid
             Test("sortBy(hello, 'x')"), // first param should be list
