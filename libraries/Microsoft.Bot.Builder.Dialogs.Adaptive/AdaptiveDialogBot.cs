@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private readonly ConversationState _conversationState;
         private readonly UserState _userState;
         private readonly BotFrameworkAuthentication _botFrameworkAuthentication;
+        private readonly IBotTelemetryClient _telemetryClient;
         private readonly LanguagePolicy _languagePolicy;
         private readonly IEnumerable<MemoryScope> _memoryScopes;
         private readonly IEnumerable<IPathResolver> _pathResolvers;
@@ -51,6 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="skillConversationIdFactoryBase">A <see cref="SkillConversationIdFactoryBase"/> implementation.</param>
         /// <param name="languagePolicy">A <see cref="LanguagePolicy"/> to use.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> used to obtain a client for making calls to Bot Builder Skills.</param>
+        /// <param name="telemetryClient">A <see cref="IBotTelemetryClient"/> used to log bot telemetry events.</param>
         /// <param name="scopes">Custom <see cref="MemoryScope"/> implementations that extend the memory system.</param>
         /// <param name="pathResolvers">Custom <see cref="IPathResolver"/> that add new resolvers path shortcuts to memory scopes.</param>
         /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
@@ -64,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             LanguagePolicy languagePolicy,
             BotFrameworkAuthentication botFrameworkAuthentication,
+            IBotTelemetryClient telemetryClient,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
             IEnumerable<Dialog> dialogs = default,
@@ -77,6 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             _skillConversationIdFactoryBase = skillConversationIdFactoryBase ?? throw new ArgumentNullException(nameof(skillConversationIdFactoryBase));
             _languagePolicy = languagePolicy ?? throw new ArgumentNullException(nameof(languagePolicy));
             _botFrameworkAuthentication = botFrameworkAuthentication ?? throw new ArgumentNullException(nameof(botFrameworkAuthentication));
+            _telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
             _memoryScopes = scopes ?? Enumerable.Empty<MemoryScope>();
             _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
             _dialogs = dialogs ?? Enumerable.Empty<Dialog>();
@@ -119,6 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_resourceExplorer.TryGetResource(_languageGeneratorId, out var resource) ? (LanguageGenerator)new ResourceMultiLanguageGenerator(_languageGeneratorId) : new TemplateEngineLanguageGenerator());
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             turnContext.TurnState.Add(_languagePolicy);
+            turnContext.TurnState.Add(_telemetryClient);
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
