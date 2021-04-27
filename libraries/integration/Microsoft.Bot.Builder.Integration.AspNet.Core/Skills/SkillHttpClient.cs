@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
     /// <summary>
     /// A <see cref="BotFrameworkHttpClient"/>specialized for Skills that encapsulates Conversation ID generation.
     /// </summary>
-    [Obsolete("Obtain a BotFrameworkClient from the BotFrameworkAuthentication to perform operations that were performed through SkillHttpClient.")]
+    [Obsolete("Use BotFrameworkAuthentication.CreateBotFrameworkClient() to obtain a client and perform the operations that were accomplished through SkillHttpClient.")]
     public class SkillHttpClient : BotFrameworkHttpClient
     {
         private readonly SkillConversationIdFactoryBase _conversationIdFactory;
