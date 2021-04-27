@@ -244,6 +244,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("greetInAWeek", new { day = "Monday" }).ToString();
             Assert.True(evaled == "Work Hard!");
+
+            evaled = templates.Evaluate("EqualSwitchTest", new { score = 1L }).ToString();
+            Assert.True(evaled == "Low");
         }
 
         [Fact]
