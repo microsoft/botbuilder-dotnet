@@ -472,6 +472,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                     variableOptions = new string[] { "text", "newText" },
                     templateRefOptions = new string[] { "ST2" }
                 },
+                new
+                {
+                    name = "addEntries",
+                    variableOptions = new string[] { "object", "entries" },
+                    templateRefOptions = new string[] { "addEntry", "addEntries" }
+                },
             };
 
             foreach (var testItem in testData)

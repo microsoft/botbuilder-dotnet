@@ -45,20 +45,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         /// <summary>
         /// Analyzes a template to get the static analyzer results. 
-        /// Throws errors if certain errors detected <see cref="TemplateErrors"/>.
         /// </summary>
         /// <param name="templateName">Template name.</param>
         /// <returns>Analyze result including variables and template references.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            if (!_templateMap.ContainsKey(templateName))
+            if (!_templateMap.ContainsKey(templateName) || _evaluationTargetStack.Any(e => e.TemplateName == templateName))
             {
-                throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
-            }
-
-            if (_evaluationTargetStack.Any(e => e.TemplateName == templateName))
-            {
-                throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                return new AnalyzerResult();
             }
 
             // Using a stack to track the evaluation trace
@@ -216,8 +210,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    // if template has parameters, just get the template ref without variables.
-                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
+                    if (!result.TemplateReferences.Contains(templateName))
+                    {
+                        // if template has parameters, just get the template ref without variables.
+                        result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
+                    }
                 }
             }
 
