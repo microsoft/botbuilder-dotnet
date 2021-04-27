@@ -313,16 +313,16 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.True(reply.Locale == (activityLocale ?? createReplyLocale));
         }
 
-        [Fact]
-        public void DoesNotCastToTraceWhenActivityTypeIsNull()
-        {
-            var activity = new Activity();
-            var trace = activity.AsTraceActivity();
+        //[Fact]
+        //public void DoesNotCastToTraceWhenActivityTypeIsNull()
+        //{
+        //    var activity = new Activity();
+        //    var trace = activity.AsTraceActivity();
 
-            Assert.NotNull(activity);
-            Assert.Null(activity.Type);
-            Assert.Null(trace);
-        }
+        //    Assert.NotNull(activity);
+        //    Assert.Null(activity.Type);
+        //    Assert.Null(trace);
+        //}
 
         [Theory]
         [InlineData(nameof(ActivityTypes.Command))]
@@ -346,10 +346,42 @@ namespace Microsoft.Bot.Schema.Tests
             {
                 Type = GetActivityType(activityType)
             };
-            CastToActivityType(activityType, activity);
+
+            // This will return null if casting was unsuccessful, otherwise it should return an Activity
+            var castActivity = CastToActivityType(activityType, activity);
 
             Assert.NotNull(activity);
+            Assert.NotNull(castActivity);
             Assert.True(activity.Type.ToLowerInvariant() == activityType.ToLowerInvariant());
+        }
+
+        [Theory]
+        [InlineData(nameof(ActivityTypes.Command))]
+        [InlineData(nameof(ActivityTypes.CommandResult))]
+        [InlineData(nameof(ActivityTypes.ContactRelationUpdate))]
+        [InlineData(nameof(ActivityTypes.ConversationUpdate))]
+        [InlineData(nameof(ActivityTypes.EndOfConversation))]
+        [InlineData(nameof(ActivityTypes.Event))]
+        [InlineData(nameof(ActivityTypes.Handoff))]
+        [InlineData(nameof(ActivityTypes.InstallationUpdate))]
+        [InlineData(nameof(ActivityTypes.Invoke))]
+        [InlineData(nameof(ActivityTypes.Message))]
+        [InlineData(nameof(ActivityTypes.MessageDelete))]
+        [InlineData(nameof(ActivityTypes.MessageReaction))]
+        [InlineData(nameof(ActivityTypes.MessageUpdate))]
+        [InlineData(nameof(ActivityTypes.Suggestion))]
+        [InlineData(nameof(ActivityTypes.Trace))]
+        [InlineData(nameof(ActivityTypes.Typing))]
+        public void CastToActivityType_ReturnNullsWithNoType(string activityType)
+        {
+            var activity = new Activity();
+
+            // This will return null if casting was unsuccessful, otherwise it should return an Activity
+            var result = CastToActivityType(activityType, activity);
+
+            Assert.NotNull(activity);
+            Assert.Null(activity.Type);
+            Assert.Null(result);
         }
 
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
@@ -402,10 +434,10 @@ namespace Microsoft.Bot.Schema.Tests
             return (string)typeof(ActivityTypes).GetField(type).GetValue(null);
         }
 
-        private void CastToActivityType(string activityType, IActivity activity)
+        private Activity CastToActivityType(string activityType, IActivity activity)
         {
             var castMethod = typeof(Activity).GetMethod($"As{activityType}Activity");
-            castMethod.Invoke(activity, new object[0]);
+            return (Activity)castMethod.Invoke(activity, new object[0]);
         }
     }
 }
