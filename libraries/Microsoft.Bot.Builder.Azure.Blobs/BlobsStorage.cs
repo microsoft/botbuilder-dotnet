@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Azure;
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Newtonsoft.Json;
@@ -32,6 +33,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         private readonly JsonSerializer _jsonSerializer;
         private readonly BlobContainerClient _containerClient;
         private int _checkForContainerExistence;
+        private readonly StorageTransferOptions _storageTransferOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
@@ -44,21 +46,39 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
         public BlobsStorage(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
+            : this(dataConnectionString, containerName, default, jsonSerializer)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsStorage"/> class.
+        /// </summary>
+        /// <param name="dataConnectionString">Azure Storage connection string.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
+        /// /// <param name="storageTransferOptions">Used for providing options for parallel transfers <see cref="StorageTransferOptions"/>.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        public BlobsStorage(string dataConnectionString, string containerName, StorageTransferOptions storageTransferOptions, JsonSerializer jsonSerializer = null)
         {
             if (string.IsNullOrEmpty(dataConnectionString))
-            { 
-                throw new ArgumentNullException(nameof(dataConnectionString)); 
+            {
+                throw new ArgumentNullException(nameof(dataConnectionString));
             }
-            
+
             if (string.IsNullOrEmpty(containerName))
             {
                 throw new ArgumentNullException(nameof(containerName));
             }
 
+            _storageTransferOptions = storageTransferOptions;
+
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
-                                                    {
-                                                        TypeNameHandling = TypeNameHandling.All,
-                                                    });
+                                                {
+                                                    TypeNameHandling = TypeNameHandling.All,
+                                                });
 
             // Triggers a check for the existence of the container
             _checkForContainerExistence = 1;
@@ -84,7 +104,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 var blobName = GetBlobName(key);
                 var blobClient = _containerClient.GetBlobClient(blobName);
-                await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);   
+                await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -163,19 +183,18 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 var accessCondition = (!string.IsNullOrEmpty(storeItem?.ETag) && storeItem?.ETag != "*")
                     ? new BlobRequestConditions() { IfMatch = new ETag(storeItem?.ETag) }
                     : null;
-                
+
                 var blobName = GetBlobName(keyValuePair.Key);
                 var blobReference = _containerClient.GetBlobClient(blobName);
                 try
                 {
-                    using (var memoryStream = new MemoryStream())
-                    using (var streamWriter = new StreamWriter(memoryStream))
-                    {
-                        _jsonSerializer.Serialize(streamWriter, newValue);
-                        await streamWriter.FlushAsync().ConfigureAwait(false);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                        await blobReference.UploadAsync(memoryStream, conditions: accessCondition, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    }
+                    using var memoryStream = new MemoryStream();
+                    using var streamWriter = new StreamWriter(memoryStream);
+                    _jsonSerializer.Serialize(streamWriter, newValue);
+                    await streamWriter.FlushAsync().ConfigureAwait(false);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    await blobReference.UploadAsync(memoryStream, conditions: accessCondition, transferOptions: _storageTransferOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 catch (RequestFailedException ex)
                 when (ex.Status == (int)HttpStatusCode.BadRequest
@@ -226,7 +245,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     // additional retry logic, even though this is a read operation blob storage can return 412 if there is contention
                     if (i++ < 8)
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(2),  cancellationToken).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken).ConfigureAwait(false);
                         continue;
                     }
                     else
