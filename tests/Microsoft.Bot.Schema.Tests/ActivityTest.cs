@@ -428,7 +428,7 @@ namespace Microsoft.Bot.Schema.Tests
 
             return activity;
         }
-        
+
         private string GetActivityType(string type)
         {
             return (string)typeof(ActivityTypes).GetField(type).GetValue(null);

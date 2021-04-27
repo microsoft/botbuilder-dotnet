@@ -23,9 +23,9 @@ INLINE_MULTILINE: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* '```' WHITESPA
 
 MULTILINE_PREFIX: WHITESPACE* '-' WHITESPACE* '```' ~('\r'|'\n')* { startTemplate && TokenStartColumn == 0 }? -> pushMode(MULTILINE_MODE);
 
-TEMPLATE_BODY : ~('\r'|'\n')+ { startTemplate }?;
+TEMPLATE_BODY : ~('\r'|'\n') { startTemplate }? ~('\r'|'\n')*;
 
-INVALID_LINE :  ~('\r'|'\n')+ { !startTemplate }?;
+INVALID_LINE :  ~('\r'|'\n') { !startTemplate }? ~('\r'|'\n')*;
 
 
 mode MULTILINE_MODE;
