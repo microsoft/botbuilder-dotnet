@@ -314,8 +314,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await dc.Context.TurnState.Get<ConversationState>().SaveChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
 
             // Prepare OAuthCard
-            var title = await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
-            var text = await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var title = Title == null ? null : await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var text = Text == null ? null : await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
             var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State), Title = title, Text = text };
 
             // Send OAuthCard to root bot. The root bot could attempt to do a token exchange or if it cannot do token exchange for this connection
