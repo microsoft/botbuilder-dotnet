@@ -286,13 +286,13 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [InlineData("en-uS", "response", true)] // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
-        [InlineData("en-uS", "response", false, null)]
-        [InlineData(null, "", true, "en-us")]
-        [InlineData(null, null, true, null)]
-        public void CanCreateReplyActivity(string activityLocale, string text, bool createRecipient = true, string createReplyLocale = null)
+        [InlineData("en-uS", "response", false, true, null)] // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
+        [InlineData("en-uS", "response", false, false, null)]
+        [InlineData(null, "", true, false, "en-us")]
+        [InlineData(null, null, true, true, null)]
+        public void CanCreateReplyActivity(string activityLocale, string text, bool createRecipient = true, bool createFrom = true, string createReplyLocale = null)
         {
-            var activity = CreateActivity(activityLocale, createRecipient);
+            var activity = CreateActivity(activityLocale, createRecipient, createFrom);
             var reply = activity.CreateReply(text, createReplyLocale);
 
             Assert.NotNull(reply);

@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Schema
                 Type = ActivityTypes.Message,
                 Timestamp = DateTime.UtcNow,
                 From = new ChannelAccount(id: Recipient?.Id, name: Recipient?.Name),
-                Recipient = new ChannelAccount(id: From.Id, name: From.Name),
+                Recipient = new ChannelAccount(id: From?.Id, name: From?.Name),
                 ReplyToId = Id,
                 ServiceUrl = ServiceUrl,
                 ChannelId = ChannelId,
