@@ -17,7 +17,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
     /// </summary>
     internal class ConvertFromUtc : ExpressionEvaluator
     {
-        private const string DefaultFormat = "yyyy-MM-ddTHH:mm:ss.fffffffK";
+        public const string DefaultFormat = "yyyy-MM-ddTHH:mm:ss.fffffffK";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertFromUtc"/> class.
