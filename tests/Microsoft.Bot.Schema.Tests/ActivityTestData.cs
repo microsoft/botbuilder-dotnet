@@ -11,6 +11,8 @@ namespace Microsoft.Bot.Schema.Tests
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return new object[] { new JObject() };
+                yield return new object[] { null };
+                yield return new object[] { new Dictionary<string, string>() };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

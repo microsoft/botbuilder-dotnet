@@ -444,16 +444,16 @@ namespace Microsoft.Bot.Schema
         public bool TryGetChannelData<TypeT>(out TypeT instance)
 #pragma warning restore CA1715 // Identifiers should have correct prefix
         {
-            instance = default(TypeT);
+            instance = default;
 
             try
             {
-                if (this.ChannelData == null)
+                if (ChannelData == null)
                 {
                     return false;
                 }
 
-                instance = this.GetChannelData<TypeT>();
+                instance = GetChannelData<TypeT>();
                 return true;
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)

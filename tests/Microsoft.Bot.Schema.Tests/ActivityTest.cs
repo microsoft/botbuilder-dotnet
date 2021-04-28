@@ -379,24 +379,29 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [InlineData(null)]
         [ClassData(typeof(TestChannelData))]
-        public void CanGetChannelData(object channelData)
+        public void CanGetStrictlyTypedChannelData(object channelData)
         {
             var activity = new Activity()
             {
                 ChannelData = channelData
             };
 
-            var result = activity.GetChannelData<MyChannelData>();
-
-            if (channelData == null)
+            try
             {
-                Assert.Null(result);
+                var result = activity.GetChannelData<MyChannelData>();
+                if (channelData == null)
+                {
+                    Assert.Null(result);
+                }
+                else
+                {
+                    Assert.IsType<MyChannelData>(result);
+                }
             }
-            else
+            catch
             {
-                Assert.True(result.GetType() == typeof(MyChannelData));
+                Assert.IsNotType<MyChannelData>(channelData);
             }
         }
 
@@ -434,6 +439,30 @@ namespace Microsoft.Bot.Schema.Tests
             };
 
             Assert.Equal(expected, activity.IsTargetActivityType(targetType));
+        }
+
+        [Theory]
+        [ClassData(typeof(TestChannelData))]
+        public void TryGetChannelData(object channelData)
+        {
+            var activity = new Activity()
+            {
+                ChannelData = channelData
+            };
+
+            var successfullyGotChannelData = activity.TryGetChannelData(out MyChannelData data);
+            var expectedSuccess = channelData?.GetType() == typeof(JObject);
+
+            Assert.Equal(expectedSuccess, successfullyGotChannelData);
+            if (successfullyGotChannelData == true)
+            {
+                Assert.NotNull(data);
+                Assert.IsType<MyChannelData>(data);
+            }
+            else
+            {
+                Assert.Null(data);
+            }
         }
 
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
