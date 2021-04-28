@@ -20,16 +20,16 @@ namespace Microsoft.Bot.Schema.Tests
         {
             public IEnumerator<object[]> GetEnumerator()
             {
-                yield return new object[] { "text", null, null, null, true };
-                yield return new object[] { null, "summary", null, null, true };
-                yield return new object[] { null, null, GetAttachment(), null, true };
-                yield return new object[] { null, null, null, new MyChannelData(), true };
-                yield return new object[] { null, null, null, null, false };
+                yield return new object[] { new Activity() { Text = "text" }, true };
+                yield return new object[] { new Activity() { Summary = "summary" }, true };
+                yield return new object[] { new Activity() { Attachments = GetAttachments() }, true };
+                yield return new object[] { new Activity() { ChannelData = new MyChannelData() }, true };
+                yield return new object[] { new Activity(), false };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            private IList<Attachment> GetAttachment()
+            private IList<Attachment> GetAttachments()
             {
                 return new List<Attachment> { new Attachment() };
             }

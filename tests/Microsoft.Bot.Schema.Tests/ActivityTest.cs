@@ -413,16 +413,8 @@ namespace Microsoft.Bot.Schema.Tests
 
         [Theory]
         [ClassData(typeof(GetContentData))]
-        public void HasContent(string text, string summary, IList<Attachment> attachments, object channelData, bool expected)
+        public void HasContent(Activity activity, bool expected)
         {
-            var activity = new Activity()
-            {
-                Text = text,
-                Summary = summary,
-                Attachments = attachments,
-                ChannelData = channelData,
-            };
-
             var hasContent = activity.HasContent();
 
             Assert.Equal(expected, hasContent);
