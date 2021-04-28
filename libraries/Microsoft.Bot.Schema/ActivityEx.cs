@@ -415,17 +415,17 @@ namespace Microsoft.Bot.Schema
         public TypeT GetChannelData<TypeT>()
 #pragma warning restore CA1715 // Identifiers should have correct prefix
         {
-            if (this.ChannelData == null)
+            if (ChannelData == null)
             {
                 return default(TypeT);
             }
 
-            if (this.ChannelData.GetType() == typeof(TypeT))
+            if (ChannelData.GetType() == typeof(TypeT))
             {
-                return (TypeT)this.ChannelData;
+                return (TypeT)ChannelData;
             }
 
-            return ((JObject)this.ChannelData).ToObject<TypeT>();
+            return ((JObject)ChannelData).ToObject<TypeT>();
         }
 
         /// <summary>

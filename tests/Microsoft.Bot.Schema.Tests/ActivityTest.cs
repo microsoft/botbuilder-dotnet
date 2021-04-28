@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -313,17 +314,6 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.True(reply.Locale == (activityLocale ?? createReplyLocale));
         }
 
-        //[Fact]
-        //public void DoesNotCastToTraceWhenActivityTypeIsNull()
-        //{
-        //    var activity = new Activity();
-        //    var trace = activity.AsTraceActivity();
-
-        //    Assert.NotNull(activity);
-        //    Assert.Null(activity.Type);
-        //    Assert.Null(trace);
-        //}
-
         [Theory]
         [InlineData(nameof(ActivityTypes.Command))]
         [InlineData(nameof(ActivityTypes.CommandResult))]
@@ -384,6 +374,28 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Null(result);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [ClassData(typeof(TestChannelData))]
+        public void CanGetChannelData(object channelData)
+        {
+            var activity = new Activity()
+            {
+                ChannelData = channelData
+            };
+
+            var result = activity.GetChannelData<MyChannelData>();
+
+            if (channelData == null)
+            {
+                Assert.Null(result);
+            }
+            else
+            {
+                Assert.True(result.GetType() == typeof(MyChannelData));
+            }
+        }
+
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
         private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {
@@ -438,6 +450,23 @@ namespace Microsoft.Bot.Schema.Tests
         {
             var castMethod = typeof(Activity).GetMethod($"As{activityType}Activity");
             return (Activity)castMethod.Invoke(activity, new object[0]);
+        }
+
+        private class TestChannelData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { new JObject() };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private class MyChannelData
+        {
+            public string Ears { get; set; }
+
+            public string Whiskers { get; set; }
         }
     }
 }
