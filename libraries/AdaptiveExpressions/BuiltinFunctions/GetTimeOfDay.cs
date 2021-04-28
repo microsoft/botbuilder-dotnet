@@ -34,7 +34,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             }
                             else if (DateTime.TryParseExact(
                                    s: args[0].ToString(),
-                                   format: "yyyy-MM-ddTHH:mm:ss.fffffffK",
+                                   format: ConvertFromUtc.DefaultFormat,
                                    provider: CultureInfo.InvariantCulture,
                                    style: DateTimeStyles.RoundtripKind,
                                    result: out var parsed))
