@@ -366,22 +366,22 @@ namespace Microsoft.Bot.Schema
         /// <see cref="ActivityTypes.Message"/>.</remarks>
         public bool HasContent()
         {
-            if (!string.IsNullOrWhiteSpace(this.Text))
+            if (!string.IsNullOrWhiteSpace(Text))
             {
                 return true;
             }
 
-            if (!string.IsNullOrWhiteSpace(this.Summary))
+            if (!string.IsNullOrWhiteSpace(Summary))
             {
                 return true;
             }
 
-            if (this.Attachments != null && this.Attachments.Any())
+            if (Attachments != null && Attachments.Any())
             {
                 return true;
             }
 
-            if (this.ChannelData != null)
+            if (ChannelData != null)
             {
                 return true;
             }

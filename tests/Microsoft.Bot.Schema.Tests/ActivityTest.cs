@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using static Microsoft.Bot.Schema.Tests.ActivityTestData;
 
 namespace Microsoft.Bot.Schema.Tests
 {
@@ -194,7 +195,7 @@ namespace Microsoft.Bot.Schema.Tests
         [InlineData(null, "myValueType", false, false, null)]
         [InlineData(null, null, true, false, null)]
         [InlineData(null, null, false, true, "testLabel")]
-        public void TestCreateTrace(string value, string valueType, bool createRecipient, bool createFrom, string label = null)
+        public void CreateTrace(string value, string valueType, bool createRecipient, bool createFrom, string label = null)
         {
             // https://github.com/Microsoft/botbuilder-dotnet/issues/1580
             var activity = CreateActivity("en-us", createRecipient, createFrom);
@@ -410,6 +411,23 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.True(mentions.Length == 0);
         }
 
+        [Theory]
+        [ClassData(typeof(GetContentData))]
+        public void HasContent(string text, string summary, IList<Attachment> attachments, object channelData, bool expected)
+        {
+            var activity = new Activity()
+            {
+                Text = text,
+                Summary = summary,
+                Attachments = attachments,
+                ChannelData = channelData,
+            };
+
+            var hasContent = activity.HasContent();
+
+            Assert.Equal(expected, hasContent);
+        }
+
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
         private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {
@@ -464,23 +482,6 @@ namespace Microsoft.Bot.Schema.Tests
         {
             var castMethod = typeof(Activity).GetMethod($"As{activityType}Activity");
             return (Activity)castMethod.Invoke(activity, new object[0]);
-        }
-
-        private class TestChannelData : IEnumerable<object[]>
-        {
-            public IEnumerator<object[]> GetEnumerator()
-            {
-                yield return new object[] { new JObject() };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
-        private class MyChannelData
-        {
-            public string Ears { get; set; }
-
-            public string Whiskers { get; set; }
         }
     }
 }
