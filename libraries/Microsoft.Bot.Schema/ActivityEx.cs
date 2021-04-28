@@ -400,7 +400,7 @@ namespace Microsoft.Bot.Schema
         /// <seealso cref="Mention"/>
         public Mention[] GetMentions()
         {
-            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
+            return Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
                 .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? Array.Empty<Mention>();
         }
 

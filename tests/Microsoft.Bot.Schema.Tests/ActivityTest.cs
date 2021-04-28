@@ -396,6 +396,20 @@ namespace Microsoft.Bot.Schema.Tests
             }
         }
 
+        [Fact]
+        public void ShouldGetEmptyArrayIfNoMentions()
+        {
+            var activity = new Activity()
+            {
+                Type = ActivityTypes.Message,
+            };
+
+            var mentions = activity.GetMentions();
+
+            Assert.IsType<Mention[]>(mentions);
+            Assert.True(mentions.Length == 0);
+        }
+
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
         private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {
