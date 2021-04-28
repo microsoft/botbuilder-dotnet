@@ -428,6 +428,19 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal(expected, hasContent);
         }
 
+        [Theory]
+        [InlineData("message/testType", ActivityTypes.Message, true)]
+        [InlineData("message-testType", ActivityTypes.Message, false)]
+        public void IsActivity(string typeOfActivity, string targetType, bool expected)
+        {
+            var activity = new TestActivity()
+            {
+                Type = typeOfActivity
+            };
+
+            Assert.Equal(expected, activity.IsTargetActivityType(targetType));
+        }
+
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
         private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {

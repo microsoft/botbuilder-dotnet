@@ -41,5 +41,13 @@ namespace Microsoft.Bot.Schema.Tests
 
             public string Whiskers { get; set; }
         }
+
+        internal class TestActivity : Activity
+        {
+            public bool IsTargetActivityType(string activityType)
+            {
+                return IsActivity(activityType);
+            }
+        }
     }
 }
