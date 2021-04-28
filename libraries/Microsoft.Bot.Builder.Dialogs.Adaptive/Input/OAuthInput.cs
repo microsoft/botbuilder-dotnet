@@ -308,9 +308,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private async Task SendOAuthCardAsync(DialogContext dc, IMessageActivity prompt, CancellationToken cancellationToken)
         {
-            var title = await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
-            var text = await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            // Save state prior to sending OAuthCard: the invoke response for a token exchange from the root bot could come in
+            // before this method ends or could land in another instance in scale-out scenarios, which means that if the state is not saved, 
+            // the OAuthInput would not be at the top of the stack, and the token exchange invoke would get discarded.
+            await dc.Context.TurnState.Get<ConversationState>().SaveChangesAsync(dc.Context, false, cancellationToken).ConfigureAwait(false);
+
+            // Prepare OAuthCard
+            var title = Title == null ? null : await Title.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
+            var text = Text == null ? null : await Text.GetValueAsync(dc, cancellationToken).ConfigureAwait(false);
             var settings = new OAuthPromptSettings { ConnectionName = ConnectionName?.GetValue(dc.State), Title = title, Text = text };
+
+            // Send OAuthCard to root bot. The root bot could attempt to do a token exchange or if it cannot do token exchange for this connection
+            // it will let the card get to the user to allow them to sign in.
             await OAuthPrompt.SendOAuthCardAsync(settings, dc.Context, prompt, cancellationToken).ConfigureAwait(false);
         }
 

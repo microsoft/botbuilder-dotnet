@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.ApplicationInsights;
+using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
@@ -28,6 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
         /// <param name="skillConversationIdFactoryBase">The <see cref="SkillConversationIdFactoryBase"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="languagePolicy">The <see cref="LanguagePolicy"/> implementation to use for this <see cref="AdaptiveDialog"/>.</param>
         /// <param name="botFrameworkAuthentication">A <see cref="BotFrameworkAuthentication"/> for making calls to Bot Builder Skills.</param>
+        /// <param name="telemetryClient">A <see cref="IBotTelemetryClient"/> for logging bot telemetry events.</param>
         /// <param name="scopes">A set of <see cref="MemoryScope"/> that will be added to the <see cref="ITurnContext"/>.</param>
         /// <param name="pathResolvers">A set of <see cref="IPathResolver"/> that will be added to the <see cref="ITurnContext"/>.</param>
         /// <param name="dialogs">Custom <see cref="Dialog"/> that will be added to the root DialogSet.</param>
@@ -40,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
             SkillConversationIdFactoryBase skillConversationIdFactoryBase,
             LanguagePolicy languagePolicy,
             BotFrameworkAuthentication botFrameworkAuthentication = null,
+            IBotTelemetryClient telemetryClient = null,
             IEnumerable<MemoryScope> scopes = default,
             IEnumerable<IPathResolver> pathResolvers = default,
             IEnumerable<Dialog> dialogs = default,
@@ -53,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
                 skillConversationIdFactoryBase,
                 languagePolicy,
                 botFrameworkAuthentication ?? BotFrameworkAuthenticationFactory.Create(),
+                telemetryClient ?? new NullBotTelemetryClient(),
                 scopes ?? Enumerable.Empty<MemoryScope>(),
                 pathResolvers ?? Enumerable.Empty<IPathResolver>(),
                 dialogs ?? Enumerable.Empty<Dialog>(),
