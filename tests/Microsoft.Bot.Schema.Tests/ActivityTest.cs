@@ -308,8 +308,17 @@ namespace Microsoft.Bot.Schema.Tests
                 Assert.Null(reply.From.Name);
             }
 
-            Assert.True(reply.Recipient.Id == "ChannelAccount_Id_1");
-            Assert.True(reply.Recipient.Name == "ChannelAccount_Name_1");
+            if (createFrom == true)
+            {
+                Assert.True(reply.Recipient.Id == "ChannelAccount_Id_1");
+                Assert.True(reply.Recipient.Name == "ChannelAccount_Name_1");
+            }
+            else
+            {
+                Assert.Null(reply.Recipient.Id);
+                Assert.Null(reply.Recipient.Name);
+            }
+
             Assert.True(reply.ReplyToId == "123");
             Assert.True(reply.ServiceUrl == "ServiceUrl123");
             Assert.True(reply.ChannelId == "ChannelId123");
