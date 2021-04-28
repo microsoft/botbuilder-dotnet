@@ -297,34 +297,13 @@ namespace Microsoft.Bot.Schema.Tests
 
             Assert.NotNull(reply);
             Assert.True(reply.Type == ActivityTypes.Message);
-            if (createRecipient == true)
-            {
-                Assert.True(reply.From.Id == "ChannelAccount_Id_2");
-                Assert.True(reply.From.Name == "ChannelAccount_Name_2");
-            }
-            else
-            {
-                Assert.Null(reply.From.Id);
-                Assert.Null(reply.From.Name);
-            }
-
-            if (createFrom == true)
-            {
-                Assert.True(reply.Recipient.Id == "ChannelAccount_Id_1");
-                Assert.True(reply.Recipient.Name == "ChannelAccount_Name_1");
-            }
-            else
-            {
-                Assert.Null(reply.Recipient.Id);
-                Assert.Null(reply.Recipient.Name);
-            }
-
             Assert.True(reply.ReplyToId == "123");
             Assert.True(reply.ServiceUrl == "ServiceUrl123");
             Assert.True(reply.ChannelId == "ChannelId123");
             Assert.True(reply.Conversation.IsGroup);
             Assert.True(reply.Text == (text ?? string.Empty));
             Assert.True(reply.Locale == (activityLocale ?? createReplyLocale));
+            ValidateRecipientAndFrom(reply, createRecipient, createFrom);
         }
 
         [Theory]
@@ -553,6 +532,31 @@ namespace Microsoft.Bot.Schema.Tests
         {
             var castMethod = typeof(Activity).GetMethod($"As{activityType}Activity");
             return (Activity)castMethod.Invoke(activity, new object[0]);
+        }
+
+        private void ValidateRecipientAndFrom(IActivity activity, bool createRecipient, bool createFrom)
+        {
+            if (createRecipient == true)
+            {
+                Assert.True(activity.From.Id == "ChannelAccount_Id_2");
+                Assert.True(activity.From.Name == "ChannelAccount_Name_2");
+            }
+            else
+            {
+                Assert.Null(activity.From.Id);
+                Assert.Null(activity.From.Name);
+            }
+
+            if (createFrom == true)
+            {
+                Assert.True(activity.Recipient.Id == "ChannelAccount_Id_1");
+                Assert.True(activity.Recipient.Name == "ChannelAccount_Name_1");
+            }
+            else
+            {
+                Assert.Null(activity.Recipient.Id);
+                Assert.Null(activity.Recipient.Name);
+            }
         }
     }
 }
