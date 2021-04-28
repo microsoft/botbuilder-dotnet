@@ -550,7 +550,7 @@ namespace Microsoft.Bot.Schema
         public bool IsFromStreamingConnection()
         {
             var isHttp = ServiceUrl?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase);
-            return isHttp.HasValue ? !isHttp.Value : false;
+            return isHttp.HasValue && !isHttp.Value;
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Schema.Tests
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        internal class GetContentData : IEnumerable<object[]>
+        internal class HasContentData : IEnumerable<object[]>
         {
             public IEnumerator<object[]> GetEnumerator()
             {

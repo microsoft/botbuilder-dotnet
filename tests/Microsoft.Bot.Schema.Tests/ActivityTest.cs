@@ -227,7 +227,7 @@ namespace Microsoft.Bot.Schema.Tests
                 "URN:botframework:WebSocket:http://beep.com",
             };
 
-            var activity = CreateActivity("en-uS");
+            var activity = CreateActivity("en-us");
 
             nonStreaming.ForEach(s =>
             {
@@ -240,6 +240,9 @@ namespace Microsoft.Bot.Schema.Tests
                 activity.ServiceUrl = s;
                 Assert.True(activity.IsFromStreamingConnection());
             });
+
+            activity.ServiceUrl = null;
+            Assert.False(activity.IsFromStreamingConnection());
         }
 
         [Theory]
@@ -412,7 +415,7 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [ClassData(typeof(GetContentData))]
+        [ClassData(typeof(HasContentData))]
         public void HasContent(Activity activity, bool expected)
         {
             var hasContent = activity.HasContent();
