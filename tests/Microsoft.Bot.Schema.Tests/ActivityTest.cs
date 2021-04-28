@@ -465,6 +465,31 @@ namespace Microsoft.Bot.Schema.Tests
             }
         }
 
+        [Fact]
+        public void CanSetCallerId()
+        {
+            var expectedCallerId = "callerId";
+            var activity = new Activity()
+            {
+                CallerId = expectedCallerId
+            };
+
+            Assert.Equal(expectedCallerId, activity.CallerId);
+        }
+
+        [Fact]
+        public void CanSetProperties()
+        {
+            var activity = new Activity()
+            {
+                Properties = new JObject()
+            };
+
+            var props = activity.Properties;
+            Assert.NotNull(props);
+            Assert.IsType<JObject>(props);
+        }
+
         // Default locale intentionally oddly-cased to check that it isn't defaulted somewhere, but tests stay in English
         private static Activity CreateActivity(string locale, bool createRecipient = true, bool createFrom = true)
         {
