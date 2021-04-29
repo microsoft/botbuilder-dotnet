@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Initializes a new instance of the <see cref="LGMemoryScope"/> class.
         /// </summary>
         public LGMemoryScope()
-            : base(ScopePath.LG)
+            : base(ScopePath.LG, false)
         {
         }
 
@@ -31,25 +31,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            // if active dialog is a container dialog then "dialog" binds to it.
-            if (dc.ActiveDialog != null)
+            if (!dc.Context.TurnState.TryGetValue(ScopePath.LG, out object val))
             {
-                var dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                if (dialog is DialogContainer)
-                {
-                    return dc.ActiveDialog.State;
-                }
+                val = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                dc.Context.TurnState[ScopePath.LG] = val;
             }
 
-            // Otherwise we always bind to parent, or if there is no parent the active dialog
-            return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog?.State;
+            return val;
         }
 
         /// <summary>
         /// Changes the backing object for the memory scope.
         /// </summary>
-        /// <param name="dc">The <see cref="DialogContext"/> object for this turn.</param>
-        /// <param name="memory">Memory object to set for the scope.</param>
+        /// <param name="dc">dc.</param>
+        /// <param name="memory">memory.</param>
         public override void SetMemory(DialogContext dc, object memory)
         {
             if (dc == null)
@@ -57,32 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (memory == null)
-            {
-                throw new ArgumentNullException(nameof(memory));
-            }
-
-            // if active dialog is a container dialog then "dialog" binds to it
-            if (dc.ActiveDialog != null)
-            {
-                var dialog = dc.FindDialog(dc.ActiveDialog.Id);
-                if (dialog is DialogContainer)
-                {
-                    dc.ActiveDialog.State = (IDictionary<string, object>)memory;
-                    return;
-                }
-            }
-            else if (dc.Parent?.ActiveDialog != null)
-            {
-                dc.Parent.ActiveDialog.State = (IDictionary<string, object>)memory;
-                return;
-            }
-            else if (dc.ActiveDialog != null)
-            {
-                dc.ActiveDialog.State = (IDictionary<string, object>)memory;
-            }
-
-            throw new InvalidOperationException("Cannot set DialogMemoryScope. There is no active dialog or parent dialog in the context");
+            dc.Context.TurnState[ScopePath.LG] = memory;
         }
     }
 }

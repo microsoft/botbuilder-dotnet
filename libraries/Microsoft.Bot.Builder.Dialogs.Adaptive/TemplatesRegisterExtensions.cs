@@ -36,7 +36,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         var currentLocale = GetCurrentLocale(state, options);
 
-                        if (state.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var resourceId))
+                        var resourceId = GetResourceID(state);
+
+                        if (!string.IsNullOrEmpty(resourceId))
                         {
                             var (resourceName, locale) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
 
@@ -159,6 +161,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return (null, error);
         }
 
+        private static string GetResourceID(IMemory memory)
+        {
+            if (memory.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var generatorIdStackObj))
+            {
+                var generatorIdStack = JArray.FromObject(generatorIdStackObj).ToObject<List<string>>();
+                return generatorIdStack[generatorIdStack.Count - 1];
+            }
+
+            return string.Empty;
+        }
+
         private static LanguagePolicy GetLanguagePolicy(IMemory memory)
         {
             var getLanguagePolicy = memory.TryGetValue(AdaptiveDialog.LanguagePolicyKey, out var lp);
@@ -169,7 +182,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                languagePolicy = JObject.FromObject(lp).ToObject<LanguagePolicy>();
+                var languagePolicyStack = JArray.FromObject(lp).ToObject<List<LanguagePolicy>>();
+                languagePolicy = languagePolicyStack[languagePolicyStack.Count - 1];
             }
 
             return languagePolicy;

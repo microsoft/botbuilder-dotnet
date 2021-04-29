@@ -17,6 +17,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -165,6 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             EnsureDependenciesInstalled();
+            PushLGState(dc);
 
             await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
@@ -258,6 +260,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
         {
+            PushLGState(dc);
+
             if (result is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
@@ -286,6 +290,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default)
         {
+            PopLGStates(turnContext);
+
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
@@ -746,19 +752,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Generator != null)
             {
                 dialogContext.Services.Set(this.Generator);
-                if (this.Generator is ResourceMultiLanguageGenerator generator)
-                {
-                    // Set generator key into state.
-                    dialogContext.State.SetValue(GeneratorIdKey, generator.ResourceId);
-
-                    // Set language policy key into state.
-                    var languagePolicy = generator.LanguagePolicy ??
-                                dialogContext.Services.Get<LanguagePolicy>() ??
-                                new LanguagePolicy();
-                    dialogContext.State.SetValue(LanguagePolicyKey, languagePolicy);
-
-                    dialogContext.RegisterTemplateFunctions(Generator);
-                }
             }
         }
 
@@ -1755,6 +1748,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             old.Assignments = list;
             list.Sort(comparer);
+        }
+
+        // Push necessary LG state into LGMemoryScope
+        private void PushLGState(DialogContext dc)
+        {
+            EnsureLGStateExists(dc);
+
+            if (dc.State.TryGetValue<List<string>>(GeneratorIdKey, out var generatorIdStack) &&
+                dc.State.TryGetValue<List<LanguagePolicy>>(LanguagePolicyKey, out var languagePolicyStack))
+            {
+                if (this.Generator is ResourceMultiLanguageGenerator generator)
+                {
+                    generatorIdStack.Add(generator.ResourceId);
+                    var languagePolicy = generator.LanguagePolicy ??
+                            dc.Services.Get<LanguagePolicy>() ??
+                            new LanguagePolicy();
+                    languagePolicyStack.Add(languagePolicy);
+
+                    dc.RegisterTemplateFunctions(generator);
+                } 
+                else
+                {
+                    generatorIdStack.Add(string.Empty);
+                    languagePolicyStack.Add(new LanguagePolicy());
+                }
+
+                dc.State.SetValue(GeneratorIdKey, generatorIdStack);
+                dc.State.SetValue(LanguagePolicyKey, languagePolicyStack);
+            }
+        }
+
+        // Pop the LG state out of stack, , this is called when dialog ends
+        // where only turnContext instead of dialogContext is available
+        private void PopLGStates(ITurnContext tc)
+        {
+            var state = tc.TurnState.Get<DialogStateManager>();
+
+            if (state.TryGetValue<List<string>>(GeneratorIdKey, out var generatorIdStack) &&
+                state.TryGetValue<List<LanguagePolicy>>(LanguagePolicyKey, out var languagePolicyStack))
+            {
+                generatorIdStack.RemoveAt(generatorIdStack.Count - 1);
+                languagePolicyStack.RemoveAt(languagePolicyStack.Count - 1);
+
+                state.SetValue(GeneratorIdKey, generatorIdStack);
+                state.SetValue(LanguagePolicyKey, languagePolicyStack);
+            }
+        }
+
+        private void EnsureLGStateExists(DialogContext dc)
+        {
+            // Given dc.state.ContainsKey is not reliable, we use TryGetValue to test key exists
+            if (!dc.State.TryGetValue<List<string>>(GeneratorIdKey, out var _))
+            {
+                dc.State.SetValue(GeneratorIdKey, new List<string>());
+            }
+
+            if (!dc.State.TryGetValue<List<LanguagePolicy>>(LanguagePolicyKey, out var _))
+            {
+                dc.State.SetValue(LanguagePolicyKey, new List<LanguagePolicy>());
+            }
         }
     }
 }
