@@ -103,7 +103,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "'foo' does not match memory scopes:[turn,settings,dialog,dialogContext,dialogclass,class,this,conversation,user]"
+            "text": "'foo' does not match memory scopes:[turn,settings,dialog,lg,dialogContext,dialogclass,class,this,conversation,user]"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",

@@ -28,6 +28,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string Dialog = "dialog";
 
         /// <summary>
+        /// LG memory scope root path.
+        /// </summary>
+        public const string LG = "lg";
+
+        /// <summary>
         /// DialogClass memory scope root path.
         /// </summary>
         public const string DialogClass = "dialogclass";

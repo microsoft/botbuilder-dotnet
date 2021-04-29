@@ -35,8 +35,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public const string Kind = "Microsoft.AdaptiveDialog";
 
         internal const string ConditionTracker = "dialog._tracker.conditions";
-        internal const string GeneratorIdKey = "dialog.generatorId";
-        internal const string LanguagePolicyKey = "dialog.languagePolicy";
+        internal const string GeneratorIdKey = "lg.generatorId";
+        internal const string LanguagePolicyKey = "lg.languagePolicy";
 
         private const string AdaptiveKey = "_adaptive";
         private const string DefaultOperationKey = "$defaultOperation";

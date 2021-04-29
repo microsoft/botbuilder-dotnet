@@ -546,7 +546,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var dsm = new DialogStateManager(dc);
-            foreach (var scope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && ms.IncludeInSnapshot == true).Select(ms => ms.Name))
+            foreach (var scope in dsm.Configuration.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && !(ms is LGMemoryScope) && ms.IncludeInSnapshot == true).Select(ms => ms.Name))
             {
                 var path = $"{scope}.test";
                 Assert.Null(dc.State.GetValue<string>(path));

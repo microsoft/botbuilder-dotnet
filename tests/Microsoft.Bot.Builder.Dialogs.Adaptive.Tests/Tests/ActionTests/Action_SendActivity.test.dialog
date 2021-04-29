@@ -1,96 +1,63 @@
 {
     "$schema": "../../../tests.schema",
     "$kind": "Microsoft.Test.Script",
-    "dialog": {
-        "$kind": "Microsoft.AdaptiveDialog",
-        "id": "planningTest",
-        "triggers": [
-            {
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SetProperty",
+            "property": "dialog.testString",
+            "value": "a"
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${dialog.testString}"
+          },
+          {
+            "$kind": "Microsoft.AdaptiveDialog",
+            "triggers": [
+              {
                 "$kind": "Microsoft.OnBeginDialog",
                 "actions": [
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": "success"
-                    },
-                    {
-                        "$kind": "Microsoft.SetProperty",
-                        "property": "$disabled",
-                        "value": "=true"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "disabled": "=$disabled",
-                        "activity": "fail"
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": {
-                            "type": "message",
-                            "text": "activity works"
-                        }
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": {
-                            "$kind": "Microsoft.StaticActivityTemplate",
-                            "activity": {
-                                "type": "message",
-                                "text": "static activity works"
-                            }
-                        }
-                    },
-                    {
-                        "$kind": "Microsoft.SendActivity",
-                        "activity": {
-                        "$kind": "Microsoft.StaticActivityTemplate",
-                        "activity": {
-                            "type": "message",
-                            "channelData": {
-                                "attachment": {
-                                    "type": "template",
-                                    "payload": {
-                                        "template_type": "button",
-                                        "text": "What do you want to do next?",
-                                        "buttons": [
-                                            {
-                                                "type": "web_url",
-                                                "url": "https://www.messenger.com",
-                                                "title": "Visit Messenger"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                        }
-                    }
+                  {
+                    "$kind": "Microsoft.SetProperty",
+                    "property": "dialog.testString",
+                    "value": "b"
+                  },
+                  {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "${dialog.testString}"
+                  }
                 ]
-            }
+              }
+            ]
+          },
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "${dialog.testString}"
+          }
         ]
-    },
+      }
+    ]
+  },
     "script": [
         {
             "$kind": "Microsoft.Test.UserConversationUpdate"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "success"
+            "text": "a"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "activity works"
+            "text": "b"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "static activity works"
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReplyActivity",
-            "assertions": [
-                "type == 'message'",
-                "text == null",
-                "channelData != null"
-            ]
+            "text": "a"
         }
     ]
 }
