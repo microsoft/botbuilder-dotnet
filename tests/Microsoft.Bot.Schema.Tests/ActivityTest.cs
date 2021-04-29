@@ -368,7 +368,7 @@ namespace Microsoft.Bot.Schema.Tests
 
         [Theory]
         [ClassData(typeof(TestChannelData))]
-        public void CanGetStrictlyTypedChannelData(object channelData)
+        public void GetChannelData(object channelData)
         {
             var activity = new Activity()
             {
@@ -439,7 +439,7 @@ namespace Microsoft.Bot.Schema.Tests
             };
 
             var successfullyGotChannelData = activity.TryGetChannelData(out MyChannelData data);
-            var expectedSuccess = channelData?.GetType() == typeof(JObject);
+            var expectedSuccess = GetExpectedTryGetChannelDataResult(channelData);
 
             Assert.Equal(expectedSuccess, successfullyGotChannelData);
             if (successfullyGotChannelData == true)
@@ -557,6 +557,11 @@ namespace Microsoft.Bot.Schema.Tests
                 Assert.Null(activity.Recipient.Id);
                 Assert.Null(activity.Recipient.Name);
             }
+        }
+
+        private bool GetExpectedTryGetChannelDataResult(object channelData)
+        {
+            return channelData?.GetType() == typeof(JObject) || channelData?.GetType() == typeof(MyChannelData);
         }
     }
 }

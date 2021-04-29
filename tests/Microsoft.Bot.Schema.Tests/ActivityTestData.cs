@@ -13,6 +13,7 @@ namespace Microsoft.Bot.Schema.Tests
                 yield return new object[] { new JObject() };
                 yield return new object[] { null };
                 yield return new object[] { new Dictionary<string, string>() };
+                yield return new object[] { new MyChannelData() };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
