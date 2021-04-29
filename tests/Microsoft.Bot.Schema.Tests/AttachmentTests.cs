@@ -85,5 +85,18 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(attachmentInfo);
             Assert.IsType<AttachmentInfo>(attachmentInfo);
         }
+
+        [Fact]
+        public void AttachmentViewInits()
+        {
+            var viewId = "viewId";
+            var size = 5;
+
+            var attachmentView = new AttachmentView(viewId, size);
+
+            Assert.NotNull(attachmentView);
+            Assert.Equal(viewId, attachmentView.ViewId);
+            Assert.Equal(size, attachmentView.Size);
+        }
     }
 }
