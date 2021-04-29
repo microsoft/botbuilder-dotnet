@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Schema
         /// content.</param>
         /// <param name="alt">HTML alt text to include on this thumbnail
         /// image.</param>
-        public ThumbnailUrl(string url = default(string), string alt = default(string))
+        public ThumbnailUrl(string url = default, string alt = default)
         {
             Url = url;
             Alt = alt;
