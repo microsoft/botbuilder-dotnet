@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Schema.Tests
             var cardAction = CardAction.FromString(text);
 
             Assert.Equal(text, cardAction.Title);
-            Assert.Equal(text, cardAction.Text);
+            Assert.Equal(text, cardAction.Value);
         }
     }
 }
