@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>Audio card.</summary>
