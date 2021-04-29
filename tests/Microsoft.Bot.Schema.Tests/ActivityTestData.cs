@@ -37,6 +37,46 @@ namespace Microsoft.Bot.Schema.Tests
             }
         }
 
+        internal class MentionsData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[]
+                {
+                    new List<Entity>() { new Entity() },
+                    false,
+                };
+                yield return new object[]
+                {
+                    new List<Entity>()
+                    {
+                        new Entity()
+                        {
+                            Type = "mention",
+                            Properties = new JObject()
+                            {
+                                { 
+                                    "Mentioned",
+                                    new JObject()
+                                    {
+                                        { "Id", "ChannelAccountId" },
+                                        { "Name", "AccountName" },
+                                        { "Properties", new JObject() },
+                                        { "Role", "ChannelAccountRole" },
+                                    }
+                                },
+                                { "Text", "text" },
+                                { "Type", "mention" },
+                            },
+                        }
+                    },
+                    true
+                };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         internal class MyChannelData
         {
             public string Ears { get; set; }

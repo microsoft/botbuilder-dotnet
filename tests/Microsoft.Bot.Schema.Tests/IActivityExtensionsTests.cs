@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Xunit;
+using static Microsoft.Bot.Schema.Tests.ActivityTestData;
 
 namespace Microsoft.Bot.Schema.Tests
 {
@@ -18,17 +19,18 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal("en-UK", sut.GetLocale());
         }
 
-        [Fact]
-        public void DetectIdMentionInText()
+        [Theory]
+        [ClassData(typeof(MentionsData))]
+        public void DetectMentionedId(List<Entity> entities, bool expectsMention)
         {
             var message = new Activity()
             {
                 Type = ActivityTypes.Message,
-                Entities = new List<Entity>() { new Entity() },
+                Entities = entities,
             };
-            var mentionsId = ActivityExtensions.MentionsId(message, "myId");
+            var mentionsId = ActivityExtensions.MentionsId(message, "ChannelAccountId");
 
-            Assert.False(mentionsId);
+            Assert.Equal(expectsMention, mentionsId);
         }
     }
 }
