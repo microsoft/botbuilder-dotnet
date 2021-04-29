@@ -241,6 +241,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             EnsureDependenciesInstalled();
+            PushLGState(dc);
 
             await this.CheckForVersionChangeAsync(dc, cancellationToken).ConfigureAwait(false);
 
