@@ -171,5 +171,30 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal(locale.ToString(), continuationActivity.Locale);
             Assert.Equal(serviceUrl, continuationActivity.ServiceUrl);
         }
+
+        [Fact]
+        public void ConversationResourceResponseInits()
+        {
+            var activityId = "activityId";
+            var serviceUrl = "http://MyServiceUrl.com";
+            var id = "myId";
+
+            var convoResourceResponse = new ConversationResourceResponse(activityId, serviceUrl, id);
+
+            Assert.NotNull(convoResourceResponse);
+            Assert.IsType<ConversationResourceResponse>(convoResourceResponse);
+            Assert.Equal(activityId, convoResourceResponse.ActivityId);
+            Assert.Equal(serviceUrl, convoResourceResponse.ServiceUrl);
+            Assert.Equal(id, convoResourceResponse.Id);
+        }
+
+        [Fact]
+        public void ConversationResourceResponseInitsWithNoArgs()
+        {
+            var convoResourceResponse = new ConversationResourceResponse();
+
+            Assert.NotNull(convoResourceResponse);
+            Assert.IsType<ConversationResourceResponse>(convoResourceResponse);
+        }
     }
 }
