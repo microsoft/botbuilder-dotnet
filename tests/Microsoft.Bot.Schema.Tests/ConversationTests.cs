@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -92,6 +93,83 @@ namespace Microsoft.Bot.Schema.Tests
 
             Assert.NotNull(convoParameters);
             Assert.IsType<ConversationParameters>(convoParameters);
+        }
+
+        [Fact]
+        public void ConversationReferenceInitsWithLocale()
+        {
+            var locale = new CultureInfo("es-es");
+            var activityId = "activityId";
+            var user = new ChannelAccount("userId", "userName", "userRole", "userAadObjectId");
+            var bot = new ChannelAccount("botId", "botName", "botRole", "botAadObjectId");
+            var conversation = new ConversationAccount();
+            var channelId = "channelId";
+            var serviceUrl = "http://myServiceUrl.com";
+
+            var convoRef = new ConversationReference(locale, activityId, user, bot, conversation, channelId, serviceUrl);
+
+            Assert.NotNull(convoRef);
+            Assert.IsType<ConversationReference>(convoRef);
+            Assert.Equal(locale.ToString(), convoRef.Locale);
+            Assert.Equal(activityId, convoRef.ActivityId);
+            Assert.Equal(user, convoRef.User);
+            Assert.Equal(bot, convoRef.Bot);
+            Assert.Equal(conversation, convoRef.Conversation);
+            Assert.Equal(channelId, convoRef.ChannelId);
+            Assert.Equal(serviceUrl, convoRef.ServiceUrl);
+        }
+
+        [Fact]
+        public void ConversationReferenceInits()
+        {
+            var activityId = "activityId";
+            var user = new ChannelAccount("userId", "userName", "userRole", "userAadObjectId");
+            var bot = new ChannelAccount("botId", "botName", "botRole", "botAadObjectId");
+            var conversation = new ConversationAccount();
+            var channelId = "channelId";
+            var serviceUrl = "http://myServiceUrl.com";
+
+            var convoRef = new ConversationReference(activityId, user, bot, conversation, channelId, serviceUrl);
+
+            Assert.NotNull(convoRef);
+            Assert.IsType<ConversationReference>(convoRef);
+            Assert.Equal(activityId, convoRef.ActivityId);
+            Assert.Equal(user, convoRef.User);
+            Assert.Equal(bot, convoRef.Bot);
+            Assert.Equal(conversation, convoRef.Conversation);
+            Assert.Equal(channelId, convoRef.ChannelId);
+            Assert.Equal(serviceUrl, convoRef.ServiceUrl);
+        }
+
+        [Fact]
+        public void ConversationReferenceInitsWithNoArgs()
+        {
+            var convoRef = new ConversationReference();
+
+            Assert.NotNull(convoRef);
+            Assert.IsType<ConversationReference>(convoRef);
+        }
+
+        [Fact]
+        public void ConversationReferenceGetContinuationActivity()
+        {
+            var locale = new CultureInfo("es-es");
+            var activityId = "activityId";
+            var user = new ChannelAccount("userId", "userName", "userRole", "userAadObjectId");
+            var bot = new ChannelAccount("botId", "botName", "botRole", "botAadObjectId");
+            var conversation = new ConversationAccount();
+            var channelId = "channelId";
+            var serviceUrl = "http://myServiceUrl.com";
+            var convoRef = new ConversationReference(locale, activityId, user, bot, conversation, channelId, serviceUrl);
+
+            var continuationActivity = convoRef.GetContinuationActivity();
+
+            Assert.NotNull(continuationActivity);
+            Assert.IsType<Activity>(continuationActivity);
+            Assert.Equal(ActivityEventNames.ContinueConversation, continuationActivity.Name);
+            Assert.Equal(channelId, continuationActivity.ChannelId);
+            Assert.Equal(locale.ToString(), continuationActivity.Locale);
+            Assert.Equal(serviceUrl, continuationActivity.ServiceUrl);
         }
     }
 }
