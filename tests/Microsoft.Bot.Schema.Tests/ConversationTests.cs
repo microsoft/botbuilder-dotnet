@@ -60,5 +60,38 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(convoMembers);
             Assert.IsType<ConversationMembers>(convoMembers);
         }
+
+        [Fact]
+        public void ConversationParametersInits()
+        {
+            var isGroup = true;
+            var bot = new ChannelAccount("botId", "botName", "botRole", "botAadObjectId");
+            var members = new List<ChannelAccount>() { bot, new ChannelAccount("userId", "userName", "userRole", "userAadObjectId") };
+            var topicName = "topicName";
+            var activity = new Activity();
+            var channelData = new { Data = "value" };
+            var tenantId = "tenantId";
+
+            var convoParameters = new ConversationParameters(isGroup, bot, members, topicName, activity, channelData, tenantId);
+
+            Assert.NotNull(convoParameters);
+            Assert.IsType<ConversationParameters>(convoParameters);
+            Assert.Equal(isGroup, convoParameters.IsGroup);
+            Assert.Equal(bot, convoParameters.Bot);
+            Assert.Equal(members, convoParameters.Members);
+            Assert.Equal(topicName, convoParameters.TopicName);
+            Assert.Equal(activity, convoParameters.Activity);
+            Assert.Equal(channelData, convoParameters.ChannelData);
+            Assert.Equal(tenantId, convoParameters.TenantId);
+        }
+
+        [Fact]
+        public void ConversationParametersInitsWithNoArgs()
+        {
+            var convoParameters = new ConversationParameters();
+
+            Assert.NotNull(convoParameters);
+            Assert.IsType<ConversationParameters>(convoParameters);
+        }
     }
 }
