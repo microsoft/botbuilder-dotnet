@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -22,7 +20,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>Initializes a new instance of the <see cref="ConversationsResult"/> class.</summary>
         /// <param name="continuationToken">Paging token.</param>
         /// <param name="conversations">List of conversations.</param>
-        public ConversationsResult(string continuationToken = default(string), IList<ConversationMembers> conversations = default(IList<ConversationMembers>))
+        public ConversationsResult(string continuationToken = default, IList<ConversationMembers> conversations = default)
         {
             ContinuationToken = continuationToken;
             Conversations = conversations;

@@ -196,5 +196,33 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(convoResourceResponse);
             Assert.IsType<ConversationResourceResponse>(convoResourceResponse);
         }
+
+        [Fact]
+        public void ConversationResultInits()
+        {
+            var continuationToken = "continuationToken";
+            var conversations = new List<ConversationMembers>()
+            {
+                new ConversationMembers("id1", new List<ChannelAccount>()),
+                new ConversationMembers("id2", new List<ChannelAccount>())
+            };
+
+            var convosResult = new ConversationsResult(continuationToken, conversations);
+
+            Assert.NotNull(convosResult);
+            Assert.IsType<ConversationsResult>(convosResult);
+            Assert.Equal(continuationToken, convosResult.ContinuationToken);
+            Assert.Equal(conversations, convosResult.Conversations);
+            Assert.Equal(2, convosResult.Conversations.Count);
+        }
+
+        [Fact]
+        public void ConversationResultInitsWithNoArgs()
+        {
+            var convosResult = new ConversationsResult();
+
+            Assert.NotNull(convosResult);
+            Assert.IsType<ConversationsResult>(convosResult);
+        }
     }
 }
