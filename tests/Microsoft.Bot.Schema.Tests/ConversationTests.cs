@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -35,6 +36,29 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal(role, convoAccount.Role);
             Assert.Equal(tenantId, convoAccount.TenantId);
             Assert.Equal(props, convoAccount.Properties);
+        }
+
+        [Fact]
+        public void ConversationMembersInits()
+        {
+            var id = "myId";
+            var members = new List<ChannelAccount>() { new ChannelAccount("id", "name", "role", "aadObjectId") };
+
+            var convoMembers = new ConversationMembers(id, members);
+
+            Assert.NotNull(convoMembers);
+            Assert.IsType<ConversationMembers>(convoMembers);
+            Assert.Equal(id, convoMembers.Id);
+            Assert.Equal(members, convoMembers.Members);
+        }
+
+        [Fact]
+        public void ConversationMembersInitsWithNoArgs()
+        {
+            var convoMembers = new ConversationMembers();
+
+            Assert.NotNull(convoMembers);
+            Assert.IsType<ConversationMembers>(convoMembers);
         }
     }
 }
