@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Connector.Authentication;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -78,15 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            string userId = this.UserId?.GetValue(dc.State);
-
-            if (!(dc.Context.Adapter is IUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("SignoutUser(): not supported by the current adapter");
-            }
-
-            var connectionName = this.ConnectionName?.GetValue(dc.State);
-            await adapter.SignOutUserAsync(dc.Context, connectionName, (string)userId, cancellationToken).ConfigureAwait(false);
+            await SignOutUserAsync(dc.Context, ConnectionName?.GetValue(dc.State), UserId?.GetValue(dc.State), cancellationToken).ConfigureAwait(false);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
@@ -95,6 +88,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{GetType().Name}({ConnectionName?.ToString()}, {UserId?.ToString()})";
+        }
+
+        private static async Task SignOutUserAsync(ITurnContext turnContext, string connectionName, string userId, CancellationToken cancellationToken)
+        {
+            userId = userId ?? turnContext.Activity?.From?.Id;
+
+            var userTokenClient = turnContext.TurnState.Get<UserTokenClient>();
+            if (userTokenClient != null)
+            {
+                await userTokenClient.SignOutUserAsync(userId, connectionName, turnContext.Activity.ChannelId, cancellationToken).ConfigureAwait(false);
+            }
+            else if (turnContext.Adapter is IExtendedUserTokenProvider adapter)
+            {
+                await adapter.SignOutUserAsync(turnContext, null, connectionName, userId, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                throw new NotSupportedException("SignOutUser is not supported by the current adapter");
+            }
         }
     }
 }

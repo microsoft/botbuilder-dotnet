@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Schema
                 Type = ActivityTypes.Message,
                 Timestamp = DateTime.UtcNow,
                 From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
-                Recipient = new ChannelAccount(id: this.From.Id, name: this.From.Name),
+                Recipient = new ChannelAccount(id: this.From?.Id, name: this.From?.Name),
                 ReplyToId = !string.Equals(this.Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(this.ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(this.ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? this.Id : null,
                 ServiceUrl = this.ServiceUrl,
                 ChannelId = this.ChannelId,
