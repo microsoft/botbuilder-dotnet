@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         var currentLocale = GetCurrentLocale(state, options);
 
-                        if (state.TryGetValue(AdaptiveDialog.GeneratorIdKey, out var resourceId))
+                        if (state.TryGetValue("dialogclass.generator.resourceId", out var resourceId))
                         {
                             var (resourceName, locale) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
 
