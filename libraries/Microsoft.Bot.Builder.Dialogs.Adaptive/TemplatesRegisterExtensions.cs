@@ -161,18 +161,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private static LanguagePolicy GetLanguagePolicy(IMemory memory)
         {
-            var getLanguagePolicy = memory.TryGetValue(AdaptiveDialog.LanguagePolicyKey, out var lp);
-            LanguagePolicy languagePolicy;
+            // order: dialogclass.generator.languagePoilcy ?? turn.languagePolicy ?? default policy
+
+            object languagePolicyObj;
+            var getLanguagePolicy = false;
+            if (!memory.TryGetValue("dialogclass.generator.languagePolicy", out languagePolicyObj))
+            {
+                if (memory.TryGetValue("turn.languagePolicy", out languagePolicyObj))
+                {
+                    getLanguagePolicy = true;
+                }
+            }
+
+            LanguagePolicy policy;
             if (!getLanguagePolicy)
             {
-                languagePolicy = new LanguagePolicy();
+                policy = new LanguagePolicy();
             }
             else
             {
-                languagePolicy = JObject.FromObject(lp).ToObject<LanguagePolicy>();
+                policy = JObject.FromObject(languagePolicyObj).ToObject<LanguagePolicy>();
             }
 
-            return languagePolicy;
+            return policy;
         }
 
         private static List<string> GetFallbackLocales(LanguagePolicy languagePolicy, string currentLocale)

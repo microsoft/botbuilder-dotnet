@@ -120,6 +120,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             turnContext.TurnState.Add(_languagePolicy);
 
+            // put global language policy into turn scope for lg functions fallback
+            ObjectPath.SetPathValue(turnContext.TurnState, "turn.languagePolicy", _languagePolicy);
+
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
         }
