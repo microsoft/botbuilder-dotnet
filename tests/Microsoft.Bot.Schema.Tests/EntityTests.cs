@@ -62,21 +62,46 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [Theory]
-        [ClassData(typeof(EntityTestData))]
-        public void EntityEqualsObject(object obj, bool expected)
+        [ClassData(typeof(EntityToEntityData))]
+        public void EntityEqualsAnotherEntity(Entity other, bool expected)
         {
-            // TODO need to change this to test case where obj is the entity itself
-            // might need to do separate unit test
-            var entity = new Entity();
+            var entity = new Entity("color");
+            var areEqual = entity.Equals(other);
+
+            Assert.Equal(expected, areEqual);
+        }
+
+        [Theory]
+        [ClassData(typeof(EntityToObjectData))]
+        public void EntityEqualsObject(Entity entity, object obj, bool expected)
+        {
             var areEqual = entity.Equals(obj);
 
             Assert.Equal(expected, areEqual);
         }
 
-        private class EntityTestData : IEnumerable<object[]>
+        private class EntityToObjectData : IEnumerable<object[]>
+        {
+            public Entity Entity { get; set; } = new Entity("color");
+
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { Entity, null, false };
+                yield return new object[] { Entity, Entity, true };
+                yield return new object[] { Entity, new JObject(), false };
+                yield return new object[] { Entity, new Entity("color"), true };
+                yield return new object[] { Entity, new Entity("flamingo"), false };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private class EntityToEntityData : IEnumerable<object[]>
         {
             public IEnumerator<object[]> GetEnumerator()
             {
+                yield return new object[] { new Entity("color"), true };
+                yield return new object[] { new Entity("flamingo"), false };
                 yield return new object[] { null, false };
             }
 
