@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>Initializes a new instance of the <see cref="Entity"/> class.</summary>
         /// <param name="type">Type of this entity (RFC 3987 IRI).</param>
-        public Entity(string type = default(string))
+        public Entity(string type = default)
         {
             Type = type;
         }
@@ -62,14 +62,14 @@ namespace Microsoft.Bot.Schema
         public void SetAs<T>(T obj)
         {
             var entity = JsonConvert.DeserializeObject<Entity>(JsonConvert.SerializeObject(obj));
-            this.Type = entity.Type;
-            this.Properties = entity.Properties;
+            Type = entity.Type;
+            Properties = entity.Properties;
         }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
-        /// <param name="other">The other object to compair against.</param>
+        /// <param name="other">The other object to compare against.</param>
         /// <returns>true if the current object is equal to the other parameter, otherwise false.</returns>
         public bool Equals(Entity other)
         {
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Determines whether the specifid object is equal to the current object.
         /// </summary>
-        /// <param name="obj">The other object to compair against.</param>
+        /// <param name="obj">The other object to compare against.</param>
         /// <returns>true if the current object is equal to the obj parameter, otherwise false.</returns>
         public override bool Equals(object obj)
         {
