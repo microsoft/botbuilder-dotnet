@@ -4,8 +4,12 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Storage.Blobs;
 using Microsoft.Bot.Builder.Azure.Blobs;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -98,6 +102,81 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 Assert.Throws<ArgumentNullException>(() =>
                     new BlobsTranscriptStore(BlobStorageEmulatorConnectionString, string.Empty));
+            }
+        }
+
+        [Fact]
+        public async Task GenericActivityOverwriteThrowsTest()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                var conversationId = "GenericActivityOverwriteThrowsTest";
+
+                var activity = CreateActivity(99, conversationId);
+
+                await TranscriptStore.LogActivityAsync(activity);
+                var loggedActivities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, conversationId);
+
+                Assert.Equal("100", loggedActivities.Items[0].Id);
+
+                await Assert.ThrowsAsync<RequestFailedException>(async () => await TranscriptStore.LogActivityAsync(activity));
+            }
+        }
+
+        [Fact]
+        public async Task UpdateActivityOverwriteDoesNotThrowTest()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                var conversationId = "UpdateActivityOverwriteDoesNotThrowTest";
+
+                var activity = CreateActivity(99, conversationId);
+                activity.ChannelData = new
+                {
+                    value = "original"
+                };
+
+                await TranscriptStore.LogActivityAsync(activity);
+                var loggedActivities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, conversationId);
+
+                Assert.Equal("100", loggedActivities.Items[0].Id);
+                Assert.Equal("original", (loggedActivities.Items[0].ChannelData as JToken)["value"]);
+
+                activity.Type = ActivityTypes.MessageUpdate;
+                activity.ChannelData = new
+                {
+                    value = "overwritten"
+                };
+
+                await TranscriptStore.LogActivityAsync(activity);
+                loggedActivities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, conversationId);
+
+                Assert.Single(loggedActivities.Items);
+                Assert.Equal("overwritten", (loggedActivities.Items[0].ChannelData as JToken)["value"]);
+            }
+        }
+
+        [Fact]
+        public async Task TombstonedActivityOverwriteDoesNotThrowTest()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                var conversationId = "TombstonedActivityOverwriteDoesNotThrowTest";
+
+                var activity = CreateActivity(99, conversationId);
+
+                await TranscriptStore.LogActivityAsync(activity);
+                var loggedActivities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, conversationId);
+
+                Assert.Equal("100", loggedActivities.Items[0].Id);
+
+                activity.Type = ActivityTypes.MessageDelete;
+
+                await TranscriptStore.LogActivityAsync(activity);
+                loggedActivities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, conversationId);
+
+                Assert.Single(loggedActivities.Items);
+                Assert.Equal("deleted", loggedActivities.Items[0].From.Id);
             }
         }
     }

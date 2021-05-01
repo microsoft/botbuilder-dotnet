@@ -383,9 +383,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             var orchestrator = orchestratorMap.GetOrAdd(fullModelFolder, path =>
             {
                 // Create Orchestrator
+                string entityModelFolder = null; 
                 try
                 {
-                    string entityModelFolder = Path.Combine(path, "entity");
+                    entityModelFolder = Path.Combine(path, "entity");
                     ScoreEntities = Directory.Exists(entityModelFolder);
 
                     return ScoreEntities ?
@@ -394,7 +395,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Failed to find or load Model", ex);
+                    throw new InvalidOperationException(
+                        ScoreEntities ? $"Failed to find or load Model with path {path}, entity model path {entityModelFolder}" : $"Failed to find or load Model with path {path}",
+                        ex);
                 }
             });
 
