@@ -746,10 +746,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 dialogContext.Services.Set(this.Generator);
                 if (this.Generator is ResourceMultiLanguageGenerator generator)
-                {
-                    // Set generator key into state.
-                    dialogContext.State.SetValue(GeneratorIdKey, generator.ResourceId);
-
+                { 
                     // Set language policy key into state.
                     var languagePolicy = generator.LanguagePolicy ??
                                 dialogContext.Services.Get<LanguagePolicy>() ??
