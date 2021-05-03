@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="type">Message reaction type. Possible values include:
         /// 'like', 'plusOne'.</param>
-        public MessageReaction(string type = default(string))
+        public MessageReaction(string type = default)
         {
             Type = type;
             CustomInit();
