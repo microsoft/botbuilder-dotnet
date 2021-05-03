@@ -52,5 +52,28 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(errorResponse);
             Assert.IsType<ErrorResponse>(errorResponse);
         }
+
+        [Fact]
+        public void InnerHttpErrorInits()
+        {
+            var statusCode = 403;
+            var body = new { };
+
+            var innerHttpError = new InnerHttpError(statusCode, body);
+
+            Assert.NotNull(innerHttpError);
+            Assert.IsType<InnerHttpError>(innerHttpError);
+            Assert.Equal(statusCode, innerHttpError.StatusCode);
+            Assert.Equal(body, innerHttpError.Body);
+        }
+
+        [Fact]
+        public void InnerHttpErrorInitsWithNoArgs()
+        {
+            var innerHttpError = new InnerHttpError();
+
+            Assert.NotNull(innerHttpError);
+            Assert.IsType<InnerHttpError>(innerHttpError);
+        }
     }
 }
