@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests
 {
-    public class MediaCardTests
+    public class MediaTests
     {
         [Fact]
         public void MediaCardInits()
@@ -49,6 +49,52 @@ namespace Microsoft.Bot.Schema.Tests
 
             Assert.NotNull(mediaCard);
             Assert.IsType<MediaCard>(mediaCard);
+        }
+
+        [Fact]
+        public void MediaEventValueInits()
+        {
+            var key = "key";
+            var value = "value";
+            var obj = new Dictionary<string, string>() { { key, value } };
+            var mediaEventValue = new MediaEventValue(obj);
+
+            Assert.NotNull(mediaEventValue);
+            Assert.Equal(obj, mediaEventValue.CardValue);
+            var cardVal = (Dictionary<string, string>)mediaEventValue.CardValue;
+            Assert.Equal(value, cardVal[key]);
+        }
+        
+        [Fact]
+        public void MediaEventValueInitsWithNoArgs()
+        {
+            var mediaEventValue = new MediaEventValue();
+
+            Assert.NotNull(mediaEventValue);
+            Assert.IsType<MediaEventValue>(mediaEventValue);
+        }
+
+        [Fact]
+        public void MediaUrlInits()
+        {
+            var url = "http://example.com";
+            var profile = "myProfile";
+
+            var mediaUrl = new MediaUrl(url, profile);
+
+            Assert.NotNull(mediaUrl);
+            Assert.IsType<MediaUrl>(mediaUrl);
+            Assert.Equal(url, mediaUrl.Url);
+            Assert.Equal(profile, mediaUrl.Profile);
+        }
+
+        [Fact]
+        public void MediaUrlInitsWithNoArgs()
+        {
+            var mediaUrl = new MediaUrl();
+
+            Assert.NotNull(mediaUrl);
+            Assert.IsType<MediaUrl>(mediaUrl);
         }
     }
 }
