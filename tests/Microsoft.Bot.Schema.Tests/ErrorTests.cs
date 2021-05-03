@@ -32,5 +32,25 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(error);
             Assert.IsType<Error>(error);
         }
+
+        [Fact]
+        public void ErrorResponseInits()
+        {
+            var error = new Error();
+            var errorResponse = new ErrorResponse(error);
+
+            Assert.NotNull(errorResponse);
+            Assert.IsType<ErrorResponse>(errorResponse);
+            Assert.Equal(error, errorResponse.Error);
+        }
+
+        [Fact]
+        public void ErrorResponseInitsWithNoArgs()
+        {
+            var errorResponse = new ErrorResponse();
+
+            Assert.NotNull(errorResponse);
+            Assert.IsType<ErrorResponse>(errorResponse);
+        }
     }
 }
