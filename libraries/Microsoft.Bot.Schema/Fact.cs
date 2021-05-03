@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="key">The key for this Fact.</param>
         /// <param name="value">The value for this Fact.</param>
-        public Fact(string key = default(string), string value = default(string))
+        public Fact(string key = default, string value = default)
         {
             Key = key;
             Value = value;
