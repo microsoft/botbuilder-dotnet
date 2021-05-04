@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema
         /// card.</param>
         /// <param name="tap">This action will be activated when user taps on
         /// the card itself.</param>
-        public ThumbnailCard(string title = default(string), string subtitle = default(string), string text = default(string), IList<CardImage> images = default(IList<CardImage>), IList<CardAction> buttons = default(IList<CardAction>), CardAction tap = default(CardAction))
+        public ThumbnailCard(string title = default, string subtitle = default, string text = default, IList<CardImage> images = default, IList<CardAction> buttons = default, CardAction tap = default)
         {
             Title = title;
             Subtitle = subtitle;

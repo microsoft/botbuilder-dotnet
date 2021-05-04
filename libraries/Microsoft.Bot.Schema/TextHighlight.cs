@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="text">Defines the snippet of text to highlight.</param>
         /// <param name="occurrence">Occurrence of the text field within the
         /// referenced text, if multiple exist.</param>
-        public TextHighlight(string text = default(string), int? occurrence = default(int?))
+        public TextHighlight(string text = default, int? occurrence = default)
         {
             Text = text;
             Occurrence = occurrence;
