@@ -324,5 +324,26 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(paymentRequestUpdate);
             Assert.IsType<PaymentRequestUpdate>(paymentRequestUpdate);
         }
+
+        [Fact]
+        public void PaymentRequestUpdateResultInits()
+        {
+            var details = new PaymentDetails(new PaymentItem(), new List<PaymentItem>(), new List<PaymentShippingOption>(), new List<PaymentDetailsModifier>(), "uh-oh");
+
+            var paymentRequestUpdateResult = new PaymentRequestUpdateResult(details);
+
+            Assert.NotNull(paymentRequestUpdateResult);
+            Assert.IsType<PaymentRequestUpdateResult>(paymentRequestUpdateResult);
+            Assert.Equal(details, paymentRequestUpdateResult.Details);
+        }
+        
+        [Fact]
+        public void PaymentRequestUpdateResultInitsWithNoArgs()
+        {
+            var paymentRequestUpdateResult = new PaymentRequestUpdateResult();
+
+            Assert.NotNull(paymentRequestUpdateResult);
+            Assert.IsType<PaymentRequestUpdateResult>(paymentRequestUpdateResult);
+        }
     }
 }
