@@ -877,6 +877,8 @@ namespace AdaptiveExpressions.Tests
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
             Test("dateReadBack(timestampObj, addDays(timestamp, 1))", "tomorrow"),
             Test("dateReadBack(addDays(timestamp, 1),timestamp)", "yesterday"),
+            Test("getTimeOfDay(convertFromUTC('2018-03-15T11:00:00.000Z', 'W. Europe Standard Time'))", "noon"),
+            Test("getTimeOfDay('2018-03-15T00:00:00.0000000')", "midnight"),
             Test("getTimeOfDay('2018-03-15T00:00:00.000Z')", "midnight"),
             Test("getTimeOfDay(timestampObj)", "afternoon"),
             Test("getTimeOfDay('2018-03-15T08:00:00.000Z')", "morning"),

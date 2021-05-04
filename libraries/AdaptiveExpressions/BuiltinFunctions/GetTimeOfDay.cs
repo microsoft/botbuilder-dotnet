@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
@@ -26,9 +27,24 @@ namespace AdaptiveExpressions.BuiltinFunctions
                             object value = null;
                             string error = null;
                             (value, error) = FunctionUtils.NormalizeToDateTime(args[0]);
+                            var timestamp = DateTime.Now;
                             if (error == null)
                             {
-                                var timestamp = (DateTime)value;
+                                timestamp = (DateTime)value;
+                            }
+                            else if (DateTime.TryParseExact(
+                                   s: args[0].ToString(),
+                                   format: ConvertFromUtc.DefaultFormat,
+                                   provider: CultureInfo.InvariantCulture,
+                                   style: DateTimeStyles.RoundtripKind,
+                                   result: out var parsed))
+                            {
+                                error = null;
+                                timestamp = parsed;
+                            }
+
+                            if (error == null)
+                            {
                                 if (timestamp.Hour == 0 && timestamp.Minute == 0)
                                 {
                                     value = "midnight";

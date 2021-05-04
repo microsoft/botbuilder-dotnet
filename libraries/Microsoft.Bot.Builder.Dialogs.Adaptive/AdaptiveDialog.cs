@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Value = options,
                 Bubble = false
             };
-
+            
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
