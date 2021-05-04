@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Schema.Tests
         {
             var id = "id";
             var details = new PaymentDetails();
-            var shippingAddress = new PaymentAddress();
+            var shippingAddress = GetShippingAddress();
             var shippingOption = "ground";
 
             var paymentRequestUpdate = new PaymentRequestUpdate(id, details, shippingAddress, shippingOption);
@@ -344,6 +344,65 @@ namespace Microsoft.Bot.Schema.Tests
 
             Assert.NotNull(paymentRequestUpdateResult);
             Assert.IsType<PaymentRequestUpdateResult>(paymentRequestUpdateResult);
+        }
+
+        [Fact]
+        public void PaymentResponseInits()
+        {
+            var methodName = "credit";
+            var details = new { };
+            var shippingAddress = GetShippingAddress();
+            var shippingOption = "ground";
+            var payerEmail = "example@somedomain.com";
+            var payerPhone = "555-555-5555";
+
+            var paymentResponse = new PaymentResponse(methodName, details, shippingAddress, shippingOption, payerEmail, payerPhone);
+
+            Assert.NotNull(paymentResponse);
+            Assert.IsType<PaymentResponse>(paymentResponse);
+            Assert.Equal(methodName, paymentResponse.MethodName);
+            Assert.Equal(details, paymentResponse.Details);
+            Assert.Equal(shippingAddress, paymentResponse.ShippingAddress);
+            Assert.Equal(shippingOption, paymentResponse.ShippingOption);
+            Assert.Equal(payerEmail, paymentResponse.PayerEmail);
+            Assert.Equal(payerPhone, paymentResponse.PayerPhone);
+        }
+        
+        [Fact]
+        public void PaymentResponseInitsWithNoArgs()
+        {
+            var paymentResponse = new PaymentResponse();
+
+            Assert.NotNull(paymentResponse);
+            Assert.IsType<PaymentResponse>(paymentResponse);
+        }
+
+        private PaymentAddress GetShippingAddress()
+        {
+            var country = "USA";
+            var addressLine = new List<string>() { "555 110th Ave NE" };
+            var region = "WA";
+            var city = "Bellevue";
+            var dependentLocality = "CCP";
+            var postalCode = "98004";
+            var sortingCode = "mySortingCode";
+            var languageCode = "en-US";
+            var organization = "Microsoft";
+            var recipient = "Mr. Bot Botly";
+            var phone = "555-555-5555";
+
+            return new PaymentAddress(
+                country,
+                addressLine,
+                region,
+                city,
+                dependentLocality,
+                postalCode,
+                sortingCode,
+                languageCode,
+                organization,
+                recipient,
+                phone);
         }
     }
 }
