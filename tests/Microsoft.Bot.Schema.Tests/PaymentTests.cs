@@ -115,5 +115,32 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(paymentDetails);
             Assert.IsType<PaymentDetails>(paymentDetails);
         }
+
+        [Fact]
+        public void PaymentDetailsModifierInits()
+        {
+            var supportedMethods = new List<string>() { "credit", "debit" };
+            var total = new PaymentItem("Awesome");
+            var additionalDisplayItems = new List<PaymentItem> { new PaymentItem("item1"), new PaymentItem("item2") };
+            var data = new { };
+
+            var paymentDetailsModifier = new PaymentDetailsModifier(supportedMethods, total, additionalDisplayItems, data);
+
+            Assert.NotNull(paymentDetailsModifier);
+            Assert.IsType<PaymentDetailsModifier>(paymentDetailsModifier);
+            Assert.Equal(supportedMethods, paymentDetailsModifier.SupportedMethods);
+            Assert.Equal(total, paymentDetailsModifier.Total);
+            Assert.Equal(additionalDisplayItems, paymentDetailsModifier.AdditionalDisplayItems);
+            Assert.Equal(data, paymentDetailsModifier.Data);
+        }
+        
+        [Fact]
+        public void PaymentDetailsModifierInitsWithNoArgs()
+        {
+            var paymentDetailsModifier = new PaymentDetailsModifier();
+
+            Assert.NotNull(paymentDetailsModifier);
+            Assert.IsType<PaymentDetailsModifier>(paymentDetailsModifier);
+        }
     }
 }
