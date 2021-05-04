@@ -42,8 +42,6 @@ namespace Microsoft.Bot.Schema.Tests
 
             Assert.NotNull(suggestedActions);
             Assert.IsType<SuggestedActions>(suggestedActions);
-            Assert.Equal(to, suggestedActions.To);
-            Assert.Equal(actions, suggestedActions.Actions);
         }
 
         private class SuggestedActionEnumerableTo : IEnumerable<string>
