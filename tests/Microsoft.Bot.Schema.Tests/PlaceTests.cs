@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Schema.Tests
             var address = "123 Drury Lane, Muffin Man Village, Enchanted Forest 45678";
             var geo = new GeoCoordinates();
             var hasMap = "http://muffin-man-who-lives-on-drury-lane.com";
-            var type = "home";
+            var type = "Place";
             var name = "muffinMan";
 
             var place = new Place(address, geo, hasMap, type, name);
