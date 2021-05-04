@@ -248,5 +248,54 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(paymentRequest);
             Assert.IsType<PaymentRequest>(paymentRequest);
         }
+
+        [Fact]
+        public void PaymentRequestCompleteInits()
+        {
+            var id = "id";
+            var paymentRequest = new PaymentRequest(
+                "paymentId",
+                new List<PaymentMethodData>() { new PaymentMethodData(new List<string> { "credit", "debit" }) },
+                new PaymentDetails(),
+                new PaymentOptions(true, true, true));
+            var paymentResponse = new PaymentResponse("credit", new { }, new PaymentAddress(), "ground", "example@somedomain.com", "555-555-5555");
+
+            var paymentRequestComplete = new PaymentRequestComplete(id, paymentRequest, paymentResponse);
+
+            Assert.NotNull(paymentRequestComplete);
+            Assert.IsType<PaymentRequestComplete>(paymentRequestComplete);
+            Assert.Equal(id, paymentRequestComplete.Id);
+            Assert.Equal(paymentRequest, paymentRequestComplete.PaymentRequest);
+            Assert.Equal(paymentResponse, paymentRequestComplete.PaymentResponse);
+        }
+        
+        [Fact]
+        public void PaymentRequestCompleteInitsWithNoArgs()
+        {
+            var paymentRequestComplete = new PaymentRequestComplete();
+
+            Assert.NotNull(paymentRequestComplete);
+            Assert.IsType<PaymentRequestComplete>(paymentRequestComplete);
+        }
+
+        [Fact]
+        public void PaymentRequestCompleteResultInits()
+        {
+            var result = "success";
+            var paymentRequestCompleteResult = new PaymentRequestCompleteResult(result);
+
+            Assert.NotNull(paymentRequestCompleteResult);
+            Assert.IsType<PaymentRequestCompleteResult>(paymentRequestCompleteResult);
+            Assert.Equal(result, paymentRequestCompleteResult.Result);
+        }
+        
+        [Fact]
+        public void PaymentRequestCompleteResultInitsWithNoArgs()
+        {
+            var paymentRequestCompleteResult = new PaymentRequestCompleteResult();
+
+            Assert.NotNull(paymentRequestCompleteResult);
+            Assert.IsType<PaymentRequestCompleteResult>(paymentRequestCompleteResult);
+        }
     }
 }
