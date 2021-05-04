@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="id">ID.</param>
         /// <param name="uri">URI.</param>
         /// <param name="providerId">Identity provider ID.</param>
-        public TokenExchangeResource(string id = default(string), string uri = default(string), string providerId = default(string))
+        public TokenExchangeResource(string id = default, string uri = default, string providerId = default)
         {
             Id = id;
             Uri = uri;
