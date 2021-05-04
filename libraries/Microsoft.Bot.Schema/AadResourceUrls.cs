@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -25,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the <see cref="AadResourceUrls"/> class.
         /// </summary>
         /// <param name="resourceUrls">The URLs to the resource you want to connect to.</param>
-        public AadResourceUrls(IList<string> resourceUrls = default(IList<string>))
+        public AadResourceUrls(IList<string> resourceUrls = default)
         {
             ResourceUrls = resourceUrls;
             CustomInit();
