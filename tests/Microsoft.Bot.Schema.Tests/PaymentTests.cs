@@ -377,6 +377,33 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.IsType<PaymentResponse>(paymentResponse);
         }
 
+        [Fact]
+        public void PaymentShippingOptionInits()
+        {
+            var id = "shippingOptionId";
+            var label = "label";
+            var amount = new PaymentCurrencyAmount();
+            var selected = true;
+
+            var paymentShippingOption = new PaymentShippingOption(id, label, amount, selected);
+
+            Assert.NotNull(paymentShippingOption);
+            Assert.IsType<PaymentShippingOption>(paymentShippingOption);
+            Assert.Equal(id, paymentShippingOption.Id);
+            Assert.Equal(label, paymentShippingOption.Label);
+            Assert.Equal(amount, paymentShippingOption.Amount);
+            Assert.Equal(selected, paymentShippingOption.Selected);
+        }
+        
+        [Fact]
+        public void PaymentShippingOptionInitsWithNoArgs()
+        {
+            var paymentShippingOption = new PaymentShippingOption();
+
+            Assert.NotNull(paymentShippingOption);
+            Assert.IsType<PaymentShippingOption>(paymentShippingOption);
+        }
+
         private PaymentAddress GetShippingAddress()
         {
             var country = "USA";
