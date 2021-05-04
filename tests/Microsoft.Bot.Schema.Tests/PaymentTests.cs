@@ -190,5 +190,63 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(paymentMethodData);
             Assert.IsType<PaymentMethodData>(paymentMethodData);
         }
+
+        [Fact]
+        public void PaymentOptionsInits()
+        {
+            var requestPayerName = true;
+            var requestPayerEmail = true;
+            var requestPayerPhone = true;
+            var requestShipping = true;
+            var shippingType = "ground";
+
+            var paymentOptions = new PaymentOptions(requestPayerName, requestPayerEmail, requestPayerPhone, requestShipping, shippingType);
+
+            Assert.NotNull(paymentOptions);
+            Assert.IsType<PaymentOptions>(paymentOptions);
+            Assert.Equal(requestPayerName, paymentOptions.RequestPayerName);
+            Assert.Equal(requestPayerEmail, paymentOptions.RequestPayerEmail);
+            Assert.Equal(requestPayerPhone, paymentOptions.RequestPayerPhone);
+            Assert.Equal(requestShipping, paymentOptions.RequestShipping);
+            Assert.Equal(shippingType, paymentOptions.ShippingType);
+        }
+        
+        [Fact]
+        public void PaymentOptionsInitsWithNoArgs()
+        {
+            var paymentOptions = new PaymentOptions();
+
+            Assert.NotNull(paymentOptions);
+            Assert.IsType<PaymentOptions>(paymentOptions);
+        }
+
+        [Fact]
+        public void PaymentRequestInits()
+        {
+            var id = "id";
+            var methodData = new List<PaymentMethodData> { new PaymentMethodData(new List<string>() { "credit", "debit" }, new { }) };
+            var details = new PaymentDetails(new PaymentItem("card", new PaymentCurrencyAmount("$", "5.00", "USD"), false));
+            var options = new PaymentOptions(true, true, true);
+            var expires = "P1D";
+
+            var paymentRequest = new PaymentRequest(id, methodData, details, options, expires);
+
+            Assert.NotNull(paymentRequest);
+            Assert.IsType<PaymentRequest>(paymentRequest);
+            Assert.Equal(id, paymentRequest.Id);
+            Assert.Equal(methodData, paymentRequest.MethodData);
+            Assert.Equal(details, paymentRequest.Details);
+            Assert.Equal(options, paymentRequest.Options);
+            Assert.Equal(expires, paymentRequest.Expires);
+        }
+        
+        [Fact]
+        public void PaymentRequestInitsWithNoArgs()
+        {
+            var paymentRequest = new PaymentRequest();
+
+            Assert.NotNull(paymentRequest);
+            Assert.IsType<PaymentRequest>(paymentRequest);
+        }
     }
 }
