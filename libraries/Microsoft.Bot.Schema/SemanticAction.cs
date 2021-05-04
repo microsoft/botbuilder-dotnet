@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -26,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="id">ID of this action.</param>
         /// <param name="entities">Entities associated with this action.</param>
-        public SemanticAction(string id = default(string), IDictionary<string, Entity> entities = default(IDictionary<string, Entity>))
+        public SemanticAction(string id = default, IDictionary<string, Entity> entities = default)
         {
             Id = id;
             Entities = entities;
