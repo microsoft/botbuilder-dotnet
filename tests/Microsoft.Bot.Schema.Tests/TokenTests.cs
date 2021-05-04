@@ -228,5 +228,32 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.NotNull(tokenResponse);
             Assert.IsType<TokenResponse>(tokenResponse);
         }
+
+        [Fact]
+        public void TokenStatusInits()
+        {
+            var channelId = "channelId";
+            var connectionName = "connectionName";
+            var hasToken = true;
+            var serviceProviderDisplayName = "serviceProviderDisplayName";
+
+            var tokenStatus = new TokenStatus(channelId, connectionName, hasToken, serviceProviderDisplayName);
+
+            Assert.NotNull(tokenStatus);
+            Assert.IsType<TokenStatus>(tokenStatus);
+            Assert.Equal(channelId, tokenStatus.ChannelId);
+            Assert.Equal(connectionName, tokenStatus.ConnectionName);
+            Assert.Equal(hasToken, tokenStatus.HasToken);
+            Assert.Equal(serviceProviderDisplayName, tokenStatus.ServiceProviderDisplayName);
+        }
+        
+        [Fact]
+        public void TokenStatusInitsWithNoArgs()
+        {
+            var tokenStatus = new TokenStatus();
+
+            Assert.NotNull(tokenStatus);
+            Assert.IsType<TokenStatus>(tokenStatus);
+        }
     }
 }
