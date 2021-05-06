@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
         [JsonProperty("logPersonalInformation")]
-        public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+        public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
 
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
@@ -216,6 +216,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             if (logPersonalInfo && !string.IsNullOrEmpty(dc.Context.Activity.Text))
             {
                 properties.Add(LuisTelemetryConstants.QuestionProperty, dc.Context.Activity.Text);
+                
+                //if (telemetryProperties == null)
+                //{
+                //    telemetryProperties = new Dictionary<string, string>();
+                //}
             }
 
             // Additional Properties can override "stock" properties.
