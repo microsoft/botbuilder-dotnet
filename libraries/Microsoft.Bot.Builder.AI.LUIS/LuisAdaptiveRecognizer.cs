@@ -216,11 +216,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             if (logPersonalInfo && !string.IsNullOrEmpty(dc.Context.Activity.Text))
             {
                 properties.Add(LuisTelemetryConstants.QuestionProperty, dc.Context.Activity.Text);
-                
-                //if (telemetryProperties == null)
-                //{
-                //    telemetryProperties = new Dictionary<string, string>();
-                //}
             }
 
             // Additional Properties can override "stock" properties.
