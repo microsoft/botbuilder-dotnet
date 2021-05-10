@@ -114,9 +114,7 @@ namespace Microsoft.Bot.Configuration
                 throw new ArgumentNullException(nameof(folder));
             }
 
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return BotConfiguration.LoadFromFolderAsync(folder, secret).GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -164,9 +162,7 @@ namespace Microsoft.Bot.Configuration
                 throw new ArgumentNullException(nameof(file));
             }
 
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return BotConfiguration.LoadAsync(file, secret).GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -186,9 +182,7 @@ namespace Microsoft.Bot.Configuration
         /// Save the file with secret.
         /// </summary>
         /// <param name="secret">Secret for encryption. </param>
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
         public void Save(string secret = null) => this.SaveAsync(secret).GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
 
         /// <summary>
         /// Save the configuration to a .bot file.
@@ -260,9 +254,7 @@ namespace Microsoft.Bot.Configuration
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
-            this.SaveAsAsync(path, secret).GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+            SaveAsAsync(path, secret).GetAwaiter().GetResult();
         }
 
         /// <summary>

@@ -95,9 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
             var lgResource = new LGResource(Id, resource.FullName, content);
             this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
             RegisterSourcemap(lg, resource);
@@ -147,9 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             TaskFactory.StartNew(() =>
             {
                 return func();
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             }).Unwrap().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
 #pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
         }
 

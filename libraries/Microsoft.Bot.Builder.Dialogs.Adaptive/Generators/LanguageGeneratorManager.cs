@@ -75,9 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 }
                 else
                 {
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
                     var content = resource.ReadTextAsync().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
                     return new LGResource(resource.Id, resource.FullName, content);
                 }
             };

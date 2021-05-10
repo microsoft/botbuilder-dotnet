@@ -49,9 +49,7 @@ namespace Microsoft.Bot.Streaming
             cancellationToken.ThrowIfCancellationRequested();
             await Task.WhenAll(requestTask, responseTask).ConfigureAwait(false);
 
-#pragma warning disable VSTHRD103 // Call async methods when in an async method
-            return responseTask.Result;
-#pragma warning restore VSTHRD103 // Call async methods when in an async method
+            return await responseTask.ConfigureAwait(false);
         }
 
         private async Task OnReceiveRequestAsync(Guid id, ReceiveRequest request)

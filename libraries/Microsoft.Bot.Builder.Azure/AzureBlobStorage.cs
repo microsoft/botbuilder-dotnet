@@ -199,9 +199,9 @@ namespace Microsoft.Bot.Builder.Azure
                     using (var streamWriter = new StreamWriter(memoryStream))
                     {
                         _jsonSerializer.Serialize(streamWriter, newValue);
-#pragma warning disable VSTHRD103 // Call async methods when in an async method
-                        streamWriter.Flush();
-#pragma warning restore VSTHRD103 // Call async methods when in an async method
+
+                        await streamWriter.FlushAsync().ConfigureAwait(false);
+
                         memoryStream.Seek(0, SeekOrigin.Begin);
                         await blobReference.UploadFromStreamAsync(memoryStream, accessCondition, blobRequestOptions, operationContext, cancellationToken).ConfigureAwait(false);
                     }

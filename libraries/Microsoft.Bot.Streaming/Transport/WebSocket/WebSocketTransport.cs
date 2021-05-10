@@ -38,9 +38,7 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
             {
                 try
                 {
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
                     Task.WaitAll(_socket.CloseAsync(
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
                         WebSocketCloseStatus.NormalClosure,
                         "Closed by the WebSocketTransport",
                         CancellationToken.None));

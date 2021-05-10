@@ -29,9 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
 
         public void Dispose()
         {
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             DisposeAsync().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         public async Task DisposeAsync()
@@ -48,9 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
                 try
                 {
                     // wait for the completion of the task
-#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
                     await _task.ConfigureAwait(false);
-#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
                 }
                 catch (OperationCanceledException error) when (error.CancellationToken == _cancellationToken.Token)
                 {

@@ -43,9 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             if (resourceExplorer.IsRef(jsonObject))
             {
                 // We can't do this asynchronously as the Json.NET interface is synchronous
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
                 jsonObject = resourceExplorer.ResolveRefAsync(jsonObject, sourceContext).GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
             }
 
             return jsonObject as JObject;

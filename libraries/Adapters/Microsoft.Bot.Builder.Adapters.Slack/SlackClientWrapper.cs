@@ -50,9 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             _api = new SlackTaskClient(options.SlackBotToken);
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             LoginWithSlackAsync(default).Wait();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>

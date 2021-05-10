@@ -25,9 +25,7 @@ namespace Microsoft.Bot.Streaming
         /// </returns>
         public static T ReadBodyAsJson<T>(this ReceiveRequest request)
         {
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return request.ReadBodyAsJsonAsync<T>().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
@@ -68,9 +66,7 @@ namespace Microsoft.Bot.Streaming
         /// </returns>
         public static string ReadBodyAsString(this ReceiveRequest request)
         {
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             return request.ReadBodyAsStringAsync().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         /// <summary>
