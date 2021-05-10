@@ -767,9 +767,21 @@ namespace AdaptiveExpressions
             obj1 = ResolveValue(obj1);
             obj2 = ResolveValue(obj2);
 
-            if (TryParseList(obj1, out IList l0) && l0.Count == 0 && TryParseList(obj2, out IList l1) && l1.Count == 0)
+            if (TryParseList(obj1, out IList l0) && TryParseList(obj2, out IList l1))
             {
-                return true;
+                if (l0.Count == 0 && l1.Count == 0)
+                {
+                    return true;
+                }
+                else if (l0.Count != l1.Count)
+                {
+                    return false;
+                }
+                else
+                {
+                    var isEqual = true;
+                    
+                }
             }
 
             if (GetPropertyCount(obj1) == 0 && GetPropertyCount(obj2) == 0)

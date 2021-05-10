@@ -35,7 +35,15 @@ namespace AdaptiveExpressions.BuiltinFunctions
                 {
                     // list to find a value
                     var operands = FunctionUtils.ResolveListValue(ilist);
-                    found = operands.Contains(args[1]);
+
+                    foreach (var item in operands)
+                    {
+                        if (FunctionUtils.CommonEquals(item, args[1]))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
                 }
                 else if (args[1] is string string2)
                 {
