@@ -1,0 +1,17 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
+    "form": {
+        "label": "Slack connection.",
+        "description": "Connects a bot to Slack.",
+        "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
+        "order": [
+            "SlackVerificationToken",
+            "SlackBotToken",
+            "SlackClientSigningSecret",
+            "*"
+        ],
+        "hidden": [
+            "type"
+        ]
+    }
+}

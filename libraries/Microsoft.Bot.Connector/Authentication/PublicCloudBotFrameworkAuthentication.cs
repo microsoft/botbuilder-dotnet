@@ -9,15 +9,16 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class PublicCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public PublicCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
+        public PublicCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger)
             : base(
                   AuthenticationConstants.ToChannelFromBotOAuthScope,
                   AuthenticationConstants.ToChannelFromBotLoginUrlTemplate,
                   CallerIdConstants.PublicAzureChannel,
                   null,
+                  AuthenticationConstants.OAuthUrl,
                   credentialFactory,
                   authConfiguration,
-                  httpClient,
+                  httpClientFactory,
                   logger)
         {
         }

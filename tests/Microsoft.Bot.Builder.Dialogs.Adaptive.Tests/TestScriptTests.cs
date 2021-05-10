@@ -129,6 +129,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public async Task TestScriptTests_PropertyMock()
         {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestScriptTests_SettingMock()
+        {
             var configBuilder = new ConfigurationBuilder();
             configBuilder.AddInMemoryCollection(new KeyValuePair<string, string>[]
             {
@@ -140,7 +146,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task TestScriptTests_UserActivity()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task TestScriptTests_UserConversationUpdate()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestScriptTests_OAuthInputMockProperties()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task TestScriptTests_OAuthInputLG()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }

@@ -26,5 +26,8 @@
             "title": "Error value",
             "description": "Error value to throw."
         }
+    },
+    "$policies": {
+        "lastAction": true
     }
 }

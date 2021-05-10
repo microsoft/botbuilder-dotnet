@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Converts the key into a DocumentID that can be used safely with Cosmos DB.
         /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', and '#'.
-        /// More information at <see cref="Microsoft.Azure.Documents.Resource.Id"/>.
+        /// More information at <see href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet"/>.
         /// </summary>
         /// <param name="key">The key to escape.</param>
         /// <returns>An escaped key that can be used safely with CosmosDB.</returns>
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Converts the key into a DocumentID that can be used safely with Cosmos DB.
         /// The following characters are restricted and cannot be used in the Id property: '/', '\', '?', and '#'.
-        /// More information at <see cref="Microsoft.Azure.Documents.Resource.Id"/>.
+        /// More information at <see href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.documents.resource.id?view=azure-dotnet"/>.
         /// </summary>
         /// <param name="key">The key to escape.</param>
         /// <param name="suffix">The string to add at the end of all row keys.</param>

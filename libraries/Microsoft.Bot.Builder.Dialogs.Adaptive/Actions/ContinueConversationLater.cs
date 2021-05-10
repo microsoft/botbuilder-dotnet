@@ -11,19 +11,20 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action which schedules a conversation to be continued later by writing an EventActivity(Name=ContinueConversation) to a queue.
+    /// Action which schedules the current conversation to be continued at a later time..
     /// </summary>
     /// <remarks>
-    /// This class works by writing an EventActivity(Name=ConversationUpdate) to an azure storage queue with visibility policy to 
-    /// make it visible at a future point in time. 
+    /// This action works by writing an EventActivity(Name=ContinueConversation) to a StorageQueue with same routing information 
+    /// as the current conversation reference, and with a visibility policy to make it visible at a future point in time. 
     /// 
-    /// The queue needs a process (such as a webjob/azure function) monitoring incoming activities and processing them by either:
-    ///   - posting the activity back to the bot itself via BotFrameworkHttpClient.PostActivityAsync(botId, botEndpoint, activity).
-    /// OR
-    ///   - processing the activity directly via adapter.ProcessActivity(activity, ...); 
-    ///     NOTE: adapter.ProcessActivity() understands that EventActivity(Name=ConversationUpdate) should be processed as ContinueConversation() pipeline.
+    /// The queue needs a process (such as a webjob/azure function) pulling activites from the StorageQueue and processing them by 
+    /// calling adapter.ProcessActivity(activity, ...); 
+    /// 
+    /// NOTE: In the case of multiple adapters this webjob/function should inspect the activity.channelId 
+    /// to properly route the activity to the appropriate adapter. 
     /// 
     /// This dialog returns the receipt information for the queued activity as the result of the dialog.
+    /// <seealso cref="ContinueConversation"/>
     /// </remarks>
     public class ContinueConversationLater : Dialog
     {
@@ -65,7 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public StringExpression Date { get; set; }
 
         /// <summary>
-        /// Gets or sets the value to pass in the EventActivity.Value payload. 
+        /// Gets or sets an optional value to use for EventActivity.Value.
         /// </summary>
         /// <value>
         /// The value to use for the EventActivity.Value payload.
@@ -81,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -95,7 +96,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             date = date.ToUniversalTime();
             if (date <= DateTime.UtcNow)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(Date)} must be in the future");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentOutOfRangeException(nameof(Date), $"{nameof(Date)} must be in the future");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             // create ContinuationActivity from the conversation reference.
@@ -115,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <inheritdoc/>
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({Date?.ToString()}s)";
+            return $"{GetType().Name}({Date?.ToString()}s)";
         }
     }
 }

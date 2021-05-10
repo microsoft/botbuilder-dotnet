@@ -1,0 +1,26 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.SettingStringMock",
+    "assignments": [
+        {
+            "property": "fileoverwrite",
+            "value": "overwrite settings.fileoverwrite"
+        },
+        {
+            "property": "baseoverwrite",
+            "value": "overwrite settings.base"
+        },
+        {
+            "property": "selfoverwrite",
+            "value": "this is overwritten"
+        },
+        {
+            "property": "selfoverwrite",
+            "value": "overwrite settings.selfoverwrite"
+        },
+        {
+            "property": "object.value",
+            "value": "within object value"
+        }
+    ]
+}

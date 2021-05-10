@@ -10,5 +10,10 @@
         "hidden": [
             "actions"
         ]
+    },
+    "trigger": {
+		"label": "Dialog cancelled (Cancel dialog event)",
+		"order": 4.2,
+		"submenu": "Dialog events"
     }
 }

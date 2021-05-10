@@ -18,7 +18,7 @@
             "title": "ActivityId",
             "description": "expression to an activityId to delete",
             "examples": [
-                "=$lastActivity"
+                "=turn.lastresult.id"
             ]
         },
         "disabled": {

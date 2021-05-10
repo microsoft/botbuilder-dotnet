@@ -19,5 +19,8 @@
                 "user.age > 3"
             ]
         }
+    },
+    "$policies": {
+        "lastAction": true
     }
 }

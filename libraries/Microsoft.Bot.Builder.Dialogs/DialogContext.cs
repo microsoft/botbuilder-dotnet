@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -154,11 +155,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         public TurnContextStateCollection Services { get; private set; }
 
         /// <summary>
-        /// Gets the current DialogManager for this dialogContext.
+        /// Gets the current DialogManager for this dialogContext. This property is obsolete.
         /// </summary>
         /// <value>
         /// The root dialogManager that was used to create this dialog context chain.
         /// </value>
+        [Obsolete("The DialogManager property serves no function.")]
         public DialogManager DialogManager => this.Context.TurnState.Get<DialogManager>();
 
         /// <summary>
@@ -657,9 +659,34 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Obtain the CultureInfo in DialogContext.
         /// </summary>
         /// <returns>A string representing the current locale.</returns>
+        /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            return Context.TurnState.Get<string>("turn.locale");
+            const string TurnLocaleProperty = "turn.locale";
+            string locale;
+
+            try
+            {
+                // turn.locale is the highest precedence.
+                if (State.TryGetValue<string>(TurnLocaleProperty, out locale) && !string.IsNullOrEmpty(locale))
+                {
+                    return new CultureInfo(locale).Name;
+                }
+
+                // If turn.locale was not populated, fall back to activity locale
+                locale = Context.Activity?.Locale;
+
+                if (!string.IsNullOrEmpty(locale))
+                {
+                    return new CultureInfo(locale).Name;
+                }
+
+                return Thread.CurrentThread.CurrentCulture.Name;
+            }
+            catch (CultureNotFoundException)
+            {
+                return Thread.CurrentThread.CurrentCulture.Name;
+            }
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

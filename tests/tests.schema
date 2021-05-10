@@ -50,10 +50,13 @@
       "$ref": "#/definitions/Microsoft.ConditionalSelector"
     },
     {
+      "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+    },
+    {
       "$ref": "#/definitions/Microsoft.ConfirmInput"
     },
     {
-      "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+      "$ref": "#/definitions/Microsoft.ContinueConversation"
     },
     {
       "$ref": "#/definitions/Microsoft.ContinueConversationLater"
@@ -107,6 +110,9 @@
       "$ref": "#/definitions/Microsoft.EndTurn"
     },
     {
+      "$ref": "#/definitions/Microsoft.FacebookAdapter"
+    },
+    {
       "$ref": "#/definitions/Microsoft.FirstSelector"
     },
     {
@@ -120,6 +126,9 @@
     },
     {
       "$ref": "#/definitions/Microsoft.GetConversationMembers"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.GetConversationReference"
     },
     {
       "$ref": "#/definitions/Microsoft.GotoAction"
@@ -186,6 +195,12 @@
     },
     {
       "$ref": "#/definitions/Microsoft.OnChooseProperty"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.OnCommandActivity"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.OnCommandResultActivity"
     },
     {
       "$ref": "#/definitions/Microsoft.OnCondition"
@@ -290,6 +305,9 @@
       "$ref": "#/definitions/Microsoft.SendActivity"
     },
     {
+      "$ref": "#/definitions/Microsoft.SendHandoffActivity"
+    },
+    {
       "$ref": "#/definitions/Microsoft.SetProperties"
     },
     {
@@ -297,6 +315,9 @@
     },
     {
       "$ref": "#/definitions/Microsoft.SignOutUser"
+    },
+    {
+      "$ref": "#/definitions/Microsoft.SlackAdapter"
     },
     {
       "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
@@ -344,6 +365,9 @@
       "$ref": "#/definitions/Microsoft.Test.SetProperties"
     },
     {
+      "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+    },
+    {
       "$ref": "#/definitions/Microsoft.Test.UserActivity"
     },
     {
@@ -377,82 +401,16 @@
       "$ref": "#/definitions/Microsoft.TrueSelector"
     },
     {
+      "$ref": "#/definitions/Microsoft.TwilioAdapter"
+    },
+    {
       "$ref": "#/definitions/Microsoft.UpdateActivity"
     },
     {
       "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
     },
     {
-      "$ref": "#/definitions/Teams.GetMeetingParticipant"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnCardAction"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnChannelCreated"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnChannelDeleted"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnChannelRenamed"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnChannelRestored"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnFileConsent"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTaskModuleFetch"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTaskModuleSubmit"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamArchived"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamDeleted"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamHardDeleted"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamRenamed"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamRestored"
-    },
-    {
-      "$ref": "#/definitions/Teams.OnTeamUnarchived"
+      "$ref": "#/definitions/Microsoft.WebexAdapter"
     },
     {
       "$ref": "#/definitions/Testbot.JavascriptAction"
@@ -462,6 +420,87 @@
     }
   ],
   "definitions": {
+    "arrayExpression": {
+      "$role": "expression",
+      "title": "Array or expression",
+      "description": "Array or expression to evaluate.",
+      "oneOf": [
+        {
+          "type": "array",
+          "title": "Array",
+          "description": "Array constant."
+        },
+        {
+          "$ref": "#/definitions/equalsExpression"
+        }
+      ]
+    },
+    "booleanExpression": {
+      "$role": "expression",
+      "title": "Boolean or expression",
+      "description": "Boolean constant or expression to evaluate.",
+      "oneOf": [
+        {
+          "type": "boolean",
+          "title": "Boolean",
+          "description": "Boolean constant.",
+          "default": false,
+          "examples": [
+            false
+          ]
+        },
+        {
+          "$ref": "#/definitions/equalsExpression",
+          "examples": [
+            "=user.isVip"
+          ]
+        }
+      ]
+    },
+    "component": {
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "condition": {
+      "$role": "expression",
+      "title": "Boolean condition",
+      "description": "Boolean constant or expression to evaluate.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/expression"
+        },
+        {
+          "type": "boolean",
+          "title": "Boolean",
+          "description": "Boolean value.",
+          "default": true,
+          "examples": [
+            false
+          ]
+        }
+      ]
+    },
     "CustomAction.dialog": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Custom Action",
@@ -566,6 +605,48 @@
         }
       }
     },
+    "equalsExpression": {
+      "$role": "expression",
+      "type": "string",
+      "title": "Expression",
+      "description": "Expression starting with =.",
+      "pattern": "^=.*\\S.*",
+      "examples": [
+        "=user.name"
+      ]
+    },
+    "expression": {
+      "$role": "expression",
+      "type": "string",
+      "title": "Expression",
+      "description": "Expression to evaluate.",
+      "pattern": "^.*\\S.*",
+      "examples": [
+        "user.age > 13"
+      ]
+    },
+    "integerExpression": {
+      "$role": "expression",
+      "title": "Integer or expression",
+      "description": "Integer constant or expression to evaluate.",
+      "oneOf": [
+        {
+          "type": "integer",
+          "title": "Integer",
+          "description": "Integer constant.",
+          "default": 0,
+          "examples": [
+            15
+          ]
+        },
+        {
+          "$ref": "#/definitions/equalsExpression",
+          "examples": [
+            "=user.age"
+          ]
+        }
+      ]
+    },
     "Microsoft.ActivityTemplate": {
       "$role": "implements(Microsoft.IActivityTemplate)",
       "title": "Microsoft activity template",
@@ -619,6 +700,7 @@
       "properties": {
         "id": {
           "type": "string",
+          "pattern": "^(?!(=)).*",
           "title": "Id",
           "description": "Optional dialog ID."
         },
@@ -633,6 +715,17 @@
           "title": "Default result property",
           "description": "Value that will be passed back to the parent dialog.",
           "default": "dialog.result"
+        },
+        "dialogs": {
+          "type": "array",
+          "title": "Dialogs",
+          "description": "Dialogs added to DialogSet.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "Dialog to add to DialogSet.",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
         },
         "recognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -732,6 +825,9 @@
       "title": "Send activity to ask a question",
       "description": "This is an action which sends an activity to the user when a response is expected",
       "type": "object",
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -805,6 +901,9 @@
       ],
       "title": "Attachment input dialog",
       "description": "Collect information - Ask for a file or image.",
+      "$policies": {
+        "interactive": true
+      },
       "type": "object",
       "required": [
         "$kind"
@@ -1026,10 +1125,7 @@
               "$ref": "#/definitions/Microsoft.IDialog"
             },
             {
-              "$ref": "#/definitions/equalsExpression",
-              "examples": [
-                "=settings.dialogId"
-              ]
+              "$ref": "#/definitions/equalsExpression"
             }
           ],
           "title": "Dialog name",
@@ -1198,6 +1294,9 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -1238,6 +1337,9 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -1298,6 +1400,9 @@
       "title": "Cancel all dialogs",
       "description": "Cancel all active dialogs. All dialogs in the dialog chain will need a trigger to capture the event configured in this action.",
       "type": "object",
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -1393,6 +1498,9 @@
       "title": "Choice input dialog",
       "description": "Collect information - Pick from a list of choices",
       "type": "object",
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -1496,7 +1604,7 @@
               ]
             },
             {
-              "$ref": "#/definitions/equalsExpression"
+              "$ref": "#/definitions/stringExpression"
             }
           ]
         },
@@ -1780,6 +1888,39 @@
         }
       }
     },
+    "Microsoft.ConfirmationEntityRecognizer": {
+      "$role": [
+        "implements(Microsoft.IRecognizer)",
+        "implements(Microsoft.IEntityRecognizer)"
+      ],
+      "title": "Confirmation entity recognizer",
+      "description": "Recognizer which recognizes confirmation choices (yes/no).",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.ConfirmationEntityRecognizer"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.ConfirmInput": {
       "$role": [
         "implements(Microsoft.IDialog)",
@@ -1788,6 +1929,9 @@
       "title": "Confirm input dialog",
       "description": "Collect information - Ask for confirmation (yes or no).",
       "type": "object",
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -1950,7 +2094,7 @@
               ]
             },
             {
-              "$ref": "#/definitions/equalsExpression"
+              "$ref": "#/definitions/stringExpression"
             }
           ]
         },
@@ -2075,15 +2219,13 @@
         }
       }
     },
-    "Microsoft.ConfirmationEntityRecognizer": {
-      "$role": [
-        "implements(Microsoft.IRecognizer)",
-        "implements(Microsoft.IEntityRecognizer)"
-      ],
-      "title": "Confirmation entity recognizer",
-      "description": "Recognizer which recognizes confirmation choices (yes/no).",
+    "Microsoft.ContinueConversation": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Continue conversation (Queue)",
+      "description": "Continue a specific conversation (via StorageQueue implementation).",
       "type": "object",
       "required": [
+        "conversationReference",
         "$kind"
       ],
       "additionalProperties": false,
@@ -2094,12 +2236,51 @@
         }
       },
       "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "conversationReference": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Conversation Reference",
+          "description": "A conversation reference. (NOTE: Minimum required values or channelId, conversation).",
+          "examples": [
+            {
+              "channelId": "skype",
+              "serviceUrl": "http://smba.skype.com",
+              "conversation": {
+                "id": "11111"
+              },
+              "bot": {
+                "id": "22222"
+              },
+              "user": {
+                "id": "33333"
+              },
+              "locale": "en-us"
+            }
+          ]
+        },
+        "value": {
+          "$ref": "#/definitions/valueExpression",
+          "title": "Value",
+          "description": "Value to send in the activity.value."
+        },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.ConfirmationEntityRecognizer"
+          "const": "Microsoft.ContinueConversation"
         },
         "$designer": {
           "title": "Designer information",
@@ -2111,11 +2292,10 @@
     "Microsoft.ContinueConversationLater": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Continue conversation later (Queue)",
-      "description": "Continue conversation at later time (via Azure Storage Queue).",
+      "description": "Continue conversation at later time (via StorageQueue implementation).",
       "type": "object",
       "required": [
         "date",
-        "connectionString",
         "$kind"
       ],
       "additionalProperties": false,
@@ -2174,6 +2354,9 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -2333,6 +2516,9 @@
         "title": "Default locale",
         "description": "Default locale.",
         "default": "en-us"
+      },
+      "$policies": {
+        "interactive": true
       },
       "required": [
         "$kind"
@@ -2562,7 +2748,7 @@
           "title": "ActivityId",
           "description": "expression to an activityId to delete",
           "examples": [
-            "=$lastActivity"
+            "=turn.lastresult.id"
           ]
         },
         "disabled": {
@@ -2725,7 +2911,7 @@
     },
     "Microsoft.EditActions": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Edit actions.",
+      "title": "Edit actions",
       "description": "Edit the current list of actions.",
       "type": "object",
       "required": [
@@ -2989,7 +3175,16 @@
         "bubbleEvent": {
           "$ref": "#/definitions/booleanExpression",
           "title": "Bubble event",
-          "description": "If true this event is passed on to parent dialogs."
+          "description": "If true this event is passed on to the parent dialogs."
+        },
+        "handledProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Handled Property",
+          "description": "Property to store whether the event was handled or not.",
+          "default": "turn.eventHandled",
+          "examples": [
+            "turn.eventHandled"
+          ]
         },
         "$kind": {
           "title": "Kind of dialog object",
@@ -3010,6 +3205,9 @@
       "title": "End dialog",
       "description": "End this dialog.",
       "type": "object",
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -3092,6 +3290,66 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.EndTurn"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.FacebookAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Facebook connection",
+      "description": "Connects a bot to Facebook.",
+      "type": "object",
+      "required": [
+        "FacebookVerifyToken",
+        "FacebookAppSecret",
+        "FacebookAccessToken",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "FacebookVerifyToken": {
+          "type": "string",
+          "title": "Verification token",
+          "description": "The verify token obtained from Facebook portal while setting up the application."
+        },
+        "FacebookAppSecret": {
+          "type": "string",
+          "title": "App secret",
+          "description": "The app secret obtained from Facebook portal while setting up the application."
+        },
+        "FacebookAccessToken": {
+          "type": "string",
+          "title": "Access token",
+          "description": "The access token obtained from Facebook portal while setting up the application."
+        },
+        "route": {
+          "type": "string",
+          "title": "route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "facebook"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Facebook.FacebookAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.FacebookAdapter"
         },
         "$designer": {
           "title": "Designer information",
@@ -3316,7 +3574,7 @@
           "title": "Activity Id",
           "description": "Activity ID or expression to an activityId to use to get the members. If none is defined then the current activity id will be used.",
           "examples": [
-            "$lastActivity"
+            "turn.lastresult.id"
           ]
         },
         "disabled": {
@@ -3392,6 +3650,57 @@
         }
       }
     },
+    "Microsoft.GetConversationReference": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Get ConversationReference",
+      "description": "Gets the ConversationReference from current context and stores it in property so it can be used to with ContinueConversation action.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "property": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property (named location to store information).",
+          "examples": [
+            "user.age"
+          ]
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            "user.age > 3"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.GetConversationReference"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.GotoAction": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "Go to action",
@@ -3401,6 +3710,9 @@
         "actionId",
         "$kind"
       ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -3572,6 +3884,7 @@
           "$ref": "#/definitions/stringExpression",
           "title": "Result property",
           "description": "A property to store the result of this action. The result can include any of the 4 properties from the HTTP response: statusCode, reasonPhrase, content, and headers. If the content is JSON it will be a deserialized object. The values can be accessed via .content for example.",
+          "default": "turn.results",
           "examples": [
             "dialog.contosodata"
           ]
@@ -3652,6 +3965,43 @@
         }
       ]
     },
+    "Microsoft.IAdapter": {
+      "$role": "interface",
+      "title": "Bot adapter",
+      "description": "Component that enables connecting bots to chat clients and applications.",
+      "type": "object",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.FacebookAdapter"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.SlackAdapter"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TwilioAdapter"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.WebexAdapter"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.IAdapter",
+          "description": "Reference to Microsoft.IAdapter .dialog file."
+        }
+      ],
+      "properties": {
+        "route": {
+          "type": "string",
+          "title": "Adapter http route",
+          "description": "Route where to expose the adapter."
+        },
+        "type": {
+          "type": "string",
+          "title": "Adapter type name",
+          "description": "Adapter type name"
+        }
+      }
+    },
     "Microsoft.IDialog": {
       "title": "Microsoft dialogs",
       "description": "Components which derive from Dialog",
@@ -3692,6 +4042,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ContinueConversation"
         },
         {
           "$ref": "#/definitions/Microsoft.ContinueConversationLater"
@@ -3742,6 +4095,9 @@
           "$ref": "#/definitions/Microsoft.GetConversationMembers"
         },
         {
+          "$ref": "#/definitions/Microsoft.GetConversationReference"
+        },
+        {
           "$ref": "#/definitions/Microsoft.GotoAction"
         },
         {
@@ -3770,6 +4126,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.SendActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.SendHandoffActivity"
         },
         {
           "$ref": "#/definitions/Microsoft.SetProperties"
@@ -3802,16 +4161,14 @@
           "$ref": "#/definitions/Microsoft.UpdateActivity"
         },
         {
-          "$ref": "#/definitions/Teams.GetMeetingParticipant"
-        },
-        {
           "$ref": "#/definitions/Testbot.JavascriptAction"
         },
         {
           "$ref": "#/definitions/Testbot.Multiply"
         },
         {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?!(=)).*"
         }
       ]
     },
@@ -3879,312 +4236,6 @@
           "type": "string",
           "title": "Reference to Microsoft.IEntityRecognizer",
           "description": "Reference to Microsoft.IEntityRecognizer .dialog file."
-        }
-      ]
-    },
-    "Microsoft.ILanguageGenerator": {
-      "title": "Microsoft LanguageGenerator",
-      "description": "Components which dervie from the LanguageGenerator class",
-      "$role": "interface",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
-        },
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "Microsoft.IRecognizer": {
-      "title": "Microsoft recognizer",
-      "description": "Components which derive from Recognizer class",
-      "$role": "interface",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ChannelMentionEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.LuisRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RecognizerSet"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RegexRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
-        },
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "Microsoft.ITextTemplate": {
-      "title": "Microsoft TextTemplate",
-      "description": "Components which derive from TextTemplate class",
-      "$role": "interface",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/Microsoft.TextTemplate"
-        },
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "Microsoft.ITrigger": {
-      "$role": "interface",
-      "title": "Microsoft Triggers",
-      "description": "Components which derive from OnCondition class.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/Microsoft.OnActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnAssignEntity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnBeginDialog"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnCancelDialog"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnChooseEntity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnChooseIntent"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnChooseProperty"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnCondition"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnContinueConversation"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnDialogEvent"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnEndOfActions"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnError"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnEventActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnHandoffActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnInstallationUpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnIntent"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnInvokeActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnMessageActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnQnAMatch"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnRepromptDialog"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnTypingActivity"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.OnUnknownIntent"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnAppBasedLinkQuery"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnCardAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelCreated"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelDeleted"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelRenamed"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnChannelRestored"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnFileConsent"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionCardButtonClicked"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionConfigurationSetting"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionFetchTask"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionQuery"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSelectItem"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnMessagingExtensionSubmitAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnO365ConnectorCardAction"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTaskModuleFetch"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTaskModuleSubmit"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamArchived"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamDeleted"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamHardDeleted"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamRenamed"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamRestored"
-        },
-        {
-          "$ref": "#/definitions/Teams.OnTeamUnarchived"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITrigger",
-          "description": "Reference to Microsoft.ITrigger .dialog file."
-        }
-      ]
-    },
-    "Microsoft.ITriggerSelector": {
-      "$role": "interface",
-      "title": "Selectors",
-      "description": "Components which derive from TriggerSelector class.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/Microsoft.ConditionalSelector"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.FirstSelector"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.MostSpecificSelector"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.RandomSelector"
-        },
-        {
-          "$ref": "#/definitions/Microsoft.TrueSelector"
-        },
-        {
-          "type": "string",
-          "title": "Reference to Microsoft.ITriggerSelector",
-          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
         }
       ]
     },
@@ -4258,6 +4309,22 @@
           "description": "Extra information for the Bot Framework Composer."
         }
       }
+    },
+    "Microsoft.ILanguageGenerator": {
+      "title": "Microsoft LanguageGenerator",
+      "description": "Components which dervie from the LanguageGenerator class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.ResourceMultiLanguageGenerator"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TemplateEngineLanguageGenerator"
+        },
+        {
+          "type": "string"
+        }
+      ]
     },
     "Microsoft.InputDialog": {
       "type": "object",
@@ -4426,6 +4493,233 @@
         }
       }
     },
+    "Microsoft.IRecognizer": {
+      "title": "Microsoft recognizer",
+      "description": "Components which derive from Recognizer class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ChannelMentionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.CrossTrainedRecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.LuisRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrchestratorRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.QnAMakerRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RecognizerSet"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RegexRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Microsoft.ITextTemplate": {
+      "title": "Microsoft TextTemplate",
+      "description": "Components which derive from TextTemplate class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.TextTemplate"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Microsoft.ITrigger": {
+      "$role": "interface",
+      "title": "Microsoft Triggers",
+      "description": "Components which derive from OnCondition class.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.OnActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnAssignEntity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnBeginDialog"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCancelDialog"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnChooseEntity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnChooseIntent"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnChooseProperty"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCommandActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCommandResultActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnCondition"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnContinueConversation"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnDialogEvent"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnEndOfActions"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnError"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnEventActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnHandoffActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnInstallationUpdateActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnIntent"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnInvokeActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnMessageActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnQnAMatch"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnRepromptDialog"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnTypingActivity"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.OnUnknownIntent"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITrigger",
+          "description": "Reference to Microsoft.ITrigger .dialog file."
+        }
+      ]
+    },
+    "Microsoft.ITriggerSelector": {
+      "$role": "interface",
+      "title": "Selectors",
+      "description": "Components which derive from TriggerSelector class.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.ConditionalSelector"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.FirstSelector"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.MostSpecificSelector"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.RandomSelector"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.ITriggerSelector",
+          "description": "Reference to Microsoft.ITriggerSelector .dialog file."
+        }
+      ]
+    },
     "Microsoft.LanguagePolicy": {
       "title": "Language policy",
       "description": "This represents a policy map for locales lookups to use for language",
@@ -4496,9 +4790,10 @@
           ]
         },
         "text": {
-          "$ref": "#/definitions/stringExpression",
+          "$kind": "Microsoft.IActivityTemplate",
           "title": "Text",
-          "description": "Information to log."
+          "description": "Information to log.",
+          "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
         "label": {
           "$ref": "#/definitions/stringExpression",
@@ -4824,6 +5119,9 @@
       "title": "Number input dialog",
       "description": "Collect information - Ask for a number.",
       "type": "object",
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -5025,12 +5323,15 @@
     "Microsoft.OAuthInput": {
       "$role": "implements(Microsoft.IDialog)",
       "title": "OAuthInput Dialog",
-      "description": "Collect login information.",
+      "description": "Collect login information before each request.",
       "type": "object",
       "required": [
         "connectionName",
         "$kind"
       ],
+      "$policies": {
+        "interactive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -5082,7 +5383,8 @@
         "property": {
           "$ref": "#/definitions/stringExpression",
           "title": "Token property",
-          "description": "Property to store the OAuth token result.",
+          "description": "Property to store the OAuth token result. WARNING: Changing this location is not recommended as you should call OAuthInput immediately before each use of the token.",
+          "default": "turn.token",
           "examples": [
             "dialog.token"
           ]
@@ -5198,7 +5500,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5231,7 +5533,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On entity assignment",
-      "description": "Actions to take when an entity should be assigned to a property.",
+      "description": "Actions to apply an operation on a property and value.",
       "type": "object",
       "required": [
         "$kind"
@@ -5244,20 +5546,20 @@
         }
       },
       "properties": {
-        "property": {
-          "type": "string",
-          "title": "Property",
-          "description": "Property that will be set after entity is selected."
-        },
-        "entity": {
-          "type": "string",
-          "title": "Entity",
-          "description": "Entity being put into property"
-        },
         "operation": {
           "type": "string",
           "title": "Operation",
-          "description": "Operation for assigning entity."
+          "description": "Operation filter on event."
+        },
+        "property": {
+          "type": "string",
+          "title": "Property",
+          "description": "Property filter on event."
+        },
+        "value": {
+          "type": "string",
+          "title": "Value",
+          "description": "Value filter on event."
         },
         "condition": {
           "$ref": "#/definitions/condition",
@@ -5277,7 +5579,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5341,7 +5643,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5405,7 +5707,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5438,7 +5740,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On choose entity",
-      "description": "Actions to be performed when an entity value needs to be resolved.",
+      "description": "Actions to be performed when value is ambiguous for operator and property.",
       "type": "object",
       "required": [
         "$kind"
@@ -5451,15 +5753,20 @@
         }
       },
       "properties": {
+        "operation": {
+          "type": "string",
+          "title": "Operation",
+          "description": "Operation filter on event."
+        },
         "property": {
           "type": "string",
-          "title": "Property to be set",
-          "description": "Property that will be set after entity is selected."
+          "title": "Property",
+          "description": "Property filter on event."
         },
-        "entity": {
+        "value": {
           "type": "string",
-          "title": "Ambiguous entity",
-          "description": "Ambiguous entity"
+          "title": "Ambiguous value",
+          "description": "Ambiguous value filter on event."
         },
         "condition": {
           "$ref": "#/definitions/condition",
@@ -5479,7 +5786,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5553,7 +5860,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5586,7 +5893,7 @@
         "extends(Microsoft.OnCondition)"
       ],
       "title": "On choose property",
-      "description": "Actions to take when there are multiple possible mappings of entities to properties.",
+      "description": "Actions to take when there are multiple possible mappings of entities to properties and operations.",
       "type": "object",
       "required": [
         "$kind"
@@ -5599,31 +5906,6 @@
         }
       },
       "properties": {
-        "entity": {
-          "type": "string",
-          "title": "Entity being assigned",
-          "description": "Entity being assigned to property choice"
-        },
-        "properties": {
-          "type": "array",
-          "title": "Possible properties",
-          "description": "Properties to be chosen between.",
-          "items": {
-            "type": "string",
-            "title": "Property name",
-            "description": "Possible property to choose."
-          }
-        },
-        "entities": {
-          "type": "array",
-          "title": "Entities",
-          "description": "Ambiguous entity names.",
-          "items": {
-            "type": "string",
-            "title": "Entity name",
-            "description": "Entity name being chosen between."
-          }
-        },
         "condition": {
           "$ref": "#/definitions/condition",
           "title": "Condition",
@@ -5642,7 +5924,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5661,6 +5943,134 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.OnChooseProperty"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.OnCommandActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Command activity",
+      "description": "Actions to perform on receipt of an activity with type 'Command'. Overrides Intent trigger.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnCommandActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.OnCommandResultActivity": {
+      "$role": [
+        "implements(Microsoft.ITrigger)",
+        "extends(Microsoft.OnCondition)"
+      ],
+      "title": "On Command Result activity",
+      "description": "Actions to perform on receipt of an activity with type 'CommandResult'. Overrides Intent trigger.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "condition": {
+          "$ref": "#/definitions/condition",
+          "title": "Condition",
+          "description": "Condition (expression).",
+          "examples": [
+            "user.vip == true"
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "title": "Actions",
+          "description": "Sequence of actions to execute.",
+          "items": {
+            "$kind": "Microsoft.IDialog",
+            "$ref": "#/definitions/Microsoft.IDialog"
+          }
+        },
+        "priority": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Priority",
+          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
+        },
+        "runOnce": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Run Once",
+          "description": "True if rule should run once per unique conditions",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.OnCommandResultActivity"
         },
         "$designer": {
           "title": "Designer information",
@@ -5703,7 +6113,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5767,7 +6177,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5831,7 +6241,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5901,7 +6311,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -5965,7 +6375,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6003,6 +6413,9 @@
       "required": [
         "$kind"
       ],
+      "$policies": {
+        "nonInteractive": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -6029,7 +6442,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6093,7 +6506,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6157,7 +6570,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6221,7 +6634,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6285,7 +6698,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6364,7 +6777,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6428,7 +6841,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6492,7 +6905,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6556,7 +6969,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6620,7 +7033,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6684,7 +7097,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6748,7 +7161,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6812,7 +7225,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6876,7 +7289,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6940,7 +7353,7 @@
           }
         },
         "priority": {
-          "$ref": "#/definitions/integerExpression",
+          "$ref": "#/definitions/numberExpression",
           "title": "Priority",
           "description": "Priority for trigger with 0 being the highest and < 0 ignored."
         },
@@ -6973,8 +7386,8 @@
       "description": "Orchestrator recognizer.",
       "type": "object",
       "required": [
-        "model",
-        "shapShot",
+        "modelFolder",
+        "snapshotFile",
         "$kind"
       ],
       "additionalProperties": false,
@@ -6990,17 +7403,17 @@
           "title": "Id",
           "description": "Optional unique id using with RecognizerSet."
         },
-        "modelPath": {
+        "modelFolder": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Model",
-          "description": "NLR model file path.",
-          "default": "=settings.orchestrator.modelpath"
+          "title": "Base Model",
+          "description": "Base model folder path.",
+          "default": "=settings.orchestrator.modelFolder"
         },
-        "snapshotPath": {
+        "snapshotFile": {
           "$ref": "#/definitions/stringExpression",
-          "title": "Endpoint key",
-          "description": "SnapShot file path.",
-          "default": "=settings.orchestrator.shapshotpath"
+          "title": "Snapshot File",
+          "description": "Snapshot file.",
+          "default": "=settings.orchestrator.snapshotFile"
         },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
@@ -7685,6 +8098,9 @@
       "type": "object",
       "title": "Repeat dialog",
       "description": "Repeat current dialog.",
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -7752,6 +8168,9 @@
       "type": "object",
       "title": "Replace dialog",
       "description": "Replace current dialog with another dialog.",
+      "$policies": {
+        "lastAction": true
+      },
       "required": [
         "$kind"
       ],
@@ -7908,6 +8327,46 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.SendActivity"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.SendHandoffActivity": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Send a handoff activity",
+      "description": "Sends a handoff activity to trigger a handoff request.",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "context": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Context",
+          "description": "Context to send with the handoff request"
+        },
+        "transcript": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "transcript",
+          "description": "Transcript to send with the handoff request"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.SendHandoffActivity"
         },
         "$designer": {
           "title": "Designer information",
@@ -8102,6 +8561,66 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.SignOutUser"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.SlackAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Slack connection",
+      "description": "Connects a bot to Slack.",
+      "type": "object",
+      "required": [
+        "SlackVerificationToken",
+        "SlackBotToken",
+        "SlackClientSigningSecret",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "SlackVerificationToken": {
+          "type": "string",
+          "title": "Verification token",
+          "description": "Verification token obtained from the Slack set-up steps."
+        },
+        "SlackBotToken": {
+          "type": "string",
+          "title": "Bot token",
+          "description": "Bot token obtained from the Slack set-up steps."
+        },
+        "SlackClientSigningSecret": {
+          "type": "string",
+          "title": "Client signing secret",
+          "description": "Client signing secret obtained from the Slack set-up steps."
+        },
+        "route": {
+          "type": "string",
+          "title": "Route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "slack"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Slack.SlackAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.SlackAdapter"
         },
         "$designer": {
           "title": "Designer information",
@@ -8912,6 +9431,21 @@
       "description": "Components which derive from PropertyMock class",
       "$role": "interface"
     },
+    "Microsoft.Test.ISettingMock": {
+      "title": "Microsoft Test ISettingMock",
+      "description": "Components which derive from SettingMock class",
+      "$role": "interface",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Microsoft.Test.SettingStringMock"
+        },
+        {
+          "type": "string",
+          "title": "Reference to Microsoft.Test.ISettingMock",
+          "description": "Reference to Microsoft.Test.ISettingMock .dialog file."
+        }
+      ]
+    },
     "Microsoft.Test.ITestAction": {
       "title": "Test action",
       "description": "Components which derive from TestAction class",
@@ -9076,6 +9610,15 @@
             "$ref": "#/definitions/Microsoft.Test.IUserTokenMock"
           }
         },
+        "settingMocks": {
+          "type": "array",
+          "title": "Setting Mocks",
+          "description": "Mock data for setting.",
+          "items": {
+            "$kind": "Microsoft.Test.ISettingMock",
+            "$ref": "#/definitions/Microsoft.Test.ISettingMock"
+          }
+        },
         "script": {
           "type": "array",
           "title": "Test actions",
@@ -9164,6 +9707,65 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.Test.SetProperties"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Microsoft.Test.SettingStringMock": {
+      "$role": "implements(Microsoft.Test.ISettingMock)",
+      "title": "Mock Settings",
+      "description": "Mock one or more settings with string value.",
+      "type": "object",
+      "required": [
+        "assignments",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "assignments": {
+          "type": "array",
+          "title": "Assignments",
+          "description": "Setting assignments as settings.property=value pairs. Assign the settings in sequence.",
+          "items": {
+            "type": "object",
+            "title": "Setting String Assignment",
+            "description": "Setting String Assignment (used in SettingStringMock).",
+            "properties": {
+              "property": {
+                "type": "string",
+                "title": "Property",
+                "description": "A property path without settings.",
+                "examples": [
+                  "connectionName"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "description": "Value string.",
+                "examples": [
+                  "Graph"
+                ]
+              }
+            }
+          }
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.SettingStringMock"
         },
         "$designer": {
           "title": "Designer information",
@@ -9456,6 +10058,9 @@
       "type": "object",
       "title": "Text input dialog",
       "description": "Collection information - Ask for a word or sentence.",
+      "$policies": {
+        "interactive": true
+      },
       "required": [
         "$kind"
       ],
@@ -9662,6 +10267,9 @@
         "errorValue",
         "$kind"
       ],
+      "$policies": {
+        "lastAction": true
+      },
       "additionalProperties": false,
       "patternProperties": {
         "^\\$": {
@@ -9796,9 +10404,75 @@
         }
       }
     },
+    "Microsoft.TwilioAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Twilio connection",
+      "description": "Connects a bot to Twilio.",
+      "type": "object",
+      "required": [
+        "TwilioNumber",
+        "TwilioAccountSid",
+        "TwilioAuthToken",
+        "TwilioValidationUrl",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "TwilioNumber": {
+          "type": "string",
+          "title": "Number key",
+          "description": "Number key obtained from Twilio set-up."
+        },
+        "TwilioAccountSid": {
+          "type": "string",
+          "title": "Account SID key",
+          "description": "Account SID obtained from Twilio set-up."
+        },
+        "TwilioAuthToken": {
+          "type": "string",
+          "title": "Authentication token",
+          "description": "Authentication token obtained from Twilio set-up."
+        },
+        "TwilioValidationUrl": {
+          "type": "string",
+          "title": "Validation url",
+          "description": "Validation url obtained from Twilio set-up."
+        },
+        "route": {
+          "type": "string",
+          "title": "Route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "twilio"
+        },
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Twilio.TwilioAdapter"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.TwilioAdapter"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.UpdateActivity": {
       "$role": "implements(Microsoft.IDialog)",
-      "title": "Send an activity",
+      "title": "Update an activity",
       "description": "Respond with an activity.",
       "type": "object",
       "required": [
@@ -9831,7 +10505,7 @@
           "title": "Activity Id",
           "description": "An string expression with the activity id to update.",
           "examples": [
-            "=dialog.lastActivityId"
+            "=turn.lastresult.id"
           ]
         },
         "activity": {
@@ -9887,12 +10561,16 @@
         }
       }
     },
-    "Teams.GetMeetingParticipant": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Get meeting participant",
-      "description": "Get teams meeting partipant information.",
+    "Microsoft.WebexAdapter": {
+      "$role": "implements(Microsoft.IAdapter)",
+      "title": "Webex connection",
+      "description": "Connects a bot to Webex.",
       "type": "object",
       "required": [
+        "WebexAccessToken",
+        "WebexPublicAddress",
+        "WebexSecret",
+        "WebexWebhookName",
         "$kind"
       ],
       "additionalProperties": false,
@@ -9903,57 +10581,44 @@
         }
       },
       "properties": {
-        "id": {
+        "WebexAccessToken": {
           "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
+          "title": "Access token",
+          "description": "Access token obtained during Webex set-up."
         },
-        "property": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Property",
-          "description": "Property (named location to store information).",
-          "examples": [
-            "user.participantInfo"
-          ]
+        "WebexPublicAddress": {
+          "type": "string",
+          "title": "Public address",
+          "description": "Public address obtained during Webex set-up."
         },
-        "meetingId": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Meeting Id",
-          "description": "Meeting Id or expression to a meetingId to use to get the participant information. Default value is the current turn.activity.channelData.meeting.id.",
-          "examples": [
-            "=turn.activity.channelData.meeting.id"
-          ]
+        "WebexSecret": {
+          "type": "string",
+          "title": "Secret",
+          "description": "Secret obtained during Webex set-up."
         },
-        "participantId": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Participant Id",
-          "description": "Participant Id or expression to a participantId to use to get the participant information. Default value is the current turn.activity.from.aadObjectId.",
-          "examples": [
-            "=turn.activity.from.aadObjectId"
-          ]
+        "WebexWebhookName": {
+          "type": "string",
+          "title": "Webhook name",
+          "description": "Webhook name obtained during Webex set-up."
         },
-        "tenantId": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Tenant Id",
-          "description": "Tenant Id or expression to a tenantId to use to get the participant information. Default value is the current $turn.activity.channelData.tenant.id.",
-          "examples": [
-            "=turn.activity.channelData.tenant.id"
-          ]
+        "route": {
+          "type": "string",
+          "title": "Route",
+          "description": "Optional route where the adapter is exposed.",
+          "default": "webex"
         },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            "=user.age > 3"
-          ]
+        "type": {
+          "type": "string",
+          "title": "type",
+          "description": "Adapter full type name.",
+          "default": "Microsoft.Bot.Builder.Adapters.Webex.WebexAdapter"
         },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.GetMeetingParticipant"
+          "const": "Microsoft.WebexAdapter"
         },
         "$designer": {
           "title": "Designer information",
@@ -9961,1714 +10626,6 @@
           "description": "Extra information for the Bot Framework Composer."
         }
       }
-    },
-    "Teams.OnAppBasedLinkQuery": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsAppBasedLinkQuery",
-      "description": "Actions triggered when a Teams activity is received with activity.name == 'composeExtension/queryLink'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnAppBasedLinkQuery"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnCardAction": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsCardAction",
-      "description": "Actions triggered when a Teams InvokeActivity is received with no activity.name.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnCardAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnChannelCreated": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsChannelCreated",
-      "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelCreated'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnChannelCreated"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnChannelDeleted": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsChannelDeleted",
-      "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelDeleted'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnChannelDeleted"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnChannelRenamed": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsChannelRenamed",
-      "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRenamed'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnChannelRenamed"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnChannelRestored": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsChannelRestored",
-      "description": "Actions triggered when a Teams ConversationUpdateActivity with channelData.eventType == 'channelRestored'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnChannelRestored"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnFileConsent": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsFileConsent",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name == 'fileConsent/invoke'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnFileConsent"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionCardButtonClicked": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionCardButtonClicked",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/onCardButtonClicked'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionCardButtonClicked"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionConfigurationQuerySettingUrl": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionConfigurationQuerySettingUrl",
-      "description": "Actions triggered when a Teams InvokeActivity is received with name='composeExtension/querySettingUrl'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionConfigurationQuerySettingUrl"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionConfigurationSetting": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionConfigurationSetting",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/setting'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionConfigurationSetting"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionFetchTask": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionFetchTask",
-      "description": "Actions triggered when a Teams InvokeActivity is received when activity.name='composeExtension/fetchTask'.",
-      "type": "object",
-      "required": [
-        "actions",
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionFetchTask"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionQuery": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionQuery",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/query'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionQuery"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionSelectItem": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionSelectItem",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionSelectItem"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnMessagingExtensionSubmitAction": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsMessagingExtensionSubmitAction",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/submitAction'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnMessagingExtensionSubmitAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnO365ConnectorCardAction": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsO365ConnectorCardAction",
-      "description": "Actions triggered when a Teams InvokeActivity is received for 'actionableMessage/executeAction'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnO365ConnectorCardAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTaskModuleFetch": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTaskModuleFetch",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/fetch'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTaskModuleFetch"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTaskModuleSubmit": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTaskModuleSubmit",
-      "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='task/submit'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTaskModuleSubmit"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamArchived": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTeamArchived",
-      "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamArchived'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamArchived"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamDeleted": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTeamDeleted",
-      "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamDeleted'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamDeleted"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamHardDeleted": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTeamHardDeleted",
-      "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamHardDeleted'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamHardDeleted"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamRenamed": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTeamRenamed",
-      "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRenamed'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamRenamed"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamRestored": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTeamRestored",
-      "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamRestored'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamRestored"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Teams.OnTeamUnarchived": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "OnTeamsTeamUnarchived",
-      "description": "Actions triggered when a Teams ConversationUpdate with channelData.eventType == 'teamUnarchived'.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/integerExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Teams.OnTeamUnarchived"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Testbot.JavascriptAction": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Javascript Action",
-      "description": "This gives you the ability to execute javascript to manipulate memory",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "id": {
-          "type": "string",
-          "title": "Id",
-          "description": "Optional id for the dialog"
-        },
-        "disabled": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Disabled",
-          "description": "Optional condition which if true will disable this action.",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "script": {
-          "type": "string",
-          "title": "Script",
-          "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
-        },
-        "options": {
-          "$ref": "#/definitions/objectExpression",
-          "title": "Options",
-          "description": "One or more options that are passed to the function as args.",
-          "additionalProperties": {
-            "type": "string",
-            "title": "Options",
-            "description": "Options for action."
-          }
-        },
-        "resultProperty": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Property",
-          "description": "Property to store any value returned by the javascript function.",
-          "examples": [
-            "dialog.userName"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Testbot.JavascriptAction"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Testbot.Multiply": {
-      "$role": "implements(Microsoft.IDialog)",
-      "title": "Multiply",
-      "description": "This will return the result of arg1*arg2",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "arg1": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Arg1",
-          "description": "Value from callers memory to use as arg 1"
-        },
-        "arg2": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Arg2",
-          "description": "Value from callers memory to use as arg 2"
-        },
-        "result": {
-          "$ref": "#/definitions/stringExpression",
-          "title": "Result",
-          "description": "Property to store the result in"
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Testbot.Multiply"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "arrayExpression": {
-      "$role": "expression",
-      "title": "Array or expression",
-      "description": "Array or expression to evaluate.",
-      "oneOf": [
-        {
-          "type": "array",
-          "title": "Array",
-          "description": "Array constant."
-        },
-        {
-          "$ref": "#/definitions/equalsExpression"
-        }
-      ]
-    },
-    "booleanExpression": {
-      "$role": "expression",
-      "title": "Boolean or expression",
-      "description": "Boolean constant or expression to evaluate.",
-      "oneOf": [
-        {
-          "type": "boolean",
-          "title": "Boolean",
-          "description": "Boolean constant.",
-          "default": false,
-          "examples": [
-            false
-          ]
-        },
-        {
-          "$ref": "#/definitions/equalsExpression",
-          "examples": [
-            "=user.isVip"
-          ]
-        }
-      ]
-    },
-    "component": {
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "condition": {
-      "$role": "expression",
-      "title": "Boolean condition",
-      "description": "Boolean constant or expression to evaluate.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/expression"
-        },
-        {
-          "type": "boolean",
-          "title": "Boolean",
-          "description": "Boolean value.",
-          "default": true,
-          "examples": [
-            false
-          ]
-        }
-      ]
-    },
-    "equalsExpression": {
-      "$role": "expression",
-      "type": "string",
-      "title": "Expression",
-      "description": "Expression starting with =.",
-      "pattern": "^=.*\\S.*",
-      "examples": [
-        "=user.name"
-      ]
-    },
-    "expression": {
-      "$role": "expression",
-      "type": "string",
-      "title": "Expression",
-      "description": "Expression to evaluate.",
-      "pattern": "^.*\\S.*",
-      "examples": [
-        "user.age > 13"
-      ]
-    },
-    "integerExpression": {
-      "$role": "expression",
-      "title": "Integer or expression",
-      "description": "Integer constant or expression to evaluate.",
-      "oneOf": [
-        {
-          "type": "integer",
-          "title": "Integer",
-          "description": "Integer constant.",
-          "default": 0,
-          "examples": [
-            15
-          ]
-        },
-        {
-          "$ref": "#/definitions/equalsExpression",
-          "examples": [
-            "=user.age"
-          ]
-        }
-      ]
     },
     "numberExpression": {
       "$role": "expression",
@@ -11781,6 +10738,118 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "test"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Testbot.JavascriptAction": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Javascript Action",
+      "description": "This gives you the ability to execute javascript to manipulate memory",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Optional id for the dialog"
+        },
+        "disabled": {
+          "$ref": "#/definitions/booleanExpression",
+          "title": "Disabled",
+          "description": "Optional condition which if true will disable this action.",
+          "examples": [
+            true,
+            "=f(x)"
+          ]
+        },
+        "script": {
+          "type": "string",
+          "title": "Script",
+          "description": "name of the script file, or javascript function with function: doAction(memory, args) => result"
+        },
+        "options": {
+          "$ref": "#/definitions/objectExpression",
+          "title": "Options",
+          "description": "One or more options that are passed to the function as args.",
+          "additionalProperties": {
+            "type": "string",
+            "title": "Options",
+            "description": "Options for action."
+          }
+        },
+        "resultProperty": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Property",
+          "description": "Property to store any value returned by the javascript function.",
+          "examples": [
+            "dialog.userName"
+          ]
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Testbot.JavascriptAction"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
+    "Testbot.Multiply": {
+      "$role": "implements(Microsoft.IDialog)",
+      "title": "Multiply",
+      "description": "This will return the result of arg1*arg2",
+      "type": "object",
+      "required": [
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "arg1": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Arg1",
+          "description": "Value from callers memory to use as arg 1"
+        },
+        "arg2": {
+          "$ref": "#/definitions/numberExpression",
+          "title": "Arg2",
+          "description": "Value from callers memory to use as arg 2"
+        },
+        "result": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Result",
+          "description": "Property to store the result in"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Testbot.Multiply"
         },
         "$designer": {
           "title": "Designer information",

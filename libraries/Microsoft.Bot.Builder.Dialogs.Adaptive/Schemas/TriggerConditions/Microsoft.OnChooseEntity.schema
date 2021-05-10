@@ -2,18 +2,23 @@
     "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
     "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
     "title": "On choose entity",
-    "description": "Actions to be performed when an entity value needs to be resolved.",
+    "description": "Actions to be performed when value is ambiguous for operator and property.",
     "type": "object",
     "properties": {
+        "operation": {
+            "type": "string",
+            "title": "Operation",
+            "description": "Operation filter on event."
+        },
         "property": {
             "type": "string",
-            "title": "Property to be set",
-            "description": "Property that will be set after entity is selected."
+            "title": "Property",
+            "description": "Property filter on event."
         },
-        "entity": {
+        "value": {
             "type": "string",
-            "title": "Ambiguous entity",
-            "description": "Ambiguous entity"
+            "title": "Ambiguous value",
+            "description": "Ambiguous value filter on event."
         }
     }
 }

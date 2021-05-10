@@ -1,0 +1,126 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "defaultResultProperty": "dialog.result",
+        "autoEndDialog": false,
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "Welcome to Switch Language Test!"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${SendActivity_003038()}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "English",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "turn.locale",
+                        "value": "en-us"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${SendActivity_HFemAd()}"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnIntent",
+                "intent": "Spanish",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "turn.locale",
+                        "value": "es-ar"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${SendActivity_Eyc6Tf()}"
+                    }
+                ]
+            }
+        ],
+        "generator": "common.lg",
+        "$schema": "https://raw.githubusercontent.com/microsoft/BotFramework-Composer/stable/Composer/packages/server/schemas/sdk.schema",
+        "id": "EchoBot-2",
+        "recognizer": {
+            "$kind": "Microsoft.RegexRecognizer",
+            "intents": [
+                {
+                    "intent": "English",
+                    "pattern": "english"
+                },
+                {
+                    "intent": "Spanish",
+                    "pattern": "spanish"
+                }
+            ]
+        }
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Hello"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Welcome to Switch Language Test!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "English"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "switching to english"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "welcome to Mars"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 'welcome to Mars'"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Spanish"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Cambiando al espanol."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "como estas"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You said 'como estas'"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "English"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "switching to english"
+        }
+
+    ]
+}

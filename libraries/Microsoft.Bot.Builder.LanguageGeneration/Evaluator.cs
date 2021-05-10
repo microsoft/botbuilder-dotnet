@@ -32,18 +32,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="Evaluator"/> class.
         /// </summary>
-        /// <param name="templates">Template list.</param>
-        /// <param name="expressionParser">Expression parser.</param>
+        /// <param name="templates">Templates.</param>
         /// <param name="opt">Options for LG. </param>
-        public Evaluator(List<Template> templates, ExpressionParser expressionParser, EvaluationOptions opt = null)
+        public Evaluator(Templates templates, EvaluationOptions opt = null)
         {
             Templates = templates;
-            TemplateMap = templates.ToDictionary(x => x.Name);
+            TemplateMap = templates.AllTemplates.ToDictionary(x => x.Name);
             _lgOptions = opt;
             _cachedResult.Clear();
 
             // generate a new customized expression parser by injecting the template as functions
-            ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(expressionParser.EvaluatorLookup));
+            ExpressionParser = new ExpressionParser(CustomizedEvaluatorLookup(templates.ExpressionParser.EvaluatorLookup));
+        }
+
+        internal enum FileFormat
+        {
+            /// <summary>
+            /// Get the evaluated result from the <see cref="FileFormat.Raw"/> Result.
+            /// </summary>
+            Evaluated,
+
+            /// <summary>
+            /// Get raw text content of the file.
+            /// </summary>
+            Raw,
+
+            /// <summary>
+            /// Get binary result from the file.
+            /// </summary>
+            Binary
         }
 
         /// <summary>
@@ -52,7 +69,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Templates.
         /// </value>
-        public List<Template> Templates { get; }
+        public Templates Templates { get; }
 
         /// <summary>
         /// Gets expression parser.
@@ -264,7 +281,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 var caseErrorPrefix = "Case '" + caseExprs[0].GetText() + "': ";
                 var caseExprResult = EvalExpression(caseExprs[0].GetText(), caseExprs[0], switchCaseNode.switchCaseStat().GetText(), caseErrorPrefix);
-                if (switchExprResult == caseExprResult || (switchExprResult != null && switchExprResult.Equals(caseExprResult)))
+                if (FunctionUtils.CommonEquals(switchExprResult, caseExprResult))
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
                 }
@@ -319,21 +336,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="inputTemplateName">Template name to evaluate.</param>
         /// <param name="args">Arguments to map to the template parameters.</param>
+        /// <param name="allTemplates">All templates.</param>
         /// <returns>
         /// An object. 
         /// If the number of arguments is 0, returns the current scope.
         /// Otherwise, returns an CustomizedMemory that the mapping of the parameter name to the argument value added to the scope.
         /// </returns>
-        public object ConstructScope(string inputTemplateName, List<object> args)
+        public object ConstructScope(string inputTemplateName, List<object> args, IList<Template> allTemplates)
         {
+            var templateMap = allTemplates.ToDictionary(x => x.Name);
             var templateName = ParseTemplateName(inputTemplateName).pureTemplateName;
 
-            if (!TemplateMap.ContainsKey(templateName))
+            if (!templateMap.ContainsKey(templateName))
             {
                 throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
             }
 
-            var parameters = TemplateMap[templateName].Parameters;
+            var parameters = templateMap[templateName].Parameters;
             var currentScope = CurrentTarget().Scope;
 
             if (args.Count == 0)
@@ -556,6 +575,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return standardFunction;
             }
 
+            var pointIndex = name.IndexOf('.');
+            if (pointIndex > 0)
+            {
+                var alias = name.Substring(0, pointIndex);
+                if (Templates.NamedReferences.ContainsKey(alias))
+                {
+                    var realTemplateName = name.Substring(pointIndex + 1);
+                    return new ExpressionEvaluator(realTemplateName, FunctionUtils.Apply(this.EvaluateWithTemplates(realTemplateName, Templates.NamedReferences[alias])), ReturnType.Object);
+                }
+            }
+
             if (name.StartsWith("lg.", StringComparison.Ordinal))
             {
                 name = name.Substring(3);
@@ -579,7 +609,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (name.Equals(fromFile, StringComparison.Ordinal))
             {
-                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(this.FromFile()), ReturnType.String, FunctionUtils.ValidateUnaryString);
+                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(FromFile()), ReturnType.String, ValidateFromFile);
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -616,7 +646,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
            var stringContent = args[0].ToString();
            
            var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
+           var newTemplates = new Templates(templates: Templates.AllTemplates, expressionParser: ExpressionParser, namedReferences: Templates.NamedReferences);
            return newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
        };
 
@@ -642,14 +672,44 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
        => (IReadOnlyList<object> args) =>
        {
            var filePath = args[0].ToString().NormalizePath();
-
            var resourcePath = GetResourcePath(filePath);
-           var stringContent = File.ReadAllText(resourcePath);
+           var format = FileFormat.Evaluated;
+           if (args.Count > 1)
+           {
+               foreach (FileFormat item in Enum.GetValues(typeof(FileFormat)))
+               {
+                   if (args[1].ToString().Equals(item.ToString(), StringComparison.OrdinalIgnoreCase))
+                   {
+                       format = item;
+                       break;
+                   }
+               }
+           }
 
-           var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
-           var newTemplates = new Templates(templates: Templates, expressionParser: ExpressionParser);
-           return newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+           object result;
+           if (format == FileFormat.Binary)
+           {
+               result = File.ReadAllBytes(resourcePath);
+           }
+           else if (format == FileFormat.Raw)
+           {
+               result = File.ReadAllText(resourcePath);
+           }
+           else
+           {
+               var stringContent = File.ReadAllText(resourcePath);
+               var newScope = _evaluationTargetStack.Count == 0 ? null : CurrentTarget().Scope;
+               var newTemplates = new Templates(templates: Templates.AllTemplates, expressionParser: ExpressionParser, namedReferences: Templates.NamedReferences);
+               result = newTemplates.EvaluateText(stringContent, newScope, _lgOptions);
+           }
+
+           return result;
        };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String);
+        }
 
         private string GetResourcePath(string filePath)
         {
@@ -674,13 +734,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return resourcePath;
         }
 
+        private Func<IReadOnlyList<object>, object> EvaluateWithTemplates(string templateName, Templates templates)
+        => (IReadOnlyList<object> args) =>
+        {
+            var newScope = this.ConstructScope(templateName, args.ToList(), templates.AllTemplates);
+            return templates.Evaluate(templateName, newScope);
+        };
+
         // Evaluator for template(templateName, ...args) 
         // normal case we can just use templateName(...args), but template function is particularly useful when the template name is not pre-known
         private Func<IReadOnlyList<object>, object> TemplateFunction()
         => (IReadOnlyList<object> args) =>
         {
             var templateName = args[0].ToString();
-            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
+            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList(), Templates.AllTemplates);
             return this.EvaluateTemplate(templateName, newScope);
         };
 
@@ -707,7 +774,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
         => (IReadOnlyList<object> args) =>
         {
-            var newScope = this.ConstructScope(templateName, args.ToList());
+            var newScope = this.ConstructScope(templateName, args.ToList(), Templates.AllTemplates);
             return this.EvaluateTemplate(templateName, newScope);
         };
 

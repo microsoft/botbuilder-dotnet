@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     ///   }
     /// }.
     /// </remarks>
-    public class ChannelMentionEntityRecognizer : Recognizer
+    public class ChannelMentionEntityRecognizer : AdaptiveRecognizer
     {
         /// <summary>
         /// Class identifier.

@@ -73,9 +73,10 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         public Task StartAsync()
         {
             _closedSignal = new TaskCompletionSource<string>();
+            var task = _closedSignal.Task;
             _sender.Connect(_webSocketTransport);
             _receiver.Connect(_webSocketTransport);
-            return _closedSignal.Task;
+            return task;
         }
 
         /// <summary>

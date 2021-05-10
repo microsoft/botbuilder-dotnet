@@ -10,5 +10,10 @@
         ],
         "label": "Conversation ended",
         "subtitle": "EndOfConversation activity"
+    },
+    "trigger": {
+		"label": "Conversation ended (EndOfConversation activity)",
+		"order": 5.3,
+		"submenu": "Activities"
     }
 }

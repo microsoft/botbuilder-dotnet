@@ -71,20 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 
             if (!string.IsNullOrEmpty(this.Template))
             {
-                var languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
-                if (languageGenerator != null)
-                {
-                    var lgStringResult = await languageGenerator.GenerateAsync(dialogContext, this.Template, data ?? dialogContext.State, cancellationToken).ConfigureAwait(false);
-                    var result = ActivityFactory.FromObject(lgStringResult);
-                    return result;
-                }
-                else
-                {
-                    var message = Activity.CreateMessageActivity();
-                    message.Text = this.Template;
-                    message.Speak = this.Template;
-                    return message as Activity;
-                }
+                var languageGenerator = dialogContext.Services.Get<LanguageGenerator>() ?? new TemplateEngineLanguageGenerator();
+                var lgStringResult = await languageGenerator.GenerateAsync(dialogContext, this.Template, data ?? dialogContext.State, cancellationToken).ConfigureAwait(false);
+                var result = ActivityFactory.FromObject(lgStringResult);
+                return result;
             }
 
             return null;

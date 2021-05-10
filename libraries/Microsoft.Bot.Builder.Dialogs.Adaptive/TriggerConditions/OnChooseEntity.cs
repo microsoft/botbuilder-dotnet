@@ -21,14 +21,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Initializes a new instance of the <see cref="OnChooseEntity"/> class.
         /// </summary>
-        /// <param name="property">Optional, property to be assigned for filtering events.</param>
-        /// <param name="entity">Optional, entity name being assigned for filtering events.</param>
+        /// <param name="property">Optional, property filter on event.</param>
+        /// <param name="val">Optional, value filter on event.</param>
+        /// <param name="operation">Optional, operation filter on event.</param>
         /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
         /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public OnChooseEntity(string property = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnChooseEntity(string property = null, string val = null, string operation = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 @event: AdaptiveEvents.ChooseEntity,
                 actions: actions,
@@ -37,29 +38,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 callerLine: callerLine)
         {
             Property = property;
-            Entity = entity;
+            Value = val;
+            Operation = operation;
         }
 
         /// <summary>
-        /// Gets or sets the property entity resolution will be assigned to for filtering events.
+        /// Gets or sets operation filter on event.
         /// </summary>
-        /// <value>Property name.</value>
+        /// <value>Operation.</value>
+        [JsonProperty("operation")]
+        public string Operation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property filter on event.
+        /// </summary>
+        /// <value>Property.</value>
         [JsonProperty("property")]
         public string Property { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity name that is ambiguous for filtering events.
+        /// Gets or sets the value filter on event.
         /// </summary>
-        /// <value>Entity name.</value>
-        [JsonProperty("entity")]
-        public string Entity { get; set; }
+        /// <value>Value.</value>
+        [JsonProperty("value")]
+        public string Value { get; set; }
 
         /// <summary>
         /// Gets the identity for this rule's action.
         /// </summary>
         /// <returns>String with the identity.</returns>
         public override string GetIdentity()
-            => $"{this.GetType().Name}({this.Property}, {this.Entity})";
+            => $"{GetType().Name}({this.Property}, {this.Value})";
 
         /// <inheritdoc/>
         protected override Expression CreateExpression()
@@ -70,9 +79,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.property == '{this.Property}'"));
             }
 
-            if (this.Entity != null)
+            if (this.Value != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.entity.name == '{this.Entity}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.value.name == '{this.Value}'"));
+            }
+
+            if (this.Operation != null)
+            {
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.operation == '{this.Operation}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

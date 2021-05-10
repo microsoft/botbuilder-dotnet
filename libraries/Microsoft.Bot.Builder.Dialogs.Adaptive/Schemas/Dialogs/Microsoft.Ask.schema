@@ -30,5 +30,8 @@
                 "Remove()"
             ]
         }
+    },
+    "$policies": {
+        "interactive": true
     }
 }

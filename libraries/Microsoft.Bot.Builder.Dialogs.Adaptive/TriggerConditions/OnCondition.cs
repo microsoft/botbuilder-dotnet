@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <value>Priority of condition expression.</value>
         [JsonProperty("priority")]
-        public IntExpression Priority { get; set; } = new IntExpression();
+        public NumberExpression Priority { get; set; } = new NumberExpression();
 
         /// <summary>
         /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <param name="actionContext">Context to use for evaluation.</param>
         /// <returns>Computed priority.</returns>
-        public int CurrentPriority(ActionContext actionContext)
+        public float CurrentPriority(ActionContext actionContext)
         {
             var (priority, error) = this.Priority.TryGetValue(actionContext.State);
             if (error != null)
@@ -234,7 +234,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual string GetIdentity()
         {
-            return $"{this.GetType().Name}()";
+            return $"{GetType().Name}()";
         }
 
         /// <summary>

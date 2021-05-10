@@ -1,0 +1,6 @@
+﻿> Power Platform Product
+@ list l_new_customtype =
+    -o_32b332a7 :
+        - Power Apps
+        - Model - driven app
+        - Canvas App

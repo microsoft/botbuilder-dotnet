@@ -29,5 +29,13 @@
                 ]
             }
         }
+    },
+    "flow": {
+        "widget": "ForeachWidget",
+        "nowrap": true,
+        "loop": {
+            "widget": "ActionCard",
+            "body": "=concat(\"Each page of \", coalesce(action.pageSize, \"?\"), \" in \", coalesce(action.page, \"?\"))"
+        }
     }
 }

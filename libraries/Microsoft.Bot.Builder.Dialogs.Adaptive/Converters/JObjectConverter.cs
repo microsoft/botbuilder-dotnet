@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
     /// <summary>
     /// JsonConverter which handles resolving declarative types in JObjects using the ResourceExplorer.
     /// </summary>
+    [SuppressMessage("Performance", "CA1812", Justification = "The class gets instantiated by dependency injection.")]
     internal class JObjectConverter : JsonConverter
     {
         private readonly ResourceExplorer resourceExplorer;

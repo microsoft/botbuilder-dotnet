@@ -247,10 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             var appId = SkillAppId?.ToString() ?? string.Empty;

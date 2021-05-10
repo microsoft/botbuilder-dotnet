@@ -9,15 +9,16 @@ namespace Microsoft.Bot.Connector.Authentication
 {
     internal class GovernmentCloudBotFrameworkAuthentication : BuiltinBotFrameworkAuthentication
     {
-        public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient = null, ILogger logger = null)
+        public GovernmentCloudBotFrameworkAuthentication(ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger = null)
             : base(
                   GovernmentAuthenticationConstants.ToChannelFromBotOAuthScope,
                   GovernmentAuthenticationConstants.ToChannelFromBotLoginUrl,
                   CallerIdConstants.USGovChannel,
                   GovernmentAuthenticationConstants.ChannelService,
+                  GovernmentAuthenticationConstants.OAuthUrlGov,
                   credentialFactory,
                   authConfiguration,
-                  httpClient,
+                  httpClientFactory,
                   logger)
         {
         }

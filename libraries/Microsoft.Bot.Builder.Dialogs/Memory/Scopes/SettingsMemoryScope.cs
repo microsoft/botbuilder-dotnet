@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
@@ -17,14 +19,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     public class SettingsMemoryScope : MemoryScope
     {
         private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
+        private readonly ImmutableDictionary<string, object> _initialSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsMemoryScope"/> class.
         /// </summary>
-        public SettingsMemoryScope()
+        /// <param name="configuration">The <see cref="IConfiguration"/> from which to create these settings.</param>
+        public SettingsMemoryScope(IConfiguration configuration = null)
             : base(ScopePath.Settings)
         {
             IncludeInSnapshot = false;
+            _initialSettings = LoadSettings(configuration);
         }
 
         /// <summary>
@@ -41,6 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             if (!dc.Context.TurnState.TryGetValue(ScopePath.Settings, out var settings))
             {
+                // legacy behavior is to look for IConfiguration on the TurnState - some tests case rely on this
                 var configuration = dc.Context.TurnState.Get<IConfiguration>();
                 if (configuration != null)
                 {
@@ -49,7 +55,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 }
             }
 
+            // settings is immutable and AdaptiveDialog.Tests rely on that, oddly _emptySettings are mutable
             return settings ?? _emptySettings;
+        }
+
+        /// <inheritdoc/>
+        public async override Task LoadAsync(DialogContext dialogContext, bool force = false, CancellationToken cancellationToken = default)
+        {
+            if (!_initialSettings.IsEmpty)
+            {
+                dialogContext.Context.TurnState[ScopePath.Settings] = _initialSettings;
+            }
+
+            await base.LoadAsync(dialogContext, force, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

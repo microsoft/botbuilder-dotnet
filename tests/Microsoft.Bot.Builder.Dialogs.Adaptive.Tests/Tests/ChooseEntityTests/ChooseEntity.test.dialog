@@ -1,108 +1,175 @@
 ﻿{
-  "$schema": "../../../tests.schema",
-  "$kind": "Microsoft.Test.Script",
-  "description": "Tests for Choosing Entity",
-  "httpRequestMocks": [
-    "LuisChooseEntity.mock"
-  ],
-  "dialog": {
-    "$kind": "Microsoft.AdaptiveDialog",
-    "recognizer": {
-      "$kind": "Microsoft.LuisRecognizer",
-      "applicationId": "00000000-0000-0000-0000-000000000000",
-      "endpointKey": "00000000000000000000000000000000",
-      "endpoint": "https://westus.api.cognitive.microsoft.com",
-      "predictionOptions": {
-        "IncludeAPIResults": true
-      }
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "description": "Tests for Choosing Entity",
+    "httpRequestMocks": [
+        "LuisChooseEntity-wheat.mock",
+        "LuisChooseEntity-whole wheat.mock",
+        "LuisChooseEntity-bread2.mock"
+    ],
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "recognizer": {
+            "$kind": "Microsoft.LuisRecognizer",
+            "applicationId": "00000000-0000-0000-0000-000000000000",
+            "endpointKey": "00000000000000000000000000000000",
+            "endpoint": "https://westus.api.cognitive.microsoft.com",
+            "predictionOptions": {
+                "IncludeAPIResults": true
+            }
+        },
+        "schema": "oneProperty.json",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "welcome"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnEndOfActions",
+                "condition": "=!$Bread",
+                "priority": 0,
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Ask",
+                        "activity": "which value do you what for bread?",
+                        "expectedProperties": [
+                            "Bread"
+                        ]
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnEndOfActions",
+                "condition": "=!$Bread2",
+                "priority": 0,
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Ask",
+                        "activity": "which value do you what for bread2?",
+                        "expectedProperties": [
+                            "Bread2"
+                        ]
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnAssignEntity",
+                "operation": "Add()",
+                "property": "Bread",
+                "value": "BreadEntity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$Bread",
+                        "value": "=@BreadEntity"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnAssignEntity",
+                "operation": "Add()",
+                "property": "Bread2",
+                "value": "BreadEntity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "$Bread2",
+                        "value": "=@BreadEntity"
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseEntity",
+                "value": "BreadEntity",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Ask",
+                        "activity": "Please choose a value for bread from [multi grain wheat, whole wheat]",
+                        "expectedProperties": [
+                            "Bread"
+                        ]
+                    }
+                ]
+            },
+            {
+                "$kind": "Microsoft.OnChooseEntity",
+                "property": "Bread2",
+                "value": "BreadEntity",
+                "operation": "Add()",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.Ask",
+                        "activity": "Please choose a value for bread2 from [multi grain wheat, whole wheat]",
+                        "expectedProperties": [
+                            "Bread2"
+                        ]
+                    }
+                ]
+            }
+        ]
     },
-    "schema": "oneProperty.json",
-    "triggers": [
-      {
-        "$kind": "Microsoft.OnBeginDialog",
-        "actions": [
-          {
-            "$kind": "Microsoft.SendActivity",
-            "activity": "welcome"
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnEndOfActions",
-        "condition": "=!$Bread",
-        "priority": 0,
-        "actions": [
-          {
-            "$kind": "Microsoft.Ask",
-            "activity": "which value do you what for bread ?",
-            "expectedProperties": [
-              "Bread"
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate",
+            "membersAdded": [
+                "Bot",
+                "User"
+            ],
+            "membersRemoved": []
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "welcome"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "which value do you what for bread?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "wheat"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please choose a value for bread from [multi grain wheat, whole wheat]"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "whole wheat"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "$Bread == 'wholeWheat'"
             ]
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnAssignEntity",
-        "operation": "Add()",
-        "property": "Bread",
-        "entity": "BreadEntity",
-        "actions": [
-          {
-            "$kind": "Microsoft.SetProperty",
-            "property": "$Bread",
-            "value": "=@BreadEntity"
-          }
-        ]
-      },
-      {
-        "$kind": "Microsoft.OnChooseEntity",
-        "entity": "BreadEntity",
-        "actions": [
-          {
-            "$kind": "Microsoft.Ask",
-            "activity": "Please choose a value for bread from [multi grain wheat, whole wheat]",
-            "expectedProperties": [
-              "Bread"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "which value do you what for bread2?"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "bread2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please choose a value for bread2 from [multi grain wheat, whole wheat]"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "whole wheat"
+        },
+        {
+            "$kind": "Microsoft.Test.MemoryAssertions",
+            "assertions": [
+                "$Bread2 == 'wholeWheat'"
             ]
-          }
-        ]
-      }
+        }
+
     ]
-  },
-  "script": [
-    {
-      "$kind": "Microsoft.Test.UserConversationUpdate",
-      "membersAdded": [
-        "Bot",
-        "User"
-      ],
-      "membersRemoved": []
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "welcome"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "which value do you what for bread ?"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "wheat"
-    },
-    {
-      "$kind": "Microsoft.Test.AssertReply",
-      "text": "Please choose a value for bread from [multi grain wheat, whole wheat]"
-    },
-    {
-      "$kind": "Microsoft.Test.UserSays",
-      "text": "whole wheat"
-    },
-    {
-      "$kind": "Microsoft.Test.MemoryAssertions",
-      "assertions": [
-        "$Bread == 'whole wheat'"
-      ]
-    }
-  ]
 }

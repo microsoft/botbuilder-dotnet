@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Azure;
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Bot.Schema;
@@ -33,6 +34,8 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
         private Lazy<BlobContainerClient> _containerClient;
 
+        private readonly StorageTransferOptions _storageTransferOptions;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
         /// </summary>
@@ -44,6 +47,22 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
         /// </param>
         public BlobsTranscriptStore(string dataConnectionString, string containerName, JsonSerializer jsonSerializer = null)
+            : this(dataConnectionString, containerName, default, jsonSerializer)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BlobsTranscriptStore"/> class.
+        /// </summary>
+        /// <param name="dataConnectionString">Azure Storage connection string.</param>
+        /// <param name="containerName">Name of the Blob container where entities will be stored.</param>
+        /// <param name="storageTransferOptions">Used for providing options for parallel transfers <see cref="StorageTransferOptions"/>.</param>
+        /// <param name="jsonSerializer">If passing in a custom JsonSerializer, we recommend the following settings:
+        /// <para>jsonSerializer.TypeNameHandling = TypeNameHandling.None.</para>
+        /// <para>jsonSerializer.NullValueHandling = NullValueHandling.Include.</para>
+        /// <para>jsonSerializer.ContractResolver = new DefaultContractResolver().</para>
+        /// </param>
+        public BlobsTranscriptStore(string dataConnectionString, string containerName, StorageTransferOptions storageTransferOptions, JsonSerializer jsonSerializer = null)
         {
             if (string.IsNullOrEmpty(dataConnectionString))
             {
@@ -54,6 +73,8 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 throw new ArgumentNullException(nameof(containerName));
             }
+
+            _storageTransferOptions = storageTransferOptions;
 
             _jsonSerializer = jsonSerializer ?? JsonSerializer.Create(new JsonSerializerSettings
                                                 {            
@@ -95,14 +116,20 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 case ActivityTypes.MessageUpdate:
                     {
+                        var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
+
                         var activityAndBlob = await InnerReadBlobAsync(activity).ConfigureAwait(false);
-                        if (activityAndBlob.Item1 != null)
+                        if (activityAndBlob != default && activityAndBlob.Item1 != null)
                         {
-                            var updatedActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
-                            updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
                             updatedActivity.LocalTimestamp = activityAndBlob.Item1.LocalTimestamp;
                             updatedActivity.Timestamp = activityAndBlob.Item1.Timestamp;
                             await LogActivityToBlobClientAsync(updatedActivity, activityAndBlob.Item2, true).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            // The activity was not found, so just add a record of this update.
+                            await InnerLogActivityAsync(updatedActivity, false).ConfigureAwait(false);
                         }
 
                         return;
@@ -111,7 +138,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 case ActivityTypes.MessageDelete:
                     {
                         var activityAndBlob = await InnerReadBlobAsync(activity).ConfigureAwait(false);
-                        if (activityAndBlob.Item1 != null)
+                        if (activityAndBlob != default && activityAndBlob.Item1 != null)
                         {
                             // tombstone the original message
                             var tombstonedActivity = new Activity()
@@ -136,9 +163,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     }
 
                 default:
-                    var blobName = GetBlobName(activity);
-                    var blobClient = _containerClient.Value.GetBlobClient(blobName);
-                    await LogActivityToBlobClientAsync(activity, blobClient).ConfigureAwait(false);
+                    await InnerLogActivityAsync(activity, false).ConfigureAwait(false);
                     return;
             }
         }
@@ -157,12 +182,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             var pagedResult = new PagedResult<IActivity>();
@@ -235,7 +260,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             string token = null;
@@ -295,12 +320,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         {
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             string token = null;
@@ -356,6 +381,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                         }
                     } 
                     while (!string.IsNullOrEmpty(token));
+                    return default;
                 }
                 catch (RequestFailedException ex)
                     when ((HttpStatusCode)ex.Status == HttpStatusCode.PreconditionFailed)
@@ -379,17 +405,18 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             return _jsonSerializer.Deserialize(jsonReader, typeof(Activity)) as Activity;
         }
 
-        private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient, bool overwrite = false)
+        private Task InnerLogActivityAsync(IActivity activity, bool overwrite = true)
         {
-            using (var memoryStream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(memoryStream))
-            using (var jsonWriter = new JsonTextWriter(streamWriter))
-            {
-                _jsonSerializer.Serialize(jsonWriter, activity);
-                await streamWriter.FlushAsync().ConfigureAwait(false);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                await blobClient.UploadAsync(memoryStream, overwrite: overwrite).ConfigureAwait(false);
-            }
+            var blobName = GetBlobName(activity);
+            var blobClient = _containerClient.Value.GetBlobClient(blobName);
+            return LogActivityToBlobClientAsync(activity, blobClient, overwrite);
+        }
+
+        private async Task LogActivityToBlobClientAsync(IActivity activity, BlobClient blobClient, bool overwrite)
+        {
+            using var memoryStream = new MemoryStream();
+            using var streamWriter = new StreamWriter(memoryStream);
+            using var jsonWriter = new JsonTextWriter(streamWriter);
 
             var metaData = new Dictionary<string, string>
             {
@@ -398,7 +425,23 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                 ["RecipientId"] = activity.Recipient?.Id,
                 ["Timestamp"] = activity.Timestamp.Value.ToString("O", CultureInfo.InvariantCulture)
             };
-            await blobClient.SetMetadataAsync(metaData).ConfigureAwait(false);
+
+            var options = new BlobUploadOptions
+            {
+                Metadata = metaData,
+                TransferOptions = _storageTransferOptions
+            };
+
+            if (!overwrite)
+            {
+                options.Conditions = new BlobRequestConditions { IfNoneMatch = new ETag("*") };
+            }
+
+            _jsonSerializer.Serialize(jsonWriter, activity);
+            await streamWriter.FlushAsync().ConfigureAwait(false);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            await blobClient.UploadAsync(memoryStream, options).ConfigureAwait(false);
         }
 
         private string GetBlobName(IActivity activity)

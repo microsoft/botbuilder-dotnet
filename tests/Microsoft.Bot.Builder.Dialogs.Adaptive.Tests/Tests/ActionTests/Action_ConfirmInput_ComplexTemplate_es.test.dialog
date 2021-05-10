@@ -1,0 +1,57 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "test.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.ConfirmInput",
+                        "style": "auto",
+                        "alwaysPrompt": true,
+                        "property": "user.confirmed",
+                        "prompt": "${ConfirmInput_Prompt()}",
+                        "unrecognizedPrompt": "${ConfirmInput_UnknownPrompt()}",
+                        "confirmChoices": "${ConfirmInput_complex()}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "confirmation: ${user.confirmed}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale": "es",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hola"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Seleccione (1) si! o (2) ni!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "asdasd"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Ni si! o ni!. Seleccione (1) si! o (2) ni!"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "si"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "confirmation: True"
+        }
+    ]
+}

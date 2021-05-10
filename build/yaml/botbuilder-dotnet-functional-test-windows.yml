@@ -55,13 +55,26 @@ steps:
 - powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
   displayName: 'Display env vars'
 
+- powershell: |
+   # Create DateTimeTag for Resource Group
+   $DateTimeTag=Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
+   "##vso[task.setvariable variable=DateTimeTag]$DateTimeTag";
+  displayName: 'Create DateTimeTag for Resource Group'
+  # Get-Date on Azure DevOps returns a datetime relative to UTC-0, so "Z" is being used instead of the dynamic "K".
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    verbosityRestore: 'Detailed'
+
 - task: DotNetCoreCLI@2
   displayName: 'Dotnet Publish TestBot'
   inputs:
     command: publish
     publishWebProjects: false
     projects: '$(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Microsoft.Bot.Builder.TestBot\publishedbot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     modifyOutputPath: false
 
 - task: AzureCLI@2
@@ -75,7 +88,7 @@ steps:
      Write-Host "This task runs for even-numbered builds. Build ID = $(Build.BuildId)";
      Write-Host "************************************************************************";
      Set-PSDebug -Trace 1;
-     az group create --location westus --name $(BotGroup);
+     az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)";
      
      # set up bot channels registration, app service, app service plan
      az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" --name "$(BotName)"
@@ -95,7 +108,7 @@ steps:
      Set-PSDebug -Trace 1;
      
      # set up resource group, bot channels registration, app service, app service plan
-     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus"
+     az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus" groupTags='{\"buildName\":\"$(Build.DefinitionName)\", \"cause\":\"automation\", \"date\":\"$(DateTimeTag)\", \"product\":\"$(Build.Repository.Name)\", \"sourceBranch\":\"$(Build.SourceBranch)\"}';
      Set-PSDebug -Trace 0;
   condition: and(succeeded(), or( endsWith(variables['Build.BuildId'], 1), endsWith(variables['Build.BuildId'], 3), endsWith(variables['Build.BuildId'], 5), endsWith(variables['Build.BuildId'], 7), endsWith(variables['Build.BuildId'], 9)))
 
@@ -111,7 +124,7 @@ steps:
      call az deployment sub create --name "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-new-rg.json" --location "westus" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newAppServicePlanLocation="westus" newWebAppName="$(BotName)" groupName="$(BotGroup)" groupLocation="westus"
      
      :: Option 2: Use the "preexisting-rg" template:
-     ::call az group create --location westus --name $(BotGroup)
+     ::call az group create --location westus --name $(BotGroup) --tags buildName="$(Build.DefinitionName)" cause=automation date="$(DateTimeTag)" product="$(Build.Repository.Name)" sourceBranch="$(Build.SourceBranch)"
      ::call az deployment group create --resource-group "$(BotGroup)" --template-file "$(System.DefaultWorkingDirectory)\FunctionalTests\ExportedTemplate\template-with-preexisting-rg.json" --parameters appId=$(AppId) appSecret="$(AppSecret)" botId="$(BotName)" botSku=F0 newAppServicePlanName="$(BotName)" newWebAppName="$(BotName)" appServicePlanLocation="westus" --name "$(BotName)"
 
 - task: AzureCLI@1

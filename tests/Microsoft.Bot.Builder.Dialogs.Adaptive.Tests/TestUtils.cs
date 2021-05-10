@@ -5,8 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -47,6 +49,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             }
 
             return parent;
+        }
+        
+        public static DialogContext CreateContext(string text)
+        {
+            var activity = Activity.CreateMessageActivity();
+            activity.Text = text;
+            return new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), (Activity)activity), new DialogState());
         }
     }
 }

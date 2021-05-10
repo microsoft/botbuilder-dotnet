@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -230,16 +230,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             var activity = dc.Context.Activity;
-            if (activity.Type != ActivityTypes.Message)
+
+            // Interrupted dialogs reprompt so we can ignore the incoming activity. 
+            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
+            if (!interrupted && activity.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return EndOfTurn;
             }
 
-            var interrupted = dc.State.GetValue<bool>(TurnPath.Interrupted, () => false);
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
+            var state = await RecognizeInputAsync(dc, interrupted ? 0 : turnCount, cancellationToken).ConfigureAwait(false);
 
             if (state == InputState.Valid)
             {
@@ -274,8 +276,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             { "result", response == null ? string.Empty : JsonConvert.SerializeObject(response, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }) },
                         };
                         TelemetryClient.TrackEvent("GeneratorResult", properties);
-
-                        await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
+                        if (response != null)
+                        {
+                            await dc.Context.SendActivityAsync(response, cancellationToken).ConfigureAwait(false);
+                        }
                     }
 
                     // set output property
@@ -469,11 +473,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (msg == null)
             {
-                template = this.Prompt;
+                template = this.Prompt ?? throw new InvalidOperationException($"InputDialog is missing Prompt.");
                 msg = await this.Prompt.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            msg.InputHint = InputHints.ExpectingInput;
+            if (msg != null && string.IsNullOrEmpty(msg.InputHint))
+            {
+                msg.InputHint = InputHints.ExpectingInput;
+            }
 
             var properties = new Dictionary<string, string>()
             {
@@ -565,7 +572,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private async Task<DialogTurnResult> PromptUserAsync(DialogContext dc, InputState state, CancellationToken cancellationToken = default(CancellationToken))
         {
             var prompt = await this.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
+
+            if (prompt == null)
+            {
+                throw new InvalidOperationException($"Call to OnRenderPromptAsync() returned a null activity for state {state}.");
+            }
+
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
+
             return Dialog.EndOfTurn;
         }
     }

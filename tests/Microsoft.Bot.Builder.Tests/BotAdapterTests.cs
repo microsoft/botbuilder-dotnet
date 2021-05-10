@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Task SimpleCallback(ITurnContext turnContext, CancellationToken cancellationToken)
             {
-                Assert.Equal("de-DE", ((TurnContext)turnContext).Locale);
+                Assert.Equal("de-DE", turnContext.Activity.Locale);
                 return Task.CompletedTask;
             }
 

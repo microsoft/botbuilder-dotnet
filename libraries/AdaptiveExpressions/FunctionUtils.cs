@@ -320,6 +320,26 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
+        /// Verify value contains elements or null.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
+        /// <returns>Error or null if valid.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the number parameter without breaking binary compat)
+        public static string VerifyContainerOrNull(object value, Expression expression, int number)
+#pragma warning restore CA1801 // Review unused parameters
+        {
+            string error = null;
+            if (value != null && !(value is string) && !(value is IList) && !(value is IEnumerable))
+            {
+                error = $"{expression} must be a string or list or a null object.";
+            }
+
+            return error;
+        }
+
+        /// <summary>
         /// Verify value contains elements.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -731,6 +751,53 @@ namespace AdaptiveExpressions
         }
 
         /// <summary>
+        /// Judge if two objects are equal.
+        /// </summary>
+        /// <param name="obj1">First object.</param>
+        /// <param name="obj2">Second object.</param>
+        /// <returns>If two objects are equal.</returns>
+        public static bool CommonEquals(object obj1, object obj2)
+        {
+            if (obj1 == null || obj2 == null)
+            {
+                // null will only equals to null
+                return obj1 == null && obj2 == null;
+            }
+
+            obj1 = ResolveValue(obj1);
+            obj2 = ResolveValue(obj2);
+
+            if (TryParseList(obj1, out IList l0) && l0.Count == 0 && TryParseList(obj2, out IList l1) && l1.Count == 0)
+            {
+                return true;
+            }
+
+            if (GetPropertyCount(obj1) == 0 && GetPropertyCount(obj2) == 0)
+            {
+                return true;
+            }
+
+            if (obj1.IsNumber() && obj2.IsNumber())
+            {
+                if (Math.Abs(CultureInvariantDoubleConvert(obj1) - CultureInvariantDoubleConvert(obj2)) < double.Epsilon)
+                {
+                    return true;
+                }
+            }
+
+            try
+            {
+                return obj1 == obj2 || (obj1 != null && obj1.Equals(obj2));
+            }
+#pragma warning disable CA1031 // Do not catch general exception types (we return false if it fails for whatever reason)
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Lookup an index property of instance.
         /// </summary>
         /// <param name="instance">Instance with property.</param>
@@ -991,52 +1058,75 @@ namespace AdaptiveExpressions
             }
             else if (error == null)
             {
-                IList list = null;
-                if (TryParseList(instance, out IList ilist))
+                var list = ConvertToList(instance);
+                if (list == null)
                 {
-                    list = ilist;
-                }
-                else if (instance is JObject jobj)
-                {
-                    list = Object2KVPairList(jobj);
-                }
-                else if (ConvertToJToken(instance) is JObject jobject)
-                {
-                    list = Object2KVPairList(jobject);
+                    error = $"{expression.Children[0]} is not a collection or structure object to run Foreach";
                 }
                 else
                 {
-                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
-                }
-
-                if (error == null)
-                {
-                    var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
-                    var stackedMemory = StackedMemory.Wrap(state);
                     result = new List<object>();
-                    for (var idx = 0; idx < list.Count; idx++)
+                    LambdaEvaluator(expression, state, options, list, (object currentItem, object r, string e) =>
                     {
-                        var local = new Dictionary<string, object>
-                        {
-                            { iteratorName, AccessIndex(list, idx).value },
-                        };
-
-                        // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(new SimpleObjectMemory(local));
-                        (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory, options);
-                        stackedMemory.Pop();
-
                         if (e != null)
                         {
-                            return (null, e);
+                            error = e;
+                            return true;
                         }
-
-                        ((List<object>)result).Add(r);
-                    }
+                        else
+                        {
+                            ((List<object>)result).Add(r);
+                            return false;
+                        }
+                    });
                 }
             }
 
             return (result, error);
+        }
+
+        internal static void LambdaEvaluator(Expression expression, IMemory state, Options options, IList list, Func<object, object, string, bool> callback)
+        {
+            var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+            var stackedMemory = StackedMemory.Wrap(state);
+            for (var idx = 0; idx < list.Count; idx++)
+            {
+                var currentItem = AccessIndex(list, idx).value;
+                var local = new Dictionary<string, object>
+                {
+                    { iteratorName, currentItem },
+                };
+
+                // the local iterator is pushed as one memory layer in the memory stack
+                stackedMemory.Push(new SimpleObjectMemory(local));
+                (var r, var e) = expression.Children[2].TryEvaluate(stackedMemory, options);
+                stackedMemory.Pop();
+
+                var shouldBreak = callback(currentItem, r, e);
+                if (shouldBreak)
+                {
+                    break;
+                }
+            }
+        }
+
+        internal static IList ConvertToList(object instance)
+        {
+            IList list = null;
+            if (TryParseList(instance, out IList ilist))
+            {
+                list = ilist;
+            }
+            else if (instance is JObject jobj)
+            {
+                list = Object2KVPairList(jobj);
+            }
+            else if (ConvertToJToken(instance) is JObject jobject)
+            {
+                list = Object2KVPairList(jobject);
+            }
+
+            return list;
         }
 
         internal static List<object> Object2KVPairList(JObject jobj)
@@ -1050,18 +1140,18 @@ namespace AdaptiveExpressions
             return tempList;
         }
 
-        internal static void ValidateForeach(Expression expression)
+        internal static void ValidateLambdaExpression(Expression expression)
         {
             if (expression.Children.Length != 3)
             {
-                throw new ArgumentException($"foreach expects 3 parameters, found {expression.Children.Length}");
+                throw new ArgumentException($"Lambda expression expects 3 parameters, found {expression.Children.Length}");
             }
 
             var second = expression.Children[1];
 
             if (!(second.Type == ExpressionType.Accessor && second.Children.Length == 1))
             {
-                throw new ArgumentException($"Second parameter of foreach is not an identifier : {second}");
+                throw new ArgumentException($"Second parameter is not an identifier : {second}");
             }
         }
 
@@ -1365,6 +1455,25 @@ namespace AdaptiveExpressions
             }
 
             return result;
+        }
+
+        private static int GetPropertyCount(object obj)
+        {
+            if (obj is IDictionary dictionary)
+            {
+                return dictionary.Count;
+            }
+            else if (obj is JObject jobj)
+            {
+                return jobj.Properties().Count();
+            }
+            else if (!(obj is JValue) && obj.GetType().IsValueType == false && obj.GetType().FullName != "System.String")
+            {
+                // exclude constant type.
+                return obj.GetType().GetProperties().Length;
+            }
+
+            return -1;
         }
     }
 }

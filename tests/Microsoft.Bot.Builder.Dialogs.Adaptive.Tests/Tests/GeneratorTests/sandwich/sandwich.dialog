@@ -82,7 +82,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Quantity",
-      "entity": "number",
+      "value": "number",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -116,7 +116,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Quantity",
-      "entity": "number",
+      "value": "number",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -162,7 +162,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Length",
-      "entity": "dimension",
+      "value": "dimension",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -184,7 +184,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Length",
-      "entity": "dimension",
+      "value": "dimension",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -319,7 +319,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Name",
-      "entity": "personName",
+      "value": "personName",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -351,7 +351,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Name",
-      "entity": "personName",
+      "value": "personName",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -378,7 +378,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Name",
-      "entity": "utterance",
+      "value": "utterance",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -480,7 +480,7 @@
     },
     {
       "$kind": "Microsoft.OnChooseEntity",
-      "entity": "BreadEntity",
+      "value": "BreadEntity",
       "actions": [
         {
           "$kind": "Microsoft.Ask",
@@ -500,7 +500,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Bread",
-      "entity": "BreadEntity",
+      "value": "BreadEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -532,7 +532,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Bread",
-      "entity": "BreadEntity",
+      "value": "BreadEntity",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -629,7 +629,7 @@
     },
     {
       "$kind": "Microsoft.OnChooseEntity",
-      "entity": "MeatEntity",
+      "value": "MeatEntity",
       "actions": [
         {
           "$kind": "Microsoft.Ask",
@@ -649,7 +649,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Meat",
-      "entity": "MeatEntity",
+      "value": "MeatEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -681,7 +681,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Meat",
-      "entity": "MeatEntity",
+      "value": "MeatEntity",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -778,7 +778,7 @@
     },
     {
       "$kind": "Microsoft.OnChooseEntity",
-      "entity": "CheeseEntity",
+      "value": "CheeseEntity",
       "actions": [
         {
           "$kind": "Microsoft.Ask",
@@ -798,7 +798,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Cheese",
-      "entity": "CheeseEntity",
+      "value": "CheeseEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -830,7 +830,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Cheese",
-      "entity": "CheeseEntity",
+      "value": "CheeseEntity",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -927,7 +927,7 @@
     },
     {
       "$kind": "Microsoft.OnChooseEntity",
-      "entity": "ToppingsEntity",
+      "value": "ToppingsEntity",
       "actions": [
         {
           "$kind": "Microsoft.Ask",
@@ -947,7 +947,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Toppings",
-      "entity": "ToppingsEntity",
+      "value": "ToppingsEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -980,7 +980,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Toppings",
-      "entity": "ToppingsEntity",
+      "value": "ToppingsEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -1073,7 +1073,7 @@
     },
     {
       "$kind": "Microsoft.OnChooseEntity",
-      "entity": "SaucesEntity",
+      "value": "SaucesEntity",
       "actions": [
         {
           "$kind": "Microsoft.Ask",
@@ -1093,7 +1093,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Sauces",
-      "entity": "SaucesEntity",
+      "value": "SaucesEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -1126,7 +1126,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Sauces",
-      "entity": "SaucesEntity",
+      "value": "SaucesEntity",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -1168,7 +1168,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Add()",
       "property": "Price",
-      "entity": "money",
+      "value": "money",
       "actions": [
         {
           "$kind": "Microsoft.SendActivity",
@@ -1190,7 +1190,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Remove()",
       "property": "Price",
-      "entity": "money",
+      "value": "money",
       "actions": [
         {
           "$kind": "Microsoft.IfCondition",
@@ -1253,7 +1253,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Set()",
       "property": "CancelConfirmation",
-      "entity": "boolean",
+      "value": "boolean",
       "actions": [
         {
           "$kind": "Microsoft.SetProperty",
@@ -1303,7 +1303,7 @@
       "$kind": "Microsoft.OnAssignEntity",
       "operation": "Set()",
       "property": "CompleteConfirmation",
-      "entity": "boolean",
+      "value": "boolean",
       "actions": [
         {
           "$kind": "Microsoft.SetProperty",
@@ -1343,7 +1343,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "$PropertyToChange",
-          "value": "=turn.dialogEvent.value.entity.name"
+          "value": "=turn.dialogEvent.value.value.name"
         }
       ],
       "$designer": {
@@ -1360,7 +1360,7 @@
         {
           "$kind": "Microsoft.SetProperty",
           "property": "$PropertyToChange",
-          "value": "=turn.dialogEvent.value.entity.name"
+          "value": "=turn.dialogEvent.value.value.name"
         }
       ],
       "$designer": {

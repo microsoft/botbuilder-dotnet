@@ -1,13 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -20,25 +23,29 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     internal abstract class BuiltinBotFrameworkAuthentication : BotFrameworkAuthentication
     {
+        private static readonly HttpClient _authHttpClient = new HttpClient();
+
         private readonly string _toChannelFromBotOAuthScope;
         private readonly string _loginEndpoint;
         private readonly string _callerId;
         private readonly string _channelService;
-        private readonly ServiceClientCredentialsFactory _credentialFactory;
+        private readonly string _oauthEndpoint;
+        private readonly ServiceClientCredentialsFactory _credentialsFactory;
         private readonly AuthenticationConfiguration _authConfiguration;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        protected BuiltinBotFrameworkAuthentication(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, ServiceClientCredentialsFactory credentialFactory, AuthenticationConfiguration authConfiguration, HttpClient httpClient, ILogger logger)
+        protected BuiltinBotFrameworkAuthentication(string toChannelFromBotOAuthScope, string loginEndpoint, string callerId, string channelService, string oauthEndpoint, ServiceClientCredentialsFactory credentialsFactory, AuthenticationConfiguration authConfiguration, IHttpClientFactory httpClientFactory, ILogger logger)
         {
             _toChannelFromBotOAuthScope = toChannelFromBotOAuthScope;
             _loginEndpoint = loginEndpoint;
             _callerId = callerId;
             _channelService = channelService;
-            _credentialFactory = credentialFactory;
+            _oauthEndpoint = oauthEndpoint;
+            _credentialsFactory = credentialsFactory;
             _authConfiguration = authConfiguration;
-            _httpClient = httpClient;
-            _logger = logger;
+            _httpClientFactory = httpClientFactory;
+            _logger = logger ?? NullLogger.Instance;
         }
 
         public static string GetAppId(ClaimsIdentity claimsIdentity)
@@ -55,53 +62,85 @@ namespace Microsoft.Bot.Connector.Authentication
             return botAppIdClaim?.Value;
         }
 
-        public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+        public override string GetOriginatingAudience()
         {
-            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialFactory), GetChannelProvider(), _authConfiguration, _httpClient).ConfigureAwait(false);
-
-            var scope = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
-            
-            var callerId = await GenerateCallerIdAsync(_credentialFactory, claimsIdentity, cancellationToken).ConfigureAwait(false);
-
-            var appId = GetAppId(claimsIdentity);
-
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
-
-            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Credentials = credentials, Scope = scope, CallerId = callerId };
+            return _toChannelFromBotOAuthScope;
         }
 
-        public override async Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override async Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
         {
-            var scope = audience ?? _toChannelFromBotOAuthScope;
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                var isAuthDisabled = await new DelegatingCredentialProvider(_credentialsFactory).IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                if (!isAuthDisabled)
+                {
+                    // No auth header. Auth is required. Request is not authorized.
+                    throw new UnauthorizedAccessException();
+                }
 
+                // In the scenario where auth is disabled, we still want to have the
+                // IsAuthenticated flag set in the ClaimsIdentity.
+                // To do this requires adding in an empty claim.
+                // Since ChannelServiceHandler calls are always a skill callback call, we set the skill claim too.
+                return SkillValidation.CreateAnonymousSkillClaim();
+            }
+
+            return await JwtTokenValidation
+                .ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialsFactory), GetChannelProvider(), "unknown", _authConfiguration)
+                .ConfigureAwait(false);
+        }
+
+        public override async Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+        {
+            var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, new DelegatingCredentialProvider(_credentialsFactory), GetChannelProvider(), _authConfiguration, _authHttpClient).ConfigureAwait(false);
+
+            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+
+            var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
+
+            var connectorFactory = new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialsFactory, _httpClientFactory, _logger);
+
+            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId, ConnectorFactory = connectorFactory };
+        }
+
+        public override async Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(channelIdHeader) && !await _credentialsFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, new DelegatingCredentialProvider(_credentialsFactory), GetChannelProvider(), channelIdHeader, httpClient: _authHttpClient).ConfigureAwait(false);
+
+            var outboundAudience = SkillValidation.IsSkillClaim(claimsIdentity.Claims) ? JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims) : _toChannelFromBotOAuthScope;
+
+            var callerId = await GenerateCallerIdAsync(_credentialsFactory, claimsIdentity, _callerId, cancellationToken).ConfigureAwait(false);
+
+            return new AuthenticateRequestResult { ClaimsIdentity = claimsIdentity, Audience = outboundAudience, CallerId = callerId };
+        }
+
+        public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
+        {
+            return new ConnectorFactoryImpl(GetAppId(claimsIdentity), _toChannelFromBotOAuthScope, _loginEndpoint, true, _credentialsFactory, _httpClientFactory, _logger);
+        }
+
+        public override async Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        {
             var appId = GetAppId(claimsIdentity);
 
-            var credentials = await _credentialFactory.CreateCredentialsAsync(appId, scope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
+            var credentials = await _credentialsFactory.CreateCredentialsAsync(appId, _toChannelFromBotOAuthScope, _loginEndpoint, true, cancellationToken).ConfigureAwait(false);
 
-            return new ProactiveCredentialsResult { Credentials = credentials, Scope = scope };
+            return new UserTokenClientImpl(appId, credentials, _oauthEndpoint, _httpClientFactory?.CreateClient(), _logger);
+        }
+
+        public override BotFrameworkClient CreateBotFrameworkClient()
+        {
+            return new BotFrameworkClientImpl(_credentialsFactory, _httpClientFactory, _loginEndpoint, _logger);
         }
 
         private IChannelProvider GetChannelProvider()
         {
             return _channelService != null ? new SimpleChannelProvider(_channelService) : null;
-        }
-
-        private async Task<string> GenerateCallerIdAsync(ServiceClientCredentialsFactory credentialFactory, ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
-        {
-            // Is the bot accepting all incoming messages?
-            if (await credentialFactory.IsAuthenticationDisabledAsync(cancellationToken).ConfigureAwait(false))
-            {
-                // Return null so that the callerId is cleared.
-                return null;
-            }
-
-            // Is the activity from another bot?
-            if (SkillValidation.IsSkillClaim(claimsIdentity.Claims))
-            {
-                return $"{CallerIdConstants.BotToBotPrefix}{JwtTokenValidation.GetAppIdFromClaims(claimsIdentity.Claims)}";
-            }
-
-            return _callerId;
         }
     }
 }

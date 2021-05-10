@@ -37,7 +37,7 @@
         "$kind": "Microsoft.OnAssignEntity",
         "operation": "Add()",
         "property": "Toppings",
-        "entity": "ToppingsEntity",
+        "value": "ToppingsEntity",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",
@@ -55,7 +55,7 @@
         "$kind": "Microsoft.OnAssignEntity",
         "operation": "Remove()",
         "property": "Toppings",
-        "entity": "ToppingsEntity",
+        "value": "ToppingsEntity",
         "actions": [
           {
             "$kind": "Microsoft.SendActivity",

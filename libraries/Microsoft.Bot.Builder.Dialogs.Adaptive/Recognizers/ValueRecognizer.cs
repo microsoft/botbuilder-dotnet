@@ -17,14 +17,14 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// ValueRecognizer - Recognizer for mapping message activity .Value payload into intent/entities.
+    /// ValueRecognizer - Recognizer for mapping message activity. Value payload into intent/entities.
     /// </summary>
     /// <remarks>
     /// This recognizer will map MessageActivity Value payloads into intents and entities.
     ///     activity.Value.intent => RecognizerResult.Intents.
     ///     activity.Value.properties => RecognizerResult.Entities.
     /// </remarks>
-    internal class ValueRecognizer : Recognizer
+    internal class ValueRecognizer : AdaptiveRecognizer
     {
         [JsonConstructor]
         internal ValueRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 }
             }
 
-            this.TrackRecognizerResult(dialogContext, "ValueRecognizerResult", this.FillRecognizerResultTelemetryProperties(recognized, telemetryProperties), telemetryMetrics);
+            TrackRecognizerResult(dialogContext, "ValueRecognizerResult", FillRecognizerResultTelemetryProperties(recognized, telemetryProperties, dialogContext), telemetryMetrics);
 
             return Task.FromResult(recognized);
         }

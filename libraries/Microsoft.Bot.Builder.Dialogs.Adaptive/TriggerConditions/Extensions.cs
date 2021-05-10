@@ -1,8 +1,11 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
@@ -25,6 +28,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public static async Task DebuggerStepAsync(this DialogContext context, OnCondition conditional, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, conditional, more: dialogEvent?.Name ?? string.Empty, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets a value from a string expression, using a <see cref="TextTemplate"/>.
+        /// </summary>
+        /// <param name="stringExpression">The <see cref="StringExpression"/> to evaluate.</param>
+        /// <param name="dc">The current <see cref="DialogContext"/>.</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/> for this call.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        public static async Task<string> GetValueAsync(this StringExpression stringExpression, DialogContext dc, CancellationToken cancellationToken)
+        {
+            string text = await new TextTemplate(stringExpression.ExpressionText)
+             .BindAsync(dc, cancellationToken: cancellationToken)
+             .ConfigureAwait(false) ?? stringExpression.GetValue(dc.State);
+
+            if (!string.IsNullOrEmpty(text) && text.StartsWith("=", StringComparison.OrdinalIgnoreCase))
+            {
+                text = AdaptiveExpressions.Expression.Parse(text).TryEvaluate<string>(dc.State).value;
+            }
+
+            return text;
         }
     }
 }

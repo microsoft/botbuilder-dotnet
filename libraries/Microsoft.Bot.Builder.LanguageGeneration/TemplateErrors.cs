@@ -69,6 +69,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public const string InvalidTemplateNameType = "Expected string type for the parameter of template function.";
 
+        public const string ImportFormatError = "Import format should follow '[x](y)' or '[x](y) as z'.";
+
         public static string InvalidStrucBody(string invalidBody) => $"Invalid structure body: '{invalidBody}'. Body can include <PropertyName> = <Value> pairs or ${{reference()}} template reference.";
 
         public static string InvalidStrucName(string invalidName) => $"Invalid structure name: '{invalidName}'. name should start with letter/number/_ and can only contains letter/number/./_.";

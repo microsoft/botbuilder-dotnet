@@ -12,5 +12,10 @@
         "subtitle": "ConversationUpdate activity",
         "description": "Handle the events fired when a user begins a new conversation with the bot.",
         "helpLink": "https://aka.ms/bf-composer-docs-conversation-update-activity"
-    }
+    },
+    "trigger": {
+		"label": "Greeting (ConversationUpdate activity)",
+		"order": 5.2,
+		"submenu": "Activities"
+	}
 }

@@ -1,9 +1,0 @@
-{
-    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
-    "$role": [ "implements(Microsoft.ITrigger)", "extends(Microsoft.OnCondition)" ],
-    "title": "OnTeamsMessagingExtensionSelectItem",
-    "description": "Actions triggered when a Teams InvokeActivity is received with activity.name='composeExtension/selectItem'.",
-    "type": "object",
-    "required": [
-    ]
-}

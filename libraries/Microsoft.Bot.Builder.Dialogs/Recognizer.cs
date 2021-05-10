@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -125,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected static RecognizerResult CreateChooseIntentResult(Dictionary<string, RecognizerResult> recognizerResults)
         {
             string text = null;
-            List<JObject> candidates = new List<JObject>();
+            var candidates = new List<JObject>();
 
             foreach (var recognizerResult in recognizerResults)
             {
@@ -162,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Uses the RecognizerResult to create a list of propeties to be included when tracking the result in telemetry.
+        /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.
         /// </summary>
         /// <param name="recognizerResult">Recognizer Result.</param>
         /// <param name="telemetryProperties">A list of properties to append or override the properties created using the RecognizerResult.</param>
@@ -175,9 +176,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { "Text", recognizerResult.Text },
                 { "AlteredText", recognizerResult.AlteredText },
                 { "TopIntent", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Key : null },
-                { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.ToString() : null },
+                { "TopIntentScore", recognizerResult.Intents.Any() ? recognizerResult.Intents.First().Value?.Score?.ToString("N1", CultureInfo.InvariantCulture) : null },
                 { "Intents", recognizerResult.Intents.Any() ? JsonConvert.SerializeObject(recognizerResult.Intents) : null },
-                { "Entities", recognizerResult.Entities != null ? recognizerResult.Entities.ToString() : null },
+                { "Entities", recognizerResult.Entities?.ToString() },
                 { "AdditionalProperties", recognizerResult.Properties.Any() ? JsonConvert.SerializeObject(recognizerResult.Properties) : null },
             };
 

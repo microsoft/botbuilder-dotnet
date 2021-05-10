@@ -21,15 +21,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Initializes a new instance of the <see cref="OnAssignEntity"/> class.
         /// </summary>
-        /// <param name="property">Optional, property to be assigned for filtering events.</param>
-        /// <param name="entity">Optional, entity name being assigned for filtering events.</param>
-        /// <param name="operation">Optional, operation being used to assign the entity for filtering events.</param>
+        /// <param name="property">Optional, property filter on event.</param>
+        /// <param name="val">Optional, value filter on event.</param>
+        /// <param name="operation">Optional, operation filter on event.</param>
         /// <param name="actions">Optional, actions to add to the plan when the rule constraints are met.</param>
         /// <param name="condition">Optional, condition which needs to be met for the actions to be executed.</param>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
-        public OnAssignEntity(string property = null, string entity = null, string operation = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnAssignEntity(string property = null, string val = null, string operation = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 @event: AdaptiveEvents.AssignEntity,
                 actions: actions,
@@ -38,28 +38,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 callerLine: callerLine)
         {
             Property = property;
-            Entity = entity;
+            Value = val;
             Operation = operation;
         }
 
         /// <summary>
-        /// Gets or sets the property to be assigned for filtering events.
+        /// Gets or sets the property filter on events.
         /// </summary>
-        /// <value>Property name.</value>
+        /// <value>Property.</value>
         [JsonProperty("property")]
         public string Property { get; set; }
 
         /// <summary>
-        /// Gets or sets the entity name being assigned for filtering events.
+        /// Gets or sets the value filter on events.
         /// </summary>
-        /// <value>Entity name.</value>
-        [JsonProperty("entity")]
-        public string Entity { get; set; }
+        /// <value>Value.</value>
+        [JsonProperty("value")]
+        public string Value { get; set; }
 
         /// <summary>
-        /// Gets or sets the operation being used to assign the entity for filtering events.
+        /// Gets or sets the operation filter on events.
         /// </summary>
-        /// <value>Operation name.</value>
+        /// <value>Operation.</value>
         [JsonProperty("operation")]
         public string Operation { get; set; }
 
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <returns>String with the identity.</returns>
         public override string GetIdentity()
-            => $"{this.GetType().Name}({this.Property}, {this.Entity})";
+            => $"{GetType().Name}({this.Property}, {this.Value})";
 
         /// <inheritdoc/>
         protected override Expression CreateExpression()
@@ -79,9 +79,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
                 expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.property == '{this.Property}'"));
             }
 
-            if (this.Entity != null)
+            if (this.Value != null)
             {
-                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.entity.name == '{this.Entity}'"));
+                expressions.Add(Expression.Parse($"{TurnPath.DialogEvent}.value.value.name == '{this.Value}'"));
             }
 
             if (this.Operation != null)

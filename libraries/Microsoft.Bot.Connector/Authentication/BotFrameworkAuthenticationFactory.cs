@@ -8,12 +8,34 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// Cloud environments capture the environment specific Bot Framework Protocol auth code.
+    /// A factory for <see cref="BotFrameworkAuthentication" /> which encapsulate the environment specific Bot Framework Protocol auth code.
     /// </summary>
     public static class BotFrameworkAuthenticationFactory
     {
         /// <summary>
-        /// Creates the appropriate cloud environment instance.
+        /// Creates the a <see cref="BotFrameworkAuthentication" /> instance for anonymous testing scenarios.
+        /// </summary>
+        /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
+        public static BotFrameworkAuthentication Create()
+        {
+            return Create(
+                channelService: null,
+                validateAuthority: false,
+                toChannelFromBotLoginUrl: null,
+                toChannelFromBotOAuthScope: null,
+                toBotFromChannelTokenIssuer: null,
+                oAuthUrl: null,
+                toBotFromChannelOpenIdMetadataUrl: null,
+                toBotFromEmulatorOpenIdMetadataUrl: null,
+                callerId: null,
+                credentialFactory: new PasswordServiceClientCredentialFactory(),
+                authConfiguration: new AuthenticationConfiguration(),
+                httpClientFactory: null,
+                logger: null);
+        }
+
+        /// <summary>
+        /// Creates the appropriate <see cref="BotFrameworkAuthentication" /> instance.
         /// </summary>
         /// <param name="channelService">The Channel Service.</param>
         /// <param name="validateAuthority">The validate authority value to use.</param>
@@ -24,11 +46,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="toBotFromChannelOpenIdMetadataUrl">The to bot from Channel Open Id Metadata url.</param>
         /// <param name="toBotFromEmulatorOpenIdMetadataUrl">The to bot from Emulator Open Id Metadata url.</param>
         /// <param name="callerId">The Microsoft app password.</param>
-        /// <param name="credentialFactory">The IServiceClientCredentialsFactory to use to create credentials.</param>
-        /// <param name="authConfiguration">The AuthenticationConfiguration to use.</param>
-        /// <param name="httpClient">The HttpClient to use.</param>
-        /// <param name="logger">The ILogger instance to use.</param>
-        /// <returns>A new cloud environment.</returns>
+        /// <param name="credentialFactory">The <see cref="ServiceClientCredentialsFactory" /> to use to create credentials.</param>
+        /// <param name="authConfiguration">The <see cref="AuthenticationConfiguration" /> to use.</param>
+        /// <param name="httpClientFactory">The <see cref="IHttpClientFactory" /> to use.</param>
+        /// <param name="logger">The <see cref="ILogger" /> to use.</param>
+        /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
         public static BotFrameworkAuthentication Create(
             string channelService,
             bool validateAuthority,
@@ -41,7 +63,7 @@ namespace Microsoft.Bot.Connector.Authentication
             string callerId,
             ServiceClientCredentialsFactory credentialFactory,
             AuthenticationConfiguration authConfiguration,
-            HttpClient httpClient,
+            IHttpClientFactory httpClientFactory,
             ILogger logger)
         {
             if (
@@ -66,7 +88,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     callerId,
                     credentialFactory,
                     authConfiguration,
-                    httpClient,
+                    httpClientFactory,
                     logger);
             }
             else
@@ -75,11 +97,11 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 if (string.IsNullOrEmpty(channelService))
                 {
-                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
+                    return new PublicCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
                 }
                 else if (channelService == GovernmentAuthenticationConstants.ChannelService)
                 {
-                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClient, logger);
+                    return new GovernmentCloudBotFrameworkAuthentication(credentialFactory, authConfiguration, httpClientFactory, logger);
                 }
                 else
                 {

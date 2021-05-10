@@ -3,7 +3,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 
@@ -41,13 +40,7 @@ namespace Microsoft.Bot.Connector
         public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this IConversations operations, ChannelAccount bot, ChannelAccount user, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(bot, user, activity), null, cancellationToken).ConfigureAwait(false);
-            var res = result.Body;
-            if (res.ServiceUrl != null)
-            {
-                MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
-            }
-
-            return res;
+            return result.Body;
         }
 
         /// <summary>
@@ -77,13 +70,7 @@ namespace Microsoft.Bot.Connector
         public static async Task<ConversationResourceResponse> CreateDirectConversationAsync(this IConversations operations, string botAddress, string userAddress, Activity activity = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await operations.CreateConversationWithHttpMessagesAsync(GetDirectParameters(botAddress, userAddress, activity), null, cancellationToken).ConfigureAwait(false);
-            var res = result.Body;
-            if (res.ServiceUrl != null)
-            {
-                MicrosoftAppCredentials.TrustServiceUrl(res.ServiceUrl);
-            }
-
-            return res;
+            return result.Body;
         }
 
         /// <summary>

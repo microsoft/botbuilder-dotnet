@@ -5,11 +5,11 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -23,12 +23,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationBotFrameworkAuthentication"/> class.
         /// </summary>
-        /// <param name="configuration">An IConfiguration instance.</param>
-        /// <param name="credentialsFactory">An IServiceClientCredentialsFactory instance.</param>
-        /// <param name="authConfiguration">An AuthenticationConfiguration instance.</param>
-        /// <param name="httpClient">A custom HttpClient to use.</param>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <param name="credentialsFactory">An <see cref="ServiceClientCredentialsFactory"/> instance.</param>
+        /// <param name="authConfiguration">An <see cref="AuthenticationConfiguration"/> instance.</param>
+        /// <param name="httpClientFactory">The <see cref="IHttpClientFactory"/> to use.</param>
         /// <param name="logger">The ILogger instance to use.</param>
-        public ConfigurationBotFrameworkAuthentication(IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, HttpClient httpClient = null, ILogger logger = null)
+        public ConfigurationBotFrameworkAuthentication(IConfiguration configuration, ServiceClientCredentialsFactory credentialsFactory = null, AuthenticationConfiguration authConfiguration = null, IHttpClientFactory httpClientFactory = null, ILogger logger = null)
         {
             var channelService = configuration.GetSection("ChannelService")?.Value;
             var validateAuthority = configuration.GetSection("ValidateAuthority")?.Value;
@@ -52,8 +52,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 callerId,
                 credentialsFactory ?? new ConfigurationServiceClientCredentialFactory(configuration),
                 authConfiguration ?? new AuthenticationConfiguration(),
-                httpClient,
+                httpClientFactory,
                 logger);
+        }
+
+        /// <inheritdoc />
+        public override string GetOriginatingAudience()
+        {
+            return _inner.GetOriginatingAudience();
+        }
+
+        /// <inheritdoc />
+        public override Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
+        {
+            return _inner.AuthenticateChannelRequestAsync(authHeader, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -63,9 +75,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc/>
-        public override Task<ProactiveCredentialsResult> GetProactiveCredentialsAsync(ClaimsIdentity claimsIdentity, string audience, CancellationToken cancellationToken)
+        public override Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
         {
-            return _inner.GetProactiveCredentialsAsync(claimsIdentity, audience, cancellationToken);
+            return _inner.AuthenticateStreamingRequestAsync(authHeader, channelIdHeader, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
+        {
+            return _inner.CreateConnectorFactory(claimsIdentity);
+        }
+
+        /// <inheritdoc/>
+        public override Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+        {
+            return _inner.CreateUserTokenClientAsync(claimsIdentity, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override BotFrameworkClient CreateBotFrameworkClient()
+        {
+            return _inner.CreateBotFrameworkClient();
         }
     }
 }

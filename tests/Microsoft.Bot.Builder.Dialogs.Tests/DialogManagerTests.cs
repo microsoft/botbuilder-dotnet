@@ -12,9 +12,12 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -273,6 +276,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task DialogManager_ContainerRegistration_OnCyclicalDialogStructures()
+        {
+            var root = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>
+                {
+                    new OnBeginDialog()
+                }
+            };
+
+            (root.Triggers.Single() as OnBeginDialog).Actions = new List<Dialog> { new EndTurn(), root };
+
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter();
+            adapter
+                .UseStorage(storage)
+                .UseBotState(userState, convoState);
+
+            // The inner adaptive dialog should be registered on the DialogManager after OnTurn.
+            var dm = new DialogManager(root);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                // First OnTurn invocation will trigger registration of dependencies.
+                // If registration is not protected against cyclical dialog structures, 
+                // this call will throw StackOverflowException.
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            })
+                .SendConversationUpdate()
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task DialogManager_ContainerRegistration_DoubleNesting()
         {
             // Create the following dialog tree
@@ -344,6 +383,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.DoesNotContain(dm.Dialogs.GetDialogs(), d => d.GetType() == typeof(SendActivity));
         }
 
+        [Fact]
+        public async Task DialogManager_StateConfiguration()
+        {
+            // Arrange
+            var dialog = new WaterfallDialog("test-dialog");
+
+            var memoryScope = new CustomMemoryScope();
+            var pathResolver = new CustomPathResolver();
+
+            var dialogManager = new DialogManager(dialog);
+            dialogManager.StateConfiguration = new DialogStateManagerConfiguration();
+            dialogManager.StateConfiguration.MemoryScopes.Add(memoryScope);
+            dialogManager.StateConfiguration.PathResolvers.Add(pathResolver);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            // Act
+            DialogStateManager actual;
+            using (var turnContext = new TurnContext(adapterMock.Object, activity))
+            {
+                turnContext.TurnState.Add(new ConversationState(new MemoryStorage()));
+                await dialogManager.OnTurnAsync(turnContext);
+                actual = turnContext.TurnState.Get<DialogStateManager>();
+            }
+
+            // Assert
+            Assert.Contains(memoryScope, actual.Configuration.MemoryScopes);
+            Assert.Contains(pathResolver, actual.Configuration.PathResolvers);
+        }
+
         [Theory]
         [InlineData(SkillFlowTestCase.RootBotOnly, false)]
         [InlineData(SkillFlowTestCase.RootBotConsumingSkill, false)]
@@ -367,6 +446,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.NotNull(_eocSent);
                 Assert.Equal(ActivityTypes.EndOfConversation, _eocSent.Type);
+                Assert.Equal(EndOfConversationCodes.CompletedSuccessfully, _eocSent.Code);
                 Assert.Equal("SomeName", _eocSent.Value);
                 Assert.Equal("en-GB", _eocSent.Locale);
             }
@@ -490,6 +570,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 // Capture the last DialogManager turn result for assertions.
                 _dmTurnResult = await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
+        }
+
+        private class CustomMemoryScope : MemoryScope
+        {
+            public CustomMemoryScope()
+                : base("custom")
+            {
+            }
+
+            public override object GetMemory(DialogContext dc)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void SetMemory(DialogContext dc, object memory)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class CustomPathResolver : IPathResolver
+        {
+            public CustomPathResolver()
+            {
+            }
+
+            public string TransformPath(string path)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private class AskForNameDialog : ComponentDialog, IDialogDependencies

@@ -1,0 +1,38 @@
+﻿> CHOICE INPUT UNIT TEST
+
+# MyChoices_Prompt
+- Please select
+
+# MyChoices_UnknownPrompt
+- Not a dog or cat. Please select
+
+# MyChoices_simple
+- dog | cat
+
+# MyChoices_complex
+- ```
+[
+  { "value": "dog", "synonyms": ["doggy","wolf"]  },
+  { "value": "cat", "synonyms": ["pussycat","kitty"] }
+]
+```
+
+> CONFIRM INPUT UNIT TEST
+
+# ConfirmInput_Prompt
+- Please select
+
+# ConfirmInput_UnknownPrompt
+- Not yep or nope. Please select
+
+# ConfirmInput_simple
+- yep | nope
+
+# ConfirmInput_complex
+- ```
+[
+  { "value": "yep", "synonyms": ["yippee","yepster"]  },
+  { "value": "nope", "synonyms": ["nopee","nopester"] }
+]
+```
+

@@ -17,7 +17,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
         /// Initializes a new instance of the <see cref="Where"/> class.
         /// </summary>
         public Where()
-            : base(ExpressionType.Where, Evaluator, ReturnType.Array, FunctionUtils.ValidateForeach)
+            : base(ExpressionType.Where, Evaluator, ReturnType.Array, FunctionUtils.ValidateLambdaExpression)
         {
         }
 
@@ -30,51 +30,26 @@ namespace AdaptiveExpressions.BuiltinFunctions
             (instance, error) = expression.Children[0].TryEvaluate(state, options);
             if (error == null)
             {
-                var isInstanceList = false;
-                IList list = null;
-                if (FunctionUtils.TryParseList(instance, out IList ilist))
+                var list = FunctionUtils.ConvertToList(instance);
+                if (list == null)
                 {
-                    isInstanceList = true;
-                    list = ilist;
-                }
-                else if (instance is JObject jobj)
-                {
-                    list = FunctionUtils.Object2KVPairList(jobj);
-                }
-                else if (FunctionUtils.ConvertToJToken(instance) is JObject jobject)
-                {
-                    list = FunctionUtils.Object2KVPairList(jobject);
+                    error = $"{expression.Children[0]} is not a collection or structure object to run Where";
                 }
                 else
                 {
-                    error = $"{expression.Children[0]} is not a collection or structure object to run foreach";
-                }
-
-                if (error == null)
-                {
-                    var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
-                    var stackedMemory = StackedMemory.Wrap(state);
                     result = new List<object>();
-                    for (var idx = 0; idx < list.Count; idx++)
+                    FunctionUtils.LambdaEvaluator(expression, state, options, list, (object currentItem, object r, string e) =>
                     {
-                        var local = new Dictionary<string, object>
-                        {
-                            { iteratorName, FunctionUtils.AccessIndex(list, idx).value },
-                        };
-
-                        // the local iterator is pushed as one memory layer in the memory stack
-                        stackedMemory.Push(new SimpleObjectMemory(local));
-                        var (r, e) = expression.Children[2].TryEvaluate(stackedMemory, new Options(options) { NullSubstitution = null });
-                        stackedMemory.Pop();
-
                         if (FunctionUtils.IsLogicTrue(r) && e == null)
                         {
                             // add if only if it evaluates to true
-                            ((List<object>)result).Add(local[iteratorName]);
+                            ((List<object>)result).Add(currentItem);
                         }
-                    }
 
-                    if (!isInstanceList)
+                        return false;
+                    });
+
+                    if (!FunctionUtils.TryParseList(instance, out IList _))
                     {
                         // re-construct object
                         var jobjResult = new JObject();

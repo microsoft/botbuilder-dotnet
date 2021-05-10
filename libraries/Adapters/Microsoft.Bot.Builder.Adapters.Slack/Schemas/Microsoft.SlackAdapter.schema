@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schemas.botframework.com/schemas/component/v1.0/component.schema",
+    "$role": "implements(Microsoft.IAdapter)",
+    "title": "Slack connection",
+    "description": "Connects a bot to Slack.",
+    "type": "object",
+    "properties": {
+        "SlackVerificationToken": {
+            "type": "string",
+            "title": "Verification token",
+            "description": "Verification token obtained from the Slack set-up steps."
+        },
+        "SlackBotToken": {
+            "type": "string",
+            "title": "Bot token",
+            "description": "Bot token obtained from the Slack set-up steps."
+        },
+        "SlackClientSigningSecret": {
+            "type": "string",
+            "title": "Client signing secret",
+            "description": "Client signing secret obtained from the Slack set-up steps."
+        },
+        "route": {
+            "type": "string",
+            "title": "Route",
+            "description": "Optional route where the adapter is exposed.",
+            "default": "slack"
+        },
+        "type": {
+            "type": "string",
+            "title": "type",
+            "description": "Adapter full type name.",
+            "default": "Microsoft.Bot.Builder.Adapters.Slack.SlackAdapter"
+        }
+    },
+    "required": [
+        "SlackVerificationToken",
+        "SlackBotToken",
+        "SlackClientSigningSecret"
+    ]
+}

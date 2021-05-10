@@ -136,7 +136,10 @@ namespace Microsoft.Bot.Builder.Streaming
                 .LastOrDefault();
             using (var context = new TurnContext(this, activity))
             {
-                context.TurnState.Add<string>(OAuthScopeKey, audience);
+                // TurnContextStateCollection applies a null check on value when using TurnContextStateCollection.Add().
+                // TurnContextStateCollection.Set() doesn't perform the same null check, and is used in its place.
+                // See https://github.com/microsoft/botbuilder-dotnet/issues/5110 for more information.
+                context.TurnState.Set<string>(OAuthScopeKey, audience);
 
                 // Pipes are unauthenticated. Pending to check that we are in pipes right now. Do not merge to master without that.
                 if (ClaimsIdentity != null)

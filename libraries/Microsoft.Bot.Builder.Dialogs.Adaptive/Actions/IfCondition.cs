@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new InvalidOperationException("Adaptive Dialogs error: Missing predicate condition. Please add a valid predicate to the Condition property of IfCondition().");
             }
 
-            if (this.Disabled != null && this.Disabled.GetValue(dc.State) == true)
+            if (Disabled != null && Disabled.GetValue(dc.State))
             {
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -164,14 +164,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Builds the compute Id for the dialog.
-        /// </summary>
-        /// <returns>A string representing the compute Id.</returns>
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{this.GetType().Name}({this.Condition?.ToString()}|{StringUtils.Ellipsis(string.Join(",", idList), 50)})";
+            return $"{GetType().Name}({this.Condition?.ToString()}|{StringUtils.Ellipsis(string.Join(",", idList), 50)})";
         }
     }
 }

@@ -7,8 +7,8 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -103,6 +103,14 @@ namespace Microsoft.Bot.Builder
 
                 case ActivityTypes.InstallationUpdate:
                     await OnInstallationUpdateActivityAsync(new DelegatingTurnContext<IInstallationUpdateActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ActivityTypes.Command:
+                    await OnCommandActivityAsync(new DelegatingTurnContext<ICommandActivity>(turnContext), cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ActivityTypes.CommandResult:
+                    await OnCommandResultActivityAsync(new DelegatingTurnContext<ICommandResultActivity>(turnContext), cancellationToken).ConfigureAwait(false);
                     break;
 
                 default:
@@ -446,13 +454,14 @@ namespace Microsoft.Bot.Builder
             {
                 switch (turnContext.Activity.Name)
                 {
+                    case "adaptiveCard/action":
+                        var invokeValue = GetAdaptiveCardInvokeValue(turnContext.Activity);
+                        return CreateInvokeResponse(await OnAdaptiveCardInvokeAsync(turnContext, invokeValue, cancellationToken).ConfigureAwait(false));
+
                     case SignInConstants.VerifyStateOperationName:
                     case SignInConstants.TokenExchangeOperationName:
                         await OnSignInInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
                         return CreateInvokeResponse();
-
-                    case "healthCheck":
-                        return CreateInvokeResponse(await OnHealthCheckAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     default:
                         throw new InvokeResponseException(HttpStatusCode.NotImplemented);
@@ -489,23 +498,22 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Invoked when the bot is sent a health check from the hosting infrastructure or, in the case of Skills the parent bot.
-        /// <see cref="OnHealthCheckAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/> is used.
-        /// By default, this method acknowledges the health state of the bot.
+        /// Invoked when the bot is sent an Adaptive Card Action Execute.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="invokeValue">A stringly-typed object from the incoming activity's Value.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>
         /// When the <see cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
-        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `healthCheck`,
+        /// method receives an Invoke with a <see cref="IInvokeActivity.Name"/> of `adaptiveCard/action`,
         /// it calls this method.
         /// </remarks>
         /// <seealso cref="OnInvokeActivityAsync(ITurnContext{IInvokeActivity}, CancellationToken)"/>
-        protected virtual Task<HealthCheckResponse> OnHealthCheckAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<AdaptiveCardInvokeResponse> OnAdaptiveCardInvokeAsync(ITurnContext<IInvokeActivity> turnContext, AdaptiveCardInvokeValue invokeValue, CancellationToken cancellationToken)
         {
-            return Task.FromResult(HealthCheck.CreateHealthCheckResponse(turnContext.TurnState.Get<IConnectorClient>()));
+            throw new InvokeResponseException(HttpStatusCode.NotImplemented);
         }
 
         /// <summary>
@@ -562,10 +570,12 @@ namespace Microsoft.Bot.Builder
             switch (turnContext.Activity.Action)
             {
                 case "add":
+                case "add-upgrade":
                     return OnInstallationUpdateAddAsync(turnContext, cancellationToken);
-                case "remove": 
+                case "remove":
+                case "remove-upgrade":
                     return OnInstallationUpdateRemoveAsync(turnContext, cancellationToken);
-                default: 
+                default:
                     return Task.CompletedTask;
             }
         }
@@ -607,6 +617,68 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Invoked when a command activity is received when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Commands are requests to perform an action and receivers typically respond with
+        /// one or more commandResult activities. Receivers are also expected to explicitly
+        /// reject unsupported command activities.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a command activity, it calls this method.
+        /// 
+        /// In a derived class, override this method to add logic that applies to all comand activities.
+        /// Add logic to apply before the specific command-handling logic before the call to the base class
+        /// <see cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/> method.
+        /// Add logic to apply after the specific command-handling logic after the call to the base class
+        /// <see cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/> method.
+        ///
+        /// Command activities communicate programmatic information from a client or channel to a bot.
+        /// The meaning of an command activity is defined by the <see cref="ICommandActivity.Name"/> property,
+        /// which is meaningful within the scope of a channel.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// <seealso cref="OnCommandActivityAsync(ITurnContext{ICommandActivity}, CancellationToken)"/>
+        protected virtual Task OnCommandActivityAsync(ITurnContext<ICommandActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a CommandResult activity is received when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// CommandResult activities can be used to communicate the result of a command execution.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a CommandResult activity, it calls this method.
+        /// 
+        /// In a derived class, override this method to add logic that applies to all comand activities.
+        /// Add logic to apply before the specific CommandResult-handling logic before the call to the base class
+        /// <see cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/> method.
+        /// Add logic to apply after the specific CommandResult-handling logic after the call to the base class
+        /// <see cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/> method.
+        ///
+        /// CommandResult activities communicate programmatic information from a client or channel to a bot.
+        /// The meaning of an CommandResult activity is defined by the <see cref="ICommandResultActivity.Name"/> property,
+        /// which is meaningful within the scope of a channel.
+        /// </remarks>
+        /// <seealso cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// <seealso cref="OnCommandResultActivityAsync(ITurnContext{ICommandResultActivity}, CancellationToken)"/>
+        protected virtual Task OnCommandResultActivityAsync(ITurnContext<ICommandResultActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Invoked when an activity other than a message, conversation update, or event is received when the base behavior of
         /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// If overridden, this could potentially respond to any of the other activity types like
@@ -632,6 +704,64 @@ namespace Microsoft.Bot.Builder
         protected virtual Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        private AdaptiveCardInvokeValue GetAdaptiveCardInvokeValue(IInvokeActivity activity)
+        {
+            if (activity.Value == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Missing value property");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            var obj = activity.Value as JObject;
+            if (obj == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Value property is not properly formed");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            AdaptiveCardInvokeValue invokeValue = null;
+
+            try
+            {
+                invokeValue = obj.ToObject<AdaptiveCardInvokeValue>();
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Value property is not properly formed");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            if (invokeValue.Action == null)
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "BadRequest", "Missing action property");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            if (invokeValue.Action.Type != "Action.Execute")
+            {
+                var response = CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode.BadRequest, "NotSupported", $"The action '{invokeValue.Action.Type}'is not supported.");
+                throw new InvokeResponseException(HttpStatusCode.BadRequest, response);
+            }
+
+            return invokeValue;
+        }
+
+        private AdaptiveCardInvokeResponse CreateAdaptiveCardInvokeErrorResponse(HttpStatusCode statusCode, string code, string message)
+        {
+            return new AdaptiveCardInvokeResponse()
+            {
+                StatusCode = (int)statusCode,
+                Type = "application/vnd.microsoft.error",
+                Value = new Error()
+                {
+                    Code = code,
+                    Message = message
+                }
+            };
         }
 
         /// <summary>
@@ -676,7 +806,7 @@ namespace Microsoft.Bot.Builder
             /// </summary>
             /// <param name="message">The message that explains the reason for the exception, or an empty string.</param>
             /// <param name="innerException">Gets the System.Exception instance that caused the current exception.</param>
-            public InvokeResponseException(string message, Exception innerException) 
+            public InvokeResponseException(string message, Exception innerException)
                 : base(message, innerException)
             {
             }

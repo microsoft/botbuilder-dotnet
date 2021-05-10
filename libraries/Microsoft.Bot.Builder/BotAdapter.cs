@@ -32,6 +32,11 @@ namespace Microsoft.Bot.Builder
     public abstract class BotAdapter
     {
         /// <summary>
+        /// The key value for any InvokeResponseActivity that would be on the TurnState.
+        /// </summary>
+        public const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
+
+        /// <summary>
         /// The string value for the bot identity key.
         /// </summary>
         public const string BotIdentityKey = "BotIdentity";
@@ -181,6 +186,63 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Sends a proactive message to a conversation.
+        /// </summary>
+        /// <param name="botId">The application ID of the bot. This parameter is ignored in
+        /// single tenant the Adapters (Console, Test, etc) but is critical to the BotFrameworkAdapter
+        /// which is multi-tenant aware. </param>
+        /// <param name="continuationActivity">An <see cref="Activity"/> with the appropriate <see cref="ConversationReference"/> with which to continue the conversation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initiate a conversation with a bot
+        /// before the bot can send activities to the user.</remarks>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public virtual Task ContinueConversationAsync(string botId, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Sends a proactive message to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="continuationActivity">An <see cref="Activity"/> with the appropriate <see cref="ConversationReference"/> with which to continue the conversation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initiate a conversation with a bot
+        /// before the bot can send activities to the user.</remarks>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public virtual Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Sends a proactive message to a conversation.
+        /// </summary>
+        /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
+        /// <param name="continuationActivity">An <see cref="Activity"/> with the appropriate <see cref="ConversationReference"/> with which to continue the conversation.</param>
+        /// <param name="audience">A value signifying the recipient of the proactive message.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initiate a conversation with a bot
+        /// before the bot can send activities to the user.</remarks>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public virtual Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, Activity continuationActivity, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Creates a turn context and runs the middleware pipeline for an incoming TRUSTED activity.
         /// </summary>
         /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the request.</param>
@@ -230,7 +292,10 @@ namespace Microsoft.Bot.Builder
                     try
                     {
                         Thread.CurrentThread.CurrentCulture = new CultureInfo(turnContext.Activity.Locale);
-                        (turnContext as TurnContext).Locale = turnContext.Activity.Locale;
+                        if (turnContext is TurnContext ctx)
+                        {
+                            ctx.Locale = turnContext.Activity.Locale;
+                        }
                     }
                     catch (CultureNotFoundException)
                     {

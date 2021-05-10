@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
@@ -64,18 +65,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
                 throw new InvalidOperationException($"The {nameof(this.Template)} property can't be empty.");
             }
 
-            var languageGenerator = dialogContext.Services.Get<LanguageGenerator>();
-            if (languageGenerator != null)
-            {
-                var result = await languageGenerator.GenerateAsync(
-                    dialogContext,
-                    template: Template,
-                    data: data ?? dialogContext.State,
-                    cancellationToken: cancellationToken).ConfigureAwait(false);
-                return result.ToString();
-            }
-
-            return null;
+            var languageGenerator = dialogContext.Services.Get<LanguageGenerator>() ?? new TemplateEngineLanguageGenerator();
+            var result = await languageGenerator.GenerateAsync(
+                                dialogContext,
+                                template: Template,
+                                data: data ?? dialogContext.State,
+                                cancellationToken: cancellationToken).ConfigureAwait(false);
+            return result.ToString();
         }
 
         /// <summary>

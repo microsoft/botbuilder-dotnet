@@ -10,5 +10,10 @@
         ],
         "label": "Re-prompt for input",
         "subtitle": "Reprompt dialog event"
+    },
+    "trigger": {
+		"label": "Re-prompt for input (Reprompt dialog event)",
+		"order": 4.4,
+		"submenu": "Dialog events"
     }
 }

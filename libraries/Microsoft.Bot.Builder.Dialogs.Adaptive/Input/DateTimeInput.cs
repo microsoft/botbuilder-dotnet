@@ -10,7 +10,6 @@ using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
-using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -128,17 +127,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         private string GetCulture(DialogContext dc)
         {
-            if (!string.IsNullOrEmpty(dc.Context.Activity.Locale))
-            {
-                return dc.Context.Activity.Locale;
-            }
-
-            if (this.DefaultLocale != null)
-            {
-                return this.DefaultLocale.GetValue(dc.State);
-            }
-
-            return English;
+            // Note: Default locale will be considered for deprecation as part of 4.13.
+            return dc.GetLocale() ?? this.DefaultLocale?.GetValue(dc.State);
         }
     }
 }

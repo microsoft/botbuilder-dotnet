@@ -34,7 +34,6 @@
 
   <ItemGroup>
     <PackageReference Include="Jint" Version="2.11.58" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.1.0-beta1-final" />
   </ItemGroup>
@@ -53,6 +52,7 @@
     <ProjectReference Include="..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Debugging\Microsoft.Bot.Builder.Dialogs.Debugging.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />

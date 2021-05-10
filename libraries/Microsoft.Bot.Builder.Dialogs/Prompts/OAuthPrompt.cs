@@ -101,11 +101,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             BotAssert.ContextNotNull(turnContext);
 
-            if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthPrompt.Prompt(): not supported by the current adapter");
-            }
-
             // Ensure prompt initialized
             prompt ??= Activity.CreateMessageActivity();
 
@@ -119,7 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 if (!prompt.Attachments.Any(a => a.Content is SigninCard))
                 {
-                    var signInResource = await adapter.GetSignInResourceAsync(turnContext, settings.OAuthAppCredentials, settings.ConnectionName, turnContext.Activity.From.Id, null, cancellationToken).ConfigureAwait(false);
+                    var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
                     prompt.Attachments.Add(new Attachment
                     {
                         ContentType = SigninCard.ContentType,
@@ -142,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
                 var cardActionType = ActionTypes.Signin;
-                var signInResource = await adapter.GetSignInResourceAsync(turnContext, settings.OAuthAppCredentials, settings.ConnectionName, turnContext.Activity.From.Id, null, cancellationToken).ConfigureAwait(false);
+                var signInResource = await UserTokenAccess.GetSignInResourceAsync(turnContext, settings, cancellationToken).ConfigureAwait(false);
                 var value = signInResource.SignInLink;
 
                 // use the SignInLink when 
@@ -228,13 +223,10 @@ namespace Microsoft.Bot.Builder.Dialogs
                     dc.Context.Activity.ServiceUrl = callerInfo.CallerServiceUrl;
 
                     // recreate a ConnectorClient and set it in TurnState so replies use the correct one
-                    if (!(turnContext.Adapter is IConnectorClientBuilder connectorClientProvider))
-                    {
-                        throw new InvalidOperationException("OAuthPrompt: IConnectorClientProvider interface not implemented by the current adapter");
-                    }
-
+                    var serviceUrl = dc.Context.Activity.ServiceUrl;
                     var claimsIdentity = turnContext.TurnState.Get<ClaimsIdentity>(BotAdapter.BotIdentityKey);
-                    var connectorClient = await connectorClientProvider.CreateConnectorClientAsync(dc.Context.Activity.ServiceUrl, claimsIdentity, callerInfo.Scope, cancellationToken).ConfigureAwait(false);
+                    var audience = callerInfo.Scope;
+                    var connectorClient = await UserTokenAccess.CreateConnectorClientAsync(turnContext, serviceUrl, claimsIdentity, audience, cancellationToken).ConfigureAwait(false);
                     if (turnContext.TurnState.Get<IConnectorClient>() != null)
                     {
                         turnContext.TurnState.Set(connectorClient);
@@ -250,11 +242,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var magicCodeObject = turnContext.Activity.Value as JObject;
                 var magicCode = magicCodeObject.GetValue("state", StringComparison.Ordinal)?.ToString();
 
-                if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
-                {
-                    throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
-                }
-
                 // Getting the token follows a different flow in Teams. At the signin completion, Teams
                 // will send the bot an "invoke" activity that contains a "magic" code. This code MUST
                 // then be used to try fetching the token from Botframework service within some time
@@ -264,7 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // progress) retry in that case.
                 try
                 {
-                    var token = await adapter.GetUserTokenAsync(turnContext, settings.OAuthAppCredentials, settings.ConnectionName, magicCode, cancellationToken).ConfigureAwait(false);
+                    var token = await UserTokenAccess.GetUserTokenAsync(turnContext, settings, magicCode, cancellationToken).ConfigureAwait(false);
 
                     if (token != null)
                     {
@@ -313,33 +300,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                             FailureDetail = "The bot received an InvokeActivity with a TokenExchangeInvokeRequest containing a ConnectionName that does not match the ConnectionName expected by the bot's active OAuthPrompt. Ensure these names match when sending the InvokeActivityInvalid ConnectionName in the TokenExchangeInvokeRequest",
                         }, cancellationToken).ConfigureAwait(false);
                 }
-                else if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
-                {
-                    await SendInvokeResponseAsync(
-                        turnContext,
-                        HttpStatusCode.BadGateway,
-                        new TokenExchangeInvokeResponse
-                        {
-                            Id = tokenExchangeRequest.Id,
-                            ConnectionName = settings.ConnectionName,
-                            FailureDetail = $"The bot's BotAdapter does not support token exchange operations. Ensure the bot's Adapter supports the {nameof(IExtendedUserTokenProvider)} interface.",
-                        }, cancellationToken).ConfigureAwait(false);
-                    throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
-                }
                 else
                 {
                     TokenResponse tokenExchangeResponse = null;
                     try
                     {
-                        tokenExchangeResponse = await adapter.ExchangeTokenAsync(
-                            turnContext,
-                            settings.ConnectionName,
-                            turnContext.Activity.From.Id,
-                            new TokenExchangeRequest
-                            {
-                                Token = tokenExchangeRequest.Token,
-                            },
-                            cancellationToken).ConfigureAwait(false);
+                        tokenExchangeResponse = await UserTokenAccess.ExchangeTokenAsync(turnContext, settings, new TokenExchangeRequest { Token = tokenExchangeRequest.Token }, cancellationToken).ConfigureAwait(false);
                     }
 #pragma warning disable CA1031 // Do not catch general exception types (ignoring, see comment below)
                     catch
@@ -392,12 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var matched = magicCodeRegex.Match(turnContext.Activity.Text);
                     if (matched.Success)
                     {
-                        if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
-                        {
-                            throw new InvalidOperationException("OAuthPrompt.Recognize(): not supported by the current adapter");
-                        }
-
-                        var token = await adapter.GetUserTokenAsync(turnContext, settings.OAuthAppCredentials, settings.ConnectionName, matched.Value, cancellationToken).ConfigureAwait(false);
+                        var token = await UserTokenAccess.GetUserTokenAsync(turnContext, settings, magicCode: matched.Value, cancellationToken).ConfigureAwait(false);
                         if (token != null)
                         {
                             result.Succeeded = true;
@@ -477,12 +438,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             SetCallerInfoInDialogState(state, dc.Context);
 
             // Attempt to get the users token
-            if (!(dc.Context.Adapter is IExtendedUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthPrompt.BeginDialog(): not supported by the current adapter");
-            }
-
-            var output = await adapter.GetUserTokenAsync(dc.Context, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            var output = await UserTokenAccess.GetUserTokenAsync(dc.Context, _settings, magicCode: null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
                 // Return token
@@ -581,14 +537,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful and user already has a token or the user successfully signs in,
         /// the result contains the user's token.</remarks>
-        public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        public Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthPrompt.GetUserToken(): not supported by the current adapter");
-            }
-
-            return await adapter.GetUserTokenAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, null, cancellationToken).ConfigureAwait(false);
+            return UserTokenAccess.GetUserTokenAsync(turnContext, _settings, magicCode: null, cancellationToken);
         }
 
         /// <summary>
@@ -598,15 +549,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        public Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (!(turnContext.Adapter is IExtendedUserTokenProvider adapter))
-            {
-                throw new InvalidOperationException("OAuthPrompt.SignOutUser(): not supported by the current adapter");
-            }
-
-            // Sign out user
-            await adapter.SignOutUserAsync(turnContext, _settings.OAuthAppCredentials, _settings.ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
+            return UserTokenAccess.SignOutUserAsync(turnContext, _settings, cancellationToken);
         }
 
         private static CallerInfo CreateCallerInfo(ITurnContext turnContext)

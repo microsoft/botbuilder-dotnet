@@ -34,5 +34,8 @@
                 "${toUpper(this.value)}"
             ]
         }
+    },
+    "$policies": {
+        "interactive": true
     }
 }
