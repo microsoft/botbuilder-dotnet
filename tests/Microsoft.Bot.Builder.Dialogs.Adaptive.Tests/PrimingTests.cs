@@ -228,10 +228,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     new[] { _dlist },
                     null,
                     new InputContext(
-                        "en-us", 
-                        new RecognizerDescription(null, new[] { new EntityDescription("entity1", "foo.lu") }, null), 
+                        "en-us",
+                        new RecognizerDescription(null, new[] { new EntityDescription("entity1", "foo.lu") }, null),
                         new RecognizerDescription(
-                            new[] { new IntentDescription("intent1", "foo.lu") }, 
+                            new[] { new IntentDescription("intent1", "foo.lu") },
                             new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
                             new[] { _dlist }))
                 }
@@ -251,14 +251,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var dc = GetTurnContext(dialog);
             await dc.BeginDialogAsync(dialog.Id);
             CheckDescription(dialog.GetRecognizerDescription(dc, locale), intents, entities, lists);
-            if (input == null)
-            {
-                CheckDescription(dc.InputContext.Possible, intents, entities, lists);
-                CheckDescription(dc.InputContext.Expected, intents, entities, lists);
-            }
-            else
+            if (input != null)
             {
                 CheckDescription(dc.InputContext.Possible, input.Possible.Intents.ToArray(), input.Possible.Entities.ToArray(), input.Possible.DynamicLists.ToArray());
+                CheckDescription(dc.InputContext.Expected, input.Expected.Intents.ToArray(), input.Expected.Entities.ToArray(), input.Expected.DynamicLists.ToArray()); 
             }
 
             await dc.EndDialogAsync();

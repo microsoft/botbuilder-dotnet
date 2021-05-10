@@ -11,7 +11,6 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -725,34 +724,31 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>Async task.</returns>
         public async Task SetInputContextAsync(string locale, RecognizerDescription expected = null, CancellationToken cancellationToken = default)
         {
-            // TODO: chrimc, walk the stack to build up possible and send back command
-
             // Does datetime return multiple entity types?
             //
             // For LUIS enhance luis:build to create the metadata for intents/entities
             //
-            // 1) Use commands without ack to send priming info
-            // 2) Recognziers have method for intents/entities
-            // 3) Dialogs have method for give me expected. Expected/possible and then walks the stack to generate the command.
-            // 4) dc.SetExpectedInput helper which takes expected and walks the dialog tree for possible
-
-            // Should be emitting a trace activity.
-            // 1) Method for SetInputContext which emits trace activity and command
-            // 2) Method for walking the stack and then calling SetInputContext.
-            // Add intents/entities to adaptive luis recognizer and default to getting from settings
-            // Add intents/entities to luis recognizer
-            // Do I need async?
-            RecognizerDescription possible = null;
+            // Recognizers -> GetRecognizerDescription
+            // Dialogs -> GetRecognizerDescription (possibly to recognizer)
+            // Dialogs -> SetInputContextAsync (calls dc.SetInputContextAsync with locale, expected)
+            // InputDialog -> OnPromptAsync -> SetInputContextAsync -> dc.SetInputContextAsync
+            // AdaptiveDialog -> For Ask calls dc.SetInputContextAsync
+            // 
+            // TODO: Use commands without ack to send priming info
+            var descriptions = new List<RecognizerDescription>();
             if (ActiveDialog != null)
             {
-                // Lookup dialog
-                var dialog = FindDialog(ActiveDialog.Id);
-                if (dialog != null)
+                foreach (var instance in Stack)
                 {
-                    possible = dialog.GetRecognizerDescription(this, locale);
+                    var dialog = FindDialog(instance.Id);
+                    if (dialog != null)
+                    {
+                        descriptions.Add(dialog.GetRecognizerDescription(this, locale));
+                    }
                 }
             }
-            
+
+            var possible = RecognizerDescription.MergeDescriptions(descriptions);
             InputContext = new InputContext(locale, expected, possible ?? new RecognizerDescription());
             var turnContext = Services.Get<ITurnContext>();
             if (turnContext != null)
