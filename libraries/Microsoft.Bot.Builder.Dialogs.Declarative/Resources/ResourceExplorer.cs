@@ -682,7 +682,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         private void ResourceProvider_Changed(object sender, IEnumerable<Resource> resources)
         {
-            if (this.Changed != null)
+            if (Changed != null)
             {
                 foreach (var resource in resources)
                 {
@@ -693,9 +693,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 {
                     cancelReloadToken.Cancel();
                     cancelReloadToken = new CancellationTokenSource();
-#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler (this code looks problematic but excluding the rule for now, we need to analyze threading and re-entrance in more detail before trying to change it).
+
                     Task.Delay(1000, cancelReloadToken.Token)
-                        .ContinueWith(t =>
+                        .ContinueWith(
+                            t =>
                         {
                             if (t.IsCanceled)
                             {
@@ -704,9 +705,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
                             var changed = changedResources.ToArray();
                             changedResources = new ConcurrentBag<Resource>();
-                            this.OnChanged(changed);
-                        }).ContinueWith(t => t.Status);
-#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
+                            OnChanged(changed);
+#pragma warning disable VSTHRD110 // Observe result of async calls
+                        }, TaskScheduler.Default).ContinueWith(t => t.Status, TaskScheduler.Default);
+#pragma warning restore VSTHRD110 // Observe result of async calls
                 }
             }
         }

@@ -269,7 +269,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 // with and without the semaphore (and different configs for the semaphore), not limiting concurrency actually
                 // results in higher response times overall. Without the use of this semaphore calls to AcquireTokenAsync can take up
                 // to 5 seconds under high concurrency scenarios.
-                acquired = tokenRefreshSemaphore.Wait(SemaphoreTimeout);
+
+                acquired = await tokenRefreshSemaphore.WaitAsync(SemaphoreTimeout).ConfigureAwait(false);
 
                 // If we are allowed to enter the semaphore, acquire the token.
                 if (acquired)

@@ -39,7 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Base
 
             // dispose all owned objects
             using (_cancellationToken)
+#pragma warning disable VSTHRD107 // Await Task within using expression
             using (_task)
+#pragma warning restore VSTHRD107 // Await Task within using expression
             {
                 try
                 {

@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Adapters
             return new TestFlow(
                 async () =>
                 {
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     await _adapter.SendTextToBotAsync(userSays, _callback, default(CancellationToken)).ConfigureAwait(false);
                 },
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     //  methods, and you handle them by enclosing the call in a try/catch statement. If a task is the
                     //  parent of attached child tasks, or if you are waiting on multiple tasks, multiple exceptions
                     //  could be thrown.
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     var cu = Activity.CreateConversationUpdateActivity();
                     cu.MembersAdded.Add(this._adapter.Conversation.User);
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     await _adapter.ProcessActivityAsync((Activity)userActivity, _callback, default(CancellationToken)).ConfigureAwait(false);
                 },
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     await Task.Delay((int)ms).ConfigureAwait(false);
                 },
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     await Task.Delay(timespan).ConfigureAwait(false);
                 },
@@ -326,7 +326,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     if (System.Diagnostics.Debugger.IsAttached)
                     {
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 async () =>
                 {
                     // NOTE: See details code in above method.
-                    await this._testTask.ConfigureAwait(false);
+                    await _testTask.ConfigureAwait(false);
 
                     try
                     {
