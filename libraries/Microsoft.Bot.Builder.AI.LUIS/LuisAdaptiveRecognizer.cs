@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -140,18 +139,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
             // Priming also includes the canonical form in synonyms whereas LUIS lists do not.
-            var lists = new List<Dialogs.Recognizers.DynamicList>();
+            var lists = new List<Schema.DynamicList>();
             foreach (var list in DynamicLists.GetValue(dialogContext.State))
             {
-                var elements = new List<Dialogs.Recognizers.ListElement>();
+                var elements = new List<ListElement>();
                 foreach (var element in list.List)
                 {
                     var synonyms = new List<string> { element.CanonicalForm };
                     synonyms.AddRange(element.Synonyms);
-                    elements.Add(new Dialogs.Recognizers.ListElement(element.CanonicalForm, synonyms));
+                    elements.Add(new ListElement(element.CanonicalForm, synonyms));
                 }
 
-                lists.Add(new Dialogs.Recognizers.DynamicList(list.Entity, elements));
+                lists.Add(new Schema.DynamicList(list.Entity, elements));
             }
 
             return new RecognizerDescription(

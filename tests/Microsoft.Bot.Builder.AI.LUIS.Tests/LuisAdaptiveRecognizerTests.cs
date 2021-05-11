@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Converters;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public void DeserializeDynamicList()
         {
-            var dl = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon);
+            var dl = JsonConvert.DeserializeObject<List<AI.Luis.DynamicList>>(DynamicListJSon);
             Assert.Equal(2, dl.Count);
             Assert.Equal("alphaEntity", dl[0].Entity);
             Assert.Equal(2, dl[0].List.Count);
@@ -102,9 +102,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public void DeserializeSerializedDynamicList()
         {
-            var ol = JsonConvert.DeserializeObject<List<DynamicList>>(DynamicListJSon);
+            var ol = JsonConvert.DeserializeObject<List<Schema.DynamicList>>(DynamicListJSon);
             var json = JsonConvert.SerializeObject(ol);
-            var dl = JsonConvert.DeserializeObject<List<DynamicList>>(json);
+            var dl = JsonConvert.DeserializeObject<List<AI.Luis.DynamicList>>(json);
             Assert.Equal(2, dl.Count);
             Assert.Equal("alphaEntity", dl[0].Entity);
             Assert.Equal(2, dl[0].List.Count);
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public void DeserializeArrayExpression()
         {
-            var ae = JsonConvert.DeserializeObject<ArrayExpression<DynamicList>>(DynamicListJSon, new ArrayExpressionConverter<DynamicList>());
+            var ae = JsonConvert.DeserializeObject<ArrayExpression<AI.Luis.DynamicList>>(DynamicListJSon, new ArrayExpressionConverter<AI.Luis.DynamicList>());
             var dl = ae.GetValue(null);
             Assert.Equal(2, dl.Count);
             Assert.Equal("alphaEntity", dl[0].Entity);
@@ -125,9 +125,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(
                 RecognizerJson,
-                new ArrayExpressionConverter<DynamicList>(),
-                new ArrayExpressionConverter<Dialogs.Recognizers.EntityDescription>(),
-                new ArrayExpressionConverter<Dialogs.Recognizers.IntentDescription>());
+                new ArrayExpressionConverter<Schema.DynamicList>(),
+                new ArrayExpressionConverter<EntityDescription>(),
+                new ArrayExpressionConverter<IntentDescription>());
             var dl = recognizer.DynamicLists.GetValue(null);
             var state = new JObject(
                 new JProperty("intents", new JArray(new JObject(new JProperty("name", "intent1")), new JObject(new JProperty("name", "intent2")))));

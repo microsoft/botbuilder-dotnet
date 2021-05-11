@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
 
@@ -54,6 +54,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <inheritdoc/>
         public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
             => new RecognizerDescription(entities: new[] { new EntityDescription("number") });
+
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        {
+            var locale = GetCulture(dc);
+            dc.SetInputContext(activity, GetCulture(dc), GetRecognizerDescription(dc, locale));
+        }
 
         /// <summary>
         /// Called when input has been received.
@@ -109,13 +116,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return Task.FromResult(InputState.Valid);
-        }
-
-        /// <inheritdoc/>
-        protected override async Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
-        {
-            var locale = GetCulture(dc);
-            await dc.SetInputContextAsync(GetCulture(dc), GetRecognizerDescription(dc, locale), cancellationToken).ConfigureAwait(false);
         }
 
         private string GetCulture(DialogContext dc)

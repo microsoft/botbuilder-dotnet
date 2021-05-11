@@ -3,12 +3,12 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Recognizers
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Description of an a recognizer entity.
     /// </summary>
-    public class EntityDescription
+    public partial class EntityDescription
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityDescription"/> class.

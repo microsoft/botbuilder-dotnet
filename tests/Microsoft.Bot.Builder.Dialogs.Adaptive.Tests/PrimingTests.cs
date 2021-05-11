@@ -12,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -217,7 +216,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public static IEnumerable<object[]> ExpectedDialog
             => new[]
             {
-                /*
                 new object[] { new NumberInput() { Prompt = _prompt }, null, new[] { new EntityDescription("number") }, null },
                 new object[] { new ConfirmInput() { Prompt = _prompt }, null, new[] { new EntityDescription("boolean") }, null },
                 new object[]
@@ -274,7 +272,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                             new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu") },
                             new[] { _dlist }))
                 },
-                */
                 new object[]
                 {
                     _parent,
@@ -303,19 +300,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [MemberData(nameof(ExpectedDialog))]
         public async Task DialogRecognizerDescriptionTests(Dialog dialog, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists, string locale = null, InputContext input = null)
         {
-            var dc = GetTurnContext();
+            var dc = GetTurnContext(dialog);
             await dc.BeginDialogAsync(dialog.Id);
+            var activity = PendingActivity(dc);
+            var context = activity.InputContext;
             CheckDescription(dialog.GetRecognizerDescription(dc, locale), intents, entities, lists);
             if (input != null)
             {
-                CheckDescription(dc.InputContext.Possible, input.Possible.Intents.ToArray(), input.Possible.Entities.ToArray(), input.Possible.DynamicLists.ToArray());
-                CheckDescription(dc.InputContext.Expected, input.Expected.Intents.ToArray(), input.Expected.Entities.ToArray(), input.Expected.DynamicLists.ToArray());
+                CheckDescription(context.Possible, input.Possible.Intents.ToArray(), input.Possible.Entities.ToArray(), input.Possible.DynamicLists.ToArray());
+                CheckDescription(context.Expected, input.Expected.Intents.ToArray(), input.Expected.Entities.ToArray(), input.Expected.DynamicLists.ToArray());
             }
-
-            await dc.EndDialogAsync();
-            Assert.Equal(dc.GetLocale(), dc.InputContext.Locale);
-            CheckDescription(dc.InputContext.Possible, null, null, null);
-            CheckDescription(dc.InputContext.Expected, null, null, null);
         }
 
         private void CheckDescription(RecognizerDescription description, IntentDescription[] intents, EntityDescription[] entities, DynamicList[] lists)
@@ -363,11 +357,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             }
         }
 
-        private DialogContext GetTurnContext()
+        private Activity PendingActivity(DialogContext dc)
+            => (dc.Services.Get<ITurnContext>().Adapter as TestAdapter).ActiveQueue.Peek();
+
+        private DialogContext GetTurnContext(Dialog dialog = null)
         {
             var dialogs = new DialogSet();
+
+            // Explicitly add leaf since it is nested in parent
             dialogs.Add(_leaf);
-            dialogs.Add(_parent);
+            if (dialog != null)
+            {
+                dialogs.Add(dialog);
+            }
+
             var turn = new TurnContext(
                     new TestAdapter(TestAdapter.CreateConversation("Priming")),
                     new Activity());

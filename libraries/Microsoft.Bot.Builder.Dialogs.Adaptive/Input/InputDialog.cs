@@ -481,7 +481,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 msg.InputHint = InputHints.ExpectingInput;
             }
 
-            await SetInputContextAsync(dc, cancellationToken).ConfigureAwait(false);
+            SetInputContext(dc, msg);
 
             var properties = new Dictionary<string, string>()
             {
@@ -492,15 +492,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             return msg;
         }
-
-        /// <summary>
-        /// Set input context.
-        /// </summary>
-        /// <param name="dc">Dialog context.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Task.</returns>
-        protected virtual async Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
-            => await dc.SetInputContextAsync(dc.GetLocale() ?? string.Empty, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         private async Task<InputState> RecognizeInputAsync(DialogContext dc, int turnCount, CancellationToken cancellationToken = default(CancellationToken))
         {

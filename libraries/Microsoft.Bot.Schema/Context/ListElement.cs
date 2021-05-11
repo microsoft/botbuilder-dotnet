@@ -6,12 +6,12 @@ using System.Linq;
 using Newtonsoft.Json;
 
 // TODO: chrimc, this is lifted from LUIS.  Should we keep in that namespace?  Mark as obsolete?
-namespace Microsoft.Bot.Builder.Dialogs.Recognizers
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Defines a sub-list to append to an existing list entity.
     /// </summary>
-    public class ListElement
+    public partial class ListElement
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ListElement"/> class.
@@ -48,19 +48,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
         /// </value>
         [JsonProperty(PropertyName = "synonyms")]
         public IReadOnlyList<string> Synonyms { get; } 
-
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if parameters are invalid.
-        /// </exception>
-        public virtual void Validate()
-        {
-            if (CanonicalForm == null)
-            {
-                throw new Microsoft.Rest.ValidationException($"RequestList requires CanonicalForm to be defined.");
-            }
-        }
     }
 }

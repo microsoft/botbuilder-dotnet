@@ -10,8 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
-using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -23,11 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     [System.Diagnostics.DebuggerDisplay("{GetType().Name}[{ActiveDialog?.Id}]")]
     public class DialogContext
     {
-        /// <summary>
-        /// The value type for a LUIS trace activity.
-        /// </summary>
-        public const string InputContextTraceType = "https://www.luis.ai/schemas/trace";
-
         /// <summary>
         /// The context label for a LUIS trace activity.
         /// </summary>
@@ -166,12 +160,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>Services collection.</value>
         public TurnContextStateCollection Services { get; private set; }
-
-        /// <summary>
-        /// Gets current input context.
-        /// </summary>
-        /// <value>Current input context.</value>
-        public InputContext InputContext { get; private set; } = new InputContext();
 
         /// <summary>
         /// Gets the current DialogManager for this dialogContext. This property is obsolete.
@@ -366,14 +354,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // End the active dialog
                 await EndActiveDialogAsync(DialogReason.EndCalled, result: result, cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                // TODO: chrimc Not sure if this is the right place to do this.
-                // Input context will get set on every end dialog.
-                if (InputContext.HasContext)
-                {
-                    // Reset the input context
-                    await SetInputContextAsync(GetLocale()).ConfigureAwait(false);
-                }
 
                 // Resume parent dialog
                 if (ActiveDialog != null)
@@ -719,11 +699,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Set the context for the next input from the user.
         /// </summary>
+        /// <param name="activity">Activity to add input context.</param>
         /// <param name="locale">Expected locale.</param>
         /// <param name="expected">Description of the expected intents and entities.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>Async task.</returns>
-        public async Task SetInputContextAsync(string locale, RecognizerDescription expected = null, CancellationToken cancellationToken = default)
+        public void SetInputContext(IMessageActivity activity, string locale, RecognizerDescription expected = null)
         {
             // Does datetime return multiple entity types?
             //
@@ -734,8 +713,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Dialogs -> SetInputContextAsync (calls dc.SetInputContextAsync with locale, expected)
             // InputDialog -> OnPromptAsync -> SetInputContextAsync -> dc.SetInputContextAsync
             // AdaptiveDialog -> For Ask calls dc.SetInputContextAsync
-            // 
-            // TODO: Use commands without ack to send priming info
 
             var descriptions = new List<RecognizerDescription>();
             var parentDc = this;
@@ -754,24 +731,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             var possible = RecognizerDescription.MergeDescriptions(descriptions);
             var context = new InputContext(locale, expected, possible);
             Trace.TraceInformation(context.ToString());
-
-            // Propagate to parents
-            // TODO: Do I need to send to children?  Stack?
-            parentDc = this;
-            do
-            {
-                parentDc.InputContext = context;
-                parentDc = parentDc.Parent;
-            }
-            while (parentDc != null);
-
-            var turnContext = Services.Get<ITurnContext>();
-            if (turnContext != null)
-            {
-                await turnContext.TraceActivityAsync("InputContext", InputContext, nameof(InputContext), "Input Context", cancellationToken).ConfigureAwait(false);
-            }
-
-            return;
+            activity.InputContext = context;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

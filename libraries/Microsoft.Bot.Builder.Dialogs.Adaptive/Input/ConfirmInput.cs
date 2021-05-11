@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Prompts;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
 using Newtonsoft.Json;
@@ -91,6 +90,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <inheritdoc/>
         public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
             => new RecognizerDescription(entities: new[] { new EntityDescription("boolean") });
+
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        {
+            var locale = DetermineCulture(dc);
+            dc.SetInputContext(activity, locale, GetRecognizerDescription(dc, locale));
+        }
 
         /// <summary>
         /// Called when input has been received.
@@ -180,13 +186,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var prompt = await base.OnRenderPromptAsync(dc, state, cancellationToken).ConfigureAwait(false);
             var (style, _) = Style.TryGetValue(dc.State);
             return AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, style, choiceOptions);
-        }
-
-        /// <inheritdoc/>
-        protected async override Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
-        {
-            var locale = DetermineCulture(dc);
-            await dc.SetInputContextAsync(locale, GetRecognizerDescription(dc, locale), cancellationToken).ConfigureAwait(false);
         }
 
         private string DetermineCulture(DialogContext dc)

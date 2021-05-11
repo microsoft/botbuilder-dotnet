@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Recognizers
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Description of the intents and entities a recognizer can return.
     /// </summary>
-    public class RecognizerDescription
+    public partial class RecognizerDescription
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RecognizerDescription"/> class.

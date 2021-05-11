@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Prompts;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
@@ -181,6 +180,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return new RecognizerDescription(entities: entities, dynamicLists: new List<DynamicList> { new DynamicList(Id, entries) });
         }
 
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        {
+            var locale = DetermineCulture(dc);
+            dc.SetInputContext(activity, locale, GetRecognizerDescription(dc, locale));
+        }
+
         /// <summary>
         /// Method which processes options.
         /// </summary>
@@ -258,13 +264,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
 
             return AppendChoices(prompt.AsMessageActivity(), channelId, options.Choices, Style.GetValue(dc.State), choiceOptions);
-        }
-
-        /// <inheritdoc/>
-        protected async override Task SetInputContextAsync(DialogContext dc, CancellationToken cancellationToken = default)
-        {
-            var locale = DetermineCulture(dc);
-            await dc.SetInputContextAsync(locale, GetRecognizerDescription(dc, locale), cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<ChoiceSet> GetChoiceSetAsync(DialogContext dc)

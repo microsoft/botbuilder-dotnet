@@ -2,12 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Recognizers;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -228,6 +227,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return new RecognizerDescription();
         }
+
+        /// <summary>
+        /// Set input context.
+        /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <param name="activity">Activity to add input context.</param>
+        public virtual void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
+            => dialogContext.SetInputContext(activity, dialogContext.GetLocale());
 
         /// <summary>
         /// Called before an event is bubbled to its parent.

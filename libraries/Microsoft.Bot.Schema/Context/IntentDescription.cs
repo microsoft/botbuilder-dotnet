@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Recognizers
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Description of an intent.
     /// </summary>
-    public class IntentDescription
+    public partial class IntentDescription
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IntentDescription"/> class.

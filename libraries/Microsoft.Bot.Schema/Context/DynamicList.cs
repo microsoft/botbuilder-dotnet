@@ -6,12 +6,12 @@ using System.Linq;
 using Newtonsoft.Json;
 
 // TODO: chrimc, this is lifted from LUIS.  Should we keep in that namespace?  Mark as obsolete?
-namespace Microsoft.Bot.Builder.Dialogs.Recognizers
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Defines an extension for a list entity.
     /// </summary>
-    public class DynamicList
+    public partial class DynamicList
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicList"/> class.

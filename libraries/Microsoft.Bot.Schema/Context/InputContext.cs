@@ -3,12 +3,12 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Recognizers
+namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Input context for the next turn.
     /// </summary>
-    public class InputContext
+    public partial class InputContext
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InputContext"/> class.
