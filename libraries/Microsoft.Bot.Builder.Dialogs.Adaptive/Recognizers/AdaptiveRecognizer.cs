@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// The flag to indicate if telemetry should log personal information.
         /// </value>
         [JsonProperty("logPersonalInformation")]
-        public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+        public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
 
         /// <summary>
         /// Uses the RecognizerResult to create a list of properties to be included when tracking the result in telemetry.

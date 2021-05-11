@@ -70,12 +70,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             using (new SourceScope(sourceContext, range))
             {
                 string refDialogName = null;
-                if (this.resourceExplorer.IsRef(jToken))
+                if (resourceExplorer.IsRef(jToken))
                 {
                     refDialogName = jToken.Value<string>();
 
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jToken = this.resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
+                    jToken = resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
                 var kind = (string)jToken["$kind"];
