@@ -54,5 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
             Possible.Intents.Count > 0 ||
             Possible.Entities.Count > 0 ||
             Possible.DynamicLists.Count > 0;
+
+        /// <inheritdoc/>
+        public override string ToString()
+            => $"InputContext(Expected: {Expected}, Possible: {Possible})";
     }
 }

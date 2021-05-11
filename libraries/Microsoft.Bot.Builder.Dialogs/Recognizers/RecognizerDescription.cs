@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -64,5 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Recognizers
 
             return new RecognizerDescription(intents, entities, lists);
         }
+        
+        /// <inheritdoc/>
+        public override string ToString()
+            => $"RecognizerDescription({ListString(Intents.Select(e => e.Name))}, {ListString(Entities.Select(e => e.Name))}, {ListString(DynamicLists.Select(e => e.Entity))})";
+
+        private string ListString(IEnumerable<string> list)
+            => $"[" + string.Join(", ", list) + "]";
     }
 }

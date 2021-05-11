@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -373,7 +374,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     // Reset the input context
                     await SetInputContextAsync(GetLocale()).ConfigureAwait(false);
                 }
-                
+
                 // Resume parent dialog
                 if (ActiveDialog != null)
                 {
@@ -735,21 +736,35 @@ namespace Microsoft.Bot.Builder.Dialogs
             // AdaptiveDialog -> For Ask calls dc.SetInputContextAsync
             // 
             // TODO: Use commands without ack to send priming info
+
             var descriptions = new List<RecognizerDescription>();
-            if (ActiveDialog != null)
+            var parentDc = this;
+            do
             {
-                foreach (var instance in Stack)
+                var dialog = parentDc.FindDialog(parentDc.ActiveDialog.Id);
+                if (dialog != null)
                 {
-                    var dialog = FindDialog(instance.Id);
-                    if (dialog != null)
-                    {
-                        descriptions.Add(dialog.GetRecognizerDescription(this, locale));
-                    }
+                    descriptions.Add(dialog.GetRecognizerDescription(this, locale));
                 }
+
+                parentDc = parentDc.Parent;
             }
+            while (parentDc != null);
 
             var possible = RecognizerDescription.MergeDescriptions(descriptions);
-            InputContext = new InputContext(locale, expected, possible ?? new RecognizerDescription());
+            var context = new InputContext(locale, expected, possible);
+            Trace.TraceInformation(context.ToString());
+
+            // Propagate to parents
+            // TODO: Do I need to send to children?  Stack?
+            parentDc = this;
+            do
+            {
+                parentDc.InputContext = context;
+                parentDc = parentDc.Parent;
+            }
+            while (parentDc != null);
+
             var turnContext = Services.Get<ITurnContext>();
             if (turnContext != null)
             {
