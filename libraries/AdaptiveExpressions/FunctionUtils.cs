@@ -767,15 +767,6 @@ namespace AdaptiveExpressions
             obj1 = ResolveValue(obj1);
             obj2 = ResolveValue(obj2);
 
-            // Number Comparison
-            if (obj1.IsNumber() && obj2.IsNumber())
-            {
-                if (Math.Abs(CultureInvariantDoubleConvert(obj1) - CultureInvariantDoubleConvert(obj2)) < double.Epsilon)
-                {
-                    return true;
-                }
-            }
-
             // Array Comparison
             if (TryParseList(obj1, out IList l0) && TryParseList(obj2, out IList l1))
             {
@@ -810,6 +801,15 @@ namespace AdaptiveExpressions
                 var jObj1 = JObject.FromObject(obj1);
                 var jObj2 = JObject.FromObject(obj2);
                 return JToken.DeepEquals(jObj1, jObj2);
+            }
+
+            // Number Comparison
+            if (obj1.IsNumber() && obj2.IsNumber())
+            {
+                if (Math.Abs(CultureInvariantDoubleConvert(obj1) - CultureInvariantDoubleConvert(obj2)) < double.Epsilon)
+                {
+                    return true;
+                }
             }
 
             try
