@@ -710,28 +710,31 @@ namespace Microsoft.Bot.Builder.Dialogs
             //
             // Recognizers -> GetRecognizerDescription
             // Dialogs -> GetRecognizerDescription (possibly to recognizer)
-            // Dialogs -> SetInputContextAsync (calls dc.SetInputContextAsync with locale, expected)
-            // InputDialog -> OnPromptAsync -> SetInputContextAsync -> dc.SetInputContextAsync
-            // AdaptiveDialog -> For Ask calls dc.SetInputContextAsync
+            // Dialogs -> SetInputContext(dc, activity) -> dc.SetInputContext(activity, locale, expected)
+            // InputDialog -> OnPromptAsync -> SetInputContext
+            // Ask -> calls AdaptiveDialog.SetInputContext
 
-            var descriptions = new List<RecognizerDescription>();
-            var parentDc = this;
-            do
+            if (activity != null)
             {
-                var dialog = parentDc.FindDialog(parentDc.ActiveDialog.Id);
-                if (dialog != null)
+                var descriptions = new List<RecognizerDescription>();
+                var parentDc = this;
+                do
                 {
-                    descriptions.Add(dialog.GetRecognizerDescription(this, locale));
+                    var dialog = parentDc.FindDialog(parentDc.ActiveDialog.Id);
+                    if (dialog != null)
+                    {
+                        descriptions.Add(dialog.GetRecognizerDescription(this, locale));
+                    }
+
+                    parentDc = parentDc.Parent;
                 }
+                while (parentDc != null);
 
-                parentDc = parentDc.Parent;
+                var possible = RecognizerDescription.MergeDescriptions(descriptions);
+                var context = new InputContext(locale, expected, possible);
+                Trace.TraceInformation(context.ToString());
+                activity.InputContext = context;
             }
-            while (parentDc != null);
-
-            var possible = RecognizerDescription.MergeDescriptions(descriptions);
-            var context = new InputContext(locale, expected, possible);
-            Trace.TraceInformation(context.ToString());
-            activity.InputContext = context;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

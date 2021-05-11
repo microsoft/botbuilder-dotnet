@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public void DeserializeSerializedDynamicList()
         {
-            var ol = JsonConvert.DeserializeObject<List<Schema.DynamicList>>(DynamicListJSon);
+            var ol = JsonConvert.DeserializeObject<List<AI.Luis.DynamicList>>(DynamicListJSon);
             var json = JsonConvert.SerializeObject(ol);
             var dl = JsonConvert.DeserializeObject<List<AI.Luis.DynamicList>>(json);
             Assert.Equal(2, dl.Count);
@@ -125,6 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(
                 RecognizerJson,
+                new ArrayExpressionConverter<AI.Luis.DynamicList>(),
                 new ArrayExpressionConverter<Schema.DynamicList>(),
                 new ArrayExpressionConverter<EntityDescription>(),
                 new ArrayExpressionConverter<IntentDescription>());
