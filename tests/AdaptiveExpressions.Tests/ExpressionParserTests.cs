@@ -516,7 +516,7 @@ namespace AdaptiveExpressions.Tests
             Test("where([{a: 1, b:{c: 2}}, {b: 2}], x, x == { b: { c: 2}, a: 1})[0].b.c", 2),
             #endregion
 
-#region  String functions test
+            #region  String functions test
             Test("concat(hello,world)", "helloworld"),
             Test("concat(hello,\r\nworld)", "helloworld"),
             Test("concat('hello','world')", "helloworld"),
