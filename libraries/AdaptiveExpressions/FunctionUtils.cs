@@ -767,16 +767,43 @@ namespace AdaptiveExpressions
             obj1 = ResolveValue(obj1);
             obj2 = ResolveValue(obj2);
 
-            if (TryParseList(obj1, out IList l0) && l0.Count == 0 && TryParseList(obj2, out IList l1) && l1.Count == 0)
+            // Array Comparison
+            if (TryParseList(obj1, out IList l0) && TryParseList(obj2, out IList l1))
             {
-                return true;
+                if (l0.Count != l1.Count)
+                {
+                    return false;
+                }
+
+                var isEqual = true;
+                for (var i = 0; i < l0.Count; i++)
+                {
+                    if (!CommonEquals(l0[i], l1[i]))
+                    {
+                        isEqual = false;
+                        break;
+                    }
+                }
+
+                return isEqual;
             }
 
-            if (GetPropertyCount(obj1) == 0 && GetPropertyCount(obj2) == 0)
+            // Object Comparison
+            var propertyCountOfObj1 = GetPropertyCount(obj1);
+            var propertyCountOfObj2 = GetPropertyCount(obj2);
+            if (propertyCountOfObj1 >= 0 && propertyCountOfObj2 >= 0)
             {
-                return true;
+                if (propertyCountOfObj1 != propertyCountOfObj2)
+                {
+                    return false;
+                }
+
+                var jObj1 = JObject.FromObject(obj1);
+                var jObj2 = JObject.FromObject(obj2);
+                return JToken.DeepEquals(jObj1, jObj2);
             }
 
+            // Number Comparison
             if (obj1.IsNumber() && obj2.IsNumber())
             {
                 if (Math.Abs(CultureInvariantDoubleConvert(obj1) - CultureInvariantDoubleConvert(obj2)) < double.Epsilon)

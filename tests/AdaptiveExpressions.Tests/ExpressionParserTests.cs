@@ -513,6 +513,7 @@ namespace AdaptiveExpressions.Tests
             Test("timestampObj2 <= timestampObj", true),
             Test("timestampObj == timestampObj2", false),
             Test("timestampObj == timestampObj", true),
+            Test("where([{a: 1, b:{c: 2}}, {b: 2}], x, x == { b: { c: 2}, a: 1})[0].b.c", 2),
             #endregion
 
             #region  String functions test
@@ -963,6 +964,7 @@ namespace AdaptiveExpressions.Tests
             Test("contains(items, 'hi')", false),
             Test("contains(bag, 'three')", true),
             Test("contains(bag, 'xxx')", false),
+            Test("contains([{ a: 1, b: { c: 2} }, { b: 2}], { a: 1, b: { c: 2} })", true),
             Test("concat(null, [1, 2], null)", new List<object> { 1, 2 }),
             Test("concat(createArray(1, 2), createArray(3, 4))", new List<object> { 1, 2, 3, 4 }),
             Test("concat(['a', 'b'], ['b', 'c'], ['c', 'd'])", new List<object> { "a", "b", "b", "c", "c", "d" }),
