@@ -183,8 +183,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <inheritdoc/>
         public override void SetInputContext(DialogContext dc, IMessageActivity activity)
         {
-            var locale = DetermineCulture(dc);
-            dc.SetInputContext(activity, locale, GetRecognizerDescription(dc, locale));
+            var opt = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+            var locale = DetermineCulture(dc, opt);
+            SetInputContext(dc, activity, locale, GetRecognizerDescription(dc, locale));
         }
 
         /// <summary>
