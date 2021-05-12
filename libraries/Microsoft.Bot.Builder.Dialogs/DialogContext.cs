@@ -704,9 +704,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="expected">Description of the expected intents and entities.</param>
         public void SetInputContext(IMessageActivity activity, string locale, RecognizerDescription expected = null)
         {
-            // Does datetime return multiple entity types?
-            //
-            // For LUIS enhance luis:build to create the metadata for intents/entities
+            // TODO: chrimc For LUIS enhance luis:build to create the metadata for intents/entities
             //
             // Recognizers -> GetRecognizerDescription
             // Dialogs -> GetRecognizerDescription (possibly to recognizer)
