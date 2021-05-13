@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         {
             if (FacebookAdapter.HasConfiguration(configuration))
             {
-                services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapter>();
+                services.AddSingleton<IBotFrameworkHttpAdapter, FacebookAdapter>(sp => new FacebookAdapter(configuration));
             }
         }
     }

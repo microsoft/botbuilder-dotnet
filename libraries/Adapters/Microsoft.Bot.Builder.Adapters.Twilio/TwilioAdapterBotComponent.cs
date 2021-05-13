@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             if (TwilioAdapter.HasConfiguration(configuration))
             {
-                services.AddSingleton<IBotFrameworkHttpAdapter, TwilioAdapter>();
+                services.AddSingleton<IBotFrameworkHttpAdapter, TwilioAdapter>(sp => new TwilioAdapter(configuration));
             }
         }
     }

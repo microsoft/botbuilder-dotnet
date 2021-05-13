@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (SlackAdapter.HasConfiguration(configuration))
             {
-                services.AddSingleton<IBotFrameworkHttpAdapter, SlackAdapter>();
+                services.AddSingleton<IBotFrameworkHttpAdapter, SlackAdapter>(sp => new SlackAdapter(configuration));
             }
         }
     }

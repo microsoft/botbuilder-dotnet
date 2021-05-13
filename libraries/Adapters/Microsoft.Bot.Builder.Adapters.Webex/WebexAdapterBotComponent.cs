@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (WebexAdapter.HasConfiguration(configuration))
             {
-                services.AddSingleton<IBotFrameworkHttpAdapter, WebexAdapter>();
+                services.AddSingleton<IBotFrameworkHttpAdapter, WebexAdapter>(sp => new WebexAdapter(configuration));
             }
         }
     }
