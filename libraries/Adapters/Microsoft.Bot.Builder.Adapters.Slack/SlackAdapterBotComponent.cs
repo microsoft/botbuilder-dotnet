@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (SlackAdapter.HasConfiguration(configuration))
             {
-                services.AddSingleton<SlackAdapter>();
+                services.AddSingleton<IBotFrameworkHttpAdapter, SlackAdapter>();
             }
         }
     }

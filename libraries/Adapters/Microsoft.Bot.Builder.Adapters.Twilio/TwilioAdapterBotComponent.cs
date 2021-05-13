@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             if (TwilioAdapter.HasConfiguration(configuration))
             {
-                services.AddSingleton<TwilioAdapter>();
+                services.AddSingleton<IBotFrameworkHttpAdapter, TwilioAdapter>();
             }
         }
     }
