@@ -20,6 +20,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             if (TwilioAdapter.HasConfiguration(configuration))
             {
+                // Components require the component configuration which is the subsection
+                // assigned to the component. When the botbuilder-dotnet issue #5583 gets resolved, this could
+                // change to the no-parameter overload.
                 services.AddSingleton<IBotFrameworkHttpAdapter, TwilioAdapter>(sp => new TwilioAdapter(configuration));
             }
         }
