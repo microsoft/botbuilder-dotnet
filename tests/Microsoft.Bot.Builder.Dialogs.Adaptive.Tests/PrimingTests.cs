@@ -137,6 +137,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             }
         };
 
+        private static AdaptiveDialog _withInterruptions = new AdaptiveDialog()
+        {
+            Recognizer = _luisParent,
+            Triggers = new List<OnCondition>
+            {
+                new OnBeginDialog(new List<Dialog> { new NumberInput { Prompt = _prompt, AllowInterruptions = true } })
+            }
+        };
+
+        private static AdaptiveDialog _withoutInterruptions = new AdaptiveDialog()
+        {
+            Recognizer = _luisParent,
+            Triggers = new List<OnCondition>
+            {
+                new OnBeginDialog(new List<Dialog> { new NumberInput { Prompt = _prompt, AllowInterruptions = false } })
+            }
+        };
+
         public static IEnumerable<object[]> ExpectedRecognizer
             => new[]
             {
@@ -216,8 +234,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public static IEnumerable<object[]> ExpectedDialog
             => new[]
             {
-                new object[] { new NumberInput() { Prompt = _prompt }, null, new[] { new EntityDescription("number") }, null },
+                new object[] { new AttachmentInput() { Prompt = _prompt }, null, null, null },  
                 new object[] { new ConfirmInput() { Prompt = _prompt }, null, new[] { new EntityDescription("boolean") }, null },
+                new object[] { new DateTimeInput() { Prompt = _prompt }, null, new[] { new EntityDescription("datetimeV2") }, null },
+                new object[] { new NumberInput() { Prompt = _prompt }, null, new[] { new EntityDescription("number") }, null },
+                new object[] { new TextInput() { Prompt = _prompt }, null, null, null },    
                 new object[]
                 {
                     new ChoiceInput()
@@ -286,6 +307,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                             new[] { new IntentDescription("intent1", "foo.lu"), new IntentDescription("intentParent", "parent.lu") },
                             new[] { new EntityDescription("entity1", "foo.lu"), new EntityDescription("dlist", "foo.lu"), new EntityDescription("entityParent", "parent.lu"), new EntityDescription("dlistParent", "parent.lu") },
                             new[] { _dlist, _dlistParent }))
+                },
+                new object[]
+                {
+                    _withInterruptions,
+                    new[] { new IntentDescription("intentParent", "parent.lu") },
+                    new[] { new EntityDescription("entityParent", "parent.lu"), new EntityDescription("dlistParent", "parent.lu") },
+                    new[] { _dlistParent },
+                    null,
+                    new InputContext(
+                        "en-us",
+                        new RecognizerDescription(null, new[] { new EntityDescription("number") }, null),
+                        new RecognizerDescription(
+                            new[] { new IntentDescription("intentParent", "parent.lu") },
+                            new[] { new EntityDescription("number"), new EntityDescription("entityParent", "parent.lu"), new EntityDescription("dlistParent", "parent.lu") },
+                            new[] { _dlistParent }))
+                },
+                new object[]
+                {
+                    _withoutInterruptions,
+                    new[] { new IntentDescription("intentParent", "parent.lu") },
+                    new[] { new EntityDescription("entityParent", "parent.lu"), new EntityDescription("dlistParent", "parent.lu") },
+                    new[] { _dlistParent },
+                    null,
+                    new InputContext(
+                        "en-us",
+                        new RecognizerDescription(null, new[] { new EntityDescription("number") }, null),
+                        new RecognizerDescription(
+                            null,
+                            new[] { new EntityDescription("number") },
+                            null))
                 }
             };
 

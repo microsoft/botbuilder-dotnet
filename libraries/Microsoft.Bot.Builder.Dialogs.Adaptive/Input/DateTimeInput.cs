@@ -55,6 +55,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public Expression OutputFormat { get; set; }
 
         /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+            => new RecognizerDescription(entities: new[] { new EntityDescription("datetimeV2") });
+        
+        /// <inheritdoc/>
         public override void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
         {
             var locale = GetCulture(dialogContext);

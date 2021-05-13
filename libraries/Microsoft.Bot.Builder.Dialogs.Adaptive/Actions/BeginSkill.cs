@@ -248,6 +248,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
+        {
+            var canInterrupt = true;
+            if (AllowInterruptions != null)
+            {
+                var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dialogContext.State);
+                canInterrupt = error == null && allowInterruptions;
+            }
+
+            if (canInterrupt)
+            {
+                // Allow interruptions by parents
+                dialogContext.SetInputContext(activity, dialogContext.GetLocale());
+            }
+            else
+            {
+                // Don't allow parent interruptions
+                activity.InputContext = new InputContext(dialogContext.GetLocale());
+            }
+        }
+
+        /// <inheritdoc/>
         protected override string OnComputeId()
         {
             var appId = SkillAppId?.ToString() ?? string.Empty;

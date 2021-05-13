@@ -23,11 +23,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContext
     {
         /// <summary>
-        /// The context label for a LUIS trace activity.
-        /// </summary>
-        public const string LuisTraceLabel = "LuisV3 Trace";
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class from the turn context.
         /// </summary>
         /// <param name="dialogs">The dialog set to create the dialog context for.</param>
