@@ -70,5 +70,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Model
         /// <value>The attachments that could come with the message.</value>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToSlack method")]
         public List<SlackAttachment> Attachments { get; set; } = new List<SlackAttachment>();
+
+        /// <summary>
+        /// Gets or sets the the Team Id the message will be sent from.
+        /// </summary>
+        /// <value>The Team Id the bot sends the message from.</value>
+        public string TeamId { get; set; }
     }
 }

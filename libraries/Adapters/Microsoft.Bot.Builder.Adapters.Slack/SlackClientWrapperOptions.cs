@@ -16,14 +16,26 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackClientWrapperOptions"/> class.
         /// </summary>
+        /// <param name="slackClientId">The ClientId of the bot app in slack.</param>
         /// <param name="slackVerificationToken">A token for validating the origin of incoming webhooks.</param>
         /// <param name="slackBotToken">A token for a bot to work on a single workspace.</param>
         /// <param name="slackClientSigningSecret">The token used to validate that incoming webhooks are originated from Slack.</param>
-        public SlackClientWrapperOptions(string slackVerificationToken, string slackBotToken, string slackClientSigningSecret)
+        /// <param name="getTokenForWorkspace">Func to get a token for a bot to work on a given workspace.</param>
+        /// <param name="getBotUserIdentity">Func to get bot id in a given workspace.</param>
+        public SlackClientWrapperOptions(
+            string slackClientId,
+            string slackVerificationToken,
+            string slackBotToken,
+            string slackClientSigningSecret,
+            Func<string, Task<string>> getTokenForWorkspace,
+            Func<string, Task<string>> getBotUserIdentity)
         {
+            SlackClientId = slackClientId;
             SlackVerificationToken = slackVerificationToken;
             SlackBotToken = slackBotToken;
             SlackClientSigningSecret = slackClientSigningSecret;
+            GetTokenForWorkspace = getTokenForWorkspace;
+            GetBotUserIdentity = getBotUserIdentity;
         }
 
         /// <summary>
@@ -68,5 +80,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>The scopes array.</returns>
         /// <value>An array of scope names that are being requested during the oauth process.</value>
         public List<string> SlackScopes { get; } = new List<string>();
+
+        public Func<string, Task<string>> GetTokenForWorkspace { get; }
+
+        public Func<string, Task<string>> GetBotUserIdentity { get; }
     }
 }
