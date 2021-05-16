@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            return new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription(Name, Id) });
+            yield return new RegexHint(Name, Pattern);
         }
 
         /// <summary>

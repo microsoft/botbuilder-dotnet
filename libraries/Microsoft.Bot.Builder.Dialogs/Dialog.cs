@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -221,20 +223,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Return a description of the intents and entities the dialog can recognize.
         /// </summary>
         /// <param name="dialogContext">Dialog context.</param>
-        /// <param name="expectedLocale">Expected input locale.</param>
-        /// <returns>A <see cref="RecognizerDescription"/>.</returns>
-        public virtual RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
+        public virtual IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            return new RecognizerDescription();
+            return Enumerable.Empty<RecognitionHint>();
         }
-
-        /// <summary>
-        /// Set input context.
-        /// </summary>
-        /// <param name="dialogContext">Dialog context.</param>
-        /// <param name="activity">Activity to add input context.</param>
-        public virtual void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
-            => dialogContext.SetInputContext(activity, dialogContext.GetLocale());
 
         /// <summary>
         /// Called before an event is bubbled to its parent.

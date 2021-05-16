@@ -692,41 +692,24 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Set the context for the next input from the user.
+        /// Gets the recognition hints of parent dialogs starting at.
         /// </summary>
-        /// <param name="activity">Activity to add input context.</param>
-        /// <param name="locale">Expected locale.</param>
-        /// <param name="expected">Description of the expected intents and entities.</param>
-        public void SetInputContext(IMessageActivity activity, string locale, RecognizerDescription expected = null)
+        /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
+        public IEnumerable<RecognitionHint> GetParentRecognitionHints()
         {
-            // TODO: chrimc For LUIS enhance luis:build to create the metadata for intents/entities
-            //
-            // Recognizers -> GetRecognizerDescription
-            // Dialogs -> GetRecognizerDescription (possibly to recognizer)
-            // Dialogs -> SetInputContext(dc, activity) -> dc.SetInputContext(activity, locale, expected)
-            // InputDialog -> OnPromptAsync -> SetInputContext
-            // Ask -> calls AdaptiveDialog.SetInputContext
-
-            if (activity != null)
+            var parentDc = Parent;
+            while (parentDc != null)
             {
-                var descriptions = new List<RecognizerDescription>();
-                var parentDc = this;
-                do
+                var dialog = parentDc.FindDialog(parentDc.ActiveDialog.Id);
+                if (dialog != null)
                 {
-                    var dialog = parentDc.FindDialog(parentDc.ActiveDialog.Id);
-                    if (dialog != null)
+                    foreach (var hint in dialog.GetRecognitionHints(this))
                     {
-                        descriptions.Add(dialog.GetRecognizerDescription(this, locale));
+                        yield return hint;
                     }
-
-                    parentDc = parentDc.Parent;
                 }
-                while (parentDc != null);
 
-                var possible = RecognizerDescription.MergeDescriptions(descriptions);
-                var context = new InputContext(locale, expected, possible);
-                Trace.TraceInformation(context.ToString());
-                activity.InputContext = context;
+                parentDc = parentDc.Parent;
             }
         }
 

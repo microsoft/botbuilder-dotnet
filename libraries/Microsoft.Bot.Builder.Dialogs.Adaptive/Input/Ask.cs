@@ -107,6 +107,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dc.State.SetValue(DialogPath.Retries, retries);
             dc.State.SetValue(DialogPath.LastTriggerEvent, trigger);
             dc.State.SetValue(DialogPath.ExpectedProperties, expected);
+
+            // Send recognition hints including those from parent adaptive dialog based on expected properties.
+            var parentId = dc.Parent?.ActiveDialog?.Id;
+            if (parentId != null)
+            {
+                var parent = dc.FindDialog(parentId);
+                if (parent is AdaptiveDialog ad)
+                {
+                    var expectedHints = ad.GetExpectedPropertiesHints(dc);
+                    var parentHints = dc.Parent.GetParentRecognitionHints(); 
+                    var activity = Schema.Activity.CreateRecognitionHints(expectedHints, parentHints);
+                    await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;
@@ -117,18 +132,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             // Do not reset input context
             return Task.CompletedTask;
-        }
-
-        /// <inheritdoc/>
-        protected override void AddContext(DialogContext dc, Activity activity)
-        {
-            // The parent dialog is responsible for Ask recognition
-            var parentId = dc.Parent?.ActiveDialog?.Id;
-            if (parentId != null)
-            {
-                var parent = dc.FindDialog(parentId);
-                parent?.SetInputContext(dc, activity);
-            }
         }
     }
 }

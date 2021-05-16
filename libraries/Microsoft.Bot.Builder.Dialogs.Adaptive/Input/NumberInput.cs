@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,14 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public NumberExpression OutputFormat { get; set; }
 
         /// <inheritdoc/>
-        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
-            => new RecognizerDescription(entities: new[] { new EntityDescription("number") });
-
-        /// <inheritdoc/>
-        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            var locale = GetCulture(dc);
-            SetInputContext(dc, activity, locale, GetRecognizerDescription(dc, locale));
+            yield return new PreBuiltHint("number");
         }
 
         /// <summary>

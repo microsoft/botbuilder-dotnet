@@ -92,7 +92,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
-            AddContext(dc, activity);
             var properties = new Dictionary<string, string>()
             {
                 { "template", JsonConvert.SerializeObject(Activity) },
@@ -112,15 +111,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Add context to activity.
-        /// </summary>
-        /// <param name="dc">Dialog context.</param>
-        /// <param name="activity">Activity to modify.</param>
-        protected virtual void AddContext(DialogContext dc, Activity activity)
-        { 
         }
 
         /// <inheritdoc/>

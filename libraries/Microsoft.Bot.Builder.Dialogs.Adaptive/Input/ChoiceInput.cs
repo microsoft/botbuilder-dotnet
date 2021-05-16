@@ -140,52 +140,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <inheritdoc/>
-        public override RecognizerDescription GetRecognizerDescription(DialogContext dc, string expectedLocale)
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dc)
         {
+            var hints = new List<RecognitionHint>();
             var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
             var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
-            var entries = new List<ListElement>();
+            var phrases = new List<string>();
             foreach (var choice in choices.Choices)
             {
-                var synonyms = new List<string>();
                 if (!options.NoValue)
                 {
-                    synonyms.Add(choice.Value);
+                    phrases.Add(choice.Value);
                 }
 
                 if (!options.NoAction && choice.Action?.Title != null)
                 {
-                    synonyms.Add(choice.Action.Title);
+                    phrases.Add(choice.Action.Title);
                 }
 
                 if (choice.Synonyms != null)
                 {
-                    synonyms.AddRange(choice.Synonyms);
+                    phrases.AddRange(choice.Synonyms);
                 }
-
-                entries.Add(new ListElement(choice.Value, synonyms));
             }
 
-            List<EntityDescription> entities = new List<EntityDescription>();
+            hints.Add(new PhraseListHint(Id, phrases));
+
             if (options.RecognizeOrdinals)
             {
-                entities.Add(new EntityDescription("ordinal"));
+                hints.Add(new PreBuiltHint("ordinal"));
             }
 
             if (options.RecognizeNumbers)
             {
-                entities.Add(new EntityDescription("number"));
+                hints.Add(new PreBuiltHint("number"));
             }
 
-            return new RecognizerDescription(entities: entities, dynamicLists: new List<DynamicList> { new DynamicList(Id, entries) });
-        }
-
-        /// <inheritdoc/>
-        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
-        {
-            var opt = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
-            var locale = DetermineCulture(dc, opt);
-            SetInputContext(dc, activity, locale, GetRecognizerDescription(dc, locale));
+            return hints;
         }
 
         /// <summary>

@@ -109,18 +109,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
 
         /// <summary>
-        /// Gets or sets the intents that are possible to surface from this recognizer.
+        /// Gets or sets a list of intents, entities or phrase lists that can be recognized.
         /// </summary>
-        /// <value>List of <see cref="IntentDescription"/>.</value>
-        [JsonProperty("possibleIntents")]
-        public ArrayExpression<IntentDescription> PossibleIntents { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entities that are possible to surface from this recognizer.
-        /// </summary>
-        /// <value>List of <see cref="EntityDescription"/>.</value>
-        [JsonProperty("possibleEntities")]
-        public ArrayExpression<EntityDescription> PossibleEntities { get; set; }
+        /// <value>List of names.</value>
+        [JsonProperty("recognizes")]
+        public ArrayExpression<string> Recognizes { get; set; }
 
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
@@ -135,28 +128,30 @@ namespace Microsoft.Bot.Builder.AI.Luis
         }
 
         /// <inheritdoc/>
-        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
             // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
             // Priming also includes the canonical form in synonyms whereas LUIS lists do not.
-            var lists = new List<Schema.DynamicList>();
-            foreach (var list in DynamicLists.GetValue(dialogContext.State))
+            var hints = new List<RecognitionHint>();
+            foreach (var name in Recognizes.GetValue(dialogContext.State))
             {
-                var elements = new List<ListElement>();
-                foreach (var element in list.List)
-                {
-                    var synonyms = new List<string> { element.CanonicalForm };
-                    synonyms.AddRange(element.Synonyms);
-                    elements.Add(new ListElement(element.CanonicalForm, synonyms));
-                }
-
-                lists.Add(new Schema.DynamicList(list.Entity, elements));
+                hints.Add(new LUReferenceHint(name, Id));
             }
 
-            return new RecognizerDescription(
-                PossibleIntents.GetValue(dialogContext.State),
-                PossibleEntities.GetValue(dialogContext.State),
-                lists);
+            var lists = DynamicLists.GetValue(dialogContext.State);
+            foreach (var list in lists)
+            {
+                var phrases = new List<string>();
+                foreach (var element in list.List)
+                {
+                    phrases.Add(element.CanonicalForm);
+                    phrases.AddRange(element.Synonyms);
+                }
+
+                hints.Add(new PhraseListHint(list.Entity, phrases));
+            }
+
+            return hints;
         }
 
         /// <summary>

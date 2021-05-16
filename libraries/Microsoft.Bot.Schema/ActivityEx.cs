@@ -158,6 +158,40 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
+        /// Createa a command to set recognition hints.
+        /// </summary>
+        /// <param name="expected">List of expected recognition hints.</param>
+        /// <param name="possible">List of possible recognition hints.</param>
+        /// <returns>New command activity.</returns>
+        public static ICommandActivity CreateRecognitionHints(IEnumerable<RecognitionHint> expected, IEnumerable<RecognitionHint> possible = null)
+        {
+            var hints = new List<RecognitionHint>();
+            foreach (var hint in expected)
+            {
+                hint.Importance = RecognitionHintImportance.Expected.ToString();
+                hints.Add(hint);
+            }
+
+            if (possible != null)
+            {
+                foreach (var hint in possible)
+                {
+                    hint.Importance = RecognitionHintImportance.Possible.ToString();
+                }
+            }
+
+            var reply = new Activity(ActivityTypes.Command)
+            {
+                Value = new CommandValue<List<RecognitionHint>>()
+                {
+                    CommandId = "recognitionHints",
+                    Data = hints
+                }
+            };
+            return reply;
+        }
+
+        /// <summary>
         /// Creates a new message activity as a response to this activity.
         /// </summary>
         /// <param name="text">The text of the reply.</param>

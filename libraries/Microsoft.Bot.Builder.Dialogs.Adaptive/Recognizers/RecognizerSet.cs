@@ -83,9 +83,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            return RecognizerDescription.MergeDescriptions(Recognizers.Select(r => r.GetRecognizerDescription(dialogContext, expectedLocale)));
+            foreach (var recognizer in Recognizers)
+            {
+                foreach (var hint in recognizer.GetRecognitionHints(dialogContext))
+                {
+                    yield return hint;
+                }
+            }
         }
 
         private RecognizerResult MergeResults(RecognizerResult[] results)

@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -87,20 +88,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <inheritdoc/>
-        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
             var languagePolicy = LanguagePolicy ??
                     dialogContext.Services.Get<LanguagePolicy>() ??
                     new LanguagePolicy();
-            foreach (var option in languagePolicy.Policy(expectedLocale))
+            foreach (var option in languagePolicy.Policy(dialogContext.GetLocale()))
             {
                 if (Recognizers.TryGetValue(option, out var recognizer))
                 {
-                    return recognizer.GetRecognizerDescription(dialogContext, expectedLocale);
+                    return recognizer.GetRecognitionHints(dialogContext);
                 }
             }
 
-            return new RecognizerDescription();
+            return Enumerable.Empty<RecognitionHint>();
         }
     }
 }
