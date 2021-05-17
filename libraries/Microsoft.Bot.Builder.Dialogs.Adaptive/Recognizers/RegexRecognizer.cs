@@ -204,6 +204,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <inheritdoc/>
         public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
+            foreach (var intent in Intents)
+            {
+                yield return new RegexHint(intent.Intent, intent.Pattern);
+            }
+
             foreach (var recognizer in Entities)
             {
                 foreach (var hint in recognizer.GetRecognitionHints(dialogContext))

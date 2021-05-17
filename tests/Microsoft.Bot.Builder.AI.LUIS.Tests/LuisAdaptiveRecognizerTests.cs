@@ -61,8 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             'applicationId': '=settings.luis.DynamicLists_test_en_us_lu.appId',
             'endpoint': '=settings.luis.endpoint',
             'endpointKey': '=settings.luis.endpointKey', 
-            'possibleIntents': '=intents',
-            'possibleEntities': [{'name': 'entity1'}, {'name': 'entity2'}],
+            'recognizes': ['intent1', 'intent2', 'entity1', 'entity2'],
             'dynamicLists': " + DynamicListJSon + "}";
 
         private readonly LuisAdaptiveRecognizerFixture _luisAdaptiveRecognizerFixture;
@@ -125,24 +124,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var recognizer = JsonConvert.DeserializeObject<LuisAdaptiveRecognizer>(
                 RecognizerJson,
-                new ArrayExpressionConverter<AI.Luis.DynamicList>(),
-                new ArrayExpressionConverter<Schema.DynamicList>(),
-                new ArrayExpressionConverter<EntityDescription>(),
-                new ArrayExpressionConverter<IntentDescription>());
+                new ArrayExpressionConverter<string>(),
+                new ArrayExpressionConverter<AI.Luis.DynamicList>());
             var dl = recognizer.DynamicLists.GetValue(null);
-            var state = new JObject(
-                new JProperty("intents", new JArray(new JObject(new JProperty("name", "intent1")), new JObject(new JProperty("name", "intent2")))));
             Assert.Equal(2, dl.Count);
             Assert.Equal("alphaEntity", dl[0].Entity);
             Assert.Equal(2, dl[0].List.Count);
-            var intents = recognizer.PossibleIntents.GetValue(state);
-            Assert.Equal(2, intents.Count);
-            Assert.Equal("intent1", intents[0].Name);
-            Assert.Equal("intent2", intents[1].Name);
-            var entities = recognizer.PossibleEntities.GetValue(state);
-            Assert.Equal(2, entities.Count);
-            Assert.Equal("entity1", entities[0].Name);
-            Assert.Equal("entity2", entities[1].Name);
+            var recognizes = recognizer.Recognizes.GetValue(null);
+            Assert.Equal(new List<string> { "intent1", "intent2", "entity1", "entity2" }, recognizes);
         }
     }
 }
