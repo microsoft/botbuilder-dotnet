@@ -141,10 +141,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         /// </summary>
         /// <param name="resourceExplorer">Resource explorer to use.</param>
         /// <param name="testName">Name of test.</param>
-        /// <param name="middlweare">Middleware to add to the adapter.</param>
+        /// <param name="middleware">Middleware to add to the adapter.</param>
         /// <returns>Test adapter.</returns>
 #pragma warning disable CA1801 // Review unused parameters (excluding for now but consider removing the resourceExplorer parameter if it is not needed)
-        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middlweare = null)
+        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middleware = null)
 #pragma warning restore CA1801 // Review unused parameters
         {
             var storage = new MemoryStorage();
@@ -158,9 +158,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
                 .Use(new SetTestOptionsMiddleware());
 
-            if (middlweare != null)
+            if (middleware != null)
             {
-                foreach (var m in middlweare)
+                foreach (var m in middleware)
                 {
                     adapter.Use(m);
                 }
