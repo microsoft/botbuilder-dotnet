@@ -26,5 +26,15 @@ namespace Microsoft.Bot.Schema
         /// <value>Name of the LU file like MyApp.lu.</value>
         [JsonProperty("pattern")]
         public string Pattern { get;  }
+
+        /// <inheritdoc/>
+        public override RecognitionHint Clone()
+            => new RegexHint(Name, Pattern) { Importance = Importance };
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{ToStringPrefix()}{Name}/{Pattern}/";
+        }
     }
 }

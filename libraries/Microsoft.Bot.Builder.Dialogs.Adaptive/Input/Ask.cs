@@ -115,13 +115,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var parent = dc.FindDialog(parentId);
                 if (parent is AdaptiveDialog ad)
                 {
-                    var expectedHints = ad.GetExpectedPropertiesHints(dc);
-                    var parentHints = dc.Parent.GetParentRecognitionHints(); 
-                    var activity = Schema.Activity.CreateRecognitionHints(expectedHints, parentHints);
+                    var expectedHints = new List<RecognitionHint>();
+                    var possibleHints = new List<RecognitionHint>();
+                    foreach (var hint in ad.GetExpectedPropertiesHints(dc))
+                    {
+                        if (hint.Importance == RecognitionHintImportance.Expected.ToString())
+                        {
+                            expectedHints.Add(hint);
+                        }
+                        else
+                        {
+                            possibleHints.Add(hint);
+                        }
+                    }
+
+                    var activity = Schema.Activity.CreateRecognitionHints(expectedHints, possibleHints.Union(dc.Parent.GetParentRecognitionHints()));
                     await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
             }
-            
+
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

@@ -16,5 +16,9 @@ namespace Microsoft.Bot.Schema
             : base("PreBuilt", name)
         {
         }
+
+        /// <inheritdoc/>
+        public override RecognitionHint Clone()
+            => new PreBuiltHint(Name) { Importance = Importance };
     }
 }

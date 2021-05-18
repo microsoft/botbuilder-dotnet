@@ -28,5 +28,15 @@ namespace Microsoft.Bot.Schema
         /// <value>Phrase list.</value>
         [JsonProperty("phrases")]
         public IReadOnlyList<string> Phrases { get;  }
+
+        /// <inheritdoc/>
+        public override RecognitionHint Clone()
+            => new PhraseListHint(Name, Phrases) { Importance = Importance };
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{ToStringPrefix()}{Name}[{Phrases.Count}]";
+        }
     }
 }

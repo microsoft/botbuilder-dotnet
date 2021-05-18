@@ -26,5 +26,15 @@ namespace Microsoft.Bot.Schema
         /// <value>Name of the LU file like MyApp.lu.</value>
         [JsonProperty("source")]
         public string Source { get;  }
+
+        /// <inheritdoc/>
+        public override RecognitionHint Clone()
+            => new LUReferenceHint(Name, Source) { Importance = Importance };
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{ToStringPrefix()}{Source}/{Name}";
+        }
     }
 }

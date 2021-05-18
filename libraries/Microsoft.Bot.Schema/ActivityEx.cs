@@ -168,15 +168,18 @@ namespace Microsoft.Bot.Schema
             var hints = new List<RecognitionHint>();
             foreach (var hint in expected)
             {
-                hint.Importance = RecognitionHintImportance.Expected.ToString();
-                hints.Add(hint);
+                var clone = hint.Clone();
+                clone.Importance = RecognitionHintImportance.Expected.ToString();
+                hints.Add(clone);
             }
 
             if (possible != null)
             {
                 foreach (var hint in possible)
                 {
-                    hint.Importance = RecognitionHintImportance.Possible.ToString();
+                    var clone = hint.Clone();
+                    clone.Importance = RecognitionHintImportance.Possible.ToString();
+                    hints.Add(clone);
                 }
             }
 

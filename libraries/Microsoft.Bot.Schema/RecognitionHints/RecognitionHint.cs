@@ -41,5 +41,25 @@ namespace Microsoft.Bot.Schema
         /// <value>Importance usually from <see cref="RecognitionHintImportance"/>.</value>
         [JsonProperty("importance")]
         public string Importance { get; set; }
+
+        /// <summary>
+        /// Clone the recognition hint.
+        /// </summary>
+        /// <returns>A shallow copy of the hint.</returns>
+        public virtual RecognitionHint Clone()
+            => new RecognitionHint(Type, Name) { Importance = Importance };
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{ToStringPrefix()}{Type}:{Name}";
+        }
+
+        /// <summary>
+        /// Importance marker in ToString.
+        /// </summary>
+        /// <returns>Marker for importance.</returns>
+        protected string ToStringPrefix()
+            => Importance == RecognitionHintImportance.Expected.ToString() ? "+" : string.Empty;
     }
 }

@@ -372,12 +372,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
-        /// Gets recognition hints for the current <see cref="DialogPath.ExpectedProperties"/> by using the <see cref="Schema"/> to find their associated entities.
+        /// Gets recognition hints for this dialog with importance marked as <see cref="RecognitionHintImportance.Expected"/> for entities 
+        /// found through <see cref="Schema"/> for <see cref="DialogPath.ExpectedProperties"/>.
         /// </summary>
         /// <param name="dialogContext">Dialog context.</param>
         /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
         public IEnumerable<RecognitionHint> GetExpectedPropertiesHints(DialogContext dialogContext)
         {
+            var hints = GetRecognitionHints(dialogContext);
+            foreach (var hint in hints)
+            {
+                hint.Importance = RecognitionHintImportance.Possible.ToString();
+            }
+
             if (dialogSchema != null && dialogContext.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
             {
                 // We have expected properties so turn that into expected entities
@@ -388,11 +395,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         foreach (var entity in propertyEntities)
                         {
-                            yield return new LUReferenceHint(entity, Recognizer.Id);
+                            hints.First(h => h.Name == entity).Importance = RecognitionHintImportance.Expected.ToString();
                         }
                     }
                 }
             }
+
+            return hints;
         }
 
         /// <summary>
