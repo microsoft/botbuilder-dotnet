@@ -9650,6 +9650,12 @@
           "description": "Enable trace activities in the unit test (default is false)",
           "default": false
         },
+        "enableCommand": {
+          "type": "boolean",
+          "title": "Enable command activity",
+          "description": "Enable command activities in the unit test (default is false)",
+          "default": false
+        },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",

@@ -395,7 +395,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     {
                         foreach (var entity in propertyEntities)
                         {
-                            hints.First(h => h.Name == entity).Importance = RecognitionHintImportance.Expected.ToString();
+                            var hint = hints.FirstOrDefault(h => h.Name == entity);
+                            if (hint != null)
+                            {
+                                hint.Importance = RecognitionHintImportance.Expected.ToString();
+                            }
                         }
                     }
                 }

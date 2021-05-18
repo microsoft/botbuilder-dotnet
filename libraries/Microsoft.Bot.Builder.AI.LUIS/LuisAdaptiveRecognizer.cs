@@ -130,25 +130,29 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <inheritdoc/>
         public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
-            // Priming also includes the canonical form in synonyms whereas LUIS lists do not.
             var hints = new List<RecognitionHint>();
-            foreach (var name in Recognizes.GetValue(dialogContext.State))
+            if (Recognizes != null)
             {
-                hints.Add(new LUReferenceHint(name, Id));
+                foreach (var name in Recognizes.GetValue(dialogContext.State))
+                {
+                    hints.Add(new LUReferenceHint(name, Id));
+                }
             }
 
-            var lists = DynamicLists.GetValue(dialogContext.State);
-            foreach (var list in lists)
+            if (DynamicLists != null)
             {
-                var phrases = new List<string>();
-                foreach (var element in list.List)
+                var lists = DynamicLists.GetValue(dialogContext.State);
+                foreach (var list in lists)
                 {
-                    phrases.Add(element.CanonicalForm);
-                    phrases.AddRange(element.Synonyms);
-                }
+                    var phrases = new List<string>();
+                    foreach (var element in list.List)
+                    {
+                        phrases.Add(element.CanonicalForm);
+                        phrases.AddRange(element.Synonyms);
+                    }
 
-                hints.Add(new PhraseListHint(list.Entity, phrases));
+                    hints.Add(new PhraseListHint(list.Entity, phrases));
+                }
             }
 
             return hints;

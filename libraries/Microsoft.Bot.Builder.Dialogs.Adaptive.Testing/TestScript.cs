@@ -137,6 +137,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public bool EnableTrace { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether command activities should be passed to the test script.
+        /// </summary>
+        /// <value>If true then command activities will be sent to the test script.</value>
+        [JsonProperty("enableCommand")]
+        public bool EnableCommand { get; set; } = false;
+
+        /// <summary>
         /// Build default test adapter.
         /// </summary>
         /// <param name="resourceExplorer">Resource explorer to use.</param>
@@ -193,6 +200,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
 
             adapter.EnableTrace = EnableTrace;
+            adapter.EnableCommand = EnableCommand;
             adapter.Locale = Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
             adapter.Use(new MockSettingsMiddleware(SettingMocks));

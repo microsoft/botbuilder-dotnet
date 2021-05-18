@@ -407,9 +407,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 dialogs.Add(dialog);
             }
 
-            var turn = new TurnContext(
-                    new TestAdapter(TestAdapter.CreateConversation("Priming")),
-                    new Activity() { Locale = locale ?? "en-us" });
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("Priming"));
+            adapter.EnableCommand = true;
+            var turn = new TurnContext(adapter, new Activity() { Locale = locale ?? "en-us" });
             var dc = new DialogContext(
                 dialogs,
                 turn,

@@ -63,6 +63,12 @@
             "title": "Enable trace activity",
             "description": "Enable trace activities in the unit test (default is false)",
             "default": false
+        },
+        "enableCommand": {
+            "type": "boolean",
+            "title": "Enable command activity",
+            "description": "Enable command activities in the unit test (default is false)",
+            "default": false
         }
     },
     "required": [
