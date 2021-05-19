@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Streaming.Payloads
         /// A task that initiates the process of disassembling the request and signals the <see cref="PayloadSender"/> to begin sending.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-#pragma warning disable UseAsyncSuffix // Use Async suffix  (we can't change this without breaking binary compat)
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
         public Task Disassemble()
-#pragma warning restore UseAsyncSuffix // Use Async suffix
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             var header = new Header()
             {

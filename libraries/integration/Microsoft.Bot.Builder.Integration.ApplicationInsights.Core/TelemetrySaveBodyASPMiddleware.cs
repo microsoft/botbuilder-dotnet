@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         /// </summary>
         /// <param name="httpContext">The HttpContext.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
         public async Task Invoke(HttpContext httpContext)
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             var request = httpContext.Request;
 

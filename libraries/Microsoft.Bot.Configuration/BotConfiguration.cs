@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Configuration
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
-            this.SaveAsAsync(path, secret).GetAwaiter().GetResult();
+            SaveAsAsync(path, secret).GetAwaiter().GetResult();
         }
 
         /// <summary>

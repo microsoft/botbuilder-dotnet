@@ -94,9 +94,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId)
-#pragma warning restore UseAsyncSuffix // Use Async suffix
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             return await AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, new AuthenticationConfiguration()).ConfigureAwait(false);
         }
@@ -118,9 +118,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <remarks>
         /// A token issued by the Bot Framework will FAIL this check. Only Emulator tokens will pass.
         /// </remarks>
-#pragma warning disable UseAsyncSuffix // Use Async suffix (can't change this without breaking binary compat)
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
         public static async Task<ClaimsIdentity> AuthenticateEmulatorToken(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, HttpClient httpClient, string channelId, AuthenticationConfiguration authConfig)
-#pragma warning restore UseAsyncSuffix // Use Async suffix
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             if (authConfig == null)
             {

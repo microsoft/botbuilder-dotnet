@@ -112,9 +112,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId">Id of the template.</param>
         /// <param name="data">Data to render the template.</param>
         /// <returns>Task.</returns>
-#pragma warning disable UseAsyncSuffix // Use Async suffix (we can't change this without breaking compat)
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
         public async Task ReplyWith(ITurnContext turnContext, string templateId, object data = null)
-#pragma warning restore UseAsyncSuffix // Use Async suffix
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -137,9 +137,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <param name="templateId">The id of the template.</param>
         /// <param name="data">Data to render the template with.</param>
         /// <returns>Task.</returns>
-#pragma warning disable UseAsyncSuffix // Use Async suffix (we can't change this without breaking compat)
+#pragma warning disable VSTHRD200 // Use "Async" suffix for async methods (can't change this without breaking binary compat)
         public async Task<Activity> RenderTemplate(ITurnContext turnContext, string language, string templateId, object data = null)
-#pragma warning restore UseAsyncSuffix // Use Async suffix
+#pragma warning restore VSTHRD200 // Use "Async" suffix for async methods
         {
             var fallbackLocales = new List<string>(LanguageFallback);
 

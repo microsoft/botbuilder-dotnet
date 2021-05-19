@@ -1,11 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Rules for StyleCop.Analyzers" Description="Source analysis rules treat as errors for BotBuilder-DotNet solution." ToolsVersion="16.0">
-  <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
-    <Rule Id="AvoidAsyncSuffix" Action="Error" />
-    <Rule Id="AvoidAsyncVoid" Action="Error" />
-    <Rule Id="UseAsyncSuffix" Action="Error" />
-    <Rule Id="UseConfigureAwait" Action="Error" />
-  </Rules>
   <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
     <Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->
     <Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->
@@ -17,6 +11,11 @@
   </Rules>
   <Rules AnalyzerId="Microsoft.NetCore.CSharp.Analyzers" RuleNamespace="Microsoft.NetCore.CSharp.Analyzers">
     <Rule Id="CA1309" Action="Error" /> <!-- Use ordinal StringComparison -->
+  </Rules>
+  <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers.CSharp" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers.CSharp">
+    <Rule Id="VSTHRD002" Action="None" /> <!-- Avoid problematic synchronous waits -->
+    <Rule Id="VSTHRD003" Action="None" /> <!-- Avoid awaiting foreign Tasks -->
+    <Rule Id="VSTHRD011" Action="None" /> <!-- Use AsyncLazy<T> -->
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA0001" Action="None" />

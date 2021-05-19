@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
         /// The flag to indicate in personal information should be logged in telemetry.
         /// </value>
         [JsonProperty("logPersonalInformation")]
-        public BoolExpression LogPersonalInformation { get; set; } = "=settings.telemetry.logPersonalInformation";
+        public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
 
         /// <summary>
         /// Return results of the call to QnA Maker.

@@ -161,8 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     Monitor.Enter(run.Gate);
                     try
                     {
-                        // TODO: remove synchronous waits
-                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+                        await UpdateThreadPhaseAsync(thread, item, cancellationToken).ConfigureAwait(false);
 
                         // while the stopped condition is true, atomically release the mutex
                         while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
@@ -176,8 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                             run.Phase = Phase.Continue;
                         }
 
-                        // TODO: remove synchronous waits
-                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+                        await UpdateThreadPhaseAsync(thread, item, cancellationToken).ConfigureAwait(false);
 
                         // allow one step to progress since next was requested
                         if (run.Phase == Phase.Next)

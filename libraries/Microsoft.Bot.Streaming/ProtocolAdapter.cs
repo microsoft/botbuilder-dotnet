@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Streaming
             cancellationToken.ThrowIfCancellationRequested();
             await Task.WhenAll(requestTask, responseTask).ConfigureAwait(false);
 
-            return responseTask.Result;
+            return await responseTask.ConfigureAwait(false);
         }
 
         private async Task OnReceiveRequestAsync(Guid id, ReceiveRequest request)
