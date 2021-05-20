@@ -185,9 +185,9 @@ namespace Microsoft.Bot.Schema
 
             var reply = new Activity(ActivityTypes.Command)
             {
+                Name = "application/recognitionHints",
                 Value = new CommandValue<List<RecognitionHint>>()
                 {
-                    CommandId = "recognitionHints",
                     Data = hints
                 }
             };

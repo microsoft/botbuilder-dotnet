@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     /// <summary>
     /// Test speech priming functionality.
@@ -284,6 +284,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                     {
                         new PhraseListHint("choiceTest", new[] { "synonym1", "synonym2" })
                     }
+                },
+                new object[]
+                {
+                    new AdaptiveDialog { Recognizer = _luis, AutoEndDialog = false }, _luisHints
                 },
                 new object[] 
                 { 

@@ -37,7 +37,7 @@
             "$kind": "Microsoft.Test.AssertReplyActivity",
             "assertions": [
                 "type == 'command'",
-                "value.commandId == 'recognitionHints'",
+                "name == 'application/recognitionHints'",
                 "count(value.data) == 1",
                 "value.data[0].type == 'PreBuilt'",
                 "value.data[0].name == 'number'",

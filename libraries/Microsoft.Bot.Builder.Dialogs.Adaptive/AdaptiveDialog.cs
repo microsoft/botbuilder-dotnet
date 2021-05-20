@@ -832,6 +832,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     return await actionContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
 
+                // Send recognition hints
+                await actionContext.Context.SendActivityAsync(Activity.CreateRecognitionHints(GetRecognitionHints(actionContext), actionContext.GetParentRecognitionHints())).ConfigureAwait(false);
+
                 return EndOfTurn;
             }
 
