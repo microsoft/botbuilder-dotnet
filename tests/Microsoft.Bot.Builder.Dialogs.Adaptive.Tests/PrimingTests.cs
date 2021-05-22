@@ -291,27 +291,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
                 new object[] 
                 { 
-                    _leaf, _luisHints,
+                    _leaf, 
                     new RecognitionHint[] { new LUReferenceHint("entity1", "leaf.lu") },
                     _luisHints.Where(h => h.Name != "entity1")
                 },
                 new object[]
                 {
-                    _parent, _luisParentHints,
+                    _parent, 
                     new RecognitionHint[] { new LUReferenceHint("entity1", "leaf.lu") },
                     _luisHints.Where(h => h.Name != "entity1").Union(_luisParentHints)
                 },
                 new object[]
                 {
                     _withInterruptions,
-                    _luisParentHints,
                     new[] { new PreBuiltHint("number") },
                     _luisParentHints
                 },
                 new object[]
                 {
                     _withoutInterruptions,
-                    _luisParentHints,
                     new[] { new PreBuiltHint("number") }
                 },
             };
@@ -347,18 +345,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         [Theory]
         [MemberData(nameof(ExpectedDialog))]
-        public async Task DialogHints(Dialog dialog, RecognitionHint[] dialogHints = null, RecognitionHint[] expectedHints = null, RecognitionHint[] possibleHints = null, string locale = null)
+        public async Task DialogHints(Dialog dialog, RecognitionHint[] expectedHints = null, RecognitionHint[] possibleHints = null, string locale = null)
         {
-            if (dialogHints == null)
-            {
-                dialogHints = Array.Empty<RecognitionHint>();
-            }
-
-            expectedHints = AssignImportance(expectedHints ?? dialogHints, RecognitionHintImportance.Expected);
+            expectedHints = AssignImportance(expectedHints ?? Array.Empty<RecognitionHint>(), RecognitionHintImportance.Expected);
             possibleHints = AssignImportance(possibleHints ?? Array.Empty<RecognitionHint>(), RecognitionHintImportance.Possible);
             var dc = GetTurnContext(dialog, locale: locale);
             await dc.BeginDialogAsync(dialog.Id);
-            CheckHints(dialog.GetRecognitionHints(dc), dialogHints);
             var hints = RecognitionHints(dc);
             CheckHints(hints, expectedHints.Union(possibleHints).ToArray());
         }

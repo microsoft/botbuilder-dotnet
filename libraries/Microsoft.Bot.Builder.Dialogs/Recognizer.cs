@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Return a description of the intents and entities the dialog can recognize.
+        /// Return a list of <see cref="RecognitionHint"/>s based on what the recognizer can recognize.
         /// </summary>
         /// <param name="dialogContext">Dialog context.</param>
         /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>

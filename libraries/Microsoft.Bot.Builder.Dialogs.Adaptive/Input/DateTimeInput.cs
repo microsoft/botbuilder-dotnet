@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,9 +56,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public Expression OutputFormat { get; set; }
 
         /// <inheritdoc/>
-        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            yield return new PreBuiltHint("datetimeV2");
+            var hints = base.GetRecognitionHints(dialogContext);
+            hints.Add(new PreBuiltHint("datetimeV2") { Importance = RecognitionHintImportance.Expected.ToString() });
+            return hints;
         }
 
         /// <summary>

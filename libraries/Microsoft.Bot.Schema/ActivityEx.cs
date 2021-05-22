@@ -160,35 +160,16 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Createa a command to set recognition hints.
         /// </summary>
-        /// <param name="expected">List of expected recognition hints.</param>
-        /// <param name="possible">List of possible recognition hints.</param>
+        /// <param name="hints">Enumerable of recognition hints.</param>
         /// <returns>New command activity.</returns>
-        public static ICommandActivity CreateRecognitionHints(IEnumerable<RecognitionHint> expected, IEnumerable<RecognitionHint> possible = null)
+        public static ICommandActivity CreateRecognitionHints(IEnumerable<RecognitionHint> hints)
         {
-            var hints = new List<RecognitionHint>();
-            foreach (var hint in expected)
-            {
-                var clone = hint.Clone();
-                clone.Importance = RecognitionHintImportance.Expected.ToString();
-                hints.Add(clone);
-            }
-
-            if (possible != null)
-            {
-                foreach (var hint in possible)
-                {
-                    var clone = hint.Clone();
-                    clone.Importance = RecognitionHintImportance.Possible.ToString();
-                    hints.Add(clone);
-                }
-            }
-
             var reply = new Activity(ActivityTypes.Command)
             {
                 Name = "application/recognitionHints",
                 Value = new CommandValue<List<RecognitionHint>>()
                 {
-                    Data = hints
+                    Data = hints.ToList()
                 }
             };
             return reply;

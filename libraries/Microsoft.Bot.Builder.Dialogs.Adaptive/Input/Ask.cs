@@ -108,28 +108,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dc.State.SetValue(DialogPath.LastTriggerEvent, trigger);
             dc.State.SetValue(DialogPath.ExpectedProperties, expected);
 
-            // Send recognition hints including those from parent adaptive dialog based on expected properties.
+            // Send our parents hints before the prompt
             var parentId = dc.Parent?.ActiveDialog?.Id;
             if (parentId != null)
             {
                 var parent = dc.FindDialog(parentId);
-                if (parent is AdaptiveDialog ad)
+                if (parent != null)
                 {
-                    var expectedHints = new List<RecognitionHint>();
-                    var possibleHints = new List<RecognitionHint>();
-                    foreach (var hint in ad.GetExpectedPropertiesHints(dc))
-                    {
-                        if (hint.Importance == RecognitionHintImportance.Expected.ToString())
-                        {
-                            expectedHints.Add(hint);
-                        }
-                        else
-                        {
-                            possibleHints.Add(hint);
-                        }
-                    }
-
-                    var activity = Schema.Activity.CreateRecognitionHints(expectedHints, possibleHints.Union(dc.Parent.GetParentRecognitionHints()));
+                    var activity = Schema.Activity.CreateRecognitionHints(parent.GetRecognitionHints(dc.Parent));
                     await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
             }

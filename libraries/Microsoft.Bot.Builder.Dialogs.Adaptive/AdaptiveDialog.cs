@@ -366,25 +366,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            return Recognizer?.GetRecognitionHints(dialogContext) ?? Enumerable.Empty<RecognitionHint>();
-        }
-
-        /// <summary>
-        /// Gets recognition hints for this dialog with importance marked as <see cref="RecognitionHintImportance.Expected"/> for entities 
-        /// found through <see cref="Schema"/> for <see cref="DialogPath.ExpectedProperties"/>.
-        /// </summary>
-        /// <param name="dialogContext">Dialog context.</param>
-        /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
-        public IEnumerable<RecognitionHint> GetExpectedPropertiesHints(DialogContext dialogContext)
-        {
-            var hints = GetRecognitionHints(dialogContext);
-            foreach (var hint in hints)
-            {
-                hint.Importance = RecognitionHintImportance.Possible.ToString();
-            }
-
+            var hints = Recognizer?.GetRecognitionHints(dialogContext).ToList() ?? new List<RecognitionHint>();
             if (dialogSchema != null && dialogContext.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
             {
                 // We have expected properties so turn that into expected entities
@@ -403,8 +387,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         }
                     }
                 }
+
+                foreach (var hint in hints)
+                {
+                    if (hint.Importance == null)
+                    {
+                        hint.Importance = RecognitionHintImportance.Possible.ToString();
+                    }
+                }
+            }
+            else
+            {
+                hints.ForEach(h => h.Importance = RecognitionHintImportance.Expected.ToString());
             }
 
+            hints.AddRange(base.GetRecognitionHints(dialogContext));
             return hints;
         }
 
@@ -833,7 +830,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 // Send recognition hints
-                await actionContext.Context.SendActivityAsync(Activity.CreateRecognitionHints(GetRecognitionHints(actionContext), actionContext.GetParentRecognitionHints())).ConfigureAwait(false);
+                await actionContext.Context.SendActivityAsync(Activity.CreateRecognitionHints(GetRecognitionHints(actionContext))).ConfigureAwait(false);
 
                 return EndOfTurn;
             }

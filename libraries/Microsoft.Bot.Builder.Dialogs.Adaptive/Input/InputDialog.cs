@@ -306,6 +306,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.PromptUserAsync(dc, InputState.Missing, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var canInterrupt = true;
+            if (AllowInterruptions != null)
+            {
+                var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dialogContext.State);
+                canInterrupt = error == null && allowInterruptions;
+            }
+
+            return canInterrupt ? base.GetRecognitionHints(dialogContext) : new List<RecognitionHint>();
+        }
+
         /// <summary>
         /// Called when input has been received, override this method to customize recognition of the input.
         /// </summary>
@@ -577,14 +590,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new InvalidOperationException($"Call to OnRenderPromptAsync() returned a null activity for state {state}.");
             }
 
-            var canInterrupt = true;
-            if (AllowInterruptions != null)
-            {
-                var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dc.State);
-                canInterrupt = error == null && allowInterruptions;
-            }
-
-            var hints = Activity.CreateRecognitionHints(GetRecognitionHints(dc), canInterrupt ? dc.GetParentRecognitionHints() : null);
+            var hints = Activity.CreateRecognitionHints(GetRecognitionHints(dc));
             await dc.Context.SendActivitiesAsync(new[] { hints, prompt }, cancellationToken).ConfigureAwait(false);
 
             return Dialog.EndOfTurn;

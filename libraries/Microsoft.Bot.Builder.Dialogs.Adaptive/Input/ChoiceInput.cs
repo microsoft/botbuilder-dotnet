@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -140,9 +141,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dc)
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dc)
         {
-            var hints = new List<RecognitionHint>();
+            var hints = base.GetRecognitionHints(dc);
             var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
             var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
             var phrases = new List<string>();
@@ -164,16 +165,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            hints.Add(new PhraseListHint(Id, phrases));
+            hints.Add(new PhraseListHint(Id, phrases) { Importance = RecognitionHintImportance.Expected.ToString() });
 
             if (options.RecognizeOrdinals)
             {
-                hints.Add(new PreBuiltHint("ordinal"));
+                hints.Add(new PreBuiltHint("ordinal") { Importance = RecognitionHintImportance.Expected.ToString() });
             }
 
             if (options.RecognizeNumbers)
             {
-                hints.Add(new PreBuiltHint("number"));
+                hints.Add(new PreBuiltHint("number") { Importance = RecognitionHintImportance.Expected.ToString() });
             }
 
             return hints;

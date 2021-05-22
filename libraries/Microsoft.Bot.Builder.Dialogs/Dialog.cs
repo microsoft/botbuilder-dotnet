@@ -220,13 +220,29 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Return a description of the intents and entities the dialog can recognize.
+        /// Return a list of recognition hints.
         /// </summary>
+        /// <remarks>
+        /// A dialog should return hints for what it and its parent dialogs if appropriate can recognize.
+        /// The returned hints should be created on each call so that that can have <see cref="RecognitionHint.Importance"/>
+        /// changed by the leaf dialog.
+        /// </remarks>
         /// <param name="dialogContext">Dialog context.</param>
-        /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
-        public virtual IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        /// <returns>A list of <see cref="RecognitionHint"/>.</returns>
+        public virtual List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
-            return Enumerable.Empty<RecognitionHint>();
+            var parentDc = dialogContext.Parent;
+            var parent = parentDc?.FindDialog(parentDc?.ActiveDialog.Id);
+            if (parent != null)
+            {
+                var hints = parent.GetRecognitionHints(parentDc);
+                hints.ForEach(h => h.Importance = RecognitionHintImportance.Possible.ToString());
+                return hints;
+            }
+            else
+            {
+                return new List<RecognitionHint>();
+            }
         }
 
         /// <summary>

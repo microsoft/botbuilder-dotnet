@@ -691,28 +691,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        /// <summary>
-        /// Gets the recognition hints of parent dialogs starting at.
-        /// </summary>
-        /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
-        public IEnumerable<RecognitionHint> GetParentRecognitionHints()
-        {
-            var parentDc = Parent;
-            while (parentDc != null)
-            {
-                var dialog = parentDc.FindDialog(parentDc.ActiveDialog.Id);
-                if (dialog != null)
-                {
-                    foreach (var hint in dialog.GetRecognitionHints(this))
-                    {
-                        yield return hint;
-                    }
-                }
-
-                parentDc = parentDc.Parent;
-            }
-        }
-
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)
