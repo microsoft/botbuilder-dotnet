@@ -161,14 +161,16 @@ namespace Microsoft.Bot.Schema
         /// Createa a command to set recognition hints.
         /// </summary>
         /// <param name="hints">Enumerable of recognition hints.</param>
-        /// <returns>New command activity.</returns>
-        public static ICommandActivity CreateRecognitionHints(IEnumerable<RecognitionHint> hints)
+        /// <param name="id">Id for the command.</param>
+        /// <returns>New recognition hint command activity.</returns>
+        public static ICommandActivity CreateRecognitionHints(IEnumerable<RecognitionHint> hints, string id = null)
         {
             var reply = new Activity(ActivityTypes.Command)
             {
                 Name = "application/recognitionHints",
                 Value = new CommandValue<List<RecognitionHint>>()
                 {
+                    CommandId = (id ?? string.Empty) + DateTime.Now.ToString("u", System.Globalization.DateTimeFormatInfo.InvariantInfo),
                     Data = hints.ToList()
                 }
             };

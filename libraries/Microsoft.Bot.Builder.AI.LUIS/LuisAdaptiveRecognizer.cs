@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 foreach (var name in Recognizes.GetValue(dialogContext.State))
                 {
-                    hints.Add(new LUReferenceHint(name, Id));
+                    hints.Add(new ReferenceHint(name, Id));
                 }
             }
 

@@ -830,7 +830,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 // Send recognition hints
-                await actionContext.Context.SendActivityAsync(Activity.CreateRecognitionHints(GetRecognitionHints(actionContext))).ConfigureAwait(false);
+                await actionContext.Context.SendActivityAsync(Activity.CreateRecognitionHints(GetRecognitionHints(actionContext), Id)).ConfigureAwait(false);
 
                 return EndOfTurn;
             }

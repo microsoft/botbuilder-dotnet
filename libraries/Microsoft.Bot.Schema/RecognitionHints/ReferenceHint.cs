@@ -7,17 +7,20 @@ namespace Microsoft.Bot.Schema
     /// <summary>
     /// Hint from an LU source file.
     /// </summary>
-    public class LUReferenceHint : RecognitionHint
+    public class ReferenceHint : RecognitionHint
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LUReferenceHint"/> class.
+        /// Initializes a new instance of the <see cref="ReferenceHint"/> class.
         /// </summary>
-        /// <param name="name">Name of LU file definition.</param>
-        /// <param name="source">Source LU file.</param>
-        public LUReferenceHint(string name, string source)
-            : base("LUReference", name)
+        /// <param name="name">Name in resource.</param>
+        /// <param name="resource">Resource.</param>
+        /// <remarks>
+        /// Resource is usually something like an LU file name.
+        /// </remarks>
+        public ReferenceHint(string name, string resource)
+            : base("Reference", name)
         {
-            Source = source;
+            Resource = resource;
         }
 
         /// <summary>
@@ -25,16 +28,16 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <value>Name of the LU file like MyApp.lu.</value>
         [JsonProperty("source")]
-        public string Source { get;  }
+        public string Resource { get;  }
 
         /// <inheritdoc/>
         public override RecognitionHint Clone()
-            => new LUReferenceHint(Name, Source) { Importance = Importance };
+            => new ReferenceHint(Name, Resource) { Importance = Importance };
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{ToStringPrefix()}{Source}/{Name}";
+            return $"{ToStringPrefix()}{Resource}/{Name}";
         }
     }
 }

@@ -864,6 +864,19 @@
       "subtitle": "Condition"
     }
   },
+  "Microsoft.OnControlForm": {
+    "form": {
+      "hidden": [
+        "actions"
+      ],
+      "label": "Handle a condition",
+      "order": [
+        "condition",
+        "*"
+      ],
+      "subtitle": "Condition"
+    }
+  },
   "Microsoft.OnConversationUpdateActivity": {
     "form": {
       "description": "Handle the events fired when a user begins a new conversation with the bot.",

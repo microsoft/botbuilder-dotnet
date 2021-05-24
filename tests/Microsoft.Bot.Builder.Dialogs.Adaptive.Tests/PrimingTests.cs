@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static RecognitionHint[] _luisHints = new RecognitionHint[]
         {
-            new LUReferenceHint("intent1", "leaf.lu"), new LUReferenceHint("entity1", "leaf.lu"), new LUReferenceHint("dlist", "leaf.lu"),
+            new ReferenceHint("intent1", "leaf.lu"), new ReferenceHint("entity1", "leaf.lu"), new ReferenceHint("dlist", "leaf.lu"),
             new PhraseListHint("dlist", new[] { "value1", "synonym1", "synonym2" })
         };
 
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static RecognitionHint[] _luisParentHints = new RecognitionHint[]
         {
-            new LUReferenceHint("intentParent", "parent.lu"), new LUReferenceHint("entityParent", "parent.lu"), new LUReferenceHint("dlistParent", "parent.lu"),
+            new ReferenceHint("intentParent", "parent.lu"), new ReferenceHint("entityParent", "parent.lu"), new ReferenceHint("dlistParent", "parent.lu"),
             new PhraseListHint("dlistParent", new[] { "valueParent", "synonym1", "synonym2" })
         };
 
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private static RecognitionHint[] _luisENHints = new RecognitionHint[]
         {
-            new LUReferenceHint("intent1", "leaf.en-us.lu"), new LUReferenceHint("entity1", "leaf.en-us.lu"), new LUReferenceHint("dlist", "leaf.en-us.lu"),
+            new ReferenceHint("intent1", "leaf.en-us.lu"), new ReferenceHint("entity1", "leaf.en-us.lu"), new ReferenceHint("dlist", "leaf.en-us.lu"),
             new PhraseListHint("dlist", new[] { "value1", "synonym1", "synonym2" })
         };
 
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             => new[]
             {
                 new object[] { new PreBuiltHint("prebuilt") },
-                new object[] { new LUReferenceHint("intent", "foo.lu") },
+                new object[] { new ReferenceHint("intent", "foo.lu") },
                 new object[] { new RegexHint("regex", "a*") },
                 new object[] { new PhraseListHint("phraseList", new[] { "a b", "c d" }) },
             };
@@ -292,13 +292,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 new object[] 
                 { 
                     _leaf, 
-                    new RecognitionHint[] { new LUReferenceHint("entity1", "leaf.lu") },
+                    new RecognitionHint[] { new ReferenceHint("entity1", "leaf.lu") },
                     _luisHints.Where(h => h.Name != "entity1")
                 },
                 new object[]
                 {
                     _parent, 
-                    new RecognitionHint[] { new LUReferenceHint("entity1", "leaf.lu") },
+                    new RecognitionHint[] { new ReferenceHint("entity1", "leaf.lu") },
                     _luisHints.Where(h => h.Name != "entity1").Union(_luisParentHints)
                 },
                 new object[]

@@ -590,7 +590,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 throw new InvalidOperationException($"Call to OnRenderPromptAsync() returned a null activity for state {state}.");
             }
 
-            var hints = Activity.CreateRecognitionHints(GetRecognitionHints(dc));
+            var hints = Activity.CreateRecognitionHints(GetRecognitionHints(dc), Id);
             await dc.Context.SendActivitiesAsync(new[] { hints, prompt }, cancellationToken).ConfigureAwait(false);
 
             return Dialog.EndOfTurn;

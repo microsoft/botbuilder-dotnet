@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var parent = dc.FindDialog(parentId);
                 if (parent != null)
                 {
-                    var activity = Schema.Activity.CreateRecognitionHints(parent.GetRecognitionHints(dc.Parent));
+                    var activity = Schema.Activity.CreateRecognitionHints(parent.GetRecognitionHints(dc.Parent), Id);
                     await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
             }
