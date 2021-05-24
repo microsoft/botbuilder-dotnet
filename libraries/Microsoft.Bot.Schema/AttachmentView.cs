@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -20,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>Initializes a new instance of the <see cref="AttachmentView"/> class.</summary>
         /// <param name="viewId">Id of the attachment.</param>
         /// <param name="size">Size of the attachment.</param>
-        public AttachmentView(string viewId = default(string), int? size = default(int?))
+        public AttachmentView(string viewId = default, int? size = default)
         {
             ViewId = viewId;
             Size = size;
