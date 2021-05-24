@@ -1232,6 +1232,11 @@ namespace AdaptiveExpressions.Tests
             Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(scope);
             Assert.Null(msg);
+            if (expected is Func<string> func)
+            {
+                expected = func();
+            }
+
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
@@ -1286,6 +1291,11 @@ namespace AdaptiveExpressions.Tests
                 Assert.NotNull(parsed);
                 var (actual, msg) = parsed.TryEvaluate(scope);
                 Assert.Null(msg);
+                if (expected is Func<string> func)
+                {
+                    expected = func();
+                }
+
                 AssertObjectEquals(expected, actual);
                 if (expectedRefs != null)
                 {
@@ -1311,6 +1321,11 @@ namespace AdaptiveExpressions.Tests
             Assert.NotNull(parsed);
             var (actual, msg) = parsed.TryEvaluate(jsonScope);
             Assert.Null(msg);
+            if (expected is Func<string> func)
+            {
+                expected = func();
+            }
+
             AssertObjectEquals(expected, actual);
             if (expectedRefs != null)
             {
