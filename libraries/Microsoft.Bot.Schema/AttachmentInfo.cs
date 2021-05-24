@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>Metadata for an attachment.</summary>
@@ -21,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Name of the attachment.</param>
         /// <param name="type">ContentType of the attachment.</param>
         /// <param name="views">attachment views.</param>
-        public AttachmentInfo(string name = default(string), string type = default(string), IList<AttachmentView> views = default(IList<AttachmentView>))
+        public AttachmentInfo(string name = default, string type = default, IList<AttachmentView> views = default)
         {
             Name = name;
             Type = type;
