@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="text">Text for signin request.</param>
         /// <param name="buttons">Action to use to perform signin.</param>
-        public SigninCard(string text = default(string), IList<CardAction> buttons = default(IList<CardAction>))
+        public SigninCard(string text = default, IList<CardAction> buttons = default)
         {
             Text = text;
             Buttons = buttons;
