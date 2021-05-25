@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Display friendly name.</param>
         /// <param name="aadObjectId">This account's object ID within Azure Active Directory (AAD).</param>
         /// <param name="role">Role of the entity behind the account (Example:User, Bot, etc.). Possible values include: 'user', 'bot'.</param>
-        public ChannelAccount(string id = default(string), string name = default(string), string role = default(string), string aadObjectId = default(string))
+        public ChannelAccount(string id = default, string name = default, string role = default, string aadObjectId = default)
         {
             Id = id;
             Name = name;

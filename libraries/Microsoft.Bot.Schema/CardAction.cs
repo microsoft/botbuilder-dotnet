@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="displayText">(Optional) text to display in the chat feed if the button is clicked.</param>
         /// <param name="value">Supplementary parameter for action. Content of this property depends on the ActionType.</param>
         /// <param name="channelData">Channel-specific data associated with this action.</param>
-        public CardAction(string type = default(string), string title = default(string), string image = default(string), string text = default(string), string displayText = default(string), object value = default(object), object channelData = default(object))
+        public CardAction(string type = default, string title = default, string image = default, string text = default, string displayText = default, object value = default, object channelData = default)
         {
             Type = type;
             Title = title;

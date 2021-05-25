@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="aadObjectId">This account's object ID within Azure Active Directory (AAD).</param>
         /// <param name="role">Role of the entity behind the account (Example: User, Bot, etc.). Possible values include: 'user', 'bot'.</param>
         /// <param name="tenantId">This conversation's tenant ID.</param>
-        public ConversationAccount(bool? isGroup = default(bool?), string conversationType = default(string), string id = default(string), string name = default(string), string aadObjectId = default(string), string role = default(string), string tenantId = default(string))
+        public ConversationAccount(bool? isGroup = default, string conversationType = default, string id = default, string name = default, string aadObjectId = default, string role = default, string tenantId = default)
         {
             IsGroup = isGroup;
             ConversationType = conversationType;
