@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="url">Url for the media.</param>
         /// <param name="profile">Optional profile hint to the client to
         /// differentiate multiple MediaUrl objects from each other.</param>
-        public MediaUrl(string url = default(string), string profile = default(string))
+        public MediaUrl(string url = default, string profile = default)
         {
             Url = url;
             Profile = profile;

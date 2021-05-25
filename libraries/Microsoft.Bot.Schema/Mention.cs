@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -26,7 +25,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="text">Sub Text which represents the mention (can be
         /// null or empty).</param>
         /// <param name="type">Type of this entity (RFC 3987 IRI).</param>
-        public Mention(ChannelAccount mentioned = default(ChannelAccount), string text = default(string), string type = default(string))
+        public Mention(ChannelAccount mentioned = default, string text = default, string type = default)
         {
             Mentioned = mentioned;
             Text = text;
