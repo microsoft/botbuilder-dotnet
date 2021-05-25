@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="activities">A collection of Activities that conforms
         /// to the ExpectedReplies schema.</param>
-        public ExpectedReplies(IList<Activity> activities = default(IList<Activity>))
+        public ExpectedReplies(IList<Activity> activities = default)
         {
             Activities = activities;
             CustomInit();
