@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -27,7 +26,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="connectionName">The connection name.</param>
         /// <param name="token">The token.</param>
         /// <param name="expiration">The expiration.</param>
-        public TokenResponse(string channelId = default(string), string connectionName = default(string), string token = default(string), string expiration = default(string))
+        public TokenResponse(string channelId = default, string connectionName = default, string token = default, string expiration = default)
         {
             ChannelId = channelId;
             ConnectionName = connectionName;

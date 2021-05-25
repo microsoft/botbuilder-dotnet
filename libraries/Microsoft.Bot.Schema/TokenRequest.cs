@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -28,7 +26,7 @@ namespace Microsoft.Bot.Schema
         /// from.</param>
         /// <param name="settings">A collection of settings for the specific
         /// provider for this request.</param>
-        public TokenRequest(string provider = default(string), IDictionary<string, object> settings = default(IDictionary<string, object>))
+        public TokenRequest(string provider = default, IDictionary<string, object> settings = default)
         {
             Provider = provider;
             Settings = settings;
