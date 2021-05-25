@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema
         /// <summary>Initializes a new instance of the <see cref="ConversationMembers"/> class.</summary>
         /// <param name="id">Conversation ID.</param>
         /// <param name="members">List of members in this conversation.</param>
-        public ConversationMembers(string id = default(string), IList<ChannelAccount> members = default(IList<ChannelAccount>))
+        public ConversationMembers(string id = default, IList<ChannelAccount> members = default)
         {
             Id = id;
             Members = members;
