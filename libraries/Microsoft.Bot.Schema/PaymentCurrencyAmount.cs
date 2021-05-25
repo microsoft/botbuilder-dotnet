@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="currency">A currency identifier.</param>
         /// <param name="value">Decimal monetary value.</param>
         /// <param name="currencySystem">Currency system.</param>
-        public PaymentCurrencyAmount(string currency = default(string), string value = default(string), string currencySystem = default(string))
+        public PaymentCurrencyAmount(string currency = default, string value = default, string currencySystem = default)
         {
             Currency = currency;
             Value = value;
