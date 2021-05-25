@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema
         /// Initializes a new instance of the <see cref="ResourceResponse"/> class.
         /// </summary>
         /// <param name="id">Id of the resource.</param>
-        public ResourceResponse(string id = default(string))
+        public ResourceResponse(string id = default)
         {
             Id = id;
             CustomInit();
