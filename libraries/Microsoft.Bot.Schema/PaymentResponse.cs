@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Schema
         /// true in the PaymentOptions passed to the PaymentRequest
         /// constructor, then payerPhone will be the phone number chosen by the
         /// user.</param>
-        public PaymentResponse(string methodName = default(string), object details = default(object), PaymentAddress shippingAddress = default(PaymentAddress), string shippingOption = default(string), string payerEmail = default(string), string payerPhone = default(string))
+        public PaymentResponse(string methodName = default, object details = default, PaymentAddress shippingAddress = default, string shippingOption = default, string payerEmail = default, string payerPhone = default)
         {
             MethodName = methodName;
             Details = details;
