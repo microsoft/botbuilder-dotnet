@@ -1,0 +1,67 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "main.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.missingProperties",
+                        "value": "=missingProperties('formFilling')"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "user.missingProperties",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "!exists(getProperty(dialog.foreach.value))",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.TextInput",
+                                        "property": "=dialog.foreach.value",
+                                        "prompt": "Hello, please input ${dialog.foreach.value}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You finish all slot filling. And get result: ${formFilling()}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, please input user.name"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Jack"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, please input user.age"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "20"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You finish all slot filling. And get result: my name is Jack and my age is 20"
+        }
+    ]
+}
