@@ -1,0 +1,76 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "main.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=missingProperties('wPhrase')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${count(user.var)}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=missingProperties(concat('call', 'Welcome'))"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${count(user.var)}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var[0]}"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.var",
+                        "value": "=missingProperties(concat('base', '.', 'welcome'))"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${count(user.var)}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.var[0]}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+          "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "0"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "1"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "theName"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "1"
+        },
+        {
+          "$kind": "Microsoft.Test.AssertReply",
+          "text": "name"
+        }
+    ]
+}

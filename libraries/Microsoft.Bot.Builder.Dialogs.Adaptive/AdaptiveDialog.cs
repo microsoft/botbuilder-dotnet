@@ -11,11 +11,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Functions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -743,6 +746,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Generator != null)
             {
                 dialogContext.Services.Set(this.Generator);
+                if (this.Generator is ResourceMultiLanguageGenerator)
+                {
+                    Expression.Functions.Add(MissingPropertiesFunction.Name, new MissingPropertiesFunction(dialogContext));
+                }
             }
         }
 

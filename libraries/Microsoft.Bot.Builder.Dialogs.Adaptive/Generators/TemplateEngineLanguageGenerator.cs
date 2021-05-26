@@ -32,14 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             TaskContinuationOptions.None,
             TaskScheduler.Default);
 
-        private readonly LanguageGeneration.Templates lg;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.lg = new LanguageGeneration.Templates();
+            this.LG = new LanguageGeneration.Templates();
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(LanguageGeneration.Templates engine = null)
         {
-            this.lg = engine ?? new LanguageGeneration.Templates();
+            this.LG = engine ?? new LanguageGeneration.Templates();
         }
 
         /// <summary>
@@ -64,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var lgResource = new LGResource(Id, Id, lgText ?? string.Empty);
-            this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
+            this.LG = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
         }
 
         /// <summary>
@@ -81,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var resource = new LGResource(Id, filePath, File.ReadAllText(filePath));
-            this.lg = LanguageGeneration.Templates.ParseResource(resource, importResolver);
+            this.LG = LanguageGeneration.Templates.ParseResource(resource, importResolver);
         }
 
         /// <summary>
@@ -97,9 +95,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var content = resource.ReadTextAsync().GetAwaiter().GetResult();
             var lgResource = new LGResource(Id, resource.FullName, content);
-            this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
-            RegisterSourcemap(lg, resource);
+            this.LG = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
+            RegisterSourcemap(LG, resource);
         }
+
+        /// <summary>
+        /// Gets language generation templates.
+        /// </summary>
+        /// <value>
+        /// Language generation templates.
+        /// </value>
+        public LanguageGeneration.Templates LG { get; }
 
         /// <summary>
         /// Gets or sets id of the source of this template (used for labeling errors).
@@ -126,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             try
             {
-                return Task.FromResult(lg.EvaluateText(template, data, lgOpt));
+                return Task.FromResult(LG.EvaluateText(template, data, lgOpt));
             }
             catch (Exception err)
             {
