@@ -588,9 +588,7 @@ namespace Microsoft.Bot.Schema
                 if (!result)
                 {
                     // Finally, if the type is longer than the type they're looking for then we need to check if there's a / separator right after the type they're looking for
-                    result = type.Length > activityType.Length
-                                    &&
-                            type[activityType.Length] == '/';
+                    result = type[activityType.Length] == '/';
                 }
             }
 
