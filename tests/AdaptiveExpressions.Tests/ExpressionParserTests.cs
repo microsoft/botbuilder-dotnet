@@ -653,7 +653,7 @@ namespace AdaptiveExpressions.Tests
             Test("equals(max(createArray(1, 2, 3, 4)), 4.0)", true),
             Test("equals(max(createArray(1, 2, 3, 4), 5.0), 5)", true),
             Test("equals(hello == 'world', bool('true'))", false), // false, true
-            Test("equals(hello == 'world', bool(0))", true), // false, false
+            Test("equals(hello == 'world', bool(0))", true), // true, true
             Test("equals(hello == 'world', bool(1))", false), // false, true
             Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
             Test("if(!!exists(one), 'r1', 'r2')", "r1"), // true
