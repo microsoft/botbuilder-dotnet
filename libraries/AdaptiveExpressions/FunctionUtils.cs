@@ -1062,7 +1062,7 @@ namespace AdaptiveExpressions
             {
                 result = instanceBool;
             }
-            else if (instance == null)
+            else if (instance == null || instance as int? == 0)
             {
                 result = false;
             }
