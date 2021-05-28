@@ -121,7 +121,8 @@ namespace Microsoft.Bot.Schema
         /// highlight when the activity contains a ReplyToId value.</param>
         /// <param name="semanticAction">An optional programmatic action
         /// accompanying this request.</param>
-        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), string label = default(string), string valueType = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<string> listenFor = default(IList<string>), IList<TextHighlight> textHighlights = default(IList<TextHighlight>), SemanticAction semanticAction = default(SemanticAction), string localTimezone = default(string))
+        /// <param name="recognitionHints">List of hints to help recognition of input.</param>
+        public Activity(string type = default(string), string id = default(string), System.DateTimeOffset? timestamp = default(System.DateTimeOffset?), System.DateTimeOffset? localTimestamp = default(System.DateTimeOffset?), string serviceUrl = default(string), string channelId = default(string), ChannelAccount from = default(ChannelAccount), ConversationAccount conversation = default(ConversationAccount), ChannelAccount recipient = default(ChannelAccount), string textFormat = default(string), string attachmentLayout = default(string), IList<ChannelAccount> membersAdded = default(IList<ChannelAccount>), IList<ChannelAccount> membersRemoved = default(IList<ChannelAccount>), IList<MessageReaction> reactionsAdded = default(IList<MessageReaction>), IList<MessageReaction> reactionsRemoved = default(IList<MessageReaction>), string topicName = default(string), bool? historyDisclosed = default(bool?), string locale = default(string), string text = default(string), string speak = default(string), string inputHint = default(string), string summary = default(string), SuggestedActions suggestedActions = default(SuggestedActions), IList<Attachment> attachments = default(IList<Attachment>), IList<Entity> entities = default(IList<Entity>), object channelData = default(object), string action = default(string), string replyToId = default(string), string label = default(string), string valueType = default(string), object value = default(object), string name = default(string), ConversationReference relatesTo = default(ConversationReference), string code = default(string), System.DateTimeOffset? expiration = default(System.DateTimeOffset?), string importance = default(string), string deliveryMode = default(string), IList<string> listenFor = default(IList<string>), IList<TextHighlight> textHighlights = default(IList<TextHighlight>), SemanticAction semanticAction = default(SemanticAction), string localTimezone = default(string), IReadOnlyList<RecognitionHint> recognitionHints = null)
         {
             Type = type;
             Id = id;
@@ -164,6 +165,7 @@ namespace Microsoft.Bot.Schema
             ListenFor = listenFor;
             TextHighlights = textHighlights;
             SemanticAction = semanticAction;
+            RecognitionHints = recognitionHints;
             CustomInit();
         }
 
@@ -571,6 +573,13 @@ namespace Microsoft.Bot.Schema
 #pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
         public IList<string> ListenFor { get; set; }
 #pragma warning restore CA2227 // Collection properties should be read only
+
+        /// <summary>
+        /// Gets or sets list of recognition hints to help prime recognition.
+        /// </summary>
+        /// <value>List of recognition hints.</value>
+        [JsonProperty(PropertyName = "recognitionHints")]
+        public IReadOnlyList<RecognitionHint> RecognitionHints { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of text fragments to highlight when the

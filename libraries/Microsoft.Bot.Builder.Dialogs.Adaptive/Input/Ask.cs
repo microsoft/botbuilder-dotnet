@@ -108,18 +108,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dc.State.SetValue(DialogPath.LastTriggerEvent, trigger);
             dc.State.SetValue(DialogPath.ExpectedProperties, expected);
 
-            // Send our parents hints before the prompt
-            var parentId = dc.Parent?.ActiveDialog?.Id;
-            if (parentId != null)
-            {
-                var parent = dc.FindDialog(parentId);
-                if (parent != null)
-                {
-                    var activity = Schema.Activity.CreateRecognitionHints(parent.GetRecognitionHints(dc.Parent), Id);
-                    await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-                }
-            }
-
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;
@@ -130,6 +118,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             // Do not reset input context
             return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<Activity> CreateActivityAsync(DialogContext dc)
+        {
+            var activity = await base.CreateActivityAsync(dc).ConfigureAwait(false);
+            var parentId = dc.Parent?.ActiveDialog?.Id;
+            if (parentId != null)
+            {
+                var parent = dc.FindDialog(parentId);
+                if (parent != null)
+                {
+                    // Parent does recognition for Ask so add hints to activity
+                    activity.RecognitionHints = parent.GetRecognitionHints(dc.Parent);
+                }
+            }
+
+            return activity;
         }
     }
 }

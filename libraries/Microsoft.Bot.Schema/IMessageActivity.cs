@@ -47,6 +47,12 @@ namespace Microsoft.Bot.Schema
         string InputHint { get; set; }
 
         /// <summary>
+        /// Gets or sets list of recognition hints to help prime recognition.
+        /// </summary>
+        /// <value>List of recognition hints.</value>
+        public IReadOnlyList<RecognitionHint> RecognitionHints { get; set; }
+
+        /// <summary>
         /// Gets or sets text to display if the channel cannot render cards.
         /// </summary>
         /// <value>

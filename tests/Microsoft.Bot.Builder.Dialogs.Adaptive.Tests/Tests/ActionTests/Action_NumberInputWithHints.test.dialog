@@ -35,18 +35,13 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReplyActivity",
+            "text": "Please enter your age.",
             "assertions": [
-                "type == 'command'",
-                "name == 'application/recognitionHints'",
-                "count(value.data) == 1",
-                "value.data[0].type == 'PreBuilt'",
-                "value.data[0].name == 'number'",
-                "value.data[0].importance == 'Expected'"
+                "count(recognitionHints) == 1",
+                "recognitionHints[0].type == 'PreBuilt'",
+                "recognitionHints[0].name == 'number'",
+                "recognitionHints[0].importance == 'Expected'"
             ]
-        },
-        {
-            "$kind": "Microsoft.Test.AssertReply",
-            "text": "Please enter your age."
         }
     ]
 }
