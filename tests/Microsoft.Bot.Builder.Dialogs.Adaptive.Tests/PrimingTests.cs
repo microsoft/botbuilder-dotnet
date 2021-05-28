@@ -389,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        private IReadOnlyList<RecognitionHint> RecognitionHints(DialogContext dc)
+        private IList<RecognitionHint> RecognitionHints(DialogContext dc)
             => (dc.Services.Get<ITurnContext>().Adapter as TestAdapter).ActiveQueue.First(q => q.Type == ActivityTypes.Message)?.RecognitionHints;
 
         private DialogContext GetTurnContext(Dialog dialog = null, string locale = null)

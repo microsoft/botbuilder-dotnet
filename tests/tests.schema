@@ -209,9 +209,6 @@
       "$ref": "#/definitions/Microsoft.OnContinueConversation"
     },
     {
-      "$ref": "#/definitions/Microsoft.OnControlForm"
-    },
-    {
       "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
     },
     {
@@ -4636,9 +4633,6 @@
           "$ref": "#/definitions/Microsoft.OnContinueConversation"
         },
         {
-          "$ref": "#/definitions/Microsoft.OnControlForm"
-        },
-        {
           "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
         },
         {
@@ -6212,100 +6206,6 @@
           "type": "string",
           "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
           "const": "Microsoft.OnContinueConversation"
-        },
-        "$designer": {
-          "title": "Designer information",
-          "type": "object",
-          "description": "Extra information for the Bot Framework Composer."
-        }
-      }
-    },
-    "Microsoft.OnControlForm": {
-      "$role": [
-        "implements(Microsoft.ITrigger)",
-        "extends(Microsoft.OnCondition)"
-      ],
-      "title": "On Control Form",
-      "description": "Actions to perform when specified condition is true.",
-      "type": "object",
-      "required": [
-        "$kind"
-      ],
-      "additionalProperties": false,
-      "patternProperties": {
-        "^\\$": {
-          "title": "Tooling property",
-          "description": "Open ended property for tooling."
-        }
-      },
-      "properties": {
-        "askNext": {
-          "type": "array",
-          "title": "Ask next properties",
-          "description": "List of properties to add to the front of dialog.requiredProperties.",
-          "items": {
-            "type": "string",
-            "title": "Property name",
-            "description": "Name of a property in the schema associated with an adaptive dialog."
-          }
-        },
-        "askLast": {
-          "type": "array",
-          "title": "Ask last properties",
-          "description": "List of properties to put at the end of dialog.requiredProperties.",
-          "items": {
-            "type": "string",
-            "title": "Property name",
-            "description": "Name of a property in the schema associated with an adaptive dialog."
-          }
-        },
-        "noAsk": {
-          "type": "array",
-          "title": "No ask properties",
-          "description": "List of properties to remove from dialog.requiredProperties.",
-          "items": {
-            "type": "string",
-            "title": "Property name",
-            "description": "Name of a property in the schema associated with an adaptive dialog."
-          }
-        },
-        "condition": {
-          "$ref": "#/definitions/condition",
-          "title": "Condition",
-          "description": "Condition (expression).",
-          "examples": [
-            "user.vip == true"
-          ]
-        },
-        "actions": {
-          "type": "array",
-          "title": "Actions",
-          "description": "Sequence of actions to execute.",
-          "items": {
-            "$kind": "Microsoft.IDialog",
-            "$ref": "#/definitions/Microsoft.IDialog"
-          }
-        },
-        "priority": {
-          "$ref": "#/definitions/numberExpression",
-          "title": "Priority",
-          "description": "Priority for trigger with 0 being the highest and < 0 ignored."
-        },
-        "runOnce": {
-          "$ref": "#/definitions/booleanExpression",
-          "title": "Run Once",
-          "description": "True if rule should run once per unique conditions",
-          "examples": [
-            true,
-            "=f(x)"
-          ]
-        },
-        "$kind": {
-          "title": "Kind of dialog object",
-          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-          "type": "string",
-          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-          "const": "Microsoft.OnControlForm"
         },
         "$designer": {
           "title": "Designer information",
