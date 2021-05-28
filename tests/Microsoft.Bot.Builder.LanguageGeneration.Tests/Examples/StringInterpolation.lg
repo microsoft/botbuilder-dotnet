@@ -15,3 +15,18 @@
 
 # StringTemplateWithTemplateRef
 - ${`${StringTemplateWithVariable('jack')} , welcome.`} nice weather!
+
+# StringTemplateWithPureObjectDefinition(item)
+- ${{ text: `I would like ${item} today`}}
+
+# StringTemplateWithObjectDefinition(item)
+- get 'text' value : ${{ text: `I would like ${item} today`}.text}
+
+# StringTemplateWithPureArrayDefinition(item)
+- ${[`I would like ${item} today`]}
+
+# StringTemplateWithArrayDefinition(item)
+- get first value : ${[`I would like ${item} today`][0]}
+
+# StringTemplateWithNestedDefinition(item)
+- two values: ${join(foreach([{ text: `I would like ${item1} today`}, { text: `I would like ${item2} today`}], u => u.text), ', ')}
