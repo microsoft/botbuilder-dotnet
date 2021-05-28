@@ -19,7 +19,6 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Microsoft.Rest.Serialization;
 using Moq;
@@ -536,6 +535,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Equal(expectedServiceUrl, actualServiceUrl4);
             Assert.Equal(expectedServiceUrl, actualServiceUrl5);
             Assert.Equal(expectedServiceUrl, actualServiceUrl6);
+        }
+
+        [Fact]
+        public async Task CloudAdapterDelay()
+        {
+            await DelayHelper.Test(new CloudAdapter());
         }
 
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)
