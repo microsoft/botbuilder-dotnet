@@ -99,6 +99,12 @@ namespace Microsoft.Bot.Builder.Adapters
         public bool EnableCommand { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether to send message activities with null text.
+        /// </summary>
+        /// <value>True to enable passing through message activities with null text.</value>
+        public bool EnableEmptyMessages { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the locale for the conversation.
         /// </summary>
         /// <value>
@@ -282,6 +288,13 @@ namespace Microsoft.Bot.Builder.Adapters
                 else if (activity.Type == ActivityTypes.Command || activity.Type == ActivityTypes.CommandResult)
                 {
                     if (EnableCommand)
+                    {
+                        Enqueue(activity);
+                    }
+                }
+                else if (activity.Type == ActivityTypes.Message && activity.Text == null && activity.Attachments == null && activity.ChannelData == null)
+                { 
+                    if (EnableEmptyMessages)
                     {
                         Enqueue(activity);
                     }

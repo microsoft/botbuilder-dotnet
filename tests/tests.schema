@@ -9656,6 +9656,12 @@
           "description": "Enable command activities in the unit test (default is false)",
           "default": false
         },
+        "enableEmptyMessages": {
+          "type": "boolean",
+          "title": "Enable empty message activity",
+          "description": "Enable message activities with null text in the unit test (default is false)",
+          "default": false
+        },
         "$kind": {
           "title": "Kind of dialog object",
           "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",

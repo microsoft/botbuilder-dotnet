@@ -144,6 +144,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public bool EnableCommand { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether message activities with null text should be passed to the test script.
+        /// </summary>
+        /// <value>If true then message activities with null text will be sent to the test script.</value>
+        [JsonProperty("enableEmptyMessages")]
+        public bool EnableEmptyMessages { get; set; } = false;
+
+        /// <summary>
         /// Build default test adapter.
         /// </summary>
         /// <param name="resourceExplorer">Resource explorer to use.</param>
@@ -201,6 +208,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
 
             adapter.EnableTrace = EnableTrace;
             adapter.EnableCommand = EnableCommand;
+            adapter.EnableEmptyMessages = EnableEmptyMessages;
             adapter.Locale = Locale;
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
             adapter.Use(new MockSettingsMiddleware(SettingMocks));

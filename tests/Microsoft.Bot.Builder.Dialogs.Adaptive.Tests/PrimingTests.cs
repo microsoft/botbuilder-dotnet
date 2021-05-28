@@ -405,6 +405,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation("Priming"));
             adapter.EnableCommand = true;
+            adapter.EnableEmptyMessages = true;
             var turn = new TurnContext(adapter, new Activity() { Locale = locale ?? "en-us" });
             var dc = new DialogContext(
                 dialogs,
