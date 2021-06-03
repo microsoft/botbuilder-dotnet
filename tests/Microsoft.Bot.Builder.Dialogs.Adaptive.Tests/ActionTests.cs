@@ -318,6 +318,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_NumberInput_LargeNumber()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_NumberInputWithDefaultValue()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
