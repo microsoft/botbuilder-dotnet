@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
-                    var delayMs = (int)activity.Value;
+                    var delayMs = Convert.ToInt32(activity.Value, CultureInfo.InvariantCulture);
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
                 }
                 else if (activity.Type == ActivityTypesEx.InvokeResponse)
