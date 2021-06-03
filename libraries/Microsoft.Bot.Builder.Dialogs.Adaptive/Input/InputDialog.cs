@@ -593,7 +593,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var msg = prompt.AsMessageActivity();
             if (msg != null)
             {
-                msg.RecognitionHints = GetRecognitionHints(dc);
+                var hints = GetRecognitionHints(dc);
+                msg.RecognitionHints = msg.RecognitionHints == null ? hints : msg.RecognitionHints.Union(hints).ToList();
             }
 
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);

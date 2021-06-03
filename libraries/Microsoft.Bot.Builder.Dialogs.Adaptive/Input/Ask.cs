@@ -131,7 +131,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 if (parent != null)
                 {
                     // Parent does recognition for Ask so add hints to activity
-                    activity.RecognitionHints = parent.GetRecognitionHints(dc.Parent);
+                    var hints = parent.GetRecognitionHints(dc.Parent);
+                    activity.RecognitionHints = activity.RecognitionHints == null ? hints : activity.RecognitionHints.Union(hints).ToList();
                 }
             }
 

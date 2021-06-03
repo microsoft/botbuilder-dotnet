@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         Enqueue(activity);
                     }
                 }
-                else if (activity.Type == ActivityTypes.Message && activity.Text == null && activity.Attachments == null && activity.ChannelData == null)
+                else if (activity.Type == ActivityTypes.Message && activity.Text == null && (activity.Attachments == null || activity.Attachments.Count == 0) && activity.ChannelData == null)
                 { 
                     if (EnableEmptyMessages)
                     {
