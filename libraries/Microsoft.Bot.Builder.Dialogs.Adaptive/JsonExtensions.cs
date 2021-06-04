@@ -40,13 +40,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <returns>Deep data binding result.</returns>
         public static JToken ReplaceJTokenRecursively(this JToken token, object state)
         {
+            // if the top level value is string, stop deep data binding
+            if (token.Type == JTokenType.String)
+            {
+                return token;
+            }
+
+            return InnerReplaceJTokenRecursively(token, state);
+        }
+
+        private static JToken InnerReplaceJTokenRecursively(JToken token, object state)
+        {
             switch (token.Type)
             {
                 case JTokenType.Object:
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children<JProperty>().ToList())
                     {
-                        child.Replace(child.ReplaceJTokenRecursively(state));
+                        child.Replace(InnerReplaceJTokenRecursively(child, state));
                     }
 
                     break;
@@ -54,13 +65,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
                     {
-                        child.Replace(child.ReplaceJTokenRecursively(state));
+                        child.Replace(InnerReplaceJTokenRecursively(child, state));
                     }
 
                     break;
                 case JTokenType.Property:
                     JProperty property = (JProperty)token;
-                    property.Value = property.Value.ReplaceJTokenRecursively(state);
+                    property.Value = InnerReplaceJTokenRecursively(property.Value, state);
                     break;
                 default:
                     if (token.Type == JTokenType.String)
