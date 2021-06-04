@@ -11,6 +11,7 @@
                     {
                         "$kind": "Microsoft.NumberInput",
                         "property": "user.test.Amount",
+                        "outputFormat": "=int(this.value)",
                         "prompt": "Please enter your lucky number."
                     },
                     {
