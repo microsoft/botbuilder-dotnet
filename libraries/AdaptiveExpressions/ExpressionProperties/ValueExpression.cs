@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using AdaptiveExpressions.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,6 +28,8 @@ namespace AdaptiveExpressions.Properties
     [JsonConverter(typeof(ValueExpressionConverter))]
     public class ValueExpression : ExpressionProperty<object>
     {
+        private readonly object _value;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ValueExpression"/> class.
         /// </summary>
@@ -41,6 +44,7 @@ namespace AdaptiveExpressions.Properties
         public ValueExpression(object value)
             : base(value)
         {
+            this._value = value;
         }
 
         /// <summary>
@@ -138,6 +142,67 @@ namespace AdaptiveExpressions.Properties
             }
 
             base.SetValue(value);
+        }
+
+        /// <inheritdoc/>
+        public override (object Value, string Error) TryGetValue(object data)
+        {
+            var (result, error) = base.TryGetValue(data);
+
+            // string expression would skipped.
+            if (!(_value is string) && result != null && error == null)
+            {
+                result = ReplaceJToken(JToken.FromObject(result).DeepClone(), data);
+            }
+
+            return (result, error);
+        }
+
+        private JToken ReplaceJToken(JToken token, object state)
+        {
+            if (token.Type == JTokenType.String)
+            {
+                return token;
+            }
+
+            return InnerReplaceJToken(token, state);
+        }
+
+        private JToken InnerReplaceJToken(JToken token, object state)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children<JProperty>().ToList())
+                    {
+                        child.Value = InnerReplaceJToken(child.Value, state);
+                    }
+
+                    break;
+                case JTokenType.Array:
+                    // NOTE: ToList() is required because JToken.Replace will break the enumeration.
+                    foreach (var child in token.Children().ToList())
+                    {
+                        child.Replace(InnerReplaceJToken(child, state));
+                    }
+
+                    break;
+                default:
+                    if (token.Type == JTokenType.String)
+                    {
+                        // if it is a "${bindingpath}" then run through expression parser and treat as a value
+                        var (result, error) = new ValueExpression(token).TryGetValue(state);
+                        if (error == null)
+                        {
+                            token = JToken.FromObject(result);
+                        }
+                    }
+
+                    break;
+            }
+
+            return token;
         }
     }
 }

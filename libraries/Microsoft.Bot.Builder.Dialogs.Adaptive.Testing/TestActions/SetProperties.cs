@@ -57,21 +57,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 {
                     foreach (var assignment in Assignments)
                     {
-                        JToken value = null;
                         var (val, valueError) = assignment.Value.TryGetValue(dc.State);
                         if (valueError != null)
                         {
                             throw new Exception($"Expression evaluation resulted in an error. Expression: {assignment.Value.ToString()}. Error: {valueError}");
                         }
 
-                        if (val != null)
-                        {
-                            value = JToken.FromObject(val).DeepClone();
-                        }
-
-                        value = value?.ReplaceJToken(dc.State);
                         var property = assignment.Property.GetValue(dc.State);
-                        dc.State.SetValue(property, value);
+                        dc.State.SetValue(property, val);
                     }
                 }).ConfigureAwait(false);
                 Trace.TraceInformation($"[Turn Ended => SetProperties completed]");

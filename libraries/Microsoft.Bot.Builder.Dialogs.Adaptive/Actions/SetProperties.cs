@@ -80,20 +80,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var propValue in this.Assignments)
             {
-                JToken value = null;
                 var (val, valueError) = propValue.Value.TryGetValue(dc.State);
                 if (valueError != null)
                 {
                     throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{propValue.Value.ToString()}\". Error: {valueError}");
                 }
 
-                if (val != null)
-                {
-                    value = JToken.FromObject(val).DeepClone();
-                }
-
-                value = value?.ReplaceJToken(dc.State);
-                dc.State.SetValue(propValue.Property.GetValue(dc.State), value);
+                dc.State.SetValue(propValue.Property.GetValue(dc.State), val);
             }
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

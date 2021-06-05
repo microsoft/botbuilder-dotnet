@@ -262,9 +262,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     throw new ArgumentException(instanceUrlError);
                 }
 
-                // Bind each string token to the data in state
-                instanceBody = instanceBody?.ReplaceJToken(dc.State);
-
                 using HttpRequestMessage request = new HttpRequestMessage(new System.Net.Http.HttpMethod(Method.ToString()), instanceUrl);
 
                 // Set headers

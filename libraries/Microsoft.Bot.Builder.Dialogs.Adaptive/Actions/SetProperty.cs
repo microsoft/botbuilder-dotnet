@@ -100,7 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
-            value = value?.ReplaceJToken(dc.State);
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

@@ -113,8 +113,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var binding in bindingOptions)
             {
-                JToken value = null;
-
                 // evaluate the value
                 var (val, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
 
@@ -123,15 +121,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     throw new InvalidOperationException($"Unable to get a value for \"{binding.Value}\" from state. {error}");
                 }
 
-                if (val != null)
-                {
-                    value = JToken.FromObject(val).DeepClone();
-                }
-
-                value = value?.ReplaceJToken(dc.State);
-
                 // and store in options as the result
-                ObjectPath.SetPathValue(boundOptions, binding.Key, value);
+                ObjectPath.SetPathValue(boundOptions, binding.Key, val);
             }
 
             return boundOptions;
