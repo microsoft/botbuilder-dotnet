@@ -28,8 +28,6 @@ namespace AdaptiveExpressions.Properties
     [JsonConverter(typeof(ValueExpressionConverter))]
     public class ValueExpression : ExpressionProperty<object>
     {
-        private readonly object _value;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ValueExpression"/> class.
         /// </summary>
@@ -44,7 +42,6 @@ namespace AdaptiveExpressions.Properties
         public ValueExpression(object value)
             : base(value)
         {
-            this._value = value;
         }
 
         /// <summary>
@@ -150,7 +147,7 @@ namespace AdaptiveExpressions.Properties
             var (result, error) = base.TryGetValue(data);
 
             // string expression would skipped.
-            if (!(_value is string) && result != null && error == null)
+            if (ExpressionText != null && result != null && error == null)
             {
                 result = ReplaceJToken(JToken.FromObject(result).DeepClone(), data);
             }
