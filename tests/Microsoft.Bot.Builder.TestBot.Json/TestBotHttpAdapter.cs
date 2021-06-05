@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.Use(new RegisterClassMiddleware<IConfiguration>(configuration));
             this.UseStorage(storage);
             this.UseBotState(userState, conversationState);
-            this.Use(new SetTestOptionsMiddleware());
+            this.Use(new TestingMiddleware());
             this.UseDebugger(configuration.GetValue("debugport", 4712), logger: logger);
 
             resourceExplorer.RegisterType<MultiplyDialog>("Testbot.Multiply");

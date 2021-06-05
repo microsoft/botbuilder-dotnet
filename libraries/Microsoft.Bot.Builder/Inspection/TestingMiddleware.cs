@@ -2,17 +2,17 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
+namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// Middleware that catch "SetTestOptions" event and save into "Conversation.TestOptions".
     /// </summary>
-    public class SetTestOptionsMiddleware : IMiddleware
+    public class TestingMiddleware : IMiddleware
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SetTestOptionsMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="TestingMiddleware"/> class.
         /// </summary>
-        public SetTestOptionsMiddleware()
+        public TestingMiddleware()
         {
         }
 
