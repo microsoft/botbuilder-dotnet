@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     value = JToken.FromObject(val).DeepClone();
                 }
 
-                value = value?.ReplaceJTokenRecursively(dc.State);
+                value = value?.ReplaceJToken(dc.State);
 
                 // and store in options as the result
                 ObjectPath.SetPathValue(boundOptions, binding.Key, value);

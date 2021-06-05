@@ -263,7 +263,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 // Bind each string token to the data in state
-                instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
+                instanceBody = instanceBody?.ReplaceJToken(dc.State);
 
                 using HttpRequestMessage request = new HttpRequestMessage(new System.Net.Http.HttpMethod(Method.ToString()), instanceUrl);
 

@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     value = JToken.FromObject(val).DeepClone();
                 }
 
-                value = value?.ReplaceJTokenRecursively(dc.State);
+                value = value?.ReplaceJToken(dc.State);
                 dc.State.SetValue(propValue.Property.GetValue(dc.State), value);
             }
 

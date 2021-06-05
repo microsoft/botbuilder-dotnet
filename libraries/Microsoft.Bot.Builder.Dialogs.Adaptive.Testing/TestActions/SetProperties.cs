@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                             value = JToken.FromObject(val).DeepClone();
                         }
 
-                        value = value?.ReplaceJTokenRecursively(dc.State);
+                        value = value?.ReplaceJToken(dc.State);
                         var property = assignment.Property.GetValue(dc.State);
                         dc.State.SetValue(property, value);
                     }
