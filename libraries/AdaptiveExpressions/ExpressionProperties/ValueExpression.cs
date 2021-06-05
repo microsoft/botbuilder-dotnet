@@ -147,7 +147,7 @@ namespace AdaptiveExpressions.Properties
             var (result, error) = base.TryGetValue(data);
 
             // string expression would skipped.
-            if (ExpressionText != null && result != null && error == null)
+            if (ExpressionText == null && result != null && error == null)
             {
                 result = ReplaceJToken(JToken.FromObject(result).DeepClone(), data);
             }
