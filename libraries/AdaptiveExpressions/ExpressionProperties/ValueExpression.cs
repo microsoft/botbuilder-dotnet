@@ -146,7 +146,8 @@ namespace AdaptiveExpressions.Properties
         {
             var (result, error) = base.TryGetValue(data);
 
-            // string expression would skipped.
+            // ExpressionText == null means the orignal format was not an expression and was not evaluated in base class
+            // So we need to travel the jobject finding expression field to evaluate and substitue 
             if (ExpressionText == null && result != null && error == null)
             {
                 result = ReplaceJToken(JToken.FromObject(result).DeepClone(), data);
