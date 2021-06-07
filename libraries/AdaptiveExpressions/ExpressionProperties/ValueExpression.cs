@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Linq;
 using AdaptiveExpressions.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
