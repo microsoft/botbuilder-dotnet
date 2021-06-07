@@ -38,17 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="token">A JSON Token value which may have some binding paths.</param>
         /// <param name="state">A scope for looking up variables.</param>
         /// <returns>Deep data binding result.</returns>
-        public static JToken ReplaceJToken(this JToken token, object state)
-        {
-            if (token.Type == JTokenType.String)
-            {
-                return token;
-            }
-
-            return InnerReplaceJToken(token, state);
-        }
-
-        private static JToken InnerReplaceJToken(JToken token, object state)
+        public static JToken EvaluateSubexpressions(this JToken token, object state)
         {
             switch (token.Type)
             {
@@ -56,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children<JProperty>().ToList())
                     {
-                        child.Value = InnerReplaceJToken(child.Value, state);
+                        child.Replace(child.EvaluateSubexpressions(state));
                     }
 
                     break;
@@ -64,14 +54,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // NOTE: ToList() is required because JToken.Replace will break the enumeration.
                     foreach (var child in token.Children().ToList())
                     {
-                        child.Replace(InnerReplaceJToken(child, state));
+                        child.Replace(child.EvaluateSubexpressions(state));
                     }
 
+                    break;
+                case JTokenType.Property:
+                    JProperty property = (JProperty)token;
+                    property.Value = property.Value.EvaluateSubexpressions(state);
                     break;
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        // if it is a "${bindingpath}" then run through expression parser and treat as a value
+                        // if it is a "{bindingpath}" then run through expression parser and treat as a value
                         var (result, error) = new ValueExpression(token).TryGetValue(state);
                         if (error == null)
                         {

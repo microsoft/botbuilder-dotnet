@@ -217,6 +217,15 @@ namespace AdaptiveExpressions.Properties
         }
 
         /// <summary>
+        /// If the value is Expresion, replace instance with memory recursevily.
+        /// </summary>
+        /// <returns>Replaced value.</returns>
+        public virtual bool IsExpression()
+        {
+            return ExpressionText != null;
+        }
+
+        /// <summary>
         /// Convert raw object to desired value type.
         /// </summary>
         /// <remarks>
