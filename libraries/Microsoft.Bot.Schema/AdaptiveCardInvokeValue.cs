@@ -20,13 +20,13 @@ namespace Microsoft.Bot.Schema
         public AdaptiveCardInvokeAction Action { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="TokenExchangeInvokeRequest"/> for this adaptive card invoke action value.
+        /// Gets or sets the <see cref="AdaptiveCardAuthentication"/> for this adaptive card invoke action value.
         /// </summary>
         /// <value>
-        /// The <see cref="TokenExchangeInvokeRequest"/> for this adaptive card invoke action value.
+        /// The <see cref="AdaptiveCardAuthentication"/> for this adaptive card invoke action value.
         /// </value>
         [JsonProperty("authentication")]
-        public TokenExchangeInvokeRequest Authentication { get; set; }
+        public AdaptiveCardAuthentication Authentication { get; set; }
 
         /// <summary>
         /// Gets or sets the 'state' or magic code for an OAuth flow.
