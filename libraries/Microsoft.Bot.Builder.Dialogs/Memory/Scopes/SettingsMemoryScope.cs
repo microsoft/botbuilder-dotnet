@@ -18,13 +18,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {
-        private static readonly List<string> _bockingList = new List<string>
+        private static readonly List<string> _blockingList = new List<string>
         {
             "luis.authoringKey",
             "luis.endpointKey",
             "qna.endpointKey",
             "qna.subscriptionKey",
-            "MicrosoftAppPassword"
+            "MicrosoftAppPassword",
+            "cosmosDb.authKey",
+            "blobStorage.connectionString",
+            "applicationInsights.connectionString",
+            "applicationInsights.InstrumentationKey"
         };
 
         private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
@@ -98,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         protected static ImmutableDictionary<string, object> LoadSettings(IConfiguration configuration)
         {
             var settings = new Dictionary<string, object>();
-            var configurations = configuration.AsEnumerable().Where(u => !_bockingList.Contains(u.Key)).ToList();
+            var configurations = configuration.AsEnumerable().Where(u => !_blockingList.Contains(u.Key)).ToList();
             if (configuration != null)
             {
                 // load configuration into settings dictionary

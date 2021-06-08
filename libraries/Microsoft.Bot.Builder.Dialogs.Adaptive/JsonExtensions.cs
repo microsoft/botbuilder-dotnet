@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
-        /// Evaluate Value Expression according the value type.
+        /// Evaluate ValueExpression according the value type.
         /// </summary>
         /// <param name="valExpr">Input ValueExpression.</param>
         /// <param name="state">A scope for looking up variables.</param>
@@ -88,8 +88,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public static object EvaluateExpression(this ValueExpression valExpr, object state)
         {
             return valExpr.ExpressionText == null ?
-                valExpr.GetValue(state)
-                : JToken.FromObject(valExpr.Value).DeepClone().ReplaceJTokenRecursively(state);
+                JToken.FromObject(valExpr.Value).DeepClone().ReplaceJTokenRecursively(state)
+                : valExpr.GetValue(state);
         }
     }
 }
