@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Schema.Tests.Teams
 {
-    public class MessageActionPayloadAppTests
+    public class MessageActionsPayloadAppTests
     {
         [Fact]
         public void MessageActionPayloadAppInits()
