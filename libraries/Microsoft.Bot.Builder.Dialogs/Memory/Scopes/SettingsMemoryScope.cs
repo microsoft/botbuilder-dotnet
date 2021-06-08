@@ -98,9 +98,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         protected static ImmutableDictionary<string, object> LoadSettings(IConfiguration configuration)
         {
             var settings = new Dictionary<string, object>();
-            var configurations = configuration.AsEnumerable().Where(u => !_blockingList.Contains(u.Key)).ToList();
+
             if (configuration != null)
             {
+                var configurations = configuration.AsEnumerable().Where(u => !_blockingList.Contains(u.Key)).ToList();
+
                 // load configuration into settings dictionary
                 var root = ConvertFlattenSettingToNode(configurations);
                 root.Children.ForEach(u => settings.Add(u.Value, ConvertNodeToObject(u)));
