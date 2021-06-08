@@ -164,7 +164,10 @@ namespace Microsoft.Bot.Builder.Adapters
                     activity.Type = ActivityTypes.Message;
                 }
 
-                activity.ChannelId = Conversation.ChannelId;
+                if (activity.ChannelId == null)
+                {
+                    activity.ChannelId = Conversation.ChannelId;
+                }
 
                 if (activity.From == null || activity.From.Id == "unknown" || activity.From.Role == RoleTypes.Bot)
                 {
