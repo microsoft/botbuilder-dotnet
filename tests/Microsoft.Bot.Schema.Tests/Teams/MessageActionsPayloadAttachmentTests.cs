@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
             Assert.IsType<MessageActionsPayloadAttachment>(msgPayloadAttachment);
             Assert.Equal(id, msgPayloadAttachment.Id);
             Assert.Equal(contentType, msgPayloadAttachment.ContentType);
+            Assert.Equal(contentUrl, msgPayloadAttachment.ContentUrl);
             Assert.Equal(content, msgPayloadAttachment.Content);
             Assert.Equal(name, msgPayloadAttachment.Name);
             Assert.Equal(thumbnailUrl, msgPayloadAttachment.ThumbnailUrl);
