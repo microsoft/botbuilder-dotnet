@@ -330,8 +330,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         {
                             using var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                             traceInfo.request.content = instanceBody.ToString();
-                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                             request.Content = putContent;
+                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                             response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         }
 
