@@ -20,10 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     {
         private static readonly List<string> _blockingList = new List<string>
         {
-            "luis.authoringKey",
-            "luis.endpointKey",
-            "qna.endpointKey",
-            "qna.subscriptionKey",
             "MicrosoftAppPassword",
             "cosmosDb.authKey",
             "blobStorage.connectionString",
