@@ -15,7 +15,13 @@ using Xunit.Sdk;
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     public class OAuthPromptTests
-    {
+    { 
+        private const string UserId = "user-id";
+        private const string ConnectionName = "connection-name";
+        private const string ChannelId = "channel-id";
+        private const string Token = "token123";
+        private const string ExchangeToken = "exch123";
+
         [Fact]
         public void OAuthPromptWithEmptySettingsShouldFail()
         {
@@ -69,7 +75,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task OAuthPromptBeginDialogWithNoPromptOptions()
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+                var convoState = new ConversationState(new MemoryStorage());
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
+                var adapter = new TestAdapter()
+                    .Use(new AutoSaveStateMiddleware(convoState));
+
+                // Create new DialogSet.
+                var dialogs = new DialogSet(dialogState);
+                dialogs.Add(prompt);
+
+                var tc = new TurnContext(adapter, new Activity() { Type = ActivityTypes.Message, Conversation = new ConversationAccount() { Id = "123" }, ChannelId = "test" });
+
+                var dc = await dialogs.CreateContextAsync(tc);
+
+                await prompt.BeginDialogAsync(dc, new Options(), CancellationToken.None);
+            });
+        }
+
+        [Fact]
         public async Task OAuthPromptWithNoneTypeHandlingForStorage()
         {
             await OAuthPrompt(new MemoryStorage(new JsonSerializer() { TypeNameHandling = TypeNameHandling.None }));
@@ -84,13 +113,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var token = "abc123";
-            var magicCode = "888999";
+            const string magicCode = "888999";
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -99,7 +126,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Please select an option."
+                        },
+                        RetryPrompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Retrying - Please select an option."
+                        }
+                    };
+                    await dc.PromptAsync("OAuthPrompt", options, cancellationToken);
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
                 {
@@ -124,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Add a magic code to the adapter
-                adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
+                adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, magicCode);
             })
             .Send(magicCode)
             .AssertReply("Logged in.")
@@ -141,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task OAuthPromptTimesOut_TokenResponseEvent()
         {
             var activity = new Activity() { Type = ActivityTypes.Event, Name = SignInConstants.TokenResponseEventName };
-            activity.Value = JObject.FromObject(new TokenResponse(Channels.Msteams, "connectionName", "token", null));
+            activity.Value = JObject.FromObject(new TokenResponse(Channels.Msteams, ConnectionName, Token, null));
             await PromptTimeoutEndsDialogTest(activity);
         }
 
@@ -159,16 +199,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var activity = new Activity() { Type = ActivityTypes.Invoke, Name = SignInConstants.TokenExchangeOperationName };
 
-            var connectionName = "myConnection";
-            var exchangeToken = "exch123";
-
             activity.Value = JObject.FromObject(new TokenExchangeInvokeRequest()
             {
-                ConnectionName = connectionName,
-                Token = exchangeToken
+                ConnectionName = ConnectionName,
+                Token = ExchangeToken
             });
 
             await PromptTimeoutEndsDialogTest(activity);
+        }
+
+        [Fact]
+        public async Task OAuthPromptContinueDialogWithNullDialogContext()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                var prompt = new OAuthPrompt("abc", new OAuthPromptSettings());
+                var convoState = new ConversationState(new MemoryStorage());
+                var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+                var dialogs = new DialogSet(dialogState);
+
+                dialogs.Add(prompt);
+
+                await prompt.ContinueDialogAsync(null, CancellationToken.None);
+            });
         }
 
         [Fact]
@@ -180,18 +233,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var token = "abc123";
-            var magicCode = "888999";
+            const string magicCode = "888999";
 
             // Create new DialogSet
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 // Add a magic code to the adapter preemptively so that we can test if the message that triggers BeginDialogAsync uses magic code detection
-                adapter.AddUserToken(connectionName, turnContext.Activity.ChannelId, turnContext.Activity.From.Id, token, magicCode);
+                adapter.AddUserToken(ConnectionName, turnContext.Activity.ChannelId, turnContext.Activity.From.Id, Token, magicCode);
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
@@ -230,13 +281,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var exchangeToken = "exch123";
-            var token = "abc123";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -269,7 +316,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Add an exchangable token to the adapter
-                adapter.AddExchangeableToken(connectionName, activity.ChannelId, activity.Recipient.Id, exchangeToken, token);
+                adapter.AddExchangeableToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, ExchangeToken, Token);
             })
             .Send(new Activity()
             {
@@ -277,8 +324,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Name = SignInConstants.TokenExchangeOperationName,
                 Value = JObject.FromObject(new TokenExchangeInvokeRequest()
                 {
-                    ConnectionName = connectionName,
-                    Token = exchangeToken
+                    ConnectionName = ConnectionName,
+                    Token = ExchangeToken
                 })
             })
             .AssertReply(a =>
@@ -288,7 +335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.NotNull(response);
                 Assert.Equal(200, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.Equal(ConnectionName, body.ConnectionName);
                 Assert.Null(body.FailureDetail);
             })
             .AssertReply("Logged in.")
@@ -304,12 +351,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var exchangeToken = "exch123";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -349,8 +393,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Name = SignInConstants.TokenExchangeOperationName,
                 Value = JObject.FromObject(new TokenExchangeInvokeRequest()
                 {
-                    ConnectionName = connectionName,
-                    Token = exchangeToken
+                    ConnectionName = ConnectionName,
+                    Token = ExchangeToken
                 })
             })
             .AssertReply(a =>
@@ -360,7 +404,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.NotNull(response);
                 Assert.Equal(412, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.Equal(ConnectionName, body.ConnectionName);
                 Assert.NotNull(body.FailureDetail);
             })
             .StartTestAsync();
@@ -375,11 +419,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -427,7 +469,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.NotNull(response);
                 Assert.Equal(400, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.Equal(ConnectionName, body.ConnectionName);
                 Assert.NotNull(body.FailureDetail);
             })
             .StartTestAsync();
@@ -442,12 +484,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var exchangeToken = "exch123";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -488,7 +527,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Value = JObject.FromObject(new TokenExchangeInvokeRequest()
                 {
                     ConnectionName = "beepboop",
-                    Token = exchangeToken
+                    Token = ExchangeToken
                 })
             })
             .AssertReply(a =>
@@ -498,7 +537,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.NotNull(response);
                 Assert.Equal(400, response.Status);
                 var body = response.Body as TokenExchangeInvokeResponse;
-                Assert.Equal(connectionName, body.ConnectionName);
+                Assert.Equal(ConnectionName, body.ConnectionName);
                 Assert.NotNull(body.FailureDetail);
             })
             .StartTestAsync();
@@ -512,33 +551,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var exchangeToken = "exch123";
-            var token = "abc123";
-
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
-                var userId = "fred";
-                adapter.AddExchangeableToken(connectionName, turnContext.Activity.ChannelId, userId, exchangeToken, token);
+                adapter.AddExchangeableToken(ConnectionName, turnContext.Activity.ChannelId, UserId, ExchangeToken, Token);
 
                 // Positive case: Token
-                var result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Token = exchangeToken });
+                var result = await adapter.ExchangeTokenAsync(turnContext, ConnectionName, UserId, new TokenExchangeRequest() { Token = ExchangeToken });
                 Assert.NotNull(result);
-                Assert.Equal(token, result.Token);
-                Assert.Equal(connectionName, result.ConnectionName);
+                Assert.Equal(Token, result.Token);
+                Assert.Equal(ConnectionName, result.ConnectionName);
 
                 // Positive case: URI
-                result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Uri = exchangeToken });
+                result = await adapter.ExchangeTokenAsync(turnContext, ConnectionName, UserId, new TokenExchangeRequest() { Uri = ExchangeToken });
                 Assert.NotNull(result);
-                Assert.Equal(token, result.Token);
-                Assert.Equal(connectionName, result.ConnectionName);
+                Assert.Equal(Token, result.Token);
+                Assert.Equal(ConnectionName, result.ConnectionName);
 
                 // Negative case: Token
-                result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Token = "beeboop" });
+                result = await adapter.ExchangeTokenAsync(turnContext, ConnectionName, UserId, new TokenExchangeRequest() { Token = "beeboop" });
                 Assert.Null(result);
 
                 // Negative case: URI
-                result = await adapter.ExchangeTokenAsync(turnContext, connectionName, userId, new TokenExchangeRequest() { Uri = "beeboop" });
+                result = await adapter.ExchangeTokenAsync(turnContext, ConnectionName, UserId, new TokenExchangeRequest() { Uri = "beeboop" });
                 Assert.Null(result);
             };
 
@@ -556,12 +590,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var retryPromptText = "Sorry, invalid input. Please sign in.";
+            const string retryPromptText = "Sorry, invalid input. Please sign in.";
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -589,6 +622,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [Fact]
+        public async Task GetUserTokenShouldReturnToken()
+        {
+            var oauthPromptSettings = new OAuthPromptSettings
+            {
+                ConnectionName = ConnectionName,
+                Text = "Please sign in",
+                Title = "Sign in",
+            };
+
+            var prompt = new OAuthPrompt("OAuthPrompt", oauthPromptSettings);
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            adapter.AddUserToken(ConnectionName, ChannelId, UserId, Token);
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(prompt);
+
+            var activity = new Activity { ChannelId = ChannelId, From = new ChannelAccount { Id = UserId } };
+            var turnContext = new TurnContext(adapter, activity);
+
+            var userToken = await prompt.GetUserTokenAsync(turnContext, CancellationToken.None);
+            
+            Assert.Equal(Token, userToken.Token);
+        }
+
         private async Task OAuthPrompt(IStorage storage)
         {
             var convoState = new ConversationState(storage);
@@ -597,12 +661,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var token = "abc123";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -636,7 +697,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Prepare an EventActivity with a TokenResponse and send it to the botCallbackHandler
-                var eventActivity = CreateEventResponse(adapter, activity, connectionName, token);
+                var eventActivity = CreateEventResponse(adapter, activity, ConnectionName, Token);
                 var ctx = new TurnContext(adapter, (Activity)eventActivity);
                 botCallbackHandler(ctx, CancellationToken.None);
             })
@@ -652,16 +713,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-            var exchangeToken = "exch123";
-            var magicCode = "888999";
-            var token = "abc123";
+            const string magicCode = "888999";
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
 
             // Set timeout to zero, so the prompt will end immediately.
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in", Timeout = 0 }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in", Timeout = 0 }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
@@ -694,10 +752,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
                 // Add a magic code to the adapter
-                adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
+                adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, magicCode);
 
                 // Add an exchangable token to the adapter
-                adapter.AddExchangeableToken(connectionName, activity.ChannelId, activity.Recipient.Id, exchangeToken, token);
+                adapter.AddExchangeableToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, ExchangeToken, Token);
             })
             .Send(oauthPromptActivity)
             .AssertReply("ended")
@@ -733,11 +791,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            var connectionName = "myConnection";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in", EndOnInvalidMessage = true }));
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in", EndOnInvalidMessage = true }));
 
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
