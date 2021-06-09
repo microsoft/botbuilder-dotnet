@@ -69,22 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            JToken value = null;
-            if (this.Value != null)
-            {
-                var (val, valueError) = this.Value.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {valueError}");
-                }
-
-                if (val != null)
-                {
-                    value = JToken.FromObject(val).DeepClone();
-                }
-            }
-
-            value = value?.ReplaceJTokenRecursively(dc.State);
+            var value = Value?.EvaluateExpression(dc.State);
 
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
