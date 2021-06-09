@@ -18,7 +18,7 @@
                 "actions": [
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "${settings.ApplicationInsights.InstrumentationKey}"
+                        "activity": "no intent"
                     }
                 ]
             },
@@ -48,7 +48,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "00000000-0000-0000-0000-000000000000"
+            "text": "no intent"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -56,7 +56,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "00000000-0000-0000-0000-000000000000"
+            "text": "no intent"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
@@ -64,7 +64,7 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "00000000-0000-0000-0000-000000000000"
+            "text": "no intent"
         },
         {
             "$kind": "Microsoft.Test.UserSays",
