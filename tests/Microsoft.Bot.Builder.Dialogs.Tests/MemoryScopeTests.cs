@@ -455,6 +455,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("three")
             .Send("settings.fakeArray.zzz")
                 .AssertReply("cat")
+<<<<<<< HEAD
+=======
+            .Send("settings.myArray[0]")
+                .AssertReply("e1")
+            .Send("settings.myArray[1].obj")
+                .AssertReply("e2")
+            .Send("settings.nestedArray[0][0]")
+                .AssertReply("a")
+            .Send("settings.nestedArray[0][1]")
+                .AssertReply("b")
+            .Send("settings.nestedArray[1][0]")
+                .AssertReply("c")
+            .Send("settings.nestedArray[1][1]")
+                .AssertReply("d")
+            .Send("settings.numberArray[0]")
+                .AssertReply("0")
+            .Send("settings.numberArray[1]")
+                .AssertReply("1")
+            .Send("settings.sequentialObjectArray[0][0]") // object with number index would be converted into array
+                .AssertReply("a")
+            .Send("settings.sequentialObjectArray[0][1]")
+                .AssertReply("b")
+            .Send("settings.sequentialObjectArray[1][0]")
+                .AssertReply("c")
+            .Send("settings.sequentialObjectArray[1][1]")
+                .AssertReply("d")
+            .Send("settings.MicrosoftAppPassword") // simple variable
+                .AssertReply("null")
+            .Send("settings.runtimeSettings.telemetry.options.connectionString") // nested setting
+                .AssertReply("null")
+            .Send("settings.BlobsStorage.CONNECTIONSTRING") // case in-sensitive 
+                .AssertReply("null")
+            .Send("settings.BlobsStorage.connectionString")
+                .AssertReply("null")
+>>>>>>> ce78f3dfb (Fix double evaluation and filter sensitive settings (#5641))
             .StartTestAsync();
         }
 
@@ -540,7 +575,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            await dc.Context.SendActivityAsync(dc.State.GetValue<string>(dc.Context.Activity.Text));
+            var value = dc.State.GetValue<string>(dc.Context.Activity.Text) ?? "null";
+            await dc.Context.SendActivityAsync(value);
             return await dc.EndDialogAsync();
         }
     }

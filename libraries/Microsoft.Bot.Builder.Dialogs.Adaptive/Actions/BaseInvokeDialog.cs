@@ -116,9 +116,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var binding in bindingOptions)
             {
-                JToken value = null;
-
                 // evaluate the value
+<<<<<<< HEAD
                 var (val, error) = new ValueExpression(binding.Value).TryGetValue(dc.State);
 
                 if (error != null)
@@ -132,6 +131,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
 
                 value = value?.ReplaceJTokenRecursively(dc.State);
+=======
+                var value = new ValueExpression(binding.Value).EvaluateExpression(dc.State);
+>>>>>>> ce78f3dfb (Fix double evaluation and filter sensitive settings (#5641))
 
                 // and store in options as the result
                 ObjectPath.SetPathValue(boundOptions, binding.Key, value);
