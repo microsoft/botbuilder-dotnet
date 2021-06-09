@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             if (configuration != null)
             {
-                var configurations = configuration.AsEnumerable().Where(u => !_blockingList.Contains(u.Key)).ToList();
+                var configurations = configuration.AsEnumerable().Where(u => !_blockingList.Contains(u.Key, StringComparer.OrdinalIgnoreCase)).ToList();
 
                 // load configuration into settings dictionary
                 var root = ConvertFlattenSettingToNode(configurations);

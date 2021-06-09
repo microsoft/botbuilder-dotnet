@@ -42,5 +42,8 @@
         "connectionString": "testConnectionString"
       }
     }
+  },
+  "BlobsStorage": {
+    "CONNECTIONSTRING": "testConnectionString"
   }
 }

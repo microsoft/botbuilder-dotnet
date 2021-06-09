@@ -479,9 +479,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("c")
             .Send("settings.sequentialObjectArray[1][1]")
                 .AssertReply("d")
-            .Send("settings.MicrosoftAppPassword")
+            .Send("settings.MicrosoftAppPassword") // simple variable
                 .AssertReply("null")
-            .Send("settings.runtimeSettings.telemetry.options.connectionString")
+            .Send("settings.runtimeSettings.telemetry.options.connectionString") // nested setting
+                .AssertReply("null")
+            .Send("settings.BlobsStorage.CONNECTIONSTRING") // case in-sensitive 
+                .AssertReply("null")
+            .Send("settings.BlobsStorage.connectionString")
                 .AssertReply("null")
             .StartTestAsync();
         }
