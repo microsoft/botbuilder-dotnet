@@ -21,10 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         private static readonly List<string> _blockingList = new List<string>
         {
             "MicrosoftAppPassword",
-            "cosmosDb.authKey",
-            "blobStorage.connectionString",
-            "applicationInsights.connectionString",
-            "applicationInsights.InstrumentationKey"
+            "cosmosDb:authKey",
+            "blobStorage:connectionString",
+            "BlobsStorage:connectionString",
+            "applicationInsights:connectionString",
+            "applicationInsights:InstrumentationKey",
+            "runtimeSettings:telemetry:options:connectionString",
+            "runtimeSettings:features:blobTranscript:connectionString"
         };
 
         private readonly Dictionary<string, object> _emptySettings = new Dictionary<string, object>();
