@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="name">Name of the action that will be used as button
         /// title.</param>
         /// <param name="id">Action Id.</param>
-        public O365ConnectorCardActionBase(string type = default(string), string name = default(string), string id = default(string))
+        public O365ConnectorCardActionBase(string type = default, string name = default, string id = default)
         {
             Type = type;
             Name = name;
