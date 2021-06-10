@@ -194,12 +194,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
 
-            object instanceBody = nulll;
+            object instanceBody = null;
             
             if (this.Body != null)
             {
                 instanceBody = this.Body.ExpressionText == null ?
-                    await ReplaceJTokenRecursivelyAsync(dc.state, JToken.FromObject(this.Body.Value).DeepClone(), cancellationToken).ConfigureAwait(false);
+                    await ReplaceJTokenRecursivelyAsync(dc.State, JToken.FromObject(this.Body.Value).DeepClone(), cancellationToken).ConfigureAwait(false)
                     : this.Body.GetValue(dc.State);
             }
 
