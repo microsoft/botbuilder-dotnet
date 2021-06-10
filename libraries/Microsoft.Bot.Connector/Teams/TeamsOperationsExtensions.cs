@@ -68,15 +68,15 @@ namespace Microsoft.Bot.Connector.Teams
         /// The cancellation token.
         /// </param>
         /// <returns>The details related to a team.</returns>
-        public static async Task<MeetingInfo> FetchMeetingDetailsAsync(this ITeamsOperations operations, string meetingId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<MeetingInfo> FetchMeetingInfoAsync(this ITeamsOperations operations, string meetingId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {
-                using var result = await teamsOperations.FetchMeetingDetailsWithHttpMessagesAsync(meetingId, null, cancellationToken).ConfigureAwait(false);
+                using var result = await teamsOperations.FetchMeetingInfoWithHttpMessagesAsync(meetingId, null, cancellationToken).ConfigureAwait(false);
                 return result.Body;
             }
 
-            throw new InvalidOperationException("TeamsOperations with GetMeetingDetailsWithHttpMessagesAsync is required for FetchMeetingDetailsAsync.");
+            throw new InvalidOperationException("TeamsOperations with GetMeetingInfoWithHttpMessagesAsync is required for FetchMeetingInfoAsync.");
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
-        public async Task TestGetMeetingDetailsAsync()
+        public async Task TestGetMeetingInfoAsync()
         {
             var baseUri = new Uri("https://test.coffee");
             var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var activity = new Activity
             {
                 Type = "message",
-                Text = "Test-GetMeetingDetailsAsync",
+                Text = "Test-GetMeetingInfoAsync",
                 ChannelId = Channels.Msteams,
                 ChannelData = new TeamsChannelData
                 {
@@ -323,8 +323,8 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     case "Test-GetParticipantAsync":
                         await CallTeamsInfoGetParticipantAsync(turnContext);
                         break;
-                    case "Test-GetMeetingDetailsAsync":
-                        await CallTeamsInfoGetMeetingDetailsAsync(turnContext);
+                    case "Test-GetMeetingInfoAsync":
+                        await CallTeamsInfoGetMeetingInfoAsync(turnContext);
                         break;
                     default:
                         Assert.True(false);
@@ -392,9 +392,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.Equal("userPrincipalName-1", participant.User.UserPrincipalName);
             }
 
-            private async Task CallTeamsInfoGetMeetingDetailsAsync(ITurnContext turnContext)
+            private async Task CallTeamsInfoGetMeetingInfoAsync(ITurnContext turnContext)
             {
-                var meeting = await TeamsInfo.GetMeetingDetailsAsync(turnContext);
+                var meeting = await TeamsInfo.GetMeetingInfoAsync(turnContext);
 
                 Assert.Equal("meeting-id", meeting.Details.Id);
                 Assert.Equal("organizer-id", meeting.Organizer.Id);

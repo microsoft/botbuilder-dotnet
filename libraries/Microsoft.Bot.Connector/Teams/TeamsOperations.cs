@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<MeetingInfo>> FetchMeetingDetailsWithHttpMessagesAsync(string meetingId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<MeetingInfo>> FetchMeetingInfoWithHttpMessagesAsync(string meetingId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (meetingId == null)
             {
@@ -197,7 +197,7 @@ namespace Microsoft.Bot.Connector.Teams
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("meetingId", meetingId);
                 tracingParameters.Add("cancellationToken", cancellationToken);
-                ServiceClientTracing.Enter(invocationId, this, "FetchMeetingDetails", tracingParameters);
+                ServiceClientTracing.Enter(invocationId, this, "FetchMeetingInfo", tracingParameters);
             }
 
             // Construct URL
