@@ -83,25 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-<<<<<<< HEAD
-                JToken value = null;
-                var (result, error) = this.Value.TryGetValue(dc.State);
-
-                if (error != null)
-                {
-                    throw new Exception($"Expression evaluation resulted in an error. Expression: {this.Value.ToString()}. Error: {error}");
-                }
-
-                if (result != null)
-                {
-                    value = JToken.FromObject(result).DeepClone();
-                }
-
-                value = value?.ReplaceJTokenRecursively(dc.State);
-
-=======
                 var value = Value?.EvaluateExpression(dc.State);
->>>>>>> ce78f3dfb (Fix double evaluation and filter sensitive settings (#5641))
                 return await EndParentDialogAsync(dc, value, cancellationToken).ConfigureAwait(false);
             }
 
