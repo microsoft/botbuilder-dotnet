@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
-                else
+                else if (!ChannelRequiresSignInLink(turnContext.Activity.ChannelId))
                 {
                     value = null;
                 }
@@ -620,6 +620,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return true;
+        }
+
+        private bool ChannelRequiresSignInLink(string channelId)
+        {
+            switch (channelId)
+            {
+                case Channels.Msteams:
+                    return true;
+            }
+
+            return false;
         }
 
         private async Task SendInvokeResponseAsync(ITurnContext turnContext, HttpStatusCode statusCode, object body, CancellationToken cancellationToken)

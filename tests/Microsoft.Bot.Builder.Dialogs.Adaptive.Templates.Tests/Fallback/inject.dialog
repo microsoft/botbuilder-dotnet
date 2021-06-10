@@ -8,6 +8,11 @@
       "actions": [
         {
           "$kind": "Microsoft.SetProperty",
+          "property": "user.obj",
+          "value": "=json('{\"SR\":{\"Q1\":\"\",\"Q2\":\"2\"}}')"
+        },
+        {
+          "$kind": "Microsoft.SetProperty",
           "property": "user.message",
           "value": "=foo.GetMessage()"
         },
@@ -28,6 +33,10 @@
         {
           "$kind": "Microsoft.SendActivity",
           "activity": "${user.message}"
+        },
+        {
+          "$kind": "Microsoft.SendActivity",
+          "activity": "${user.obj.SR.Q2}"
         }
 
       ]

@@ -19,8 +19,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
     /// </remarks>
     internal class CycleDetectionObserver : IJsonLoadObserver
     {
+        private readonly bool allowCycle;
         private readonly Dictionary<int, object> cache = new Dictionary<int, object>();
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CycleDetectionObserver"/> class.
+        /// </summary>
+        /// <param name="allowCycle">If allowCycle is set to false, throw an exception when detecting cycle.</param>
+        public CycleDetectionObserver(bool allowCycle = true)
+        {
+            this.allowCycle = allowCycle;
+        }
+
         /// <summary>
         /// Gets or sets the current pass of the algorithm.
         /// </summary>
@@ -48,6 +58,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Observers
             // Now analyze the stack to find cycles.
             // If the same source range appears twice in the stack, we have a cycle.
             var isCycle = context.CallStack.Count(s => s.Equals(range)) > 1;
+
+            if (isCycle && !allowCycle)
+            {
+                throw new InvalidOperationException($"Cycle detected for range: {range}");
+            }
 
             if (isCycle && CycleDetectionPass == CycleDetectionPasses.PassOne)
             {

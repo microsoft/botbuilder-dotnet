@@ -76,6 +76,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             generatedTemplates = Templates.ParseText(evaled);
             result = generatedTemplates.Evaluate("generated2", new { name = "jack" });
             Assert.Equal("please input jack", result.ToString().Trim());
+
+            evaled = templates.Evaluate("template3").ToString();
+            Assert.Equal("markdown\n## Manage the knowledge base\n", evaled.Replace("\r\n", "\n"));
+
+            evaled = templates.Evaluate("template4").ToString();
+            Assert.Equal("## Manage the knowledge base", evaled);
+
+            evaled = templates.Evaluate("template5").ToString();
+            Assert.Equal(string.Empty, evaled);
         }
 
         [Fact]
@@ -1424,6 +1433,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var templates = Templates.ParseFile(GetExampleFilePath("2.lg"));
             var evaled = templates.EvaluateText("hello");
             Assert.Equal("hello", evaled);
+
+            evaled = templates.EvaluateText("${``}");
+            Assert.Equal(string.Empty, evaled);
 
             // test template reference
             evaled = templates.EvaluateText("${wPhrase()}");

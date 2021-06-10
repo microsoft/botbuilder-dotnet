@@ -323,6 +323,7 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region locale specific tests
+            
             //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
@@ -366,6 +367,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region string interpolation test
+            Test("``", string.Empty),
             Test("`hi`", "hi"),
             Test(@"`hi\``", "hi`"),
             Test("`${world}`", "world"),
@@ -516,6 +518,9 @@ namespace AdaptiveExpressions.Tests
             Test(@"replace('hello\n', '\n', '\\\\')", @"hello\\"),
             Test("replaceIgnoreCase('hello', 'L', 'k')", "hekko"),
             Test("replaceIgnoreCase(nullObj, 'L', 'k')", string.Empty),
+            Test("split('token1 token2 token3', ' ')", new string[] { "token1", "token2", "token3" }),
+            Test("split('token1 token2 token3', '  ')", new string[] { "token1 token2 token3" }),
+            Test("split('token one', '')", new string[] { "t", "o", "k", "e", "n", " ", "o", "n", "e" }),
             Test("split('hello','e')", new string[] { "h", "llo" }),
             Test("split('hello','')", new string[] { "h", "e", "l", "l", "o" }),
             Test("split('','')", new string[] { }),
@@ -672,6 +677,7 @@ namespace AdaptiveExpressions.Tests
             Test("int('10')", 10),
             Test("int(12345678912345678 + 1)", 12345678912345679),
             Test("string('str')", "str"),
+            Test("string('str\"')", "str\""),
             Test("string(one)", "1"),
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
