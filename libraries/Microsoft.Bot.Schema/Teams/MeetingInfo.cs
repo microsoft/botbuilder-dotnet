@@ -33,10 +33,10 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets the meeting's detailed information.
+        /// Gets or sets the specific details of a Teams meeting.
         /// </summary>
         /// <value>
-        /// The meetings detailed information.
+        /// The specific details of a Teams meeting.
         /// </value>
         [JsonProperty(PropertyName = "details")]
         public MeetingDetails Details { get; set; }
