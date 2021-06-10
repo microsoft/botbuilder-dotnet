@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Gets the details for the given meeting id.
+        /// Gets the information for the given meeting id.
         /// </summary>
         /// <param name="turnContext"> Turn context.</param>
         /// <param name="meetingId"> The BASE64-encoded id of the Teams meeting.</param>

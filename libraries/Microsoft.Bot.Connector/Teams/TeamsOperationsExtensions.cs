@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
-        /// Fetches details related to a Teams meeting.
+        /// Fetches information related to a Teams meeting.
         /// </summary>
         /// <param name='operations'>
         /// The operations group for this extension method.
