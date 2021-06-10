@@ -196,16 +196,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
 
-            JToken instanceBody = null;
+            object instanceBody = null;
             if (this.Body != null)
             {
-                var (body, err) = this.Body.TryGetValue(dcState);
-                if (err != null)
-                {
-                    throw new ArgumentException(err);
-                }
-
-                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
+                vainstanceBody = this.Body.ExpressionText == null ?
+                    await ReplaceJTokenRecursivelyAsync(dc.state, JToken.FromObject(this.Body.Value).DeepClone(), cancellationToken).ConfigureAwait(false);
+                    : this.Body.GetValue(dc.State);
             }
 
             var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
@@ -214,12 +210,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (instanceUrlError != null)
             {
                 throw new ArgumentException(instanceUrlError);
-            }
-
-            // Bind each string token to the data in state
-            if (instanceBody != null)
-            {
-                await ReplaceJTokenRecursively(dc, instanceBody);
             }
 
             // Set headers
