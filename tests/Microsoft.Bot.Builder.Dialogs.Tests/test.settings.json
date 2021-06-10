@@ -13,30 +13,7 @@
     "zzz": "cat",
     "2": "two",
     "3": "three"
-<<<<<<< HEAD
-=======
   },
-  "myarray": [
-    "e1",
-    {
-      "obj": "e2"
-    }
-  ],
-  "nestedArray": [
-    [ "a", "b" ],
-    [ "c", "d" ]
-  ],
-  "numberArray": [ 0, 1, 2 ],
-  "sequentialObjectArray": [
-    {
-      "0": "a",
-      "1": "b"
-    },
-    {
-      "0": "c",
-      "1": "d"
-    }
-  ],
   "MicrosoftAppPassword": "testpassword",
   "runtimeSettings": {
     "telemetry": {
@@ -47,6 +24,5 @@
   },
   "BlobsStorage": {
     "CONNECTIONSTRING": "testConnectionString"
->>>>>>> ce78f3dfb (Fix double evaluation and filter sensitive settings (#5641))
   }
 }
