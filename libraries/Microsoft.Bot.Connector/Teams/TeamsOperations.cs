@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// <returns>
         /// A response object containing the response body and response headers.
         /// </returns>
-        public async Task<HttpOperationResponse<MeetingDetails>> FetchMeetingDetailsWithHttpMessagesAsync(string meetingId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<MeetingInfo>> FetchMeetingDetailsWithHttpMessagesAsync(string meetingId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (meetingId == null)
             {
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Connector.Teams
             var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}").ToString();
             url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
 
-            return await GetResponseAsync<MeetingDetails>(url, shouldTrace, invocationId, customHeaders).ConfigureAwait(false);
+            return await GetResponseAsync<MeetingInfo>(url, shouldTrace, invocationId, customHeaders).ConfigureAwait(false);
         }
 
         /// <summary>

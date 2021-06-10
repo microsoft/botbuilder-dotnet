@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Teams
         /// <param name="meetingId"> The BASE64-encoded id of the Teams meeting.</param>
         /// <param name="cancellationToken"> Cancellation token.</param>
         /// <returns>Team Details.</returns>
-        public static async Task<MeetingDetails> GetMeetingDetailsAsync(ITurnContext turnContext, string meetingId = null, CancellationToken cancellationToken = default)
+        public static async Task<MeetingInfo> GetMeetingDetailsAsync(ITurnContext turnContext, string meetingId = null, CancellationToken cancellationToken = default)
         {
             meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("The meetingId can only be null if turnContext is within the scope of a MS Teams Meeting.");
             using (var teamsClient = GetTeamsConnectorClient(turnContext))

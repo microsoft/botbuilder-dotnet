@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Connector.Teams
         /// The cancellation token.
         /// </param>
         /// <returns>The details related to a team.</returns>
-        public static async Task<MeetingDetails> FetchMeetingDetailsAsync(this ITeamsOperations operations, string meetingId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<MeetingInfo> FetchMeetingDetailsAsync(this ITeamsOperations operations, string meetingId, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (operations is TeamsOperations teamsOperations)
             {
