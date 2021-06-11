@@ -382,7 +382,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var hint = hints.FirstOrDefault(h => h.Name == entity);
                             if (hint != null)
                             {
-                                hint.Importance = RecognitionHintImportance.Expected.ToString();
+                                hint.Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected);
                             }
                         }
                     }
@@ -392,13 +392,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     if (hint.Importance == null)
                     {
-                        hint.Importance = RecognitionHintImportance.Possible.ToString();
+                        hint.Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Possible);
                     }
                 }
             }
             else
             {
-                hints.ForEach(h => h.Importance = RecognitionHintImportance.Expected.ToString());
+                hints.ForEach(h => h.Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected));
             }
 
             hints.AddRange(base.GetRecognitionHints(dialogContext));

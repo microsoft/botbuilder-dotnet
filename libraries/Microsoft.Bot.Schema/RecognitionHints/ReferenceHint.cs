@@ -18,16 +18,16 @@ namespace Microsoft.Bot.Schema
         /// Resource is usually something like an LU file name.
         /// </remarks>
         public ReferenceHint(string name, string resource)
-            : base("Reference", name)
+            : base("reference", name)
         {
             Resource = resource;
         }
 
         /// <summary>
-        /// Gets the source LU file where <see cref="RecognitionHint.Name"/> is found.
+        /// Gets the resource where <see cref="RecognitionHint.Name"/> is found.
         /// </summary>
-        /// <value>Name of the LU file like MyApp.lu.</value>
-        [JsonProperty("source")]
+        /// <value>Name of the resource usually an LU file like MyApp.lu.</value>
+        [JsonProperty("resource")]
         public string Resource { get;  }
 
         /// <inheritdoc/>

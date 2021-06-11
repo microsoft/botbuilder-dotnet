@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="name">Name of LU file definition.</param>
         public PreBuiltHint(string name)
-            : base("PreBuilt", name)
+            : base("prebuilt", name)
         {
         }
 

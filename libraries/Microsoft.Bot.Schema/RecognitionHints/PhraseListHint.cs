@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Name for the phrase list.</param>
         /// <param name="phrases">Source LU file.</param>
         public PhraseListHint(string name, IEnumerable<string> phrases)
-            : base("PhraseList", name)
+            : base("phraselist", name)
         {
             Phrases = phrases.ToList();
         }

@@ -361,7 +361,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             foreach (var hint in hints)
             {
                 var newHint = hint.Clone();
-                newHint.Importance = importance.ToString();
+                newHint.Importance = RecognitionHint.ImportanceString(importance);
                 newHints.Add(newHint);
             }
 

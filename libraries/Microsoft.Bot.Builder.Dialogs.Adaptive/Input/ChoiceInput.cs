@@ -165,16 +165,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
             }
 
-            hints.Add(new PhraseListHint(Id, phrases) { Importance = RecognitionHintImportance.Expected.ToString() });
+            hints.Add(new PhraseListHint(Id, phrases) { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
 
             if (options.RecognizeOrdinals)
             {
-                hints.Add(new PreBuiltHint("ordinal") { Importance = RecognitionHintImportance.Expected.ToString() });
+                hints.Add(new PreBuiltHint("ordinal") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
             }
 
             if (options.RecognizeNumbers)
             {
-                hints.Add(new PreBuiltHint("number") { Importance = RecognitionHintImportance.Expected.ToString() });
+                hints.Add(new PreBuiltHint("number") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
             }
 
             return hints;

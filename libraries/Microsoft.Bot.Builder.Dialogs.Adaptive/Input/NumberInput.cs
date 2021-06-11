@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
         {
             var hints = base.GetRecognitionHints(dialogContext);
-            hints.Add(new PreBuiltHint("number") { Importance = RecognitionHintImportance.Expected.ToString() });
+            hints.Add(new PreBuiltHint("number") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
             return hints;
         }
 

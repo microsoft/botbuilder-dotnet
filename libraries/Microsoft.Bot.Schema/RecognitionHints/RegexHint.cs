@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Name of the regex.</param>
         /// <param name="pattern">Regular expression.</param>
         public RegexHint(string name, string pattern)
-            : base("Regex", name)
+            : base("regex", name)
         {
             Pattern = pattern;
         }

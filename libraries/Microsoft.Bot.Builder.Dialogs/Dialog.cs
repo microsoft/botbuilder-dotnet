@@ -236,7 +236,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (parent != null)
             {
                 var hints = parent.GetRecognitionHints(parentDc);
-                hints.ForEach(h => h.Importance = RecognitionHintImportance.Possible.ToString());
+                var importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Possible);
+                hints.ForEach(h => h.Importance = importance);
                 return hints;
             }
             else

@@ -43,6 +43,14 @@ namespace Microsoft.Bot.Schema
         public string Importance { get; set; }
 
         /// <summary>
+        /// Returns the string corresponding to a <see cref="RecognitionHintImportance"/>.
+        /// </summary>
+        /// <param name="importance">Enum selection.</param>
+        /// <returns>String version of enumeration.</returns>
+        public static string ImportanceString(RecognitionHintImportance importance)
+            => importance.ToString().ToLowerInvariant();
+        
+        /// <summary>
         /// Clone the recognition hint.
         /// </summary>
         /// <returns>A shallow copy of the hint.</returns>
@@ -60,6 +68,6 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <returns>Marker for importance.</returns>
         protected string ToStringPrefix()
-            => Importance == RecognitionHintImportance.Expected.ToString() ? "+" : string.Empty;
+            => Importance == RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) ? "+" : string.Empty;
     }
 }
