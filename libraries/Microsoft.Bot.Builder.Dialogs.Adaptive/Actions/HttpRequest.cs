@@ -199,9 +199,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object instanceBody = null;
             if (this.Body != null)
             {
-                vainstanceBody = this.Body.ExpressionText == null ?
-                    await ReplaceJTokenRecursivelyAsync(dc.state, JToken.FromObject(this.Body.Value).DeepClone(), cancellationToken).ConfigureAwait(false);
-                    : this.Body.GetValue(dc.State);
+                if (this.Body.ExpressionText == null)
+                {
+                    instanceBody = JToken.FromObject(this.Body.Value).DeepClone();
+                    await ReplaceJTokenRecursively(dc, instanceBody as JToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    instanceBody = this.Body.GetValue(dcState);
+                }
             }
 
             var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dcState));
