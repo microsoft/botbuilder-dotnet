@@ -84,23 +84,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-            JToken value = null;
-            if (this.Value != null)
-            {
-                var (val, valueError) = this.Value.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{this.Value.ToString()}\". Error: {valueError}");
-                }
+            var value = Value?.EvaluateExpression(dc.State);
 
-                if (val != null)
-                {
-                    value = JToken.FromObject(val).DeepClone();
-                }
-            }
-
-            value = value?.ReplaceJTokenRecursively(dc.State);
             dc.State.SetValue(this.Property.GetValue(dc.State), value);
 
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

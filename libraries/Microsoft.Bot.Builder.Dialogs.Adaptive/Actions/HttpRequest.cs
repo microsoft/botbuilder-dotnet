@@ -242,17 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             try
             {
-                JToken instanceBody = null;
-                if (Body != null)
-                {
-                    var (body, err) = Body.TryGetValue(dc.State);
-                    if (err != null)
-                    {
-                        throw new ArgumentException(err);
-                    }
-
-                    instanceBody = (JToken)JToken.FromObject(body).DeepClone();
-                }
+                var instanceBody = Body?.EvaluateExpression(dc.State);
 
                 var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dc.State));
 
@@ -261,9 +251,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     throw new ArgumentException(instanceUrlError);
                 }
-
-                // Bind each string token to the data in state
-                instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
 
                 using HttpRequestMessage request = new HttpRequestMessage(new System.Net.Http.HttpMethod(Method.ToString()), instanceUrl);
 
@@ -330,8 +317,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         {
                             using var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, contentType);
                             traceInfo.request.content = instanceBody.ToString();
-                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                             request.Content = putContent;
+                            traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                             response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
                         }
 
