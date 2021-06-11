@@ -1,0 +1,57 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "test.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.ChoiceInput",
+                        "alwaysPrompt": true,
+                        "choices": "${MyChoices_complex()}",
+                        "style": "inline",
+                        "property": "user.choice",
+                        "prompt": "${MyChoices_Prompt()}",
+                        "unrecognizedPrompt": "${MyChoices_UnknownPrompt()}"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.choice}"
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "locale":"en",
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please select (1) dog or (2) cat"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "asdasd"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Not a dog or cat. Please select (1) dog or (2) cat"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "kitty"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "cat"
+        }
+    ]
+}

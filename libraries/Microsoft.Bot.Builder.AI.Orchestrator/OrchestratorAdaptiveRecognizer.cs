@@ -64,12 +64,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             _resolver = resolver;
             if (modelFolder == null)
             {
-                throw new ArgumentNullException($"Missing `ModelFolder` information.");
+                throw new ArgumentNullException(nameof(modelFolder));
             }
 
             if (snapshotFile == null)
             {
-                throw new ArgumentNullException($"Missing `SnapshotFile` information.");
+                throw new ArgumentNullException(nameof(snapshotFile));
             }
 
             _modelFolder = modelFolder;
@@ -226,12 +226,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         {
             if (_modelFolder == null)
             {
-                throw new ArgumentNullException($"Missing `ModelFolder` information.");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentNullException("ModelFolder");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             if (_snapshotFile == null)
             {
-                throw new ArgumentNullException($"Missing `SnapshotFile` information.");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentNullException("SnapshotFile");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             if (_resolver != null)
