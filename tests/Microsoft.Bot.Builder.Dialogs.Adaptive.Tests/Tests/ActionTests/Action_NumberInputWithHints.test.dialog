@@ -38,9 +38,9 @@
             "assertions": [
                 "text == 'Please enter your age.'",
                 "count(recognitionHints) == 1",
-                "recognitionHints[0].type == 'PreBuilt'",
+                "recognitionHints[0].type == 'prebuilt'",
                 "recognitionHints[0].name == 'number'",
-                "recognitionHints[0].importance == 'Expected'"
+                "recognitionHints[0].importance == 'expected'"
             ]
         }
     ]
