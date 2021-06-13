@@ -362,6 +362,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             EnsureDependenciesInstalled();
 
+            // Expose required nested dependencies for parent dialog
+            foreach (var dlg in Dialogs.GetDialogs())
+            {
+                if (dlg is IHaveParentDialogDependencies dependencies)
+                {
+                    foreach (var item in dependencies.GetParentDependencies())
+                    {
+                        yield return item;
+                    }
+                }
+            }
+
             yield break;
         }
 
