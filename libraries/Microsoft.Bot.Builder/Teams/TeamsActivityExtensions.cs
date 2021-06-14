@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Teams
         public static string TeamsGetChannelId(this IActivity activity)
         {
             var channelData = activity.GetChannelData<TeamsChannelData>();
-            return channelData?.Channel?.Id ?? activity.ChannelId;
+            return channelData?.Channel?.Id;
         }
 
         /// <summary>
