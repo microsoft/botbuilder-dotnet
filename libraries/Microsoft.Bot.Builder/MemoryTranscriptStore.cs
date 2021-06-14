@@ -115,12 +115,12 @@ namespace Microsoft.Bot.Builder
         {
             if (channelId == null)
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (conversationId == null)
             {
-                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             var pagedResult = new PagedResult<IActivity>();
@@ -177,12 +177,12 @@ namespace Microsoft.Bot.Builder
         {
             if (channelId == null)
             {
-                throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (conversationId == null)
             {
-                throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 
             lock (_channels)
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder
         {
             if (channelId == null)
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             var pagedResult = new PagedResult<TranscriptInfo>();
