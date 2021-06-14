@@ -342,7 +342,7 @@ namespace Microsoft.Bot.Builder
 
             if (string.IsNullOrWhiteSpace(audience))
             {
-                throw new ArgumentNullException($"{nameof(audience)} cannot be null or white space.");
+                throw new ArgumentNullException(nameof(audience), $"{nameof(audience)} cannot be null or white space.");
             }
 
             // Reusing the code from the above override, ContinueConversationAsync()
@@ -658,12 +658,12 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Conversation == null)
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
@@ -690,12 +690,12 @@ namespace Microsoft.Bot.Builder
 
             if (turnContext.Activity.Conversation == null)
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
@@ -716,12 +716,12 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Conversation == null)
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation");
             }
 
             if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation.id");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation.id");
             }
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
@@ -802,7 +802,7 @@ namespace Microsoft.Bot.Builder
             BotAssert.ContextNotNull(turnContext);
             if (turnContext.Activity.From == null || string.IsNullOrWhiteSpace(turnContext.Activity.From.Id))
             {
-                throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetUserTokenAsync)}(): missing from or from.id");
+                throw new ArgumentException($"{nameof(BotFrameworkAdapter)}.{nameof(GetUserTokenAsync)}(): missing from or from.id");
             }
 
             if (string.IsNullOrWhiteSpace(connectionName))

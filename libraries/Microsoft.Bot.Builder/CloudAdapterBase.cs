@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder
 
             if (string.IsNullOrWhiteSpace(audience))
             {
-                throw new ArgumentNullException($"{nameof(audience)} cannot be null or white space.");
+                throw new ArgumentNullException(nameof(audience));
             }
 
             return ProcessProactiveAsync(claimsIdentity, reference, audience, callback, cancellationToken);
