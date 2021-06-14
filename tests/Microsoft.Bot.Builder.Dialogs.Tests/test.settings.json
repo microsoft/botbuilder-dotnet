@@ -13,5 +13,16 @@
     "zzz": "cat",
     "2": "two",
     "3": "three"
+  },
+  "MicrosoftAppPassword": "testpassword",
+  "runtimeSettings": {
+    "telemetry": {
+      "options": {
+        "connectionString": "testConnectionString"
+      }
+    }
+  },
+  "BlobsStorage": {
+    "CONNECTIONSTRING": "testConnectionString"
   }
 }
