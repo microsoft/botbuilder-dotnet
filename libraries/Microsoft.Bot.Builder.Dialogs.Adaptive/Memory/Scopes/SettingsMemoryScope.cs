@@ -13,6 +13,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {
+        private static readonly List<string> _blockingList = new List<string>
+        {
+            "MicrosoftAppPassword",
+            "cosmosDb:authKey",
+            "blobStorage:connectionString",
+            "BlobsStorage:connectionString",
+            "CosmosDbPartitionedStorage:authKey",
+            "applicationInsights:connectionString",
+            "applicationInsights:InstrumentationKey",
+            "runtimeSettings:telemetry:options:connectionString",
+            "runtimeSettings:telemetry:options:instrumentationKey",
+            "runtimeSettings:features:blobTranscript:connectionString"
+        };
+
         private Dictionary<string, object> emptySettings = new Dictionary<string, object>();
 
         public SettingsMemoryScope()
@@ -57,8 +71,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             if (configuration != null)
             {
+                var configurations = configuration.AsEnumerable().Where(u => !_blockingList.Contains(u.Key, StringComparer.OrdinalIgnoreCase)).ToList();
+                
                 // load configuration into settings dictionary
-                foreach (var child in configuration.AsEnumerable())
+                foreach (var child in configurations)
                 {
                     string[] keys = child.Key.Split(':');
 
