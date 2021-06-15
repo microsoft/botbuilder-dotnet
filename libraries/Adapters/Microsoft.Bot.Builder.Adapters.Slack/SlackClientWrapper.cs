@@ -171,6 +171,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 ["channel"] = message.Channel,
                 ["text"] = message.Text,
                 ["thread_ts"] = message.ThreadTs,
+                ["user"] = message.User,
             };
 
             if (message.Blocks != null)
