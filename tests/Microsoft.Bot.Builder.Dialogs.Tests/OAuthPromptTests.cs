@@ -663,37 +663,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
-        public async Task GetUserTokenShouldReturnToken()
-        {
-            var oauthPromptSettings = new OAuthPromptSettings
-            {
-                ConnectionName = ConnectionName,
-                Text = "Please sign in",
-                Title = "Sign in",
-            };
-
-            var prompt = new OAuthPrompt("OAuthPrompt", oauthPromptSettings);
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            adapter.AddUserToken(ConnectionName, ChannelId, UserId, Token);
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(prompt);
-
-            var activity = new Activity { ChannelId = ChannelId, From = new ChannelAccount { Id = UserId } };
-            var turnContext = new TurnContext(adapter, activity);
-
-            var userToken = await prompt.GetUserTokenAsync(turnContext, CancellationToken.None);
-            
-            Assert.Equal(Token, userToken.Token);
-        }
-
-        [Fact]
         public async Task OAuthPromptEndOnInvalidMessageSetting()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -742,6 +711,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("blah")
             .AssertReply("Ended.")
             .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task GetUserTokenShouldReturnToken()
+        {
+            var oauthPromptSettings = new OAuthPromptSettings
+            {
+                ConnectionName = ConnectionName,
+                Text = "Please sign in",
+                Title = "Sign in",
+            };
+
+            var prompt = new OAuthPrompt("OAuthPrompt", oauthPromptSettings);
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            adapter.AddUserToken(ConnectionName, ChannelId, UserId, Token);
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(prompt);
+
+            var activity = new Activity { ChannelId = ChannelId, From = new ChannelAccount { Id = UserId } };
+            var turnContext = new TurnContext(adapter, activity);
+
+            var userToken = await prompt.GetUserTokenAsync(turnContext, CancellationToken.None);
+            
+            Assert.Equal(Token, userToken.Token);
         }
 
         private async Task OAuthPrompt(IStorage storage)
