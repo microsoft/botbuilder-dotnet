@@ -566,7 +566,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var initialActivity = new Activity()
             {
-                ChannelId = Channels.Cortana,
+                ChannelId = Channels.Skype,
                 Text = "hello"
             };
 
