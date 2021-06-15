@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Recognizers
                 new QnAMakerOptions
                 {
                     Context = Context?.GetValue(dialogContext.State),
-                    ScoreThreshold = Threshold.GetValue(dialogContext.State),
+                    ScoreThreshold = (float)Threshold.GetValue(dialogContext.State),
                     StrictFilters = filters.ToArray(),
                     Top = Top.GetValue(dialogContext.State),
                     QnAId = QnAId.GetValue(dialogContext.State),
