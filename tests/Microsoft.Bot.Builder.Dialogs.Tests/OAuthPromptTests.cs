@@ -822,55 +822,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             return eventActivity;
         }
-
-        private async Task OAuthPromptEndOnInvalidMessageSetting()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            // Create new DialogSet.
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in", EndOnInvalidMessage = true }));
-
-            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
-                }
-                else if (results.Status == DialogTurnStatus.Waiting)
-                {
-                    throw new InvalidOperationException("Test OAuthPromptEndOnInvalidMessageSetting expected DialogTurnStatus.Complete");
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    if (results.Result is TokenResponse)
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Logged in."), cancellationToken);
-                    }
-                    else
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Ended."), cancellationToken);
-                    }
-                }
-            };
-
-            await new TestFlow(adapter, botCallbackHandler)
-            .Send("hello")
-            .AssertReply(activity =>
-            {
-                Assert.Single(((Activity)activity).Attachments);
-                Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-            })
-            .Send("blah")
-            .AssertReply("Ended.")
-            .StartTestAsync();
-        }
     }
 }
