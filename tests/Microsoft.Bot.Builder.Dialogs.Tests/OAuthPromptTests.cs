@@ -19,9 +19,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private const string UserId = "user-id";
         private const string ConnectionName = "connection-name";
         private const string ChannelId = "channel-id";
+        private const string MagicCode = "888999";
         private const string Token = "token123";
         private const string ExchangeToken = "exch123";
-
+        
         [Fact]
         public void OAuthPromptWithEmptySettingsShouldFail()
         {
@@ -113,8 +114,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            const string magicCode = "888999";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
@@ -164,9 +163,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(InputHints.AcceptingInput, ((Activity)activity).InputHint);
 
                 // Add a magic code to the adapter
-                adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, magicCode);
+                adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, MagicCode);
             })
-            .Send(magicCode)
+            .Send(MagicCode)
             .AssertReply("Logged in.")
             .StartTestAsync();
         }
@@ -233,8 +232,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            const string magicCode = "888999";
-
             // Create new DialogSet
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = ConnectionName, Title = "Sign in" }));
@@ -242,7 +239,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
             {
                 // Add a magic code to the adapter preemptively so that we can test if the message that triggers BeginDialogAsync uses magic code detection
-                adapter.AddUserToken(ConnectionName, turnContext.Activity.ChannelId, turnContext.Activity.From.Id, Token, magicCode);
+                adapter.AddUserToken(ConnectionName, turnContext.Activity.ChannelId, turnContext.Activity.From.Id, Token, MagicCode);
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
@@ -261,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             // Call BeginDialogAsync by sending the magic code as the first message. It SHOULD respond with an OAuthPrompt since we haven't authenticated yet
             await new TestFlow(adapter, botCallbackHandler)
-            .Send(magicCode)
+            .Send(MagicCode)
             .AssertReply(activity =>
             {
                 Assert.Single(((Activity)activity).Attachments);
@@ -804,8 +801,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(convoState));
 
-            const string magicCode = "888999";
-
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
 
@@ -843,7 +838,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
                 // Add a magic code to the adapter
-                adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, magicCode);
+                adapter.AddUserToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, Token, MagicCode);
 
                 // Add an exchangable token to the adapter
                 adapter.AddExchangeableToken(ConnectionName, activity.ChannelId, activity.Recipient.Id, ExchangeToken, Token);
