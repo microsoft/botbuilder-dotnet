@@ -544,6 +544,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task OAuthPromptInNotSupportedChannelShouldAddSignInCard()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings()));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                }
+            };
+
+            var initialActivity = new Activity()
+            {
+                ChannelId = Channels.Cortana,
+                Text = "hello"
+            };
+
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send(initialActivity)
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(SigninCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                })
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task TestAdapterTokenExchange()
         {
             var convoState = new ConversationState(new MemoryStorage());
