@@ -33,6 +33,14 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public const string Kind = "Microsoft.OrchestratorRecognizer";
 
         /// <summary>
+        /// Unknown intent is the same meaning as None intent.
+        /// </summary>
+        /// <remarks>
+        /// Unknown intent is mapped to None intent.
+        /// </remarks>
+        public const string UnknownIntent = "Unknown";
+
+        /// <summary>
         /// Property key in RecognizerResult that holds the full recognition result from Orchestrator core.
         /// </summary>
         public const string ResultProperty = "result";
@@ -182,7 +190,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     // add top score
                     foreach (var result in results)
                     {
-                        recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
+                        recognizerResult.Intents.Add(result.Label.Name == UnknownIntent ? NoneIntent : result.Label.Name, new IntentScore()
                         {
                             Score = result.Score
                         });

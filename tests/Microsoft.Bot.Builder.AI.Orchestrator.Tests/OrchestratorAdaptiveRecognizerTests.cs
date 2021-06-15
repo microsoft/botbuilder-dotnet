@@ -45,6 +45,62 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
         }
 
+        [Fact]
+        public async Task TestUnknownRecognize()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.9,
+                Label = new Label { Name = "Unknown" }
+            };
+
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath")
+            };
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
+
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
+            Assert.Equal(1, result.Intents.Count);
+            Assert.True(result.Intents.ContainsKey("None"));
+            Assert.Equal(0.9, result.Intents["None"].Score);
+        }
+
+        [Fact]
+        public async Task TestNoneRecognize()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.9,
+                Label = new Label { Name = "None" }
+            };
+
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath")
+            };
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
+
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
+            Assert.Equal(1, result.Intents.Count);
+            Assert.True(result.Intents.ContainsKey("None"));
+            Assert.Equal(0.9, result.Intents["None"].Score);
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
