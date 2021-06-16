@@ -10,8 +10,8 @@
         },
         {
           "$kind": "Microsoft.SetProperty",
-          "property": "turn.foo",
-          "value": "bar"
+          "property": "turn.x",
+          "value": "y"
         }
       ]
     }
