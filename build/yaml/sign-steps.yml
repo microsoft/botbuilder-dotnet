@@ -22,6 +22,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: ./build/FixLicenseInNuspecFiles.ps1
+    arguments: '$(Build.ArtifactStagingDirectory)\Signing'
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: 'ESRP Signing - strong name (CP-233863-SN)'

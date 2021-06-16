@@ -5,12 +5,18 @@
 # nuget.org. It compensates for a bug in Visual Studio's .nuspec file generation 
 # dating from when <licenseUrl> was deprecated in 2018. 6/15/2021
 #
-$path = "$(Build.SourcesDirectory)/libraries/*/package.json/signing/*/*.nuspec";
+param
+( 
+    [string]$pathRoot,
+)
+pushd $pathRoot
+
+$relativePath = "./*/*.nuspec";
 $find = "licenseUrl>";
 $replace = "license>";
 
 function GoReplace() {
-    Get-ChildItem -Path "$path" | % {
+    Get-ChildItem -Path "$relativePath" | % {
         $_.FullName; 
         $content = Get-Content -Raw $_.FullName;
 
