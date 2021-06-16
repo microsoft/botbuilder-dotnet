@@ -39,6 +39,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
 
+        private const string CacheKey = "LuisResult";
+
         private readonly LuisRecognizerOptions _luisRecognizerOptions;
 
         /// <summary>
@@ -629,9 +631,16 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            var result = await recognizer.RecognizeInternalAsync(turnContext, HttpClient, cancellationToken).ConfigureAwait(false);
-            await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-            return result;
+            var cached = turnContext.TurnState.Get<RecognizerResult>(CacheKey);
+            if (cached == null)
+            {
+                var result = await recognizer.RecognizeInternalAsync(turnContext, HttpClient, cancellationToken).ConfigureAwait(false);
+                turnContext.TurnState.Set<RecognizerResult>(CacheKey, result);
+                await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                return result;
+            }
+
+            return cached;
         }
 
         /// <summary>
@@ -647,9 +656,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(DialogContext dialogContext, Activity activity, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            var result = await recognizer.RecognizeInternalAsync(dialogContext, activity, HttpClient, cancellationToken).ConfigureAwait(false);
-            await OnRecognizerResultAsync(result, dialogContext.Context, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-            return result;
+            var turnContext = dialogContext.Context;
+            var cached = turnContext.TurnState.Get<RecognizerResult>(CacheKey);
+            if (cached == null)
+            {
+                var result = await recognizer.RecognizeInternalAsync(dialogContext, activity, HttpClient, cancellationToken).ConfigureAwait(false);
+                turnContext.TurnState.Set<RecognizerResult>(CacheKey, result);
+                await OnRecognizerResultAsync(result, dialogContext.Context, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                return result;
+            }
+
+            return cached;
         }
 
         /// <summary>
