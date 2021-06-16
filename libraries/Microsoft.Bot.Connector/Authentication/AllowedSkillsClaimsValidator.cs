@@ -19,15 +19,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Initializes a new instance of the <see cref="AllowedSkillsClaimsValidator"/> class.
         /// </summary>
-        /// <param name="allowedAppIds">List of allowed callers referenced by appId.</param>
-        public AllowedSkillsClaimsValidator(List<string> allowedAppIds)
+        /// <param name="allowedSkillAppIds">List of allowed callers referenced by appId.</param>
+        public AllowedSkillsClaimsValidator(List<string> allowedSkillAppIds)
         {
-            if (allowedAppIds == null)
-            {
-                throw new ArgumentNullException(nameof(allowedAppIds));
-            }
-
-            _allowedSkills = allowedAppIds;
+            _allowedSkills = allowedSkillAppIds ?? new List<string>();
         }
 
         /// <inheritdoc/>
