@@ -5,7 +5,7 @@
 # nuget.org. It compensates for a bug in Visual Studio's .nuspec file generation 
 # dating from when <licenseUrl> was deprecated in 2018. 6/15/2021
 #
-$path = "$(System.DefaultWorkingDirectory)/signing/*/*.nuspec";
+$path = "./signing/*/*.nuspec";
 $find = "licenseUrl>";
 $replace = "license>";
 
