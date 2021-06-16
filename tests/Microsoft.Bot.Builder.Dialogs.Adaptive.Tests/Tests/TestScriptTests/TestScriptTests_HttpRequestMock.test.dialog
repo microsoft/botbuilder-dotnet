@@ -4,6 +4,7 @@
     "description": "Test HttpRequestMock",
     "httpRequestMocks": [
         "httpexact.mock",
+        "httpgzip.mock",
         "httppartial.mock",
         "get.mock",
         "all.mock"
@@ -158,6 +159,18 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${dialog.result.content}"
+                    },
+                    {
+                        "$kind": "Microsoft.HttpRequest",
+                        "responseType": "Json",
+                        "method": "POST",
+                        "body": "gzip body",
+                        "url": "http://127.0.0.1",
+                        "resultProperty": "dialog.result"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${dialog.result.content}"
                     }
                 ]
             }
@@ -219,6 +232,10 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "exact match"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "string response with gzip format"
         }
     ]
 }

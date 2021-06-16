@@ -28,7 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
             /// <summary>
             /// Byte array response. The content should be the base64 string of the byte array.
             /// </summary>
-            ByteArray
+            ByteArray,
+
+            /// <summary>
+            /// String content with GZip format.
+            /// </summary>
+            GZipString
         }
 
         /// <summary>

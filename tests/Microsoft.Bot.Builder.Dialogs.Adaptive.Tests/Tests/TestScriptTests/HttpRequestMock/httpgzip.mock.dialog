@@ -1,0 +1,15 @@
+﻿{
+    "$schema": "../../../../tests.schema",
+    "$kind": "Microsoft.Test.HttpRequestSequenceMock",
+    "method": "POST",
+    "url": "http://127.0.0.1",
+    "body": "gzip body",
+    "matchType": "Exact",
+    "responses": [
+        {
+            "contentType": "GZipString",
+            // CompressToGZip(content);
+            "content": "string response with gzip format"
+        }
+    ]
+}
