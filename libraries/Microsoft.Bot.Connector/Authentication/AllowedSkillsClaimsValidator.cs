@@ -14,13 +14,13 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class AllowedSkillsClaimsValidator : ClaimsValidator
     {
-        private readonly List<string> _allowedSkills;
+        private readonly IList<string> _allowedSkills;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AllowedSkillsClaimsValidator"/> class.
         /// </summary>
         /// <param name="allowedSkillAppIds">List of allowed callers referenced by appId.</param>
-        public AllowedSkillsClaimsValidator(List<string> allowedSkillAppIds)
+        public AllowedSkillsClaimsValidator(IList<string> allowedSkillAppIds)
         {
             _allowedSkills = allowedSkillAppIds ?? new List<string>();
         }
