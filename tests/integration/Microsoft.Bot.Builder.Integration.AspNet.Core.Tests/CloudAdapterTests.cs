@@ -580,12 +580,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             cloudEnvironmentMock.Setup(ce => ce.CreateConnectorFactory(It.IsAny<ClaimsIdentity>())).Returns(connectorFactoryMock.Object);
             cloudEnvironmentMock.Setup(ce => ce.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<UserTokenClient>(userTokenClient));
 
-           //var bot = new ConnectorFactoryBot();
-
-            //var conversationAccount = new ConversationAccount { Id = "conversation Id" };
-            //var continuationActivity = new Activity { Type = ActivityTypes.Event, ServiceUrl = serviceUrl, Conversation = conversationAccount };
-            //var conversationReference = new ConversationReference { ServiceUrl = serviceUrl, Conversation = conversationAccount };
-
             var expectedChannelId = "expected-channel-id";
             var actualChannelId = string.Empty;
 
