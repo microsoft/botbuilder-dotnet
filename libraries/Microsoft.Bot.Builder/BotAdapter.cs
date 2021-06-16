@@ -248,6 +248,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="botAppId">TThe application ID of the bot.</param>
         /// <param name="channelId">The ID for the channel.</param>
         /// <param name="serviceUrl">The channel's service URL endpoint.</param>
+        /// <param name="audience">The audience for the connector.</param>
         /// <param name="conversationParameters">The conversation information to use to
         /// create the conversation.</param>
         /// <param name="callback">The method to call for the resulting bot turn.</param>
@@ -264,7 +265,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        public virtual Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public virtual Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, string audience, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
