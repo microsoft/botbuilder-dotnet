@@ -7,7 +7,7 @@
 #
 param
 ( 
-    [string]$pathRoot,
+    [string]$pathRoot
 )
 pushd $pathRoot
 
