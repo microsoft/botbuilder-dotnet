@@ -17,6 +17,12 @@ steps:
     filePath: ./build/ExtractCompressNuGet.ps1
     arguments: '$(Build.ArtifactStagingDirectory)\Signing  -Extract'
 
+- task: PowerShell@2
+  displayName: 'Fix license in .nuspec files'
+  inputs:
+    targetType: filePath
+    filePath: ./build/FixLicenseInNuspecFiles.ps1
+
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
   displayName: 'ESRP Signing - strong name (CP-233863-SN)'
   inputs:
