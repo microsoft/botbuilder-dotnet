@@ -72,23 +72,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 
         private byte[] CompressToGZip(string content)
         {
-            var byteArray = Encoding.Default.GetBytes(content);
+            var from = Encoding.Default.GetBytes(content);
 
-            using var memory = new MemoryStream();
-            using (var gzip = new GZipStream(memory, CompressionMode.Compress, true))
+            using var to = new MemoryStream();
+            using (var gzipStream = new GZipStream(to, CompressionMode.Compress))
             {
-                gzip.Write(byteArray, 0, byteArray.Length);
+                gzipStream.Write(from, 0, from.Length);
+                gzipStream.Close();
             }
 
-            return memory.ToArray();
+            return to.ToArray();
         }
 
         private string DecompressFromGZip(byte[] content)
         {
             using var from = new MemoryStream(content);
             using var to = new MemoryStream();
-            using var gZipStream = new GZipStream(from, CompressionMode.Decompress);
-            gZipStream.CopyTo(to);
+            using var gzipStream = new GZipStream(from, CompressionMode.Decompress);
+            gzipStream.CopyTo(to);
             return Encoding.Default.GetString(to.ToArray());
         }
     }
