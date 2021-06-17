@@ -38,8 +38,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The context label for a LUIS trace activity.
         /// </summary>
         public const string LuisTraceLabel = "Luis Trace";
-
-        private const string CacheKey = "LuisResult";
+        
+        private readonly string _cacheKey;
 
         private readonly LuisRecognizerOptions _luisRecognizerOptions;
 
@@ -69,6 +69,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
 #pragma warning disable 618 // Reference to obsolete property, this is here only for backward compat and should be removed when DefaultHttpClient is removed.
             DefaultHttpClient = HttpClient;
 #pragma warning restore 618
+
+            _cacheKey = _luisRecognizerOptions.Application.Endpoint + _luisRecognizerOptions.Application.ApplicationId;
         }
 
         /// <summary>
@@ -631,15 +633,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisRecognizerOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
-            var cached = turnContext.TurnState.Get<RecognizerResult>(CacheKey);
+            var cached = turnContext.TurnState.Get<RecognizerResult>(_cacheKey);
             if (cached == null)
             {
                 var result = await recognizer.RecognizeInternalAsync(turnContext, HttpClient, cancellationToken).ConfigureAwait(false);
-                turnContext.TurnState.Set<RecognizerResult>(CacheKey, result);
                 await OnRecognizerResultAsync(result, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                turnContext.TurnState.Set(_cacheKey, result);
+                _luisRecognizerOptions.TelemetryClient.TrackEvent("Luis result cached", telemetryProperties, telemetryMetrics);
+                
                 return result;
             }
 
+            _luisRecognizerOptions.TelemetryClient.TrackEvent("Read from cached Luis result", telemetryProperties, telemetryMetrics);
             return cached;
         }
 
@@ -657,15 +662,17 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var recognizer = predictionOptions ?? _luisRecognizerOptions;
             var turnContext = dialogContext.Context;
-            var cached = turnContext.TurnState.Get<RecognizerResult>(CacheKey);
+            var cached = turnContext.TurnState.Get<RecognizerResult>(_cacheKey);
             if (cached == null)
             {
                 var result = await recognizer.RecognizeInternalAsync(dialogContext, activity, HttpClient, cancellationToken).ConfigureAwait(false);
-                turnContext.TurnState.Set<RecognizerResult>(CacheKey, result);
                 await OnRecognizerResultAsync(result, dialogContext.Context, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+                turnContext.TurnState.Set(_cacheKey, result);
+                _luisRecognizerOptions.TelemetryClient.TrackEvent("Luis result cached", telemetryProperties, telemetryMetrics);
                 return result;
             }
 
+            _luisRecognizerOptions.TelemetryClient.TrackEvent("Read from cached Luis result", telemetryProperties, telemetryMetrics);
             return cached;
         }
 
