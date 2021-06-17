@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="id">Unique identifier representing a channel.</param>
         /// <param name="name">Name of the channel.</param>
-        public ChannelInfo(string id = default(string), string name = default(string))
+        public ChannelInfo(string id = default, string name = default)
         {
             Id = id;
             Name = name;

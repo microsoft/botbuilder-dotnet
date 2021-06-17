@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Equal(activity.ChannelId, conversationReference.ChannelId);
             Assert.Equal(activity.Locale, conversationReference.Locale);
             Assert.Equal(activity.ServiceUrl, conversationReference.ServiceUrl);
+
+            activity = CreateActivity(ActivityTypes.ConversationUpdate);
+            conversationReference = activity.GetConversationReference();
+
+            Assert.Null(conversationReference.ActivityId);
         }
 
         [Fact]
@@ -204,6 +209,24 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.True(trace.ValueType == (valueType ?? value?.GetType().Name));
             Assert.True(trace.Label == label);
             Assert.True(trace.Name == "test");
+        }
+
+        [Fact]
+        public void CreateTraceForConversationUpdateActivity()
+        {
+            var activity = CreateActivity(ActivityTypes.ConversationUpdate);
+            var trace = activity.CreateTrace("test");
+
+            Assert.Null(trace.ReplyToId);
+        }
+
+        [Fact]
+        public void CreateReplyForConversationUpdateActivity()
+        {
+            var activity = CreateActivity(ActivityTypes.ConversationUpdate);
+            var reply = activity.CreateReply("test");
+
+            Assert.Null(reply.ReplyToId);
         }
 
         [Fact]
@@ -510,6 +533,7 @@ namespace Microsoft.Bot.Schema.Tests
             var activity = new Activity
             {
                 Id = "123",
+                Type = activityType,
                 From = account1,
                 Recipient = account2,
                 Conversation = conversationAccount,
