@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
     public class UserTokenClientImplTests
     {
         private const string AppId = "test-app-id";
-        private const string ToChannelFromBotOAuthScope = "oauth-scope";
         private const string OauthEndpoint = "https://test.endpoint";
         private const string UserId = "userId";
         private const string ConnectionName = "connection-name";
