@@ -60,6 +60,7 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
+    - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_31
     variables:
       BuildConfiguration: Release-Windows
