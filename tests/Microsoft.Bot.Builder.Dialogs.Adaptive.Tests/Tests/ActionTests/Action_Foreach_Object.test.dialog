@@ -20,25 +20,12 @@
                             {
                                 "$kind": "Microsoft.Foreach",
                                 "index": "dialog.foreach.inner.index",
-                                "key": "dialog.foreach.inner.key",
                                 "value": "dialog.foreach.inner.value",
                                 "itemsProperty": "dialog.foreach.value",
                                 "actions": [
                                     {
-                                        "$kind": "Microsoft.IfCondition",
-                                        "condition": "=exists(dialog.foreach.inner.key)",
-                                        "actions": [
-                                            {
-                                                "$kind": "Microsoft.SendActivity",
-                                                "activity": "index is: ${dialog.foreach.inner.index}, key is: ${dialog.foreach.inner.key} and value is: ${dialog.foreach.inner.value}"
-                                            }
-                                        ],
-                                        "elseActions": [
-                                            {
-                                                "$kind": "Microsoft.SendActivity",
-                                                "activity": "index is: ${dialog.foreach.inner.index} and value is: ${dialog.foreach.inner.value}"
-                                            }
-                                        ]
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "index is: ${dialog.foreach.inner.index} and value is: ${dialog.foreach.inner.value}"
                                     }
                                 ]
                             }
@@ -65,11 +52,11 @@
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "index is: 0, key is: k1 and value is: v1"
+            "text": "index is: k1 and value is: v1"
         },
         {
             "$kind": "Microsoft.Test.AssertReply",
-            "text": "index is: 1, key is: k2 and value is: v2"
+            "text": "index is: k2 and value is: v2"
         }
     ]
 }

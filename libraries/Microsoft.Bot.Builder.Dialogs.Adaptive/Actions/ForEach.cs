@@ -23,8 +23,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Foreach";
 
-        private const string IterationKey = "key";
+        private const string IterationKey = "index";
         private const string IterationValue = "value";
+
+        private int index;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Foreach"/> class.
@@ -69,15 +71,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public StringExpression Index { get; set; } = "dialog.foreach.index";
 
         /// <summary>
-        /// Gets or sets property path expression to item key.
-        /// </summary>
-        /// <value>
-        /// Property path expression to the item key.
-        /// </value>
-        [JsonProperty("key")]
-        public StringExpression Key { get; set; } = "dialog.foreach.key";
-
-        /// <summary>
         /// Gets or sets property path expression to item value.
         /// </summary>
         /// <value>
@@ -106,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            dc.State.SetValue(Index.GetValue(dc.State), -1);
+            index = -1;
             return await this.NextItemAsync(dc, cancellationToken).ConfigureAwait(false);
         }
 
@@ -165,15 +158,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var result = dc.State.GetValue<object>(this.ItemsProperty.GetValue(dc.State));
             var list = ConvertToList(result);
 
-            var index = dc.State.GetIntValue(Index.GetValue(dc.State));
-
             // Next item
             if (list != null && ++index < list.Count)
             {
                 // Persist index and value
                 dc.State.SetValue(Value.GetValue(dc.State), list[index][IterationValue]);
-                dc.State.SetValue(Index.GetValue(dc.State), index);
-                dc.State.SetValue(Key.GetValue(dc.State), list[index][IterationKey]);
+                dc.State.SetValue(Index.GetValue(dc.State), list[index][IterationKey]);
 
                 // Start loop
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
@@ -196,11 +186,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var result = new JArray();
             if (FunctionUtils.TryParseList(instance, out var list))
             {
-                foreach (var item in list)
+                for (var i = 0; i < list.Count; i++)
                 {
                     result.Add(new JObject
                     {
-                        [IterationValue] = ConvertToJToken(item)
+                        [IterationKey] = ConvertToJToken(i),
+                        [IterationValue] = ConvertToJToken(list[i])
                     });
                 }
             }

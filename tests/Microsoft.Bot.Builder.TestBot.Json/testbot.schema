@@ -3239,12 +3239,6 @@
                     "description": "Property that holds the index of the item.",
                     "default": "dialog.foreach.index"
                 },
-                "key": {
-                    "$ref": "#/definitions/stringExpression",
-                    "title": "Key property",
-                    "description": "Property that holds the key of the item.",
-                    "default": "dialog.foreach.key"
-                },
                 "value": {
                     "$ref": "#/definitions/stringExpression",
                     "title": "Value property",
