@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="alert">true if notification is to be sent to the user,
         /// false otherwise.</param>
-        public NotificationInfo(bool? alert = default(bool?))
+        public NotificationInfo(bool? alert = default)
         {
             Alert = alert;
             CustomInit();
