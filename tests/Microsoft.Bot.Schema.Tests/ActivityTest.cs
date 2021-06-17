@@ -533,7 +533,6 @@ namespace Microsoft.Bot.Schema.Tests
             var activity = new Activity
             {
                 Id = "123",
-                Type = activityType,
                 From = account1,
                 Recipient = account2,
                 Conversation = conversationAccount,
