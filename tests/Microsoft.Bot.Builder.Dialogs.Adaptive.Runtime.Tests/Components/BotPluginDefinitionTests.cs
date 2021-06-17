@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Component;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -124,7 +125,35 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
             {
                 Name = "TestPlugin",
                 SettingsPrefix = settingsPrefix
-            }.Load(pluginEnumerator, services, configuration);
+            }.Load(pluginEnumerator, services, configuration, new TestLogger());
+        }
+
+        [Fact]
+        public void Load_Succeeds_NoComponents()
+        {
+            var pluginEnumerator = new TestBotComponentEnumerator();
+            var services = new ServiceCollection();
+            IConfiguration configuration = new ConfigurationBuilder().Build();
+
+            var logger = new TestLogger
+            {
+                LogAction = (logLevel, eventId, state, exception) =>
+                {
+                    Assert.Equal(LogLevel.Warning, logLevel);
+                    Assert.Equal(0, eventId.Id);
+                    Assert.Null(eventId.Name);
+                    Assert.Equal(
+                        $"TestPlugin does not contain any discoverable implementations of Microsoft.Bot.Builder.BotComponent. " +
+                        "Consider removing this component from the list of components in your application settings.",
+                        state.ToString());
+                    Assert.Null(exception);
+                }
+            };
+
+            new BotComponentDefinition
+            {
+                Name = "TestPlugin"
+            }.Load(pluginEnumerator, services, configuration, logger);
         }
 
         [Fact]
@@ -158,7 +187,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
             new BotComponentDefinition
             {
                 Name = "TestPlugin"
-            }.Load(pluginEnumerator, services, configuration);
+            }.Load(pluginEnumerator, services, configuration, new TestLogger());
 
             IServiceProvider provider = services.BuildServiceProvider();
 
@@ -183,7 +212,8 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
         {
             Assert.Throws<ArgumentNullException>(
                 paramName,
-                () => new BotComponentDefinition().Load(pluginEnumerator, services, configuration));
+                () => new BotComponentDefinition().
+                Load(pluginEnumerator, services, configuration, new TestLogger()));
         }
 
         [Theory]
@@ -200,7 +230,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Components
                 () => new BotComponentDefinition
                 {
                     Name = name
-                }.Load(pluginEnumerator, services, configuration));
+                }.Load(pluginEnumerator, services, configuration, new TestLogger()));
         }
     }
 }

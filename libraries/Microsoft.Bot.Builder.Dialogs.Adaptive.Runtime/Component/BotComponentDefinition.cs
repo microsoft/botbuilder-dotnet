@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Component
@@ -45,10 +46,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Component
         /// <param name="pluginEnumerator">Enumerates available plugins from the definition information.</param>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">Application configuration.</param>
+        /// <param name="logger"><see cref="ILogger"/> instance.</param>
         public void Load(
             IBotComponentEnumerator pluginEnumerator,
             IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger logger)
         {
             if (pluginEnumerator == null)
             {
@@ -65,16 +68,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Component
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            foreach (BotComponent component in pluginEnumerator.GetComponents(this.Name))
+            if (logger == null)
             {
-                var componentServices = new ServiceCollection();
+                throw new ArgumentNullException(nameof(logger));
+            }
 
-                component.ConfigureServices(componentServices, GetPluginConfiguration(configuration));
+            var components = new List<BotComponent>(pluginEnumerator.GetComponents(this.Name));
 
-                foreach (var serviceDescriptor in componentServices)
+            if (components.Count > 0)
+            {
+                foreach (BotComponent component in pluginEnumerator.GetComponents(this.Name))
                 {
-                    services.Add(serviceDescriptor);
+                    var componentServices = new ServiceCollection();
+
+                    component.ConfigureServices(componentServices, GetPluginConfiguration(configuration));
+
+                    foreach (var serviceDescriptor in componentServices)
+                    {
+                        services.Add(serviceDescriptor);
+                    }
                 }
+            }
+            else
+            {
+                logger.LogWarning(
+                    $"{this.Name} does not contain any discoverable implementations of {typeof(BotComponent).FullName}. " +
+                    "Consider removing this component from the list of components in your application settings.");
             }
         }
 

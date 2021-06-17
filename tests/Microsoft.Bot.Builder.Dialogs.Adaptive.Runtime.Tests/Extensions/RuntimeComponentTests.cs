@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Component;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Settings;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Tests.Components.TestComponents;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Memory;
@@ -18,6 +20,7 @@ using Microsoft.Bot.Builder.Runtime.Tests.Components.Implementations;
 using Microsoft.Bot.Builder.Runtime.Tests.Components.TestComponents;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
@@ -70,7 +73,7 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             services.AddSingleton<IConfiguration>(configuration);
 
             // Test
-            services.AddBotRuntimeComponents(configuration);
+            services.AddBotRuntimeComponents(configuration, new TestLoggerFactory());
 
             // Assert 
             var provider = services.BuildServiceProvider();
@@ -174,6 +177,24 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
             {
                 byte[] byteArray = Encoding.UTF8.GetBytes(_json);
                 return Task.FromResult<Stream>(new MemoryStream(byteArray));
+            }
+        }
+
+        internal class TestLoggerFactory : ILoggerFactory
+        {
+            public void AddProvider(ILoggerProvider provider)
+            {
+                throw new NotImplementedException();
+            }
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return new TestLogger();
+            }
+
+            public void Dispose()
+            {
+                throw new NotImplementedException();
             }
         }
     }
