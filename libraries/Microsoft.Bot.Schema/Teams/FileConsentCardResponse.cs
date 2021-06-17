@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// action.</param>
         /// <param name="uploadInfo">If the user accepted the file, contains
         /// information about the file to be uploaded.</param>
-        public FileConsentCardResponse(string action = default(string), object context = default(object), FileUploadInfo uploadInfo = default(FileUploadInfo))
+        public FileConsentCardResponse(string action = default, object context = default, FileUploadInfo uploadInfo = default)
         {
             Action = action;
             Context = context;
