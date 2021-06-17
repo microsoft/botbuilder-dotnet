@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,6 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         [JsonProperty("$kind")]
         public const string Kind = "Microsoft.Foreach";
+
+        private const string IterationKey = "key";
+        private const string IterationValue = "value";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Foreach"/> class.
@@ -63,6 +67,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         [JsonProperty("index")]
         public StringExpression Index { get; set; } = "dialog.foreach.index";
+
+        /// <summary>
+        /// Gets or sets property path expression to item key.
+        /// </summary>
+        /// <value>
+        /// Property path expression to the item key.
+        /// </value>
+        [JsonProperty("key")]
+        public StringExpression Key { get; set; } = "dialog.foreach.key";
 
         /// <summary>
         /// Gets or sets property path expression to item value.
@@ -149,15 +162,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected virtual async Task<DialogTurnResult> NextItemAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
             // Get list information
-            var list = dc.State.GetValue<JArray>(this.ItemsProperty.GetValue(dc.State));
+            var result = dc.State.GetValue<object>(this.ItemsProperty.GetValue(dc.State));
+            var list = ConvertToList(result);
+
             var index = dc.State.GetIntValue(Index.GetValue(dc.State));
 
             // Next item
             if (list != null && ++index < list.Count)
             {
                 // Persist index and value
-                dc.State.SetValue(Value.GetValue(dc.State), list[index]);
+                dc.State.SetValue(Value.GetValue(dc.State), list[index][IterationValue]);
                 dc.State.SetValue(Index.GetValue(dc.State), index);
+                dc.State.SetValue(Key.GetValue(dc.State), list[index][IterationKey]);
 
                 // Start loop
                 return await this.BeginActionAsync(dc, 0, cancellationToken).ConfigureAwait(false);
@@ -173,6 +189,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{GetType().Name}({this.ItemsProperty?.ToString()})";
+        }
+
+        private JArray ConvertToList(object instance)
+        {
+            var result = new JArray();
+            if (FunctionUtils.TryParseList(instance, out var list))
+            {
+                foreach (var item in list)
+                {
+                    result.Add(new JObject
+                    {
+                        [IterationValue] = ConvertToJToken(item)
+                    });
+                }
+            }
+            else if (instance is JObject jobj)
+            {
+                result = Object2List(jobj);
+            }
+            else if (ConvertToJToken(instance) is JObject jobject)
+            {
+                result = Object2List(jobject);
+            }
+
+            return result;
+        }
+
+        private JArray Object2List(JObject jobj)
+        {
+            var result = new JArray();
+            foreach (var item in jobj)
+            {
+                result.Add(new JObject
+                {
+                    [IterationKey] = ConvertToJToken(item.Key),
+                    [IterationValue] = ConvertToJToken(item.Value)
+                });
+            }
+
+            return result;
+        }
+
+        private JToken ConvertToJToken(object value)
+        {
+            return value == null ? JValue.CreateNull() : JToken.FromObject(value);
         }
     }
 }
