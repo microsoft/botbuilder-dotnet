@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Action which calls another dialog, when it is done it will go to the callers parent dialog.
     /// </summary>
-    public class ReplaceDialog : BaseInvokeDialog, IHaveParentDialogDependencies
+    public class ReplaceDialog : BaseInvokeDialog, IAdaptiveDialogDependencies
     {
         /// <summary>
         /// Class identifier.
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Enumerate child dialog dependencies required to be exposed for parent containers dialogset.
         /// </summary>
         /// <returns>dialog enumeration.</returns>
-        public virtual IEnumerable<Dialog> GetParentDependencies()
+        public virtual IEnumerable<Dialog> GetExternalDependencies()
         {
             return this.GetDependencies();
         }

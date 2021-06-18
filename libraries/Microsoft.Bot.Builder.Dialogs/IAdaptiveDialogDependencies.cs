@@ -8,12 +8,12 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines Dialog Dependencies interface for enumerating child dialogs should exposed for parent.
     /// </summary>
-    public interface IHaveParentDialogDependencies
+    public interface IAdaptiveDialogDependencies
     {
         /// <summary>
         /// Enumerate child dialog dependencies required to be exposed for parent containers dialogset.
         /// </summary>
         /// <returns>dialog enumeration.</returns>
-        IEnumerable<Dialog> GetParentDependencies();
+        IEnumerable<Dialog> GetExternalDependencies();
     }
 }
