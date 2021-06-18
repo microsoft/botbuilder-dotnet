@@ -121,5 +121,23 @@ namespace Microsoft.Bot.Schema.Tests.Teams
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
+
+        internal class TabSuggestedActionsTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { null };
+                yield return new object[]
+                { 
+                    new List<CardAction>()
+                    { 
+                        new CardAction(),
+                        new CardAction(),
+                    } 
+                };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
     }
 }
