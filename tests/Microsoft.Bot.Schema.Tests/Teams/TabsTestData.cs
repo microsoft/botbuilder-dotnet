@@ -81,5 +81,28 @@ namespace Microsoft.Bot.Schema.Tests.Teams
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
+
+        internal class TabSubmitTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                // TabEntityContext tabEntityContext, TabContext tabContext, TabSubmitData tabSubmitData
+                yield return new object[]
+                {
+                    null,
+                    null,
+                    null,
+                };
+
+                yield return new object[]
+                {
+                    new TabEntityContext(),
+                    new TabContext(),
+                    new TabSubmitData(),
+                };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
     }
 }
