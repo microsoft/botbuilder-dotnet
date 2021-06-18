@@ -59,5 +59,27 @@ namespace Microsoft.Bot.Schema.Tests.Teams
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
+
+        internal class TabResponsePayloadTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[]
+                {
+                    null,
+                    null,
+                    null
+                };
+
+                yield return new object[]
+                {
+                    "docx",
+                    new TabResponseCards(),
+                    new TabSuggestedActions(),
+                };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
     }
 }
