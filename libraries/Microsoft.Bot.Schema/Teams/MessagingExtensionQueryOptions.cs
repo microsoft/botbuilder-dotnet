@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="skip">Number of entities to skip.</param>
         /// <param name="count">Number of entities to fetch.</param>
-        public MessagingExtensionQueryOptions(int? skip = default(int?), int? count = default(int?))
+        public MessagingExtensionQueryOptions(int? skip = default, int? count = default)
         {
             Skip = skip;
             Count = count;

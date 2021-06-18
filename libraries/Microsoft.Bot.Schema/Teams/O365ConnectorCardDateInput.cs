@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="value">Default value for this input field.</param>
         /// <param name="includeTime">Include time input field. Default value
         /// is false (date only).</param>
-        public O365ConnectorCardDateInput(string type = default(string), string id = default(string), bool? isRequired = default(bool?), string title = default(string), string value = default(string), bool? includeTime = default(bool?))
+        public O365ConnectorCardDateInput(string type = default, string id = default, bool? isRequired = default, string title = default, string value = default, bool? includeTime = default)
             : base(type, id, isRequired, title, value)
         {
             IncludeTime = includeTime;

@@ -570,20 +570,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             connectorMock.SetupGet(m => m.Conversations).Returns(conversationsMock.Object);
 
             var expectedServiceUrl = "http://serviceUrl";
+            var expectedAudience = "audience";
 
             var connectorFactoryMock = new Mock<ConnectorFactory>();
-            connectorFactoryMock.Setup(cf => cf.CreateAsync(It.Is<string>(serviceUrl => serviceUrl == expectedServiceUrl), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(connectorMock.Object));
+            connectorFactoryMock.Setup(cf => cf.CreateAsync(It.Is<string>(serviceUrl => serviceUrl == expectedServiceUrl), It.Is<string>(audience => audience == expectedAudience), It.IsAny<CancellationToken>())).Returns(Task.FromResult(connectorMock.Object));
 
             var cloudEnvironmentMock = new Mock<BotFrameworkAuthentication>();
             cloudEnvironmentMock.Setup(ce => ce.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(authenticateRequestResult));
             cloudEnvironmentMock.Setup(ce => ce.CreateConnectorFactory(It.IsAny<ClaimsIdentity>())).Returns(connectorFactoryMock.Object);
             cloudEnvironmentMock.Setup(ce => ce.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<UserTokenClient>(userTokenClient));
-
-            var bot = new ConnectorFactoryBot();
-
-            var conversationAccount = new ConversationAccount { Id = "conversation Id" };
-            var continuationActivity = new Activity { Type = ActivityTypes.Event, ServiceUrl = expectedServiceUrl, Conversation = conversationAccount };
-            var conversationReference = new ConversationReference { ServiceUrl = expectedServiceUrl, Conversation = conversationAccount };
 
             var expectedChannelId = "expected-channel-id";
             var actualChannelId = string.Empty;
@@ -605,7 +600,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
             // Act
             var adapter = new CloudAdapter(cloudEnvironmentMock.Object);
-            await adapter.CreateConversationAsync("botAppId", expectedChannelId, expectedServiceUrl, conversationParameters, callback1, CancellationToken.None);
+            await adapter.CreateConversationAsync("botAppId", expectedChannelId, expectedServiceUrl, expectedAudience, conversationParameters, callback1, CancellationToken.None);
 
             // Assert
             Assert.Equal(expectedChannelId, actualChannelId);

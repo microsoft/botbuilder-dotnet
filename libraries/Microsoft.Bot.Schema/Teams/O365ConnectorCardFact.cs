@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="name">Display name of the fact.</param>
         /// <param name="value">Display value for the fact.</param>
-        public O365ConnectorCardFact(string name = default(string), string value = default(string))
+        public O365ConnectorCardFact(string name = default, string value = default)
         {
             Name = name;
             Value = value;

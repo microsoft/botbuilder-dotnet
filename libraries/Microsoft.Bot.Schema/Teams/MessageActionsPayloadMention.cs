@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// mentioned entity.</param>
         /// <param name="mentioned">Provides more details on the mentioned
         /// entity.</param>
-        public MessageActionsPayloadMention(int? id = default(int?), string mentionText = default(string), MessageActionsPayloadFrom mentioned = default(MessageActionsPayloadFrom))
+        public MessageActionsPayloadMention(int? id = default, string mentionText = default, MessageActionsPayloadFrom mentioned = default)
         {
             Id = id;
             MentionText = mentionText;

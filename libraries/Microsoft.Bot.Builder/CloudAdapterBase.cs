@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <inheritdoc/>
-        public override async Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        public override async Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, string audience, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(serviceUrl))
             {
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder
             var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
 
             // Create the connector client to use for outbound requests.
-            using (var connectorClient = await connectorFactory.CreateAsync(serviceUrl, null, cancellationToken).ConfigureAwait(false))
+            using (var connectorClient = await connectorFactory.CreateAsync(serviceUrl, audience, cancellationToken).ConfigureAwait(false))
             {
                 // Make the actual create conversation call using the connector.
                 var createConversationResult = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
