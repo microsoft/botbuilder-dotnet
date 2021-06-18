@@ -4,6 +4,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Schema.Tests.Teams
 {
@@ -99,6 +100,22 @@ namespace Microsoft.Bot.Schema.Tests.Teams
                     new TabEntityContext(),
                     new TabContext(),
                     new TabSubmitData(),
+                };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        internal class TabSubmitDataTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                // string tabType, JObject properties
+                yield return new object[] { null, null };
+                yield return new object[]
+                {
+                    "pdf",
+                    new JObject() { { "key", "value" } },
                 };
             }
 
