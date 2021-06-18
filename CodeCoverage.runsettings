@@ -34,7 +34,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Declarative.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>                
-                <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
+                 <ModulePath>.*\Microsoft.Bot.Builder.Schema.dll$</ModulePath> 
               </Include>
             </ModulePaths>
             <Sources>
