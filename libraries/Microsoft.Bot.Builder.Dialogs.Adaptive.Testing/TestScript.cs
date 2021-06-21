@@ -155,9 +155,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .Use(new RegisterClassMiddleware<IConfiguration>(Configuration))
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
-                .Use(new TestingMiddleware());
-
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+                
             if (middlweare != null)
             {
                 foreach (var m in middlweare)
