@@ -96,7 +96,7 @@
     },
     {
       "$kind": "Microsoft.Test.AssertTelemetryContains",
-      "contains": [
+      "events": [
         "Luis result cached",
         "Read from cached Luis result"
       ],
