@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Schema.Teams
     /// <summary>
     /// Specific details of a Teams meeting.
     /// </summary>
-    public partial class MeetingDetails
+    public partial class MeetingDetails : MeetingDetailsBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MeetingDetails"/> class.
@@ -37,26 +37,15 @@ namespace Microsoft.Bot.Schema.Teams
             Uri joinUrl = null,
             string title = null,
             string type = "Scheduled")
+            : base(id, joinUrl, title)
         {
-            Id = id;
             MsGraphResourceId = msGraphResourceId;
             ScheduledStartTime = scheduledStartTime;
             ScheduledEndTime = scheduledEndTime;
-            JoinUrl = joinUrl;
-            Title = title;
             Type = type;
 
             CustomInit();
         }
-
-        /// <summary>
-        /// Gets or sets the meeting's Id, encoded as a BASE64 string.
-        /// </summary>
-        /// <value>
-        /// The meeting's Id, encoded as a BASE64 string.
-        /// </value>
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the MsGraphResourceId, used specifically for MS Graph API calls.
@@ -84,24 +73,6 @@ namespace Microsoft.Bot.Schema.Teams
         /// </value>
         [JsonProperty(PropertyName = "scheduledEndTime")]
         public DateTime ScheduledEndTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL used to join the meeting.
-        /// </summary>
-        /// <value>
-        /// The URL used to join the meeting.
-        /// </value>
-        [JsonProperty(PropertyName = "joinUrl")]
-        public Uri JoinUrl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the title of the meeting.
-        /// </summary>
-        /// <value>
-        /// The title of the meeting.
-        /// </value>
-        [JsonProperty(PropertyName = "title")]
-        public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets the meeting's type.
