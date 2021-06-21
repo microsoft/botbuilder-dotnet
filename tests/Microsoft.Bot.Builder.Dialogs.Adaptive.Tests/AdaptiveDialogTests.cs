@@ -254,8 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Use(new RegisterClassMiddleware<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection().Build()))
                 .UseStorage(storage)
                 .UseBotState(userState, convoState)
-                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
-                .Use(new TestingMiddleware());
+                .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
 
             adapter.OnTurnError += (context, err) => { throw err; };
 
