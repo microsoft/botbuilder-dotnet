@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(2, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("test"));
             Assert.Equal("testvalue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["test"]);
@@ -419,7 +419,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(2, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
 
             // Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 8);
@@ -467,7 +467,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(2, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 7);
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
@@ -519,7 +519,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(2, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
             Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"]);
@@ -577,7 +577,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(2, telemetryClient.Invocations.Count);
+            Assert.Equal(3, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
             Assert.Equal("myImportantValue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["MyImportantProperty"]);
@@ -630,7 +630,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(2, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intent"));
@@ -674,7 +674,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(2, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("intent"));
@@ -729,7 +729,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(telemetryClient.Invocations);
+            Assert.Equal(2, telemetryClient.Invocations.Count);
             Assert.Equal("LuisResult", telemetryClient.Invocations[0].Arguments[0].ToString());
             Assert.True(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("test"));
             Assert.Equal("testvalue", ((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1])["test"]);
