@@ -75,25 +75,12 @@
       "text": "Bread?"
     },
     {
-      "$kind": "Microsoft.Test.MemoryAssertions",
-      "assertions": [
-        "$retries == 0"
-      ],
-      "description": "Ensure retries is initialized"
-    },
-    {
       "$kind": "Microsoft.Test.UserSays",
       "text": "no entities"
     },
     {
       "$kind": "Microsoft.Test.AssertReply",
       "text": "Bread?"
-    },
-    {
-      "$kind": "Microsoft.Test.MemoryAssertions",
-      "assertions": [
-        "$retries == 1"
-      ]
     },
     {
       "$kind": "Microsoft.Test.UserSays",
@@ -108,10 +95,12 @@
       "text": "rye"
     },
     {
-      "$kind": "Microsoft.Test.MemoryAssertions",
-      "assertions": [
-        "!$retries"
-      ]
+      "$kind": "Microsoft.Test.AssertTelemetryContains",
+      "contains": [
+        "Luis result cached",
+        "Read from cached Luis result"
+      ],
+      "description": "Ensure telemetry log contains cached Luis info"
     }
   ]
 }

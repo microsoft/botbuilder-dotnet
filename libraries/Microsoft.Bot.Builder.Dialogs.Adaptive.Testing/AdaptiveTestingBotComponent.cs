@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<AssertReplyActivity>(AssertReplyActivity.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<AssertNoActivity>(AssertNoActivity.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<MemoryAssertions>(MemoryAssertions.Kind));
+            services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<AssertTelemetryContains>(AssertTelemetryContains.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<HttpRequestSequenceMock>(HttpRequestSequenceMock.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<UserTokenBasicMock>(UserTokenBasicMock.Kind));
             services.AddSingleton<DeclarativeType>(sp => new DeclarativeType<SetProperties>(SetProperties.Kind));
