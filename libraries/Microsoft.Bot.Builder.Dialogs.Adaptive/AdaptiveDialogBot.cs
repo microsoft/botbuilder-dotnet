@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             using (var botFrameworkClient = _botFrameworkAuthentication.CreateBotFrameworkClient())
             {
                 // Set up the TurnState the Dialog is expecting
-                await SetUpTurnStateAsync(turnContext, botFrameworkClient);
+                await SetUpTurnStateAsync(turnContext, botFrameworkClient).ConfigureAwait(false);
 
                 // Load the Dialog from the ResourceExplorer - the actual load should only happen once
                 var rootDialog = await _lazyRootDialog.Value.ConfigureAwait(false);
