@@ -18,8 +18,9 @@
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)\CodeCoverage.runsettings</RunSettingsFilePath>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
