@@ -9,12 +9,13 @@ using AdaptiveExpressions;
 using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Functions
 {
     /// <summary>
-    /// Defines missingProperties(templateName) expression function.
+    /// Defines missingProperties(template) expression function.
     /// </summary>
     /// <remarks>
     /// This expression will get all variables the template contains.
@@ -25,6 +26,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
         /// Function identifier name.
         /// </summary>
         public const string Name = "missingProperties";
+
+        private const string LanguagePolicyInDialogPath = "dialogclass.generator.languagePolicy";
+
+        private const string ResourceIdInDialogPath = "dialogclass.generator.resourceId";
 
         private static DialogContext dialogContext;
 
@@ -47,10 +52,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
             }
 
             var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
-            var templateName = args[0]?.ToString();
+            var templateBody = args[0]?.ToString();
             var currentLocale = GetCurrentLocale(state, options);
 
-            if (state.TryGetValue("dialogclass.generator.resourceId", out var resourceId))
+            if (state.TryGetValue(ResourceIdInDialogPath, out var resourceId))
             {
                 var (resourceName, locale) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
 
@@ -70,24 +75,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
                 {
                     if (generator is TemplateEngineLanguageGenerator templateGenerator)
                     {
-                        if (templateGenerator.LG.AllTemplates.Any(u => u.Name == templateName))
-                        {
-                            var analyzerResults = templateGenerator.LG.AnalyzeTemplate(templateName);
-                            return (analyzerResults.Variables, null);
-                        }
+                        var tempTemplateName = $"{Templates.InlineTemplateIdPrefix}{Guid.NewGuid():N}";
 
-                        // Alias inject
-                        var pointIndex = templateName.IndexOf('.');
-                        if (pointIndex > 0)
-                        {
-                            var alias = templateName.Substring(0, pointIndex);
-                            if (templateGenerator.LG.NamedReferences.ContainsKey(alias))
-                            {
-                                var realTemplateName = templateName.Substring(pointIndex + 1);
-                                var analyzerResults = templateGenerator.LG.NamedReferences[alias].AnalyzeTemplate(realTemplateName);
-                                return (analyzerResults.Variables, null);
-                            }
-                        }
+                        var multiLineMark = "```";
+
+                        templateBody = !templateBody.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && templateBody.Contains('\n')
+                               ? $"{multiLineMark}{templateBody}{multiLineMark}" : templateBody;
+
+                        templateGenerator.LG.AddTemplate(tempTemplateName, null, $"- {templateBody}");
+                        var analyzerResults = templateGenerator.LG.AnalyzeTemplate(tempTemplateName);
+
+                        // Delete it after the analyzer
+                        templateGenerator.LG.DeleteTemplate(tempTemplateName);
+                        return (analyzerResults.Variables, null);
                     }
                 }
             }
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
         private static string GetCurrentLocale(IMemory memory, Options options)
         {
             string currentLocale;
-            if (memory.TryGetValue("turn.locale", out var locale))
+            if (memory.TryGetValue(TurnPath.Locale, out var locale))
             {
                 currentLocale = locale.ToString();
             }
@@ -116,9 +116,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
 
             object languagePolicyObj;
             var getLanguagePolicy = false;
-            if (!memory.TryGetValue("dialogclass.generator.languagePolicy", out languagePolicyObj))
+            if (!memory.TryGetValue(LanguagePolicyInDialogPath, out languagePolicyObj))
             {
-                if (memory.TryGetValue("turn.languagePolicy", out languagePolicyObj))
+                if (memory.TryGetValue(TurnPath.LanguagePolicy, out languagePolicyObj))
                 {
                     getLanguagePolicy = true;
                 }

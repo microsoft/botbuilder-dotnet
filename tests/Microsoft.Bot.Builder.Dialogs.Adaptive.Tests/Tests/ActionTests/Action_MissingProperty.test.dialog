@@ -12,7 +12,7 @@
                     {
                         "$kind": "Microsoft.SetProperty",
                         "property": "user.missingProperties",
-                        "value": "=missingProperties('formFilling')"
+                        "value": "=missingProperties('my name is ${user.name} and my age is ${user.age}')"
                     },
                     {
                         "$kind": "Microsoft.Foreach",
@@ -33,7 +33,7 @@
                     },
                     {
                         "$kind": "Microsoft.SendActivity",
-                        "activity": "You finish all slot filling. And get result: ${formFilling()}"
+                        "activity": "You finish all slot filling. And get result: my name is ${user.name} and my age is ${user.age}"
                     }
                 ]
             }

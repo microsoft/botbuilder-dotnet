@@ -662,13 +662,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <exception cref="CultureNotFoundException">Thrown when no locale is resolved and no default value factory is provided.</exception>
         public string GetLocale()
         {
-            const string TurnLocaleProperty = "turn.locale";
             string locale;
 
             try
             {
                 // turn.locale is the highest precedence.
-                if (State.TryGetValue<string>(TurnLocaleProperty, out locale) && !string.IsNullOrEmpty(locale))
+                if (State.TryGetValue<string>(TurnPath.Locale, out locale) && !string.IsNullOrEmpty(locale))
                 {
                     return new CultureInfo(locale).Name;
                 }

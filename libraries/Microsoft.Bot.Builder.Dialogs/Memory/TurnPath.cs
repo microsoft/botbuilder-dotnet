@@ -43,6 +43,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string Text = "turn.recognized.text";
 
         /// <summary>
+        /// Language policy.
+        /// </summary>
+        public const string LanguagePolicy = "turn.languagePolicy";
+
+        /// <summary>
+        /// Locale.
+        /// </summary>
+        public const string Locale = "turn.locale";
+
+        /// <summary>
         /// Original utterance split into unrecognized strings.
         /// </summary>
         public const string UnrecognizedText = "turn.unrecognizedText";

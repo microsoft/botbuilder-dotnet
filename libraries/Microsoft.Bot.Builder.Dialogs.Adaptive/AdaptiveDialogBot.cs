@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_telemetryClient);
 
             // put global language policy into turn scope for lg functions fallback
-            ObjectPath.SetPathValue(turnContext.TurnState, "turn.languagePolicy", _languagePolicy);
+            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.LanguagePolicy, _languagePolicy);
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);

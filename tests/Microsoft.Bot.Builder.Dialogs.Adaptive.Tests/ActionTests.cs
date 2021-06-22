@@ -474,12 +474,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
-        public async Task Action_SetProperty_MissPropertiesFunction()
-        {
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
-        }
-
-        [Fact]
         public async Task Action_MissingProperty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
