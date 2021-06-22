@@ -32,8 +32,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 {
                     context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
                 }
-
-                context.ExceptionHandled = true;
             }
         }
     }
