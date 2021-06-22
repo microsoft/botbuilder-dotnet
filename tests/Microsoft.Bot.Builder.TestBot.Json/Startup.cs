@@ -44,11 +44,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             services.AddSingleton<AuthenticationConfiguration>();
 
             new DialogsBotComponent().ConfigureServices(services, Configuration);
-            new DeclarativeBotComponent().ConfigureServices(services, Configuration);
-            new AdaptiveBotComponent().ConfigureServices(services, Configuration);
-            new LanguageGenerationBotComponent().ConfigureServices(services, Configuration);
-            new QnAMakerBotComponent().ConfigureServices(services, Configuration);
-            new LuisBotComponent().ConfigureServices(services, Configuration);
+            ComponentRegistration.Add(new DeclarativeComponentRegistration());
+            ComponentRegistration.Add(new AdaptiveComponentRegistration());
+            ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
+            ComponentRegistration.Add(new QnAMakerComponentRegistration());
+            ComponentRegistration.Add(new LuisComponentRegistration());
 
             // Create the Bot Framework Adapter with error handling enabled.
             // Note: some classes use the base BotAdapter so we add an extra registration that pulls the same instance.
