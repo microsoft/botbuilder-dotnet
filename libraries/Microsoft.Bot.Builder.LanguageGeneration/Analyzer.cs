@@ -197,9 +197,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private AnalyzerResult AnalyzeExpressionDirectly(Expression exp)
         {
             var result = new AnalyzerResult();
-            var templateName = exp.Type;
-            if (_templateMap.ContainsKey(templateName))
+
+            if (_templateMap.ContainsKey(exp.Type))
             {
+                // template function
+                var templateName = exp.Type;
                 result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
 
                 if (_templateMap[templateName].Parameters.Count == 0)
