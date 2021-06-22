@@ -133,6 +133,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 var eventActivity = turnContext.Activity.AsEventActivity();
                 if (eventActivity.Name == "SetTestOptions")
                 {
+                    _logger.LogInformation("SetTestOptions received.  This could change the behavior of AdaptiveExpression RandomNext.");
+
                     var conversationState = turnContext.TurnState.Get<ConversationState>();
                     var property = conversationState.CreateProperty<object>("TestOptions");
                     await property.SetAsync(turnContext, eventActivity.Value).ConfigureAwait(false);
