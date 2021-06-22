@@ -24,14 +24,11 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="type">Input type name. Possible values include:
         /// 'textInput', 'dateInput', 'multichoiceInput'.</param>
-        /// <param name="id">Input Id. It must be unique per entire O365
-        /// connector card.</param>
-        /// <param name="isRequired">Define if this input is a required field.
-        /// Default value is false.</param>
-        /// <param name="title">Input title that will be shown as the
-        /// placeholder.</param>
+        /// <param name="id">Input Id. It must be unique per entire O365 connector card.</param>
+        /// <param name="isRequired">Define if this input is a required field. Default value is false.</param>
+        /// <param name="title">Input title that will be shown as the placeholder.</param>
         /// <param name="value">Default value for this input field.</param>
-        public O365ConnectorCardInputBase(string type = default(string), string id = default(string), bool? isRequired = default(bool?), string title = default(string), string value = default(string))
+        public O365ConnectorCardInputBase(string type = default, string id = default, bool? isRequired = default, string title = default, string value = default)
         {
             Type = type;
             Id = id;

@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// whose each item can be in any subtype of
         /// O365ConnectorCardActionBase except O365ConnectorCardActionCard, as
         /// nested ActionCard is forbidden.</param>
-        public O365ConnectorCardActionCard(string type = default(string), string name = default(string), string id = default(string), IList<O365ConnectorCardInputBase> inputs = default(IList<O365ConnectorCardInputBase>), IList<O365ConnectorCardActionBase> actions = default(IList<O365ConnectorCardActionBase>))
+        public O365ConnectorCardActionCard(string type = default, string name = default, string id = default, IList<O365ConnectorCardInputBase> inputs = default, IList<O365ConnectorCardActionBase> actions = default)
             : base(type, name, id)
         {
             Inputs = inputs;

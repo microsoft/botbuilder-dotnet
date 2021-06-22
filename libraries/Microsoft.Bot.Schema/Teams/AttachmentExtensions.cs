@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Schema.Teams
@@ -28,9 +27,7 @@ namespace Microsoft.Bot.Schema.Teams
                 ContentUrl = attachment.ContentUrl,
                 Name = attachment.Name,
                 ThumbnailUrl = attachment.ThumbnailUrl,
-                Preview = previewAttachment == null ?
-                    JObject.FromObject(attachment).ToObject<Attachment>() :
-                    previewAttachment,
+                Preview = previewAttachment ?? JObject.FromObject(attachment).ToObject<Attachment>(),
             };
         }
     }
