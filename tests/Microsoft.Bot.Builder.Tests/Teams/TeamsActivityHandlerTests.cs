@@ -1102,7 +1102,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("OnTeamsMeetingStartAsync", bot.Record[1]);
             Assert.NotNull(activitiesToSend);
             Assert.Single(activitiesToSend);
-            Assert.Equal("6/5/2021 12:01:02 AM", activitiesToSend[0].Text);
+            Assert.Contains("12:01:02 AM", activitiesToSend[0].Text); // Date format differs between OSs, so we just Assert.Contains instead of Assert.Equals
         }
 
         [Fact]
@@ -1135,7 +1135,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("OnTeamsMeetingEndAsync", bot.Record[1]);
             Assert.NotNull(activitiesToSend);
             Assert.Single(activitiesToSend);
-            Assert.Equal("6/5/2021 1:02:03 AM", activitiesToSend[0].Text);
+            Assert.Contains("1:02:03 AM", activitiesToSend[0].Text); // Date format differs between OSs, so we just Assert.Contains instead of Assert.Equals
         }
 
         private class NotImplementedAdapter : BotAdapter
