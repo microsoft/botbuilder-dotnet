@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="task">The JSON for the Adaptive card to appear in the
         /// task module.</param>
         /// <param name="composeExtension">A <see cref="MessagingExtensionResult"/> that initializes the current object's ComposeExension property.</param>
-        public MessagingExtensionActionResponse(TaskModuleResponseBase task = default(TaskModuleResponseBase), MessagingExtensionResult composeExtension = default(MessagingExtensionResult))
+        public MessagingExtensionActionResponse(TaskModuleResponseBase task = default, MessagingExtensionResult composeExtension = default)
         {
             Task = task;
             ComposeExtension = composeExtension;
