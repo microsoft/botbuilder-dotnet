@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+using System;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Specific details of a Teams meeting end event.
     /// </summary>
