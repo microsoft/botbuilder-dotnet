@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // Register AuthConfiguration to enable custom claim validation.
             services.AddSingleton<AuthenticationConfiguration>();
 
+            // register components.
             new DialogsBotComponent().ConfigureServices(services, Configuration);
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
