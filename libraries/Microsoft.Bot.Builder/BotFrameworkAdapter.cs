@@ -1359,7 +1359,9 @@ namespace Microsoft.Bot.Builder
                 if (tenantId != null)
                 {
                     // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
-                    conversationParameters.ChannelData = new { tenant = new { tenantId } };
+                    var channelData = JObject.FromObject(conversationParameters.ChannelData ?? new { });
+                    channelData["tenant"] = JToken.FromObject(new { tenantId = reference.Conversation.TenantId });
+                    conversationParameters.ChannelData = channelData;
 
                     // Permanent solution is to put tenantId in parameters.tenantId
                     conversationParameters.TenantId = tenantId;
