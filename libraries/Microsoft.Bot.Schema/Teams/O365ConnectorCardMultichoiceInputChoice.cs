@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="display">The text rendered on ActionCard.</param>
         /// <param name="value">The value received as results.</param>
-        public O365ConnectorCardMultichoiceInputChoice(string display = default(string), string value = default(string))
+        public O365ConnectorCardMultichoiceInputChoice(string display = default, string value = default)
         {
             Display = display;
             Value = value;

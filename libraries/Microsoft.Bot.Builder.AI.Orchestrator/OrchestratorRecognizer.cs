@@ -175,7 +175,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // if top scoring intent is less than threshold, return None
                 if (topScore < UnknownIntentFilterScore)
                 {
-                    recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
+                    ((List<Result>)recognizerResult.Properties[ResultProperty]).Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = "None", Type = LabelType.Intent } });
+
+                    // add all scores
+                    foreach (var result in results)
+                    {
+                        recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
+                        {
+                            Score = result.Score
+                        });
+                    }
                 }
                 else
                 {

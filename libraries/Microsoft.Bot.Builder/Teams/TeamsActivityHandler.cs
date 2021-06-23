@@ -739,6 +739,61 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
+        /// Invoked when an event activity is received from the channel.
+        /// Event activities can be used to communicate many different things.
+        /// </summary>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// In a derived class, override this method to add logic that applies to all event activities.
+        /// </remarks>
+        protected override Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.ChannelId == Channels.Msteams)
+            {
+                switch (turnContext.Activity.Name)
+                {
+                    case "application/vnd.microsoft.meetingStart":
+                        return OnTeamsMeetingStartAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingStartEventDetails>(), turnContext, cancellationToken);
+                    case "application/vnd.microsoft.meetingEnd":
+                        return OnTeamsMeetingEndAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingEndEventDetails>(), turnContext, cancellationToken);
+                }
+            }
+
+            return base.OnEventActivityAsync(turnContext, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invoked when a Teams Meeting Start event activity is received from the connector.
+        /// Override this in a derived class to provide logic for when a meeting is started.
+        /// </summary>
+        /// <param name="meeting">The details of the meeting.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMeetingStartAsync(MeetingStartEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Teams Meeting End event activity is received from the connector.
+        /// Override this in a derived class to provide logic for when a meeting is ended.
+        /// </summary>
+        /// <param name="meeting">The details of the meeting.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMeetingEndAsync(MeetingEndEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Safely casts an object to an object of type <typeparamref name="T"/> .
         /// </summary>
         /// <param name="value">The object to be casted.</param>

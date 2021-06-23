@@ -58,16 +58,54 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public void ActivityToTwilioShouldReturnMessageOptionWithFromIdDefaultedToActivityFromId()
+        {
+            var activity = new Activity
+            {
+                Conversation = new ConversationAccount
+                {
+                    Id = "MockConversation"
+                },
+                From = new ChannelAccount
+                {
+                    Id = "MockId"
+                }
+            };
+            var messageOption = TwilioHelper.ActivityToTwilio(activity);
+
+            Assert.Equal(activity.From.Id, messageOption.From);
+        }
+
+        [Fact]
+        public void ActivityToTwilioShouldReturnMessageOptionWithFromIdSetToTwilioNumberWhenProvided()
+        {
+            var activity = new Activity
+            {
+                Conversation = new ConversationAccount
+                {
+                    Id = "MockConversation"
+                },
+                From = new ChannelAccount
+                {
+                    Id = "MockId"
+                }
+            };
+            var mockTwilioId = "mockTwilioId";
+            var messageOption = TwilioHelper.ActivityToTwilio(activity, mockTwilioId);
+
+            Assert.Equal(mockTwilioId, messageOption.From);
+        }
+
+        [Fact]
         public void ActivityToTwilioShouldShouldThrowArgumentNullExceptionWithNullActivity()
         {
             Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(null, TwilioNumber); });
         }
 
         [Fact]
-        public void ActivityToTwilioShouldThrowArgumentNullExceptionWithEmptyOrInvalidNumber()
+        public void ActivityToTwilioShouldThrowArgumentExceptionIfNoNumberAndNoActivityFromId()
         {
-            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default, "not_a_number"); });
-            Assert.Throws<ArgumentNullException>(() => { TwilioHelper.ActivityToTwilio(default, string.Empty); });
+            Assert.Throws<ArgumentException>(() => { TwilioHelper.ActivityToTwilio(new Activity(), null); });
         }
 
         [Fact]

@@ -56,6 +56,30 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
+        /// Fetches information related to a Teams meeting.
+        /// </summary>
+        /// <param name='operations'>
+        /// The operations group for this extension method.
+        /// </param>
+        /// <param name='meetingId'>
+        /// Meeting Id.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <returns>The details related to a team.</returns>
+        public static async Task<MeetingInfo> FetchMeetingInfoAsync(this ITeamsOperations operations, string meetingId, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (operations is TeamsOperations teamsOperations)
+            {
+                using var result = await teamsOperations.FetchMeetingInfoWithHttpMessagesAsync(meetingId, null, cancellationToken).ConfigureAwait(false);
+                return result.Body;
+            }
+
+            throw new InvalidOperationException("TeamsOperations with GetMeetingInfoWithHttpMessagesAsync is required for FetchMeetingInfoAsync.");
+        }
+
+        /// <summary>
         /// Fetches participant details related to a Teams meeting.
         /// </summary>
         /// <param name='operations'>

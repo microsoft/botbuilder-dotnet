@@ -172,7 +172,7 @@ namespace Microsoft.Bot.Schema
                 Timestamp = DateTime.UtcNow,
                 From = new ChannelAccount(id: Recipient?.Id, name: Recipient?.Name),
                 Recipient = new ChannelAccount(id: From?.Id, name: From?.Name),
-                ReplyToId = Id,
+                ReplyToId = !string.Equals(Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? Id : null,
                 ServiceUrl = ServiceUrl,
                 ChannelId = ChannelId,
                 Conversation = new ConversationAccount(isGroup: Conversation.IsGroup, id: Conversation.Id, name: Conversation.Name),
@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Schema
                 Timestamp = DateTime.UtcNow,
                 From = new ChannelAccount(id: Recipient?.Id, name: Recipient?.Name),
                 Recipient = new ChannelAccount(id: From?.Id, name: From?.Name),
-                ReplyToId = Id,
+                ReplyToId = !string.Equals(Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? Id : null,
                 ServiceUrl = ServiceUrl,
                 ChannelId = ChannelId,
                 Conversation = Conversation,
@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Schema
         {
             var reference = new ConversationReference
             {
-                ActivityId = Id,
+                ActivityId = !string.Equals(Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? Id : null,
                 User = From,
                 Bot = Recipient,
                 Conversation = Conversation,
@@ -588,9 +588,7 @@ namespace Microsoft.Bot.Schema
                 if (!result)
                 {
                     // Finally, if the type is longer than the type they're looking for then we need to check if there's a / separator right after the type they're looking for
-                    result = type.Length > activityType.Length
-                                    &&
-                            type[activityType.Length] == '/';
+                    result = type[activityType.Length] == '/';
                 }
             }
 

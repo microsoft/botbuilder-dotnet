@@ -23,7 +23,13 @@ namespace AdaptiveExpressions.BuiltinFunctions
 
         private static bool Function(IReadOnlyList<object> args)
         {
-            return FunctionUtils.IsLogicTrue(args[0]);
+            var arg = args[0];
+            if (arg is int @int)
+            {
+                arg = @int != 0;
+            }
+
+            return FunctionUtils.IsLogicTrue(arg);
         }
     }
 }

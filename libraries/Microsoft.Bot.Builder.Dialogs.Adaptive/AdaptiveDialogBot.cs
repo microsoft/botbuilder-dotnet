@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -97,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             using (var botFrameworkClient = _botFrameworkAuthentication.CreateBotFrameworkClient())
             {
                 // Set up the TurnState the Dialog is expecting
-                SetUpTurnState(turnContext, botFrameworkClient);
+                await SetUpTurnStateAsync(turnContext, botFrameworkClient).ConfigureAwait(false);
 
                 // Load the Dialog from the ResourceExplorer - the actual load should only happen once
                 var rootDialog = await _lazyRootDialog.Value.ConfigureAwait(false);
@@ -111,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private void SetUpTurnState(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
+        private async Task SetUpTurnStateAsync(ITurnContext turnContext, BotFrameworkClient botFrameworkClient)
         {
             turnContext.TurnState.Add(botFrameworkClient);
             turnContext.TurnState.Add(_skillConversationIdFactoryBase);
@@ -124,6 +125,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_languageGeneratorManagers.GetOrAdd(_resourceExplorer, _ => new LanguageGeneratorManager(_resourceExplorer)));
             turnContext.TurnState.Add(_languagePolicy);
             turnContext.TurnState.Add(_telemetryClient);
+
+            // Catch "SetTestOptions" event and save into "Conversation.TestOptions".
+            // Note: This is consumed by AdaptiveExpressions Extensions.RandomNext
+            if (turnContext.Activity.Type == ActivityTypes.Event)
+            {
+                var eventActivity = turnContext.Activity.AsEventActivity();
+                if (eventActivity.Name == "SetTestOptions")
+                {
+                    _logger.LogInformation("SetTestOptions received.  This could change the behavior of AdaptiveExpression RandomNext.");
+
+                    var conversationState = turnContext.TurnState.Get<ConversationState>();
+                    var property = conversationState.CreateProperty<object>("TestOptions");
+                    await property.SetAsync(turnContext, eventActivity.Value).ConfigureAwait(false);
+                }
+            }
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);

@@ -22,9 +22,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleContinueResponse"/> class.
         /// </summary>
-        /// <param name="value">The JSON for the Adaptive card to appear in the
-        /// task module.</param>
-        public TaskModuleContinueResponse(TaskModuleTaskInfo value = default(TaskModuleTaskInfo))
+        /// <param name="value">The JSON for the Adaptive card to appear in the task module.</param>
+        public TaskModuleContinueResponse(TaskModuleTaskInfo value = default)
             : base("continue")
         {
             Value = value;
@@ -32,8 +31,7 @@ namespace Microsoft.Bot.Schema.Teams
         }
 
         /// <summary>
-        /// Gets or sets the JSON for the Adaptive card to appear in the task
-        /// module.
+        /// Gets or sets the JSON for the Adaptive card to appear in the task module.
         /// </summary>
         /// <value>The JSON for the adaptive card to appear in the task module.</value>
         [JsonProperty(PropertyName = "value")]

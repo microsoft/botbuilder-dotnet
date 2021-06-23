@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -26,20 +24,14 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="type">Input type name. Possible values include:
         /// 'textInput', 'dateInput', 'multichoiceInput'.</param>
-        /// <param name="id">Input Id. It must be unique per entire O365
-        /// connector card.</param>
-        /// <param name="isRequired">Define if this input is a required field.
-        /// Default value is false.</param>
-        /// <param name="title">Input title that will be shown as the
-        /// placeholder.</param>
+        /// <param name="id">Input Id. It must be unique per entire O365 connector card.</param>
+        /// <param name="isRequired">Define if this input is a required field. Default value is false.</param>
+        /// <param name="title">Input title that will be shown as the placeholder.</param>
         /// <param name="value">Default value for this input field.</param>
-        /// <param name="choices">Set of choices whose each item can be in any
-        /// subtype of O365ConnectorCardMultichoiceInputChoice.</param>
-        /// <param name="style">Choice item rendering style. Default value is
-        /// 'compact'. Possible values include: 'compact', 'expanded'.</param>
-        /// <param name="isMultiSelect">Define if this input field allows
-        /// multiple selections. Default value is false.</param>
-        public O365ConnectorCardMultichoiceInput(string type = default(string), string id = default(string), bool? isRequired = default(bool?), string title = default(string), string value = default(string), IList<O365ConnectorCardMultichoiceInputChoice> choices = default(IList<O365ConnectorCardMultichoiceInputChoice>), string style = default(string), bool? isMultiSelect = default(bool?))
+        /// <param name="choices">Set of choices whose each item can be in any subtype of O365ConnectorCardMultichoiceInputChoice.</param>
+        /// <param name="style">Choice item rendering style. Default value is 'compact'. Possible values include: 'compact', 'expanded'.</param>
+        /// <param name="isMultiSelect">Define if this input field allows multiple selections. Default value is false.</param>
+        public O365ConnectorCardMultichoiceInput(string type = default, string id = default, bool? isRequired = default, string title = default, string value = default, IList<O365ConnectorCardMultichoiceInputChoice> choices = default, string style = default, bool? isMultiSelect = default)
             : base(type, id, isRequired, title, value)
         {
             Choices = choices;

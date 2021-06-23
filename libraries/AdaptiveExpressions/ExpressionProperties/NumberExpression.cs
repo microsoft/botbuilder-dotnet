@@ -13,7 +13,7 @@ namespace AdaptiveExpressions.Properties
     /// </summary>
     /// <remarks>String values are always interpreted as an expression, whether it has '=' prefix or not.</remarks>
     [JsonConverter(typeof(NumberExpressionConverter))]
-    public class NumberExpression : ExpressionProperty<float>
+    public class NumberExpression : ExpressionProperty<double>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="NumberExpression"/> class.
@@ -26,7 +26,7 @@ namespace AdaptiveExpressions.Properties
         /// Initializes a new instance of the <see cref="NumberExpression"/> class.
         /// </summary>
         /// <param name="value">value to use.</param>
-        public NumberExpression(float value) 
+        public NumberExpression(double value) 
             : base(value)
         {
         }
@@ -72,7 +72,7 @@ namespace AdaptiveExpressions.Properties
         /// </summary>
         /// <param name="value">The floating point number number to convert.</param>
 #pragma warning disable CA2225 // Operator overloads have named alternates
-        public static implicit operator NumberExpression(float value) => new NumberExpression(value);
+        public static implicit operator NumberExpression(double value) => new NumberExpression(value);
 
         /// <summary>
         /// Converts a string value to a NumberExpression instance.

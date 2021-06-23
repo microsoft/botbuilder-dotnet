@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// the message.</param>
         /// <param name="user">The user with which the reaction is
         /// associated.</param>
-        public MessageActionsPayloadReaction(string reactionType = default(string), string createdDateTime = default(string), MessageActionsPayloadFrom user = default(MessageActionsPayloadFrom))
+        public MessageActionsPayloadReaction(string reactionType = default, string createdDateTime = default, MessageActionsPayloadFrom user = default)
         {
             ReactionType = reactionType;
             CreatedDateTime = createdDateTime;
