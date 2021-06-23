@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="userPrincipalName">Unique user principal name.</param>
         /// <param name="tenantId">TenantId of the user.</param>
         /// <param name="userRole">UserRole of the user.</param>
-        public TeamsChannelAccount(string id = default(string), string name = default(string), string givenName = default(string), string surname = default(string), string email = default(string), string userPrincipalName = default(string), string tenantId = default(string), string userRole = default(string))
+        public TeamsChannelAccount(string id = default, string name = default, string givenName = default, string surname = default, string email = default, string userPrincipalName = default, string tenantId = default, string userRole = default)
             : base(id, name)
         {
             GivenName = givenName;
@@ -53,7 +52,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="surname">Surname part of the user name.</param>
         /// <param name="email">Email Id of the user.</param>
         /// <param name="userPrincipalName">Unique user principal name.</param>
-        public TeamsChannelAccount(string id = default(string), string name = default(string), string givenName = default(string), string surname = default(string), string email = default(string), string userPrincipalName = default(string))
+        public TeamsChannelAccount(string id = default, string name = default, string givenName = default, string surname = default, string email = default, string userPrincipalName = default)
             : this(id, name, givenName, surname, email, userPrincipalName, string.Empty, string.Empty)
         {
         }
