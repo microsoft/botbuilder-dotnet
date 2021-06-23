@@ -18,8 +18,6 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Memory;
-using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Extensions.Configuration;
 
@@ -31,23 +29,12 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private DialogManager dialogManager;
         private readonly ResourceExplorer resourceExplorer;
         private IConfiguration configuration;
-        private readonly IEnumerable<MemoryScope> _memoryScopes;
-        private readonly IEnumerable<IPathResolver> _pathResolvers;
 
-        public TestBot(
-            ConversationState conversationState,
-            ResourceExplorer resourceExplorer,
-            BotFrameworkClient skillClient,
-            SkillConversationIdFactoryBase conversationIdFactory,
-            IConfiguration configuration,
-            IEnumerable<MemoryScope> scopes = default,
-            IEnumerable<IPathResolver> pathResolvers = default)
+        public TestBot(ConversationState conversationState, ResourceExplorer resourceExplorer, BotFrameworkClient skillClient, SkillConversationIdFactoryBase conversationIdFactory, IConfiguration configuration)
         {
             this.dialogStateAccessor = conversationState.CreateProperty<DialogState>("RootDialogState");
             this.resourceExplorer = resourceExplorer;
             this.configuration = configuration;
-            _memoryScopes = scopes ?? Enumerable.Empty<MemoryScope>();
-            _pathResolvers = pathResolvers ?? Enumerable.Empty<IPathResolver>();
 
             // auto reload dialogs when file changes
             this.resourceExplorer.Changed += (e, resources) =>
@@ -65,14 +52,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         public override Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            SetUpTurnState(turnContext);
             return this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
-        }
-
-        private void SetUpTurnState(ITurnContext turnContext)
-        {
-            turnContext.TurnState.Add(_memoryScopes);
-            turnContext.TurnState.Add(_pathResolvers);
         }
 
         private void LoadDialogs()

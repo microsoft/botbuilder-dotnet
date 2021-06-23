@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             services.AddSingleton<AuthenticationConfiguration>();
 
             // register components.
-            new DialogsBotComponent().ConfigureServices(services, Configuration);
+            ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
             ComponentRegistration.Add(new LanguageGenerationComponentRegistration());
