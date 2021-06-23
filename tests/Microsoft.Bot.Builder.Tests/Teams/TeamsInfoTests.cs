@@ -12,6 +12,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -49,6 +50,61 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             turnContext.Activity.ServiceUrl = "https://test.coffee";
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
+        }
+
+        [Fact]
+        public async Task TestSendMessageToTeamsChannel2Async()
+        {
+            // Arrange
+
+            var expectedTeamsChannelId = "teams-channel-id";
+            var expectedAppId = "app-id";
+            var expectedServiceUrl = "service-url";
+            var expectedActivityId = "activity-id";
+            var expectedConversationId = "conversation-id";
+
+            var requestActivity = new Activity { ServiceUrl = expectedServiceUrl };
+
+            var adapter = new TestCreateConversationAdapter(expectedActivityId, expectedConversationId);
+
+            var turnContextMock = new Mock<ITurnContext>();
+            turnContextMock.Setup(tc => tc.Activity).Returns(requestActivity);
+            turnContextMock.Setup(tc => tc.Adapter).Returns(adapter);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMessageToTeamsChannelAsync",
+                ChannelId = Channels.Msteams,
+                ChannelData = new TeamsChannelData
+                {
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+            };
+
+            // Act
+
+            var r = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContextMock.Object, activity, expectedTeamsChannelId, expectedAppId, CancellationToken.None);
+
+            // Assert
+
+            Assert.Equal(expectedConversationId, r.Item1.Conversation.Id);
+            Assert.Equal(expectedActivityId, r.Item2);
+            Assert.Equal(expectedAppId, adapter.AppId);
+            Assert.Equal(Channels.Msteams, adapter.ChannelId);
+            Assert.Equal(expectedServiceUrl, adapter.ServiceUrl);
+            Assert.Null(adapter.Audience);
+
+            var channelData = adapter.ConversationParameters.ChannelData;
+
+            var channel = channelData.GetType().GetProperty("channel").GetValue(channelData, null);
+            var id = channel.GetType().GetProperty("id").GetValue(channel, null);
+
+            Assert.Equal(expectedTeamsChannelId, id);
+            Assert.Equal(adapter.ConversationParameters.Activity, activity);
         }
 
         [Fact]
@@ -529,6 +585,61 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 }
 
                 return Task.FromResult(response);
+            }
+        }
+
+        private class TestCreateConversationAdapter : BotAdapter
+        {
+            private string _activityId;
+
+            private string _conversationId;
+
+            public TestCreateConversationAdapter(string activityId, string conversationId)
+            {
+                _activityId = activityId;
+                _conversationId = conversationId;
+            }
+
+            public string AppId { get; set; }
+
+            public string ChannelId { get; set; }
+
+            public string ServiceUrl { get; set; }
+
+            public string Audience { get; set; }
+
+            public ConversationParameters ConversationParameters { get; set; }
+
+            public override Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, string audience, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+            {
+                AppId = botAppId;
+                ChannelId = channelId;
+                ServiceUrl = serviceUrl;
+                Audience = audience;
+                ConversationParameters = conversationParameters;
+
+                var activity = new Activity { Id = _activityId, Conversation = new ConversationAccount { Id = _conversationId } };
+
+                var mockTurnContext = new Mock<ITurnContext>();
+                mockTurnContext.Setup(tc => tc.Activity).Returns(activity);
+
+                callback(mockTurnContext.Object, cancellationToken);
+                return Task.CompletedTask;
+            }
+
+            public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
             }
         }
     }

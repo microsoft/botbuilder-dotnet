@@ -284,7 +284,7 @@ namespace Microsoft.Bot.Builder.Teams
 
             await turnContext.Adapter.CreateConversationAsync(
                 botAppId,
-                teamsChannelId,
+                Channels.Msteams,
                 serviceUrl,
                 null,
                 conversationParameters,
