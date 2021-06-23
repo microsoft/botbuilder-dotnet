@@ -21,8 +21,8 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Orchestrator.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.ApplicationInsights.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>
+                <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>-->
+                <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.Azure.Queues.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
@@ -37,7 +37,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Configuration.dll$</ModulePath>
+                <!--<ModulePath>.*\Microsoft.Bot.Configuration.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Connector.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Schema.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Streaming.dll$</ModulePath>
