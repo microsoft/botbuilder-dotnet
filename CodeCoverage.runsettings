@@ -29,7 +29,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.Core.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.WebApi.dll$</ModulePath>
+                <!--<ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.WebApi.dll$</ModulePath>-->
                 <!--<ModulePath>.*\Microsoft.Bot.Builder.LanguageGeneration.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
