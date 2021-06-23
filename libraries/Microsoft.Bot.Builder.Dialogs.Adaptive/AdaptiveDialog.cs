@@ -738,7 +738,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// OnSetScopedServices provides ability to set scoped services for the current dialogContext.
         /// </summary>
         /// <remarks>
-        /// USe dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
+        /// Use dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
         /// </remarks>
         /// <param name="dialogContext">dialog Context.</param>
         protected virtual void OnSetScopedServices(DialogContext dialogContext)
