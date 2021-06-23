@@ -17,18 +17,18 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Webex.dll$</ModulePath>
-                  <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
-                  <ModulePath>.*\Microsoft.Bot.Builder.AI.Orchestrator.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.AI.Orchestrator.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.ApplicationInsights.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>
-                  <ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>
-                  <ModulePath>.*\Microsoft.Bot.Builder.Azure.Queues.dll$</ModulePath>
-                  <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Azure.Queues.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.dll$</ModulePath>
-                  <!--<ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.dll$</ModulePath>-->
-                  <!--<ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Debugging.dll$</ModulePath>-->
+                <!--<ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.dll$</ModulePath>-->
+                <!--<ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Debugging.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Declarative.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.dll$</ModulePath>
                 <!--<ModulePath>.*\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.dll$</ModulePath>-->
