@@ -13,10 +13,11 @@
     <!-- TODO: Change TargetFramework to netstandard2.0 once Orchestrator supports it -->
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Microsoft.Bot.Builder.AI.Orchestrator</PackageId>
-    <Description>This library implements .NET support for Orchestrator</Description>
+    <Description>The Orchestrator package contains Bot Framework recognizer for detecting and routing user intents.</Description>
     <Summary>This library implements .NET support for Orchestrator</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
     <PackageTags>msbot-component;msbot-recognizer</PackageTags>
+    <PackageProjectUrl>https://aka.ms/bf-orchestrator-package-readme</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
