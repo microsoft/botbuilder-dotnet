@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="id">The id of the attachment.</param>
         /// <param name="contentType">The type of the attachment.</param>
-        /// <param name="contentUrl">The url of the attachment, in case of a
+        /// <param name="contentUrl">The url of the attachment, in case of an
         /// external link.</param>
         /// <param name="content">The content of the attachment, in case of a
         /// code snippet, email, or file.</param>
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// attachment.</param>
         /// <param name="thumbnailUrl">The url of a thumbnail image that might
         /// be embedded in the attachment, in case of a card.</param>
-        public MessageActionsPayloadAttachment(string id = default(string), string contentType = default(string), string contentUrl = default(string), object content = default(object), string name = default(string), string thumbnailUrl = default(string))
+        public MessageActionsPayloadAttachment(string id = default, string contentType = default, string contentUrl = default, object content = default, string name = default, string thumbnailUrl = default)
         {
             Id = id;
             ContentType = contentType;

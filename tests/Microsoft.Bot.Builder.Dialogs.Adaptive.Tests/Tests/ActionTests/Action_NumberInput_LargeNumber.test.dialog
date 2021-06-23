@@ -1,0 +1,44 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "property": "user.test.Amount",
+                        "outputFormat": "=int(this.value)",
+                        "prompt": "Please enter your lucky number."
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I have your lucky number as ${user.test.Amount}."
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please enter your lucky number."
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "8144331287 "
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "I have your lucky number as 8144331287."
+        }
+    ]
+}

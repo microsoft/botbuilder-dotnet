@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder
 
                 if (activity.Type == ActivityTypesEx.Delay)
                 {
-                    var delayMs = (int)activity.Value;
+                    var delayMs = Convert.ToInt32(activity.Value, CultureInfo.InvariantCulture);
                     await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
                 }
                 else if (activity.Type == ActivityTypesEx.InvokeResponse)
@@ -191,6 +192,47 @@ namespace Microsoft.Bot.Builder
             return ProcessProactiveAsync(claimsIdentity, continuationActivity, audience, callback, cancellationToken);
         }
 
+        /// <inheritdoc/>
+        public override async Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, string audience, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(serviceUrl))
+            {
+                throw new ArgumentNullException(nameof(serviceUrl));
+            }
+
+            _ = conversationParameters ?? throw new ArgumentNullException(nameof(conversationParameters));
+            _ = callback ?? throw new ArgumentNullException(nameof(callback));
+
+            Logger.LogInformation($"CreateConversationAsync for channel: {channelId}");
+
+            // Create a ClaimsIdentity, to create the connector and for adding to the turn context.
+            var claimsIdentity = CreateClaimsIdentity(botAppId);
+            claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
+
+            // Create the connector factory.
+            var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
+
+            // Create the connector client to use for outbound requests.
+            using (var connectorClient = await connectorFactory.CreateAsync(serviceUrl, audience, cancellationToken).ConfigureAwait(false))
+            {
+                // Make the actual create conversation call using the connector.
+                var createConversationResult = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
+
+                // Create the create activity to communicate the results to the application.
+                var createActivity = CreateCreateActivity(createConversationResult, channelId, serviceUrl, conversationParameters);
+
+                // Create a UserTokenClient instance for the application to use. (For example, in the OAuthPrompt.)
+                using (var userTokenClient = await BotFrameworkAuthentication.CreateUserTokenClientAsync(claimsIdentity, cancellationToken).ConfigureAwait(false))
+
+                // Create a turn context and run the pipeline.
+                using (var context = CreateTurnContext(createActivity, claimsIdentity, null, connectorClient, userTokenClient, callback, connectorFactory))
+                {
+                    // Run the pipeline.
+                    await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
         /// <summary>
         /// The implementation for continue conversation.
         /// </summary>
@@ -204,7 +246,7 @@ namespace Microsoft.Bot.Builder
         {
             Logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {continuationActivity.Conversation.Id}");
 
-            // Create the connector factory and  the inbound request, extracting parameters and then create a connector for outbound requests.
+            // Create the connector factory.
             var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
 
             // Create the connector client to use for outbound requests.
@@ -290,6 +332,20 @@ namespace Microsoft.Bot.Builder
                 new Claim(AuthenticationConstants.AudienceClaim, botAppId),
                 new Claim(AuthenticationConstants.AppIdClaim, botAppId),
             });
+        }
+
+        private Activity CreateCreateActivity(ConversationResourceResponse createConversationResult, string channelId, string serviceUrl, ConversationParameters conversationParameters)
+        {
+            // Create a conversation update activity to represent the result.
+            var activity = Activity.CreateEventActivity();
+            activity.Name = ActivityEventNames.CreateConversation;
+            activity.ChannelId = channelId;
+            activity.ServiceUrl = serviceUrl;
+            activity.Id = createConversationResult.ActivityId ?? Guid.NewGuid().ToString("n");
+            activity.Conversation = new ConversationAccount(id: createConversationResult.Id, tenantId: conversationParameters.TenantId);
+            activity.ChannelData = conversationParameters.ChannelData;
+            activity.Recipient = conversationParameters.Bot;
+            return (Activity)activity;
         }
 
         private TurnContext CreateTurnContext(Activity activity, ClaimsIdentity claimsIdentity, string oauthScope, IConnectorClient connectorClient, UserTokenClient userTokenClient, BotCallbackHandler callback, ConnectorFactory connectorFactory)
