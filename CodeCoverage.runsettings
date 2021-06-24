@@ -23,7 +23,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.ApplicationInsights.dll$</ModulePath>
                 <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.dll$</ModulePath>-->
                 <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.Blobs.dll$</ModulePath>-->
-                <ModulePath>.*\Microsoft.Bot.Builder.Azure.Queues.dll$</ModulePath>
+                <!--<ModulePath>.*\Microsoft.Bot.Builder.Azure.Queues.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.dll$</ModulePath>
