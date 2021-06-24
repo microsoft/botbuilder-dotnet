@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="meetingRole">Role of the participant in the current meeting.</param>
         /// <param name="inMeeting">True, if the participant is in the meeting.</param>
         /// <param name="conversation">Conversation Account for the meeting.</param>
-        public TeamsParticipantChannelAccount(string id = default(string), string name = default(string), string givenName = default(string), string surname = default(string), string email = default(string), string userPrincipalName = default(string), string tenantId = default(string), string userRole = default(string), string meetingRole = default(string), bool inMeeting = default(bool), ConversationAccount conversation = null)
+        public TeamsParticipantChannelAccount(string id = default, string name = default, string givenName = default, string surname = default, string email = default, string userPrincipalName = default, string tenantId = default, string userRole = default, string meetingRole = default, bool inMeeting = default, ConversationAccount conversation = null)
             : base(id, name, givenName, surname, email, userPrincipalName, tenantId, userRole)
         {
             MeetingRole = meetingRole;

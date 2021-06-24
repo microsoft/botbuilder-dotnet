@@ -22,25 +22,15 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleTaskInfo"/> class.
         /// </summary>
-        /// <param name="title">Appears below the app name and to the right of
-        /// the app icon.</param>
-        /// <param name="height">This can be a number, representing the task
-        /// module's height in pixels, or a string, one of: small, medium,
-        /// large.</param>
-        /// <param name="width">This can be a number, representing the task
-        /// module's width in pixels, or a string, one of: small, medium,
-        /// large.</param>
-        /// <param name="url">The URL of what is loaded as an iframe inside the
-        /// task module. One of url or card is required.</param>
-        /// <param name="card">The JSON for the Adaptive card to appear in the
-        /// task module.</param>
-        /// <param name="fallbackUrl">If a client does not support the task
-        /// module feature, this URL is opened in a browser tab.</param>
-        /// <param name="completionBotId">Specifies a bot App ID to send the
-        /// result of the user's interaction with the task module to. If
-        /// specified, the bot will receive a task/submit invoke event with
-        /// a JSON object in the event payload.</param>
-        public TaskModuleTaskInfo(string title = default(string), object height = default(object), object width = default(object), string url = default(string), Attachment card = default(Attachment), string fallbackUrl = default(string), string completionBotId = default(string))
+        /// <param name="title">Appears below the app name and to the right of the app icon.</param>
+        /// <param name="height">This can be a number, representing the task module's height in pixels, or a string, one of: small, medium, large.</param>
+        /// <param name="width">This can be a number, representing the task module's width in pixels, or a string, one of: small, medium, large.</param>
+        /// <param name="url">The URL of what is loaded as an iframe inside the task module. One of url or card is required.</param>
+        /// <param name="card">The JSON for the Adaptive card to appear in the task module.</param>
+        /// <param name="fallbackUrl">If a client does not support the task module feature, this URL is opened in a browser tab.</param>
+        /// <param name="completionBotId">Specifies a bot App ID to send the result of the user's interaction with the task module to.
+        /// If specified, the bot will receive a task/submit invoke event with a JSON object in the event payload.</param>
+        public TaskModuleTaskInfo(string title = default, object height = default, object width = default, string url = default, Attachment card = default, string fallbackUrl = default, string completionBotId = default(string))
         {
             Title = title;
             Height = height;

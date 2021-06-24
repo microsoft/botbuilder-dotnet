@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="id">Unique identifier representing a team.</param>
         /// <param name="name">Name of team.</param>
-        public TeamInfo(string id = default(string), string name = default(string))
+        public TeamInfo(string id = default, string name = default)
         {
             Id = id;
             Name = name;
