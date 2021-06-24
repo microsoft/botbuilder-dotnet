@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// The default <see cref="LanguagePolicy"/> is "us-en" and this can be changed through configuration.
         /// 
         /// If not overriden, the exact type of <see cref="IStorage"/> added depends on configuration. With no configuration the default is memory storage.
-        /// It should be noted that <see cref="MemoryStorage"/> is designed primarily for testing with a single host running the bot and no database.
+        /// It should be noted that <see cref="MemoryStorage"/> is designed primarily for testing with a single host running the bot and no durable storage.
         /// 
         /// The default Skills implementation can be constrained in terms of allowed callers through configuration.
         /// Refer to the product documentation for further details.
