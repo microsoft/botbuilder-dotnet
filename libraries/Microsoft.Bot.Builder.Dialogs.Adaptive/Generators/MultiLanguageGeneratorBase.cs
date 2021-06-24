@@ -52,12 +52,63 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
+            var generators = GetGenerators(dialogContext);
+
+            var errors = new List<string>();
+            foreach (var generator in generators)
+            {
+                try
+                {
+                    return await generator.GenerateAsync(dialogContext, template, data, cancellationToken).ConfigureAwait(false);
+                }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the errors list).
+                catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    errors.Add(err.Message);
+                }
+            }
+
+            throw new InvalidOperationException(string.Join(",\n", errors.Distinct()));
+        }
+
+        /// <summary>
+        /// Method to get missing properties.
+        /// </summary>
+        /// <param name="dialogContext">dialogContext.</param>
+        /// <param name="template">template or [templateId].</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>Property list.</returns>
+        public override List<string> MissingProperties(DialogContext dialogContext, string template, CancellationToken cancellationToken = default)
+        {
+            var generators = GetGenerators(dialogContext);
+
+            var errors = new List<string>();
+            foreach (var generator in generators)
+            {
+                try
+                {
+                    return generator.MissingProperties(dialogContext, template, cancellationToken);
+                }
+#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the errors list).
+                catch (Exception err)
+#pragma warning restore CA1031 // Do not catch general exception types
+                {
+                    errors.Add(err.Message);
+                }
+            }
+
+            throw new InvalidOperationException(string.Join(",\n", errors.Distinct()));
+        }
+
+        private List<LanguageGenerator> GetGenerators(DialogContext dialogContext)
+        {
             // priority 
             // 1. local policy
             // 2. shared policy in turnContext
             // 3. default policy
-            var languagePolicy = this.LanguagePolicy ?? 
-                                dialogContext.Services.Get<LanguagePolicy>() ?? 
+            var languagePolicy = this.LanguagePolicy ??
+                                dialogContext.Services.Get<LanguagePolicy>() ??
                                 new LanguagePolicy();
 
             // see if we have any locales that match
@@ -68,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             {
                 fallbackLocales.AddRange(languagePolicy[targetLocale]);
             }
-            
+
             // append empty as fallback to end
             if (targetLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
             {
@@ -94,22 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 throw new InvalidOperationException($"No generator found for language {targetLocale}");
             }
 
-            var errors = new List<string>();
-            foreach (var generator in generators)
-            {
-                try
-                {
-                    return await generator.GenerateAsync(dialogContext, template, data, cancellationToken).ConfigureAwait(false);
-                }
-#pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the errors list).
-                catch (Exception err)
-#pragma warning restore CA1031 // Do not catch general exception types
-                {
-                    errors.Add(err.Message);
-                }
-            }
-
-            throw new InvalidOperationException(string.Join(",\n", errors.Distinct()));
+            return generators;
         }
     }
 }

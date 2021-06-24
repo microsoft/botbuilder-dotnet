@@ -75,19 +75,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
                 {
                     if (generator is TemplateEngineLanguageGenerator templateGenerator)
                     {
-                        var tempTemplateName = $"{Templates.InlineTemplateIdPrefix}{Guid.NewGuid():N}";
-
-                        var multiLineMark = "```";
-
-                        templateBody = !templateBody.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && templateBody.Contains('\n')
-                               ? $"{multiLineMark}{templateBody}{multiLineMark}" : templateBody;
-
-                        templateGenerator.LG.AddTemplate(tempTemplateName, null, $"- {templateBody}");
-                        var analyzerResults = templateGenerator.LG.AnalyzeTemplate(tempTemplateName);
-
-                        // Delete it after the analyzer
-                        templateGenerator.LG.DeleteTemplate(tempTemplateName);
-                        return (analyzerResults.Variables, null);
+                        var variables = templateGenerator.MissingProperties(dialogContext, templateBody);
+                        return (variables, null);
                     }
                 }
             }

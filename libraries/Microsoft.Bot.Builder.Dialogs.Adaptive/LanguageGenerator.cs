@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,5 +23,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 #pragma warning disable CA1716 // Identifiers should not match keywords (we can't change the template parameter name without breaking binary compat).
         public abstract Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default);
 #pragma warning restore CA1716 // Identifiers should not match keywords
+
+        /// <summary>
+        /// Method to get missing properties.
+        /// </summary>
+        /// <param name="dialogContext">dialogContext.</param>
+        /// <param name="template">template or [templateId].</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>Property list.</returns>
+#pragma warning disable CA1716 // Identifiers should not match keywords (we can't change the template parameter name without breaking binary compat).
+        public virtual List<string> MissingProperties(DialogContext dialogContext, string template, CancellationToken cancellationToken = default)
+#pragma warning restore CA1716 // Identifiers should not match keywords
+        {
+            return new List<string>();
+        }
     }
 }

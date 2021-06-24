@@ -145,6 +145,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
         }
 
+        /// <summary>
+        /// Method to get missing properties.
+        /// </summary>
+        /// <param name="dialogContext">dialogContext.</param>
+        /// <param name="template">template or [templateId].</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>Property list.</returns>
+        public override List<string> MissingProperties(DialogContext dialogContext, string template, CancellationToken cancellationToken = default)
+        {
+            var tempTemplateName = $"{LanguageGeneration.Templates.InlineTemplateIdPrefix}{Guid.NewGuid():N}";
+
+            var multiLineMark = "```";
+
+            template = !template.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && template.Contains('\n')
+                   ? $"{multiLineMark}{template}{multiLineMark}" : template;
+
+            LG.AddTemplate(tempTemplateName, null, $"- {template}");
+            var analyzerResults = LG.AnalyzeTemplate(tempTemplateName);
+
+            // Delete it after the analyzer
+            LG.DeleteTemplate(tempTemplateName);
+            return analyzerResults.Variables;
+        }
+
         private static void RunSync(Func<Task> func)
         {
 #pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
