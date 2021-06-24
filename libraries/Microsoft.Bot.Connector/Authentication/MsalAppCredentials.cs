@@ -197,8 +197,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             catch (SemaphoreFullException)
             {
-                // We should not be hitting this after switching to SemaphoreSlim, but if we do hit it everything will keep working.
-                // Logging to have clear knowledge of whether this is happening.
+                // This should never happen but we want to know if it does.
                 _logger?.LogWarning("Attempted to release a full semaphore.");
             }
 
