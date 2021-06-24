@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Connector.Authentication
     /// <summary>
     /// An authentication class that implements <see cref="IAuthenticator"/>, used to acquire tokens for outgoing messages to the channels.
     /// </summary>
-    internal class MsalAppCredentials : AppCredentials, IAuthenticator
+    public class MsalAppCredentials : AppCredentials, IAuthenticator
     {
         /// <summary>
         /// An empty set of credentials.
