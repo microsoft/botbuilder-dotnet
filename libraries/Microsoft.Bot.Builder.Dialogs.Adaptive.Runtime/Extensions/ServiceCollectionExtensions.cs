@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         internal static void AddBotRuntimeSkills(this IServiceCollection services, IConfiguration configuration)
         {
             var skillSettings = configuration.GetSection(SkillSettings.SkillSettingsKey).Get<SkillSettings>();
-            List<SkillConfigurationEntry> settings = configuration.GetSection("skill").Get<List<SkillConfigurationEntry>>();
+            var settings = configuration.GetSection(SkillConfigurationEntry.SkillSettingsKey).Get<List<SkillConfigurationEntry>>();
             if (settings?.Count > 0)
             {
                 services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedSkillsClaimsValidator(settings.Select(x => x.MsAppId).ToList()) });

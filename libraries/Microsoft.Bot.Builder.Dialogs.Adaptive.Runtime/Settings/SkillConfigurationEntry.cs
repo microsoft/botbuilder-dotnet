@@ -9,6 +9,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Settings
     public class SkillConfigurationEntry
     {
         /// <summary>
+        /// Gets the configuration key for <see cref="SkillConfigurationEntry"/>.
+        /// </summary>
+        /// <value>
+        /// Configuration key for <see cref="SkillConfigurationEntry"/>.
+        /// </value>
+        public static string SkillSettingsKey => "skill";
+
+        /// <summary>
         /// Gets or sets of sets the MSAppId for the entry.
         /// </summary>
         /// <value>
