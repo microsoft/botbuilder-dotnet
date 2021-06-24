@@ -60,6 +60,8 @@ namespace Microsoft.BotBuilderSamples
             //services.AddTransient<IBot, AuthBot<MainDialog>>();
             //services.AddTransient<IBot, EchoBot>();
 
+            services.AddSingleton<Dialog, Akhenaten>();
+
             services.AddBotRuntime(Configuration);
 
             // Un-comment the lines below to opt-in to MSAL auth.
