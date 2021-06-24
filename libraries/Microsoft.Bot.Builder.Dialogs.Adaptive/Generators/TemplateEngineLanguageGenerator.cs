@@ -35,12 +35,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             TaskContinuationOptions.None,
             TaskScheduler.Default);
 
+        private readonly LanguageGeneration.Templates lg;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         public TemplateEngineLanguageGenerator()
         {
-            this.LG = new LanguageGeneration.Templates();
+            this.lg = new LanguageGeneration.Templates();
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <param name="engine">template engine.</param>
         public TemplateEngineLanguageGenerator(LanguageGeneration.Templates engine = null)
         {
-            this.LG = engine ?? new LanguageGeneration.Templates();
+            this.lg = engine ?? new LanguageGeneration.Templates();
         }
 
         /// <summary>
@@ -65,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var (_, locale) = LGResourceLoader.ParseLGFileName(id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var lgResource = new LGResource(Id, Id, lgText ?? string.Empty);
-            this.LG = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
         }
 
         /// <summary>
@@ -82,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var (_, locale) = LGResourceLoader.ParseLGFileName(Id);
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var resource = new LGResource(Id, filePath, File.ReadAllText(filePath));
-            this.LG = LanguageGeneration.Templates.ParseResource(resource, importResolver);
+            this.lg = LanguageGeneration.Templates.ParseResource(resource, importResolver);
         }
 
         /// <summary>
@@ -98,17 +100,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             var importResolver = LanguageGeneratorManager.ResourceExplorerResolver(locale, resourceMapping);
             var content = resource.ReadTextAsync().GetAwaiter().GetResult();
             var lgResource = new LGResource(Id, resource.FullName, content);
-            this.LG = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
-            RegisterSourcemap(LG, resource);
+            this.lg = LanguageGeneration.Templates.ParseResource(lgResource, importResolver);
+            RegisterSourcemap(lg, resource);
         }
-
-        /// <summary>
-        /// Gets language generation templates.
-        /// </summary>
-        /// <value>
-        /// Language generation templates.
-        /// </value>
-        public LanguageGeneration.Templates LG { get; }
 
         /// <summary>
         /// Gets or sets id of the source of this template (used for labeling errors).
@@ -135,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
             try
             {
-                return Task.FromResult(LG.EvaluateText(template, data, lgOpt));
+                return Task.FromResult(lg.EvaluateText(template, data, lgOpt));
             }
             catch (Exception err)
             {
@@ -166,11 +160,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             template = !template.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && template.Contains('\n')
                    ? $"{multiLineMark}{template}{multiLineMark}" : template;
 
-            LG.AddTemplate(tempTemplateName, null, $"- {template}");
-            var analyzerResults = LG.AnalyzeTemplate(tempTemplateName);
+            lg.AddTemplate(tempTemplateName, null, $"- {template}");
+            var analyzerResults = lg.AnalyzeTemplate(tempTemplateName);
 
             // Delete it after the analyzer
-            LG.DeleteTemplate(tempTemplateName);
+            lg.DeleteTemplate(tempTemplateName);
             return analyzerResults.Variables;
         }
 
