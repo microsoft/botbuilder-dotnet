@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public async Task MsalAppCredentials_GetToken_Skills()
         {
             EnsureSettings();
-            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, scope: "5faaf978-ee6a-4faa-a258-c23a98c9f3fa");
+            MsalAppCredentials credentials = new MsalAppCredentials(testAppId, testPassword, scope: testAppId);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
         }
