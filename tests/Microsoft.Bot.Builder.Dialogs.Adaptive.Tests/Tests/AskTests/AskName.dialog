@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.AdaptiveDialog",
+  "recognizer": {
+    "$kind": "Microsoft.LuisRecognizer",
+    "applicationId": "00000000-0000-0000-0000-000000000000",
+    "endpointKey": "00000000000000000000000000000000",
+    "endpoint": "https://westus.api.cognitive.microsoft.com",
+    "predictionOptions": {
+      "IncludeAPIResults": true
+    }
+  },
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$kind": "Microsoft.TextInput",
+          "disabled": false,
+          "maxTurnCount": 3,
+          "alwaysPrompt": false,
+          "allowInterruptions": true,
+          "unrecognizedPrompt": "",
+          "invalidPrompt": "",
+          "prompt": "What is your name?"
+        }
+      ]
+    }
+  ],
+  "id": "AskName"
+}
