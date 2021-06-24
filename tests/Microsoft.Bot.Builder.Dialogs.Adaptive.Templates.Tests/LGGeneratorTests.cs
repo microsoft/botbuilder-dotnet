@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -15,9 +16,9 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Xunit;
 
@@ -567,6 +568,32 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("hello")
                 .AssertReply("This is Tom")
             .StartTestAsync();
+        }
+
+        [Fact]
+        public void TestMissingPropertiesInGenerator()
+        {
+            LanguageGenerator generator = new TemplateEngineLanguageGenerator();
+            var properties = generator.MissingProperties(GetDialogContext(), "${user.name} and ${user.age}");
+            Assert.Collection(
+                properties,
+                item => Assert.Equal("user.name", item),
+                item => Assert.Equal("user.age", item));
+
+            var filePath = Path.Combine(AppContext.BaseDirectory, "lg", "properties.lg");
+            generator = new TemplateEngineLanguageGenerator(Templates.ParseFile(filePath));
+            properties = generator.MissingProperties(GetDialogContext(), "${nameAndAge()}");
+            Assert.Collection(
+                properties,
+                item => Assert.Equal("user.name", item),
+                item => Assert.Equal("user.age", item));
+
+            generator = new ResourceMultiLanguageGenerator("properties.lg");
+            properties = generator.MissingProperties(GetDialogContext(), "${nameAndAge()}");
+            Assert.Collection(
+                properties,
+                item => Assert.Equal("user.name", item),
+                item => Assert.Equal("user.age", item));
         }
 
         private static string GetProjectFolder()
