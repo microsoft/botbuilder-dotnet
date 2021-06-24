@@ -1251,6 +1251,8 @@ namespace Microsoft.Bot.Connector
                 }
             }
 
+            httpRequest.Headers.Add("x-ms-conversation-id", conversationId);
+
             // Serialize Request
             string requestContent = null;
             if (activity != null)
