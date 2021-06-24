@@ -32,34 +32,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// </summary>
         /// <remark>
         /// The following dependencies are added with TrySingleton so advanced scenarios can override them to customize the runtimne behavior:
-        /// BotFrameworkAuthentication,
-        /// IBot,
-        /// ResourceExplorer,
-        /// LanguagePolicy,
-        /// ChannelServiceHandlerBase,
-        /// IStorage,
-        /// UserState,
-        /// ConversationState,
-        /// SkillConversationIdFactoryBase
-        /// and IBotTelemetryClient.
+        /// <see cref="BotFrameworkAuthentication"/>,
+        /// <see cref="IBot"/>,
+        /// <see cref="ResourceExplorer"/>,
+        /// <see cref="LanguagePolicy"/>,
+        /// <see cref="ChannelServiceHandlerBase"/>,
+        /// <see cref="IStorage"/>,
+        /// <see cref="UserState"/>,
+        /// <see cref="ConversationState"/>,
+        /// <see cref="SkillConversationIdFactoryBase"/>
+        /// and <see cref="IBotTelemetryClient"/>.
+        /// 
+        /// While the full set of dependencies is designed to be sufficient to run Adaptiev Dialogs the <see cref="IBot"/> dependency can actually be
+        /// any <see cref="IBot"/> implementation and is not constrained to one that uses Adaptive Dialogs. Any Bot Framework project Startup can therefore
+        /// be simplified by just using this function along with a custom <see cref="IBot"/> implementation.
         /// 
         /// Aspects of the behavior of a number of these dependencies, including those that can be overriden, can be controlled through configuration.   
         /// 
-        /// The default ResourceExlorer uses the file system. The folder used being read from configuration.
+        /// The default <see cref="ResourceExplorer"/> uses the file system. The folder used being read from configuration.
         /// 
-        /// The default LanguagePolicy is "us-en" and this can be changed through configuration.
+        /// The default <see cref="LanguagePolicy"/> is "us-en" and this can be changed through configuration.
         /// 
-        /// If not overriden, the exact type of storage added depends on configuration. With no configuration the default is memory storage.
-        /// It should be noted that MemoryStorage is designed primarily for testing with a single host running the bot and no database.
+        /// If not overriden, the exact type of <see cref="IStorage"/> added depends on configuration. With no configuration the default is memory storage.
+        /// It should be noted that <see cref="MemoryStorage"/> is designed primarily for testing with a single host running the bot and no database.
         /// 
         /// The default Skills implementation can be constrained in terms of allowed callers through configuration.
         /// Refer to the product documentation for further details.
         /// 
-        /// The default telemetry implementation used AppInsights and aspects of what is included in the telemetry data recorded can be controller through configuration.
+        /// The default <see cref="IBotTelemetryClient"/> implementation used AppInsights and aspects of what is included in the telemetry data recorded can be controller through configuration.
         /// Refer to the product documentation for further details.
         /// 
         /// A number of the features of the runtime are implemented through middleware. Various feature flags in configuration determine whether these
-        /// middleware are added at runtime, the settings include: UseInspection, RemoveRecipientMentions, ShowTyping and SetSpeak.
+        /// middleware are added at runtime, the settings include: UseInspection, RemoveRecipientMentions, ShowTyping and SetSpeak. Which control the addition of:
+        /// <see cref="InspectionMiddleware"/>, <see cref="NormalizeMentionsMiddleware"/>, <see cref="ShowTypingMiddleware"/> and <see cref="SetSpeakMiddleware"/> respectively.
         /// 
         /// </remark>
         /// <param name="services">The application's collection of registered services.</param>
