@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// Adds bot runtime-related services to the application's service collection.
         /// </summary>
         /// <remark>
-        /// The following dependencies are added with TrySingleton so advanced scenarios can override them to customize the runtimne behavior:
+        /// The following dependencies are added with TrySingleton so advanced scenarios can override them to customize the runtime behavior:
         /// <see cref="BotFrameworkAuthentication"/>,
         /// <see cref="IBot"/>,
         /// <see cref="ResourceExplorer"/>,
