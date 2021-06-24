@@ -22,10 +22,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleRequest"/> class.
         /// </summary>
-        /// <param name="data">User input data. Free payload with key-value
-        /// pairs.</param>
+        /// <param name="data">User input data. Free payload with key-value pairs.</param>
         /// <param name="context">Current user context, i.e., the current theme.</param>
-        public TaskModuleRequest(object data = default(object), TaskModuleRequestContext context = default(TaskModuleRequestContext))
+        public TaskModuleRequest(object data = default, TaskModuleRequestContext context = default)
         {
             Data = data;
             Context = context;

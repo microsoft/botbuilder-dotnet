@@ -30,19 +30,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Creates Twilio SMS message options object from a Bot Framework <see cref="Activity"/>.
         /// </summary>
         /// <param name="activity">The activity.</param>
-        /// <param name="twilioNumber">The Twilio phone number assigned to the bot.</param>
+        /// <param name="twilioNumber">Optional. The Twilio phone number assigned to the bot. If not provided, defaults to Activity.From.Id to allow WhatsApp and other future integrations.</param>
         /// <returns>The Twilio message options object.</returns>
         /// <seealso cref="TwilioAdapter.SendActivitiesAsync(ITurnContext, Activity[], System.Threading.CancellationToken)"/>
-        public static TwilioMessageOptions ActivityToTwilio(Activity activity, string twilioNumber)
+        public static TwilioMessageOptions ActivityToTwilio(Activity activity, string twilioNumber = null)
         {
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
             }
 
-            if (string.IsNullOrWhiteSpace(twilioNumber))
+            if (string.IsNullOrWhiteSpace(twilioNumber) && string.IsNullOrWhiteSpace(activity.From?.Id))
             {
-                throw new ArgumentNullException(nameof(twilioNumber));
+                throw new ArgumentException($"Either {nameof(twilioNumber)} or {nameof(activity.From.Id)} must be provided.");
             }
 
             var mediaUrls = new List<Uri>();
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 To = activity.Conversation.Id,
                 ApplicationSid = activity.Conversation.Id,
-                From = twilioNumber,
+                From = twilioNumber ?? activity.From.Id,
                 Body = activity.Text
             };
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 throw new ArgumentNullException(nameof(payload));
             }
-            
+
             var twilioMessage = JsonConvert.DeserializeObject<TwilioMessage>(JsonConvert.SerializeObject(payload));
 
             return new Activity()

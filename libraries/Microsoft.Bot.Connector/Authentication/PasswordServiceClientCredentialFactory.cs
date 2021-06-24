@@ -73,6 +73,16 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <inheritdoc/>
         public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string oauthScope, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(AppId))
+            {
+                return Task.FromResult<ServiceClientCredentials>(MicrosoftAppCredentials.Empty);
+            }
+
+            if (appId != AppId)
+            {
+                throw new InvalidOperationException("Invalid appId");
+            }
+
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(

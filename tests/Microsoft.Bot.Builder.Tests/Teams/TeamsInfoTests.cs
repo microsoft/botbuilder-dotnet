@@ -108,6 +108,37 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [Fact]
+        public async Task TestGetMeetingInfoAsync()
+        {
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-GetMeetingInfoAsync",
+                ChannelId = Channels.Msteams,
+                ChannelData = new TeamsChannelData
+                {
+                    Meeting = new TeamsMeetingInfo
+                    {
+                        Id = "meeting-id"
+                    }
+                },
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [Fact]
         public async Task TestGetTeamDetailsAsync()
         {
             var baseUri = new Uri("https://test.coffee");
@@ -348,6 +379,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     case "Test-GetParticipantAsync":
                         await CallTeamsInfoGetParticipantAsync(turnContext);
                         break;
+                    case "Test-GetMeetingInfoAsync":
+                        await CallTeamsInfoGetMeetingInfoAsync(turnContext);
+                        break;
                     default:
                         Assert.True(false);
                         break;
@@ -412,6 +446,15 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.Equal("Organizer", participant.Meeting.Role);
                 Assert.Equal("meetigConversationId-1", participant.Conversation.Id);
                 Assert.Equal("userPrincipalName-1", participant.User.UserPrincipalName);
+            }
+
+            private async Task CallTeamsInfoGetMeetingInfoAsync(ITurnContext turnContext)
+            {
+                var meeting = await TeamsInfo.GetMeetingInfoAsync(turnContext);
+
+                Assert.Equal("meeting-id", meeting.Details.Id);
+                Assert.Equal("organizer-id", meeting.Organizer.Id);
+                Assert.Equal("meetingConversationId-1", meeting.Conversation.Id);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
@@ -580,6 +623,18 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                             new JProperty("user", new JObject(new JProperty("userPrincipalName", "userPrincipalName-1"))),
                             new JProperty("meeting", new JObject(new JProperty("role", "Organizer"))),
                             new JProperty("conversation", new JObject(new JProperty("Id", "meetigConversationId-1"))),
+                        };
+                    response.Content = new StringContent(content.ToString());
+                }
+
+                // Get meeting details
+                else if (request.RequestUri.PathAndQuery.EndsWith("v1/meetings/meeting-id"))
+                {
+                    var content = new JObject
+                        {
+                            new JProperty("details", new JObject(new JProperty("id", "meeting-id"))),
+                            new JProperty("organizer", new JObject(new JProperty("id", "organizer-id"))),
+                            new JProperty("conversation", new JObject(new JProperty("id", "meetingConversationId-1"))),
                         };
                     response.Content = new StringContent(content.ToString());
                 }

@@ -5569,7 +5569,7 @@
                     "title": "Token property",
                     "description": "Property to store the OAuth token result.",
                     "examples": [
-                        "dialog.token"
+                        "turn.token"
                     ]
                 },
                 "invalidPrompt": {

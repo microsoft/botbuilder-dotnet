@@ -350,6 +350,9 @@
       "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
     },
     {
+      "$ref": "#/definitions/Microsoft.Test.AssertTelemetryContains"
+    },
+    {
       "$ref": "#/definitions/Microsoft.Test.CustomEvent"
     },
     {
@@ -5386,7 +5389,7 @@
           "description": "Property to store the OAuth token result. WARNING: Changing this location is not recommended as you should call OAuthInput immediately before each use of the token.",
           "default": "turn.token",
           "examples": [
-            "dialog.token"
+            "turn.token"
           ]
         },
         "invalidPrompt": {
@@ -9163,6 +9166,50 @@
         }
       }
     },
+    "Microsoft.Test.AssertTelemetryContains": {
+      "$role": "implements(Microsoft.Test.ITestAction)",
+      "title": "Assert telemetry contains",
+      "description": "Checks whether telemetry log contsain specific events.",
+      "type": "object",
+      "required": [
+        "events",
+        "$kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^\\$": {
+          "title": "Tooling property",
+          "description": "Open ended property for tooling."
+        }
+      },
+      "properties": {
+        "events": {
+          "type": "array",
+          "title": "Events name should be included in telemetry log",
+          "description": "A string array contains event names.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "The description of which events should be included"
+        },
+        "$kind": {
+          "title": "Kind of dialog object",
+          "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+          "type": "string",
+          "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+          "const": "Microsoft.Test.AssertTelemetryContains"
+        },
+        "$designer": {
+          "title": "Designer information",
+          "type": "object",
+          "description": "Extra information for the Bot Framework Composer."
+        }
+      }
+    },
     "Microsoft.Test.CustomEvent": {
       "$role": "implements(Microsoft.Test.ITestAction)",
       "title": "User event",
@@ -9462,6 +9509,9 @@
         },
         {
           "$ref": "#/definitions/Microsoft.Test.AssertReplyOneOf"
+        },
+        {
+          "$ref": "#/definitions/Microsoft.Test.AssertTelemetryContains"
         },
         {
           "$ref": "#/definitions/Microsoft.Test.CustomEvent"
