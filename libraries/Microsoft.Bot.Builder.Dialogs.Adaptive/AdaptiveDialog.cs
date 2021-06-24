@@ -746,10 +746,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Generator != null)
             {
                 dialogContext.Services.Set(this.Generator);
-                if (this.Generator is ResourceMultiLanguageGenerator)
-                {
-                    Expression.Functions.Add(MissingPropertiesFunction.Name, new MissingPropertiesFunction(dialogContext));
-                }
+                Expression.Functions.Add(MissingPropertiesFunction.Name, new MissingPropertiesFunction(dialogContext));
             }
         }
 
