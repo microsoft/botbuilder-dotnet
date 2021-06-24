@@ -147,8 +147,6 @@ namespace Microsoft.Bot.Connector.Authentication
                 // If we are allowed to enter the semaphore, acquire the token.
                 if (acquired)
                 {
-                    // Acquire token async using MSAL.NET
-                    // This will use the cache from the application cache of the MSAL library, no external caching is needed.
                     // Note that in MSAL, we dont pass resources anymore, and we instead pass scopes. To be recognized by MSAL, we append the '/.default' to the scope.
                     // Scope requirements described in MSAL migration spec: https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-net-migration.
                     const string scopePostFix = "/.default";
@@ -159,6 +157,8 @@ namespace Microsoft.Bot.Connector.Authentication
                         scope = $"{scope}{scopePostFix}";
                     }
 
+                    // Acquire token async using MSAL.NET
+                    // This will use the cache from the application cache of the MSAL library, no external caching is needed.
                     var msalResult = await _clientApplication
                         .AcquireTokenForClient(new[] { scope })
                         .WithAuthority(_authority ?? OAuthEndpoint, _validateAuthority)
@@ -207,9 +207,13 @@ namespace Microsoft.Bot.Connector.Authentication
 
         private RetryParams HandleMsalException(Exception ex, int ct)
         {
+            _logger?.LogError(ex, "Exception acquiring token through MSAL.");
+
             if (ex is MsalServiceException msalException)
             {
-                // Only retryiable service error is status code "temporarily_unavailable".
+                _logger?.LogWarning(msalException, $"MSAL service error code: {msalException.ErrorCode}.");
+
+                // Service error with status code "temporarily_unavailable" is retryable.
                 // Spec and reference: https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-aadsts-error-codes.
                 if (msalException.ErrorCode == "temporarily_unavailable")
                 {
