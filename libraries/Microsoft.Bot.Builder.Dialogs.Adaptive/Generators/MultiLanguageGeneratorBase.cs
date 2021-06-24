@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>Property list.</returns>
         public override List<string> MissingProperties(DialogContext dialogContext, string templateBody, IMemory state = null, Options options = null, CancellationToken cancellationToken = default)
         {
-            var currentLocale = GetCurrentLocale(state, options);
+            var currentLocale = GetCurrentLocale(state, dialogContext, options);
             var languagePolicy = GetLanguagePolicy(state);
             var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
             var generators = GetGenerators(dialogContext, fallbackLocales);
@@ -130,16 +131,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return new List<string>();
         }
 
-        private string GetCurrentLocale(IMemory memory, Options options)
+        private string GetCurrentLocale(IMemory memory, DialogContext dc, Options options)
         {
-            string currentLocale;
-            if (memory.TryGetValue(TurnPath.Locale, out var locale))
+            var currentLocale = string.Empty;
+            if (memory != null && memory.TryGetValue(TurnPath.Locale, out var locale))
             {
                 currentLocale = locale.ToString();
             }
-            else
+            else if (options != null && !string.IsNullOrEmpty(options.Locale))
             {
                 currentLocale = options.Locale;
+            }
+            else
+            {
+                var activityLocale = dc.Context.Activity?.Locale;
+
+                if (!string.IsNullOrEmpty(activityLocale))
+                {
+                    currentLocale = new CultureInfo(currentLocale).Name;
+                }
+                else
+                {
+                    currentLocale = Thread.CurrentThread.CurrentCulture.Name;
+                }
             }
 
             return currentLocale;
@@ -154,15 +168,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 return LanguagePolicy;
             }
 
-            object languagePolicyObj;
+            object languagePolicyObj = null;
             var getLanguagePolicy = false;
-            if (memory.TryGetValue(TurnPath.LanguagePolicy, out languagePolicyObj))
+            if (memory != null && memory.TryGetValue(TurnPath.LanguagePolicy, out languagePolicyObj))
             {
                 getLanguagePolicy = true;
             }
 
             LanguagePolicy policy;
-            if (!getLanguagePolicy)
+            if (!getLanguagePolicy || languagePolicyObj == null)
             {
                 policy = new LanguagePolicy();
             }
