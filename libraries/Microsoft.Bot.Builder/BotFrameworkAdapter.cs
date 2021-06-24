@@ -1322,7 +1322,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        [Obsolete("This method will soon be deprecated. Use the one without the 'reference' parameter.")]
+        [Obsolete("This method is now obsolete because the ConversationReference argument is now redundant. Use the overload without this argument.")]
         public virtual Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
             return CreateConversationAsync(channelId, serviceUrl, (AppCredentials)credentials, conversationParameters, callback, reference, cancellationToken);
@@ -1351,7 +1351,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
-        [Obsolete("This method will soon be deprecated. Use the one without the 'reference' parameter.")]
+        [Obsolete("This method is now obsolete because the ConversationReference argument is now redundant. Use the overload without this argument.")]
         public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, AppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
             if (reference.Conversation != null)
