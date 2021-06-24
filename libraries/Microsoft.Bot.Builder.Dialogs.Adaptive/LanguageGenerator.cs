@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -29,10 +31,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dialogContext">dialogContext.</param>
         /// <param name="template">template or [templateId].</param>
+        /// <param name="state">Memory state.</param>
+        /// <param name="options">Options.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>Property list.</returns>
 #pragma warning disable CA1716 // Identifiers should not match keywords (we can't change the template parameter name without breaking binary compat).
-        public virtual List<string> MissingProperties(DialogContext dialogContext, string template, CancellationToken cancellationToken = default)
+        public virtual List<string> MissingProperties(DialogContext dialogContext, string template, IMemory state = null, Options options = null, CancellationToken cancellationToken = default)
 #pragma warning restore CA1716 // Identifiers should not match keywords
         {
             return new List<string>();

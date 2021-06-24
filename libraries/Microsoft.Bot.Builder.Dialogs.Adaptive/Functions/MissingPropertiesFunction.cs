@@ -27,9 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
         /// </summary>
         public const string Name = "missingProperties";
 
-        private const string LanguagePolicyInDialogPath = "dialogclass.generator.languagePolicy";
-
-        private const string ResourceIdInDialogPath = "dialogclass.generator.resourceId";
+        private const string GeneratorPath = "dialogclass.generator";
 
         private static DialogContext dialogContext;
 
@@ -51,117 +49,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Functions
                 return (null, error);
             }
 
-            var lgm = dialogContext.Services.Get<LanguageGeneratorManager>();
             var templateBody = args[0]?.ToString();
-            var currentLocale = GetCurrentLocale(state, options);
 
-            if (state.TryGetValue(ResourceIdInDialogPath, out var resourceId))
+            if (state.TryGetValue(GeneratorPath, out var lgGenerator))
             {
-                var (resourceName, locale) = LGResourceLoader.ParseLGFileName(resourceId.ToString());
-
-                var languagePolicy = GetLanguagePolicy(state);
-
-                var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
-
-                var generators = new List<LanguageGenerator>();
-                generators.AddRange(GetGenerators(lgm.LanguageGenerators, fallbackLocales, resourceName + ".lg"));
-
-                if (!string.IsNullOrEmpty(locale))
-                {
-                    generators.AddRange(GetGenerators(lgm.LanguageGenerators, fallbackLocales, resourceId.ToString()));
-                }
-
-                foreach (var generator in generators)
-                {
-                    if (generator is TemplateEngineLanguageGenerator templateGenerator)
-                    {
-                        var variables = templateGenerator.MissingProperties(dialogContext, templateBody);
-                        return (variables, null);
-                    }
-                }
+                var generator = lgGenerator as LanguageGenerator;
+                return (generator.MissingProperties(dialogContext, templateBody, state, options), null);
             }
 
             return (new List<string>(), null);
-        }
-
-        private static string GetCurrentLocale(IMemory memory, Options options)
-        {
-            string currentLocale;
-            if (memory.TryGetValue(TurnPath.Locale, out var locale))
-            {
-                currentLocale = locale.ToString();
-            }
-            else
-            {
-                currentLocale = options.Locale;
-            }
-
-            return currentLocale;
-        }
-
-        private static LanguagePolicy GetLanguagePolicy(IMemory memory)
-        {
-            // order: dialogclass.generator.languagePoilcy ?? turn.languagePolicy ?? default policy
-
-            object languagePolicyObj;
-            var getLanguagePolicy = false;
-            if (!memory.TryGetValue(LanguagePolicyInDialogPath, out languagePolicyObj))
-            {
-                if (memory.TryGetValue(TurnPath.LanguagePolicy, out languagePolicyObj))
-                {
-                    getLanguagePolicy = true;
-                }
-            }
-
-            LanguagePolicy policy;
-            if (!getLanguagePolicy)
-            {
-                policy = new LanguagePolicy();
-            }
-            else
-            {
-                policy = JObject.FromObject(languagePolicyObj).ToObject<LanguagePolicy>();
-            }
-
-            return policy;
-        }
-
-        private static List<string> GetFallbackLocales(LanguagePolicy languagePolicy, string currentLocale)
-        {
-            var fallbackLocales = new List<string>();
-
-            if (languagePolicy.ContainsKey(currentLocale))
-            {
-                fallbackLocales.AddRange(languagePolicy[currentLocale]);
-            }
-
-            // append empty as fallback to end
-            if (currentLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
-            {
-                fallbackLocales.AddRange(languagePolicy[string.Empty]);
-            }
-
-            if (fallbackLocales.Count == 0)
-            {
-                throw new InvalidOperationException($"No supported language found for {currentLocale}");
-            }
-
-            return fallbackLocales;
-        }
-
-        private static List<LanguageGenerator> GetGenerators(ConcurrentDictionary<string, LanguageGenerator> generators, List<string> fallbackLocales, string resourceId)
-        {
-            var result = new List<LanguageGenerator>();
-            foreach (var fallbackLocale in fallbackLocales)
-            {
-                var id = string.IsNullOrEmpty(fallbackLocale) ? resourceId : resourceId.Replace(".lg", $".{fallbackLocale}.lg");
-                if (generators.ContainsKey(id))
-                {
-                    result.Add(generators[id]);
-                }
-            }
-
-            return result;
         }
     }
 }

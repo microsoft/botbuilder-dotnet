@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -151,9 +153,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// </summary>
         /// <param name="dialogContext">dialogContext.</param>
         /// <param name="template">template or [templateId].</param>
+        /// <param name="state">Memory.</param>
+        /// <param name="options">Options.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>Property list.</returns>
-        public override List<string> MissingProperties(DialogContext dialogContext, string template, CancellationToken cancellationToken = default)
+        public override List<string> MissingProperties(DialogContext dialogContext, string template, IMemory state = null, Options options = null, CancellationToken cancellationToken = default)
         {
             var tempTemplateName = $"{LanguageGeneration.Templates.InlineTemplateIdPrefix}{Guid.NewGuid():N}";
 

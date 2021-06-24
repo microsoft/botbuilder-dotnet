@@ -2,11 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
@@ -52,7 +56,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
-            var generators = GetGenerators(dialogContext);
+            // priority 
+            // 1. local policy
+            // 2. shared policy in turnContext
+            // 3. default policy
+            var languagePolicy = this.LanguagePolicy ??
+                                dialogContext.Services.Get<LanguagePolicy>() ??
+                                new LanguagePolicy();
+
+            // see if we have any locales that match
+            var targetLocale = dialogContext.GetLocale();
+            var fallbackLocales = GetFallbackLocales(languagePolicy, targetLocale);
+            var generators = GetGenerators(dialogContext, fallbackLocales);
+
+            if (generators.Count == 0)
+            {
+                throw new InvalidOperationException($"No generator found for language {targetLocale}");
+            }
 
             var errors = new List<string>();
             foreach (var generator in generators)
@@ -76,73 +96,116 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// Method to get missing properties.
         /// </summary>
         /// <param name="dialogContext">dialogContext.</param>
-        /// <param name="template">template or [templateId].</param>
+        /// <param name="templateBody">template or [templateId].</param>
+        /// <param name="state">Memory state.</param>
+        /// <param name="options">Options.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>Property list.</returns>
-        public override List<string> MissingProperties(DialogContext dialogContext, string template, CancellationToken cancellationToken = default)
+        public override List<string> MissingProperties(DialogContext dialogContext, string templateBody, IMemory state = null, Options options = null, CancellationToken cancellationToken = default)
         {
-            var generators = GetGenerators(dialogContext);
+            var currentLocale = GetCurrentLocale(state, options);
+            var languagePolicy = GetLanguagePolicy(state);
+            var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
+            var generators = GetGenerators(dialogContext, fallbackLocales);
 
-            var errors = new List<string>();
+            if (generators.Count == 0)
+            {
+                generators.Add(new TemplateEngineLanguageGenerator());
+            }
+
             foreach (var generator in generators)
             {
                 try
                 {
-                    return generator.MissingProperties(dialogContext, template, cancellationToken);
+                    return generator.MissingProperties(dialogContext, templateBody, state, options, cancellationToken);
                 }
 #pragma warning disable CA1031 // Do not catch general exception types (catch any exception and add it to the errors list).
-                catch (Exception err)
+                catch
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    errors.Add(err.Message);
+                    // ignore
                 }
             }
 
-            throw new InvalidOperationException(string.Join(",\n", errors.Distinct()));
+            return new List<string>();
         }
 
-        private List<LanguageGenerator> GetGenerators(DialogContext dialogContext)
+        private string GetCurrentLocale(IMemory memory, Options options)
         {
-            // priority 
-            // 1. local policy
-            // 2. shared policy in turnContext
-            // 3. default policy
-            var languagePolicy = this.LanguagePolicy ??
-                                dialogContext.Services.Get<LanguagePolicy>() ??
-                                new LanguagePolicy();
-
-            // see if we have any locales that match
-            var fallbackLocales = new List<string>();
-            var targetLocale = dialogContext.GetLocale();
-
-            if (languagePolicy.ContainsKey(targetLocale))
+            string currentLocale;
+            if (memory.TryGetValue(TurnPath.Locale, out var locale))
             {
-                fallbackLocales.AddRange(languagePolicy[targetLocale]);
+                currentLocale = locale.ToString();
+            }
+            else
+            {
+                currentLocale = options.Locale;
+            }
+
+            return currentLocale;
+        }
+
+        private LanguagePolicy GetLanguagePolicy(IMemory memory)
+        {
+            // order: dialogclass.generator.languagePoilcy ?? turn.languagePolicy ?? default policy
+
+            if (LanguagePolicy != null)
+            {
+                return LanguagePolicy;
+            }
+
+            object languagePolicyObj;
+            var getLanguagePolicy = false;
+            if (memory.TryGetValue(TurnPath.LanguagePolicy, out languagePolicyObj))
+            {
+                getLanguagePolicy = true;
+            }
+
+            LanguagePolicy policy;
+            if (!getLanguagePolicy)
+            {
+                policy = new LanguagePolicy();
+            }
+            else
+            {
+                policy = JObject.FromObject(languagePolicyObj).ToObject<LanguagePolicy>();
+            }
+
+            return policy;
+        }
+
+        private List<string> GetFallbackLocales(LanguagePolicy languagePolicy, string currentLocale)
+        {
+            var fallbackLocales = new List<string>();
+
+            if (languagePolicy.ContainsKey(currentLocale))
+            {
+                fallbackLocales.AddRange(languagePolicy[currentLocale]);
             }
 
             // append empty as fallback to end
-            if (targetLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
+            if (currentLocale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
             {
                 fallbackLocales.AddRange(languagePolicy[string.Empty]);
             }
 
             if (fallbackLocales.Count == 0)
             {
-                throw new InvalidOperationException($"No supported language found for {targetLocale}");
+                throw new InvalidOperationException($"No supported language found for {currentLocale}");
             }
 
+            return fallbackLocales;
+        }
+
+        private List<LanguageGenerator> GetGenerators(DialogContext dc, List<string> fallbackLocales)
+        {
             var generators = new List<LanguageGenerator>();
             foreach (var locale in fallbackLocales)
             {
-                if (this.TryGetGenerator(dialogContext, locale, out LanguageGenerator generator))
+                if (TryGetGenerator(dc, locale, out var generator))
                 {
                     generators.Add(generator);
                 }
-            }
-
-            if (generators.Count == 0)
-            {
-                throw new InvalidOperationException($"No generator found for language {targetLocale}");
             }
 
             return generators;
