@@ -30,6 +30,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// <summary>
         /// Adds bot runtime-related services to the application's service collection.
         /// </summary>
+        /// <remark>
+        /// The following dependencies are added with TrySingleton so advanced scenarios can be override them to customize the runtimne behavior:
+        /// BotFrameworkAuthentication,
+        /// IBot,
+        /// ResourceExplorer,
+        /// LanguagePolicy,
+        /// ChannelServiceHandlerBase,
+        /// IStorage,
+        /// UserState,
+        /// ConversationState,
+        /// SkillConversationIdFactoryBase
+        /// and IBotTelemetryClient.
+        /// 
+        /// Aspects of the behavior of a number of these dependencies, including those that can be overriden, can be controlled through configuration.   
+        /// 
+        /// The default ResourceExlorer uses the file system. The folder used being read from configuration.
+        /// 
+        /// The default LanguagePolicy is "us-en" this can be changed through configuration.
+        /// 
+        /// If not overriden, the exact type of storage added depends on configuration. With no configuration the default is memory storage.
+        /// It should be noted that MemoryStorage is designed primarily for testing with a single host running the bot and no database.
+        /// 
+        /// The default Skills implementation can be constrained in terms of allowed callers through configuration.
+        /// Refer to the product documentation for further details.
+        /// 
+        /// The default telemetry implementation used AppInsights and aspects of what is included in the telemetry can be controller through configuration.
+        /// Refer to the product documentation for further details.
+        /// 
+        /// A number of the features of the runtime are implemented through middleware. Various feature flags in configuration determine whether these
+        /// middleware are added at runtime, the settings include: UseInspection, RemoveRecipientMentions, ShowTyping and SetSpeak.
+        /// 
+        /// </remark>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">The application configuration.</param>
         public static void AddBotRuntime(this IServiceCollection services, IConfiguration configuration)
