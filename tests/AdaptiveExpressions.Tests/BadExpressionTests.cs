@@ -425,8 +425,7 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
             Test("merge(json(json1))"), // should have at least two arguments
-            Test("merge(json(json1), json(jarray1))"), // arguments should all be JSON objects
-            Test("merge(json(jarray1), json(json1))"), // arguments should all be JSON objects
+            Test("merge(1, json(jarray1))"), // arguments should all be JSON objects or array
             #endregion
 
             #region Memory access test
