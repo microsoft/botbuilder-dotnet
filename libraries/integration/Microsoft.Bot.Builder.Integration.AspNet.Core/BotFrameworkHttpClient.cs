@@ -236,6 +236,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     }
 
+                    httpRequestMessage.Headers.Add(ConversationConstants.ConversationIdHttpHeaderName, activity.Conversation.Id);
+
                     httpRequestMessage.Content = jsonContent;
                     using (var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                     {
