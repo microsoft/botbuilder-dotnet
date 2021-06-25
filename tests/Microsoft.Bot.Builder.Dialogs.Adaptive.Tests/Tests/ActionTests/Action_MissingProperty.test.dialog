@@ -21,7 +21,7 @@
                         "actions": [
                             {
                                 "$kind": "Microsoft.IfCondition",
-                                "condition": "!exists(getProperty(dialog.foreach.value))",
+                                "condition": "empty(getProperty(dialog.foreach.value))",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.TextInput",
@@ -48,7 +48,7 @@
                         "actions": [
                             {
                                 "$kind": "Microsoft.IfCondition",
-                                "condition": "!exists(getProperty(dialog.foreach.value))",
+                                "condition": "empty(getProperty(dialog.foreach.value))",
                                 "actions": [
                                     {
                                         "$kind": "Microsoft.TextInput",
