@@ -57,16 +57,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>The generator.</returns>
         public override async Task<object> GenerateAsync(DialogContext dialogContext, string template, object data, CancellationToken cancellationToken = default)
         {
-            // priority 
-            // 1. local policy
-            // 2. shared policy in turnContext
-            // 3. default policy
-            var languagePolicy = this.LanguagePolicy ??
-                                dialogContext.Services.Get<LanguagePolicy>() ??
-                                new LanguagePolicy();
-
-            // see if we have any locales that match
-            var targetLocale = dialogContext.GetLocale();
+            var languagePolicy = GetLanguagePolicy(dialogContext);
+            var targetLocale = GetCurrentLocale(dialogContext);
             var fallbackLocales = GetFallbackLocales(languagePolicy, targetLocale);
             var generators = GetGenerators(dialogContext, fallbackLocales);
 
@@ -104,8 +96,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         /// <returns>Property list.</returns>
         public override List<string> MissingProperties(DialogContext dialogContext, string templateBody, IMemory state = null, Options options = null, CancellationToken cancellationToken = default)
         {
-            var currentLocale = GetCurrentLocale(state, dialogContext, options);
-            var languagePolicy = GetLanguagePolicy(state);
+            var currentLocale = GetCurrentLocale(dialogContext, state, options);
+            var languagePolicy = GetLanguagePolicy(dialogContext, state);
             var fallbackLocales = GetFallbackLocales(languagePolicy, currentLocale);
             var generators = GetGenerators(dialogContext, fallbackLocales);
 
@@ -131,9 +123,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             return new List<string>();
         }
 
-        private string GetCurrentLocale(IMemory memory, DialogContext dc, Options options)
+        private string GetCurrentLocale(DialogContext dc, IMemory memory = null, Options options = null)
         {
-            var currentLocale = string.Empty;
+            // order
+            // 1. turn.locale
+            // 2. options.locale
+            // 3. Context.Activity.Locale
+            // 4. Thread.CurrentThread.CurrentCulture.Name
+            string currentLocale;
             if (memory != null && memory.TryGetValue(TurnPath.Locale, out var locale))
             {
                 currentLocale = locale.ToString();
@@ -144,48 +141,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             }
             else
             {
-                var activityLocale = dc.Context.Activity?.Locale;
-
-                if (!string.IsNullOrEmpty(activityLocale))
-                {
-                    currentLocale = new CultureInfo(currentLocale).Name;
-                }
-                else
-                {
-                    currentLocale = Thread.CurrentThread.CurrentCulture.Name;
-                }
+                currentLocale = dc.GetLocale();
             }
 
             return currentLocale;
         }
 
-        private LanguagePolicy GetLanguagePolicy(IMemory memory)
+        private LanguagePolicy GetLanguagePolicy(DialogContext dc, IMemory memory = null)
         {
-            // order: dialogclass.generator.languagePoilcy ?? turn.languagePolicy ?? default policy
-
+            // order
+            // 1. local languagePolicy
+            // 2. turn.languagePolicy
+            // 3. dialogContext.get<LanguagePolicy>
+            // 4. Default languagepolicy
             if (LanguagePolicy != null)
             {
                 return LanguagePolicy;
             }
 
-            object languagePolicyObj = null;
-            var getLanguagePolicy = false;
-            if (memory != null && memory.TryGetValue(TurnPath.LanguagePolicy, out languagePolicyObj))
+            if (memory != null && memory.TryGetValue(TurnPath.LanguagePolicy, out var languagePolicyObj))
             {
-                getLanguagePolicy = true;
+                return JObject.FromObject(languagePolicyObj).ToObject<LanguagePolicy>();
             }
 
-            LanguagePolicy policy;
-            if (!getLanguagePolicy || languagePolicyObj == null)
-            {
-                policy = new LanguagePolicy();
-            }
-            else
-            {
-                policy = JObject.FromObject(languagePolicyObj).ToObject<LanguagePolicy>();
-            }
-
-            return policy;
+            return dc.Services.Get<LanguagePolicy>() ??
+                                new LanguagePolicy();
         }
 
         private List<string> GetFallbackLocales(LanguagePolicy languagePolicy, string currentLocale)
