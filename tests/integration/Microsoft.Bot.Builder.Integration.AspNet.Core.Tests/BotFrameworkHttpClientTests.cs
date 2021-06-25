@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Moq;
@@ -52,6 +53,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
         {
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
+                Assert.Equal("NewConversationId", request.Headers.GetValues(ConversationConstants.ConversationIdHttpHeaderName).FirstOrDefault());
                 var sentActivity = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
                 Assert.Equal(RoleTypes.Skill, sentActivity.Recipient.Role);
 
@@ -110,6 +112,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             {
                 // Assert the request properties
                 Assert.Equal(new Uri("https://skillbot.com/api/messages"), request.RequestUri);
+                Assert.Equal("NewConversationId", request.Headers.GetValues(ConversationConstants.ConversationIdHttpHeaderName).FirstOrDefault());
 
                 // Assert expected values are in the activity being sent.
                 var sentActivity = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
@@ -166,6 +169,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var activity = new Activity { Conversation = new ConversationAccount(id: Guid.NewGuid().ToString()) };
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
+                Assert.Equal(activity.Conversation.Id, request.Headers.GetValues(ConversationConstants.ConversationIdHttpHeaderName).FirstOrDefault());
                 var sentActivity = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
 
                 // Assert the activity we are sending is what we passed in.
@@ -193,6 +197,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             var activity = new Activity { Conversation = new ConversationAccount(id: Guid.NewGuid().ToString()) };
             var httpClient = CreateHttpClientWithMockHandler((request, cancellationToken) =>
             {
+                Assert.Equal(activity.Conversation.Id, request.Headers.GetValues(ConversationConstants.ConversationIdHttpHeaderName).FirstOrDefault());
                 var sentActivity = JsonConvert.DeserializeObject<Activity>(request.Content.ReadAsStringAsync().Result);
 
                 // Assert the activity we are sending is what we passed in.
