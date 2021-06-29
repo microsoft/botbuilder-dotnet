@@ -313,52 +313,59 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
         private void TryScoreEntities(string text, RecognizerResult recognizerResult)
         {
-            if ((this._orchestratorDictionaryEntry == null) || (!this._orchestratorDictionaryEntry.IsEntityReady))
+            if (this._resolver == null)
             {
                 return;
             }
 
-            var results = _resolver.Score(text, LabelType.Entity);
-            recognizerResult.Properties.Add(EntitiesProperty, results);
-
-            if (results.Any())
+            try
             {
-                if (recognizerResult.Entities == null)
+                var results = _resolver.Score(text, LabelType.Entity);
+                recognizerResult.Properties.Add(EntitiesProperty, results);
+
+                if (results.Any())
                 {
-                    recognizerResult.Entities = new JObject();
+                    if (recognizerResult.Entities == null)
+                    {
+                        recognizerResult.Entities = new JObject();
+                    }
+
+                    var entitiesResult = recognizerResult.Entities;
+                    foreach (var result in results)
+                    {
+                        // add value
+                        JToken values;
+                        if (!entitiesResult.TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out values))
+                        {
+                            values = new JArray();
+                            entitiesResult[result.Label.Name] = values;
+                        }
+
+                        ((JArray)values).Add(EntityResultToJObject(text, result));
+
+                        // get/create $instance
+                        JToken instanceRoot;
+                        if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
+                        {
+                            instanceRoot = new JObject();
+                            recognizerResult.Entities["$instance"] = instanceRoot;
+                        }
+
+                        // add instanceData
+                        JToken instanceData;
+                        if (!((JObject)instanceRoot).TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out instanceData))
+                        {
+                            instanceData = new JArray();
+                            instanceRoot[result.Label.Name] = instanceData;
+                        }
+
+                        ((JArray)instanceData).Add(EntityResultToInstanceJObject(text, result));
+                    }
                 }
-
-                var entitiesResult = recognizerResult.Entities;
-                foreach (var result in results)
-                {
-                    // add value
-                    JToken values;
-                    if (!entitiesResult.TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out values))
-                    {
-                        values = new JArray();
-                        entitiesResult[result.Label.Name] = values;
-                    }
-
-                    ((JArray)values).Add(EntityResultToJObject(text, result));
-
-                    // get/create $instance
-                    JToken instanceRoot;
-                    if (!recognizerResult.Entities.TryGetValue("$instance", StringComparison.OrdinalIgnoreCase, out instanceRoot))
-                    {
-                        instanceRoot = new JObject();
-                        recognizerResult.Entities["$instance"] = instanceRoot;
-                    }
-
-                    // add instanceData
-                    JToken instanceData;
-                    if (!((JObject)instanceRoot).TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out instanceData))
-                    {
-                        instanceData = new JArray();
-                        instanceRoot[result.Label.Name] = instanceData;
-                    }
-
-                    ((JArray)instanceData).Add(EntityResultToInstanceJObject(text, result));
-                }
+            }
+            catch (ApplicationException)
+            {
+                return; // ---- This is a "Try" function, i.e., best effort only, no exception.
             }
         }
 
