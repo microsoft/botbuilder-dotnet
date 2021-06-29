@@ -42,9 +42,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string EntitiesProperty = "entityResult";
         private const float UnknownIntentFilterScore = 0.4F;
-        private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
+        private static ConcurrentDictionary<string, OrchestratorDictionaryEntry> orchestratorMap = new ConcurrentDictionary<string, OrchestratorDictionaryEntry>();
         private string _modelFolder;
         private string _snapshotFile;
+        private OrchestratorDictionaryEntry _orchestratorDictionaryEntry = null;
         private ILabelResolver _resolver = null;
 
         /// <summary>
@@ -81,11 +82,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             _snapshotFile = snapshotFile;
             InitializeModel();
         }
-
-        [JsonIgnore]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public bool ScoreEntities { get; set; } = false;
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         /// <summary>
         /// Gets or sets the folder path to Orchestrator base model to use.
@@ -230,7 +226,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // Return 'None' if no intent matched.
                 recognizerResult.Intents.Add(NoneIntent, new IntentScore() { Score = 1.0 });
             }
-            
+
             if (ExternalEntityRecognizer != null)
             {
                 // Run external recognition
@@ -239,7 +235,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             TryScoreEntities(text, recognizerResult);
-            
+
             // Add full recognition result as a 'result' property
             await dc.Context.TraceActivityAsync($"{nameof(OrchestratorRecognizer)}Result", JObject.FromObject(recognizerResult), nameof(OrchestratorRecognizer), "Orchestrator Recognition", cancellationToken).ConfigureAwait(false);
             TrackRecognizerResult(dc, $"{nameof(OrchestratorRecognizer)}Result", FillRecognizerResultTelemetryProperties(recognizerResult, telemetryProperties, dc), telemetryMetrics);
@@ -317,7 +313,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
         private void TryScoreEntities(string text, RecognizerResult recognizerResult)
         {
-            if (!this.ScoreEntities)
+            if (!this._orchestratorDictionaryEntry.IsEntityReady)
             {
                 return;
             }
@@ -389,23 +385,28 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             var fullModelFolder = Path.GetFullPath(PathUtils.NormalizePath(_modelFolder));
 
-            var orchestrator = orchestratorMap.GetOrAdd(fullModelFolder, path =>
+            _orchestratorDictionaryEntry = orchestratorMap.GetOrAdd(fullModelFolder, path =>
             {
                 // Create Orchestrator
-                string entityModelFolder = null; 
+                string entityModelFolder = null;
+                bool isEntityReady = false;
                 try
                 {
                     entityModelFolder = Path.Combine(path, "entity");
-                    ScoreEntities = Directory.Exists(entityModelFolder);
+                    isEntityReady = Directory.Exists(entityModelFolder);
 
-                    return ScoreEntities ?
-                        new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
-                        new BotFramework.Orchestrator.Orchestrator(path);
+                    return new OrchestratorDictionaryEntry()
+                    {
+                        Orchestrator = isEntityReady ?
+                            new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
+                            new BotFramework.Orchestrator.Orchestrator(path),
+                        IsEntityReady = isEntityReady
+                    };
                 }
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException(
-                        ScoreEntities ? $"Failed to find or load Model with path {path}, entity model path {entityModelFolder}" : $"Failed to find or load Model with path {path}",
+                        isEntityReady ? $"Failed to find or load Model with path {path}, entity model path {entityModelFolder}" : $"Failed to find or load Model with path {path}",
                         ex);
                 }
             });
@@ -417,7 +418,37 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             byte[] snapShotByteArray = Encoding.UTF8.GetBytes(content);
 
             // Create label resolver
-            _resolver = orchestrator.CreateLabelResolver(snapShotByteArray);
+            _resolver = _orchestratorDictionaryEntry.Orchestrator.CreateLabelResolver(snapShotByteArray);
+        }
+
+        /// <summary>
+        /// OrchestratorDictionaryEntry is used in a static OrchestratorMap object.
+        /// </summary>
+        protected class OrchestratorDictionaryEntry
+        {
+            /// <summary>
+            /// Gets or sets the Orchestrator object.
+            /// </summary>
+            /// <value>
+            /// The Orchestrator object.
+            /// </value>
+            public BotFramework.Orchestrator.Orchestrator Orchestrator
+            {
+                get;
+                protected internal set;
+            }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the Orchestrator object ready for entity extraction.
+            /// </summary>
+            /// <value>
+            /// The IsEntityReady flag.
+            /// </value>
+            public bool IsEntityReady
+            {
+                get;
+                protected internal set;
+            }
         }
     }
 }
