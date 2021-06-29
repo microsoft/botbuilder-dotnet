@@ -90,6 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var omit = new List<string>
             {
                 "Action_SendActivity.test.dialog",
+                "Action_SendHandoffActivity.test.dialog",
                 "Action_BeginSkill.test.dialog",
                 "Action_BeginSkillEndDialog.test.dialog",
                 "TestScriptTests_OAuthInputLG.test.dialog"
