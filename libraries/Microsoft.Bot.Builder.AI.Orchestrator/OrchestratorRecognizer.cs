@@ -42,10 +42,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string EntitiesProperty = "entityResult";
         private const float UnknownIntentFilterScore = 0.4F;
-        private static ConcurrentDictionary<string, OrchestratorDictionaryEntry> orchestratorMap = new ConcurrentDictionary<string, OrchestratorDictionaryEntry>();
+        private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
         private string _modelFolder;
         private string _snapshotFile;
-        private OrchestratorDictionaryEntry _orchestratorDictionaryEntry = null;
         private ILabelResolver _resolver = null;
 
         /// <summary>
@@ -392,7 +391,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
             var fullModelFolder = Path.GetFullPath(PathUtils.NormalizePath(_modelFolder));
 
-            _orchestratorDictionaryEntry = orchestratorMap.GetOrAdd(fullModelFolder, path =>
+            BotFramework.Orchestrator.Orchestrator orchestrator = orchestratorMap.GetOrAdd(fullModelFolder, path =>
             {
                 // Create Orchestrator
                 string entityModelFolder = null;
@@ -402,13 +401,9 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     entityModelFolder = Path.Combine(path, "entity");
                     isEntityReady = Directory.Exists(entityModelFolder);
 
-                    return new OrchestratorDictionaryEntry()
-                    {
-                        Orchestrator = isEntityReady ?
-                            new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
-                            new BotFramework.Orchestrator.Orchestrator(path),
-                        IsEntityReady = isEntityReady
-                    };
+                    return isEntityReady ?
+                        new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
+                        new BotFramework.Orchestrator.Orchestrator(path);
                 }
                 catch (Exception ex)
                 {
@@ -425,37 +420,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             byte[] snapShotByteArray = Encoding.UTF8.GetBytes(content);
 
             // Create label resolver
-            _resolver = _orchestratorDictionaryEntry.Orchestrator.CreateLabelResolver(snapShotByteArray);
-        }
-
-        /// <summary>
-        /// OrchestratorDictionaryEntry is used in a static OrchestratorMap object.
-        /// </summary>
-        protected class OrchestratorDictionaryEntry
-        {
-            /// <summary>
-            /// Gets or sets the Orchestrator object.
-            /// </summary>
-            /// <value>
-            /// The Orchestrator object.
-            /// </value>
-            public BotFramework.Orchestrator.Orchestrator Orchestrator
-            {
-                get;
-                protected internal set;
-            }
-
-            /// <summary>
-            /// Gets or sets a value indicating whether the Orchestrator object ready for entity extraction.
-            /// </summary>
-            /// <value>
-            /// The IsEntityReady flag.
-            /// </value>
-            public bool IsEntityReady
-            {
-                get;
-                protected internal set;
-            }
+            _resolver = orchestrator.CreateLabelResolver(snapShotByteArray);
         }
     }
 }
