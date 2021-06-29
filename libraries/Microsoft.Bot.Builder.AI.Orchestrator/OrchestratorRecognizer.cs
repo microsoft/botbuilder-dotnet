@@ -313,7 +313,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
         private void TryScoreEntities(string text, RecognizerResult recognizerResult)
         {
-            if (!this._orchestratorDictionaryEntry.IsEntityReady)
+            if ((this._orchestratorDictionaryEntry == null) || (!this._orchestratorDictionaryEntry.IsEntityReady))
             {
                 return;
             }
