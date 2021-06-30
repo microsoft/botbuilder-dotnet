@@ -63,10 +63,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         /// <param name="modelFolder">Specifies the base model folder.</param>
         /// <param name="snapshotFile">Specifies full path to the snapshot file.</param>
-        /// <param name="resolverMockup">Label resolver mockup.</param>
-        public OrchestratorRecognizer(string modelFolder, string snapshotFile, ILabelResolver resolverMockup = null)
+        /// <param name="resolverExternal">External label resolver object.</param>
+        public OrchestratorRecognizer(string modelFolder, string snapshotFile, ILabelResolver resolverExternal = null)
         {
-            InitializeModel(modelFolder, snapshotFile, resolverMockup);
+            InitializeModel(modelFolder, snapshotFile, resolverExternal);
         }
 
         /// <summary>
@@ -360,6 +360,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                             entitiesResult[result.Label.Name] = values;
                         }
 
+                        // values came from an external entity recognizer, which may not make it a JArray.
+                        if (values.Type != JTokenType.Array)
+                        {
+                            values = new JArray();
+                        }
+
                         ((JArray)values).Add(EntityResultToJObject(text, result));
 
                         // get/create $instance
@@ -370,12 +376,24 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                             recognizerResult.Entities["$instance"] = instanceRoot;
                         }
 
+                        // instanceRoot came from an external entity recognizer, which may not make it a JObject.
+                        if (instanceRoot.Type != JTokenType.Object)
+                        {
+                            instanceRoot = new JObject();
+                        }
+
                         // add instanceData
                         JToken instanceData;
                         if (!((JObject)instanceRoot).TryGetValue(result.Label.Name, StringComparison.OrdinalIgnoreCase, out instanceData))
                         {
                             instanceData = new JArray();
                             instanceRoot[result.Label.Name] = instanceData;
+                        }
+
+                        // instanceData came from an external entity recognizer, which may not make it a JArray.
+                        if (instanceData.Type != JTokenType.Array)
+                        {
+                            instanceData = new JArray();
                         }
 
                         ((JArray)instanceData).Add(EntityResultToInstanceJObject(text, result));
@@ -389,11 +407,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void InitializeModel(string modelFolder, string snapshotFile, ILabelResolver resolverMockup = null)
+        private void InitializeModel(string modelFolder, string snapshotFile, ILabelResolver resolverExternal = null)
         {
-            if (resolverMockup != null)
+            if (resolverExternal != null)
             {
-                _resolver = resolverMockup;
+                _resolver = resolverExternal;
                 _isResolverMockup = true;
                 return;
             }
