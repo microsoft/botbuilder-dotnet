@@ -158,11 +158,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             // Score with orchestrator
             var results = _resolver.Score(text);
 
-            // Add full recognition result as a 'result' property
-            recognizerResult.Properties.Add(ResultProperty, results);
-
-            if (results.Any())
+            if ((results != null) && results.Any())
             {
+                // Add full recognition result as a 'result' property
+                recognizerResult.Properties.Add(ResultProperty, results);
+
                 var topScore = results[0].Score;
 
                 // if top scoring intent is less than threshold, return None
@@ -339,10 +339,11 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             try
             {
                 var results = _resolver.Score(text, LabelType.Entity);
-                recognizerResult.Properties.Add(EntitiesProperty, results);
 
-                if (results.Any())
+                if ((results != null) && results.Any())
                 {
+                    recognizerResult.Properties.Add(EntitiesProperty, results);
+
                     if (recognizerResult.Entities == null)
                     {
                         recognizerResult.Entities = new JObject();
@@ -398,12 +399,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             {
-                if (modelFolder == null)
+                if (string.IsNullOrWhiteSpace(modelFolder))
                 {
                     throw new ArgumentNullException(nameof(modelFolder));
                 }
 
-                if (snapshotFile == null)
+                if (string.IsNullOrWhiteSpace(snapshotFile))
                 {
                     throw new ArgumentNullException(nameof(snapshotFile));
                 }
