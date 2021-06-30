@@ -166,7 +166,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
-                ScoreEntities = true,
                 ExternalEntityRecognizer = new NumberEntityRecognizer()
             };
 
