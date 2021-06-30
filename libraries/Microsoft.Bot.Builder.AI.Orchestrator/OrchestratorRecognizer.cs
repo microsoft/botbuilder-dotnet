@@ -42,10 +42,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string EntitiesProperty = "entityResult";
         private const float UnknownIntentFilterScore = 0.4F;
-        private static ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator> orchestratorMap = new ConcurrentDictionary<string, BotFramework.Orchestrator.Orchestrator>();
-        private string _modelFolder;
-        private string _snapshotFile;
+        private static ConcurrentDictionary<string, OrchestratorDictionaryEntry> orchestratorMap = new ConcurrentDictionary<string, OrchestratorDictionaryEntry>();
+        private OrchestratorDictionaryEntry _orchestrator = null;
         private ILabelResolver _resolver = null;
+        private bool _isResolverMockup = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OrchestratorRecognizer"/> class.
@@ -63,23 +63,10 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         /// <param name="modelFolder">Specifies the base model folder.</param>
         /// <param name="snapshotFile">Specifies full path to the snapshot file.</param>
-        /// <param name="resolver">Label resolver.</param>
-        public OrchestratorRecognizer(string modelFolder, string snapshotFile, ILabelResolver resolver = null)
+        /// <param name="resolverMockup">Label resolver mockup.</param>
+        public OrchestratorRecognizer(string modelFolder, string snapshotFile, ILabelResolver resolverMockup = null)
         {
-            _resolver = resolver;
-            if (modelFolder == null)
-            {
-                throw new ArgumentNullException(nameof(modelFolder));
-            }
-
-            if (snapshotFile == null)
-            {
-                throw new ArgumentNullException(nameof(snapshotFile));
-            }
-
-            _modelFolder = modelFolder;
-            _snapshotFile = snapshotFile;
-            InitializeModel();
+            InitializeModel(modelFolder, snapshotFile, resolverMockup);
         }
 
         /// <summary>
@@ -127,6 +114,15 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public BoolExpression DetectAmbiguousIntents { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether to enable or disable entity-extraction logic.
+        /// NOTE: SHOULD consider removing this flag in the next major SDK release (V5).
+        /// </summary>
+        /// <value>
+        /// The flag for enabling or disabling entity-extraction function.
+        /// </value>
+        public bool ScoreEntities { get; set; } = true;
+
+        /// <summary>
         /// Return recognition results.
         /// </summary>
         /// <param name="dc">Context object containing information for a single turn of conversation with a user.</param>
@@ -137,13 +133,15 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// <returns>A <see cref="RecognizerResult"/> containing the QnA Maker result.</returns>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dc, Schema.Activity activity, CancellationToken cancellationToken, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
+            if (_resolver == null)
+            {
+                string modelFolder = ModelFolder.GetValue(dc.State);
+                string snapshotFile = SnapshotFile.GetValue(dc.State);
+                InitializeModel(modelFolder, snapshotFile, null);
+            }
+
             var text = activity.Text ?? string.Empty;
             var detectAmbiguity = DetectAmbiguousIntents.GetValue(dc.State);
-
-            _modelFolder = ModelFolder.GetValue(dc.State);
-            _snapshotFile = SnapshotFile.GetValue(dc.State);
-
-            InitializeModel();
 
             var recognizerResult = new RecognizerResult()
             {
@@ -312,11 +310,32 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
         private void TryScoreEntities(string text, RecognizerResult recognizerResult)
         {
-            if (this._resolver == null)
+            // It's impossible to extract entities without a _resolver object.
+            if (_resolver == null)
             {
                 return;
             }
 
+            // Entity extraction can be controlled by the ScoreEntities flag.
+            // NOTE: SHOULD consider removing this flag in the next major SDK release (V5).
+            if (!this.ScoreEntities)
+            {
+                return;
+            }
+
+            // The following check is necessary to ensure that the _resolver object
+            // is capable of entity exttraction. However, this check can also block
+            // a mock-up _resolver.
+            if (!_isResolverMockup)
+            {
+                if ((_orchestrator == null) || (!_orchestrator.IsEntityExtractionCapable))
+                {
+                    return;
+                }
+            }
+
+            // As this method is TryScoreEntities, so it's best effort only, there should
+            // not be any exception thrown out of this method.
             try
             {
                 var results = _resolver.Score(text, LabelType.Entity);
@@ -368,59 +387,93 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
         }
 
-        private void InitializeModel()
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void InitializeModel(string modelFolder, string snapshotFile, ILabelResolver resolverMockup = null)
         {
-            if (_modelFolder == null)
+            if (resolverMockup != null)
             {
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                throw new ArgumentNullException("ModelFolder");
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-            }
-
-            if (_snapshotFile == null)
-            {
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                throw new ArgumentNullException("SnapshotFile");
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-            }
-
-            if (_resolver != null)
-            {
+                _resolver = resolverMockup;
+                _isResolverMockup = true;
                 return;
             }
 
-            var fullModelFolder = Path.GetFullPath(PathUtils.NormalizePath(_modelFolder));
+            {
+                if (modelFolder == null)
+                {
+                    throw new ArgumentNullException(nameof(modelFolder));
+                }
 
-            BotFramework.Orchestrator.Orchestrator orchestrator = orchestratorMap.GetOrAdd(fullModelFolder, path =>
+                if (snapshotFile == null)
+                {
+                    throw new ArgumentNullException(nameof(snapshotFile));
+                }
+            }
+
+            var fullModelFolder = Path.GetFullPath(PathUtils.NormalizePath(modelFolder));
+
+            _orchestrator = orchestratorMap.GetOrAdd(fullModelFolder, path =>
             {
                 // Create Orchestrator
                 string entityModelFolder = null;
-                bool isEntityReady = false;
+                bool isEntityExtractionCapable = false;
                 try
                 {
                     entityModelFolder = Path.Combine(path, "entity");
-                    isEntityReady = Directory.Exists(entityModelFolder);
+                    isEntityExtractionCapable = Directory.Exists(entityModelFolder);
 
-                    return isEntityReady ?
-                        new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
-                        new BotFramework.Orchestrator.Orchestrator(path);
+                    return new OrchestratorDictionaryEntry()
+                    {
+                        Orchestrator = isEntityExtractionCapable ?
+                            new BotFramework.Orchestrator.Orchestrator(path, entityModelFolder) :
+                            new BotFramework.Orchestrator.Orchestrator(path),
+                        IsEntityExtractionCapable = isEntityExtractionCapable
+                    };
                 }
                 catch (Exception ex)
                 {
                     throw new InvalidOperationException(
-                        isEntityReady ? $"Failed to find or load Model with path {path}, entity model path {entityModelFolder}" : $"Failed to find or load Model with path {path}",
+                        isEntityExtractionCapable ? $"Failed to find or load Model with path {path}, entity model path {entityModelFolder}" : $"Failed to find or load Model with path {path}",
                         ex);
                 }
             });
 
-            var fullSnapShotFile = Path.GetFullPath(PathUtils.NormalizePath(_snapshotFile));
+            var fullSnapShotFile = Path.GetFullPath(PathUtils.NormalizePath(snapshotFile));
 
             // Load the snapshot
-            string content = File.ReadAllText(fullSnapShotFile);
-            byte[] snapShotByteArray = Encoding.UTF8.GetBytes(content);
+            byte[] snapShotByteArray = File.ReadAllBytes(fullSnapShotFile);
 
             // Create label resolver
-            _resolver = orchestrator.CreateLabelResolver(snapShotByteArray);
+            _resolver = this._orchestrator.Orchestrator.CreateLabelResolver(snapShotByteArray);
+        }
+
+        /// <summary>
+        /// OrchestratorDictionaryEntry is used for the static orchestratorMap object.
+        /// </summary>
+        private class OrchestratorDictionaryEntry
+        {
+            /// <summary>
+            /// Gets or sets the Orchestrator object.
+            /// </summary>
+            /// <value>
+            /// The Orchestrator object.
+            /// </value>
+            public BotFramework.Orchestrator.Orchestrator Orchestrator
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether the Orchestrator object is capable of entity extraction.
+            /// </summary>
+            /// <value>
+            /// The IsEntityExtractionCapable flag.
+            /// </value>
+            public bool IsEntityExtractionCapable
+            {
+                get;
+                set;
+            }
         }
     }
 }
