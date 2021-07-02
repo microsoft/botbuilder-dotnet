@@ -31,30 +31,40 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public async Task GetUserToken_ShouldThrowOnEmptyUserId()
+        public async Task GetTokenWithHttpMessagesAsync_ShouldThrowOnEmptyUserId()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetTokenAsync(null, "mockConnection", string.Empty));
         }
 
         [Fact]
-        public async Task GetUserToken_ShouldThrowOnEmptyConnectionName()
+        public async Task GetTokenWithHttpMessagesAsync_ShouldThrowOnEmptyConnectionName()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetTokenAsync("userid", null, string.Empty));
         }
 
         [Fact]
-        public async Task GetUserToken_ShouldThrowOnNoLocalBot()
+        public async Task GetTokenWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("dummyToken"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenAsync(
-                "dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode"));
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenAsync(
+                    "dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode"));
+            }
+            else
+            {
+                // Automated build:
+                await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode");
+                Assert.True(true, "No exception thrown.");
+            }
         }
 
         // [Fact] - Disabled due to bug in service
-        // public async Task GetUserToken_ShouldReturnTokenWithNoMagicCode()
+        // public async Task GetTokenWithHttpMessagesAsync_ShouldReturnTokenWithNoMagicCode()
         // {
         //    await UseOAuthClientFor(async client =>
         //     {
@@ -64,7 +74,7 @@ namespace Microsoft.Bot.Connector.Tests
         //     });
         // }
         [Fact]
-        public async Task GetUserToken_ShouldReturnNullOnInvalidConnectionString()
+        public async Task GetTokenWithHttpMessagesAsync_ShouldReturnNullOnInvalidConnectionString()
         {
             await UseOAuthClientFor(async client =>
              {
@@ -74,66 +84,93 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public async Task SignOutUser_ShouldThrowOnEmptyUserId()
+        public async Task SignOutWithHttpMessagesAsync_ShouldThrowOnEmptyUserId()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.SignOutAsync(null, "dummyConnection"));
         }
 
         [Fact]
-        public async Task SignOutUser_ShouldThrowOnNoLocalBot()
+        public async Task SignOutWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.SignOutAsync(
-                "dummyUserId", "dummyConnectionName", "dummyChannelId"));
-
-            //Task t = client.UserToken.SignOutAsync("testUserId", "mockConnection");
-            //t.Wait();
-            //Assert.True(true);
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.SignOutAsync(
+                    "dummyUserId", "dummyConnectionName", "dummyChannelId"));
+            }
+            else
+            {
+                // Automated build exception:
+                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.SignOutAsync(
+                    "dummyUserId", "dummyConnectionName", "dummyChannelId"));
+            }
         }
 
         [Fact]
-        public async Task GetSigninLink_ShouldThrowOnNullState()
+        public async Task GetSignInUrlWithHttpMessagesAsync_ShouldThrowOnNullState()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.BotSignIn.GetSignInUrlAsync(null));
         }
 
         [Fact]
-        public async Task GetSigninLink_ShouldThrowOnNoLocalBot()
+        public async Task GetSignInUrlWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.BotSignIn.GetSignInUrlAsync(
-                "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
+
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.BotSignIn.GetSignInUrlAsync(
+                    "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
+            }
+            else
+            {
+                // Automated build exception:
+                await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.BotSignIn.GetSignInUrlAsync(
+                    "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
+            }
         }
 
         [Fact]
-        public async Task GetTokenStatus_ShouldThrowOnNullUserId()
+        public async Task GetTokenStatusWithHttpMessagesAsync_ShouldThrowOnNullUserId()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetTokenStatusAsync(null));
         }
 
         [Fact]
-        public async Task GetTokenStatus_ShouldThrowOnNoLocalBot()
+        public async Task GetTokenStatusWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenStatusAsync(
-                "dummyUserId", "dummyChannelId", "dummyInclude"));
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenStatusAsync(
+                    "dummyUserId", "dummyChannelId", "dummyInclude"));
+            }
+            else
+            {
+                // Automated build exception:
+                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetTokenStatusAsync(
+                    "dummyUserId", "dummyChannelId", "dummyInclude"));
+            }
         }
 
         [Fact]
-        public async Task GetAadTokensAsync_ShouldThrowOnNullUserId()
+        public async Task GetAadTokensWithHttpMessagesAsync_ShouldThrowOnNullUserId()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync(null, "connection", new AadResourceUrls() { ResourceUrls = new string[] { "hello" } }));
         }
 
         [Fact]
-        public async Task GetAadTokensAsync_ShouldThrowOnNullConnectionName()
+        public async Task GetAadTokensWithHttpMessagesAsync_ShouldThrowOnNullConnectionName()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync(
@@ -141,19 +178,30 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public async Task GetAadTokensAsync_ShouldThrowOnNullResourceUrls()
+        public async Task GetAadTokensWithHttpMessagesAsync_ShouldThrowOnNullResourceUrls()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync("dummyUserId", "dummyConnectionName", null));
         }
 
         [Fact]
-        public async Task GetAadTokensAsync_ShouldThrowOnNoLocalBot()
+        public async Task GetAadTokensWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
-                "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
+
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Automated build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
+                    "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
+            }
+            else
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
+                    "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
+            }
         }
 
         [Fact]
@@ -168,8 +216,18 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(
-                client, true));
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(
+                    client, true));
+            }
+            else
+            {
+                // Automated build:
+                await OAuthClientConfig.SendEmulateOAuthCardsAsync(client, true);
+                Assert.True(true, "No exception thrown.");
+            }
         }
 
         [Fact]
@@ -185,8 +243,18 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.GetSignInResourceAsync(
-                "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.GetSignInResourceAsync(
+                    "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
+            }
+            else
+            {
+                // Automated build exception:
+                await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.GetSignInResourceAsync(
+                    "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
+            }
         }
 
         [Fact]
@@ -226,8 +294,19 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.ExchangeAsyncAsync(
-                "dummyUserId", "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest()));
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            {
+                // Local exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.ExchangeAsyncAsync(
+                    "dummyUserId", "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest()));
+            }
+            else
+            {
+                // Automated build:
+                await client.ExchangeAsyncAsync(
+                    "dummyUserId", "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest());
+                Assert.True(true, "No exception thrown.");
+            }
         }
 
         // [Fact] - Disabled due to bug in service
