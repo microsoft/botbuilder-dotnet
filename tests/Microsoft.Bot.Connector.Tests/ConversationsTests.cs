@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Connector.Tests
             //var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.Conversations.SendConversationHistoryAsync(
+            await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.Conversations.SendConversationHistoryAsync(
                 "dummyConversationId", new Transcript()));
         }
 
