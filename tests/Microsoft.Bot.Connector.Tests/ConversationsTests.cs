@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Connector.Tests
 {
-    public class ConversationsTest : BaseTest
+    public class ConversationsTests : BaseTest
     {
         [Fact]
         public void AgentStringComponents()
@@ -49,6 +49,60 @@ namespace Microsoft.Bot.Connector.Tests
                 Assert.NotNull(result.ActivityId);
             });
         }
+
+        [Fact]
+        public async Task SendConversationHistoryWithHttpMessagesAsync_ShouldThrowOnNullConversationId()
+        {
+            var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.SendConversationHistoryAsync(
+                null, new Transcript()));
+        }
+
+        [Fact]
+        public async Task SendConversationHistoryWithHttpMessagesAsync_ShouldThrowOnNullTranscript()
+        {
+            var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
+            await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.SendConversationHistoryAsync(
+                "dummyConversationId", null));
+        }
+
+        [Fact]
+        public async Task SendConversationHistoryWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
+        {
+            //var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
+            ServiceClientTracing.IsEnabled = true;
+            await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.Conversations.SendConversationHistoryAsync(
+                "dummyConversationId", new Transcript()));
+        }
+
+        //[Fact]
+        //public async Task GetConversationsWithHttpMessagesAsync_ShouldThrowOnNullContinuationToken()
+        //{
+        //    var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
+        //    await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationsAsync(null));
+        //}
+
+        [Fact]
+        public async Task GetConversationsWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
+        {
+            //var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
+            var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
+            ServiceClientTracing.IsEnabled = true;
+            await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetConversationsAsync(
+                "dummyContinuationToken"));
+        }
+
+        //[Fact]
+        //public async Task GetConversationMemberWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
+        //{
+        //    var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
+        //    var c = new Conversations();
+        //    var conversationId = (new ITurnContext.Activity.Conversation.Id;
+        //    ServiceClientTracing.IsEnabled = true;
+        //    await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetConversationMemberAsync(
+        //        client.Conversations, "dummyUserId", "dummyConversationId"));
+        //}
 
         [Fact]
         public async Task CreateConversation_WithTracing()
