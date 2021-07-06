@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             // Score with orchestrator
-            var results = _resolver.Score(text);
+            var results = _resolver.Score(text)?.ToList();
 
             // Add full recognition result as a 'result' property
             recognizerResult.Properties.Add(ResultProperty, results);
