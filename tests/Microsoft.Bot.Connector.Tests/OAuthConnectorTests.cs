@@ -199,13 +199,13 @@ namespace Microsoft.Bot.Connector.Tests
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
                 // Automated Windows build exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
+                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetAadTokensAsync(
                     "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
             }
             else
             {
                 // MacLinux build and local build exception:
-                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetAadTokensAsync(
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
                     "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
             }
         }
