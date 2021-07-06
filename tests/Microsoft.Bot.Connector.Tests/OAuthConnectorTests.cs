@@ -95,16 +95,18 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.SignOutAsync(
+                // Automated Windows build exception:
+                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.SignOutAsync(
                     "dummyUserId", "dummyConnectionName", "dummyChannelId"));
             }
             else
             {
-                // Automated build exception:
-                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.SignOutAsync(
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.SignOutAsync(
                     "dummyUserId", "dummyConnectionName", "dummyChannelId"));
             }
         }
@@ -122,16 +124,17 @@ namespace Microsoft.Bot.Connector.Tests
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
 
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.BotSignIn.GetSignInUrlAsync(
+                // Automated Windows build exception:
+                await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.BotSignIn.GetSignInUrlAsync(
                     "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
             }
             else
             {
-                // Automated build exception:
-                await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.BotSignIn.GetSignInUrlAsync(
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.BotSignIn.GetSignInUrlAsync(
                     "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
             }
         }
@@ -148,16 +151,18 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+ 
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenStatusAsync(
+                // Automated Windows build exception:
+                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetTokenStatusAsync(
                     "dummyUserId", "dummyChannelId", "dummyInclude"));
             }
             else
             {
-                // Automated build exception:
-                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetTokenStatusAsync(
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenStatusAsync(
                     "dummyUserId", "dummyChannelId", "dummyInclude"));
             }
         }
@@ -190,15 +195,16 @@ namespace Microsoft.Bot.Connector.Tests
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
 
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Automated build exception:
+                // Automated Windows build exception:
                 await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetAadTokensAsync(
                     "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
             }
             else
             {
-                // Local exception:
+                // MacLinux build and local build exception:
                 await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.GetAadTokensAsync(
                     "dummyUserId", "dummyConnectionName", new AadResourceUrls() { ResourceUrls = new string[] { "dummyUrl" } }, "dummyChannelId"));
             }
@@ -243,16 +249,18 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.GetSignInResourceAsync(
+                // Automated Windows build exception:
+                await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.GetSignInResourceAsync(
                     "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
             }
             else
             {
-                // Automated build exception:
-                await Assert.ThrowsAsync<Microsoft.Rest.HttpOperationException>(() => client.GetSignInResourceAsync(
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.GetSignInResourceAsync(
                     "dummyState", "dummyCodeChallenge", "dummyEmulatorUrl", "dummyFinalRedirect"));
             }
         }
