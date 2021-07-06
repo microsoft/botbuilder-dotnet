@@ -156,12 +156,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             // Score with orchestrator
-            var results = _resolver.Score(text);
+            var results = _resolver.Score(text).ToList();
 
             if ((results != null) && results.Any())
             {
                 // Add full recognition result as a 'result' property
-                recognizerResult.Properties.Add(ResultProperty, results.ToList());
+                recognizerResult.Properties.Add(ResultProperty, results);
 
                 var topScore = results[0].Score;
 
