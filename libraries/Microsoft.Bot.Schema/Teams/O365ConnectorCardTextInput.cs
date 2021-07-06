@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -24,18 +23,13 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="type">Input type name. Possible values include:
         /// 'textInput', 'dateInput', 'multichoiceInput'.</param>
-        /// <param name="id">Input Id. It must be unique per entire O365
-        /// connector card.</param>
-        /// <param name="isRequired">Define if this input is a required field.
-        /// Default value is false.</param>
-        /// <param name="title">Input title that will be shown as the
-        /// placeholder.</param>
+        /// <param name="id">Input Id. It must be unique per entire O365 connector card.</param>
+        /// <param name="isRequired">Define if this input is a required field. Default value is false.</param>
+        /// <param name="title">Input title that will be shown as the placeholder.</param>
         /// <param name="value">Default value for this input field.</param>
-        /// <param name="isMultiline">Define if text input is allowed for
-        /// multiple lines. Default value is false.</param>
-        /// <param name="maxLength">Maximum length of text input. Default value
-        /// is unlimited.</param>
-        public O365ConnectorCardTextInput(string type = default(string), string id = default(string), bool? isRequired = default(bool?), string title = default(string), string value = default(string), bool? isMultiline = default(bool?), double? maxLength = default(double?))
+        /// <param name="isMultiline">Define if text input is allowed for multiple lines. Default value is false.</param>
+        /// <param name="maxLength">Maximum length of text input. Default value is unlimited.</param>
+        public O365ConnectorCardTextInput(string type = default, string id = default, bool? isRequired = default, string title = default, string value = default, bool? isMultiline = default, double? maxLength = default)
             : base(type, id, isRequired, title, value)
         {
             IsMultiline = isMultiline;

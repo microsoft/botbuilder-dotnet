@@ -85,6 +85,8 @@ namespace Microsoft.Bot.Connector.Authentication
                     httpRequestMessage.RequestUri = toUrl;
                     httpRequestMessage.Content = jsonContent;
 
+                    httpRequestMessage.Headers.Add(ConversationConstants.ConversationIdHttpHeaderName, conversationId);
+
                     // Add the auth header to the HTTP request.
                     await credentials.ProcessHttpRequestAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 

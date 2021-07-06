@@ -30,6 +30,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
         /// <summary>
         /// Adds bot runtime-related services to the application's service collection.
         /// </summary>
+        /// <remark>
+        /// The following dependencies are added with TrySingleton so advanced scenarios can override them to customize the runtime behavior:
+        /// <see cref="BotFrameworkAuthentication"/>,
+        /// <see cref="IBot"/>,
+        /// <see cref="ResourceExplorer"/>,
+        /// <see cref="LanguagePolicy"/>,
+        /// <see cref="ChannelServiceHandlerBase"/>,
+        /// <see cref="IStorage"/>,
+        /// <see cref="UserState"/>,
+        /// <see cref="ConversationState"/>,
+        /// <see cref="SkillConversationIdFactoryBase"/>
+        /// and <see cref="IBotTelemetryClient"/>.
+        /// 
+        /// While the full set of dependencies is designed to be sufficient to run Adaptiev Dialogs the <see cref="IBot"/> dependency can actually be
+        /// any <see cref="IBot"/> implementation and is not constrained to one that uses Adaptive Dialogs. Any Bot Framework project Startup can therefore
+        /// be simplified by just using this function along with a custom <see cref="IBot"/> implementation.
+        /// 
+        /// Aspects of the behavior of a number of these dependencies, including those that can be overriden, can be controlled through configuration.   
+        /// 
+        /// The default <see cref="ResourceExplorer"/> uses the file system. The folder used being read from configuration.
+        /// 
+        /// The default <see cref="LanguagePolicy"/> is "us-en" and this can be changed through configuration.
+        /// 
+        /// If not overriden, the exact type of <see cref="IStorage"/> added depends on configuration. With no configuration the default is memory storage.
+        /// It should be noted that <see cref="MemoryStorage"/> is designed primarily for testing with a single host running the bot and no durable storage.
+        /// 
+        /// The default Skills implementation can be constrained in terms of allowed callers through configuration.
+        /// Refer to the product documentation for further details.
+        /// 
+        /// The default <see cref="IBotTelemetryClient"/> implementation used AppInsights and aspects of what is included in the telemetry data recorded can be controller through configuration.
+        /// Refer to the product documentation for further details.
+        /// 
+        /// A number of the features of the runtime are implemented through middleware. Various feature flags in configuration determine whether these
+        /// middleware are added at runtime, the settings include: UseInspection, RemoveRecipientMentions, ShowTyping and SetSpeak. Which control the addition of:
+        /// <see cref="InspectionMiddleware"/>, <see cref="NormalizeMentionsMiddleware"/>, <see cref="ShowTypingMiddleware"/> and <see cref="SetSpeakMiddleware"/> respectively.
+        /// 
+        /// </remark>
         /// <param name="services">The application's collection of registered services.</param>
         /// <param name="configuration">The application configuration.</param>
         public static void AddBotRuntime(this IServiceCollection services, IConfiguration configuration)
@@ -77,9 +114,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
 
         internal static void AddBotRuntimeSkills(this IServiceCollection services, IConfiguration configuration)
         {
+            // We only support being a skill or a skill consumer currently (not both).
+            // See https://github.com/microsoft/botbuilder-dotnet/issues/5738 for feature request to allow both in the future.
             var skillSettings = configuration.GetSection(SkillSettings.SkillSettingsKey).Get<SkillSettings>();
+            var settings = configuration.GetSection(SkillConfigurationEntry.SkillSettingsKey).Get<List<SkillConfigurationEntry>>();
+            if (settings?.Count > 0)
+            {
+                // If the config entry for SkillConfigurationEntry.SkillSettingsKey is present then we are a consumer
+                // and the entries under SkillSettings.SkillSettingsKey are ignored
+                services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedSkillsClaimsValidator(settings.Select(x => x.MsAppId).ToList()) });
+            }
+            else
+            {
+                // If the config entry for SkillSettings.SkillSettingsKey contains entries, then we are a skill
+                // and we validate caller against this list
+                services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(skillSettings?.AllowedCallers) });
+            }
 
-            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(skillSettings?.AllowedCallers) });
             services.TryAddSingleton<ChannelServiceHandlerBase, CloudSkillHandler>();
         }
 

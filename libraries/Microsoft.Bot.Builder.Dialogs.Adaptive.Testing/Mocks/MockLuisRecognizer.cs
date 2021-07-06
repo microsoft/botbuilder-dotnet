@@ -49,9 +49,17 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
             HttpClientHandler newHandler = null, oldHandler = _recognizer.HttpClient;
-
+            
             // Used for ResponsePath
             var recognizer = _recognizer.RecognizerOptions(dialogContext);
+            foreach (var middware in dialogContext.Context.Adapter.MiddlewareSet)
+            {
+                if (middware is TelemetryLoggerMiddleware telemetryMiddleware)
+                {
+                    _recognizer.TelemetryClient = telemetryMiddleware.TelemetryClient;
+                }
+            }
+
             recognizer.IncludeAPIResults = true;
 
             var middleware = dialogContext.Context.TurnState.Get<MockHttpRequestMiddleware>();

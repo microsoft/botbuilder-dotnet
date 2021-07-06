@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="application">Represents details of the app.</param>
         /// <param name="conversation">Represents details of the
         /// converesation.</param>
-        public MessageActionsPayloadFrom(MessageActionsPayloadUser user = default(MessageActionsPayloadUser), MessageActionsPayloadApp application = default(MessageActionsPayloadApp), MessageActionsPayloadConversation conversation = default(MessageActionsPayloadConversation))
+        public MessageActionsPayloadFrom(MessageActionsPayloadUser user = default, MessageActionsPayloadApp application = default, MessageActionsPayloadConversation conversation = default)
         {
             User = user;
             Application = application;

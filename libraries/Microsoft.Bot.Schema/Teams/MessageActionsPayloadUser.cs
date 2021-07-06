@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="id">The id of the user.</param>
         /// <param name="displayName">The plaintext display name of the
         /// user.</param>
-        public MessageActionsPayloadUser(string userIdentityType = default(string), string id = default(string), string displayName = default(string))
+        public MessageActionsPayloadUser(string userIdentityType = default, string id = default, string displayName = default)
         {
             UserIdentityType = userIdentityType;
             Id = id;

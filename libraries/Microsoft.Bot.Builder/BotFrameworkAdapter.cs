@@ -1322,6 +1322,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
+        [Obsolete("This method is now obsolete because the ConversationReference argument is now redundant. Use the overload without this argument.")]
         public virtual Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
             return CreateConversationAsync(channelId, serviceUrl, (AppCredentials)credentials, conversationParameters, callback, reference, cancellationToken);
@@ -1350,6 +1351,7 @@ namespace Microsoft.Bot.Builder
         /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
         /// will contain the ID of the new conversation.</para>
         /// </remarks>
+        [Obsolete("This method is now obsolete because the ConversationReference argument is now redundant. Use the overload without this argument.")]
         public virtual async Task CreateConversationAsync(string channelId, string serviceUrl, AppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, ConversationReference reference, CancellationToken cancellationToken)
         {
             if (reference.Conversation != null)
@@ -1359,7 +1361,9 @@ namespace Microsoft.Bot.Builder
                 if (tenantId != null)
                 {
                     // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
-                    conversationParameters.ChannelData = new { tenant = new { tenantId } };
+                    var channelData = JObject.FromObject(conversationParameters.ChannelData ?? new { });
+                    channelData["tenant"] = JToken.FromObject(new { tenantId = reference.Conversation.TenantId });
+                    conversationParameters.ChannelData = channelData;
 
                     // Permanent solution is to put tenantId in parameters.tenantId
                     conversationParameters.TenantId = tenantId;

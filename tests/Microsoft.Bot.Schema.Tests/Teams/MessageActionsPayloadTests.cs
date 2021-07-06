@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Schema.Tests.Teams
         [Fact]
         public void TestMessageActionsPayloadConstructorWithArguments()
         {
-            var payload = CreateActionPayload();
+            var payload = new MessageActionsPayload(_id, _replyId, _messageType, _date, _date, _deleted, _subject, _summary, _importance, _locale, _from, _body, _attachmentLayout, _attachments, _mentions, _reactions);
 
             Assert.Equal(_id, payload.Id);
             Assert.Equal(_replyId, payload.ReplyToId);

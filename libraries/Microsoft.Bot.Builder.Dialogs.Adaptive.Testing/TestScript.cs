@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.UserTokenMocks;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -210,8 +211,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             adapter.EnableCommand = EnableCommand;
             adapter.EnableEmptyMessages = EnableEmptyMessages;
             adapter.Locale = Locale;
+            var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));
             adapter.Use(new MockSettingsMiddleware(SettingMocks));
+            adapter.Use(new TelemetryLoggerMiddleware(mockTelemetryClient.Object, logPersonalInformation: true));
 
             foreach (var userToken in UserTokenMocks)
             {

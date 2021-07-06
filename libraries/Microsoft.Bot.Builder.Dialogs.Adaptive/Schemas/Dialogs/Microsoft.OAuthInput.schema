@@ -51,7 +51,7 @@
             "description": "Property to store the OAuth token result. WARNING: Changing this location is not recommended as you should call OAuthInput immediately before each use of the token.",
             "default":  "turn.token",
             "examples": [
-                "dialog.token"
+                "turn.token"
             ]
         },
         "invalidPrompt": {

@@ -45,6 +45,22 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
+        /// Gets the information for the given meeting id.
+        /// </summary>
+        /// <param name="turnContext"> Turn context.</param>
+        /// <param name="meetingId"> The BASE64-encoded id of the Teams meeting.</param>
+        /// <param name="cancellationToken"> Cancellation token.</param>
+        /// <returns>Team Details.</returns>
+        public static async Task<MeetingInfo> GetMeetingInfoAsync(ITurnContext turnContext, string meetingId = null, CancellationToken cancellationToken = default)
+        {
+            meetingId ??= turnContext.Activity.TeamsGetMeetingInfo()?.Id ?? throw new InvalidOperationException("The meetingId can only be null if turnContext is within the scope of a MS Teams Meeting.");
+            using (var teamsClient = GetTeamsConnectorClient(turnContext))
+            {
+                return await teamsClient.Teams.FetchMeetingInfoAsync(meetingId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Gets the details for the given team id. This only works in teams scoped conversations. 
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
@@ -190,11 +206,11 @@ namespace Microsoft.Bot.Builder.Teams
         }
 
         /// <summary>
-        /// Creates a new thread in a team chat and sends an activity to that new thread.
+        /// Creates a new thread in a team chat and sends an activity to that new thread. Use this method if you are using BotFrameworkAdapter and are handling credentials in your code.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
-        /// <param name="activity"> ID of the Teams team. </param>
-        /// <param name="teamsChannelId"> cancellation token. </param>
+        /// <param name="activity"> The activity to send on starting the new thread. </param>
+        /// <param name="teamsChannelId"> The Team's Channel ID, note this is distinct from the Bot Framework activity property with same name. </param>
         /// <param name="credentials"> Microsoft app credentials. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <returns>Team Details.</returns>
@@ -234,6 +250,59 @@ namespace Microsoft.Bot.Builder.Teams
                 teamsChannelId,
                 serviceUrl,
                 credentials,
+                conversationParameters,
+                (t, ct) =>
+                {
+                    conversationReference = t.Activity.GetConversationReference();
+                    newActivityId = t.Activity.Id;
+                    return Task.CompletedTask;
+                },
+                cancellationToken).ConfigureAwait(false);
+
+            return new Tuple<ConversationReference, string>(conversationReference, newActivityId);
+        }
+
+        /// <summary>
+        /// Creates a new thread in a team chat and sends an activity to that new thread. Use this method if you are using CloudAdapter where credentials are handled by the adapter.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="activity"> The activity to send on starting the new thread. </param>
+        /// <param name="teamsChannelId"> The Team's Channel ID, note this is distinct from the Bot Framework activity property with same name. </param>
+        /// <param name="botAppId"> The bot's appId. </param>
+        /// <param name="cancellationToken"> The cancellation token. </param>
+        /// <returns>Team Details.</returns>
+        public static async Task<Tuple<ConversationReference, string>> SendMessageToTeamsChannelAsync(ITurnContext turnContext, IActivity activity, string teamsChannelId, string botAppId, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (turnContext.Activity == null)
+            {
+                throw new InvalidOperationException(nameof(turnContext.Activity));
+            }
+
+            if (string.IsNullOrEmpty(teamsChannelId))
+            {
+                throw new ArgumentNullException(nameof(teamsChannelId));
+            }
+
+            ConversationReference conversationReference = null;
+            var newActivityId = string.Empty;
+            var serviceUrl = turnContext.Activity.ServiceUrl;
+            var conversationParameters = new ConversationParameters
+            {
+                IsGroup = true,
+                ChannelData = new { channel = new { id = teamsChannelId } },
+                Activity = (Activity)activity,
+            };
+
+            await turnContext.Adapter.CreateConversationAsync(
+                botAppId,
+                Channels.Msteams,
+                serviceUrl,
+                null,
                 conversationParameters,
                 (t, ct) =>
                 {

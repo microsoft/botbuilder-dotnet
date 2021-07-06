@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the <see cref="ConversationList"/> class.
         /// </summary>
         /// <param name="conversations">The IList of conversations.</param>
-        public ConversationList(IList<ChannelInfo> conversations = default(IList<ChannelInfo>))
+        public ConversationList(IList<ChannelInfo> conversations = default)
         {
             Conversations = conversations;
             CustomInit();
