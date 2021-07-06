@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             if ((results != null) && results.Any())
             {
                 // Add full recognition result as a 'result' property
-                recognizerResult.Properties.Add(ResultProperty, results);
+                recognizerResult.Properties.Add(ResultProperty, results.ToList());
 
                 var topScore = results[0].Score;
 
