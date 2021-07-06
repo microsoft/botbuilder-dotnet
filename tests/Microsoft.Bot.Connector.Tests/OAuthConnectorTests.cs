@@ -49,17 +49,19 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("dummyToken"));
             ServiceClientTracing.IsEnabled = true;
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenAsync(
-                    "dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode"));
+                // Automated Windows build exception:
+                await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode");
+                Assert.True(true, "No exception thrown.");
             }
             else
             {
-                // Automated build:
-                await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode");
-                Assert.True(true, "No exception thrown.");
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenAsync(
+                    "dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode"));
             }
         }
 
@@ -222,17 +224,19 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(
-                    client, true));
+                // Automated Windows build exception:
+                await OAuthClientConfig.SendEmulateOAuthCardsAsync(client, true);
+                Assert.True(true, "No exception thrown.");
             }
             else
             {
-                // Automated build:
-                await OAuthClientConfig.SendEmulateOAuthCardsAsync(client, true);
-                Assert.True(true, "No exception thrown.");
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(
+                    client, true));
             }
         }
 
@@ -302,18 +306,20 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BUILD_BUILDID")))
+
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Local exception:
-                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.ExchangeAsyncAsync(
-                    "dummyUserId", "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest()));
-            }
-            else
-            {
-                // Automated build:
+                // Automated Windows build exception:
                 await client.ExchangeAsyncAsync(
                     "dummyUserId", "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest());
                 Assert.True(true, "No exception thrown.");
+            }
+            else
+            {
+                // MacLinux build and local build exception:
+                await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.ExchangeAsyncAsync(
+                    "dummyUserId", "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest()));
             }
         }
 
