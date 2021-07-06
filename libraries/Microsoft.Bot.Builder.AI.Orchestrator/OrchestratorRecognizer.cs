@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             }
 
             // Score with orchestrator
-            var results = _resolver.Score(text).ToList();
+            var results = _resolver.Score(text)?.ToList();
 
             if ((results != null) && results.Any())
             {
