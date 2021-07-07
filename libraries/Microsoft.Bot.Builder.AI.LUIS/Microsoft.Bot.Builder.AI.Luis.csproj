@@ -14,6 +14,7 @@
     <Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using LUIS.</Summary>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
