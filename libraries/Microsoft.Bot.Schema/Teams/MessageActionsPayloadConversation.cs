@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="id">The id of the team or channel.</param>
         /// <param name="displayName">The plaintext display name of the team or
         /// channel entity.</param>
-        public MessageActionsPayloadConversation(string conversationIdentityType = default(string), string id = default(string), string displayName = default(string))
+        public MessageActionsPayloadConversation(string conversationIdentityType = default, string id = default, string displayName = default)
         {
             ConversationIdentityType = conversationIdentityType;
             Id = id;

@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// </summary>
         /// <param name="actionContext">Context to use for evaluation.</param>
         /// <returns>Computed priority.</returns>
-        public float CurrentPriority(ActionContext actionContext)
+        public double CurrentPriority(ActionContext actionContext)
         {
             var (priority, error) = this.Priority.TryGetValue(actionContext.State);
             if (error != null)

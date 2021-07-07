@@ -155,6 +155,60 @@ namespace Microsoft.Bot.Connector.Teams
         }
 
         /// <summary>
+        /// Fetches details related to a meeting.
+        /// </summary>
+        /// <param name='meetingId'>
+        /// Meeting Id, encoded as a BASE64 string.
+        /// </param>
+        /// <param name='customHeaders'>
+        /// Headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="HttpOperationException">
+        /// Thrown when the operation returned an invalid status code.
+        /// </exception>
+        /// <exception cref="SerializationException">
+        /// Thrown when unable to deserialize the response.
+        /// </exception>
+        /// <exception cref="ValidationException">
+        /// Thrown when an input value does not match the expected data type, range or pattern.
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// Thrown when a required parameter is null.
+        /// </exception>
+        /// <returns>
+        /// A response object containing the response body and response headers.
+        /// </returns>
+        public async Task<HttpOperationResponse<MeetingInfo>> FetchMeetingInfoWithHttpMessagesAsync(string meetingId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (meetingId == null)
+            {
+                throw new ValidationException(ValidationRules.CannotBeNull, "meetingId");
+            }
+
+            // Tracing
+            bool shouldTrace = ServiceClientTracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = ServiceClientTracing.NextInvocationId.ToString(CultureInfo.InvariantCulture);
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("meetingId", meetingId);
+                tracingParameters.Add("cancellationToken", cancellationToken);
+                ServiceClientTracing.Enter(invocationId, this, "FetchMeetingInfo", tracingParameters);
+            }
+
+            // Construct URL
+            var baseUrl = Client.BaseUri.AbsoluteUri;
+            var url = new System.Uri(new System.Uri(baseUrl + (baseUrl.EndsWith("/", System.StringComparison.InvariantCulture) ? string.Empty : "/")), "v1/meetings/{meetingId}").ToString();
+            url = url.Replace("{meetingId}", System.Uri.EscapeDataString(meetingId));
+
+            return await GetResponseAsync<MeetingInfo>(url, shouldTrace, invocationId, customHeaders).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Fetches Teams meeting participant details.
         /// </summary>
         /// <remarks>

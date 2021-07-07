@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="sections">Set of sections for the current card.</param>
         /// <param name="potentialAction">Set of actions for the current
         /// card.</param>
-        public O365ConnectorCard(string title = default(string), string text = default(string), string summary = default(string), string themeColor = default(string), IList<O365ConnectorCardSection> sections = default(IList<O365ConnectorCardSection>), IList<O365ConnectorCardActionBase> potentialAction = default(IList<O365ConnectorCardActionBase>))
+        public O365ConnectorCard(string title = default, string text = default, string summary = default, string themeColor = default, IList<O365ConnectorCardSection> sections = default, IList<O365ConnectorCardActionBase> potentialAction = default)
         {
             Title = title;
             Text = text;

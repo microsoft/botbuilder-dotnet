@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="id">The id of the application.</param>
         /// <param name="displayName">The plaintext display name of the
         /// application.</param>
-        public MessageActionsPayloadApp(string applicationIdentityType = default(string), string id = default(string), string displayName = default(string))
+        public MessageActionsPayloadApp(string applicationIdentityType = default, string id = default, string displayName = default)
         {
             ApplicationIdentityType = applicationIdentityType;
             Id = id;

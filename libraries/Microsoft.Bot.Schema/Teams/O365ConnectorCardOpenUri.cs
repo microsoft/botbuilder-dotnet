@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -30,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// title.</param>
         /// <param name="id">Action Id.</param>
         /// <param name="targets">Target os / urls.</param>
-        public O365ConnectorCardOpenUri(string type = default(string), string name = default(string), string id = default(string), IList<O365ConnectorCardOpenUriTarget> targets = default(IList<O365ConnectorCardOpenUriTarget>))
+        public O365ConnectorCardOpenUri(string type = default, string name = default, string id = default, IList<O365ConnectorCardOpenUriTarget> targets = default)
             : base(type, name, id)
         {
             Targets = targets;

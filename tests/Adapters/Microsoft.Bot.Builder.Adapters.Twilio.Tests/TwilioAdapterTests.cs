@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
             activity.Object.Conversation = new ConversationAccount(id: "MockId");
             activity.Object.Text = "Hello, Bot!";
+            activity.Object.From = new ChannelAccount { Id = "MockId" };
 
             const string resourceIdentifier = "Mocked Resource Identifier";
             var twilioApi = new Mock<TwilioClientWrapper>(_testOptions);

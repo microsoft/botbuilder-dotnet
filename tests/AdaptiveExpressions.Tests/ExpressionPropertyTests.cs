@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             Assert.Equal("test", test.Str.TryGetValue(data).Value);
             Assert.Equal(13, test.Int.TryGetValue(data).Value);
-            Assert.Equal(3.14F, test.Number.TryGetValue(data).Value);
+            Assert.Equal(3.14D, test.Number.TryGetValue(data).Value);
             Assert.Equal(TestEnum.Two, test.Enm.TryGetValue(data).Value);
             Assert.True(test.Bool.TryGetValue(data).Value);
             Assert.Equal("one", test.Strings.TryGetValue(data).Value[0]);
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             Assert.Equal("test2", test.Str.TryGetValue(data).Value);
             Assert.Equal(113, test.Int.TryGetValue(data).Value);
-            Assert.Equal(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.Equal(13.14D, test.Number.TryGetValue(data).Value);
             Assert.Equal(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.True(test.Bool.TryGetValue(data).Value);
             Assert.Equal("a", test.Strings.TryGetValue(data).Value[0]);
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var test2 = JsonConvert.DeserializeObject<ImplicitCastTest>(json, settings: settings);
             Assert.Equal("test2", test2.Str.TryGetValue(data).Value);
             Assert.Equal(113, test2.Int.TryGetValue(data).Value);
-            Assert.Equal(13.14F, test2.Number.TryGetValue(data).Value);
+            Assert.Equal(13.14D, test2.Number.TryGetValue(data).Value);
             Assert.Equal(TestEnum.Three, test2.Enm.TryGetValue(data).Value);
             Assert.True(test2.Bool.TryGetValue(data).Value);
             Assert.Equal("a", test2.Strings.TryGetValue(data).Value[0]);
@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             Assert.Equal("test2", test.Str.TryGetValue(data).Value);
             Assert.Equal(113, test.Int.TryGetValue(data).Value);
-            Assert.Equal(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.Equal(13.14D, test.Number.TryGetValue(data).Value);
             Assert.Equal(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.True(test.Bool.TryGetValue(data).Value);
 
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             Assert.Equal("test2", test.Str.TryGetValue(data).Value);
             Assert.Equal(113, test.Int.TryGetValue(data).Value);
-            Assert.Equal(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.Equal(13.14D, test.Number.TryGetValue(data).Value);
             Assert.Equal(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.True(test.Bool.TryGetValue(data).Value);
 
@@ -301,7 +301,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             Assert.Equal("test2", test.Str.TryGetValue(data).Value);
             Assert.Equal(113, test.Int.TryGetValue(data).Value);
-            Assert.Equal(13.14F, test.Number.TryGetValue(data).Value);
+            Assert.Equal(13.14D, test.Number.TryGetValue(data).Value);
             Assert.Equal(TestEnum.Three, test.Enm.TryGetValue(data).Value);
             Assert.True(test.Bool.TryGetValue(data).Value);
 
@@ -545,7 +545,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public void ExpressionPropertyTests_FloatExpression()
         {
-            TestNumberExpression<NumberExpression, float>(new NumberExpression(), 3.14F);
+            TestNumberExpression<NumberExpression, double>(new NumberExpression(), 3.14D);
         }
 
         private void TestNumberExpression<TExpression, TValue>(TExpression val, TValue expected)

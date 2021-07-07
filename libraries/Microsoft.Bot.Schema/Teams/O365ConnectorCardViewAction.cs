@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -26,12 +24,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="type">Type of the action. Possible values include:
         /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.</param>
-        /// <param name="name">Name of the action that will be used as button
-        /// title.</param>
+        /// <param name="name">Name of the action that will be used as button title.</param>
         /// <param name="id">Action Id.</param>
-        /// <param name="target">Target urls, only the first url effective for
-        /// card button.</param>
-        public O365ConnectorCardViewAction(string type = default(string), string name = default(string), string id = default(string), IList<string> target = default(IList<string>))
+        /// <param name="target">Target urls, only the first url effective for card button.</param>
+        public O365ConnectorCardViewAction(string type = default, string name = default, string id = default, IList<string> target = default)
             : base(type, name, id)
         {
             Target = target;

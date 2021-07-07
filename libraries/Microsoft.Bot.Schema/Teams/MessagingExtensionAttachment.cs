@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="name">(OPTIONAL) The name of the attachment.</param>
         /// <param name="thumbnailUrl">(OPTIONAL) Thumbnail associated with attachment.</param>
         /// <param name="preview">A preview attachment.</param>
-        public MessagingExtensionAttachment(string contentType = default(string), string contentUrl = default(string), object content = default(object), string name = default(string), string thumbnailUrl = default(string), Attachment preview = default(Attachment))
+        public MessagingExtensionAttachment(string contentType = default, string contentUrl = default, object content = default, string name = default, string thumbnailUrl = default, Attachment preview = default)
             : base(contentType, contentUrl, content, name, thumbnailUrl)
         {
             Preview = preview;

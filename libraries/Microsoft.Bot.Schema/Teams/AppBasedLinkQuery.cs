@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -23,7 +22,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the  <see cref="AppBasedLinkQuery"/> class.
         /// </summary>
         /// <param name="url">Url queried by user.</param>
-        public AppBasedLinkQuery(string url = default(string))
+        public AppBasedLinkQuery(string url = default)
         {
             Url = url;
             CustomInit();
@@ -41,7 +40,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Gets or sets state, which is the magic code for OAuth Flow.
         /// </summary>
-        /// <value>The state,w hich is the magic code for OAuth Flow.</value>
+        /// <value>The state, which is the magic code for OAuth Flow.</value>
         [JsonProperty(PropertyName = "state")]
         public string State { get; set; }
 

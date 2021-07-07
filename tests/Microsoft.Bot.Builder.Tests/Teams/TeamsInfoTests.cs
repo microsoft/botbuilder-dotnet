@@ -12,6 +12,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Moq;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -47,6 +48,92 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             var turnContext = new TurnContext(new BotFrameworkAdapter(new SimpleCredentialProvider(), customHttpClient: customHttpClient), activity);
             turnContext.TurnState.Add<IConnectorClient>(connectorClient);
             turnContext.Activity.ServiceUrl = "https://test.coffee";
+            var handler = new TestTeamsActivityHandler();
+            await handler.OnTurnAsync(turnContext);
+        }
+
+        [Fact]
+        public async Task TestSendMessageToTeamsChannel2Async()
+        {
+            // Arrange
+
+            var expectedTeamsChannelId = "teams-channel-id";
+            var expectedAppId = "app-id";
+            var expectedServiceUrl = "service-url";
+            var expectedActivityId = "activity-id";
+            var expectedConversationId = "conversation-id";
+
+            var requestActivity = new Activity { ServiceUrl = expectedServiceUrl };
+
+            var adapter = new TestCreateConversationAdapter(expectedActivityId, expectedConversationId);
+
+            var turnContextMock = new Mock<ITurnContext>();
+            turnContextMock.Setup(tc => tc.Activity).Returns(requestActivity);
+            turnContextMock.Setup(tc => tc.Adapter).Returns(adapter);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-SendMessageToTeamsChannelAsync",
+                ChannelId = Channels.Msteams,
+                ChannelData = new TeamsChannelData
+                {
+                    Team = new TeamInfo
+                    {
+                        Id = "team-id",
+                    },
+                },
+            };
+
+            // Act
+
+            var r = await TeamsInfo.SendMessageToTeamsChannelAsync(turnContextMock.Object, activity, expectedTeamsChannelId, expectedAppId, CancellationToken.None);
+
+            // Assert
+
+            Assert.Equal(expectedConversationId, r.Item1.Conversation.Id);
+            Assert.Equal(expectedActivityId, r.Item2);
+            Assert.Equal(expectedAppId, adapter.AppId);
+            Assert.Equal(Channels.Msteams, adapter.ChannelId);
+            Assert.Equal(expectedServiceUrl, adapter.ServiceUrl);
+            Assert.Null(adapter.Audience);
+
+            var channelData = adapter.ConversationParameters.ChannelData;
+
+            var channel = channelData.GetType().GetProperty("channel").GetValue(channelData, null);
+            var id = channel.GetType().GetProperty("id").GetValue(channel, null);
+
+            Assert.Equal(expectedTeamsChannelId, id);
+            Assert.Equal(adapter.ConversationParameters.Activity, activity);
+        }
+
+        [Fact]
+        public async Task TestGetMeetingInfoAsync()
+        {
+            var baseUri = new Uri("https://test.coffee");
+            var customHttpClient = new HttpClient(new RosterHttpMessageHandler());
+
+            // Set a special base address so then we can make sure the connector client is honoring this http client
+            customHttpClient.BaseAddress = baseUri;
+            var connectorClient = new ConnectorClient(new Uri("http://localhost/"), new MicrosoftAppCredentials(string.Empty, string.Empty), customHttpClient);
+
+            var activity = new Activity
+            {
+                Type = "message",
+                Text = "Test-GetMeetingInfoAsync",
+                ChannelId = Channels.Msteams,
+                ChannelData = new TeamsChannelData
+                {
+                    Meeting = new TeamsMeetingInfo
+                    {
+                        Id = "meeting-id"
+                    }
+                },
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+            turnContext.TurnState.Add<IConnectorClient>(connectorClient);
+
             var handler = new TestTeamsActivityHandler();
             await handler.OnTurnAsync(turnContext);
         }
@@ -292,6 +379,9 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     case "Test-GetParticipantAsync":
                         await CallTeamsInfoGetParticipantAsync(turnContext);
                         break;
+                    case "Test-GetMeetingInfoAsync":
+                        await CallTeamsInfoGetMeetingInfoAsync(turnContext);
+                        break;
                     default:
                         Assert.True(false);
                         break;
@@ -356,6 +446,15 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Assert.Equal("Organizer", participant.Meeting.Role);
                 Assert.Equal("meetigConversationId-1", participant.Conversation.Id);
                 Assert.Equal("userPrincipalName-1", participant.User.UserPrincipalName);
+            }
+
+            private async Task CallTeamsInfoGetMeetingInfoAsync(ITurnContext turnContext)
+            {
+                var meeting = await TeamsInfo.GetMeetingInfoAsync(turnContext);
+
+                Assert.Equal("meeting-id", meeting.Details.Id);
+                Assert.Equal("organizer-id", meeting.Organizer.Id);
+                Assert.Equal("meetingConversationId-1", meeting.Conversation.Id);
             }
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
@@ -528,7 +627,74 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                     response.Content = new StringContent(content.ToString());
                 }
 
+                // Get meeting details
+                else if (request.RequestUri.PathAndQuery.EndsWith("v1/meetings/meeting-id"))
+                {
+                    var content = new JObject
+                        {
+                            new JProperty("details", new JObject(new JProperty("id", "meeting-id"))),
+                            new JProperty("organizer", new JObject(new JProperty("id", "organizer-id"))),
+                            new JProperty("conversation", new JObject(new JProperty("id", "meetingConversationId-1"))),
+                        };
+                    response.Content = new StringContent(content.ToString());
+                }
+
                 return Task.FromResult(response);
+            }
+        }
+
+        private class TestCreateConversationAdapter : BotAdapter
+        {
+            private string _activityId;
+
+            private string _conversationId;
+
+            public TestCreateConversationAdapter(string activityId, string conversationId)
+            {
+                _activityId = activityId;
+                _conversationId = conversationId;
+            }
+
+            public string AppId { get; set; }
+
+            public string ChannelId { get; set; }
+
+            public string ServiceUrl { get; set; }
+
+            public string Audience { get; set; }
+
+            public ConversationParameters ConversationParameters { get; set; }
+
+            public override Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, string audience, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+            {
+                AppId = botAppId;
+                ChannelId = channelId;
+                ServiceUrl = serviceUrl;
+                Audience = audience;
+                ConversationParameters = conversationParameters;
+
+                var activity = new Activity { Id = _activityId, Conversation = new ConversationAccount { Id = _conversationId } };
+
+                var mockTurnContext = new Mock<ITurnContext>();
+                mockTurnContext.Setup(tc => tc.Activity).Returns(activity);
+
+                callback(mockTurnContext.Object, cancellationToken);
+                return Task.CompletedTask;
+            }
+
+            public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
             }
         }
     }

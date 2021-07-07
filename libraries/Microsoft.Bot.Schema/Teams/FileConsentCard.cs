@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="declineContext">Context sent back to the Bot if user
         /// declined. This is free flow schema and is sent back in Value field
         /// of Activity.</param>
-        public FileConsentCard(string description = default(string), long? sizeInBytes = default(long?), object acceptContext = default(object), object declineContext = default(object))
+        public FileConsentCard(string description = default, long? sizeInBytes = default, object acceptContext = default, object declineContext = default)
         {
             Description = description;
             SizeInBytes = sizeInBytes;

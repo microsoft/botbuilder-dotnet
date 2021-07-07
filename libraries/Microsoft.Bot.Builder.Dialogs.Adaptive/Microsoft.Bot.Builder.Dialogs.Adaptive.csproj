@@ -47,11 +47,11 @@
     <PackageReference Include="AdaptiveExpressions" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.9" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.9" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.9" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.9" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.9" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.3.2" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.3.2" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.3.2" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.3.2" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.3.2" />
   </ItemGroup>
 
   <ItemGroup>

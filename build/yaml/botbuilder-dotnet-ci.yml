@@ -56,7 +56,7 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
-      PublishCoverage: true
+      PublishCoverage: false
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml

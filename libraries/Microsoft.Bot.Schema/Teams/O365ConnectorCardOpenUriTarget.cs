@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="os">Target operating system. Possible values include:
         /// 'default', 'iOS', 'android', 'windows'.</param>
         /// <param name="uri">Target url.</param>
-        public O365ConnectorCardOpenUriTarget(string os = default(string), string uri = default(string))
+        public O365ConnectorCardOpenUriTarget(string os = default, string uri = default)
         {
             Os = os;
             Uri = uri;

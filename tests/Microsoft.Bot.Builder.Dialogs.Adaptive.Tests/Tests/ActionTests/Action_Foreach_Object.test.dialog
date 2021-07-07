@@ -1,0 +1,62 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "root",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "dialog.items",
+                        "value": "=[['item1', 'item2'], {'k1':'v1', 'k2':'v2'}]"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "dialog.items",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.Foreach",
+                                "index": "dialog.foreach.inner.index",
+                                "value": "dialog.foreach.inner.value",
+                                "itemsProperty": "dialog.foreach.value",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.SendActivity",
+                                        "activity": "index is: ${dialog.foreach.inner.index} and value is: ${dialog.foreach.inner.value}"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "autoEndDialog": true,
+        "defaultResultProperty": "dialog.result"
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 0 and value is: item1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: 1 and value is: item2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: k1 and value is: v1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "index is: k2 and value is: v2"
+        }
+    ]
+}

@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 }
                 else
                 {
-                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _twilioClient.Options.TwilioNumber);
+                    var messageOptions = TwilioHelper.ActivityToTwilio(activity);
 
                     var res = await _twilioClient.SendMessageAsync(messageOptions, cancellationToken)
                         .ConfigureAwait(false);

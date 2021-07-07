@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the <see cref="MessagingExtensionResponse"/> class.
         /// </summary>
         /// <param name="composeExtension">A <see cref="MessagingExtensionResult"/> that initializes the current object's ComposeExension property.</param>
-        public MessagingExtensionResponse(MessagingExtensionResult composeExtension = default(MessagingExtensionResult))
+        public MessagingExtensionResponse(MessagingExtensionResult composeExtension = default)
         {
             ComposeExtension = composeExtension;
             CustomInit();

@@ -67,13 +67,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // Try to parse value based on type
                 var text = results[0].Resolution["value"].ToString();
 
-                if (int.TryParse(text, out var intValue))
+                if (long.TryParse(text, out var intValue))
                 {
                     input = intValue;
                 }
                 else
                 {
-                    if (float.TryParse(text, out var value))
+                    if (double.TryParse(text, out var value))
                     {
                         input = value;
                     }

@@ -16,15 +16,9 @@ namespace Microsoft.Bot.Schema.Teams
         [JsonProperty(PropertyName = "objectId")]
         private string ObjectId
         {
-            get
-            {
-                return this.AadObjectId;
-            }
+            get => AadObjectId;
 
-            set
-            {
-                this.AadObjectId = value;
-            }
+            set => AadObjectId = value;
         }
     }
 }

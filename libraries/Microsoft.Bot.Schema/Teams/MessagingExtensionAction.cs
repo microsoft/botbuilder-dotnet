@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -37,7 +35,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="botActivityPreview">A collection of bot activities.</param>
         /// <param name="messagePayload">Message content sent as part of the
         /// command request.</param>
-        public MessagingExtensionAction(object data = default(object), TaskModuleRequestContext context = default(TaskModuleRequestContext), string commandId = default(string), string commandContext = default(string), string botMessagePreviewAction = default(string), IList<Activity> botActivityPreview = default(IList<Activity>), MessageActionsPayload messagePayload = default(MessageActionsPayload))
+        public MessagingExtensionAction(object data = default, TaskModuleRequestContext context = default, string commandId = default, string commandContext = default, string botMessagePreviewAction = default, IList<Activity> botActivityPreview = default, MessageActionsPayload messagePayload = default)
             : base(data, context)
         {
             CommandId = commandId;

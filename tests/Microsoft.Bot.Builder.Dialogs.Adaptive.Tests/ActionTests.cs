@@ -264,6 +264,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_Foreach_Object()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_Foreach_Empty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
@@ -313,6 +319,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [Fact]
         public async Task Action_NumberInput()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task Action_NumberInput_LargeNumber()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
@@ -474,6 +486,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_MissingProperty()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+        
+        [Fact]
         public async Task Action_SetProperties()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
@@ -499,6 +517,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [Fact]
         public async Task Action_ReplaceDialogRoot()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task Action_SendHandoffActivity()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }

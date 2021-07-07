@@ -258,7 +258,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount.GetValue(dc.State))
             {
                 // increase the turnCount as last step
-                dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
+                if (!interrupted)
+                {
+                    dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
+                }
+
                 return await this.PromptUserAsync(dc, state, cancellationToken).ConfigureAwait(false);
             }
             else

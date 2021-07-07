@@ -1,0 +1,106 @@
+{
+  "$schema": "../../../tests.schema",
+  "$kind": "Microsoft.Test.Script",
+  "description": "Test retries from Ask with DeleteProperties",
+  "httpRequestMocks": [
+    "LuisNoEntities.mock",
+    "LuisBreadEntity.mock"
+  ],
+  "dialog": {
+    "$kind": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+      "$kind": "Microsoft.LuisRecognizer",
+      "applicationId": "00000000-0000-0000-0000-000000000000",
+      "endpointKey": "00000000000000000000000000000000",
+      "endpoint": "https://westus.api.cognitive.microsoft.com",
+      "predictionOptions": {
+        "IncludeAPIResults": true
+      }
+    },
+    "schema": "oneProperty.json",
+    "triggers": [
+      {
+        "$kind": "Microsoft.OnBeginDialog",
+        "actions": [
+          {
+            "$kind": "Microsoft.SendActivity",
+            "activity": "welcome"
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnEndOfActions",
+        "condition": "=!$Bread",
+        "priority": 0,
+        "actions": [
+          {
+            "$kind": "Microsoft.Ask",
+            "activity": "Bread?",
+            "expectedProperties": [
+              "Bread"
+            ]
+          }
+        ]
+      },
+      {
+        "$kind": "Microsoft.OnAssignEntity",
+        "operation": "Add()",
+        "property": "Bread",
+        "value": "BreadEntity",
+        "actions": [
+          {
+            "$kind": "Microsoft.BeginDialog",
+            "options": {},
+            "dialog": "AskName"
+          }
+        ]
+      }
+    ]
+  },
+  "script": [
+    {
+      "$kind": "Microsoft.Test.UserConversationUpdate",
+      "membersAdded": [
+        "Bot",
+        "User"
+      ],
+      "membersRemoved": []
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "welcome"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Bread?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "no entities"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "Bread?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "rye"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertReply",
+      "text": "What is your name?"
+    },
+    {
+      "$kind": "Microsoft.Test.UserSays",
+      "text": "rye"
+    },
+    {
+      "$kind": "Microsoft.Test.AssertTelemetryContains",
+      "events": [
+        "Luis result cached",
+        "Read from cached Luis result"
+      ],
+      "description": "Ensure telemetry log contains cached Luis info"
+    }
+  ]
+}

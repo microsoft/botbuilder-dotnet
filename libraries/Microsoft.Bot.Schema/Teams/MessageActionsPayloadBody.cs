@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="contentType">Type of the content. Possible values
         /// include: 'html', 'text'.</param>
         /// <param name="content">The content of the body.</param>
-        public MessageActionsPayloadBody(string contentType = default(string), string content = default(string))
+        public MessageActionsPayloadBody(string contentType = default, string content = default)
         {
             ContentType = contentType;
             Content = content;
