@@ -1,11 +1,5 @@
 {
   "$schema": "https://schemas.botframework.com/schemas/ui/v1.0/ui.schema",
-  "Microsoft.QnAMakerDialog": {
-    "flow": {
-      "body": "=action.hostname",
-      "widget": "ActionCard"
-    }
-  },
   "Microsoft.AdaptiveDialog": {
     "form": {
       "description": "This configures a data driven dialog via a collection of events and actions.",
@@ -27,72 +21,6 @@
           "label": "Language Understanding"
         }
       }
-    }
-  },
-  "Microsoft.FacebookAdapter": {
-    "form": {
-      "description": "Connects a bot to Facebook.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Facebook",
-      "hidden": [
-        "type"
-      ],
-      "label": "Facebook connection.",
-      "order": [
-        "FacebookVerifyToken",
-        "FacebookAppSecret",
-        "FacebookAccessToken",
-        "*"
-      ]
-    }
-  },
-  "Microsoft.SlackAdapter": {
-    "form": {
-      "description": "Connects a bot to Slack.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
-      "hidden": [
-        "type"
-      ],
-      "label": "Slack connection.",
-      "order": [
-        "SlackVerificationToken",
-        "SlackBotToken",
-        "SlackClientSigningSecret",
-        "*"
-      ]
-    }
-  },
-  "Microsoft.TwilioAdapter": {
-    "form": {
-      "description": "Connects a bot to Twilio.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Twilio",
-      "hidden": [
-        "type"
-      ],
-      "label": "Twilio connection.",
-      "order": [
-        "TwilioNumber",
-        "TwilioAccountSid",
-        "TwilioAuthToken",
-        "TwilioValidationUrl",
-        "*"
-      ]
-    }
-  },
-  "Microsoft.WebexAdapter": {
-    "form": {
-      "description": "Connects a bot to Webex.",
-      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Webex",
-      "hidden": [
-        "type"
-      ],
-      "label": "Webex connection.",
-      "order": [
-        "WebexAccessToken",
-        "WebexPublicAddress",
-        "WebexSecret",
-        "WebexWebhookName",
-        "*"
-      ]
     }
   },
   "Microsoft.Ask": {
@@ -173,6 +101,95 @@
         }
       },
       "subtitle": "Attachment Input"
+    }
+  },
+  "Microsoft.BeginDialog": {
+    "flow": {
+      "body": {
+        "dialog": "=action.dialog",
+        "widget": "DialogRef"
+      },
+      "footer": {
+        "description": "= Return value",
+        "property": "=action.resultProperty",
+        "widget": "PropertyDescription"
+      },
+      "hideFooter": "=!action.resultProperty",
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Begin a new dialog",
+      "order": [
+        "dialog",
+        "options",
+        "resultProperty",
+        "*"
+      ],
+      "properties": {
+        "resultProperty": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Begin Dialog"
+    }
+  },
+  "Microsoft.BeginSkill": {
+    "flow": {
+      "body": {
+        "operation": "Host",
+        "resource": "=coalesce(action.skillEndpoint, \"?\")",
+        "singleline": true,
+        "widget": "ResourceOperation"
+      },
+      "colors": {
+        "color": "#FFFFFF",
+        "icon": "#FFFFFF",
+        "theme": "#004578"
+      },
+      "footer": {
+        "description": "= Result",
+        "property": "=action.resultProperty",
+        "widget": "PropertyDescription"
+      },
+      "hideFooter": "=!action.resultProperty",
+      "icon": "Library",
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bf-composer-docs-connect-skill",
+      "label": "Connect to a skill",
+      "properties": {
+        "resultProperty": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Skill Dialog"
+    }
+  },
+  "Microsoft.BreakLoop": {
+    "form": {
+      "label": "Break out of loop",
+      "subtitle": "Break out of loop"
+    }
+  },
+  "Microsoft.CancelAllDialogs": {
+    "flow": {
+      "body": {
+        "description": "(Event)",
+        "property": "=coalesce(action.eventName, \"?\")",
+        "widget": "PropertyDescription"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Cancel all active dialogs",
+      "subtitle": "Cancel All Dialogs"
     }
   },
   "Microsoft.ChoiceInput": {
@@ -271,6 +288,12 @@
       "subtitle": "Confirm Input"
     }
   },
+  "Microsoft.ContinueLoop": {
+    "form": {
+      "label": "Continue loop",
+      "subtitle": "Continue loop"
+    }
+  },
   "Microsoft.DateTimeInput": {
     "flow": {
       "body": "=action.prompt",
@@ -317,223 +340,6 @@
         }
       },
       "subtitle": "Date Time Input"
-    }
-  },
-  "Microsoft.NumberInput": {
-    "flow": {
-      "body": "=action.prompt",
-      "botAsks": {
-        "body": {
-          "defaultContent": "<prompt>",
-          "field": "prompt",
-          "widget": "LgWidget"
-        },
-        "header": {
-          "colors": {
-            "icon": "#5C2E91",
-            "theme": "#EEEAF4"
-          },
-          "icon": "MessageBot",
-          "widget": "ActionHeader"
-        },
-        "widget": "ActionCard"
-      },
-      "nowrap": true,
-      "userInput": {
-        "header": {
-          "colors": {
-            "icon": "#0078D4",
-            "theme": "#E5F0FF"
-          },
-          "disableSDKTitle": true,
-          "icon": "User",
-          "menu": "none",
-          "widget": "ActionHeader"
-        },
-        "widget": "ActionCard"
-      },
-      "widget": "PromptWidget"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for a number",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Number Input"
-    }
-  },
-  "Microsoft.OAuthInput": {
-    "flow": {
-      "body": {
-        "operation": "Connection",
-        "resource": "=coalesce(action.connectionName, \"?\")",
-        "singleline": true,
-        "widget": "ResourceOperation"
-      },
-      "footer": {
-        "description": "= Token property",
-        "property": "=action.property",
-        "widget": "PropertyDescription"
-      },
-      "hideFooter": "=!action.property",
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-using-oauth",
-      "label": "OAuth login",
-      "order": [
-        "connectionName",
-        "*"
-      ],
-      "subtitle": "OAuth Input"
-    }
-  },
-  "Microsoft.TextInput": {
-    "flow": {
-      "body": "=action.prompt",
-      "botAsks": {
-        "body": {
-          "defaultContent": "<prompt>",
-          "field": "prompt",
-          "widget": "LgWidget"
-        },
-        "header": {
-          "colors": {
-            "icon": "#5C2E91",
-            "theme": "#EEEAF4"
-          },
-          "icon": "MessageBot",
-          "widget": "ActionHeader"
-        },
-        "widget": "ActionCard"
-      },
-      "nowrap": true,
-      "userInput": {
-        "header": {
-          "colors": {
-            "icon": "#0078D4",
-            "theme": "#E5F0FF"
-          },
-          "disableSDKTitle": true,
-          "icon": "User",
-          "menu": "none",
-          "widget": "ActionHeader"
-        },
-        "widget": "ActionCard"
-      },
-      "widget": "PromptWidget"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
-      "label": "Prompt for text",
-      "properties": {
-        "property": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Text Input"
-    }
-  },
-  "Microsoft.BeginDialog": {
-    "flow": {
-      "body": {
-        "dialog": "=action.dialog",
-        "widget": "DialogRef"
-      },
-      "footer": {
-        "description": "= Return value",
-        "property": "=action.resultProperty",
-        "widget": "PropertyDescription"
-      },
-      "hideFooter": "=!action.resultProperty",
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Begin a new dialog",
-      "order": [
-        "dialog",
-        "options",
-        "resultProperty",
-        "*"
-      ],
-      "properties": {
-        "resultProperty": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Begin Dialog"
-    }
-  },
-  "Microsoft.BeginSkill": {
-    "flow": {
-      "body": {
-        "operation": "Host",
-        "resource": "=coalesce(action.skillEndpoint, \"?\")",
-        "singleline": true,
-        "widget": "ResourceOperation"
-      },
-      "colors": {
-        "color": "#FFFFFF",
-        "icon": "#FFFFFF",
-        "theme": "#004578"
-      },
-      "footer": {
-        "description": "= Result",
-        "property": "=action.resultProperty",
-        "widget": "PropertyDescription"
-      },
-      "hideFooter": "=!action.resultProperty",
-      "icon": "Library",
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bf-composer-docs-connect-skill",
-      "label": "Connect to a skill",
-      "properties": {
-        "resultProperty": {
-          "intellisenseScopes": [
-            "variable-scopes"
-          ]
-        }
-      },
-      "subtitle": "Skill Dialog"
-    }
-  },
-  "Microsoft.BreakLoop": {
-    "form": {
-      "label": "Break out of loop",
-      "subtitle": "Break out of loop"
-    }
-  },
-  "Microsoft.CancelAllDialogs": {
-    "flow": {
-      "body": {
-        "description": "(Event)",
-        "property": "=coalesce(action.eventName, \"?\")",
-        "widget": "PropertyDescription"
-      },
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Cancel all active dialogs",
-      "subtitle": "Cancel All Dialogs"
-    }
-  },
-  "Microsoft.ContinueLoop": {
-    "form": {
-      "label": "Continue loop",
-      "subtitle": "Continue loop"
     }
   },
   "Microsoft.DebugBreak": {
@@ -650,6 +456,22 @@
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
       "label": "End turn",
       "subtitle": "End Turn"
+    }
+  },
+  "Microsoft.FacebookAdapter": {
+    "form": {
+      "description": "Connects a bot to Facebook.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Facebook",
+      "hidden": [
+        "type"
+      ],
+      "label": "Facebook connection.",
+      "order": [
+        "FacebookVerifyToken",
+        "FacebookAppSecret",
+        "FacebookAccessToken",
+        "*"
+      ]
     }
   },
   "Microsoft.Foreach": {
@@ -818,111 +640,44 @@
       "subtitle": "Log Action"
     }
   },
-  "Microsoft.RepeatDialog": {
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Repeat this dialog",
-      "order": [
-        "options",
-        "*"
-      ],
-      "subtitle": "Repeat Dialog"
-    }
-  },
-  "Microsoft.ReplaceDialog": {
+  "Microsoft.NumberInput": {
     "flow": {
-      "body": {
-        "dialog": "=action.dialog",
-        "widget": "DialogRef"
-      },
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
-      "label": "Replace this dialog",
-      "order": [
-        "dialog",
-        "options",
-        "*"
-      ],
-      "subtitle": "Replace Dialog"
-    }
-  },
-  "Microsoft.SendActivity": {
-    "flow": {
-      "body": {
-        "field": "activity",
-        "widget": "LgWidget"
-      },
-      "header": {
-        "colors": {
-          "icon": "#5C2E91",
-          "theme": "#EEEAF4"
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
         },
-        "icon": "MessageBot",
-        "widget": "ActionHeader"
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
       },
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-send-activity",
-      "label": "Send a response",
-      "order": [
-        "activity",
-        "*"
-      ],
-      "subtitle": "Send Activity"
-    }
-  },
-  "Microsoft.SendHandoffActivity": {
-    "flow": {
-      "widget": "ActionHeader"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-send-handoff-activity",
-      "label": "Send a handoff request",
-      "subtitle": "Send Handoff Activity"
-    },
-    "menu": {
-      "label": "Send Handoff Event",
-      "submenu": [
-        "Access external resources"
-      ]
-    }
-  },
-  "Microsoft.SetProperties": {
-    "flow": {
-      "body": {
-        "items": "=foreach(action.assignments, x => concat(coalesce(x.property, \"?\"), \" : \", coalesce(x.value, \"?\")))",
-        "widget": "ListOverview"
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
       },
-      "widget": "ActionCard"
+      "widget": "PromptWidget"
     },
     "form": {
-      "helpLink": "https://aka.ms/bfc-using-memory",
-      "label": "Set properties",
-      "properties": {
-        "assignments": {
-          "properties": {
-            "property": {
-              "intellisenseScopes": [
-                "variable-scopes"
-              ]
-            }
-          }
-        }
-      },
-      "subtitle": "Set Properties"
-    }
-  },
-  "Microsoft.SetProperty": {
-    "flow": {
-      "body": "${coalesce(action.property, \"?\")} : ${coalesce(action.value, \"?\")}",
-      "widget": "ActionCard"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-using-memory",
-      "label": "Set a property",
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for a number",
       "properties": {
         "property": {
           "intellisenseScopes": [
@@ -930,93 +685,33 @@
           ]
         }
       },
-      "subtitle": "Set Property"
+      "subtitle": "Number Input"
     }
   },
-  "Microsoft.SignOutUser": {
-    "form": {
-      "label": "Sign out user",
-      "subtitle": "Signout User"
-    }
-  },
-  "Microsoft.SwitchCondition": {
-    "flow": {
-      "judgement": {
-        "body": "=coalesce(action.condition, \"<condition>\")",
-        "widget": "ActionCard"
-      },
-      "nowrap": true,
-      "widget": "SwitchConditionWidget"
-    },
-    "form": {
-      "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
-      "hidden": [
-        "default"
-      ],
-      "label": "Branch: Switch (multiple options)",
-      "properties": {
-        "cases": {
-          "hidden": [
-            "actions"
-          ]
-        },
-        "condition": {
-          "intellisenseScopes": [
-            "user-variables"
-          ]
-        }
-      },
-      "subtitle": "Switch Condition"
-    }
-  },
-  "Microsoft.ThrowException": {
+  "Microsoft.OAuthInput": {
     "flow": {
       "body": {
-        "description": "= ErrorValue",
-        "property": "=coalesce(action.errorValue, \"?\")",
+        "operation": "Connection",
+        "resource": "=coalesce(action.connectionName, \"?\")",
+        "singleline": true,
+        "widget": "ResourceOperation"
+      },
+      "footer": {
+        "description": "= Token property",
+        "property": "=action.property",
         "widget": "PropertyDescription"
       },
+      "hideFooter": "=!action.property",
       "widget": "ActionCard"
     },
     "form": {
-      "label": "Throw an exception",
-      "subtitle": "Throw an exception"
-    }
-  },
-  "Microsoft.TraceActivity": {
-    "form": {
-      "helpLink": "https://aka.ms/composer-telemetry",
-      "label": "Emit a trace event",
-      "subtitle": "Trace Activity"
-    }
-  },
-  "Microsoft.UpdateActivity": {
-    "flow": {
-      "body": {
-        "field": "activity",
-        "widget": "LgWidget"
-      },
-      "header": {
-        "colors": {
-          "icon": "#656565",
-          "theme": "#D7D7D7"
-        },
-        "icon": "MessageBot",
-        "title": "Update activity",
-        "widget": "ActionHeader"
-      },
-      "widget": "ActionCard"
-    },
-    "form": {
-      "label": "Update an activity",
-      "subtitle": "Update Activity"
-    }
-  },
-  "Microsoft.RegexRecognizer": {
-    "form": {
-      "hidden": [
-        "entities"
-      ]
+      "helpLink": "https://aka.ms/bfc-using-oauth",
+      "label": "OAuth login",
+      "order": [
+        "connectionName",
+        "*"
+      ],
+      "subtitle": "OAuth Input"
     }
   },
   "Microsoft.OnActivity": {
@@ -1470,6 +1165,311 @@
     "trigger": {
       "label": "Unknown intent",
       "order": 3
+    }
+  },
+  "Microsoft.QnAMakerDialog": {
+    "flow": {
+      "body": "=action.hostname",
+      "widget": "ActionCard"
+    }
+  },
+  "Microsoft.RegexRecognizer": {
+    "form": {
+      "hidden": [
+        "entities"
+      ]
+    }
+  },
+  "Microsoft.RepeatDialog": {
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Repeat this dialog",
+      "order": [
+        "options",
+        "*"
+      ],
+      "subtitle": "Repeat Dialog"
+    }
+  },
+  "Microsoft.ReplaceDialog": {
+    "flow": {
+      "body": {
+        "dialog": "=action.dialog",
+        "widget": "DialogRef"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-understanding-dialogs",
+      "label": "Replace this dialog",
+      "order": [
+        "dialog",
+        "options",
+        "*"
+      ],
+      "subtitle": "Replace Dialog"
+    }
+  },
+  "Microsoft.SendActivity": {
+    "flow": {
+      "body": {
+        "field": "activity",
+        "widget": "LgWidget"
+      },
+      "header": {
+        "colors": {
+          "icon": "#5C2E91",
+          "theme": "#EEEAF4"
+        },
+        "icon": "MessageBot",
+        "widget": "ActionHeader"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-activity",
+      "label": "Send a response",
+      "order": [
+        "activity",
+        "*"
+      ],
+      "subtitle": "Send Activity"
+    }
+  },
+  "Microsoft.SendHandoffActivity": {
+    "flow": {
+      "widget": "ActionHeader"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-send-handoff-activity",
+      "label": "Send a handoff request",
+      "subtitle": "Send Handoff Activity"
+    },
+    "menu": {
+      "label": "Send Handoff Event",
+      "submenu": [
+        "Access external resources"
+      ]
+    }
+  },
+  "Microsoft.SetProperties": {
+    "flow": {
+      "body": {
+        "items": "=foreach(action.assignments, x => concat(coalesce(x.property, \"?\"), \" : \", coalesce(x.value, \"?\")))",
+        "widget": "ListOverview"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-using-memory",
+      "label": "Set properties",
+      "properties": {
+        "assignments": {
+          "properties": {
+            "property": {
+              "intellisenseScopes": [
+                "variable-scopes"
+              ]
+            }
+          }
+        }
+      },
+      "subtitle": "Set Properties"
+    }
+  },
+  "Microsoft.SetProperty": {
+    "flow": {
+      "body": "${coalesce(action.property, \"?\")} : ${coalesce(action.value, \"?\")}",
+      "widget": "ActionCard"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-using-memory",
+      "label": "Set a property",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Set Property"
+    }
+  },
+  "Microsoft.SignOutUser": {
+    "form": {
+      "label": "Sign out user",
+      "subtitle": "Signout User"
+    }
+  },
+  "Microsoft.SlackAdapter": {
+    "form": {
+      "description": "Connects a bot to Slack.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Slack",
+      "hidden": [
+        "type"
+      ],
+      "label": "Slack connection.",
+      "order": [
+        "SlackVerificationToken",
+        "SlackBotToken",
+        "SlackClientSigningSecret",
+        "*"
+      ]
+    }
+  },
+  "Microsoft.SwitchCondition": {
+    "flow": {
+      "judgement": {
+        "body": "=coalesce(action.condition, \"<condition>\")",
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "widget": "SwitchConditionWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-controlling-conversation-flow",
+      "hidden": [
+        "default"
+      ],
+      "label": "Branch: Switch (multiple options)",
+      "properties": {
+        "cases": {
+          "hidden": [
+            "actions"
+          ]
+        },
+        "condition": {
+          "intellisenseScopes": [
+            "user-variables"
+          ]
+        }
+      },
+      "subtitle": "Switch Condition"
+    }
+  },
+  "Microsoft.TextInput": {
+    "flow": {
+      "body": "=action.prompt",
+      "botAsks": {
+        "body": {
+          "defaultContent": "<prompt>",
+          "field": "prompt",
+          "widget": "LgWidget"
+        },
+        "header": {
+          "colors": {
+            "icon": "#5C2E91",
+            "theme": "#EEEAF4"
+          },
+          "icon": "MessageBot",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "nowrap": true,
+      "userInput": {
+        "header": {
+          "colors": {
+            "icon": "#0078D4",
+            "theme": "#E5F0FF"
+          },
+          "disableSDKTitle": true,
+          "icon": "User",
+          "menu": "none",
+          "widget": "ActionHeader"
+        },
+        "widget": "ActionCard"
+      },
+      "widget": "PromptWidget"
+    },
+    "form": {
+      "helpLink": "https://aka.ms/bfc-ask-for-user-input",
+      "label": "Prompt for text",
+      "properties": {
+        "property": {
+          "intellisenseScopes": [
+            "variable-scopes"
+          ]
+        }
+      },
+      "subtitle": "Text Input"
+    }
+  },
+  "Microsoft.ThrowException": {
+    "flow": {
+      "body": {
+        "description": "= ErrorValue",
+        "property": "=coalesce(action.errorValue, \"?\")",
+        "widget": "PropertyDescription"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "label": "Throw an exception",
+      "subtitle": "Throw an exception"
+    }
+  },
+  "Microsoft.TraceActivity": {
+    "form": {
+      "helpLink": "https://aka.ms/composer-telemetry",
+      "label": "Emit a trace event",
+      "subtitle": "Trace Activity"
+    }
+  },
+  "Microsoft.TwilioAdapter": {
+    "form": {
+      "description": "Connects a bot to Twilio.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Twilio",
+      "hidden": [
+        "type"
+      ],
+      "label": "Twilio connection.",
+      "order": [
+        "TwilioNumber",
+        "TwilioAccountSid",
+        "TwilioAuthToken",
+        "TwilioValidationUrl",
+        "*"
+      ]
+    }
+  },
+  "Microsoft.UpdateActivity": {
+    "flow": {
+      "body": {
+        "field": "activity",
+        "widget": "LgWidget"
+      },
+      "header": {
+        "colors": {
+          "icon": "#656565",
+          "theme": "#D7D7D7"
+        },
+        "icon": "MessageBot",
+        "title": "Update activity",
+        "widget": "ActionHeader"
+      },
+      "widget": "ActionCard"
+    },
+    "form": {
+      "label": "Update an activity",
+      "subtitle": "Update Activity"
+    }
+  },
+  "Microsoft.WebexAdapter": {
+    "form": {
+      "description": "Connects a bot to Webex.",
+      "helpLink": "https://github.com/microsoft/botbuilder-dotnet/tree/main/libraries/Adapters/Microsoft.Bot.Builder.Adapters.Webex",
+      "hidden": [
+        "type"
+      ],
+      "label": "Webex connection.",
+      "order": [
+        "WebexAccessToken",
+        "WebexPublicAddress",
+        "WebexSecret",
+        "WebexWebhookName",
+        "*"
+      ]
     }
   }
 }

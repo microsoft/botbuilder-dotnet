@@ -47,14 +47,6 @@ namespace Microsoft.Bot.Schema
         string InputHint { get; set; }
 
         /// <summary>
-        /// Gets or sets list of recognition hints to help prime recognition.
-        /// </summary>
-        /// <value>List of recognition hints.</value>
-#pragma warning disable CA2227 // Collection properties should be read only (we can't change this without breaking binary compat)
-        public IList<RecognitionHint> RecognitionHints { get; set; }
-#pragma warning restore CA2227 // Collection properties should be read only
-
-        /// <summary>
         /// Gets or sets text to display if the channel cannot render cards.
         /// </summary>
         /// <value>

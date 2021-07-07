@@ -830,7 +830,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 // Send recognition hints for what we are listening for
-                var activity = Activity.CreateMessageActivity();
+                var activity = new Activity(ActivityTypes.Message)
+                {
+                    Attachments = new List<Attachment>(),
+                    Entities = new List<Entity>(),
+                };
                 activity.RecognitionHints = GetRecognitionHints(actionContext);
                 await actionContext.Context.SendActivityAsync(activity).ConfigureAwait(false);
 
