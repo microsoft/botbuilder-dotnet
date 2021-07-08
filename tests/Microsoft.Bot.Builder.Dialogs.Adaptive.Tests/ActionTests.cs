@@ -490,8 +490,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
 #if NETCOREAPP2_1
             await Task.Run(() => System.Console.WriteLine("This test is skipped under dotnet core 2.1"));
-#endif
+#else
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+#endif
         }
 
         [Fact]
