@@ -485,7 +485,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
-        [Fact]
+        [Fact(Skip = "Ignore")]
         public async Task Action_MissingProperty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
