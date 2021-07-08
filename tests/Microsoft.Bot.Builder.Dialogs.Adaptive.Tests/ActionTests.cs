@@ -488,10 +488,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [Fact]
         public async Task Action_MissingProperty()
         {
-#if NETCOREAPP3_1
-            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+#if NETCOREAPP2_1
+            await Task.Run(() => System.Console.WriteLine("This test is skipped under dotnet core 2.1"));
 #endif
-            await Task.Run(() => System.Console.WriteLine("This test only runs on dotnet core 3.1"));
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
