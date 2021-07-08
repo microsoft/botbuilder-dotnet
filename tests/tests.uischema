@@ -144,18 +144,21 @@
         "singleline": true,
         "widget": "ResourceOperation"
       },
-      "colors": {
-        "color": "#FFFFFF",
-        "icon": "#FFFFFF",
-        "theme": "#004578"
-      },
       "footer": {
         "description": "= Result",
         "property": "=action.resultProperty",
         "widget": "PropertyDescription"
       },
+      "header": {
+        "colors": {
+          "color": "#FFFFFF",
+          "icon": "#FFFFFF",
+          "theme": "#004578"
+        },
+        "icon": "Library",
+        "widget": "ActionHeader"
+      },
       "hideFooter": "=!action.resultProperty",
-      "icon": "Library",
       "widget": "ActionCard"
     },
     "form": {
