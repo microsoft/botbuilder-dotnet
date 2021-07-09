@@ -91,8 +91,8 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
                     var containerClient = new BlobContainerClient(dataConnectionString, containerName);
                     if (!_checkedContainers.Contains(containerName))
                     {
-                        _checkedContainers.Add(containerName);
                         containerClient.CreateIfNotExistsAsync().Wait();
+                        _checkedContainers.Add(containerName);
                     }
 
                     return containerClient;
