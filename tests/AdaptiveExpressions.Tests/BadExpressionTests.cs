@@ -1,4 +1,5 @@
 ﻿#pragma warning disable SA1124 // Do not use regions
+using System;
 using System.Collections.Generic;
 using System.Data;
 using Newtonsoft.Json.Linq;
@@ -424,9 +425,8 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
-            Test("merge(json(json1))"), // should have at least two arguments
-            Test("merge(json(json1), json(jarray1))"), // arguments should all be JSON objects
-            Test("merge(json(jarray1), json(json1))"), // arguments should all be JSON objects
+            Test("merge(1, json(jarray1))"), // arguments should all be JSON objects or array
+            Test("merge([json(jarray1)])"), // not support nested array
             #endregion
 
             #region Memory access test
