@@ -114,9 +114,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
 
         internal static void AddBotRuntimeSkills(this IServiceCollection services, IConfiguration configuration)
         {
+            // We only support being a skill or a skill consumer currently (not both).
+            // See https://github.com/microsoft/botbuilder-dotnet/issues/5738 for feature request to allow both in the future.
             var skillSettings = configuration.GetSection(SkillSettings.SkillSettingsKey).Get<SkillSettings>();
+            var settings = configuration.GetSection(SkillConfigurationEntry.SkillSettingsKey).Get<List<SkillConfigurationEntry>>();
+            if (settings?.Count > 0)
+            {
+                // If the config entry for SkillConfigurationEntry.SkillSettingsKey is present then we are a consumer
+                // and the entries under SkillSettings.SkillSettingsKey are ignored
+                services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedSkillsClaimsValidator(settings.Select(x => x.MsAppId).ToList()) });
+            }
+            else
+            {
+                // If the config entry for SkillSettings.SkillSettingsKey contains entries, then we are a skill
+                // and we validate caller against this list
+                services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(skillSettings?.AllowedCallers) });
+            }
 
-            services.AddSingleton(sp => new AuthenticationConfiguration { ClaimsValidator = new AllowedCallersClaimsValidator(skillSettings?.AllowedCallers) });
             services.TryAddSingleton<ChannelServiceHandlerBase, CloudSkillHandler>();
         }
 

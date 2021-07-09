@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Label = new Label { Name = "mockLabel" }
             };
 
-            var mockScore = new List<Result> { mockResult };
+            var mockScore = new List<Result> { mockResult }.AsReadOnly();
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Label = new Label { Name = "mockLabel2" }
             };
 
-            var mockScore = new List<Result> { mockResult1, mockResult2 };
+            var mockScore = new List<Result> { mockResult1, mockResult2 }.AsReadOnly();
             var mockResolver = new MockResolver(mockScore);
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Label = new Label { Name = "FOOBAR", Type = LabelType.Intent },
             };
 
-            var mockScore = new List<Result> { mockResult1 };
+            var mockScore = new List<Result> { mockResult1 }.AsReadOnly();
             var mockResolver = new MockResolver(mockScore);
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
@@ -153,20 +153,19 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
                 Label = new Label { Name = "mockLabel" }
             };
 
-            var mockScore = new List<Result> { mockResult };
+            var mockScore = new List<Result> { mockResult }.AsReadOnly();
             var mockEntityResult = new Result
             {
                 Score = 0.75,
                 Label = new Label { Name = "mockEntityLabel", Type = LabelType.Entity, Span = new Span { Offset = 17, Length = 7 } },
             };
 
-            var mockEntityScore = new List<Result> { mockEntityResult };
+            var mockEntityScore = new List<Result> { mockEntityResult }.AsReadOnly();
             var mockResolver = new MockResolver(mockScore, mockEntityScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {
                 ModelFolder = new StringExpression("fakePath"),
                 SnapshotFile = new StringExpression("fakePath"),
-                ScoreEntities = true,
                 ExternalEntityRecognizer = new NumberEntityRecognizer()
             };
 
@@ -208,7 +207,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             {
                 mockResult1,
                 mockResult2
-            };
+            }.AsReadOnly();
             var mockResolver = new MockResolver(mockScore);
             var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
             {

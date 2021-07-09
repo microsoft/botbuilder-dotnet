@@ -18,3 +18,6 @@
 
 # length
 - length in main
+
+# nameAndAge
+- my name is ${user.name} and my age is ${user.age}
