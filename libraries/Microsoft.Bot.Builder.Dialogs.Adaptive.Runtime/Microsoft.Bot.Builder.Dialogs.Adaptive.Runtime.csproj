@@ -61,7 +61,7 @@
   <ItemGroup>
     <ProjectReference Include="..\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core\Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.csproj" />
     <ProjectReference Include="..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.AI.Luis\Microsoft.Bot.Builder.AI.Luis.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.QnA\Microsoft.Bot.Builder.AI.QnA.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Azure\Microsoft.Bot.Builder.Azure.csproj" />
