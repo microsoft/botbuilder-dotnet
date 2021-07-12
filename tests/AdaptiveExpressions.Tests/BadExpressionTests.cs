@@ -66,7 +66,6 @@ namespace AdaptiveExpressions.Tests
             Test("substring(hello, 0, 'hello')"), // length is not integer
             Test("toLower(one)"), // the parameter of toLower must be string
             Test("toLower('hi', 1)"), // the second argument must be a locale string
-            Test("toLower('hi', 1)"), // should have 1 param
             Test("toLower('hi', locale, 1)"), // should have 1 or 2 params
             Test("toUpper(one)"), // the parameter of toUpper must be string
             Test("toUpper('hi', 1)"), // the second argument must be a locale string
@@ -80,7 +79,6 @@ namespace AdaptiveExpressions.Tests
             Test("startsWith(one, hello)"), // should have string params
             Test("startsWith(hello)"), // should have two params
             Test("countWord(hello, 1)"), // should have one param
-            Test("countWord(one)"), // should have string param
             Test("countWord(one)"), // should have string param
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
