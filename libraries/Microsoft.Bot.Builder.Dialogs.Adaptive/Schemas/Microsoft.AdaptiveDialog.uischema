@@ -12,7 +12,8 @@
             "triggers",
             "generator",
             "selector",
-            "schema"
+            "schema",
+            "dialogs"
         ],
         "properties": {
             "recognizer": {
