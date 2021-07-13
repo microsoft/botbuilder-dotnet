@@ -15,6 +15,10 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class ManagedIdentityAppCredentials : AppCredentials
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ManagedIdentityAppCredentials"/> class.
+        /// Managed Identity for AAD credentials auth and caching.
+        /// </summary>
         public ManagedIdentityAppCredentials() 
             : base(null, null, null)
         {
