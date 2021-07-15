@@ -421,6 +421,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
         {
+            var result = await ResolveRefWithRangeNoCacheAsync(refToken, sourceContext, cancellationToken).ConfigureAwait(false);
+
+            // if we have a source range for the resource, then make it available to InterfaceConverter
+            DebugSupport.SourceMap.Add(result.Item1, result.Item2);
+
+            return result.Item1;
+        }
+
+        /// <summary>
+        /// Resolves a ref to the actual object with the range, but does not add it to the SourceMap cache.
+        /// </summary>
+        /// <param name="refToken">reference.</param>
+        /// <param name="sourceContext">source context to build debugger source map.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>resolved object the reference refers to.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
+        public async Task<Tuple<JToken, SourceRange>> ResolveRefWithRangeNoCacheAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
+#pragma warning restore CA1801 // Review unused parameters
+        {
             var refTarget = GetRefTarget(refToken);
 
             if (string.IsNullOrEmpty(refTarget))
@@ -472,10 +491,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            // if we have a source range for the resource, then make it available to InterfaceConverter
-            DebugSupport.SourceMap.Add(json, range);
-
-            return json;
+            return new Tuple<JToken, SourceRange>(json, range);
         }
 
         /// <summary>
