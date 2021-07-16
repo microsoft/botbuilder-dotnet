@@ -66,6 +66,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var (jToken, range) = SourceScope.ReadTokenRange(reader, sourceContext);
+
             using (new SourceScope(sourceContext, range))
             {
                 string refDialogName = null;
@@ -78,6 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 }
 
                 var kind = (string)jToken["$kind"];
+
                 if (kind == null)
                 {
                     // see if there is jObject resolver
@@ -109,6 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     }
 
                     var tokenToBuild = TryAssignId(jToken, sourceContext);
+
                     T result;
                     if (passTwo && refDialogName != null && cachedRefDialogs.ContainsKey(refDialogName))
                     {
