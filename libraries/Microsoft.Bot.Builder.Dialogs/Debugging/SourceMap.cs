@@ -19,7 +19,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// Initializes a read-only new instance of the <see cref="SourceMap"/>.
         /// </summary>
         public static readonly SourceMap Instance = new SourceMap();
-
+        
+        private readonly object _gate = new object();
         private readonly Dictionary<object, SourceRange> _items = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
         private readonly Dictionary<SourceRange, object> _reverseLookup = new Dictionary<SourceRange, object>(new SourceRangeEqualityComparer());
 
@@ -30,21 +31,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 throw new ArgumentOutOfRangeException(range.Path);
             }
 
-            if (_reverseLookup.TryGetValue(range, out object foundRef))
+            lock (_gate)
             {
-                _items.Remove(foundRef);
-                _reverseLookup.Remove(range);
-            }
+                if (_reverseLookup.TryGetValue(range, out object foundRef))
+                {
+                    _items.Remove(foundRef);
+                    _reverseLookup.Remove(range);
+                }
 
-            _items.Add(item, range);
-            _reverseLookup.Add(range, item);
+                _items.Add(item, range);
+                _reverseLookup.Add(range, item);
+            }
         }
 
         bool ISourceMap.TryGetValue(object item, out SourceRange range)
         {
             if (item != null)
             {
-                return _items.TryGetValue(item, out range);
+                lock (_gate)
+                {
+                    return _items.TryGetValue(item, out range);
+                }
             }
 
             range = default;

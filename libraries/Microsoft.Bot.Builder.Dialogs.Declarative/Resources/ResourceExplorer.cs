@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>resolved object the reference refers to.</returns>
 #pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
-        public async Task<Tuple<JToken, SourceRange>> ResolveRefWithRangeNoCacheAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
+        public async Task<(JToken, SourceRange)> ResolveRefWithRangeNoCacheAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
         {
             var refTarget = GetRefTarget(refToken);
@@ -491,7 +491,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            return new Tuple<JToken, SourceRange>(json, range);
+            return (json, range);
         }
 
         /// <summary>
