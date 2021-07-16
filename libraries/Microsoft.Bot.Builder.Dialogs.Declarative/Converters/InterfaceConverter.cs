@@ -69,20 +69,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             using (new SourceScope(sourceContext, range))
             {
                 string refDialogName = null;
-                SourceRange sourceRange = null;
-                var isRefToken = resourceExplorer.IsRef(jToken);
-                if (isRefToken)
+                if (resourceExplorer.IsRef(jToken))
                 {
                     refDialogName = jToken.Value<string>();
 
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    var rangeResult = resourceExplorer.ResolveRefWithRangeNoCacheAsync(jToken, sourceContext).GetAwaiter().GetResult();
-                    sourceRange = rangeResult.Item2;
-                    jToken = rangeResult.Item1;
-                }
-                else
-                {
-                    sourceRange = range;
+                    jToken = resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
                 }
 
                 var kind = (string)jToken["$kind"];
@@ -99,7 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 }
 
                 // if reference resolution made a source context available for the JToken, then add it to the context stack
-                using (var newScope = isRefToken ? new SourceScope(sourceContext, sourceRange) : null)
+                var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
+                using (var newScope = found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
                     var passTwo = false;
                     foreach (var observer in this.observers)
@@ -109,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                             passTwo = true;
                         }
 
-                        if (observer.OnBeforeLoadToken(sourceContext, sourceRange, jToken, out T interceptResult))
+                        if (observer.OnBeforeLoadToken(sourceContext, rangeResolved ?? range, jToken, out T interceptResult))
                         {
                             return interceptResult;
                         }

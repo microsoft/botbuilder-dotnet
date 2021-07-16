@@ -503,8 +503,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>The resulting <see cref="JToken"/> and <see cref="SourceRange"/> for the requested resource.</returns>
         internal async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advanceJsonReader = false)
         {
-            var text = await resource.ReadTextAsync().ConfigureAwait(false);
-            using (var readerText = new StringReader(text))
+            if (_cache.TryGetValue(resource.FullName, out Tuple<JToken, SourceRange> result))
+            {
+                return await Task.FromResult((result.Item1, result.Item2)).ConfigureAwait(false);
+            }
+
+            using (var readerText = new StreamReader(await resource.OpenStreamAsync().ConfigureAwait(false)))
             using (var readerJson = new JsonTextReader(readerText))
             {
                 if (advanceJsonReader)
@@ -519,9 +523,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
                 AutoAssignId(resource, token, sourceContext, range);
                 range.Path = resource.FullName ?? resource.Id;
+
+                _cache.Add(resource.FullName, new Tuple<JToken, SourceRange>(token, range));
                 return (token, range);
             }
         }
+
+#pragma warning disable CA1823 // Avoid unused private fields
+#pragma warning disable SA1201 // Elements should appear in the correct order
+        private readonly Dictionary<string, Tuple<JToken, SourceRange>> _cache = new Dictionary<string, Tuple<JToken, SourceRange>>();
+#pragma warning restore SA1201 // Elements should appear in the correct order
+#pragma warning restore CA1823 // Avoid unused private fields
 
         /// <summary>
         /// Disposes objected used by the class.

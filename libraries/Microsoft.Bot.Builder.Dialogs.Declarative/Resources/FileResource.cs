@@ -12,8 +12,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     /// </summary>
     public class FileResource : Resource
     {
-        private Task<byte[]> contentTask;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="FileResource"/> class.
         /// </summary>
@@ -30,32 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>Stream for accesssing the content of the resource.</returns>
         public override async Task<Stream> OpenStreamAsync()
         {
-            if (contentTask == null)
-            {
-                this.contentTask = Task.Run(async () =>
-                {
-                    Trace.TraceInformation($"Loading {this.Id}");
-                    var fileInfo = new FileInfo(this.FullName);
-                    Stream stream = null;
-                    try
-                    {
-                        stream = File.OpenRead(this.FullName);
-                        var buffer = new byte[fileInfo.Length];
-                        await stream.ReadAsync(buffer, 0, (int)fileInfo.Length).ConfigureAwait(false);
-                        return buffer;
-                    }
-                    finally
-                    {
-                        if (stream != null)
-                        {
-                            stream.Close();
-                        }
-                    }
-                });
-            }
-
-            var content = await contentTask.ConfigureAwait(false);
-            return new MemoryStream(content);
+            return await Task.FromResult(new FileStream(this.FullName, FileMode.Open)).ConfigureAwait(false);
         }
 
         /// <summary>
