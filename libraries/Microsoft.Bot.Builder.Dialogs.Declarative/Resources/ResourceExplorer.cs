@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
         private readonly List<JsonConverterFactory> converterFactories = new List<JsonConverterFactory>();
         private readonly ResourceExplorerOptions options;
+        private readonly ConcurrentDictionary<string, (JToken, SourceRange)> _resourceTokenCache = new ConcurrentDictionary<string, (JToken, SourceRange)>();
 
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private List<IComponentDeclarativeTypes> declarativeTypes;
@@ -421,25 +422,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
         {
-            var result = await ResolveRefWithRangeNoCacheAsync(refToken, sourceContext, cancellationToken).ConfigureAwait(false);
-
-            // if we have a source range for the resource, then make it available to InterfaceConverter
-            DebugSupport.SourceMap.Add(result.Item1, result.Item2);
-
-            return result.Item1;
-        }
-
-        /// <summary>
-        /// Resolves a ref to the actual object with the range, but does not add it to the SourceMap cache.
-        /// </summary>
-        /// <param name="refToken">reference.</param>
-        /// <param name="sourceContext">source context to build debugger source map.</param>
-        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
-        /// <returns>resolved object the reference refers to.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
-        public async Task<(JToken, SourceRange)> ResolveRefWithRangeNoCacheAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
-#pragma warning restore CA1801 // Review unused parameters
-        {
             var refTarget = GetRefTarget(refToken);
 
             if (string.IsNullOrEmpty(refTarget))
@@ -491,7 +473,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
-            return (json, range);
+            // if we have a source range for the resource, then make it available to InterfaceConverter
+            DebugSupport.SourceMap.Add(json, range);
+
+            return json;
         }
 
         /// <summary>
@@ -503,7 +488,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>The resulting <see cref="JToken"/> and <see cref="SourceRange"/> for the requested resource.</returns>
         internal async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advanceJsonReader = false)
         {
-            if (_cache.TryGetValue(resource.FullName, out (JToken, SourceRange) cachedResult))
+            if (_resourceTokenCache.TryGetValue(resource.FullName, out (JToken, SourceRange) cachedResult))
             {
                 return await Task.FromResult(cachedResult).ConfigureAwait(false);
             }
@@ -524,16 +509,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 AutoAssignId(resource, token, sourceContext, range);
                 range.Path = resource.FullName ?? resource.Id;
 
-                _cache.AddOrUpdate(resource.FullName, (token, range), (key, oldValue) => (token, range));
+                _resourceTokenCache.AddOrUpdate(resource.FullName, (token, range), (key, oldValue) => (token, range));
                 return (token, range);
             }
         }
-
-#pragma warning disable CA1823 // Avoid unused private fields
-#pragma warning disable SA1201 // Elements should appear in the correct order
-        private readonly ConcurrentDictionary<string, (JToken, SourceRange)> _cache = new ConcurrentDictionary<string, (JToken, SourceRange)>();
-#pragma warning restore SA1201 // Elements should appear in the correct order
-#pragma warning restore CA1823 // Avoid unused private fields
 
         /// <summary>
         /// Disposes objected used by the class.
