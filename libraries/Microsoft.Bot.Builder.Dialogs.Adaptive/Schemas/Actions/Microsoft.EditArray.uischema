@@ -17,6 +17,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Edit an array property",
+        "submenu": ["Manage properties"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

@@ -12,6 +12,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Delete properties",
+        "submenu": ["Manage properties"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {
