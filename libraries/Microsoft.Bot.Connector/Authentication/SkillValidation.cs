@@ -36,6 +36,8 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
                     "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",           // Auth for US Gov, 1.0 token
                     "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",       // Auth for US Gov, 2.0 token
+                    "https://sts.chinacloudapi.cn/0b4a31a2-c1a0-475d-b363-5f26668660a3/",                    // Auth for China, 1.0 token
+                    "https://login.partner.microsoftonline.cn/0b4a31a2-c1a0-475d-b363-5f26668660a3/v2.0",    // Auth for China, 2.0 token
                 },
                 ValidateAudience = false, // Audience validation takes place manually in code.
                 ValidateLifetime = true,
