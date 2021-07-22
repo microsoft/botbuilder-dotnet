@@ -403,28 +403,24 @@ namespace Microsoft.Bot.Builder.Streaming
                 }
             }
 
-            try
+            if (!_serverIsConnected)
             {
-                if (!_serverIsConnected)
-                {
-                    throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
-                }
-
-                var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
-
-                if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
-                {
-                    return serverResponse.ReadBodyAsJson<ResourceResponse>();
-                }
-            }
-#pragma warning disable CA1031 // Do not catch general exception types (this should probably be addressed later, but for now we just log the error and continue the execution)
-            catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
-            {
-                _logger.LogError(ex.Message);
+                throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
             }
 
-            return null;
+            // Attempt to send the request. If send fails, we let the original exception get thrown so that the 
+            // upper layers can handle it and trigger OnError. This is consistent with error handling in http and proactive 
+            // paths, making all 3 paths consistent in terms of error handling.
+            var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
+            {
+                return serverResponse.ReadBodyAsJson<ResourceResponse>();
+            }
+            else
+            {
+                throw new Exception($"Failed tosend request through streaming transport. Status code: {serverResponse.StatusCode}.");
+            }
         }
 
         /// <summary>
