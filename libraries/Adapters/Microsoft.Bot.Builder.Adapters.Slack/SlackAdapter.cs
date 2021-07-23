@@ -245,6 +245,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
         }
 
+        /// <inheritdoc/>
+        public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            await ContinueConversationAsync(reference, callback, cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Accept an incoming webhook request and convert it into a TurnContext which can be processed by the bot's logic.
         /// </summary>

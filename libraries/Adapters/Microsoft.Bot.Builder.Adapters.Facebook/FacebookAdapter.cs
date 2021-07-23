@@ -24,9 +24,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
-     /// <summary>
-     /// BotAdapter to allow for handling Facebook App payloads and responses via the Facebook API.
-     /// </summary>
+    /// <summary>
+    /// BotAdapter to allow for handling Facebook App payloads and responses via the Facebook API.
+    /// </summary>
     public class FacebookAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private const string HubModeSubscribe = "subscribe";
@@ -190,6 +190,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
             }
+        }
+
+        /// <inheritdoc/>
+        public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            await ContinueConversationAsync(reference, callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

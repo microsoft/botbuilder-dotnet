@@ -195,6 +195,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
         }
 
+        /// <inheritdoc/>
+        public override async Task ContinueConversationAsync(ClaimsIdentity claimsIdentity, ConversationReference reference, string audience, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            await ContinueConversationAsync(reference, callback, cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
         /// </summary>
