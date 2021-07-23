@@ -101,7 +101,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
 
             // Needed for SkillsHttpClient which depends on BotAdapter
-            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<CoreBotAdapter>());
+            services.AddSingleton<MultiplexingAdapter>();
+            services.AddSingleton<BotAdapter>(sp => sp.GetRequiredService<MultiplexingAdapter>());
 
             // Runtime set up
             services.AddBotRuntimeSkills(configuration);
