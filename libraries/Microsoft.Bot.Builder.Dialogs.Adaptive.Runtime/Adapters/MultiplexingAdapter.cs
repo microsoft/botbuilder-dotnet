@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </remarks>
     public class MultiplexingAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly Dictionary<string, IBotFrameworkHttpAdapter> _adapters = new ();
+        private readonly Dictionary<string, IBotFrameworkHttpAdapter> _adapters = new Dictionary<string, IBotFrameworkHttpAdapter>();
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
