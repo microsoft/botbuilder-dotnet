@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Settings;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,9 +33,6 @@ namespace Microsoft.Bot.Builder.Runtime.Tests.Extensions
 
             // Core adapter should be register for as IBotFrameworkHttpAdapter for controllers
             Assertions.AssertService<IBotFrameworkHttpAdapter, CoreBotAdapter>(services, provider, ServiceLifetime.Singleton);
-
-            // Core adapter should be register for as BotAdapter for Skill HttpClient
-            Assertions.AssertService<BotAdapter, CoreBotAdapter>(services, provider, ServiceLifetime.Singleton);
         }
     }
 }
