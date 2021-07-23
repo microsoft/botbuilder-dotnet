@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = ActivityTypes.ConversationUpdate,               
+                Type = ActivityTypes.ConversationUpdate,
                 ChannelData = new TeamsChannelData { EventType = "channelRestored" },
                 ChannelId = Channels.Msteams,
             };
@@ -333,7 +333,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         [Fact]
         public async Task TestConversationUpdateTeamsTeamArchived()
         {
-          // Arrange
+            // Arrange
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
@@ -351,7 +351,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal("OnConversationUpdateActivityAsync", bot.Record[0]);
             Assert.Equal("OnTeamsTeamArchivedAsync", bot.Record[1]);
         }
-        
+
         [Fact]
         public async Task TestConversationUpdateTeamsTeamDeleted()
         {
@@ -1040,7 +1040,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Act
             var bot = new TestActivityHandler();
             await ((IBot)bot).OnTurnAsync(turnContext);
-           
+
             // Assert
             Assert.Equal(2, bot.Record.Count);
             Assert.Equal("OnInvokeActivityAsync", bot.Record[0]);
@@ -1138,6 +1138,80 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Contains("1:02:03 AM", activitiesToSend[0].Text); // Date format differs between OSs, so we just Assert.Contains instead of Assert.Equals
         }
 
+        [Fact]
+        public async Task TestMeetingParticipantsAddedEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingParticipantsAdded",
+                Value = JObject.Parse(@"{
+                    ParticipantsAdded: [
+                        {Id: 'id', Name: 'name'}
+                    ]
+                }"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingParticipantsAddedAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("id", activitiesToSend[0].Text);
+        }
+
+        [Fact]
+        public async Task TestMeetingParticipantsRemovedEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingParticipantsRemoved",
+                Value = JObject.Parse(@"{
+                    ParticipantsRemoved: [
+                        {Id: 'id', Name: 'name'}
+                    ]
+                }"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingParticipantsRemovedAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Equal("id", activitiesToSend[0].Text);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -1184,7 +1258,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsChannelRenamedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
-          
+
             protected override Task OnTeamsChannelRestoredAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
@@ -1207,7 +1281,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsTeamHardDeletedAsync(teamInfo, turnContext, cancellationToken);
-            }            
+            }
 
             protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
@@ -1403,6 +1477,20 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 turnContext.SendActivityAsync(meeting.EndTime.ToString());
                 return Task.CompletedTask;
             }
+
+            protected override Task OnTeamsMeetingParticipantsAddedAsync(MeetingParticipantsAddedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.ParticipantsAdded[0].Id);
+                return base.OnTeamsMeetingParticipantsAddedAsync(meeting, turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMeetingParticipantsRemovedAsync(MeetingParticipantsRemovedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.ParticipantsRemoved[0].Id);
+                return base.OnTeamsMeetingParticipantsRemovedAsync(meeting, turnContext, cancellationToken);
+            }
         }
 
         private class RosterHttpMessageHandler : HttpMessageHandler
@@ -1410,7 +1498,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                
+
                 // GetMembers (Team)
                 if (request.RequestUri.PathAndQuery.EndsWith("team-id/members"))
                 {

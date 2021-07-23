@@ -82,10 +82,10 @@ namespace Microsoft.Bot.Builder.Teams
 
                         case "task/submit":
                             return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-                        
+
                         case "tab/fetch":
                             return CreateInvokeResponse(await OnTeamsTabFetchAsync(turnContext, SafeCast<TabRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-                        
+
                         case "tab/submit":
                             return CreateInvokeResponse(await OnTeamsTabSubmitAsync(turnContext, SafeCast<TabSubmit>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
@@ -638,7 +638,7 @@ namespace Microsoft.Bot.Builder.Teams
         {
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Invoked when a Channel Restored event activity is received from the connector.
         /// Channel Restored correspond to the user restoring a previously deleted channel.
@@ -759,6 +759,10 @@ namespace Microsoft.Bot.Builder.Teams
                         return OnTeamsMeetingStartAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingStartEventDetails>(), turnContext, cancellationToken);
                     case "application/vnd.microsoft.meetingEnd":
                         return OnTeamsMeetingEndAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingEndEventDetails>(), turnContext, cancellationToken);
+                    case "application/vnd.microsoft.meetingParticipantsAdded":
+                        return OnTeamsMeetingParticipantsAddedAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingParticipantsAddedEventDetails>(), turnContext, cancellationToken);
+                    case "application/vnd.microsoft.meetingParticipantsRemoved":
+                        return OnTeamsMeetingParticipantsRemovedAsync(JObject.FromObject(turnContext.Activity.Value).ToObject<MeetingParticipantsRemovedEventDetails>(), turnContext, cancellationToken);
                 }
             }
 
@@ -789,6 +793,34 @@ namespace Microsoft.Bot.Builder.Teams
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnTeamsMeetingEndAsync(MeetingEndEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Teams Participants Added event activity is received from the connector.
+        /// Override this in a derived class to provide logic for when meeting participants are added.
+        /// </summary>
+        /// <param name="meeting">The details of the meeting.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMeetingParticipantsAddedAsync(MeetingParticipantsAddedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when a Teams Participants Removed event activity is received from the connector.
+        /// Override this in a derived class to provide logic for when meeting participants are removed.
+        /// </summary>
+        /// <param name="meeting">The details of the meeting.</param>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnTeamsMeetingParticipantsRemovedAsync(MeetingParticipantsRemovedEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
