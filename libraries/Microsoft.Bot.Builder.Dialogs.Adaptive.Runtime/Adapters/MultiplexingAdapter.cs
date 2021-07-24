@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </remarks>
     public class MultiplexingAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly Dictionary<string, IBotFrameworkHttpAdapter> _adapters = new Dictionary<string, IBotFrameworkHttpAdapter>();
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -38,8 +37,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             _configuration = configuration;
             _logger = logger ?? NullLogger.Instance;
 
+            Adapters = new Dictionary<string, IBotFrameworkHttpAdapter>();
+
             Initialize(adapters);
         }
+
+        /// <summary>
+        /// Gets a collection that maps channelId/route to the appropriate adapter.
+        /// </summary>
+        /// <value>
+        /// A collection that maps channelId/route to the appropriate adapter.
+        /// </value>
+        protected internal Dictionary<string, IBotFrameworkHttpAdapter> Adapters { get; }
 
         /// <inheritdoc/>
         public Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
@@ -130,17 +139,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             foreach (var adapter in adapters ?? throw new ArgumentNullException(nameof(adapters)))
             {
-                var settings = adapterSettings.FirstOrDefault(s => s.Enabled && s.Type == adapter.GetType().FullName.Split('.').Last());
+                var settings = adapterSettings.FirstOrDefault(s => s.Enabled && s.Type == adapter.GetType().FullName.Split('.').Last().Split('+').Last());
 
                 if (settings != null)
                 {
                     // Map route/ChannelId to adapter.
-                    _adapters.Add(settings.Route, adapter);
+                    Adapters.Add(settings.Route, adapter);
 
                     // Add the adapter handling the messages route as the default adapter.
                     if (settings.Route == "messages")
                     {
-                        _adapters.Add("default", adapter);
+                        Adapters.Add("default", adapter);
                     }
                 }
             }
@@ -153,12 +162,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private BotAdapter GetAppropriateAdapter(string channelId)
         {
-            if (_adapters.TryGetValue(channelId, out var adapter))
+            if (Adapters.TryGetValue(channelId, out var adapter))
             {
                 return adapter as BotAdapter;
             }
 
-            if (_adapters.TryGetValue("default", out var defaultAdapter))
+            if (Adapters.TryGetValue("default", out var defaultAdapter))
             {
                 _logger.LogWarning($"Unable to find router for channelId {channelId}. Using default adapter {nameof(defaultAdapter)}. You may need to ensure your appsettings.json has an adapter with the Route property that matches the ChannelId of the adapter.");
                 return defaultAdapter as BotAdapter;
