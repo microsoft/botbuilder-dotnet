@@ -49,7 +49,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new InvalidOperationException(message + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
-            _api = new SlackTaskClient(options.SlackBotToken);
+            if (Options.SlackBotToken != null)
+            {
+                _api = new SlackTaskClient(options.SlackBotToken);
+            }
+
             LoginWithSlackAsync(default).Wait();
         }
 
@@ -167,7 +171,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var data = new NameValueCollection
             {
-                ["token"] = Options.SlackBotToken,
+                ["token"] = Options.SlackBotToken ?? await Options.GetTokenForWorkspace(message.TeamId).ConfigureAwait(false),
                 ["channel"] = message.Channel,
                 ["text"] = message.Text,
                 ["thread_ts"] = message.ThreadTs,
@@ -202,9 +206,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="activity">An Activity.</param>
         /// <returns>The identity of the bot's user.</returns>
-        public virtual string GetBotUserIdentity(Activity activity)
+        public virtual async Task<string> GetBotUserIdentityAsync(Activity activity)
         {
-            return Identity;
+            return Identity ?? await Options.GetBotUserIdentity(activity.Conversation.TenantId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -218,10 +222,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 Identity = await TestAuthAsync(cancellationToken).ConfigureAwait(false);
             }
-            else if (string.IsNullOrWhiteSpace(Options.SlackClientId) ||
-                     string.IsNullOrWhiteSpace(Options.SlackClientSecret) ||
-                     Options.SlackRedirectUri == null ||
-                     Options.SlackScopes.Count == 0)
+            else if (string.IsNullOrWhiteSpace(Options.SlackClientId))
             {
                 throw new InvalidOperationException("Missing Slack API credentials! Provide SlackClientId, SlackClientSecret, scopes and SlackRedirectUri as part of the SlackAdapter options.");
             }

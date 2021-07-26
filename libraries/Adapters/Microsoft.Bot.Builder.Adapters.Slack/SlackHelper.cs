@@ -77,6 +77,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             message.Channel = activity.Conversation.Id;
+            message.TeamId = activity.Conversation.TenantId;
 
             if (!string.IsNullOrWhiteSpace(activity.Conversation.Properties["thread_ts"]?.ToString()))
             {
@@ -151,6 +152,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 Conversation = new ConversationAccount()
                 {
                     Id = slackPayload.Channel.id,
+                    TenantId = slackPayload.Team.id,
                 },
                 From = new ChannelAccount()
                 {
@@ -205,7 +207,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="eventRequest">The data of the slack event.</param>
         /// <param name="client">The Slack client.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static Activity EventToActivity(EventRequest eventRequest, SlackClientWrapper client)
+        public static async Task<Activity> EventToActivityAsync(EventRequest eventRequest, SlackClientWrapper client)
         {
             if (eventRequest == null)
             {
@@ -222,7 +224,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 Conversation =
                     new ConversationAccount()
                     {
-                        Id = innerEvent.Channel ?? innerEvent.ChannelId ?? eventRequest.TeamId
+                        Id = innerEvent.Channel ?? innerEvent.ChannelId ?? eventRequest.TeamId,
+                        TenantId = eventRequest.TeamId,
                     },
                 From = new ChannelAccount()
                 {
@@ -235,7 +238,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             activity.Recipient = new ChannelAccount()
             {
-                Id = client.GetBotUserIdentity(activity)
+                Id = await client.GetBotUserIdentityAsync(activity).ConfigureAwait(false)
             };
 
             if (!string.IsNullOrEmpty(innerEvent.ThreadTs))
@@ -281,7 +284,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             }
 
                             attachments.Add(new Attachment
-                            { 
+                            {
                                 ContentType = contentType,
                                 ContentUrl = contentUrl,
                                 Name = name
@@ -297,6 +300,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
             else
             {
+                if (innerEvent.Type == "app_uninstalled")
+                {
+                    activity.Type = ActivityTypes.InstallationUpdate;
+                    activity.Action = "remove";
+                }
+
                 activity.Name = innerEvent.Type;
                 activity.Value = innerEvent;
             }
@@ -310,7 +319,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="commandRequest">The data of the slack command request.</param>
         /// <param name="client">The Slack client.</param>
         /// <returns>An activity containing the event data.</returns>
-        public static Activity CommandToActivity(CommandPayload commandRequest, SlackClientWrapper client)
+        public static async Task<Activity> CommandToActivityAsync(CommandPayload commandRequest, SlackClientWrapper client)
         {
             if (commandRequest == null)
             {
@@ -325,6 +334,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 Conversation = new ConversationAccount()
                 {
                     Id = commandRequest.ChannelId,
+                    TenantId = commandRequest.TeamId,
                 },
                 From = new ChannelAccount()
                 {
@@ -338,7 +348,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             activity.Recipient = new ChannelAccount()
             {
-                Id = client.GetBotUserIdentity(activity)
+                Id = await client.GetBotUserIdentityAsync(activity).ConfigureAwait(false)
             };
 
             activity.Conversation.Properties["team"] = commandRequest.TeamId;

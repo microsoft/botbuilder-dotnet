@@ -47,7 +47,17 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="options">An instance of <see cref="SlackAdapterOptions"/>.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public SlackAdapter(IConfiguration configuration, SlackAdapterOptions options = null, ILogger logger = null)
-            : this(new SlackClientWrapper(new SlackClientWrapperOptions(configuration[SlackVerificationTokenKey], configuration[SlackBotTokenKey], configuration[SlackClientSigningSecretKey])), options, logger)
+            : this(
+                new SlackClientWrapper(
+                    new SlackClientWrapperOptions(
+                        configuration["SlackClientId"],
+                        configuration["SlackVerificationToken"],
+                        configuration["SlackBotToken"],
+                        configuration["SlackClientSigningSecret"],
+                        options.GetTokenForWorkspace,
+                        options.GetBotUserIdentity)),
+                options,
+                logger)
         {
         }
 
@@ -301,7 +311,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     var serializedPayload = JsonConvert.SerializeObject(postValues);
                     var payload = JsonConvert.DeserializeObject<CommandPayload>(serializedPayload);
-                    activity = SlackHelper.CommandToActivity(payload, _slackClient);
+                    activity = await SlackHelper.CommandToActivityAsync(payload, _slackClient).ConfigureAwait(false);
                 }
             }
             else if (requestContentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase))
@@ -326,7 +336,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     // this is an event api post
                     var eventRequest = bodyObject.ToObject<EventRequest>();
-                    activity = SlackHelper.EventToActivity(eventRequest, _slackClient);
+                    activity = await SlackHelper.EventToActivityAsync(eventRequest, _slackClient).ConfigureAwait(false);
                 }
             }
 
