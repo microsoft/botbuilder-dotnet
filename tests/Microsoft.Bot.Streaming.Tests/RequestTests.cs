@@ -3,10 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming.Payloads;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -28,6 +31,46 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var r = new ReceiveRequest();
             Assert.Null(r.Verb);
             Assert.Null(r.Path);
+        }
+
+        [Fact]
+
+        public void ReceiveExtensions_ReadBodyAsJson_Streams()
+        {
+            var activity = new Activity { Type = ActivityTypes.Message };
+            var stringInput = JsonConvert.SerializeObject(activity);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(stringInput));
+            var mockContentStream = new Mock<IContentStream>();
+            mockContentStream.Setup(e => e.Stream).Returns(stream);
+
+            var request = new ReceiveRequest
+            {
+                Streams = new List<IContentStream> { mockContentStream.Object }
+            };
+            var result = request.ReadBodyAsJson<Activity>();
+
+            Assert.NotNull(result);
+            Assert.Equal(activity.Type, result.Type);
+        }
+
+        [Fact]
+
+        public void ReceiveExtensions_ReadBodyAsJson_Streams_Zero()
+        {
+            var request = new ReceiveRequest();
+            var result = request.ReadBodyAsJson<dynamic>();
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+
+        public void ReceiveExtensions_ReadBodyAsString_Streams_Zero()
+        {
+            var request = new ReceiveRequest();
+            var result = request.ReadBodyAsString();
+
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -133,6 +176,14 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
+        public void Request_Create_WithEmptyMethod()
+        {
+            var request = StreamingRequest.CreateRequest(string.Empty);
+
+            Assert.Null(request);
+        }
+
+        [Fact]
         public async Task RequestExtensions_SetBodyString_Success()
         {
             var r = new StreamingRequest();
@@ -155,6 +206,26 @@ namespace Microsoft.Bot.Streaming.UnitTests
             try
             {
                 r.SetBody((string)null);
+            }
+            catch (Exception caughtEx)
+            {
+                ex = caughtEx;
+            }
+            finally
+            {
+                Assert.Null(ex);
+            }
+        }
+
+        [Fact]
+        public void RequestExtensions_SetBodyObject_Null_Does_Not_Throw()
+        {
+            Exception ex = null;
+
+            var r = new StreamingRequest();
+            try
+            {
+                r.SetBody((object)null);
             }
             catch (Exception caughtEx)
             {
