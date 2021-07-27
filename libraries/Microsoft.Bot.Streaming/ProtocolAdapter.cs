@@ -2,11 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Bot.Streaming.PayloadTransport;
 using Microsoft.Bot.Streaming.Utilities;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Streaming.Tests")]
 
 namespace Microsoft.Bot.Streaming
 {
