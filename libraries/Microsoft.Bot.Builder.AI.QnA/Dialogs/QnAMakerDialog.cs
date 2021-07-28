@@ -485,7 +485,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Dialogs
         {
             return Task.FromResult(new QnAMakerOptions
             {
-                ScoreThreshold = this.Threshold.GetValue(dc.State),
+                ScoreThreshold = (float)this.Threshold.GetValue(dc.State),
                 StrictFilters = this.StrictFilters?.GetValue(dc.State)?.ToArray(),
                 Top = this.Top.GetValue(dc.State),
                 Context = new QnARequestContext(),

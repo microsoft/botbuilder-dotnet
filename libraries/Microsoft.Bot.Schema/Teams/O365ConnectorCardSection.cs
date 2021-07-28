@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -30,15 +28,12 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="activitySubtitle">Activity subtitle.</param>
         /// <param name="activityText">Activity text.</param>
         /// <param name="activityImage">Activity image.</param>
-        /// <param name="activityImageType">Describes how Activity image is
-        /// rendered. Possible values include: 'avatar', 'article'.</param>
-        /// <param name="markdown">Use markdown for all text contents. Default
-        /// value is true.</param>
+        /// <param name="activityImageType">Describes how Activity image is rendered. Possible values include: 'avatar', 'article'.</param>
+        /// <param name="markdown">Use markdown for all text contents. Default value is true.</param>
         /// <param name="facts">Set of facts for the current section.</param>
         /// <param name="images">Set of images for the current section.</param>
-        /// <param name="potentialAction">Set of actions for the current
-        /// section.</param>
-        public O365ConnectorCardSection(string title = default(string), string text = default(string), string activityTitle = default(string), string activitySubtitle = default(string), string activityText = default(string), string activityImage = default(string), string activityImageType = default(string), bool? markdown = default(bool?), IList<O365ConnectorCardFact> facts = default(IList<O365ConnectorCardFact>), IList<O365ConnectorCardImage> images = default(IList<O365ConnectorCardImage>), IList<O365ConnectorCardActionBase> potentialAction = default(IList<O365ConnectorCardActionBase>))
+        /// <param name="potentialAction">Set of actions for the current section.</param>
+        public O365ConnectorCardSection(string title = default, string text = default, string activityTitle = default, string activitySubtitle = default, string activityText = default, string activityImage = default, string activityImageType = default, bool? markdown = default, IList<O365ConnectorCardFact> facts = default, IList<O365ConnectorCardImage> images = default, IList<O365ConnectorCardActionBase> potentialAction = default)
         {
             Title = title;
             Text = text;

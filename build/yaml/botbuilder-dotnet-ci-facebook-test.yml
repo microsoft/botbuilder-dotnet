@@ -8,29 +8,29 @@ name: $(Build.BuildId)
 pool:
   vmImage: $[ coalesce( variables['VMImage'], 'windows-2019' ) ] # or 'windows-latest' or 'vs2017-win2016'
 
-trigger: # ci trigger
-  batch: true
-  branches:
-    include:
-    - main
-  paths:
-    include:
-    - '*'
-    exclude:
-    - doc/
-    - specs/
-    - Changes.md
-    - LICENSE
-    - README.md
-    - UsingMyGet.md
+# trigger: # ci trigger
+#   batch: true
+#   branches:
+#     include:
+#     - main
+#   paths:
+#     include:
+#     - '*'
+#     exclude:
+#     - doc/
+#     - specs/
+#     - Changes.md
+#     - LICENSE
+#     - README.md
+#     - UsingMyGet.md
 
-pr: # pr trigger
-  branches:
-    include:
-    - main
-  paths:
-    include:
-    - build/yaml/botbuilder-dotnet-ci-facebook-test.yml
+# pr: # pr trigger
+#   branches:
+#     include:
+#     - main
+#   paths:
+#     include:
+#     - build/yaml/botbuilder-dotnet-ci-facebook-test.yml
 
 variables:
   AppId: $(FacebookTestBotAppId)

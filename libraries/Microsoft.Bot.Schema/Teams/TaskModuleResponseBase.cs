@@ -22,10 +22,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleResponseBase"/> class.
         /// </summary>
-        /// <param name="type">Choice of action options when responding to the
-        /// task/submit message. Possible values include: 'message',
-        /// 'continue'.</param>
-        public TaskModuleResponseBase(string type = default(string))
+        /// <param name="type">Choice of action options when responding to the task/submit message. Possible values include: 'message', 'continue'.</param>
+        public TaskModuleResponseBase(string type = default)
         {
             Type = type;
             CustomInit();

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="image">URL for the image.</param>
         /// <param name="title">Alternative text for the image.</param>
-        public O365ConnectorCardImage(string image = default(string), string title = default(string))
+        public O365ConnectorCardImage(string image = default, string title = default)
         {
             Image = image;
             Title = title;

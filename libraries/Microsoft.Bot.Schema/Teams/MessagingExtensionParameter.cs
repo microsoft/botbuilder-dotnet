@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="name">Name of the parameter.</param>
         /// <param name="value">Value of the parameter.</param>
-        public MessagingExtensionParameter(string name = default(string), object value = default(object))
+        public MessagingExtensionParameter(string name = default, object value = default)
         {
             Name = name;
             Value = value;

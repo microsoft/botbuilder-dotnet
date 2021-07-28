@@ -68,8 +68,8 @@ namespace Microsoft.Bot.Builder.Azure
                 var container = blobClient.GetContainerReference(containerName);
                 if (!_checkedContainers.Contains(containerName))
                 {
-                    _checkedContainers.Add(containerName);
                     container.CreateIfNotExistsAsync().Wait();
+                    _checkedContainers.Add(containerName);
                 }
 
                 return container;

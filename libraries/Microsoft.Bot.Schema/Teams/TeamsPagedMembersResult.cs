@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="continuationToken">A paging token.</param>
         /// <param name="members">A list of channel accounts.</param>
-        public TeamsPagedMembersResult(string continuationToken = default(string), IList<ChannelAccount> members = default(IList<ChannelAccount>))
+        public TeamsPagedMembersResult(string continuationToken = default, IList<ChannelAccount> members = default)
         {
             ContinuationToken = continuationToken;
             var teamsChannelAccounts = members.Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>());

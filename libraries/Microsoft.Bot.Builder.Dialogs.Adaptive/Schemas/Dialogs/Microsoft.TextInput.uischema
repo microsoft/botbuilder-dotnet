@@ -12,6 +12,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Text",
+        "submenu": ["Ask a question"]
+    },
     "flow": {
         "widget": "PromptWidget",
         "body": "=action.prompt",

@@ -24,10 +24,9 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="id">Unique identifier representing a team.</param>
         /// <param name="name">Name of team.</param>
-        /// <param name="aadGroupId">Azure Active Directory (AAD) Group Id for.
-        /// </param>
+        /// <param name="aadGroupId">Azure Active Directory (AAD) Group Id.</param>
         [Obsolete("Use the parameter initialization method instead.")]
-        public TeamDetails(string id = default(string), string name = default(string), string aadGroupId = default(string))
+        public TeamDetails(string id = default, string name = default, string aadGroupId = default)
         {
             Id = id;
             Name = name;

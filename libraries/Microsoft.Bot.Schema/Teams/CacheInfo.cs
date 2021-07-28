@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="cacheType">Type of Cache Info.</param>
         /// <param name="cacheDuration">Duration of the Cached Info.</param>
-        public CacheInfo(string cacheType = default(string), int cacheDuration = default(int))
+        public CacheInfo(string cacheType = default, int cacheDuration = default)
         {
             CacheType = cacheType;
             CacheDuration = cacheDuration;

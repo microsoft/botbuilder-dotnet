@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace AdaptiveExpressions.BuiltinFunctions
 {
     /// <summary>
-    /// Merge two object(json) into one object(json).
+    /// Merge multiple object(json) into one object(json).
+    /// If the item is array, the elements of the array are merged as well.
     /// </summary>
     internal class Merge : ExpressionEvaluator
     {
@@ -14,39 +16,77 @@ namespace AdaptiveExpressions.BuiltinFunctions
         /// Initializes a new instance of the <see cref="Merge"/> class.
         /// </summary>
         public Merge()
-            : base(ExpressionType.Merge, Evaluator(), ReturnType.Object, Validator)
+            : base(ExpressionType.Merge, Evaluator(), ReturnType.Object, FunctionUtils.ValidateAtLeastOne)
         {
         }
 
         private static EvaluateExpressionDelegate Evaluator()
         {
-            return FunctionUtils.ApplySequenceWithError(args =>
-            {
-                object result = null;
-                string error = null;
-                var arg0 = FunctionUtils.ConvertToJToken(args[0]);
-                var arg1 = FunctionUtils.ConvertToJToken(args[1]);
-                if (arg0 is JObject && arg1 is JObject)
+            return FunctionUtils.ApplyWithError(
+                args =>
                 {
-                    (arg0 as JObject).Merge(arg1 as JObject, new JsonMergeSettings
-                    {
-                        MergeArrayHandling = MergeArrayHandling.Replace
-                    });
+                    var result = new JObject();
 
-                    result = arg0;
+                    foreach (var arg in args)
+                    {
+                        var (list, itemError) = ParseToObjectList(arg);
+
+                        if (itemError != null)
+                        {
+                            return (null, itemError);
+                        }
+
+                        foreach (var item in list)
+                        {
+                            result.Merge(item, new JsonMergeSettings
+                            {
+                                MergeArrayHandling = MergeArrayHandling.Replace
+                            });
+                        }
+                    }
+
+                    return (result, null);
+                });
+        }
+
+        private static (List<JObject>, string) ParseToObjectList(object arg)
+        {
+            var result = new List<JObject>();
+            string error = null;
+            if (arg == null)
+            {
+                error = $"The argument {arg} must be a JSON object or array.";
+            }
+            else if (FunctionUtils.TryParseList(arg, out var array))
+            {
+                var jarray = JArray.FromObject(array);
+                foreach (var jtoken in jarray)
+                {
+                    if (jtoken is JObject jobj)
+                    {
+                        result.Add(jobj);
+                    }
+                    else
+                    {
+                        error = $"The argument {jtoken} in array must be a JSON object.";
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                var jtoken = FunctionUtils.ConvertToJToken(arg);
+                if (jtoken is JObject jobj)
+                {
+                    result.Add(jobj);
                 }
                 else
                 {
-                    error = $"The arguments {args[0]} and {args[1]} must be a JSON objects.";
+                    error = $"The argument {arg} must be a JSON object or array.";
                 }
+            }
 
-                return (result, error);
-            });
-        }
-
-        private static void Validator(Expression expression)
-        {
-            FunctionUtils.ValidateArityAndAnyType(expression, 2, int.MaxValue);
+            return (result, error);
         }
     }
 }

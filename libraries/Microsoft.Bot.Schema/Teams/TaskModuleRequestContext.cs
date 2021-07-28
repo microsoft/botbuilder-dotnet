@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the <see cref="TaskModuleRequestContext"/> class.
         /// </summary>
         /// <param name="theme">The theme.</param>
-        public TaskModuleRequestContext(string theme = default(string))
+        public TaskModuleRequestContext(string theme = default)
         {
             Theme = theme;
             CustomInit();

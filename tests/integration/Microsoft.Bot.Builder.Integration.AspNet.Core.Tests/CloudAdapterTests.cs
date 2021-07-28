@@ -19,7 +19,6 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Microsoft.Rest.Serialization;
 using Moq;
@@ -536,6 +535,75 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Equal(expectedServiceUrl, actualServiceUrl4);
             Assert.Equal(expectedServiceUrl, actualServiceUrl5);
             Assert.Equal(expectedServiceUrl, actualServiceUrl6);
+        }
+
+        [Fact]
+        public async Task CloudAdapterDelay()
+        {
+            await DelayHelper.Test(new CloudAdapter());
+        }
+
+        [Fact]
+        public async Task CloudAdapterCreateConversation()
+        {
+            // Arrange
+            var claimsIdentity = new ClaimsIdentity();
+
+            var authenticateRequestResult = new AuthenticateRequestResult
+            {
+                ClaimsIdentity = claimsIdentity,
+                ConnectorFactory = new TestConnectorFactory(),
+                Audience = "audience",
+                CallerId = "callerId"
+            };
+
+            var userTokenClient = new TestUserTokenClient("appId");
+
+            var conversationResourceResponse = new ConversationResourceResponse();
+            var createResponse = new HttpOperationResponse<ConversationResourceResponse> { Body = conversationResourceResponse };
+
+            // note Moq doesn't support extension methods used in the implementation so we are actually mocking the underlying CreateConversationWithHttpMessagesAsync method
+            var conversationsMock = new Mock<IConversations>();
+            conversationsMock.Setup(cm => cm.CreateConversationWithHttpMessagesAsync(It.IsAny<ConversationParameters>(), It.IsAny<Dictionary<string, List<string>>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(createResponse));
+
+            var connectorMock = new Mock<IConnectorClient>();
+            connectorMock.SetupGet(m => m.Conversations).Returns(conversationsMock.Object);
+
+            var expectedServiceUrl = "http://serviceUrl";
+            var expectedAudience = "audience";
+
+            var connectorFactoryMock = new Mock<ConnectorFactory>();
+            connectorFactoryMock.Setup(cf => cf.CreateAsync(It.Is<string>(serviceUrl => serviceUrl == expectedServiceUrl), It.Is<string>(audience => audience == expectedAudience), It.IsAny<CancellationToken>())).Returns(Task.FromResult(connectorMock.Object));
+
+            var cloudEnvironmentMock = new Mock<BotFrameworkAuthentication>();
+            cloudEnvironmentMock.Setup(ce => ce.AuthenticateRequestAsync(It.IsAny<Activity>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(authenticateRequestResult));
+            cloudEnvironmentMock.Setup(ce => ce.CreateConnectorFactory(It.IsAny<ClaimsIdentity>())).Returns(connectorFactoryMock.Object);
+            cloudEnvironmentMock.Setup(ce => ce.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult<UserTokenClient>(userTokenClient));
+
+            var expectedChannelId = "expected-channel-id";
+            var actualChannelId = string.Empty;
+
+            BotCallbackHandler callback1 = (t, c) =>
+            {
+                actualChannelId = t.Activity.ChannelId;
+
+                return Task.CompletedTask;
+            };
+
+            var conversationParameters = new ConversationParameters
+            {
+                IsGroup = false,
+                Bot = new ChannelAccount { },
+                Members = new ChannelAccount[] { },
+                TenantId = "tenantId",
+            };
+
+            // Act
+            var adapter = new CloudAdapter(cloudEnvironmentMock.Object);
+            await adapter.CreateConversationAsync("botAppId", expectedChannelId, expectedServiceUrl, expectedAudience, conversationParameters, callback1, CancellationToken.None);
+
+            // Assert
+            Assert.Equal(expectedChannelId, actualChannelId);
         }
 
         private static Stream CreateMessageActivityStream(string userId, string channelId, string conversationId, string recipient, string relatesToActivityId)

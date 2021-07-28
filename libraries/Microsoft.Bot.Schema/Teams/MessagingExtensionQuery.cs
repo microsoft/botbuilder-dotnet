@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="parameters">Parameters for the query.</param>
         /// <param name="queryOptions">The query options.</param>
         /// <param name="state">State parameter passed back to the bot after authentication/configuration flow.</param>
-        public MessagingExtensionQuery(string commandId = default(string), IList<MessagingExtensionParameter> parameters = default(IList<MessagingExtensionParameter>), MessagingExtensionQueryOptions queryOptions = default(MessagingExtensionQueryOptions), string state = default(string))
+        public MessagingExtensionQuery(string commandId = default, IList<MessagingExtensionParameter> parameters = default, MessagingExtensionQueryOptions queryOptions = default, string state = default)
         {
             CommandId = commandId;
             Parameters = parameters;

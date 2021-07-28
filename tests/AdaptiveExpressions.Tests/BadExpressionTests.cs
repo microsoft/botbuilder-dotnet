@@ -1,4 +1,5 @@
 ﻿#pragma warning disable SA1124 // Do not use regions
+using System;
 using System.Collections.Generic;
 using System.Data;
 using Newtonsoft.Json.Linq;
@@ -65,7 +66,6 @@ namespace AdaptiveExpressions.Tests
             Test("substring(hello, 0, 'hello')"), // length is not integer
             Test("toLower(one)"), // the parameter of toLower must be string
             Test("toLower('hi', 1)"), // the second argument must be a locale string
-            Test("toLower('hi', 1)"), // should have 1 param
             Test("toLower('hi', locale, 1)"), // should have 1 or 2 params
             Test("toUpper(one)"), // the parameter of toUpper must be string
             Test("toUpper('hi', 1)"), // the second argument must be a locale string
@@ -79,7 +79,6 @@ namespace AdaptiveExpressions.Tests
             Test("startsWith(one, hello)"), // should have string params
             Test("startsWith(hello)"), // should have two params
             Test("countWord(hello, 1)"), // should have one param
-            Test("countWord(one)"), // should have string param
             Test("countWord(one)"), // should have string param
             Test("addOrdinal(one)"), // should have Integer param
             Test("addOrdinal(one, two)"), // should have one param
@@ -424,9 +423,8 @@ namespace AdaptiveExpressions.Tests
             Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
             Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
-            Test("merge(json(json1))"), // should have at least two arguments
-            Test("merge(json(json1), json(jarray1))"), // arguments should all be JSON objects
-            Test("merge(json(jarray1), json(json1))"), // arguments should all be JSON objects
+            Test("merge(1, json(jarray1))"), // arguments should all be JSON objects or array
+            Test("merge([json(jarray1)])"), // not support nested array
             #endregion
 
             #region Memory access test

@@ -24,12 +24,10 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         /// <param name="type">Type of the action. Possible values include:
         /// 'ViewAction', 'OpenUri', 'HttpPOST', 'ActionCard'.</param>
-        /// <param name="name">Name of the action that will be used as button
-        /// title.</param>
+        /// <param name="name">Name of the action that will be used as button title.</param>
         /// <param name="id">Action Id.</param>
-        /// <param name="body">Content to be posted back to bots via
-        /// invoke.</param>
-        public O365ConnectorCardHttpPOST(string type = default(string), string name = default(string), string id = default(string), string body = default(string))
+        /// <param name="body">Content to be posted back to bots via invoke.</param>
+        public O365ConnectorCardHttpPOST(string type = default, string name = default, string id = default, string body = default)
             : base(type, name, id)
         {
             Body = body;

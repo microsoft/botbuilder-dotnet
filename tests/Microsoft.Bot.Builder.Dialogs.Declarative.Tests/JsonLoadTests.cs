@@ -352,6 +352,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [Fact]
+        public async Task JsonDialogLoad_NoReplyToIdForFirstConversationActivityFromBotToUser()
+        {
+            // The ReplyToId should be null if the activity from bot to user is the first one of the conversation 
+            await BuildTestFlow(@"ReplyToId.main.dialog", nameof(JsonDialogLoad_NoReplyToIdForFirstConversationActivityFromBotToUser))
+                .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount> { new ChannelAccount("bot", "Bot") }, channelId: "webchat"))
+                    .AssertReply(activity =>
+                    {
+                        Assert.Null(activity.ReplyToId);
+                    })
+                    .AssertReply(activity =>
+                    {
+                        Assert.Null(activity.ReplyToId);
+                    })
+                    .AssertReply(activity =>
+                    {
+                        Assert.Null(activity.ReplyToId);
+                    })
+                .Send("Tom")
+                    .AssertReply(activity =>
+                    {
+                        Assert.NotNull(activity.ReplyToId);
+                    })
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task JsonDialogLoad_QnAMakerDialog_ActiveLearning_WithProperResponse()
         {
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };

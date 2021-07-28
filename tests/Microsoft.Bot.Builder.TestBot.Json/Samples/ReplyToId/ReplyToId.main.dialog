@@ -1,0 +1,27 @@
+{
+    "$schema": "../../testbot.schema",
+    "$kind": "Microsoft.AdaptiveDialog",
+    "triggers": [
+        {
+            "$kind": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Action 1"
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Action 2"
+                },
+                {
+                    "$kind": "Microsoft.TextInput",
+                    "prompt": "Hello, what is your name?",
+                },
+                {
+                    "$kind": "Microsoft.SendActivity",
+                    "activity": "Action 3"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,46 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    {
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "$context",
+                      "value": "={\"context\": \"test-context\"}"
+                    },{
+                      "$kind": "Microsoft.SetProperty",
+                      "property": "$transcript",
+                      "value": "={\"activities\": [{\"id\": \"activity1\"}, {\"id\": \"activity2\"}]}"
+                    },
+                    {
+                      "$kind": "Microsoft.SendHandoffActivity",
+                      "context": "=$context",
+                      "transcript":  "=$transcript", 
+                      "activity": {
+                        "type": "event"
+                      }
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "type == 'event'",
+                "value.context == 'test-context'",
+                "attachments[0].name == 'Transcript'",
+                "attachments[0].content.activities[0].id == 'activity1'"
+            ]
+        }
+    ]
+}

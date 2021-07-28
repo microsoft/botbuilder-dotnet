@@ -1051,6 +1051,93 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.Equal(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
+        [Fact]
+        public async Task TestOnEventActivity()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Directline,
+                Type = ActivityTypes.Event
+            };
+
+            var turnContext = new TurnContext(new SimpleAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Single(bot.Record);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+        }
+
+        [Fact]
+        public async Task TestMeetingStartEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingStart",
+                Value = JObject.Parse(@"{""StartTime"":""2021-06-05T00:01:02.0Z""}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingStartAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Contains("12:01:02 AM", activitiesToSend[0].Text); // Date format differs between OSs, so we just Assert.Contains instead of Assert.Equals
+        }
+
+        [Fact]
+        public async Task TestMeetingEndEvent()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                ChannelId = Channels.Msteams,
+                Type = ActivityTypes.Event,
+                Name = "application/vnd.microsoft.meetingEnd",
+                Value = JObject.Parse(@"{""EndTime"":""2021-06-05T01:02:03.0Z""}"),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.Equal(2, bot.Record.Count);
+            Assert.Equal("OnEventActivityAsync", bot.Record[0]);
+            Assert.Equal("OnTeamsMeetingEndAsync", bot.Record[1]);
+            Assert.NotNull(activitiesToSend);
+            Assert.Single(activitiesToSend);
+            Assert.Contains("1:02:03 AM", activitiesToSend[0].Text); // Date format differs between OSs, so we just Assert.Contains instead of Assert.Equals
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -1295,6 +1382,26 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new TabResponse());
+            }
+
+            protected override Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnEventActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMeetingStartAsync(MeetingStartEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.StartTime.ToString());
+                return Task.CompletedTask;
+            }
+
+            protected override Task OnTeamsMeetingEndAsync(MeetingEndEventDetails meeting, ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                turnContext.SendActivityAsync(meeting.EndTime.ToString());
+                return Task.CompletedTask;
             }
         }
 

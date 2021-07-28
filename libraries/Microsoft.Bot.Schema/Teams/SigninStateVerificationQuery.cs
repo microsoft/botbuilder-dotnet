@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="state"> The state string originally received when the
         /// signin web flow is finished with a state posted back to client via
         /// tab SDK microsoftTeams.authentication.notifySuccess(state).</param>
-        public SigninStateVerificationQuery(string state = default(string))
+        public SigninStateVerificationQuery(string state = default)
         {
             State = state;
             CustomInit();

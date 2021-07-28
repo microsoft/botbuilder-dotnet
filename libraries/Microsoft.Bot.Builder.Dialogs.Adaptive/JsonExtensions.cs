@@ -78,5 +78,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             return token;
         }
+
+        /// <summary>
+        /// Evaluate ValueExpression according the value type.
+        /// </summary>
+        /// <param name="valExpr">Input ValueExpression.</param>
+        /// <param name="state">A scope for looking up variables.</param>
+        /// <returns>Deep data binding result.</returns>
+        public static object EvaluateExpression(this ValueExpression valExpr, object state)
+        {
+            return valExpr.ExpressionText == null ?
+                JToken.FromObject(valExpr.Value).DeepClone().ReplaceJTokenRecursively(state)
+                : valExpr.GetValue(state);
+        }
     }
 }

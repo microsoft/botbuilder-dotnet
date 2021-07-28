@@ -83,21 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (this.Value != null)
             {
-                JToken value = null;
-                var (result, error) = this.Value.TryGetValue(dc.State);
-
-                if (error != null)
-                {
-                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{this.Value.ToString()}\". Error: {error}");
-                }
-
-                if (result != null)
-                {
-                    value = JToken.FromObject(result).DeepClone();
-                }
-
-                value = value?.ReplaceJTokenRecursively(dc.State);
-
+                var value = Value?.EvaluateExpression(dc.State);
                 return await EndParentDialogAsync(dc, value, cancellationToken).ConfigureAwait(false);
             }
 

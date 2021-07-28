@@ -264,6 +264,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_Foreach_Object()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_Foreach_Empty()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
@@ -313,6 +319,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         [Fact]
         public async Task Action_NumberInput()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
+        public async Task Action_NumberInput_LargeNumber()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
@@ -473,6 +485,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
+        [Fact(Skip = "Ignore")]
+        public async Task Action_MissingProperty()
+        {
+#if NETCOREAPP2_1
+            await Task.Run(() => System.Console.WriteLine("This test is skipped under dotnet core 2.1"));
+#else
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+#endif
+        }
+
         [Fact]
         public async Task Action_SetProperties()
         {
@@ -504,6 +526,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_SendHandoffActivity()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_HttpRequest()
         {
             var handler = new MockHttpMessageHandler();
@@ -526,6 +554,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 })
                 .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]".Replace("\r\n", Environment.NewLine))
                 .Respond("plain/text", "array");
+
+            handler
+                .When(HttpMethod.Put, "http://foo.com/")
+                .WithContent("Joe is 52")
+                .Respond("plain/text", "put:string");
+
+            handler
+                .When(HttpMethod.Put, "http://foo.com/")
+                .WithContent("{\r\n  \"text\": \"Joe is 52\",\r\n  \"age\": 52\r\n}".Replace("\r\n", Environment.NewLine))
+                .Respond("plain/text", "put:object");
+
+            handler
+                .When(HttpMethod.Put, "http://foo.com/")
+                .WithHeaders(new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("bound", "52"),
+                    new KeyValuePair<string, string>("unbound", "dialog.age")
+                })
+                .WithContent("[\r\n  {\r\n    \"text\": \"Joe is 52\",\r\n    \"age\": 52\r\n  },\r\n  {\r\n    \"text\": \"text\",\r\n    \"age\": 11\r\n  }\r\n]".Replace("\r\n", Environment.NewLine))
+                .Respond("plain/text", "put:array");
 
             // Reply with a bytes array and this bytes array would be base64encoded by the sdk
             handler
@@ -628,6 +676,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("${turn.lastresult.content}"),
                             new HttpRequest()
                             {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.PUT,
+                                ContentType = "plain/text",
+                                Body = "${dialog.name} is ${dialog.age}"
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.PUT,
+                                ContentType = "application/json",
+                                Body = JToken.FromObject(new
+                                {
+                                    text = "${dialog.name} is ${dialog.age}",
+                                    age = "=dialog.age"
+                                })
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
+                                Url = "http://foo.com/",
+                                Method = HttpRequest.HttpMethod.PUT,
+                                ContentType = "application/json",
+                                Headers = new Dictionary<string, AdaptiveExpressions.Properties.StringExpression>()
+                                {
+                                    { "bound", "=dialog.age" },
+                                    { "unbound", "dialog.age" }
+                                },
+                                Body = JToken.FromObject(new object[]
+                                {
+                                    new
+                                    {
+                                        text = "${dialog.name} is ${dialog.age}",
+                                        age = "=dialog.age"
+                                    },
+                                    new
+                                    {
+                                        text = "text",
+                                        age = 11
+                                    }
+                                })
+                            },
+                            new SendActivity("${turn.lastresult.content}"),
+                            new HttpRequest()
+                            {
                                 Url = "http://foo.com/image",
                                 Method = HttpRequest.HttpMethod.GET,
                                 ResponseType = HttpRequest.ResponseTypes.Binary
@@ -668,6 +761,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("string")
                     .AssertReply("object")
                     .AssertReply("array")
+                    .AssertReply("put:string")
+                    .AssertReply("put:object")
+                    .AssertReply("put:array")
                     .AssertReply("VGVzdEltYWdl")
                     .AssertReply("test")
                     .AssertReply("testtest")

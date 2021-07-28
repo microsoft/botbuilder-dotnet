@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -205,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters
                     // hack directly in the POST method. Replicating that here
                     // to keep the behavior as close as possible to facilitate
                     // more realistic tests.
-                    var delayMs = (int)activity.Value;
+                    var delayMs = Convert.ToInt32(activity.Value, CultureInfo.InvariantCulture);
 
                     await Task.Delay(delayMs).ConfigureAwait(false);
                 }

@@ -1395,6 +1395,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = templates.Evaluate("StringTemplateWithTemplateRef");
             Assert.Equal("hello jack , welcome. nice weather!", evaled);
+
+            evaled = templates.Evaluate("StringTemplateWithPureObjectDefinition", new { item = "item1" });
+            Assert.True(
+                JToken.DeepEquals(JObject.Parse("{\"text\":\"I would like item1 today\"}"), evaled as JObject));
+
+            evaled = templates.Evaluate("StringTemplateWithObjectDefinition", new { item = "item1" });
+            Assert.Equal("get 'text' value : I would like item1 today", evaled);
+
+            evaled = templates.Evaluate("StringTemplateWithPureArrayDefinition", new { item = "item1" });
+
+            Assert.True(
+                JToken.DeepEquals(JArray.Parse("[\"I would like item1 today\"]"), JArray.FromObject(evaled)));
+
+            evaled = templates.Evaluate("StringTemplateWithArrayDefinition", new { item = "item1" });
+            Assert.Equal("get first value : I would like item1 today", evaled);
+
+            evaled = templates.Evaluate("StringTemplateWithNestedDefinition", new { item1 = "item1", item2 = "item2" });
+            Assert.Equal("two values: I would like item1 today, I would like item2 today", evaled);
         }
 
         [Fact]

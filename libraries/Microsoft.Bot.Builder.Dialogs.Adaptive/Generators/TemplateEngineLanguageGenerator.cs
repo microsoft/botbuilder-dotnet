@@ -4,8 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaptiveExpressions;
+using AdaptiveExpressions.Memory;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -137,6 +140,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Method to get missing properties.
+        /// </summary>
+        /// <param name="dialogContext">dialogContext.</param>
+        /// <param name="template">template or [templateId].</param>
+        /// <param name="state">Memory.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>Property list.</returns>
+        public override List<string> MissingProperties(DialogContext dialogContext, string template, IMemory state = null, Options options = null, CancellationToken cancellationToken = default)
+        {
+            var tempTemplateName = $"{LanguageGeneration.Templates.InlineTemplateIdPrefix}{Guid.NewGuid():N}";
+
+            var multiLineMark = "```";
+
+            template = !template.Trim().StartsWith(multiLineMark, StringComparison.Ordinal) && template.Contains('\n')
+                   ? $"{multiLineMark}{template}{multiLineMark}" : template;
+
+            lg.AddTemplate(tempTemplateName, null, $"- {template}");
+            var analyzerResults = lg.AnalyzeTemplate(tempTemplateName);
+
+            // Delete it after the analyzer
+            lg.DeleteTemplate(tempTemplateName);
+            return analyzerResults.Variables;
         }
 
         private static void RunSync(Func<Task> func)

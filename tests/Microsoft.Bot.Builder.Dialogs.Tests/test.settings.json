@@ -34,5 +34,16 @@
       "0": "c",
       "1": "d"
     }
-  ]
+  ],
+  "MicrosoftAppPassword": "testpassword",
+  "runtimeSettings": {
+    "telemetry": {
+      "options": {
+        "connectionString": "testConnectionString"
+      }
+    }
+  },
+  "BlobsStorage": {
+    "CONNECTIONSTRING": "testConnectionString"
+  }
 }

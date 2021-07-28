@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="uniqueId">ID that uniquely identifies the
         /// file.</param>
         /// <param name="fileType">Type of the file.</param>
-        public FileUploadInfo(string name = default(string), string uploadUrl = default(string), string contentUrl = default(string), string uniqueId = default(string), string fileType = default(string))
+        public FileUploadInfo(string name = default, string uploadUrl = default, string contentUrl = default, string uniqueId = default, string fileType = default)
         {
             Name = name;
             UploadUrl = uploadUrl;

@@ -22,9 +22,8 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TaskModuleMessageResponse"/> class.
         /// </summary>
-        /// <param name="value">Teams will display the value of value in a
-        /// popup message box.</param>
-        public TaskModuleMessageResponse(string value = default(string))
+        /// <param name="value">Teams will display the value of value in a popup message box.</param>
+        public TaskModuleMessageResponse(string value = default)
             : base("message")
         {
             Value = value;

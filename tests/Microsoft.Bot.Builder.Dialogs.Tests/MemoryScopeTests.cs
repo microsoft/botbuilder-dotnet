@@ -479,6 +479,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("c")
             .Send("settings.sequentialObjectArray[1][1]")
                 .AssertReply("d")
+            .Send("settings.MicrosoftAppPassword") // simple variable
+                .AssertReply("null")
+            .Send("settings.runtimeSettings.telemetry.options.connectionString") // nested setting
+                .AssertReply("null")
+            .Send("settings.BlobsStorage.CONNECTIONSTRING") // case in-sensitive 
+                .AssertReply("null")
+            .Send("settings.BlobsStorage.connectionString")
+                .AssertReply("null")
             .StartTestAsync();
         }
 
@@ -564,7 +572,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            await dc.Context.SendActivityAsync(dc.State.GetValue<string>(dc.Context.Activity.Text));
+            var value = dc.State.GetValue<string>(dc.Context.Activity.Text) ?? "null";
+            await dc.Context.SendActivityAsync(value);
             return await dc.EndDialogAsync();
         }
     }

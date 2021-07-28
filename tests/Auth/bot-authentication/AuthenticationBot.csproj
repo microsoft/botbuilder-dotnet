@@ -23,6 +23,9 @@
     <None Update="hello.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="snapshot.dialog">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="test.dialog">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

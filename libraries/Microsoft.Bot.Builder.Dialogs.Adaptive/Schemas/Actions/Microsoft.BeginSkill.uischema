@@ -12,19 +12,26 @@
             }
         }
     },
+    "menu": {
+        "label": "Connect to a skill",
+        "submenu": ["Access external resources"]
+    },
     "flow": {
         "widget": "ActionCard",
-        "colors": {
-            "theme": "#004578",
-            "color": "#FFFFFF",
-            "icon": "#FFFFFF"
-        },
-        "icon": "Library",
         "body": {
             "widget": "ResourceOperation",
             "operation": "Host",
             "resource": "=coalesce(action.skillEndpoint, \"?\")",
             "singleline": true
+        },
+        "header": {
+            "widget": "ActionHeader",
+            "colors": {
+                "theme": "#004578",
+                "color": "#FFFFFF",
+                "icon": "#FFFFFF"
+            },
+            "icon": "Library"
         },
         "footer": {
             "widget": "PropertyDescription",

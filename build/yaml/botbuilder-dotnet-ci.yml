@@ -56,10 +56,11 @@ stages:
     variables:
       BuildConfiguration: Release-Windows
       BuildTarget: 'netcoreapp21' # set the TargetFramework property for tests to use netcoreapp2.1
-      PublishCoverage: true
+      PublishCoverage: false
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
+    - template: ci-component-detection-steps.yml
   - job: Release_Windows_Configuration_31
     variables:
       BuildConfiguration: Release-Windows
@@ -68,6 +69,7 @@ stages:
     steps:
     - template: ci-build-steps.yml
     - template: ci-test-steps.yml
+    - template: ci-component-detection-steps.yml
 
 - stage: API_Compatibility_Validation
   condition: ne(variables['DisableApiCompatibityValidation'], 'true')

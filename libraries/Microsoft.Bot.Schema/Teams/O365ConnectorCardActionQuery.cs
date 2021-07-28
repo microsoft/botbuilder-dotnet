@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema.Teams
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -27,7 +26,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="actionId">Action Id associated with the HttpPOST
         /// action button triggered, defined in
         /// O365ConnectorCardActionBase.</param>
-        public O365ConnectorCardActionQuery(string body = default(string), string actionId = default(string))
+        public O365ConnectorCardActionQuery(string body = default, string actionId = default)
         {
             Body = body;
             ActionId = actionId;

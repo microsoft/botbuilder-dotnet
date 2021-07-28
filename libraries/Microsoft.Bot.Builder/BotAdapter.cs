@@ -243,6 +243,34 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Creates a conversation on the specified channel.
+        /// </summary>
+        /// <param name="botAppId">TThe application ID of the bot.</param>
+        /// <param name="channelId">The ID for the channel.</param>
+        /// <param name="serviceUrl">The channel's service URL endpoint.</param>
+        /// <param name="audience">The audience for the connector.</param>
+        /// <param name="conversationParameters">The conversation information to use to
+        /// create the conversation.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>To start a conversation, your bot must know its account information
+        /// and the user's account information on that channel.
+        /// Most _channels only support initiating a direct message (non-group) conversation.
+        /// <para>The adapter attempts to create a new conversation on the channel, and
+        /// then sends a <c>conversationUpdate</c> activity through its middleware pipeline
+        /// to the <paramref name="callback"/> method.</para>
+        /// <para>If the conversation is established with the
+        /// specified users, the ID of the activity's <see cref="IActivity.Conversation"/>
+        /// will contain the ID of the new conversation.</para>
+        /// </remarks>
+        public virtual Task CreateConversationAsync(string botAppId, string channelId, string serviceUrl, string audience, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Creates a turn context and runs the middleware pipeline for an incoming TRUSTED activity.
         /// </summary>
         /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the request.</param>

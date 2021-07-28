@@ -80,19 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             foreach (var propValue in this.Assignments)
             {
-                JToken value = null;
-                var (val, valueError) = propValue.Value.TryGetValue(dc.State);
-                if (valueError != null)
-                {
-                    throw new InvalidOperationException($"Expression evaluation resulted in an error. Expression: \"{propValue.Value.ToString()}\". Error: {valueError}");
-                }
-
-                if (val != null)
-                {
-                    value = JToken.FromObject(val).DeepClone();
-                }
-
-                value = value?.ReplaceJTokenRecursively(dc.State);
+                var value = propValue.Value?.EvaluateExpression(dc.State);
                 dc.State.SetValue(propValue.Property.GetValue(dc.State), value);
             }
 

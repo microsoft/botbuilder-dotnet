@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="uniqueId">Unique Id for the file.</param>
         /// <param name="fileType">Type of file.</param>
         /// <param name="etag">ETag for the file.</param>
-        public FileDownloadInfo(string downloadUrl = default(string), string uniqueId = default(string), string fileType = default(string), object etag = default(object))
+        public FileDownloadInfo(string downloadUrl = default, string uniqueId = default, string fileType = default, object etag = default)
         {
             DownloadUrl = downloadUrl;
             UniqueId = uniqueId;

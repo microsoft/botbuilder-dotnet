@@ -39,7 +39,7 @@ namespace AdaptiveExpressions.BuiltinFunctions
                                     }
                                     catch (JsonReaderException err)
                                     {
-                                        error = $"Unexpected character at Path {err.Path}, line {err.LineNumber}, position {err.LinePosition} when parsing {args[0]}.";
+                                        error = err.Message;
                                     }
                                 }
                             }

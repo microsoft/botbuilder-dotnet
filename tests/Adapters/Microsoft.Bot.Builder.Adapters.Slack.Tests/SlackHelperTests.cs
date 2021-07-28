@@ -53,6 +53,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         public void ActivityToSlackShouldReturnMessageFromChannelData()
         {
             const string messageText = "Hello from message";
+            const string ephemeralValue = "testEphemeral";
+            const string channelId = "channelId";
+            const string userId = "testRecipientId";
 
             var activity = new Activity
             {
@@ -62,7 +65,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
                 ChannelData = new NewSlackMessage
                 {
                     Text = messageText,
-                    Ephemeral = "testEphemeral"
+                    Ephemeral = ephemeralValue,
+                    Channel = channelId,
+                    User = userId,
                 },
                 Conversation = new ConversationAccount(id: "testId"),
             };
@@ -70,6 +75,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             var message = SlackHelper.ActivityToSlack(activity);
 
             Assert.Equal(messageText, message.Text);
+            Assert.Equal(ephemeralValue, message.Ephemeral);
+            Assert.Equal(channelId, message.Channel);
+            Assert.Equal(userId, message.User);
         }
 
         [Fact]

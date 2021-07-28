@@ -1,0 +1,170 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "planningTest",
+        "generator": "main.lg",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnBeginDialog",
+                "actions": [
+                    // normal template
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.missingProperties",
+                        "value": "=missingProperties('${dialog.first} and ${dialog.second}')"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "user.missingProperties",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "empty(getProperty(dialog.foreach.value))",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.TextInput",
+                                        "property": "=dialog.foreach.value",
+                                        "prompt": "Hello, please input ${dialog.foreach.value}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You finish all slot filling. And get result: ${dialog.first} and ${dialog.second}"
+                    },
+                    // template with reference
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.missingProperties",
+                        "value": "=missingProperties('${nameAndAge()}')"
+                    },
+                    {
+                        "$kind": "Microsoft.Foreach",
+                        "itemsProperty": "user.missingProperties",
+                        "actions": [
+                            {
+                                "$kind": "Microsoft.IfCondition",
+                                "condition": "empty(getProperty(dialog.foreach.value))",
+                                "actions": [
+                                    {
+                                        "$kind": "Microsoft.TextInput",
+                                        "property": "=dialog.foreach.value",
+                                        "prompt": "Hello, please input ${dialog.foreach.value}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "You finish all slot filling. And get result: ${nameAndAge()}"
+                    },
+                    // nested dialog
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.missingProperties",
+                        "value": "=missingProperties('${nameAndAge()}')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${count(user.missingProperties)}"
+                    },
+                    {
+                        "$kind": "Microsoft.BeginDialog",
+                        "options": {},
+                        "dialog": {
+                            "$kind": "Microsoft.AdaptiveDialog",
+                            "generator": "sub.lg",
+                            "triggers": [
+                                {
+                                    "$kind": "Microsoft.OnBeginDialog",
+                                    "actions": [
+                                        {
+                                            "$kind": "Microsoft.SetProperty",
+                                            "property": "user.missingProperties",
+                                            "value": "=missingProperties('${showPetName()}')"
+                                        },
+                                        {
+                                            "$kind": "Microsoft.SendActivity",
+                                            "activity": "${count(user.missingProperties)}"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.missingProperties",
+                        "value": "=missingProperties('${nameAndAge()}')"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${count(user.missingProperties)}"
+                    }
+                ]
+            }
+        ]
+    },
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserConversationUpdate"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, please input dialog.first"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, please input dialog.second"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You finish all slot filling. And get result: 1 and 2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, please input user.name"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "Jack"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Hello, please input user.age"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "20"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "You finish all slot filling. And get result: my name is Jack and my age is 20"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "2"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "1"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "2"
+        }
+    ]
+}

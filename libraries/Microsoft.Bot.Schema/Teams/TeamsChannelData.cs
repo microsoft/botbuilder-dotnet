@@ -21,16 +21,13 @@ namespace Microsoft.Bot.Schema.Teams
         /// <summary>
         /// Initializes a new instance of the <see cref="TeamsChannelData"/> class.
         /// </summary>
-        /// <param name="channel">Information about the channel in which the
-        /// message was sent.</param>
+        /// <param name="channel">Information about the channel in which the message was sent.</param>
         /// <param name="eventType">Type of event.</param>
-        /// <param name="team">Information about the team in which the message
-        /// was sent.</param>
-        /// <param name="notification">Notification settings for the
-        /// message.</param>
+        /// <param name="team">Information about the team in which the message was sent.</param>
+        /// <param name="notification">Notification settings for the message.</param>
         /// <param name="tenant">Information about the tenant in which the
         /// message was sent.</param>
-        public TeamsChannelData(ChannelInfo channel = default(ChannelInfo), string eventType = default(string), TeamInfo team = default(TeamInfo), NotificationInfo notification = default(NotificationInfo), TenantInfo tenant = default(TenantInfo))
+        public TeamsChannelData(ChannelInfo channel = default, string eventType = default, TeamInfo team = default, NotificationInfo notification = default, TenantInfo tenant = default)
         {
             Channel = channel;
             EventType = eventType;

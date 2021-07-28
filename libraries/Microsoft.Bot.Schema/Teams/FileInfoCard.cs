@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// <param name="uniqueId">Unique Id for the file.</param>
         /// <param name="fileType">Type of file.</param>
         /// <param name="etag">ETag for the file.</param>
-        public FileInfoCard(string uniqueId = default(string), string fileType = default(string), object etag = default(object))
+        public FileInfoCard(string uniqueId = default, string fileType = default, object etag = default)
         {
             UniqueId = uniqueId;
             FileType = fileType;

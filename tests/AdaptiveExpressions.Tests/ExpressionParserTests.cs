@@ -324,7 +324,7 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region locale specific tests
-            
+
             //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
@@ -653,7 +653,8 @@ namespace AdaptiveExpressions.Tests
             Test("equals(max(createArray(1, 2, 3, 4)), 4.0)", true),
             Test("equals(max(createArray(1, 2, 3, 4), 5.0), 5)", true),
             Test("equals(hello == 'world', bool('true'))", false), // false, true
-            Test("equals(hello == 'world', bool(0))", false), // false, true
+            Test("equals(hello == 'world', bool(0))", true), // true, true
+            Test("equals(hello == 'world', bool(1))", false), // false, true
             Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
             Test("if(!!exists(one), 'r1', 'r2')", "r1"), // true
             Test("if(0, 'r1', 'r2')", "r1"), // true
@@ -724,7 +725,7 @@ namespace AdaptiveExpressions.Tests
             Test("string(bool(1))", "true"),
             Test("string(bag.set)", "{\"four\":4.0}"),
             Test("bool(1)", true),
-            Test("bool(0)", true),
+            Test("bool(0)", false),
             Test("bool(null)", false),
             Test("bool(hello * 5)", false),
             Test("bool('false')", true),
@@ -732,14 +733,14 @@ namespace AdaptiveExpressions.Tests
             Test("[1,2,3]", new List<object> { 1, 2, 3 }),
             Test("[1,2,3, [4,5]]", new List<object> { 1, 2, 3, new List<object> { 4, 5 } }),
             Test("\"[1,2,3]\"", "[1,2,3]"),
-            Test("[1, bool(0), string(bool(1)), float(\'10\')]", new List<object> { 1, true, "true", 10.0 }),
+            Test("[1, bool(0), string(bool(1)), float(\'10\')]", new List<object> { 1, false, "true", 10.0 }),
             Test("[\"a\", \"b[]\", \"c[][][]\"][1]", "b[]"),
             Test("[\'a\', [\'b\', \'c\']][1][0]", "b"),
             Test("union([\"a\", \"b\", \"c\"], [\"d\", [\"e\", \"f\"], \"g\"][1])", new List<string> { "a", "b", "c", "e", "f" }),
             Test("union([\"a\", \"b\", \"c\"], [\"d\", [\"e\", \"f\"], \"g\"][1])[1]",  "b"),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object> { "h", "e", "l", "l", "o" }),
             Test("createArray('h',\r\n 'e',\r\n 'l',\r\n 'l',\r\n 'o')", new List<object> { "h", "e", "l", "l", "o" }),
-            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, true, "true", 10.0f }),
+            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, false, "true", 10.0f }),
             Test("createArray()", new List<object> { }),
             Test("[]", new List<object> { }),
             Test("binary(hello)", new byte[] { 104, 101, 108, 108, 111 }),
@@ -1090,6 +1091,8 @@ namespace AdaptiveExpressions.Tests
             Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
             Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             Test("merge(callstack[1], callstack[2]).z", 1),
+            Test("merge(callstack).z", 1),
+            Test("string(merge({k1:'v1'}, [{k2:'v2'}, {k3: 'v3'}], {k4:'v4'}))", "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\",\"k4\":\"v4\"}"),
             #endregion
 
             #region  Memory access

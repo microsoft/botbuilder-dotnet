@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the <see cref="TeamsMeetingInfo"/> class.
         /// </summary>
         /// <param name="id">Unique identifier representing a teams meeting.</param>
-        public TeamsMeetingInfo(string id = default(string))
+        public TeamsMeetingInfo(string id = default)
         {
             Id = id;
             CustomInit();

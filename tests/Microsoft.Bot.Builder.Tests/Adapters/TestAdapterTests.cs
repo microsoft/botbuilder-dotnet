@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Reflection;
+using System.Diagnostics;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +11,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
+using Activity = Microsoft.Bot.Schema.Activity;
 
 namespace Microsoft.Bot.Builder.Tests.Adapters
 {
@@ -533,6 +534,32 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             status = await adapter.GetTokenStatusAsync(turnContext, oAuthAppCredentials, userId, "DEF");
             Assert.NotNull(status);
             Assert.Single(status);
+        }
+
+        [Fact]
+        public async Task TestAdapter_Delay()
+        {
+            var adapter = new TestAdapter();
+
+            using var turnContext = new TurnContext(adapter, new Activity());
+
+            var activities = new[]
+            {
+                new Activity(ActivityTypes.Delay, value: 275),
+                new Activity(ActivityTypes.Delay, value: 275L),
+                new Activity(ActivityTypes.Delay, value: 275F),
+                new Activity(ActivityTypes.Delay, value: 275D),
+            };
+
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
+
+            await adapter.SendActivitiesAsync(turnContext, activities, default);
+
+            sw.Stop();
+
+            Assert.True(sw.Elapsed.TotalSeconds > 1, $"Delay only lasted {sw.Elapsed}");
         }
 
         [Theory]
