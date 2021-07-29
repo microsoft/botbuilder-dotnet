@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             var policy = new List<string>();
 
-            var locale = activity.Locale ?? dialogContext.GetLocale() ?? string.Empty;
+            var locale = activity.Locale ?? string.Empty;
 
             if (languagePolicy.ContainsKey(locale))
             {
