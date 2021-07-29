@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             get => recognizers;
 
             set => recognizers = new Dictionary<string, Recognizer>(
-        value, StringComparer.InvariantCultureIgnoreCase);
+        value, StringComparer.OrdinalIgnoreCase);
         }
 #pragma warning restore CA2227 // Collection properties should be read only
 
