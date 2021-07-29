@@ -14,7 +14,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Slack.Model;
 using Microsoft.Bot.Builder.Adapters.Slack.Model.Events;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SlackAPI;
 
 #if SIGNASSEMBLY
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Slack.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
@@ -58,6 +60,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     if (att.Name == "blocks")
                     {
                         message.Blocks = att.Content;
+                    }
+                    else if (att.ContentType == HeroCard.ContentType)
+                    {
+                        message.Blocks = HeroCardToBlockKit((HeroCard)att.Content);
                     }
                     else
                     {
@@ -253,7 +259,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     activity.Text = message.Text;
                     if (message.AdditionalProperties.ContainsKey("files"))
                     {
-                        var attachments = new List<Attachment>();
+                        var attachments = new List<Schema.Attachment>();
                         foreach (var attachment in message.AdditionalProperties["files"])
                         {
                             var attachmentProperties = attachment.Value<JObject>().Properties();
@@ -280,8 +286,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                                 }
                             }
 
-                            attachments.Add(new Attachment
-                            { 
+                            attachments.Add(new Schema.Attachment
+                            {
                                 ContentType = contentType,
                                 ContentUrl = contentUrl,
                                 Name = name
@@ -371,6 +377,88 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             return values;
+        }
+
+        private static JArray HeroCardToBlockKit(HeroCard heroCard)
+        {
+            var blockKitContent = new List<IBlock>();
+
+            if (!string.IsNullOrWhiteSpace(heroCard.Title))
+            {
+                blockKitContent.Add(new HeaderBlock
+                {
+                    text = new Text
+                    {
+                        type = TextTypes.PlainText,
+                        text = heroCard.Title
+                    }
+                });
+            }
+
+            if (!string.IsNullOrWhiteSpace(heroCard.Subtitle))
+            {
+                blockKitContent.Add(new ContextBlock
+                {
+                    elements = new IElement[]
+                    {
+                        new Text
+                        {
+                            type = TextTypes.Markdown,
+                            text = heroCard.Subtitle
+                        }
+                    }
+                });
+            }
+
+            if (heroCard.Images?.Any() == true)
+            {
+                foreach (var image in heroCard.Images)
+                {
+                    blockKitContent.Add(new ImageBlock
+                    {
+                        image_url = image.Url,
+                        alt_text = !string.IsNullOrWhiteSpace(image.Alt) ? image.Alt : "Image" // Slack doesn't allow alt_text to be null/empty.
+                    });
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(heroCard.Text))
+            {
+                blockKitContent.Add(new SectionBlock
+                {
+                    text = new Text
+                    {
+                        type = TextTypes.Markdown,
+                        text = heroCard.Text
+                    }
+                });
+            }
+
+            if (heroCard.Buttons?.Any() == true)
+            {
+                var actionsBlock = new ActionsBlock
+                {
+                    elements = heroCard.Buttons.Select(button => new ButtonElement
+                    {
+                        text = new Text
+                        {
+                            type = TextTypes.PlainText,
+                            text = button.Title ?? button.Text ?? button.DisplayText,
+                            emoji = true,
+                        },
+
+                        // value/url get a little tricky if the button is an OpenUrl since CardAction.Value is meant for the URL.
+                        // We don't want to set value if it's an OpenUrl, because then the URL gets displayed in chat and sent to the bot.
+                        value = button.Type == ActionTypes.OpenUrl ? null : button.Value.ToString() ?? button.DisplayText ?? button.Text,
+                        url = button.Type == ActionTypes.OpenUrl ? button.Value.ToString() : null
+                    }).ToArray()
+                };
+
+                blockKitContent.Add(new DividerBlock());
+                blockKitContent.Add(actionsBlock);
+            }
+
+            return JArray.FromObject(blockKitContent, new JsonSerializer { NullValueHandling = NullValueHandling.Ignore });
         }
     }
 }
