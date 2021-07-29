@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,6 +138,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dc)
+        {
+            var hints = base.GetRecognitionHints(dc);
+            var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
+            var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+            var phrases = new List<string>();
+            foreach (var choice in choices.Choices)
+            {
+                if (!options.NoValue)
+                {
+                    phrases.Add(choice.Value);
+                }
+
+                if (!options.NoAction && choice.Action?.Title != null)
+                {
+                    phrases.Add(choice.Action.Title);
+                }
+
+                if (choice.Synonyms != null)
+                {
+                    phrases.AddRange(choice.Synonyms);
+                }
+            }
+
+            hints.Add(new PhraseListHint(Id, phrases) { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
+
+            if (options.RecognizeOrdinals)
+            {
+                hints.Add(new PreBuiltHint("ordinal") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
+            }
+
+            if (options.RecognizeNumbers)
+            {
+                hints.Add(new PreBuiltHint("number") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
+            }
+
+            return hints;
         }
 
         /// <summary>

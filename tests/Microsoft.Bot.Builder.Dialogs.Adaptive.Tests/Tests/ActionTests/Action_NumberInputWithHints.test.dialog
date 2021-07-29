@@ -1,0 +1,47 @@
+{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.Test.Script",
+    "dialog": {
+        "$kind": "Microsoft.AdaptiveDialog",
+        "id": "CommandTest",
+        "triggers": [
+            {
+                "$kind": "Microsoft.OnUnknownIntent",
+                "actions": [
+                    {
+                        "$kind": "Microsoft.NumberInput",
+                        "outputFormat": "=int(this.value)",
+                        "property": "user.userProfile.Age",
+                        "prompt": "Please enter your age.",
+                        "unrecognizedPrompt": "The value entered must be greater than 0 and less than 150.",
+                        "validations": [
+                            "this.value > 0 && this.value < 150"
+                        ]
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "I have your age as ${user.userProfile.Age}."
+                    }
+                ]
+            }
+        ],
+        "defaultResultProperty": "dialog.result"
+    },
+    "enableCommand":  true,
+    "script": [
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "hi"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReplyActivity",
+            "assertions": [
+                "text == 'Please enter your age.'",
+                "count(recognitionHints) == 1",
+                "recognitionHints[0].type == 'prebuilt'",
+                "recognitionHints[0].name == 'number'",
+                "recognitionHints[0].importance == 'expected'"
+            ]
+        }
+    ]
+}

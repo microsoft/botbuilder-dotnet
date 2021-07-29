@@ -422,6 +422,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ValidateImBack(string inputText, string expectedText)
         {
             var adapter = new TestAdapter(TestAdapter.CreateConversation("ValidateImBack"));
+            adapter.EnableEmptyMessages = true;
 
             async Task ReplyWithImBack(ITurnContext ctx, CancellationToken cancellationToken)
             {

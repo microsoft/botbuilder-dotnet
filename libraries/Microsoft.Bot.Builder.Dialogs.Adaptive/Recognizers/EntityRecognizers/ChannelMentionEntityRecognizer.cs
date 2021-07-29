@@ -140,5 +140,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             return Task.FromResult(result);
         }
+
+        /// <inheritdoc/>
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            yield return new PreBuiltHint("channelMention");
+        }
     }
 }

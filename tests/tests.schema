@@ -4866,6 +4866,16 @@
           "title": "LUIS prediction key",
           "description": "LUIS prediction key used to call endpoint."
         },
+        "recognizes": {
+          "$ref": "#/definitions/arrayExpression",
+          "title": "Recognizes",
+          "description": "Names of intents, entities and phrase lists that can be recognized.",
+          "items": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of an intent, entity or phrase list that can be recognized."
+          }
+        },
         "externalEntityRecognizer": {
           "$kind": "Microsoft.IRecognizer",
           "title": "External entity recognizer",
@@ -9688,6 +9698,18 @@
           "type": "boolean",
           "title": "Enable trace activity",
           "description": "Enable trace activities in the unit test (default is false)",
+          "default": false
+        },
+        "enableCommand": {
+          "type": "boolean",
+          "title": "Enable command activity",
+          "description": "Enable command activities in the unit test (default is false)",
+          "default": false
+        },
+        "enableEmptyMessages": {
+          "type": "boolean",
+          "title": "Enable empty message activity",
+          "description": "Enable message activities with null text in the unit test (default is false)",
           "default": false
         },
         "$kind": {

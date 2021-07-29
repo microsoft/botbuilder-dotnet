@@ -174,6 +174,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 activity = await Activity.BindAsync(dc, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            // TODO: chrimc Not sure how to handle recognition hints here.  If AllowInterruptions is true then parents on this
+            // side can recogniZe stuff.  Feels like I need to pass the parent hints into the skill through BeginSkillDialogOptions
+            // and ensure they get included on the skill side at the root.
+            // Here is how to compute them.
+            /*
+            var canInterrupt = true;
+            if (AllowInterruptions != null)
+            {
+                var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dialogContext.State);
+                canInterrupt = error == null && allowInterruptions;
+            }
+
+            var expected = GetRecognitionHints(dialogContext);
+            var activity = Schema.Activity.CreateRecognitionHints(expected, canInterrupt ? dialogContext.GetParentRecognitionHints() : null);*/
+
             // Call the base to invoke the skill
             // (If the activity has not been processed, send the turn context activity to the skill (pass through)). 
             return await base.BeginDialogAsync(dc, new BeginSkillDialogOptions { Activity = activity ?? dc.Context.Activity }, cancellationToken).ConfigureAwait(false);

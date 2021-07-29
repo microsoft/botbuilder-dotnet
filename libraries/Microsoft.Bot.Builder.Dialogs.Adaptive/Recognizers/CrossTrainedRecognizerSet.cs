@@ -109,6 +109,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return result;
         }
 
+        /// <inheritdoc/>
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            foreach (var recognizer in Recognizers)
+            {
+                foreach (var hint in recognizer.GetRecognitionHints(dialogContext))
+                {
+                    yield return hint;
+                }
+            }
+        }
+
         private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)
         {
             // put results into a dictionary for easier lookup while processing.

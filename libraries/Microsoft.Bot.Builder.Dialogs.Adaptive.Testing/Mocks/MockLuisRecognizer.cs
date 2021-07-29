@@ -88,6 +88,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Testing
             return result;
         }
 
+        /// <inheritdoc/>
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            return _recognizer.GetRecognitionHints(dialogContext);
+        }
+
         private string ResponsePath(string utterance, LuisRecognizerOptionsV3 recognizer)
         {
             var hash = utterance.StableHash();

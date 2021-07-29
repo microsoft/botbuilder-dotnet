@@ -2,10 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -70,18 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     dialogContext.Services.Get<LanguagePolicy>() ??
                     new LanguagePolicy();
 
-            var policy = new List<string>();
-            if (activity.Locale != null && languagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
-            {
-                policy.AddRange(targetpolicy);
-            }
-
-            if (languagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
-            {
-                // we now explictly add defaultPolicy instead of coding that into target's policy
-                policy.AddRange(defaultPolicy);
-            }
-
+            var policy = languagePolicy.Policy(activity.Locale);
             foreach (var option in policy)
             {
                 if (Recognizers.TryGetValue(option, out var recognizer))
@@ -96,6 +85,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             
             // nothing recognized
             return new RecognizerResult() { };
+        }
+
+        /// <inheritdoc/>
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var languagePolicy = LanguagePolicy ??
+                    dialogContext.Services.Get<LanguagePolicy>() ??
+                    new LanguagePolicy();
+            foreach (var option in languagePolicy.Policy(dialogContext.GetLocale()))
+            {
+                if (Recognizers.TryGetValue(option, out var recognizer))
+                {
+                    return recognizer.GetRecognitionHints(dialogContext);
+                }
+            }
+
+            return Enumerable.Empty<RecognitionHint>();
         }
     }
 }

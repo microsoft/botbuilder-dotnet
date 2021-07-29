@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value>Dynamic lists.</value>
         [JsonProperty("dynamicLists")]
-        public ArrayExpression<Luis.DynamicList> DynamicLists { get; set; }
+        public ArrayExpression<DynamicList> DynamicLists { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS prediction options.
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>Prediction options for backward compat code.</value>
         [JsonIgnore]
         [Obsolete("You should use Options instead as it supports expression properties.")]
-        public AI.LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
+        public LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS Prediction options (with expressions).
@@ -108,6 +108,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
 
+        /// <summary>
+        /// Gets or sets a list of intents, entities or phrase lists that can be recognized.
+        /// </summary>
+        /// <value>List of names.</value>
+        [JsonProperty("recognizes")]
+        public ArrayExpression<string> Recognizes { get; set; }
+
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
@@ -118,6 +125,37 @@ namespace Microsoft.Bot.Builder.AI.Luis
             TrackRecognizerResult(dialogContext, "LuisResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var hints = new List<RecognitionHint>();
+            if (Recognizes != null)
+            {
+                foreach (var name in Recognizes.GetValue(dialogContext.State))
+                {
+                    hints.Add(new ReferenceHint(name, Id));
+                }
+            }
+
+            if (DynamicLists != null)
+            {
+                var lists = DynamicLists.GetValue(dialogContext.State);
+                foreach (var list in lists)
+                {
+                    var phrases = new List<string>();
+                    foreach (var element in list.List)
+                    {
+                        phrases.Add(element.CanonicalForm);
+                        phrases.AddRange(element.Synonyms);
+                    }
+
+                    hints.Add(new PhraseListHint(list.Entity, phrases));
+                }
+            }
+
+            return hints;
         }
 
         /// <summary>

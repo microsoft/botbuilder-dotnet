@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -178,7 +180,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // No-op by default
             return Task.CompletedTask;
         }
 
@@ -216,6 +217,33 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return handled;
+        }
+
+        /// <summary>
+        /// Return a list of recognition hints.
+        /// </summary>
+        /// <remarks>
+        /// A dialog should return hints for what it and its parent dialogs if appropriate can recognize.
+        /// The returned hints should be created on each call so that that can have <see cref="RecognitionHint.Importance"/>
+        /// changed by the leaf dialog.
+        /// </remarks>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <returns>A list of <see cref="RecognitionHint"/>.</returns>
+        public virtual List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var parentDc = dialogContext.Parent;
+            var parent = parentDc?.FindDialog(parentDc?.ActiveDialog.Id);
+            if (parent != null)
+            {
+                var hints = parent.GetRecognitionHints(parentDc);
+                var importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Possible);
+                hints.ForEach(h => h.Importance = importance);
+                return hints;
+            }
+            else
+            {
+                return new List<RecognitionHint>();
+            }
         }
 
         /// <summary>

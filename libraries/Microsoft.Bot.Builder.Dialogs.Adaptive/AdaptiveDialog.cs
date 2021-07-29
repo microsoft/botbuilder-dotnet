@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Value = options,
                 Bubble = false
             };
-            
+
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
@@ -366,6 +366,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             yield break;
+        }
+
+        /// <inheritdoc/>
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var hints = Recognizer?.GetRecognitionHints(dialogContext).ToList() ?? new List<RecognitionHint>();
+            if (dialogSchema != null && dialogContext.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
+            {
+                // We have expected properties so turn that into expected entities
+                foreach (var property in expected)
+                {
+                    var propertyEntities = dialogSchema.PathToSchema(property)?.Entities;
+                    if (propertyEntities != null)
+                    {
+                        foreach (var entity in propertyEntities)
+                        {
+                            var hint = hints.FirstOrDefault(h => h.Name == entity);
+                            if (hint != null)
+                            {
+                                hint.Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected);
+                            }
+                        }
+                    }
+                }
+
+                foreach (var hint in hints)
+                {
+                    if (hint.Importance == null)
+                    {
+                        hint.Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Possible);
+                    }
+                }
+            }
+            else
+            {
+                hints.ForEach(h => h.Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected));
+            }
+
+            hints.AddRange(base.GetRecognitionHints(dialogContext));
+            return hints;
         }
 
         /// <summary>
@@ -792,6 +832,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     actionContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
                     return await actionContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
+
+                // Send recognition hints for what we are listening for
+                var activity = new Activity(ActivityTypes.Message)
+                {
+                    Attachments = new List<Attachment>(),
+                    Entities = new List<Entity>(),
+                };
+                activity.RecognitionHints = GetRecognitionHints(actionContext);
+                await actionContext.Context.SendActivityAsync(activity).ConfigureAwait(false);
 
                 return EndOfTurn;
             }

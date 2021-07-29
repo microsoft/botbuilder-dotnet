@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -64,6 +65,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 this.pattern = value;
                 this.regex = new Regex(value, RegexOptions.Compiled);
             }
+        }
+
+        /// <inheritdoc/>
+        public override IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            yield return new RegexHint(Name, Pattern);
         }
 
         /// <summary>

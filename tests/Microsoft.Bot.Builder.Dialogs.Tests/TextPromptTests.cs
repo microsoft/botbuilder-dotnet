@@ -73,6 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(nameof(TextPromptWithNaughtyStrings)))
                 .Use(new AutoSaveStateMiddleware(convoState))
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)));
+            adapter.EnableEmptyMessages = true;
 
             var dialogs = new DialogSet(dialogState);
 

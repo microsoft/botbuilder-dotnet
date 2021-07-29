@@ -31,6 +31,16 @@
             "title": "LUIS prediction key",
             "description": "LUIS prediction key used to call endpoint."
         },
+        "recognizes": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Recognizes",
+            "description": "Names of intents, entities and phrase lists that can be recognized.",
+            "items": {
+                "type": "string",
+                "title": "Name",
+                "description": "Name of an intent, entity or phrase list that can be recognized."
+            }
+        },
         "externalEntityRecognizer": {
             "$kind": "Microsoft.IRecognizer",
             "title": "External entity recognizer",

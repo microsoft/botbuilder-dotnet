@@ -138,14 +138,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
         public bool EnableTrace { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether command activities should be passed to the test script.
+        /// </summary>
+        /// <value>If true then command activities will be sent to the test script.</value>
+        [JsonProperty("enableCommand")]
+        public bool EnableCommand { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether message activities with null text should be passed to the test script.
+        /// </summary>
+        /// <value>If true then message activities with null text will be sent to the test script.</value>
+        [JsonProperty("enableEmptyMessages")]
+        public bool EnableEmptyMessages { get; set; } = false;
+
+        /// <summary>
         /// Build default test adapter.
         /// </summary>
         /// <param name="resourceExplorer">Resource explorer to use.</param>
         /// <param name="testName">Name of test.</param>
-        /// <param name="middlweare">Middleware to add to the adapter.</param>
+        /// <param name="middleware">Middleware to add to the adapter.</param>
         /// <returns>Test adapter.</returns>
 #pragma warning disable CA1801 // Review unused parameters (excluding for now but consider removing the resourceExplorer parameter if it is not needed)
-        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middlweare = null)
+        public TestAdapter DefaultTestAdapter(ResourceExplorer resourceExplorer, [CallerMemberName] string testName = null, IEnumerable<IMiddleware> middleware = null)
 #pragma warning restore CA1801 // Review unused parameters
         {
             var storage = new MemoryStorage();
@@ -159,9 +173,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
                 .Use(new TranscriptLoggerMiddleware(new TraceTranscriptLogger(traceActivity: false)))
                 .Use(new SetTestOptionsMiddleware());
 
-            if (middlweare != null)
+            if (middleware != null)
             {
-                foreach (var m in middlweare)
+                foreach (var m in middleware)
                 {
                     adapter.Use(m);
                 }
@@ -194,6 +208,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing
             }
 
             adapter.EnableTrace = EnableTrace;
+            adapter.EnableCommand = EnableCommand;
+            adapter.EnableEmptyMessages = EnableEmptyMessages;
             adapter.Locale = Locale;
             var mockTelemetryClient = new Mock<IBotTelemetryClient>();
             adapter.Use(new MockHttpRequestMiddleware(HttpRequestMocks));

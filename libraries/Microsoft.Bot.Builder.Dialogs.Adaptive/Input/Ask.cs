@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -106,9 +107,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             dc.State.SetValue(DialogPath.Retries, retries);
             dc.State.SetValue(DialogPath.LastTriggerEvent, trigger);
             dc.State.SetValue(DialogPath.ExpectedProperties, expected);
+
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;
+        }
+
+        /// <inheritdoc/>
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Do not reset input context
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        protected override async Task<Activity> CreateActivityAsync(DialogContext dc)
+        {
+            var activity = await base.CreateActivityAsync(dc).ConfigureAwait(false);
+            var parentId = dc.Parent?.ActiveDialog?.Id;
+            if (parentId != null)
+            {
+                var parent = dc.FindDialog(parentId);
+                if (parent != null)
+                {
+                    // Parent does recognition for Ask so add hints to activity
+                    var hints = parent.GetRecognitionHints(dc.Parent);
+                    activity.RecognitionHints = activity.RecognitionHints == null ? hints : activity.RecognitionHints.Union(hints).ToList();
+                }
+            }
+
+            return activity;
         }
     }
 }

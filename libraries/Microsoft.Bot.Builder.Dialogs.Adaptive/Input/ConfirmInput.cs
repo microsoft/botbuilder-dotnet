@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -86,6 +87,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
         public ValueExpression OutputFormat { get; set; }
+
+        /// <inheritdoc/>
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var hints = base.GetRecognitionHints(dialogContext);
+            hints.Add(new PreBuiltHint("boolean") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
+            return hints;
+        }
 
         /// <summary>
         /// Called when input has been received.

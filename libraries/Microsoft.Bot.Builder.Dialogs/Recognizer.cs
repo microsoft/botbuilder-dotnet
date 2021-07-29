@@ -119,6 +119,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Return a list of <see cref="RecognitionHint"/>s based on what the recognizer can recognize.
+        /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <returns>An enumerable of <see cref="RecognitionHint"/>.</returns>
+        public virtual IEnumerable<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            return Enumerable.Empty<RecognitionHint>();
+        }
+
+        /// <summary>
         /// CreateChooseIntentResult - returns ChooseIntent between multiple recognizer results.
         /// </summary>
         /// <param name="recognizerResults">recognizer Id => recognizer results map.</param>

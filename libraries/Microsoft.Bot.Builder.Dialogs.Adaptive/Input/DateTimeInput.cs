@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
 
@@ -52,6 +54,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
         public Expression OutputFormat { get; set; }
+
+        /// <inheritdoc/>
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var hints = base.GetRecognitionHints(dialogContext);
+            hints.Add(new PreBuiltHint("datetimeV2") { Importance = RecognitionHint.ImportanceString(RecognitionHintImportance.Expected) });
+            return hints;
+        }
 
         /// <summary>
         /// Called when input has been received.

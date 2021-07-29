@@ -63,6 +63,18 @@
             "title": "Enable trace activity",
             "description": "Enable trace activities in the unit test (default is false)",
             "default": false
+        },
+        "enableCommand": {
+            "type": "boolean",
+            "title": "Enable command activity",
+            "description": "Enable command activities in the unit test (default is false)",
+            "default": false
+        },
+        "enableEmptyMessages": {
+            "type": "boolean",
+            "title": "Enable empty message activity",
+            "description": "Enable message activities with null text in the unit test (default is false)",
+            "default": false
         }
     },
     "required": [

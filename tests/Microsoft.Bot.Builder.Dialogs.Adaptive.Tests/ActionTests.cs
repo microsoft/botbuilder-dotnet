@@ -330,13 +330,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [Fact]
+        public async Task Action_NumberInputWithHints()
+        {
+            await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
+        }
+
+        [Fact]
         public async Task Action_NumberInputWithDefaultValue()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }
 
         [Fact]
-        public async Task Action_NumberInputWithVAlueExpression()
+        public async Task Action_NumberInputWithValueExpression()
         {
             await TestUtils.RunTestScript(_resourceExplorerFixture.ResourceExplorer);
         }

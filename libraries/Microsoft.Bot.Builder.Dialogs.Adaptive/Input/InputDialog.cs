@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
@@ -311,6 +310,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.PromptUserAsync(dc, InputState.Missing, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
+        public override List<RecognitionHint> GetRecognitionHints(DialogContext dialogContext)
+        {
+            var canInterrupt = true;
+            if (AllowInterruptions != null)
+            {
+                var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dialogContext.State);
+                canInterrupt = error == null && allowInterruptions;
+            }
+
+            return canInterrupt ? base.GetRecognitionHints(dialogContext) : new List<RecognitionHint>();
+        }
+
         /// <summary>
         /// Called when input has been received, override this method to customize recognition of the input.
         /// </summary>
@@ -580,6 +592,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (prompt == null)
             {
                 throw new InvalidOperationException($"Call to OnRenderPromptAsync() returned a null activity for state {state}.");
+            }
+
+            if (prompt is Activity msg)
+            {
+                var hints = GetRecognitionHints(dc);
+                msg.RecognitionHints = msg.RecognitionHints == null ? hints : msg.RecognitionHints.Union(hints).ToList();
             }
 
             await dc.Context.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);
