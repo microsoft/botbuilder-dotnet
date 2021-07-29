@@ -80,15 +80,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     new LanguagePolicy();
 
             var policy = new List<string>();
-            if (activity.Locale != null && languagePolicy.TryGetValue(activity.Locale, out string[] targetpolicy))
+
+            var locale = activity.Locale ?? dialogContext.GetLocale() ?? string.Empty;
+
+            if (languagePolicy.ContainsKey(locale))
             {
-                policy.AddRange(targetpolicy);
+                policy.AddRange(languagePolicy[locale]);
             }
 
-            if (languagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
+            if (locale.Length != 0 && languagePolicy.ContainsKey(string.Empty))
             {
-                // we now explictly add defaultPolicy instead of coding that into target's policy
-                policy.AddRange(defaultPolicy);
+                policy.AddRange(languagePolicy[string.Empty]);
             }
 
             foreach (var option in policy)
