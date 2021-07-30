@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using Newtonsoft.Json;
 
@@ -52,6 +53,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <value>an expression.</value>
         [JsonProperty("outputFormat")]
         public Expression OutputFormat { get; set; }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+            => new RecognizerDescription(entities: new[] { new EntityDescription("datetimeV2") });
+        
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
+        {
+            var locale = GetCulture(dialogContext);
+            SetInputContext(dialogContext, activity, locale, GetRecognizerDescription(dialogContext, locale));
+        }
 
         /// <summary>
         /// Called when input has been received.

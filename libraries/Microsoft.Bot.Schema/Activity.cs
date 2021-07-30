@@ -612,6 +612,14 @@ namespace Microsoft.Bot.Schema
         public string CallerId { get; set; }
 
         /// <summary>
+        /// Gets or sets context that describes what kind of input is expected and possible in terms of intents, entities and dynamic lists.
+        /// </summary>
+        /// <value>A structured object with locale, expected and possible intents, entities and dynamic lists.
+        /// </value>
+        [JsonProperty(PropertyName = "inputContext")]
+        public InputContext InputContext { get; set; }
+
+        /// <summary>
         /// An initialization method that performs custom operations like setting defaults.
         /// </summary>
         partial void CustomInit();

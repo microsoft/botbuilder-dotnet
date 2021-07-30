@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public AgeEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(callerPath, callerLine)
+            : base(callerPath, callerLine, "age")
         {
         }
 

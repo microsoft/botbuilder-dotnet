@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Number;
 using Newtonsoft.Json;
 
@@ -49,6 +50,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </value>
         [JsonProperty("outputFormat")]
         public NumberExpression OutputFormat { get; set; }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+            => new RecognizerDescription(entities: new[] { new EntityDescription("number") });
+
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        {
+            var locale = GetCulture(dc);
+            SetInputContext(dc, activity, locale, GetRecognizerDescription(dc, locale));
+        }
 
         /// <summary>
         /// Called when input has been received.

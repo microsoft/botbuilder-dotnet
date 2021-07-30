@@ -139,6 +139,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dc, string expectedLocale)
+        {
+            var choices = dc.State.GetValue<ChoiceInputOptions>(ThisPath.Options);
+            var options = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+            var entries = new List<ListElement>();
+            foreach (var choice in choices.Choices)
+            {
+                var synonyms = new List<string>();
+                if (!options.NoValue)
+                {
+                    synonyms.Add(choice.Value);
+                }
+
+                if (!options.NoAction && choice.Action?.Title != null)
+                {
+                    synonyms.Add(choice.Action.Title);
+                }
+
+                if (choice.Synonyms != null)
+                {
+                    synonyms.AddRange(choice.Synonyms);
+                }
+
+                entries.Add(new ListElement(choice.Value, synonyms));
+            }
+
+            List<EntityDescription> entities = new List<EntityDescription>();
+            if (options.RecognizeOrdinals)
+            {
+                entities.Add(new EntityDescription("ordinal"));
+            }
+
+            if (options.RecognizeNumbers)
+            {
+                entities.Add(new EntityDescription("number"));
+            }
+
+            return new RecognizerDescription(entities: entities, dynamicLists: new List<DynamicList> { new DynamicList(Id, entries) });
+        }
+
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        {
+            var opt = RecognizerOptions?.GetValue(dc.State) ?? new FindChoicesOptions();
+            var locale = DetermineCulture(dc, opt);
+            SetInputContext(dc, activity, locale, GetRecognizerDescription(dc, locale));
+        }
+
         /// <summary>
         /// Method which processes options.
         /// </summary>

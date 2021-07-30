@@ -109,6 +109,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return result;
         }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return RecognizerDescription.MergeDescriptions(Recognizers.Select(r => r.GetRecognizerDescription(dialogContext, expectedLocale)));
+        }
+
         private RecognizerResult ProcessResults(IEnumerable<RecognizerResult> results)
         {
             // put results into a dictionary for easier lookup while processing.

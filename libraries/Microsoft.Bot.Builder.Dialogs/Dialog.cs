@@ -2,11 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -178,7 +178,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // No-op by default
             return Task.CompletedTask;
         }
 
@@ -217,6 +216,25 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return handled;
         }
+
+        /// <summary>
+        /// Return a description of the intents and entities the dialog can recognize.
+        /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <param name="expectedLocale">Expected input locale.</param>
+        /// <returns>A <see cref="RecognizerDescription"/>.</returns>
+        public virtual RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return new RecognizerDescription();
+        }
+
+        /// <summary>
+        /// Set input context.
+        /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <param name="activity">Activity to add input context.</param>
+        public virtual void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
+            => dialogContext.SetInputContext(activity, dialogContext.GetLocale());
 
         /// <summary>
         /// Called before an event is bubbled to its parent.

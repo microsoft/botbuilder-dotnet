@@ -31,6 +31,62 @@
             "title": "LUIS prediction key",
             "description": "LUIS prediction key used to call endpoint."
         },
+        "possibleIntents": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Possible intents",
+            "description": "Intents that can be recognized.",
+            "items": {
+                "title": "Possible intents",
+                "description": "List of intents that are possible to recognize.",
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "title": "Intent description",
+                        "description": "Description of an intent.",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "title": "Intent name",
+                                "description": "Name of intent."
+                            }
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "title": "Intent name",
+                        "description": "Name of intent."
+                    }
+                ]
+            }
+        },
+        "possibleEntities": {
+            "$ref": "schema:#/definitions/arrayExpression",
+            "title": "Possible entities",
+            "description": "Entities that can be recognized.",
+            "items": {
+                "title": "Possible entities",
+                "description": "List of entities that are possible to recognize.",
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "title": "Entity description",
+                        "description": "Description of an entity.",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "title": "Entity name",
+                                "description": "Name of entity."
+                            }
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "title": "Entity name",
+                        "description": "Name of entity."
+                    }
+                ]
+            }
+        },
         "externalEntityRecognizer": {
             "$kind": "Microsoft.IRecognizer",
             "title": "External entity recognizer",

@@ -140,5 +140,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
             return Task.FromResult(result);
         }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription("channelMention") });
+        }
     }
 }

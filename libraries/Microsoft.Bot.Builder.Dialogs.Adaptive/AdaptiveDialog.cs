@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Value = options,
                 Bubble = false
             };
-            
+
             var properties = new Dictionary<string, string>()
                 {
                     { "DialogId", Id },
@@ -366,6 +366,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             yield break;
+        }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return Recognizer?.GetRecognizerDescription(dialogContext, expectedLocale) ?? new RecognizerDescription();
+        }
+
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
+        {
+            if (dialogSchema != null && dialogContext.State.TryGetValue<string[]>(DialogPath.ExpectedProperties, out var expected))
+            {
+                // We have expected properties so turn that into expected entities
+                var description = GetRecognizerDescription(dialogContext, dialogContext.GetLocale());
+                var entities = new List<EntityDescription>();
+                foreach (var property in expected)
+                {
+                    var propertyEntities = dialogSchema.PathToSchema(property)?.Entities;
+                    if (propertyEntities != null)
+                    {
+                        foreach (var entity in propertyEntities)
+                        {
+                            var entityDescription = description.Entities.FirstOrDefault(e => entity == e.Name);
+                            if (entityDescription != null)
+                            {
+                                entities.Add(entityDescription);
+                            }
+                        }
+                    }
+                }
+
+                dialogContext.SetInputContext(activity, dialogContext.GetLocale(), new RecognizerDescription(null, entities));
+            }
+            else
+            {
+                base.SetInputContext(dialogContext, activity);
+            }
         }
 
         /// <summary>

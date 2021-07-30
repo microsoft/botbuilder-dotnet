@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -109,6 +110,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;
+        }
+
+        /// <inheritdoc/>
+        public override Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Do not reset input context
+            return Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        protected override void AddContext(DialogContext dc, Activity activity)
+        {
+            // The parent dialog is responsible for Ask recognition
+            var parentId = dc.Parent?.ActiveDialog?.Id;
+            if (parentId != null)
+            {
+                var parent = dc.FindDialog(parentId);
+                parent?.SetInputContext(dc, activity);
+            }
         }
     }
 }

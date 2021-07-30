@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
@@ -311,6 +310,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.PromptUserAsync(dc, InputState.Missing, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dialogContext, IMessageActivity activity)
+        {
+            SetInputContext(dialogContext, activity, dialogContext.GetLocale(), new RecognizerDescription());
+        }
+
+        /// <summary>
+        /// Set input context conditional on AllowInterruptions.
+        /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <param name="activity">Activity to add context.</param>
+        /// <param name="locale">Input locale.</param>
+        /// <param name="expected">Expected RecognizerDescription.</param>
+        protected void SetInputContext(DialogContext dialogContext, IMessageActivity activity, string locale, RecognizerDescription expected)
+        {
+            var canInterrupt = true;
+            if (AllowInterruptions != null)
+            {
+                var (allowInterruptions, error) = AllowInterruptions.TryGetValue(dialogContext.State);
+                canInterrupt = error == null && allowInterruptions;
+            }
+
+            if (canInterrupt)
+            {
+                // Local recognizer is expected but parents are possible as well
+                dialogContext.SetInputContext(activity, locale, expected);
+            }
+            else
+            {
+                // Only allow local recognizer
+                activity.InputContext = new InputContext(locale, expected, expected);
+            }
+        }
+
         /// <summary>
         /// Called when input has been received, override this method to customize recognition of the input.
         /// </summary>
@@ -485,6 +518,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 msg.InputHint = InputHints.ExpectingInput;
             }
+
+            SetInputContext(dc, msg);
 
             var properties = new Dictionary<string, string>()
             {

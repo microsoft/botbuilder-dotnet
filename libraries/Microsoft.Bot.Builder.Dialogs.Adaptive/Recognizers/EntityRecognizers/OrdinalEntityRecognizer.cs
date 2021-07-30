@@ -27,7 +27,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// <param name="callerLine">Optional, line number in source file.</param>
         [JsonConstructor]
         public OrdinalEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(callerPath, callerLine)
+ 
+            // TODO: chrimc, how does this relate to LUIS ordinalV2?
+            : base(callerPath, callerLine, "ordinal")
         {
         }
 

@@ -47,6 +47,14 @@ namespace Microsoft.Bot.Schema
         string InputHint { get; set; }
 
         /// <summary>
+        /// Gets or sets the input context.
+        /// </summary>
+        /// <value>
+        /// Input locale, expected and possible intents, entities and dynamic lists.
+        /// </value>
+        InputContext InputContext { get; set; }
+
+        /// <summary>
         /// Gets or sets text to display if the channel cannot render cards.
         /// </summary>
         /// <value>

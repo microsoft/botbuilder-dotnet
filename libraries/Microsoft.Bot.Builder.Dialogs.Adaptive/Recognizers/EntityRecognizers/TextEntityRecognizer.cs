@@ -20,16 +20,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public abstract class TextEntityRecognizer : EntityRecognizer
     {
         private static JsonSerializer serializer = new JsonSerializer() { ContractResolver = new CamelCasePropertyNamesContractResolver() };
+        private string entityName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextEntityRecognizer"/> class.
         /// </summary>
         /// <param name="callerPath">Optional, source file full path.</param>
         /// <param name="callerLine">Optional, line number in source file.</param>
+        /// <param name="entityName">Optional, name of the entity being recognized.</param>
         [JsonConstructor]
-        public TextEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public TextEntityRecognizer([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0, string entityName = null)
             : base(callerPath, callerLine)
         {
+            this.entityName = entityName;
         }
 
         /// <summary>
@@ -64,6 +67,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             }
 
             return Task.FromResult<IEnumerable<Entity>>(newEntities);
+        }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return new RecognizerDescription(entities: new List<EntityDescription> { new EntityDescription(entityName, Id) });
         }
 
         /// <summary>

@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value>Dynamic lists.</value>
         [JsonProperty("dynamicLists")]
-        public ArrayExpression<Luis.DynamicList> DynamicLists { get; set; }
+        public ArrayExpression<DynamicList> DynamicLists { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS prediction options.
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>Prediction options for backward compat code.</value>
         [JsonIgnore]
         [Obsolete("You should use Options instead as it supports expression properties.")]
-        public AI.LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
+        public LuisV3.LuisPredictionOptions PredictionOptions { get; set; }
 
         /// <summary>
         /// Gets or sets LUIS Prediction options (with expressions).
@@ -108,6 +108,20 @@ namespace Microsoft.Bot.Builder.AI.Luis
         [JsonProperty("logPersonalInformation")]
         public BoolExpression LogPersonalInformation { get; set; } = "=settings.runtimeSettings.telemetry.logPersonalInformation";
 
+        /// <summary>
+        /// Gets or sets the intents that are possible to surface from this recognizer.
+        /// </summary>
+        /// <value>List of <see cref="IntentDescription"/>.</value>
+        [JsonProperty("possibleIntents")]
+        public ArrayExpression<IntentDescription> PossibleIntents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the entities that are possible to surface from this recognizer.
+        /// </summary>
+        /// <value>List of <see cref="EntityDescription"/>.</value>
+        [JsonProperty("possibleEntities")]
+        public ArrayExpression<EntityDescription> PossibleEntities { get; set; }
+
         /// <inheritdoc/>
         public override async Task<RecognizerResult> RecognizeAsync(DialogContext dialogContext, Activity activity, CancellationToken cancellationToken = default, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
@@ -118,6 +132,31 @@ namespace Microsoft.Bot.Builder.AI.Luis
             TrackRecognizerResult(dialogContext, "LuisResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            // DynamicList has the same shape here and in recognizers, but class is duplicated because of layering
+            // Priming also includes the canonical form in synonyms whereas LUIS lists do not.
+            var lists = new List<Schema.DynamicList>();
+            foreach (var list in DynamicLists.GetValue(dialogContext.State))
+            {
+                var elements = new List<ListElement>();
+                foreach (var element in list.List)
+                {
+                    var synonyms = new List<string> { element.CanonicalForm };
+                    synonyms.AddRange(element.Synonyms);
+                    elements.Add(new ListElement(element.CanonicalForm, synonyms));
+                }
+
+                lists.Add(new Schema.DynamicList(list.Entity, elements));
+            }
+
+            return new RecognizerDescription(
+                PossibleIntents.GetValue(dialogContext.State),
+                PossibleEntities.GetValue(dialogContext.State),
+                lists);
         }
 
         /// <summary>

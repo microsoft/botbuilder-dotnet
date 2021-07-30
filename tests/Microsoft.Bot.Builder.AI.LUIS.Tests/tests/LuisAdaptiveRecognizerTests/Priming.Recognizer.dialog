@@ -1,0 +1,19 @@
+﻿{
+    "$schema": "../../../tests.schema",
+    "$kind": "Microsoft.LuisRecognizer",
+    "applicationId": "=settings.luis.DynamicLists_test_en_us_lu.appId",
+    "endpoint": "=settings.luis.endpoint",
+    "endpointKey": "=settings.luis.endpointKey",
+    "possibleIntents": [
+        "a",
+        {
+            "name": "b"
+        }
+    ],
+    "possibleEntities": [
+        "aEntity",
+        {
+            "name": "bEntity"
+        }
+    ]
+}

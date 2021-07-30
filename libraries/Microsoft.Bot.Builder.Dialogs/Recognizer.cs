@@ -119,6 +119,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Return a description of the intents and entities the dialog can recognize.
+        /// </summary>
+        /// <param name="dialogContext">Dialog context.</param>
+        /// <param name="expectedLocale">Expected locale.</param>
+        /// <returns>A <see cref="RecognizerDescription"/>.</returns>
+        public virtual RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return new RecognizerDescription();
+        }
+
+        /// <summary>
         /// CreateChooseIntentResult - returns ChooseIntent between multiple recognizer results.
         /// </summary>
         /// <param name="recognizerResults">recognizer Id => recognizer results map.</param>

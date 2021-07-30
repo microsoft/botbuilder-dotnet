@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets template for the activity.
@@ -92,6 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             var activity = await Activity.BindAsync(dc, dc.State).ConfigureAwait(false);
+            AddContext(dc, activity);
             var properties = new Dictionary<string, string>()
             {
                 { "template", JsonConvert.SerializeObject(Activity) },
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             TelemetryClient.TrackEvent("GeneratorResult", properties);
 
             ResourceResponse response = null;
-            if (activity.Type != "message" 
+            if (activity.Type != "message"
                 || !string.IsNullOrEmpty(activity.Text)
                 || activity.Attachments?.Any() == true
                 || !string.IsNullOrEmpty(activity.Speak)
@@ -111,6 +112,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Add context to activity.
+        /// </summary>
+        /// <param name="dc">Dialog context.</param>
+        /// <param name="activity">Activity to modify.</param>
+        protected virtual void AddContext(DialogContext dc, Activity activity)
+        { 
         }
 
         /// <inheritdoc/>

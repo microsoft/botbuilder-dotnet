@@ -5,12 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Microsoft.Bot.Schema;
-using Microsoft.Recognizers.Text.NumberWithUnit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -83,6 +80,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             TrackRecognizerResult(dialogContext, "RecognizerSetResult", FillRecognizerResultTelemetryProperties(result, telemetryProperties, dialogContext), telemetryMetrics);
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+        {
+            return RecognizerDescription.MergeDescriptions(Recognizers.Select(r => r.GetRecognizerDescription(dialogContext, expectedLocale)));
         }
 
         private RecognizerResult MergeResults(RecognizerResult[] results)

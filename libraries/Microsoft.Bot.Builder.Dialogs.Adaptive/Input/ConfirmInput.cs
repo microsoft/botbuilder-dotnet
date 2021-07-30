@@ -87,6 +87,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         [JsonProperty("outputFormat")]
         public ValueExpression OutputFormat { get; set; }
 
+        /// <inheritdoc/>
+        public override RecognizerDescription GetRecognizerDescription(DialogContext dialogContext, string expectedLocale)
+            => new RecognizerDescription(entities: new[] { new EntityDescription("boolean") });
+
+        /// <inheritdoc/>
+        public override void SetInputContext(DialogContext dc, IMessageActivity activity)
+        {
+            var locale = DetermineCulture(dc);
+            SetInputContext(dc, activity, locale, GetRecognizerDescription(dc, locale));
+        }
+
         /// <summary>
         /// Called when input has been received.
         /// </summary>
