@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 retryExceptionHandler: (ex, ct) => HandleMsalException(ex, ct)).ConfigureAwait(false);
 
             watch.Stop();
-            _logger?.LogInformation($"GetTokenAsync: Acquired token using ADAL in {watch.ElapsedMilliseconds}.");
+            _logger?.LogInformation($"GetTokenAsync: Acquired token using MSAL in {watch.ElapsedMilliseconds}.");
 
             return result;
         }
