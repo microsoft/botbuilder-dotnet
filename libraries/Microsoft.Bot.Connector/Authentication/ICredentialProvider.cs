@@ -54,5 +54,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// that may need to call out to serviced to validate the appId / password pair.
         /// </para></remarks>
         Task<bool> IsAuthenticationDisabledAsync();
+
+        /// <summary>
+        /// Gets the Tenant ID of the Azure AD tenant where the bot is registered.
+        /// </summary>
+        /// <returns>The Tenant ID of the Azure AD tenant where the bot is registered.</returns>
+        Task<string> GetAuthTenantAsync();
     }
 }

@@ -112,6 +112,13 @@ namespace Microsoft.Bot.Connector.Authentication
             }
         }
 
+        /// <inheritdoc />
+        public override Task<string> GetAuthTenantAsync(CancellationToken cancellationToken)
+        {
+            // Tenant is not required for Password auth
+            return Task.FromResult(string.Empty);
+        }
+
         private class PrivateCloudAppCredentials : MicrosoftAppCredentials
         {
             private readonly string _oauthEndpoint;

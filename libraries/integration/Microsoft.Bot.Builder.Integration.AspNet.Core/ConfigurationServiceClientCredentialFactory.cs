@@ -2,9 +2,12 @@
 // Licensed under the MIT License.
 
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
@@ -17,8 +20,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     ///
     /// NOTE: if the keys are not present, a <c>null</c> value will be used.
     /// </remarks>
-    public class ConfigurationServiceClientCredentialFactory : PasswordServiceClientCredentialFactory
+    public class ConfigurationServiceClientCredentialFactory : ServiceClientCredentialsFactory
     {
+        private readonly ServiceClientCredentialsFactory _inner;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationServiceClientCredentialFactory"/> class.
         /// </summary>
@@ -26,12 +31,48 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="httpClient">A httpClient to use.</param>
         /// <param name="logger">A logger to use.</param>
         public ConfigurationServiceClientCredentialFactory(IConfiguration configuration, HttpClient httpClient = null, ILogger logger = null)
-            : base(
-            configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value,
-            configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value,
-            httpClient,
-            logger)
         {
+            string appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+            string password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+            string managedId = configuration.GetSection(ManagedIdentityAppCredentials.ManagedIdKey)?.Value;
+            string tenantId = configuration.GetSection(ManagedIdentityAppCredentials.TenantIdKey)?.Value;
+
+            if (!string.IsNullOrWhiteSpace(managedId) && !string.IsNullOrWhiteSpace(tenantId))
+            {
+                // Both ManagedId and TenantId are present -- Use MSI auth
+                _inner = new ManagedIdentityServiceClientCredentialsFactory(managedId, tenantId);
+            }
+            else
+            {
+                // Default to Password Auth
+                _inner = new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger);
+            }
+        }
+
+        /// <inheritdoc />
+        public override Task<bool> IsValidAppIdAsync(string appId, CancellationToken cancellationToken)
+        {
+            return _inner.IsValidAppIdAsync(appId, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken)
+        {
+            return _inner.IsAuthenticationDisabledAsync(cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override Task<ServiceClientCredentials> CreateCredentialsAsync(
+            string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
+        {
+            return _inner.CreateCredentialsAsync(
+                appId, audience, loginEndpoint, validateAuthority, cancellationToken);
+        }
+
+        /// <inheritdoc />
+        public override Task<string> GetAuthTenantAsync(CancellationToken cancellationToken)
+        {
+            return _inner.GetAuthTenantAsync(cancellationToken);
         }
     }
 }

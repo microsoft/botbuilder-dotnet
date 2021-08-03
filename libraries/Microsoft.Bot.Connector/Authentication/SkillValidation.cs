@@ -144,6 +144,19 @@ namespace Microsoft.Bot.Connector.Authentication
                 GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl : 
                 AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl;
 
+            // Add tenant id from settings (if present) as a valid token issuer
+            var tenantId = await credentials.GetAuthTenantAsync().ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(tenantId))
+            {
+                var validIssuers = _tokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(new[]
+                {
+                    $"https://sts.windows.net/{tenantId}/", // MSI auth, 1.0 token
+                    $"https://login.microsoftonline.com/{tenantId}/v2.0" // MSI auth, 2.0 token
+                });
+                _tokenValidationParameters.ValidIssuers = validIssuers;
+            }
+
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
                 _tokenValidationParameters,

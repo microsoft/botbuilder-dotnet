@@ -210,6 +210,19 @@ namespace Microsoft.Bot.Connector.Authentication
                     RequireSignedTokens = true
                 };
 
+            // Add tenant id from settings (if present) as a valid token issuer
+            var tenantId = await _credentialsFactory.GetAuthTenantAsync(CancellationToken.None).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(tenantId))
+            {
+                var validIssuers = tokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(new[]
+                {
+                    $"https://sts.windows.net/{tenantId}/", // MSI auth, 1.0 token
+                    $"https://login.microsoftonline.com/{tenantId}/v2.0" // MSI auth, 2.0 token
+                });
+                tokenValidationParameters.ValidIssuers = validIssuers;
+            }
+
             // TODO: what should the openIdMetadataUrl be here?
             var tokenExtractor = new JwtTokenExtractor(
                 _authHttpClient,
@@ -289,6 +302,14 @@ namespace Microsoft.Bot.Connector.Authentication
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true,
                 };
+
+            // Add tenant id from settings (if present) as a valid token issuer
+            var tenantId = await _credentialsFactory.GetAuthTenantAsync(CancellationToken.None).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(tenantId))
+            {
+                _ = toBotFromEmulatorTokenValidationParameters.ValidIssuers.Append($"https://sts.windows.net/{tenantId}/"); // MSI auth, 1.0 token
+                _ = toBotFromEmulatorTokenValidationParameters.ValidIssuers.Append($"https://login.microsoftonline.com/{tenantId}/v2.0"); // MSI auth, 2.0 token
+            }
 
             var tokenExtractor = new JwtTokenExtractor(
                     _authHttpClient,

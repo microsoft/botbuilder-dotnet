@@ -82,5 +82,11 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             return Task.FromResult(string.IsNullOrEmpty(AppId));
         }
+
+        /// <inheritdoc />
+        public Task<string> GetAuthTenantAsync()
+        {
+            return Task.FromResult(string.Empty);
+        }
     }
 }
