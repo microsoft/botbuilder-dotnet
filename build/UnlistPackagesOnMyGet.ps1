@@ -8,7 +8,7 @@ param
     [string[]]$packageNames = { "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" },
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
-    [boolean]$deletePackagesForReal = $false
+    [string]$deletePackagesForReal = false
 )
 
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
@@ -69,7 +69,7 @@ foreach ($packageName in $packageNames) {
 
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
-        if ($deletePackagesForReal -eq $true) {
+        if ($deletePackagesForReal -eq true) {
             "Deleting $version"
             "nuget delete $packageName $version -Source $feedApiUrl -apikey myGetPersonalAccessToken -NonInteractive"
             #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
