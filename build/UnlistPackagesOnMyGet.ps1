@@ -14,6 +14,8 @@ param
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
 $feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/api/v3/index.json";
 
+Set-PSDebug -Trace 1;
+
 Function Sort-Versions
 {
     param ( [string]$versions );
@@ -77,4 +79,6 @@ foreach ($packageName in $packageNames) {
             #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
         }
     }
+
+    Set-PSDebug -Trace 0;
 }
