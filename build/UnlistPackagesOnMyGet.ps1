@@ -8,7 +8,7 @@ param
     [string[]]$packageNames = { "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" },
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
-    [string]$deletePackagesForReal = false
+    [string]$deletePackagesForReal = "false"
 )
 
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
