@@ -1,6 +1,6 @@
 #
 # Unlists MyGet package versions lower than or equal to $versionToUnlist.
-# Run this first with $deletePackagesForReal = false to verify what versions will be unlisted.
+# Run this first with $deletePackagesForReal = false (default) to verify what versions will be affected.
 #
 param
 ( 
