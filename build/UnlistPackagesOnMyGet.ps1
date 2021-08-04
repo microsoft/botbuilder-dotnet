@@ -5,7 +5,7 @@
 param
 ( 
     [string]$versionToUnlist = "4.7.2-",
-    [string]$packageNames = "AdaptiveExpressions",
+    [string[]]$packageNames = { "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" },
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
     [switch]$deletePackagesForReal = $false
