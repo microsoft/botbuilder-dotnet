@@ -14,7 +14,7 @@ param
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
 $feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/api/v3/index.json";
 
-Set-PSDebug -Trace 1;
+#Set-PSDebug -Trace 1;
 
 Function Sort-Versions
 {
@@ -80,5 +80,5 @@ foreach ($packageName in $packageNames) {
         }
     }
 
-    Set-PSDebug -Trace 0;
+    #Set-PSDebug -Trace 0;
 }
