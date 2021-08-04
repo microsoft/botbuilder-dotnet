@@ -37,6 +37,7 @@ Function Sort-Versions
 
 $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
 
+"deletePackagesForReal: " + $deletePackagesForReal;
 "Target version: " + $versionToUnlist;
 " ";
 "Package versions to unlist:"
