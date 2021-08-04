@@ -5,7 +5,7 @@
 param
 ( 
     [string]$versionToUnlist = "1.0.2",
-    [string[]]$packageNames = { "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" },
+    [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$nuGetPersonalAccessToken,
     [string]$unlistPackagesForReal = "false"
 )
