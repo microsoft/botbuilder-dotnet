@@ -14,8 +14,6 @@ param
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
 $feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/api/v3/index.json";
 
-#Set-PSDebug -Trace 1;
-
 Function Sort-Versions
 {
     param ( [string]$versions );
@@ -41,9 +39,9 @@ $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "applica
 "Target version: " + $versionToUnlist;
 " ";
 "Package versions to unlist:"
-"========================";
 
 foreach ($packageName in $packageNames) {
+    "========================";
     $packageName;
     "========================";
 
@@ -65,8 +63,6 @@ foreach ($packageName in $packageNames) {
         $versionsToUnlist = $null;
         "[none]";
     }
-    " ";
-    "========================";
 
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
@@ -80,6 +76,4 @@ foreach ($packageName in $packageNames) {
             #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
         }
     }
-
-    #Set-PSDebug -Trace 0;
 }
