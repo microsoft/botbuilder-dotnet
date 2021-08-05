@@ -69,11 +69,11 @@ foreach ($packageName in $packageNames) {
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version"
-            "npm unpublish $packageName@$version --registry=$feedApiUrl"
-            npm unpublish $packageName@$version --registry=$feedApiUrl
+            "npm unpublish $packageName@$version"
+            npm unpublish $packageName@$version
         } else {
             "What-if: Unlisting $version"
-            "npm unpublish $packageName@$version --registry=$feedApiUrl"
+            "npm unpublish $packageName@$version"
         }
     }
 }
