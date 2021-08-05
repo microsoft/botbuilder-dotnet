@@ -1,5 +1,5 @@
 #
-# Unlists NuGet package versions on Azure ConversationalAI feed  lower than or equal to $versionToUnlist.
+# Unlists NuGet package versions on Azure ConversationalAI feed lower than or equal to $versionToUnlist.
 # Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
 # See: https://stackoverflow.com/questions/34958908/where-can-i-find-documentation-for-the-nuget-v3-api
 #

@@ -49,6 +49,7 @@ foreach ($packageName in $packageNames) {
         $versionsToUnlist = $null;
         "[none]";
     }
+    "------------------------";
 
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
