@@ -34,6 +34,8 @@ Function Sort-Versions
 }
 
 $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
+"----result--------------------------"
+$result
 
 "unlistPackagesForReal: " + $unlistPackagesForReal;
 "Target version: " + $versionToUnlist;
@@ -46,6 +48,8 @@ foreach ($packageName in $packageNames) {
     "========================";
 
     $package = $result.packages | Where-Object {$_.id -eq $packageName};
+    "----package--------------------------"
+    $package
 
     #$package.versions | Select -Last 30;
 
