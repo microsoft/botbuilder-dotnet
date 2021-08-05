@@ -12,7 +12,7 @@ param
 )
 
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
-$feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/api/v3/index.json";
+$feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/npm/";
 
 Function Sort-Versions
 {
@@ -50,6 +50,7 @@ foreach ($packageName in $packageNames) {
     #$package.versions | Select -Last 30;
 
     [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
+
     $sortedVersions = Sort-Versions $unsortedVersions;
 
     #Get versions equal to or older than $versionToUnlist
@@ -68,11 +69,11 @@ foreach ($packageName in $packageNames) {
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
-            nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
+            "npm unpublish $packageName@$version --registry=$feedApiUrl"
+            npm unpublish $packageName@$version --registry=$feedApiUrl
         } else {
             "What-if: Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
+            "npm unpublish $packageName@$version --registry=$feedApiUrl"
         }
     }
 }
