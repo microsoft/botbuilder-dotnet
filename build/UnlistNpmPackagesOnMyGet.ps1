@@ -50,7 +50,8 @@ foreach ($packageName in $packageNames) {
     #$package.versions | Select -Last 30;
 
     [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
-
+    "----unsortedVersions--------------------------"
+    $unsortedVersions
     $sortedVersions = Sort-Versions $unsortedVersions;
 
     #Get versions equal to or older than $versionToUnlist
