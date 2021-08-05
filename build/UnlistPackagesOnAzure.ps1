@@ -11,13 +11,12 @@ param
     [string]$unlistPackagesForReal = "false"
 )
 
-$feedApiUrl = "https://api.nuget.org/v3/index.json";
+$RegistryUrlSource = "https://pkgs.dev.azure.com/ConversationalAI/BotFramework/_packaging/SDK/nuget/v3/index.json";
 
 Function Get-Versions-From-Azure 
 {
     param ( [string]$packageName );
 
-    $RegistryUrlSource = "https://pkgs.dev.azure.com/ConversationalAI/BotFramework/_packaging/SDK/nuget/v3/index.json" 
     $result = nuget list $packageName -Source "$RegistryUrlSource" -PreRelease -AllVersions | Where-Object { $_ -like "$packageName *" };
     $versions = $result | % { $_.Split(" ")[-1] };
 
@@ -53,11 +52,11 @@ foreach ($packageName in $packageNames) {
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $adoPersonalAccessToken -NonInteractive"
-            nuget delete $packageName $version -Source $feedApiUrl -apikey $adoPersonalAccessToken -NonInteractive
+            "nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive"
+            nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive
         } else {
             "What-if: Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $adoPersonalAccessToken -NonInteractive"
+            "nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive"
         }
     }
 }
