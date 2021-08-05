@@ -1,5 +1,5 @@
 #
-# Unlists NuGet package versions lower than or equal to $versionToUnlist.
+# Unlists NuGet package versions on NuGet.org lower than or equal to $versionToUnlist.
 # Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
 #
 param
