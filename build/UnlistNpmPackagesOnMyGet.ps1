@@ -33,12 +33,7 @@ Function Sort-Versions
     return $Q.TrimEnd(".");
 }
 
-"----packageNames--------------------------"
-$packageNames
-
 $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
-"----result--------------------------"
-$result
 
 "unlistPackagesForReal: " + $unlistPackagesForReal;
 "Target version: " + $versionToUnlist;
@@ -51,15 +46,11 @@ foreach ($packageName in $packageNames) {
     "========================";
 
     $package = $result.packages | Where-Object {$_.id -eq $packageName};
-    "----package--------------------------"
-    $package
 
     #$package.versions | Select -Last 30;
 
     [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
-    "----unsortedVersions--------------------------"
-    $unsortedVersions
-    #$sortedVersions = Sort-Versions $unsortedVersions;
+    $sortedVersions = Sort-Versions $unsortedVersions;
 
     #Get versions equal to or older than $versionToUnlist
     $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
