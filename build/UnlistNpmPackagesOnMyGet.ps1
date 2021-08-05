@@ -4,7 +4,7 @@
 #
 param
 ( 
-    [string]$versionToUnlist = "v4.13.4",
+    [string]$versionToUnlist = "4.0.5-1500",
     [string[]]$packageNames = @( "adaptive-expressions","botbuilder","botbuilder-dialogs-adaptive-runtime-core" ),
     [string]$myGetFeedName = "botbuilder-v4-js-daily",
     [string]$myGetPersonalAccessToken,
@@ -68,11 +68,11 @@ foreach ($packageName in $packageNames) {
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
-            "Deleting $version"
+            "Unlisting $version"
             "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
             nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
         } else {
-            "What-if: Deleting $version"
+            "What-if: Unlisting $version"
             "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
         }
     }

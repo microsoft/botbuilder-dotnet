@@ -68,11 +68,11 @@ foreach ($packageName in $packageNames) {
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
-            "Deleting $version"
+            "Unlisting $version"
             "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
             nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
         } else {
-            "What-if: Deleting $version"
+            "What-if: Unlisting $version"
             "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
         }
     }
