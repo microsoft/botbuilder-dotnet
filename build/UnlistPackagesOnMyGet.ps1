@@ -1,6 +1,6 @@
 #
 # Unlists NuGet package versions on MyGet.org lower than or equal to $versionToUnlist.
-# Run this first with $deletePackagesForReal = false (default) to verify what versions will be affected.
+# Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
 #
 param
 ( 
@@ -8,7 +8,7 @@ param
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
-    [string]$deletePackagesForReal = "false"
+    [string]$unlistPackagesForReal = "false"
 )
 
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
@@ -35,7 +35,7 @@ Function Sort-Versions
 
 $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
 
-"deletePackagesForReal: " + $deletePackagesForReal;
+"unlistPackagesForReal: " + $unlistPackagesForReal;
 "Target version: " + $versionToUnlist;
 " ";
 "Package versions to unlist:"
@@ -66,7 +66,7 @@ foreach ($packageName in $packageNames) {
 
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
-        if ($deletePackagesForReal -eq "true") {
+        if ($unlistPackagesForReal -eq "true") {
             "Deleting $version"
             "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
             nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive

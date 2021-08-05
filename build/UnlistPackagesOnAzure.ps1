@@ -24,7 +24,7 @@ Function Get-Versions-From-Azure
     return $versions
 }
 
-"deletePackagesForReal: " + $unlistPackagesForReal;
+"unlistPackagesForReal: " + $unlistPackagesForReal;
 "Target version: " + $versionToUnlist;
 " ";
 "Package versions to unlist:"
