@@ -1,5 +1,5 @@
 #
-# Unlists NuGet package versions on NuGet.org lower than or equal to $versionToUnlist.
+# Unlists NuGet package versions on Azure ConversationalAI feed  lower than or equal to $versionToUnlist.
 # Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
 # See: https://stackoverflow.com/questions/34958908/where-can-i-find-documentation-for-the-nuget-v3-api
 #
@@ -7,7 +7,7 @@ param
 ( 
     [string]$versionToUnlist = "1.0.2",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
-    [string]$nuGetPersonalAccessToken,
+    [string]$adoPersonalAccessToken,
     [string]$unlistPackagesForReal = "false"
 )
 
@@ -53,11 +53,11 @@ foreach ($packageName in $packageNames) {
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $nuGetPersonalAccessToken -NonInteractive"
-            nuget delete $packageName $version -Source $feedApiUrl -apikey $nuGetPersonalAccessToken -NonInteractive
+            "nuget delete $packageName $version -Source $feedApiUrl -apikey $adoPersonalAccessToken -NonInteractive"
+            nuget delete $packageName $version -Source $feedApiUrl -apikey $adoPersonalAccessToken -NonInteractive
         } else {
             "What-if: Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $nuGetPersonalAccessToken -NonInteractive"
+            "nuget delete $packageName $version -Source $feedApiUrl -apikey $adoPersonalAccessToken -NonInteractive"
         }
     }
 }
