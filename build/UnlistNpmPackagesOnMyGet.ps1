@@ -73,14 +73,14 @@ foreach ($packageName in $packageNames) {
         #$url = "$feedApiUrl$packageName/versions/$version";
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version";
-            "npm unpublish $packageName@$version";
-            npm unpublish $packageName@$version
+            "npm unpublish $packageName@v$version";
+            npm unpublish $packageName@v$version
             #Invoke-RestMethod -Uri $url -Method Delete -ContentType "application/json"
             #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
             #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive;
         } else {
             "What-if: Unlisting $version"
-            "npm unpublish $packageName@$version";
+            "npm unpublish $packageName@v$version";
             #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
         }
     }
