@@ -67,17 +67,21 @@ foreach ($packageName in $packageNames) {
     "------------------------";
 
     # Do the unlisting
+    npm config set registry https://botbuilder.myget.org/F/botbuilder-v4-js-daily/npm/
+
     foreach ($version in $versionsToUnlist) {
         #$url = "$feedApiUrl$packageName/versions/$version";
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version";
-            #npm unpublish $packageName@$version
+            "npm unpublish $packageName@$version";
+            npm unpublish $packageName@$version
             #Invoke-RestMethod -Uri $url -Method Delete -ContentType "application/json"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
-            nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive;
+            #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
+            #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive;
         } else {
             "What-if: Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
+            "npm unpublish $packageName@$version";
+            #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
         }
     }
 }
