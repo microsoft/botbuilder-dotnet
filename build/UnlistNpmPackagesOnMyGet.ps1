@@ -67,13 +67,16 @@ foreach ($packageName in $packageNames) {
 
     # Do the unlisting
     foreach ($version in $versionsToUnlist) {
+        #$url = "$feedApiUrl$packageName/versions/$version";
         if ($unlistPackagesForReal -eq "true") {
-            "Unlisting $version"
-            "npm unpublish $packageName@$version"
-            npm unpublish $packageName@$version
+            "Unlisting $version";
+            #npm unpublish $packageName@$version
+            #Invoke-RestMethod -Uri $url -Method Delete -ContentType "application/json"
+            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
+            nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive;
         } else {
             "What-if: Unlisting $version"
-            "npm unpublish $packageName@$version"
+            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
         }
     }
 }
