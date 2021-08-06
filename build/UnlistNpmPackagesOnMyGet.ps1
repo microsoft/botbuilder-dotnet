@@ -12,7 +12,8 @@ param
 )
 
 $feedStateUrl = "https://botbuilder.myget.org/F/$myGetFeedName/auth/$myGetPersonalAccessToken/api/v2/feed-state";
-$feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/npm/";
+#$feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/npm/";
+$feedApiUrl = "https://botbuilder.myget.org/F/$myGetFeedName/api/v3/index.json";
 
 Function Sort-Versions
 {
