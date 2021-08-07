@@ -56,7 +56,7 @@ foreach ($packageName in $packageNames) {
         } else {
             "What-if: Unlisting $version"
             "npm unpublish $packageName@$version --dry-run";
-            npm unpublish $packageName@$version --dry-run
+            npm unpublish $packageName@$version --dry-run --loglevel verbose;
         }
     }
 }
