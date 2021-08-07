@@ -51,8 +51,8 @@ foreach ($packageName in $packageNames) {
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version"
-            "npm unpublish $packageName@$version";
-            npm unpublish $packageName@$version
+            "npm unpublish @microsoft/$packageName@$version --loglevel verbose";
+            npm unpublish @microsoft/$packageName@$version --loglevel verbose;
         } else {
             "What-if: Unlisting $version"
             "npm unpublish @microsoft/$packageName@$version --dry-run --loglevel verbose";
