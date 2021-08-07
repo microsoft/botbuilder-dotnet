@@ -6,7 +6,7 @@ param
 ( 
     [string]$versionToUnlist = "0.6.0",
     [string[]]$packageNames = @( "adaptive-expressions","botbuilder","botbuilder-dialogs-adaptive-runtime-core" ),
-    [string]$adoPersonalAccessToken,
+    [string]$npmPersonalAccessToken,
     [string]$unlistPackagesForReal = "false"
 )
 
