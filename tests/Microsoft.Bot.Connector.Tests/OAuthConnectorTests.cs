@@ -54,14 +54,14 @@ namespace Microsoft.Bot.Connector.Tests
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
                 // Automated Windows build exception:
-                await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode");
+                await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChannelId", "dummyCode");
                 Assert.True(true, "No exception thrown.");
             }
             else
             {
                 // MacLinux build and local build exception:
                 await Assert.ThrowsAsync<System.Net.Http.HttpRequestException>(() => client.UserToken.GetTokenAsync(
-                    "dummyUserid", "dummyConnectionName", "dummyChanneId", "dummyCode"));
+                    "dummyUserid", "dummyConnectionName", "dummyChannelId", "dummyCode"));
             }
         }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Connector.Tests
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
                 // Automated Windows build exception:
-                await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.UserToken.SignOutAsync(
+                await Assert.ThrowsAsync<ErrorResponseException>(() => client.UserToken.SignOutAsync(
                     "dummyUserId", "dummyConnectionName", "dummyChannelId"));
             }
             else
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.ExchangeAsyncAsync(
-                null, null, null, null));
+                null, "dummyConnectionName", "dummyChannelId", new TokenExchangeRequest()));
         }
 
         [Fact]
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.ExchangeAsyncAsync(
-                "dummyUserId", null, null, null));
+                "dummyUserId", null, "dummyChannelId", new TokenExchangeRequest()));
         }
 
         [Fact]
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Connector.Tests
         {
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.ExchangeAsyncAsync(
-                "dummyUserId", "dummyConnectionName", null, null));
+                "dummyUserId", "dummyConnectionName", null, new TokenExchangeRequest()));
         }
 
         [Fact]

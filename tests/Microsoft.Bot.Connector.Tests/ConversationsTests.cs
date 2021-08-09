@@ -69,19 +69,11 @@ namespace Microsoft.Bot.Connector.Tests
         [Fact]
         public async Task SendConversationHistoryWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
         {
-            //var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
             ServiceClientTracing.IsEnabled = true;
-            await Assert.ThrowsAsync<Microsoft.Bot.Schema.ErrorResponseException>(() => client.Conversations.SendConversationHistoryAsync(
+            await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.SendConversationHistoryAsync(
                 "dummyConversationId", new Transcript()));
         }
-
-        //[Fact]
-        //public async Task GetConversationsWithHttpMessagesAsync_ShouldThrowOnNullContinuationToken()
-        //{
-        //    var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
-        //    await Assert.ThrowsAsync<ValidationException>(() => client.Conversations.GetConversationsAsync(null));
-        //}
 
         [Fact]
         public async Task GetConversationsWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
