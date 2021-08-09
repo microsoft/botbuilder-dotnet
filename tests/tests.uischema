@@ -53,6 +53,12 @@
         "*"
       ],
       "subtitle": "Ask Activity"
+    },
+    "menu": {
+      "label": "Ask Activity",
+      "submenu": [
+        "Ask a question"
+      ]
     }
   },
   "Microsoft.AttachmentInput": {
@@ -101,6 +107,12 @@
         }
       },
       "subtitle": "Attachment Input"
+    },
+    "menu": {
+      "label": "File or attachment",
+      "submenu": [
+        "Ask a question"
+      ]
     }
   },
   "Microsoft.BeginDialog": {
@@ -134,6 +146,12 @@
         }
       },
       "subtitle": "Begin Dialog"
+    },
+    "menu": {
+      "label": "Begin a new dialog",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.BeginSkill": {
@@ -144,18 +162,21 @@
         "singleline": true,
         "widget": "ResourceOperation"
       },
-      "colors": {
-        "color": "#FFFFFF",
-        "icon": "#FFFFFF",
-        "theme": "#004578"
-      },
       "footer": {
         "description": "= Result",
         "property": "=action.resultProperty",
         "widget": "PropertyDescription"
       },
+      "header": {
+        "colors": {
+          "color": "#FFFFFF",
+          "icon": "#FFFFFF",
+          "theme": "#004578"
+        },
+        "icon": "Library",
+        "widget": "ActionHeader"
+      },
       "hideFooter": "=!action.resultProperty",
-      "icon": "Library",
       "widget": "ActionCard"
     },
     "form": {
@@ -169,12 +190,24 @@
         }
       },
       "subtitle": "Skill Dialog"
+    },
+    "menu": {
+      "label": "Connect to a skill",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.BreakLoop": {
     "form": {
       "label": "Break out of loop",
       "subtitle": "Break out of loop"
+    },
+    "menu": {
+      "label": "Break out of loop",
+      "submenu": [
+        "Looping"
+      ]
     }
   },
   "Microsoft.CancelAllDialogs": {
@@ -190,6 +223,20 @@
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
       "label": "Cancel all active dialogs",
       "subtitle": "Cancel All Dialogs"
+    },
+    "menu": {
+      "label": "Cancel all active dialogs",
+      "submenu": [
+        "Dialog management"
+      ]
+    }
+  },
+  "Microsoft.CancelDialog": {
+    "menu": {
+      "label": "Cancel dialog",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.ChoiceInput": {
@@ -238,6 +285,12 @@
         }
       },
       "subtitle": "Choice Input"
+    },
+    "menu": {
+      "label": "Multi-choice",
+      "submenu": [
+        "Ask a question"
+      ]
     }
   },
   "Microsoft.ConfirmInput": {
@@ -286,12 +339,40 @@
         }
       },
       "subtitle": "Confirm Input"
+    },
+    "menu": {
+      "label": "Confirmation",
+      "submenu": [
+        "Ask a question"
+      ]
+    }
+  },
+  "Microsoft.ContinueConversation": {
+    "menu": {
+      "label": "Continue conversation",
+      "submenu": [
+        "Dialog management"
+      ]
+    }
+  },
+  "Microsoft.ContinueConversationLater": {
+    "menu": {
+      "label": "Continue conversation later",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.ContinueLoop": {
     "form": {
       "label": "Continue loop",
       "subtitle": "Continue loop"
+    },
+    "menu": {
+      "label": "Continue loop",
+      "submenu": [
+        "Looping"
+      ]
     }
   },
   "Microsoft.DateTimeInput": {
@@ -340,11 +421,31 @@
         }
       },
       "subtitle": "Date Time Input"
+    },
+    "menu": {
+      "label": "Date or time",
+      "submenu": [
+        "Ask a question"
+      ]
     }
   },
   "Microsoft.DebugBreak": {
     "form": {
       "label": "Debug Break"
+    },
+    "menu": {
+      "label": "Debug break",
+      "submenu": [
+        "Debugging options"
+      ]
+    }
+  },
+  "Microsoft.DeleteActivity": {
+    "menu": {
+      "label": "Delete activity",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.DeleteProperties": {
@@ -366,6 +467,12 @@
         }
       },
       "subtitle": "Delete Properties"
+    },
+    "menu": {
+      "label": "Delete properties",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.DeleteProperty": {
@@ -384,6 +491,12 @@
         }
       },
       "subtitle": "Delete Property"
+    },
+    "menu": {
+      "label": "Delete a property",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.EditActions": {
@@ -427,6 +540,12 @@
         }
       },
       "subtitle": "Edit Array"
+    },
+    "menu": {
+      "label": "Edit an array property",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.EmitEvent": {
@@ -442,6 +561,12 @@
       "helpLink": "https://aka.ms/bfc-custom-events",
       "label": "Emit a custom event",
       "subtitle": "Emit Event"
+    },
+    "menu": {
+      "label": "Emit a custom event",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.EndDialog": {
@@ -449,6 +574,12 @@
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
       "label": "End this dialog",
       "subtitle": "End Dialog"
+    },
+    "menu": {
+      "label": "End this dialog",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.EndTurn": {
@@ -456,6 +587,12 @@
       "helpLink": "https://aka.ms/bfc-understanding-dialogs",
       "label": "End turn",
       "subtitle": "End Turn"
+    },
+    "menu": {
+      "label": "End turn",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.FacebookAdapter": {
@@ -511,6 +648,12 @@
         }
       },
       "subtitle": "For Each"
+    },
+    "menu": {
+      "label": "Loop: For each item",
+      "submenu": [
+        "Looping"
+      ]
     }
   },
   "Microsoft.ForeachPage": {
@@ -551,6 +694,12 @@
         }
       },
       "subtitle": "For Each Page"
+    },
+    "menu": {
+      "label": "Loop: For each page (multiple items)",
+      "submenu": [
+        "Looping"
+      ]
     }
   },
   "Microsoft.GetActivityMembers": {
@@ -566,6 +715,12 @@
         "widget": "PropertyDescription"
       },
       "widget": "ActionCard"
+    },
+    "menu": {
+      "label": "Get activity members",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.GetConversationMembers": {
@@ -576,6 +731,28 @@
         "widget": "PropertyDescription"
       },
       "widget": "ActionCard"
+    },
+    "menu": {
+      "label": "Get conversation members",
+      "submenu": [
+        "Manage properties"
+      ]
+    }
+  },
+  "Microsoft.GetConversationReference": {
+    "menu": {
+      "label": "Get conversation reference",
+      "submenu": [
+        "Dialog management"
+      ]
+    }
+  },
+  "Microsoft.GotoAction": {
+    "menu": {
+      "label": "Go to action",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.HttpRequest": {
@@ -612,6 +789,12 @@
         }
       },
       "subtitle": "HTTP Request"
+    },
+    "menu": {
+      "label": "Send an HTTP request",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.IfCondition": {
@@ -631,6 +814,12 @@
       ],
       "label": "Branch: If/Else",
       "subtitle": "If Condition"
+    },
+    "menu": {
+      "label": "Branch: If/else",
+      "submenu": [
+        "Create a condition"
+      ]
     }
   },
   "Microsoft.LogAction": {
@@ -638,6 +827,12 @@
       "helpLink": "https://aka.ms/composer-telemetry",
       "label": "Log to console",
       "subtitle": "Log Action"
+    },
+    "menu": {
+      "label": "Log to console",
+      "submenu": [
+        "Debugging options"
+      ]
     }
   },
   "Microsoft.NumberInput": {
@@ -686,6 +881,12 @@
         }
       },
       "subtitle": "Number Input"
+    },
+    "menu": {
+      "label": "Number",
+      "submenu": [
+        "Ask a question"
+      ]
     }
   },
   "Microsoft.OAuthInput": {
@@ -712,7 +913,21 @@
         "*"
       ],
       "subtitle": "OAuth Input"
-    }
+    },
+    "menu": [
+      {
+        "label": "OAuth login",
+        "submenu": [
+          "Ask a question"
+        ]
+      },
+      {
+        "label": "OAuth login",
+        "submenu": [
+          "Access external resources"
+        ]
+      }
+    ]
   },
   "Microsoft.OnActivity": {
     "form": {
@@ -862,6 +1077,16 @@
         "*"
       ],
       "subtitle": "Condition"
+    }
+  },
+  "Microsoft.OnContinueConversation": {
+    "form": {
+      "hidden": [
+        "actions"
+      ]
+    },
+    "trigger": {
+      "submenu": "Activities"
     }
   },
   "Microsoft.OnConversationUpdateActivity": {
@@ -1171,6 +1396,12 @@
     "flow": {
       "body": "=action.hostname",
       "widget": "ActionCard"
+    },
+    "menu": {
+      "label": "Connect to QnA Knowledgebase",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.RegexRecognizer": {
@@ -1189,6 +1420,12 @@
         "*"
       ],
       "subtitle": "Repeat Dialog"
+    },
+    "menu": {
+      "label": "Repeat this dialog",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.ReplaceDialog": {
@@ -1208,6 +1445,12 @@
         "*"
       ],
       "subtitle": "Replace Dialog"
+    },
+    "menu": {
+      "label": "Replace this dialog",
+      "submenu": [
+        "Dialog management"
+      ]
     }
   },
   "Microsoft.SendActivity": {
@@ -1234,6 +1477,10 @@
         "*"
       ],
       "subtitle": "Send Activity"
+    },
+    "menu": {
+      "label": "Send a response",
+      "submenu": false
     }
   },
   "Microsoft.SendHandoffActivity": {
@@ -1275,6 +1522,12 @@
         }
       },
       "subtitle": "Set Properties"
+    },
+    "menu": {
+      "label": "Set properties",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.SetProperty": {
@@ -1293,12 +1546,24 @@
         }
       },
       "subtitle": "Set Property"
+    },
+    "menu": {
+      "label": "Set a property",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.SignOutUser": {
     "form": {
       "label": "Sign out user",
       "subtitle": "Signout User"
+    },
+    "menu": {
+      "label": "Sign out user",
+      "submenu": [
+        "Access external resources"
+      ]
     }
   },
   "Microsoft.SlackAdapter": {
@@ -1345,6 +1610,20 @@
         }
       },
       "subtitle": "Switch Condition"
+    },
+    "menu": {
+      "label": "Branch: Switch (multiple options)",
+      "submenu": [
+        "Create a condition"
+      ]
+    }
+  },
+  "Microsoft.TelemetryTrackEventAction": {
+    "menu": {
+      "label": "Emit a telemetry track event",
+      "submenu": [
+        "Debugging options"
+      ]
     }
   },
   "Microsoft.TextInput": {
@@ -1393,6 +1672,12 @@
         }
       },
       "subtitle": "Text Input"
+    },
+    "menu": {
+      "label": "Text",
+      "submenu": [
+        "Ask a question"
+      ]
     }
   },
   "Microsoft.ThrowException": {
@@ -1407,6 +1692,12 @@
     "form": {
       "label": "Throw an exception",
       "subtitle": "Throw an exception"
+    },
+    "menu": {
+      "label": "Throw exception",
+      "submenu": [
+        "Debugging options"
+      ]
     }
   },
   "Microsoft.TraceActivity": {
@@ -1414,6 +1705,12 @@
       "helpLink": "https://aka.ms/composer-telemetry",
       "label": "Emit a trace event",
       "subtitle": "Trace Activity"
+    },
+    "menu": {
+      "label": "Emit a trace event",
+      "submenu": [
+        "Debugging options"
+      ]
     }
   },
   "Microsoft.TwilioAdapter": {
@@ -1453,6 +1750,12 @@
     "form": {
       "label": "Update an activity",
       "subtitle": "Update Activity"
+    },
+    "menu": {
+      "label": "Update an activity",
+      "submenu": [
+        "Manage properties"
+      ]
     }
   },
   "Microsoft.WebexAdapter": {

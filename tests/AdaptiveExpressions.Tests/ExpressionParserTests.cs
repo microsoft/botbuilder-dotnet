@@ -324,7 +324,7 @@ namespace AdaptiveExpressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region locale specific tests
-            
+
             //on *nix OS, 'de-DE' will return 'MM.dd.YY HH:mm:ss', on Windows it's 'MM.dd.YYYY HH:mm:ss'
             Test("replace(addDays(timestamp, 1, '', 'de-DE'), '20', '')", "16.03.18 13:00:00"),
             Test("replace(addHours(timestamp, 2, '', 'de-DE'), '20', '')", "15.03.18 15:00:00"),
@@ -1091,6 +1091,8 @@ namespace AdaptiveExpressions.Tests
             Test("string(merge(json(json1), json(json2)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"]}"),
             Test("string(merge(json(json1), json(json2), json(json3)))", "{\"FirstName\":\"John\",\"LastName\":\"Smith\",\"Enabled\":true,\"Roles\":[\"Customer\",\"Admin\"],\"Age\":36}"),
             Test("merge(callstack[1], callstack[2]).z", 1),
+            Test("merge(callstack).z", 1),
+            Test("string(merge({k1:'v1'}, [{k2:'v2'}, {k3: 'v3'}], {k4:'v4'}))", "{\"k1\":\"v1\",\"k2\":\"v2\",\"k3\":\"v3\",\"k4\":\"v4\"}"),
             #endregion
 
             #region  Memory access
