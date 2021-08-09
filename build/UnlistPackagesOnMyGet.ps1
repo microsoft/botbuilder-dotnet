@@ -43,10 +43,6 @@ $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "applica
 "Package versions to unlist:"
 
 foreach ($packageName in $packageNames) {
-    "========================";
-    $packageName;
-    "========================";
-
     $package = $result.packages | Where-Object {$_.id -eq $packageName};
 
     #$package.versions | Select -Last 30;
@@ -59,27 +55,24 @@ foreach ($packageName in $packageNames) {
     $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
 
     if ($index -ne $Null) {
+        "==================";
+        $packageName;
+        "==================";
+
         if ($unlistAllOlderVersionsAlso -eq "true") {
             $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
         } else {
             $versionsToUnlist = @($sortedVersions[$index]);
         }
-        $versionsToUnlist;
-    } else {
-        $versionsToUnlist = $null;
-        "[none]";
-    }
-    "------------------------";
 
-    # Do the unlisting
-    foreach ($version in $versionsToUnlist) {
-        if ($unlistPackagesForReal -eq "true") {
-            "Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
-            nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
-        } else {
-            "What-if: Unlisting $version"
-            "nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
+        foreach ($version in $versionsToUnlist) {
+            if ($unlistPackagesForReal -eq "true") {
+                "    Unlisting $version"
+                "    nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive"
+                nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive
+            } else {
+                "    $version"
+            }
         }
     }
 }
