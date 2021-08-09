@@ -1,10 +1,11 @@
 #
-# Unlists NuGet package versions on MyGet.org lower than or equal to $versionToUnlist.
+# Unlists NuGet packages on MyGet.org with the specified version number. Option to unlist all older packages as well.
 # Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
 #
 param
 ( 
     [string]$versionToUnlist = "4.7.2-",
+    [string]$unlistAllOlderPackagesAlso = "false",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
@@ -53,11 +54,15 @@ foreach ($packageName in $packageNames) {
 
     $sortedVersions = Sort-Versions $unsortedVersions;
 
-    #Get versions equal to or older than $versionToUnlist
+    #Set index to $versionToUnlist
     $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
 
     if ($index -ne $Null) {
-        $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
+        if ($unlistAllOlderPackagesAlso == "true") {
+            $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
+        } else {
+            $versionsToUnlist = @($sortedVersions[$index]);
+        }
         $versionsToUnlist;
     } else {
         $versionsToUnlist = $null;
