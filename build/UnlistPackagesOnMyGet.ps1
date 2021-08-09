@@ -1,11 +1,11 @@
 #
-# Unlists NuGet packages on MyGet.org with the specified version number. Option to unlist all older packages as well.
+# Unlists NuGet packages on MyGet.org with the specified version number. Option to unlist all older versions as well.
 # Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
 #
 param
 ( 
     [string]$versionToUnlist = "4.7.2-",
-    [string]$unlistAllOlderPackagesAlso = "false",
+    [string]$unlistAllOlderVersionsAlso = "false",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
@@ -37,7 +37,8 @@ Function Sort-Versions
 $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
 
 "unlistPackagesForReal: " + $unlistPackagesForReal;
-"Target version: " + $versionToUnlist;
+"versionToUnlist: " + $versionToUnlist;
+"unlistAllOlderVersionsAlso: " + $unlistAllOlderVersionsAlso;
 " ";
 "Package versions to unlist:"
 
@@ -58,7 +59,7 @@ foreach ($packageName in $packageNames) {
     $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
 
     if ($index -ne $Null) {
-        if ($unlistAllOlderPackagesAlso == "true") {
+        if ($unlistAllOlderVersionsAlso -eq "true") {
             $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
         } else {
             $versionsToUnlist = @($sortedVersions[$index]);
