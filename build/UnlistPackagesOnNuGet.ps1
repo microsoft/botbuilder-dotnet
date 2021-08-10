@@ -19,7 +19,7 @@ Function Get-Versions-From-Nuget
     param ( [string]$packageName );
 
     $packageBaseAddress = "https://api.nuget.org/v3-flatcontainer/";
-    $versionsUri = $packageBaseAddress + $packageName + "/index.json";
+    [string]$versionsUri = $packageBaseAddress + $packageName + "/index.json";
 
     $response2 = Invoke-RestMethod -Uri $versionsUri
 
@@ -47,7 +47,7 @@ foreach ($packageName in $packageNames) {
             [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
         }
     } else {
-        [string[]]$versionsToUnlist = $packageInfo.versions.Where({$_ -eq $versionToUnlist});
+        [string[]]$versionsToUnlist = $sortedVersions.Where({$_ -eq $versionToUnlist});
     }
 
     if ($versionsToUnlist.Count -gt 0) {
