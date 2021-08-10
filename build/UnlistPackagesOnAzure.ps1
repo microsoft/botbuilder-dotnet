@@ -5,7 +5,8 @@
 #
 param
 ( 
-    [string]$versionToUnlist = "4.11.0",
+    [string]$versionToUnlist = "4.7.0",
+    [string]$unlistOlderVersionsAlso = "false",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$adoPersonalAccessToken,
     [string]$unlistPackagesForReal = "false"
@@ -23,41 +24,43 @@ Function Get-Versions-From-Azure
     return $versions
 }
 
+"versionToUnlist: " + $versionToUnlist;
+"unlistOlderVersionsAlso: " + $unlistOlderVersionsAlso;
 "unlistPackagesForReal: " + $unlistPackagesForReal;
-"Target version: " + $versionToUnlist;
 " ";
 "Package versions to unlist:"
 
 foreach ($packageName in $packageNames) {
-    "========================";
-    $packageName;
-    "========================";
+    $versionsToUnlist = $null;
 
     $sortedVersions = Get-Versions-From-Azure $packageName;
 
     [array]::Reverse($sortedVersions);
 
-    #Get versions equal to or older than $versionToUnlist
-    $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
+    if ($unlistOlderVersionsAlso -eq "true") {
+        #Set index to $versionToUnlist
+        $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
 
-    if ($index -ne $Null) {
-        $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
-        $versionsToUnlist;
+        if ($index -ne $Null) {
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
+        }
     } else {
-        $versionsToUnlist = $null;
-        "[none]";
+        [string[]]$versionsToUnlist = $sortedVersions.Where({$_ -eq $versionToUnlist});
     }
-    "------------------------";
 
-    # Do the unlisting
-    foreach ($version in $versionsToUnlist) {
-        if ($unlistPackagesForReal -eq "true") {
-            "Unlisting $version"
-            "nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive"
-            nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive
-        } else {
-            "What-if: Unlisting $version"
-            "nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive"
+    if ($versionsToUnlist.Count -gt 0) {
+        "-----------------------------------------";
+        $packageName + ":";
+        "-----------------------------------------";
+
+        foreach ($version in $versionsToUnlist) {
+            if ($unlistPackagesForReal -eq "true") {
+                "    Unlisting $version"
+                "    nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive"
+                nuget delete $packageName $version -Source $RegistryUrlSource -apikey $adoPersonalAccessToken -NonInteractive
+            } else {
+                "    $version"
+            }
         }
     }
 }
