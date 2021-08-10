@@ -5,6 +5,7 @@
 param
 ( 
     [string]$versionToUnlist = "0.6.0",
+    [string]$unlistOlderVersionsAlso = "false",
     [string[]]$packageNames = @( "adaptive-expressions","botbuilder","botbuilder-dialogs-adaptive-runtime-core" ),
     [string]$npmPersonalAccessToken, # Not currently used.
     [string]$unlistPackagesForReal = "false"
@@ -22,32 +23,35 @@ Function Get-Versions-From-Npm
     return $versions;
 }
 
+"versionToUnlist: " + $versionToUnlist;
+"unlistOlderVersionsAlso: " + $unlistOlderVersionsAlso;
 "unlistPackagesForReal: " + $unlistPackagesForReal;
-"Target version: " + $versionToUnlist;
 " ";
 "Package versions to unlist:"
 
 foreach ($packageName in $packageNames) {
-    "========================";
-    $packageName;
-    "========================";
+    $versionsToUnlist = $null;
 
     $versions = Get-Versions-From-Npm $packageName;
     $versionsArray = $versions -split " " | Where-Object {$_};
 
-    #Get versions equal to or older than $versionToUnlist
-    $index = (0..($versionsArray.Count-1)) | where {$versionsArray[$_].StartsWith($versionToUnlist)};
+    if ($unlistOlderVersionsAlso -eq "true") {
 
-    if ($index -ne $Null) {
-        $versionsToUnlist = $versionsArray | select -First ($index[-1] + 1);
-        $versionsToUnlist;
+        #Set index to $versionToUnlist
+        $index = (0..($versionsArray.Count-1)) | where {$versionsArray[$_].StartsWith($versionToUnlist)};
+
+        if ($index -ne $Null) {
+            [string[]]$versionsToUnlist = $versionsArray | select -First ($index[-1] + 1);
+        }
     } else {
-        $versionsToUnlist = $null;
-        "[none]";
+        [string[]]$versionsToUnlist = $versionsArray.Where({$_ -eq $versionToUnlist});
     }
-    "------------------------";
 
-    # Do the unlisting
+    if ($versionsToUnlist.Count -gt 0) {
+        "-----------------------------------------";
+        $packageName + ":";
+        "-----------------------------------------";
+
     foreach ($version in $versionsToUnlist) {
         if ($unlistPackagesForReal -eq "true") {
             "Unlisting $version"
@@ -55,12 +59,10 @@ foreach ($packageName in $packageNames) {
             npm unpublish $packageName@$version --loglevel verbose;
             #"npm unpublish @microsoft/$packageName@$version --loglevel verbose";
             #npm unpublish @microsoft/$packageName@$version --loglevel verbose;
-        } else {
-            "What-if: Unlisting $version"
-            "npm unpublish $packageName@$version --dry-run --loglevel verbose";
-            npm unpublish $packageName@$version --dry-run --loglevel verbose;
-            #"npm unpublish @microsoft/$packageName@$version --dry-run --loglevel verbose";
-            #npm unpublish @microsoft/$packageName@$version --dry-run --loglevel verbose;
+            } else {
+                "    $version"
+            }
         }
     }
 }
+"-----------------------------------------";

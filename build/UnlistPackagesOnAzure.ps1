@@ -5,7 +5,7 @@
 #
 param
 ( 
-    [string]$versionToUnlist = "4.7.0",
+    [string]$versionToUnlist = "4.11.2",
     [string]$unlistOlderVersionsAlso = "false",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$adoPersonalAccessToken,
