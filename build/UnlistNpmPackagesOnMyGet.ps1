@@ -1,10 +1,11 @@
 #
-# Unlists npm package versions on MyGet.org lower than or equal to $versionToUnlist.
-# Run this first with $unlistPackagesForReal = false (default) to verify what versions will be affected.
-#
+# Shows but cannot unlist npm package versions on MyGet.org lower than or equal to $versionToUnlist.
+# Cannot unlist because per MyGet support, "we do not support the npm unpublish command".
+# 
 param
 ( 
     [string]$versionToUnlist = "4.0.5-1500",
+    [string]$unlistOlderVersionsAlso = "false",
     [string[]]$packageNames = @( "adaptive-expressions","botbuilder","botbuilder-dialogs-adaptive-runtime-core" ),
     [string]$myGetFeedName = "botbuilder-v4-js-daily",
     [string]$myGetPersonalAccessToken,
@@ -39,49 +40,47 @@ $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "applica
 "unlistPackagesForReal: " + $unlistPackagesForReal;
 "Target version: " + $versionToUnlist;
 " ";
-"Package versions to unlist:"
+"Package versions to unlist:";
+
+npm config set registry https://botbuilder.myget.org/F/botbuilder-v4-js-daily/npm/;
 
 foreach ($packageName in $packageNames) {
-    "========================";
-    $packageName;
-    "========================";
+    $versionsToUnlist = $null;
 
     $package = $result.packages | Where-Object {$_.id -eq $packageName};
 
-    #$package.versions | Select -Last 30;
+    if ($unlistOlderVersionsAlso -eq "true") {
+        [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
 
-    [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
+        $sortedVersions = Sort-Versions $unsortedVersions;
 
-    $sortedVersions = Sort-Versions $unsortedVersions;
+        #Set index to $versionToUnlist
+        $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
 
-    #Get versions equal to or older than $versionToUnlist
-    $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
-
-    if ($index -ne $Null) {
-        $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
-        $versionsToUnlist;
+        if ($index -ne $Null) {
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
+        }
     } else {
-        $versionsToUnlist = $null;
-        "[none]";
+        [string[]]$versionsToUnlist = $packageInfo.versions.Where({$_ -eq $versionToUnlist});
     }
-    "------------------------";
 
-    # Do the unlisting
-    npm config set registry https://botbuilder.myget.org/F/botbuilder-v4-js-daily/npm/
+    if ($versionsToUnlist.Count -gt 0) {
+        "-----------------------------------------";
+        $packageName + ":";
+        "-----------------------------------------";
 
-    foreach ($version in $versionsToUnlist) {
-        #$url = "$feedApiUrl$packageName/versions/$version";
-        if ($unlistPackagesForReal -eq "true") {
-            "Unlisting $version";
-            "npm unpublish $packageName@v$version";
-            npm unpublish $packageName@v$version
-            #Invoke-RestMethod -Uri $url -Method Delete -ContentType "application/json"
-            #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
-            #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive;
-        } else {
-            "What-if: Unlisting $version"
-            "npm unpublish $packageName@v$version";
-            #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
+        foreach ($version in $versionsToUnlist) {
+            #$url = "$feedApiUrl$packageName/versions/$version";
+            if ($unlistPackagesForReal -eq "true") {
+                "    Unlisting $version (nonfunctional";
+                #"    npm unpublish $packageName@v$version --loglevel verbose";
+                #npm unpublish $packageName@v$version --loglevel verbose;
+                #Invoke-RestMethod -Uri $url -Method Delete -ContentType "application/json";
+                #"nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive";
+                #nuget delete $packageName $version -Source $feedApiUrl -apikey $myGetPersonalAccessToken -NonInteractive;
+            } else {
+                "    $version";
+            }
         }
     }
 }
