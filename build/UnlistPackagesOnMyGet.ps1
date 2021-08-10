@@ -4,8 +4,8 @@
 #
 param
 ( 
-    [string]$versionToUnlist = "4.7.2-",
-    [string]$unlistAllOlderVersionsAlso = "false",
+    [string]$versionToUnlist = "4.7.0",
+    [string]$unlistOlderVersionsAlso = "false",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
@@ -34,36 +34,38 @@ Function Sort-Versions
     return $Q.TrimEnd(".");
 }
 
-$result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
-
-"unlistPackagesForReal: " + $unlistPackagesForReal;
 "versionToUnlist: " + $versionToUnlist;
-"unlistAllOlderVersionsAlso: " + $unlistAllOlderVersionsAlso;
+"unlistOlderVersionsAlso: " + $unlistOlderVersionsAlso;
+"unlistPackagesForReal: " + $unlistPackagesForReal;
 " ";
 "Package versions to unlist:"
 
+$result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
+
 foreach ($packageName in $packageNames) {
-    $package = $result.packages | Where-Object {$_.id -eq $packageName};
+    $versionsToUnlist = $null;
 
-    #$package.versions | Select -Last 30;
+    $packageInfo = $result.packages | Where-Object {$_.id -eq $packageName};
 
-    [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
+    if ($unlistOlderVersionsAlso -eq "true") {
+        [string]$unsortedVersions = $packageInfo.versions | %{ $_ + "`r`n" };
 
-    $sortedVersions = Sort-Versions $unsortedVersions;
+        $sortedVersions = Sort-Versions $unsortedVersions;
 
-    #Set index to $versionToUnlist
-    $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
+        #Set index to $versionToUnlist
+        $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
 
-    if ($index -ne $Null) {
-        "==================";
-        $packageName;
-        "==================";
-
-        if ($unlistAllOlderVersionsAlso -eq "true") {
-            $versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
-        } else {
-            $versionsToUnlist = @($sortedVersions[$index]);
+        if ($index -ne $Null) {
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
         }
+    } else {
+        [string[]]$versionsToUnlist = $packageInfo.versions.Where({$_ -eq $versionToUnlist});
+    }
+
+    if ($versionsToUnlist.Count -gt 0) {
+        "-----------------------------------------";
+        $packageName + ":";
+        "-----------------------------------------";
 
         foreach ($version in $versionsToUnlist) {
             if ($unlistPackagesForReal -eq "true") {
@@ -76,3 +78,4 @@ foreach ($packageName in $packageNames) {
         }
     }
 }
+"-----------------------------------------";
