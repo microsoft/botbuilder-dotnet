@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Streaming
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
             _serverIsConnected = true;
-            _server.Disconnected += Server_Disconnected;
+            _server.Disconnected += ServerDisconnected;
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Streaming
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
             _serverIsConnected = true;
-            _server.Disconnected += Server_Disconnected;
+            _server.Disconnected += ServerDisconnected;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
         /// </summary>
         /// <returns>A task that completes once the server is no longer listening.</returns>
-        public async Task ListenAsync()
+        public virtual async Task ListenAsync()
         {
             await _server.StartAsync().ConfigureAwait(false);
             _logger.LogInformation("Streaming request handler started listening");
@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="activity">The activity to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A task that resolves to a <see cref="ResourceResponse"/>.</returns>
-        public async Task<ResourceResponse> SendActivityAsync(Activity activity, CancellationToken cancellationToken = default)
+        public virtual async Task<ResourceResponse> SendActivityAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             string requestPath;
             if (!string.IsNullOrWhiteSpace(activity.ReplyToId) && activity.ReplyToId.Length >= 1)
@@ -440,6 +440,19 @@ namespace Microsoft.Bot.Builder.Streaming
         }
 
         /// <summary>
+        /// An event handler for server disconnected events.
+        /// </summary>
+        /// <param name="sender">The source of the disconnection event.</param>
+        /// <param name="e">The arguments specified by the disconnection event.</param>
+        protected virtual void ServerDisconnected(object sender, DisconnectedEventArgs e)
+        {
+            _serverIsConnected = false;
+
+            // remove ourselves from the global collection
+            _requestHandlers.TryRemove(_instanceId, out var _);
+        }
+
+        /// <summary>
         /// Build and return versioning information used for telemetry, including:
         /// The Schema version is 3.1, put into the Microsoft-BotFramework header,
         /// Protocol Extension Info,
@@ -483,14 +496,6 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             return null;
-        }
-
-        private void Server_Disconnected(object sender, DisconnectedEventArgs e)
-        {
-            _serverIsConnected = false;
-
-            // remove ourselves from the global collection
-            _requestHandlers.TryRemove(_instanceId, out var _);
         }
 
         /// <summary>

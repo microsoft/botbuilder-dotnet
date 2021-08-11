@@ -9,11 +9,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
+using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Bot.Streaming.UnitTests.Mocks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Rest.Serialization;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -324,7 +330,59 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Assert
             Assert.Matches(expectation, response.Streams[0].Content.ReadAsStringAsync().Result);
         }
-        
+
+        [Fact]
+        public async void CallStreamingRequestHandlerOverrides()
+        {
+            var activity = new Activity()
+            {
+                Type = "message",
+                Text = "received from bot",
+                ServiceUrl = "http://localhost",
+                ChannelId = "ChannelId",
+                From = new Schema.ChannelAccount()
+                {
+                    Id = "bot",
+                    Name = "bot",
+                },
+                Conversation = new Schema.ConversationAccount(null, null, Guid.NewGuid().ToString(), null, null, null, null),
+            };
+
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
+
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Body).Returns(CreateStream(activity));
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+            httpRequestMock.Setup(r => r.Method).Returns(HttpMethods.Get);
+            httpRequestMock.Setup(r => r.HttpContext.WebSockets.IsWebSocketRequest).Returns(true);
+
+            var httpResponseMock = new Mock<HttpResponse>();
+
+            var botMock = new Mock<IBot>();
+            botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            // Act
+            var methodCalls = new List<string>();
+            var adapter = new BotFrameworkHttpAdapterSub(methodCalls);
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
+
+            Assert.Contains("ListenAsync()", methodCalls);
+            Assert.Contains("ServerDisconnected()", methodCalls);
+        }
+
+        private static Stream CreateStream(Activity activity)
+        {
+            string json = SafeJsonConvert.SerializeObject(activity, MessageSerializerSettings.Create());
+            var stream = new MemoryStream();
+            var textWriter = new StreamWriter(stream);
+            textWriter.Write(json);
+            textWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
         public class FauxSock : WebSocket
         {
             public override WebSocketCloseStatus? CloseStatus => throw new NotImplementedException();
@@ -387,6 +445,46 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             public int? Length { get; set; }
 
             public Stream Stream { get; set; }
+        }
+
+        private class BotFrameworkHttpAdapterSub : BotFrameworkHttpAdapter
+        {
+            private List<string> _methodCalls;
+
+            public BotFrameworkHttpAdapterSub(List<string> methodCalls)
+            : base()
+            {
+                _methodCalls = methodCalls;
+            }
+
+            public override StreamingRequestHandler CreateStreamingRequestHandler(IBot bot, WebSocket socket, string audience)
+            {
+                var socketMock = new Mock<WebSocket>();
+                return new StreamingRequestHandlerSub(bot, this, socketMock.Object, audience, Logger, _methodCalls);
+            }
+        }
+
+        private class StreamingRequestHandlerSub : StreamingRequestHandler
+        {
+            private List<string> _methodCalls;
+
+            public StreamingRequestHandlerSub(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, string audience, ILogger logger = null, List<string> methodCalls = null)
+                : base(bot, activityProcessor, socket, audience, logger)
+            {
+                _methodCalls = methodCalls;
+            }
+
+            public override async Task ListenAsync()
+            {
+                _methodCalls.Add("ListenAsync()");
+                await base.ListenAsync();
+            }
+
+            protected override void ServerDisconnected(object sender, DisconnectedEventArgs e)
+            {
+                _methodCalls.Add("ServerDisconnected()");
+                base.ServerDisconnected(sender, e);
+            }
         }
     }
 }
