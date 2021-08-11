@@ -57,6 +57,11 @@ foreach ($packageName in $packageNames) {
         #$index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
         $index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
 
+        "sortedVersions = ";
+        $sortedVersions;
+        "sortedVersions.Count = " + $sortedVersions.Count;
+        "index = " + $index;
+
         if ($index -ne $Null) {
             [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[0] + 1);
         }
