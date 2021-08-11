@@ -35,12 +35,13 @@ Function Sort-Versions
     return $Q.TrimEnd(".");
 }
 
-$result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
-
+"versionToUnlist: " + $versionToUnlist;
+"unlistOlderVersionsAlso: " + $unlistOlderVersionsAlso;
 "unlistPackagesForReal: " + $unlistPackagesForReal;
-"Target version: " + $versionToUnlist;
 " ";
-"Package versions to unlist:";
+"Package versions to unlist:"
+
+$result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "application/json";
 
 npm config set registry https://botbuilder.myget.org/F/botbuilder-v4-js-daily/npm/;
 
