@@ -44,7 +44,7 @@ $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "applica
 
 foreach ($packageName in $packageNames) {
     $versionsToUnlist = $Null;
-    $index = $Null;
+    $index = -1;
 
     $packageInfo = $result.packages | Where-Object {$_.id -eq $packageName};
 
@@ -55,18 +55,27 @@ foreach ($packageName in $packageNames) {
 
         #Set index to $versionToUnlist
         #$index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
-        $index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
+        #$index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
+
+        for (int i = 0; i -lt $sortedVersions.Count; i++)
+        {
+            if ($sortedVersions[i] -ge $versionToUnlist) {
+                $index = i;
+                if ($sortedVersions[i] -gt $versionToUnlist) { $index--; }
+                break;
+            }
+        }
 
         "sortedVersions = ";
         $sortedVersions;
         "sortedVersions.Count = " + $sortedVersions.Count;
         "index = " + $index;
 
-        if ($index -ne $Null) {
-            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[0] + 1);
+        if ($index -ne $Null && $index -ge 0) {
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index + 1);
         }
     } else {
-        [string[]]$versionsToUnlist = $packageInfo.versions.Where({$_ -eq $versionToUnlist});
+        [string[]]$versionsToUnlist = $sortedVersions.Where({$_ -eq $versionToUnlist});
     }
 
     if ($versionsToUnlist.Count -gt 0) {
