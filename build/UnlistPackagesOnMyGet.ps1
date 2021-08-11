@@ -53,13 +53,7 @@ foreach ($packageName in $packageNames) {
 
         $sortedVersions = Sort-Versions $unsortedVersions;
 
-        #"sortedVersions = ";
-        #$sortedVersions;
         "sortedVersions.Count = " + $sortedVersions.Count;
-
-        #Set index to $versionToUnlist
-        #$index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
-        #$index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
 
         for ([int]$i = 0; $i -lt $sortedVersions.Count; $i++)
         {
@@ -69,8 +63,6 @@ foreach ($packageName in $packageNames) {
                 break;
             }
         }
-
-        "index = " + $index;
 
         if ($index -ne $Null -and $index -ge 0) {
             [string[]]$versionsToUnlist = $sortedVersions | select -First ($index + 1);
