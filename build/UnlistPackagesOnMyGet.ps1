@@ -4,8 +4,8 @@
 #
 param
 ( 
-    [string]$versionToUnlist = "4.7.0",
-    [string]$unlistOlderVersionsAlso = "false",
+    [string]$versionToUnlist = "4.6.1-preview",
+    [string]$unlistOlderVersionsAlso = "true",
     [string[]]$packageNames = @( "AdaptiveExpressions","Microsoft.Bot.Builder","Microsoft.Bot.Builder.Integration.AspNet.Core" ),
     [string]$myGetFeedName = "botbuilder-v4-dotnet-daily",
     [string]$myGetPersonalAccessToken,
@@ -53,25 +53,26 @@ foreach ($packageName in $packageNames) {
 
         $sortedVersions = Sort-Versions $unsortedVersions;
 
+        #"sortedVersions = ";
+        #$sortedVersions;
+        "sortedVersions.Count = " + $sortedVersions.Count;
+
         #Set index to $versionToUnlist
         #$index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
         #$index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
 
-        for (int i = 0; i -lt $sortedVersions.Count; i++)
+        for ([int]$i = 0; $i -lt $sortedVersions.Count; $i++)
         {
-            if ($sortedVersions[i] -ge $versionToUnlist) {
-                $index = i;
-                if ($sortedVersions[i] -gt $versionToUnlist) { $index--; }
+            if ($sortedVersions[$i] -ge $versionToUnlist) {
+                $index = $i;
+                if ($sortedVersions[$i] -gt $versionToUnlist) { $index--; }
                 break;
             }
         }
 
-        "sortedVersions = ";
-        $sortedVersions;
-        "sortedVersions.Count = " + $sortedVersions.Count;
         "index = " + $index;
 
-        if ($index -ne $Null && $index -ge 0) {
+        if ($index -ne $Null -and $index -ge 0) {
             [string[]]$versionsToUnlist = $sortedVersions | select -First ($index + 1);
         }
     } else {
