@@ -53,8 +53,6 @@ foreach ($packageName in $packageNames) {
 
         $sortedVersions = Sort-Versions $unsortedVersions;
 
-        "sortedVersions.Count = " + $sortedVersions.Count;
-
         for ([int]$i = 0; $i -lt $sortedVersions.Count; $i++)
         {
             if ($sortedVersions[$i] -ge $versionToUnlist) {
