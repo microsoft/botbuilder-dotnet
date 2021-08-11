@@ -1,6 +1,6 @@
 #
 # Shows but cannot unlist npm package versions on MyGet.org lower than or equal to $versionToUnlist.
-# Cannot unlist because per MyGet support, "we do not support the npm unpublish command".
+# Cannot unlist because per MyGet support, "we do not support the npm unpublish command". Unlisting must be done in the UI.
 # 
 param
 ( 
