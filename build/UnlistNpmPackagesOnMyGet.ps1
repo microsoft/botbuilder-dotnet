@@ -55,10 +55,11 @@ foreach ($packageName in $packageNames) {
         $sortedVersions = Sort-Versions $unsortedVersions;
 
         #Set index to $versionToUnlist
-        $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
+        #$index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
+        $index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
 
         if ($index -ne $Null) {
-            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[0] + 1);
         }
     } else {
         [string[]]$versionsToUnlist = $packageInfo.versions.Where({$_ -eq $versionToUnlist});
