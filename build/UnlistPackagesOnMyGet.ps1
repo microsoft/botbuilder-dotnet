@@ -48,11 +48,11 @@ foreach ($packageName in $packageNames) {
 
     $packageInfo = $result.packages | Where-Object {$_.id -eq $packageName};
 
+    [string]$unsortedVersions = $packageInfo.versions | %{ $_ + "`r`n" };
+
+    $sortedVersions = Sort-Versions $unsortedVersions;
+
     if ($unlistOlderVersionsAlso -eq "true") {
-        [string]$unsortedVersions = $packageInfo.versions | %{ $_ + "`r`n" };
-
-        $sortedVersions = Sort-Versions $unsortedVersions;
-
         for ([int]$i = 0; $i -lt $sortedVersions.Count; $i++)
         {
             if ($sortedVersions[$i] -ge $versionToUnlist) {

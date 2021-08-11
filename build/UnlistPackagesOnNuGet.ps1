@@ -35,16 +35,23 @@ Function Get-Versions-From-Nuget
 "Package versions to unlist:"
 
 foreach ($packageName in $packageNames) {
-    $versionsToUnlist = $null;
+    $versionsToUnlist = $Null;
+    $index = -1;
 
     $sortedVersions = Get-Versions-From-Nuget $packageName;
 
     if ($unlistOlderVersionsAlso -eq "true") {
-        #Set index to $versionToUnlist
-        $index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
+        for ([int]$i = 0; $i -lt $sortedVersions.Count; $i++)
+        {
+            if ($sortedVersions[$i] -ge $versionToUnlist) {
+                $index = $i;
+                if ($sortedVersions[$i] -gt $versionToUnlist) { $index--; }
+                break;
+            }
+        }
 
-        if ($index -ne $Null) {
-            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[-1] + 1);
+        if ($index -ne $Null -and $index -ge 0) {
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index + 1);
         }
     } else {
         [string[]]$versionsToUnlist = $sortedVersions.Where({$_ -eq $versionToUnlist});

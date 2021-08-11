@@ -45,24 +45,30 @@ $result = Invoke-RestMethod -Uri $feedStateUrl -Method Get -ContentType "applica
 npm config set registry https://botbuilder.myget.org/F/botbuilder-v4-js-daily/npm/;
 
 foreach ($packageName in $packageNames) {
-    $versionsToUnlist = $null;
+    $versionsToUnlist = $Null;
+    $index = -1;
 
-    $package = $result.packages | Where-Object {$_.id -eq $packageName};
+    $packageInfo = $result.packages | Where-Object {$_.id -eq $packageName};
+
+    [string]$unsortedVersions = $packageInfo.versions | %{ $_ + "`r`n" };
+
+    $sortedVersions = Sort-Versions $unsortedVersions;
 
     if ($unlistOlderVersionsAlso -eq "true") {
-        [string]$unsortedVersions = $package.versions | %{ $_ + "`r`n" };
+        for ([int]$i = 0; $i -lt $sortedVersions.Count; $i++)
+        {
+            if ($sortedVersions[$i] -ge $versionToUnlist) {
+                $index = $i;
+                if ($sortedVersions[$i] -gt $versionToUnlist) { $index--; }
+                break;
+            }
+        }
 
-        $sortedVersions = Sort-Versions $unsortedVersions;
-
-        #Set index to $versionToUnlist
-        #$index = (0..($sortedVersions.Count-1)) | where {$sortedVersions[$_].StartsWith($versionToUnlist)};
-        $index = (($sortedVersions.Count-1)..0) | where {$sortedVersions[$_] -le $versionToUnlist};
-
-        if ($index -ne $Null) {
-            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index[0] + 1);
+        if ($index -ne $Null -and $index -ge 0) {
+            [string[]]$versionsToUnlist = $sortedVersions | select -First ($index + 1);
         }
     } else {
-        [string[]]$versionsToUnlist = $packageInfo.versions.Where({$_ -eq $versionToUnlist});
+        [string[]]$versionsToUnlist = $sortedVersions.Where({$_ -eq $versionToUnlist});
     }
 
     if ($versionsToUnlist.Count -gt 0) {
@@ -85,3 +91,4 @@ foreach ($packageName in $packageNames) {
         }
     }
 }
+"-----------------------------------------";
