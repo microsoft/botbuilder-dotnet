@@ -9,6 +9,10 @@
             "*"
         ]
     },
+    "menu": {
+        "label": "Ask Activity",
+        "submenu": ["Ask a question"]
+    },
     "flow": {
         "widget": "ActionCard",
         "header": {

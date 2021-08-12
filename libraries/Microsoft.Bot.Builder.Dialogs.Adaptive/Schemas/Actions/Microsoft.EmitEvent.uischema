@@ -5,6 +5,10 @@
         "subtitle": "Emit Event",
         "helpLink": "https://aka.ms/bfc-custom-events"
     },
+    "menu": {
+        "label": "Emit a custom event",
+        "submenu": ["Access external resources"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

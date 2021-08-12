@@ -4,5 +4,9 @@
         "label": "Emit a trace event",
         "subtitle": "Trace Activity",
         "helpLink": "https://aka.ms/composer-telemetry"
+    },
+    "menu": {
+        "label": "Emit a trace event",
+        "submenu": ["Debugging options"]
     }
 }

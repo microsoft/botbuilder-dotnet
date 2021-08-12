@@ -12,6 +12,10 @@
             }
         }
     },
+    "menu": {
+        "label": "Connect to a skill",
+        "submenu": ["Access external resources"]
+    },
     "flow": {
         "widget": "ActionCard",
         "body": {

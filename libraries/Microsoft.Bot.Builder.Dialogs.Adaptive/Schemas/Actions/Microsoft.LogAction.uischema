@@ -4,5 +4,9 @@
         "label": "Log to console",
         "subtitle": "Log Action",
         "helpLink": "https://aka.ms/composer-telemetry"
+    },
+    "menu": {
+        "label": "Log to console",
+        "submenu": ["Debugging options"]
     }
 }

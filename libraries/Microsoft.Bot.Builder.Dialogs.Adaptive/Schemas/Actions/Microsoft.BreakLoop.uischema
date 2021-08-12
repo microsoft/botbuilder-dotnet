@@ -3,5 +3,9 @@
     "form": {
         "label": "Break out of loop",
         "subtitle": "Break out of loop"
+    },
+    "menu": {
+        "label": "Break out of loop",
+        "submenu": ["Looping"]
     }
 }

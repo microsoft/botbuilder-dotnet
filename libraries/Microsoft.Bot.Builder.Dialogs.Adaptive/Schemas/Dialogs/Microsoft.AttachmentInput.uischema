@@ -12,6 +12,10 @@
             }
         }
     },
+    "menu": {
+        "label": "File or attachment",
+        "submenu": ["Ask a question"]
+    },
     "flow": {
         "widget": "PromptWidget",
         "body": "=action.prompt",

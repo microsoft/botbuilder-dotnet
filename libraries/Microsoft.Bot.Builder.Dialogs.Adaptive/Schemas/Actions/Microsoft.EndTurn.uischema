@@ -4,5 +4,9 @@
         "label": "End turn",
         "subtitle": "End Turn",
         "helpLink": "https://aka.ms/bfc-understanding-dialogs"
+    },
+    "menu": {
+        "label": "End turn",
+        "submenu": ["Dialog management"]
     }
 }
