@@ -210,16 +210,11 @@ namespace Microsoft.Bot.Connector.Authentication
                     RequireSignedTokens = true
                 };
 
-            // Add tenant id from settings (if present) as a valid token issuer
-            var tenantId = await _credentialsFactory.GetAuthTenantAsync(CancellationToken.None).ConfigureAwait(false);
-            if (!string.IsNullOrWhiteSpace(tenantId))
+            // Add allowed token issuers from configuration (if present)
+            if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
             {
                 var validIssuers = tokenValidationParameters.ValidIssuers.ToList();
-                validIssuers.AddRange(new[]
-                {
-                    $"https://sts.windows.net/{tenantId}/", // MSI auth, 1.0 token
-                    $"https://login.microsoftonline.com/{tenantId}/v2.0" // MSI auth, 2.0 token
-                });
+                validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
                 tokenValidationParameters.ValidIssuers = validIssuers;
             }
 
@@ -303,12 +298,12 @@ namespace Microsoft.Bot.Connector.Authentication
                     RequireSignedTokens = true,
                 };
 
-            // Add tenant id from settings (if present) as a valid token issuer
-            var tenantId = await _credentialsFactory.GetAuthTenantAsync(CancellationToken.None).ConfigureAwait(false);
-            if (!string.IsNullOrWhiteSpace(tenantId))
+            // Add allowed token issuers from configuration (if present)
+            if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
             {
-                _ = toBotFromEmulatorTokenValidationParameters.ValidIssuers.Append($"https://sts.windows.net/{tenantId}/"); // MSI auth, 1.0 token
-                _ = toBotFromEmulatorTokenValidationParameters.ValidIssuers.Append($"https://login.microsoftonline.com/{tenantId}/v2.0"); // MSI auth, 2.0 token
+                var validIssuers = toBotFromEmulatorTokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
+                toBotFromEmulatorTokenValidationParameters.ValidIssuers = validIssuers;
             }
 
             var tokenExtractor = new JwtTokenExtractor(

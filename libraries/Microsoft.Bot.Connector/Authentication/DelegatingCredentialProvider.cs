@@ -29,11 +29,6 @@ namespace Microsoft.Bot.Connector.Authentication
             return _credentialFactory.IsAuthenticationDisabledAsync(CancellationToken.None);
         }
 
-        public Task<string> GetAuthTenantAsync()
-        {
-            return _credentialFactory.GetAuthTenantAsync(CancellationToken.None);
-        }
-
         public Task<bool> IsValidAppIdAsync(string appId)
         {
             return _credentialFactory.IsValidAppIdAsync(appId, CancellationToken.None);

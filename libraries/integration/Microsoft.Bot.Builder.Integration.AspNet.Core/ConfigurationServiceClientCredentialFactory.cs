@@ -12,14 +12,8 @@ using Microsoft.Rest;
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
-    /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup appId and password.
+    /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup app credentials.
     /// </summary>
-    /// <remarks>
-    /// This will populate the <see cref="PasswordServiceClientCredentialFactory.AppId"/> from an configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppIdKey"/>
-    /// and the <see cref="PasswordServiceClientCredentialFactory.Password"/> from a configuration entry with the key of <see cref="MicrosoftAppCredentials.MicrosoftAppPasswordKey"/>.
-    ///
-    /// NOTE: if the keys are not present, a <c>null</c> value will be used.
-    /// </remarks>
     public class ConfigurationServiceClientCredentialFactory : ServiceClientCredentialsFactory
     {
         private readonly ServiceClientCredentialsFactory _inner;
@@ -32,21 +26,23 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="logger">A logger to use.</param>
         public ConfigurationServiceClientCredentialFactory(IConfiguration configuration, HttpClient httpClient = null, ILogger logger = null)
         {
-            string appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
-            string password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
-            string managedId = configuration.GetSection(ManagedIdentityAppCredentials.ManagedIdKey)?.Value;
-            string tenantId = configuration.GetSection(ManagedIdentityAppCredentials.TenantIdKey)?.Value;
+            var appType = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTypeKey)?.Value;
+            var appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
+            var password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
+            var tenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
 
-            if (!string.IsNullOrWhiteSpace(managedId) && !string.IsNullOrWhiteSpace(tenantId))
+            // TODO: Config Validations
+            // 1. AppType can only be one of 3 values (if present) -- If not specified, default is MultiTenant.
+            // 2. TenantId can be specified at anytime -- If specified, it will be added to allowed token issuers.
+            // 3. For MSI -- AppId is required, and, Password must not be specified.
+            // 4. For SingleTenant -- TenantId is required.
+
+            _inner = appType switch
             {
-                // Both ManagedId and TenantId are present -- Use MSI auth
-                _inner = new ManagedIdentityServiceClientCredentialsFactory(managedId, tenantId);
-            }
-            else
-            {
-                // Default to Password Auth
-                _inner = new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger);
-            }
+                "UserAssignedMSI" => new ManagedIdentityServiceClientCredentialsFactory(appId),
+                "SingleTenant" => new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger),
+                _ => new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger) // MultiTenant
+            };
         }
 
         /// <inheritdoc />
@@ -67,12 +63,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             return _inner.CreateCredentialsAsync(
                 appId, audience, loginEndpoint, validateAuthority, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public override Task<string> GetAuthTenantAsync(CancellationToken cancellationToken)
-        {
-            return _inner.GetAuthTenantAsync(cancellationToken);
         }
     }
 }

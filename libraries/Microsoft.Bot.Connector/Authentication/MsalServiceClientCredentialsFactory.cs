@@ -84,12 +84,6 @@ namespace Microsoft.Bot.Connector.Authentication
                 new MsalAppCredentials(_clientApplication, appId, authority: loginEndpoint, scope: audience, validateAuthority: validateAuthority, logger: _logger));
         }
 
-        /// <inheritdoc />
-        public override Task<string> GetAuthTenantAsync(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(string.Empty);
-        }
-
         /// <inheritdoc/>
         public override Task<bool> IsAuthenticationDisabledAsync(CancellationToken cancellationToken)
         {

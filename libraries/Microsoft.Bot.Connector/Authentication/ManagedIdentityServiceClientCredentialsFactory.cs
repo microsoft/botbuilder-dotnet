@@ -11,17 +11,14 @@ namespace Microsoft.Bot.Connector.Authentication
     public class ManagedIdentityServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly string _appId;
-        private readonly string _tenantId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityServiceClientCredentialsFactory"/> class.
         /// </summary>
         /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
-        /// <param name="tenantId">Tenant ID of the Azure AD tenant where the bot is created.</param>
-        public ManagedIdentityServiceClientCredentialsFactory(string appId, string tenantId)
+        public ManagedIdentityServiceClientCredentialsFactory(string appId)
         {
             _appId = appId ?? throw new ArgumentNullException(nameof(appId));
-            _tenantId = tenantId ?? throw new ArgumentNullException(nameof(tenantId));
         }
 
         /// <inheritdoc />
@@ -46,13 +43,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException("Invalid Managed ID.");
             }
 
-            return Task.FromResult<ServiceClientCredentials>(new ManagedIdentityAppCredentials(_appId, _tenantId, audience));
-        }
-
-        /// <inheritdoc />
-        public override Task<string> GetAuthTenantAsync(CancellationToken cancellationToken)
-        {
-            return Task.FromResult(_tenantId);
+            return Task.FromResult<ServiceClientCredentials>(new ManagedIdentityAppCredentials(_appId, audience));
         }
     }
 }

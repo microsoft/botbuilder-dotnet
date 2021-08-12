@@ -51,12 +51,5 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         public abstract Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Gets the Tenant ID of the Azure AD tenant where the bot is registered.
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token.</param>
-        /// <returns>The Tenant ID of the Azure AD tenant where the bot is registered.</returns>
-        public abstract Task<string> GetAuthTenantAsync(CancellationToken cancellationToken);
     }
 }
