@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,24 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
+    internal enum MicrosoftAppType
+    {
+        /// <summary>
+        /// MultiTenant app which uses botframework.com tenant to acquire tokens.
+        /// </summary>
+        MultiTenant,
+
+        /// <summary>
+        /// SingleTenant app which uses the bot's host tenant to acquire tokens.
+        /// </summary>
+        SingleTenant,
+
+        /// <summary>
+        /// App with a user assigned Managed Identity (MSI), which will be used as the AppId for token acquisition.
+        /// </summary>
+        UserAssignedMsi
+    }
+
     /// <summary>
     /// Credential provider which uses <see cref="Microsoft.Extensions.Configuration.IConfiguration"/> to lookup app credentials.
     /// </summary>
@@ -31,18 +50,54 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
             var tenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
 
-            // TODO: Config Validations
-            // 1. AppType can only be one of 3 values (if present) -- If not specified, default is MultiTenant.
-            // 2. TenantId can be specified at anytime -- If specified, it will be added to allowed token issuers.
-            // 3. For MSI -- AppId is required, and, Password must not be specified.
-            // 4. For SingleTenant -- TenantId is required.
+            var parsedAppType = Enum.TryParse(appType, ignoreCase: true, out MicrosoftAppType parsed)
+                ? parsed
+                : MicrosoftAppType.MultiTenant; // default
 
-            _inner = appType switch
+            switch (parsedAppType)
             {
-                "UserAssignedMSI" => new ManagedIdentityServiceClientCredentialsFactory(appId, httpClient, logger),
-                "SingleTenant" => new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger),
-                _ => new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger) // MultiTenant
-            };
+                case MicrosoftAppType.UserAssignedMsi:
+                    if (string.IsNullOrWhiteSpace(appId))
+                    {
+                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppIdKey} is required for MSI in configuration.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(tenantId))
+                    {
+                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppTenantIdKey} is required for MSI in configuration.");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(password))
+                    {
+                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} must not be set for MSI in configuration.");
+                    }
+
+                    _inner = new ManagedIdentityServiceClientCredentialsFactory(appId, httpClient, logger);
+                    break;
+
+                case MicrosoftAppType.SingleTenant:
+                    if (string.IsNullOrWhiteSpace(appId))
+                    {
+                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppIdKey} is required for SingleTenant in configuration.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(tenantId))
+                    {
+                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppTenantIdKey} is required for SingleTenant in configuration.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(password))
+                    {
+                        throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} is required for SingleTenant in configuration.");
+                    }
+
+                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger);
+                    break;
+
+                default: // MultiTenant
+                    _inner = new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger);
+                    break;
+            }
         }
 
         /// <inheritdoc />
