@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             _inner = appType switch
             {
-                "UserAssignedMSI" => new ManagedIdentityServiceClientCredentialsFactory(appId),
+                "UserAssignedMSI" => new ManagedIdentityServiceClientCredentialsFactory(appId, httpClient, logger),
                 "SingleTenant" => new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger),
                 _ => new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger) // MultiTenant
             };

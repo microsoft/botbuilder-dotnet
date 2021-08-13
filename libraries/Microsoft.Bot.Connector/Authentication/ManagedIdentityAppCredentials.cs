@@ -2,7 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net.Http;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -16,10 +18,17 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Managed Identity for AAD credentials auth and caching.
         /// </summary>
         /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
-        /// <param name="audience">The id of the resource that is being accessed by the bot.</param>
-        public ManagedIdentityAppCredentials(string appId, string audience)
-            : base(null, null, null, audience)
+        /// <param name="oAuthScope">The scope for the token.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        public ManagedIdentityAppCredentials(string appId, string oAuthScope, HttpClient customHttpClient = null, ILogger logger = null)
+            : base(channelAuthTenant: null, customHttpClient, logger, oAuthScope)
         {
+            if (oAuthScope == null)
+            {
+                throw new ArgumentNullException(nameof(oAuthScope));
+            }
+
             MicrosoftAppId = appId ?? throw new ArgumentNullException(nameof(appId));
         }
 
@@ -33,9 +42,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <inheritdoc/>
         protected override Lazy<IAuthenticator> BuildIAuthenticator()
         {
-            // TODO: constructor, test oauth scope for skills and channels, enable httpclient factory, logging, etc
             return new (
-                () => new ManagedIdentityAuthenticator(MicrosoftAppId, OAuthScope),
+                () => new ManagedIdentityAuthenticator(MicrosoftAppId, OAuthScope, CustomHttpClient, Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
     }

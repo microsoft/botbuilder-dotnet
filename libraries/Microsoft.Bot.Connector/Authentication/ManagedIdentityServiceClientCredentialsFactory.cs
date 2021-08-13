@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -11,14 +13,20 @@ namespace Microsoft.Bot.Connector.Authentication
     public class ManagedIdentityServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly string _appId;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityServiceClientCredentialsFactory"/> class.
         /// </summary>
         /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
-        public ManagedIdentityServiceClientCredentialsFactory(string appId)
+        /// <param name="httpClient">A custom httpClient to use.</param>
+        /// <param name="logger">A logger instance to use.</param>
+        public ManagedIdentityServiceClientCredentialsFactory(string appId, HttpClient httpClient = null, ILogger logger = null)
         {
             _appId = appId ?? throw new ArgumentNullException(nameof(appId));
+            _httpClient = httpClient;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -43,7 +51,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new InvalidOperationException("Invalid Managed ID.");
             }
 
-            return Task.FromResult<ServiceClientCredentials>(new ManagedIdentityAppCredentials(_appId, audience));
+            return Task.FromResult<ServiceClientCredentials>(
+                new ManagedIdentityAppCredentials(_appId, audience, _httpClient, _logger));
         }
     }
 }
