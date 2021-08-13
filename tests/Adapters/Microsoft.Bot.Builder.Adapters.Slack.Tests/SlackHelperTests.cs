@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Adapters.Slack.Model;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
@@ -96,6 +97,54 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             Assert.Equal(activity.Conversation.Id, message.Channel);
             Assert.Equal(activity.Conversation.Properties["thread_ts"].ToString(), message.ThreadTs);
+        }
+
+        [Fact]
+        public void ActivityToSlackShouldConvertHeroCardsToBlocks()
+        {
+            var serializeConversation = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/SlackActivity.json");
+
+            var card = new HeroCard
+            {
+                Title = "BotFramework Hero Card",
+                Subtitle = "Microsoft Bot Framework",
+                Text = "Build and connect intelligent bots to interact with your users naturally wherever they are," +
+                                " from text/sms to Skype, Slack, Office 365 mail and other popular services.",
+                Images = new List<CardImage> { new CardImage("https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg") },
+                Buttons = new List<CardAction>
+                        {
+                            new CardAction(ActionTypes.OpenUrl, "OpenUrl", value: "https://docs.microsoft.com/bot-framework"),
+                            new CardAction
+                            {
+                                Text = "Some Action Text",
+                                DisplayText = "ImBack",
+                                Title = "Some Action Title",
+                                Value = "Some Action Value",
+                                Type = ActionTypes.ImBack
+                            }
+                        },
+            };
+
+            var activity = new Activity
+            {
+                Timestamp = new DateTimeOffset(),
+                Text = "Hello!",
+                Conversation = JsonConvert.DeserializeObject<ConversationAccount>(serializeConversation),
+                Attachments = new List<Attachment>
+                {
+                    card.ToAttachment()
+                }
+            };
+
+            var message = SlackHelper.ActivityToSlack(activity);
+
+            Assert.Equal(activity.Conversation.Id, message.Channel);
+            Assert.Equal(activity.Conversation.Properties["thread_ts"].ToString(), message.ThreadTs);
+            Assert.Equal(card.Title, (message.Blocks as JArray)[0]["text"]["text"]);
+            Assert.Equal(card.Subtitle, (message.Blocks as JArray)[1]["elements"][0]["text"]);
+            Assert.Equal(card.Images[0].Url, (message.Blocks as JArray)[2]["image_url"]);
+            Assert.Equal(card.Text, (message.Blocks as JArray)[3]["text"]["text"]);
+            Assert.Equal(card.Buttons[0].Value, (message.Blocks as JArray)[5]["elements"][0]["url"].ToString());
         }
 
         [Fact]
