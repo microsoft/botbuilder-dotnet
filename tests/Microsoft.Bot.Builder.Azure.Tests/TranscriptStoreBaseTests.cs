@@ -442,7 +442,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         /// <param name="expectedLength">Expected length of pagedResult array.</param>
         /// <param name="maxTimeout">Maximum time to wait to retrieve pagedResult.</param>
         /// <returns>PagedResult.</returns>
-        private async Task<PagedResult<IActivity>> GetPagedResultAsync(ConversationReference conversation, int expectedLength, int maxTimeout = 5000)
+        private async Task<PagedResult<IActivity>> GetPagedResultAsync(ConversationReference conversation, int expectedLength, int maxTimeout = 10000)
         {
             PagedResult<IActivity> pagedResult = null;
             for (var timeout = 0; timeout < maxTimeout; timeout += 500)
