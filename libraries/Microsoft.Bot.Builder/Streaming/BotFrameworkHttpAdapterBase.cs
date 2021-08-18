@@ -22,8 +22,10 @@ namespace Microsoft.Bot.Builder.Streaming
     /// <summary>
     /// An HTTP adapter base class.
     /// </summary>
-    public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor
+    public class BotFrameworkHttpAdapterBase : BotFrameworkAdapter, IStreamingActivityProcessor, IDisposable
     {
+        private bool _disposedValue;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkHttpAdapterBase"/> class.
         /// </summary>
@@ -220,7 +222,9 @@ namespace Microsoft.Bot.Builder.Streaming
                 var host = uri[uri.Length - 1];
                 await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
 
+#pragma warning disable CA2000 // Dispose objects before losing scope (We'll dispose this when the adapter gets disposed or when elements are removed)
                 var handler = new StreamingRequestHandler(ConnectedBot, this, connection, Logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
                 if (RequestHandlers == null)
                 {
@@ -259,10 +263,47 @@ namespace Microsoft.Bot.Builder.Streaming
                 RequestHandlers = new List<StreamingRequestHandler>();
             }
 
+#pragma warning disable CA2000 // Dispose objects before losing scope (We'll dispose this when the adapter gets disposed or when elements are removed)
             var requestHandler = new StreamingRequestHandler(bot, this, pipeName, audience, Logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
             RequestHandlers.Add(requestHandler);
 
             await requestHandler.ListenAsync().ConfigureAwait(false);
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes resources of the <see cref="StreamingRequestHandler"/>.
+        /// </summary>
+        /// <param name="disposing">Whether we are disposing managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    if (RequestHandlers != null)
+                    {
+                        foreach (var handler in RequestHandlers)
+                        {
+                            if (handler is IDisposable disposable)
+                            {
+                                handler.Dispose();
+                            }
+                        }
+                    }
+                }
+
+                RequestHandlers = null;
+                _disposedValue = true;
+            }
         }
 
         /// <summary>

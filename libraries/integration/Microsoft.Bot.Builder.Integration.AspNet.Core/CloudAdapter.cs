@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Extensions.Configuration;
@@ -146,10 +147,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             };
 
             // Tie the authentication results, the named pipe, the adapter and the bot together to be ready to handle any inbound activities
-            var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, pipeName, this, bot);
-
-            // Start receiving activities on the named pipe
-            await streamingActivityProcessor.ListenAsync().ConfigureAwait(false);
+            using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, pipeName, this, bot))
+            {
+                // Start receiving activities on the named pipe
+                // TODO /*_applicationLifetime?.ApplicationStopped ?? */ 
+                await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+            }
         }
 
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
@@ -163,22 +166,57 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var channelIdHeader = httpRequest.Headers["channelid"];
 
             var authenticationRequestResult = await BotFrameworkAuthentication.AuthenticateStreamingRequestAsync(authHeader, channelIdHeader, cancellationToken).ConfigureAwait(false);
+            
+            // TODO: From IConfiguration
+            bool useNewStreaming = true;
 
-            // Transition the request to a WebSocket connection
-            var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+            // TODO: Get this from IConfiguration so it acts as a circuit breaker / emergency switch to go back to the legacy implementation
+            // while we transition to the new pipelines-based implementation.
+            if (useNewStreaming)
+            {
+                using (var scope = Logger.BeginScope(Guid.NewGuid()))
+                {
+                    var connection = new WebSocketStreamingConnection(httpRequest.HttpContext, Logger);
+                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                    {
+                        // Start receiving activities on the socket
+                        // TODO: pass asp.net core lifetime for cancellation here.
+                        await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                    }
+                }
+            }
+            else
+            {
+                // Transition the request to a WebSocket connection
+                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
 
-            // Tie the authentication results, the socket, the adapter and the bot together to be ready to handle any inbound activities
-            var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, socket, this, bot);
-
-            // Start receiving activities on the socket
-            await streamingActivityProcessor.ListenAsync().ConfigureAwait(false);
+                // Tie the authentication results, the socket, the adapter and the bot together to be ready to handle any inbound activities
+                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, socket, this, bot))
+                {
+                    // Start receiving activities on the socket
+                    // TODO: pass asp.net core lifetime for cancellation here.
+                    await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                }
+            }
         }
 
-        private class StreamingActivityProcessor : IStreamingActivityProcessor
+        private class StreamingActivityProcessor : IStreamingActivityProcessor, IDisposable
         {
             private readonly AuthenticateRequestResult _authenticateRequestResult;
             private readonly CloudAdapter _adapter;
             private readonly StreamingRequestHandler _requestHandler;
+
+            public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, StreamingConnection connection, CloudAdapter adapter, IBot bot)
+            {
+                _authenticateRequestResult = authenticateRequestResult;
+                _adapter = adapter;
+
+                // Internal reuse of the existing StreamingRequestHandler class
+                _requestHandler = new StreamingRequestHandler(bot, this, connection, authenticateRequestResult.Audience, logger: adapter.Logger);
+
+                // Fix up the connector factory so connector create from it will send over this connection
+                _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
+            }
 
             public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, WebSocket socket, CloudAdapter adapter, IBot bot)
             {
@@ -204,7 +242,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
             }
 
-            public Task ListenAsync() => _requestHandler.ListenAsync();
+            public void Dispose()
+            {
+                ((IDisposable)_requestHandler)?.Dispose();
+            }
+
+            public Task ListenAsync(CancellationToken cancellationToken) => _requestHandler.ListenAsync(cancellationToken);
 
             Task<InvokeResponse> IStreamingActivityProcessor.ProcessStreamingActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken)
                 => _adapter.ProcessActivityAsync(_authenticateRequestResult, activity, callback, cancellationToken);

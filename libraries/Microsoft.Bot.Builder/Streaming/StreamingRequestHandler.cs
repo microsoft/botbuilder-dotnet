@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
@@ -29,19 +30,34 @@ namespace Microsoft.Bot.Builder.Streaming
     /// A request handler that processes incoming requests sent over an IStreamingTransport 
     /// and adheres to the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
-    public class StreamingRequestHandler : RequestHandler
+    public class StreamingRequestHandler : RequestHandler, IDisposable
     {
-        private static ConcurrentDictionary<string, StreamingRequestHandler> _requestHandlers = new ConcurrentDictionary<string, StreamingRequestHandler>();
-        private readonly string _instanceId = Guid.NewGuid().ToString();
-
         private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
-        private readonly string _userAgent;
-        private readonly ConcurrentDictionary<string, DateTime> _conversations;
-        private readonly IStreamingTransportServer _server;
+        private readonly string _userAgent = GetUserAgent();
+        private readonly ConcurrentDictionary<string, DateTime> _conversations = new ConcurrentDictionary<string, DateTime>();
+        private readonly StreamingConnection _innerConnection;
 
-        private bool _serverIsConnected;
+        private bool _disposedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
+        /// </summary>
+        /// <param name="bot">The bot for which we handle requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
+        /// <param name="connection">Connection used to send requests to the transport.</param>
+        /// <param name="audience">The specified recipient of all outgoing activities.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, StreamingConnection connection, string audience = null, ILogger logger = null)
+        {
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
+            _innerConnection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _logger = logger ?? NullLogger.Instance;
+
+            Audience = audience;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
@@ -85,11 +101,9 @@ namespace Microsoft.Bot.Builder.Streaming
 
             Audience = audience;
             _logger = logger ?? NullLogger.Instance;
-            _conversations = new ConcurrentDictionary<string, DateTime>();
-            _userAgent = GetUserAgent();
-            _server = new WebSocketServer(socket, this);
-            _serverIsConnected = true;
-            _server.Disconnected += Server_Disconnected;
+#pragma warning disable CA2000 // Dispose objects before losing scope  (The WebSocketServer gets disposed bythe LegacyStreamingConnection)
+            _innerConnection = new LegacyStreamingConnection(new WebSocketServer(socket, this), _logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         /// <summary>
@@ -134,11 +148,9 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             Audience = audience;
-            _conversations = new ConcurrentDictionary<string, DateTime>();
-            _userAgent = GetUserAgent();
-            _server = new NamedPipeServer(pipeName, this);
-            _serverIsConnected = true;
-            _server.Disconnected += Server_Disconnected;
+#pragma warning disable CA2000 // Dispose objects before losing scope (The NamedPipeServer gets disposed bythe LegacyStreamingConnection)
+            _innerConnection = new LegacyStreamingConnection(new NamedPipeServer(pipeName, this), _logger);
+#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         /// <summary>
@@ -162,14 +174,12 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
         /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that completes once the server is no longer listening.</returns>
-        public async Task ListenAsync()
+        public async Task ListenAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _server.StartAsync().ConfigureAwait(false);
+            await _innerConnection.ListenAsync(this, cancellationToken).ConfigureAwait(false);
             _logger.LogInformation("Streaming request handler started listening");
-
-            // add ourselves to a global collection to ensure a reference is maintained if we are connected
-            _requestHandlers.TryAdd(_instanceId, this);
         }
 
         /// <summary>
@@ -403,15 +413,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 }
             }
 
-            if (!_serverIsConnected)
-            {
-                throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
-            }
-
-            // Attempt to send the request. If send fails, we let the original exception get thrown so that the 
-            // upper layers can handle it and trigger OnError. This is consistent with error handling in http and proactive 
-            // paths, making all 3 paths consistent in terms of error handling.
-            var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var serverResponse = await _innerConnection.SendStreamingRequestAsync(request, cancellationToken).ConfigureAwait(false);
 
             if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
             {
@@ -431,12 +433,35 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <returns>A task that resolves to a <see cref="ReceiveResponse"/>.</returns>
         public Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
         {
-            if (!_serverIsConnected)
-            {
-                throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
-            }
+            return _innerConnection.SendStreamingRequestAsync(request, cancellationToken);
+        }
 
-            return _server.SendAsync(request, cancellationToken);
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes resources of the <see cref="StreamingRequestHandler"/>.
+        /// </summary>
+        /// <param name="disposing">Whether we are disposing managed resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    if (_innerConnection is IDisposable disposable)
+                    {
+                        disposable?.Dispose();
+                    }
+                }
+
+                _disposedValue = true;
+            }
         }
 
         /// <summary>
@@ -485,14 +510,6 @@ namespace Microsoft.Bot.Builder.Streaming
             return null;
         }
 
-        private void Server_Disconnected(object sender, DisconnectedEventArgs e)
-        {
-            _serverIsConnected = false;
-
-            // remove ourselves from the global collection
-            _requestHandlers.TryRemove(_instanceId, out var _);
-        }
-
         /// <summary>
         /// Checks the validity of the request and attempts to map it the correct custom endpoint,
         /// then generates and returns a response if appropriate.
@@ -520,6 +537,90 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             return null;
+        }
+
+        private class LegacyStreamingConnection : StreamingConnection, IDisposable
+        {
+            private readonly IStreamingTransportServer _server;
+            private readonly ILogger _logger;
+
+            private bool _serverIsConnected;
+            private bool _disposedValue;
+
+            public LegacyStreamingConnection(IStreamingTransportServer server, ILogger logger)
+            {
+                _server = server ?? throw new ArgumentNullException(nameof(server));
+                _serverIsConnected = true;
+                _server.Disconnected += Server_Disconnected;
+                _logger = logger;
+            }
+
+            public override async Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default)
+            {
+                await _server.StartAsync().ConfigureAwait(false);
+            }
+
+            public override async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
+            {
+                if (!_serverIsConnected)
+                {
+                    throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
+                }
+
+                return await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            }
+
+            public void Dispose()
+            {
+                // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+                Dispose(disposing: true);
+                GC.SuppressFinalize(this);
+            }
+
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions while disconnecting.")]
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!_disposedValue)
+                {
+                    if (disposing)
+                    {
+                        try
+                        {
+                            if (_server != null)
+                            {
+                                _server.Disconnected -= Server_Disconnected;
+
+                                if (_server is WebSocketServer webSocketServer)
+                                {
+                                    webSocketServer.Disconnect();
+                                }
+                                else if (_server is NamedPipeServer namedPipeServer)
+                                {
+                                    namedPipeServer.Disconnect();
+                                }
+
+                                if (_server is IDisposable disposable)
+                                {
+                                    disposable.Dispose();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Failed to gracefully disconnect server while tearing down streaming connection.");
+                        }
+                    }
+
+                    // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                    // TODO: set large fields to null
+                    _disposedValue = true;
+                }
+            }
+
+            private void Server_Disconnected(object sender, DisconnectedEventArgs e)
+            {
+                _serverIsConnected = false;
+            }
         }
     }
 }
