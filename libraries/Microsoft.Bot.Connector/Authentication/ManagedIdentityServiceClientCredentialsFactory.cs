@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +16,7 @@ namespace Microsoft.Bot.Connector.Authentication
     public class ManagedIdentityServiceClientCredentialsFactory : ServiceClientCredentialsFactory
     {
         private readonly string _appId;
+        private readonly IJwtTokenProviderFactory _tokenProviderFactory;
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
 
@@ -20,11 +24,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Initializes a new instance of the <see cref="ManagedIdentityServiceClientCredentialsFactory"/> class.
         /// </summary>
         /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
+        /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
         /// <param name="httpClient">A custom httpClient to use.</param>
         /// <param name="logger">A logger instance to use.</param>
-        public ManagedIdentityServiceClientCredentialsFactory(string appId, HttpClient httpClient = null, ILogger logger = null)
+        public ManagedIdentityServiceClientCredentialsFactory(string appId, IJwtTokenProviderFactory tokenProviderFactory, HttpClient httpClient = null, ILogger logger = null)
         {
-            _appId = appId ?? throw new ArgumentNullException(nameof(appId));
+            if (string.IsNullOrWhiteSpace(appId))
+            {
+                throw new ArgumentNullException(nameof(appId));
+            }
+
+            _appId = appId;
+            _tokenProviderFactory = tokenProviderFactory ?? throw new ArgumentNullException(nameof(tokenProviderFactory));
             _httpClient = httpClient;
             _logger = logger;
         }
@@ -52,7 +63,7 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return Task.FromResult<ServiceClientCredentials>(
-                new ManagedIdentityAppCredentials(_appId, audience, _httpClient, _logger));
+                new ManagedIdentityAppCredentials(_appId, audience, _tokenProviderFactory, _httpClient, _logger));
         }
     }
 }

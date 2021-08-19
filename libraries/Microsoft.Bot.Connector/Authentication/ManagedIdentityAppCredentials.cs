@@ -13,23 +13,28 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public class ManagedIdentityAppCredentials : AppCredentials
     {
+        private readonly IJwtTokenProviderFactory _tokenProviderFactory;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ManagedIdentityAppCredentials"/> class.
         /// Managed Identity for AAD credentials auth and caching.
         /// </summary>
         /// <param name="appId">Client ID for the managed identity assigned to the bot.</param>
         /// <param name="oAuthScope">The scope for the token.</param>
+        /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public ManagedIdentityAppCredentials(string appId, string oAuthScope, HttpClient customHttpClient = null, ILogger logger = null)
+        public ManagedIdentityAppCredentials(string appId, string oAuthScope, IJwtTokenProviderFactory tokenProviderFactory, HttpClient customHttpClient = null, ILogger logger = null)
             : base(channelAuthTenant: null, customHttpClient, logger, oAuthScope)
         {
-            if (oAuthScope == null)
+            if (string.IsNullOrWhiteSpace(appId))
             {
-                throw new ArgumentNullException(nameof(oAuthScope));
+                throw new ArgumentNullException(nameof(appId));
             }
 
-            MicrosoftAppId = appId ?? throw new ArgumentNullException(nameof(appId));
+            _tokenProviderFactory = tokenProviderFactory ?? throw new ArgumentNullException(nameof(tokenProviderFactory));
+
+            MicrosoftAppId = appId;
         }
 
         /// <inheritdoc/>
@@ -43,7 +48,7 @@ namespace Microsoft.Bot.Connector.Authentication
         protected override Lazy<IAuthenticator> BuildIAuthenticator()
         {
             return new (
-                () => new ManagedIdentityAuthenticator(MicrosoftAppId, OAuthScope, CustomHttpClient, Logger),
+                () => new ManagedIdentityAuthenticator(MicrosoftAppId, OAuthScope, _tokenProviderFactory, CustomHttpClient, Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
     }

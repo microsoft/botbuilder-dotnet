@@ -25,23 +25,28 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">Client id for the managed identity to be used for acquiring tokens.</param>
         /// <param name="resource">Resource for which to acquire the token.</param>
+        /// <param name="tokenProviderFactory">The JWT token provider factory to use.</param>
         /// <param name="customHttpClient">A customized instance of the HttpClient class.</param>
         /// <param name="logger">The type used to perform logging.</param>
-        public ManagedIdentityAuthenticator(string appId, string resource, HttpClient customHttpClient = null, ILogger logger = null)
+        public ManagedIdentityAuthenticator(string appId, string resource, IJwtTokenProviderFactory tokenProviderFactory, HttpClient customHttpClient = null, ILogger logger = null)
         {
-            if (string.IsNullOrEmpty(appId))
+            if (string.IsNullOrWhiteSpace(appId))
             {
                 throw new ArgumentNullException(nameof(appId));
             }
 
-            _resource = resource ?? throw new ArgumentNullException(nameof(resource));
+            if (string.IsNullOrWhiteSpace(resource))
+            {
+                throw new ArgumentNullException(nameof(resource));
+            }
 
-            // https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity?tabs=dotnet
-            // "RunAs=App;AppId=<client-id-guid>" for user-assigned managed identities
-            _tokenProvider = customHttpClient == null
-                ? new AzureServiceTokenProvider($"RunAs=App;AppId={appId}")
-                : new AzureServiceTokenProvider($"RunAs=App;AppId={appId}", httpClientFactory: new ConstantHttpClientFactory(customHttpClient));
+            if (tokenProviderFactory == null)
+            {
+                throw new ArgumentNullException(nameof(tokenProviderFactory));
+            }
 
+            _resource = resource;
+            _tokenProvider = tokenProviderFactory.CreateAzureServiceTokenProvider(appId, customHttpClient);
             _logger = logger ?? NullLogger.Instance;
         }
 
