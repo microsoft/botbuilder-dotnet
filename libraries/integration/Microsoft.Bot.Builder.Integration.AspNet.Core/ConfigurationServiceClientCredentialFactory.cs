@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     break;
 
                 default: // MultiTenant
-                    _inner = new PasswordServiceClientCredentialFactory(appId, password, httpClient, logger);
+                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId: string.Empty,  httpClient, logger);
                     break;
             }
         }

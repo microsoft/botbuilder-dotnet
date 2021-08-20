@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Loader;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -120,8 +121,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime.Extensions
             var tenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
             if (!string.IsNullOrWhiteSpace(tenantId))
             {
-                validTokenIssuers.Add($"https://sts.windows.net/{tenantId}/"); // For MSI auth, 1.0 token
-                validTokenIssuers.Add($"https://login.microsoftonline.com/{tenantId}/v2.0"); // For MSI auth, 2.0 token
+                // For SingleTenant/MSI auth, the JWT tokens will be issued from the bot's home tenant.
+                // So, these issuers need to be added to the list of valid token issuers for authenticating activity requests.
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidTokenIssuerUrlTemplateV1, tenantId));
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidTokenIssuerUrlTemplateV2, tenantId));
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidGovernmentTokenIssuerUrlTemplateV1, tenantId));
+                validTokenIssuers.Add(string.Format(CultureInfo.InvariantCulture, AuthenticationConstants.ValidGovernmentTokenIssuerUrlTemplateV2, tenantId));
             }
 
             // We only support being a skill or a skill consumer currently (not both).
