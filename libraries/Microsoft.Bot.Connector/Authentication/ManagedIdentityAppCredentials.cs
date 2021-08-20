@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <inheritdoc/>
         protected override Lazy<IAuthenticator> BuildIAuthenticator()
         {
-            return new (
+            return new Lazy<IAuthenticator>(
                 () => new ManagedIdentityAuthenticator(MicrosoftAppId, OAuthScope, _tokenProviderFactory, CustomHttpClient, Logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
