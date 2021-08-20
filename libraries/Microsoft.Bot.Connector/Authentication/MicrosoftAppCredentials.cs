@@ -22,6 +22,11 @@ namespace Microsoft.Bot.Connector.Authentication
     public class MicrosoftAppCredentials : AppCredentials
     {
         /// <summary>
+        /// The configuration property for the App type of the bot -- MultiTenant, SingleTenant, or, MSI.
+        /// </summary>
+        public const string MicrosoftAppTypeKey = "MicrosoftAppType";
+
+        /// <summary>
         /// The configuration property for the Microsoft app Password.
         /// </summary>
         public const string MicrosoftAppPasswordKey = "MicrosoftAppPassword";
@@ -30,6 +35,11 @@ namespace Microsoft.Bot.Connector.Authentication
         /// The configuration property for the Microsoft app ID.
         /// </summary>
         public const string MicrosoftAppIdKey = "MicrosoftAppId";
+
+        /// <summary>
+        /// The configuration property for Tenant ID of the Azure AD tenant.
+        /// </summary>
+        public const string MicrosoftAppTenantIdKey = "MicrosoftAppTenantId";
 
         /// <summary>
         /// An empty set of credentials.

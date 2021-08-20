@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -31,5 +32,13 @@ namespace Microsoft.Bot.Connector.Authentication
         /// An <see cref="ClaimsValidator"/> instance used to validate the identity claims.
         /// </value>
         public virtual ClaimsValidator ClaimsValidator { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets a collection of valid JWT token issuers.
+        /// </summary>
+        /// <value>
+        /// A collection of valid JWT token issuers.
+        /// </value>
+        public IEnumerable<string> ValidTokenIssuers { get; set; }
     }
 }
