@@ -34,8 +34,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //[Fact]
         //public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
         //{
-        //    string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-        //    var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", string.Empty);
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider("", string.Empty);
         //    var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, "https://webchat.botframework.com/", client);
 
         //    Assert.True(result.IsAuthenticated);
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //[Fact]
         //public async void Connector_AuthHeader_BotAppIdDiffers_ShouldNotValidate()
         //{
-        //    string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
 
         //    await Assert.ThrowsAsync<UnauthorizedAccessException>(
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //public async void Connector_AuthHeader_BotWithNoCredentials_ShouldNotValidate()
         //{
         //    // token received and auth disabled
-        //    string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider(string.Empty, string.Empty);
 
         //    await Assert.ThrowsAsync<UnauthorizedAccessException>(
@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //[Fact]
         //public async void Emulator_MsaHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
         //{
-        //    string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-        //    var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", string.Empty);
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider("", string.Empty);
         //    var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, "https://webchat.botframework.com/", emptyClient);
 
         //    Assert.True(result.IsAuthenticated);
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //[Fact]
         //public async void Emulator_MsaHeader_BotAppIdDiffers_ShouldNotValidate()
         //{
-        //    string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
         //    var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
         //    await Assert.ThrowsAsync<UnauthorizedAccessException>(
         //        async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));
@@ -145,8 +145,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
         //{
         //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
-        //        "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
-        //        "2.30Vs3VQLKt974F",
+        //        "",         // emulator creds
+        //        "",
         //        GovernmentAuthenticationConstants.ChannelService);
         //}
 
@@ -155,8 +155,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithPrivateChannelService_ShouldValidate()
         //{
         //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
-        //        "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
-        //        "2.30Vs3VQLKt974F",
+        //        "",         // emulator creds
+        //        "",
         //        "TheChannel");
         //}
 
@@ -165,8 +165,8 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
         //public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
         //{
         //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
-        //        "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
-        //        "2.30Vs3VQLKt974F",
+        //        "",         // emulator creds
+        //        "",
         //        GovernmentAuthenticationConstants.ChannelService);
         //}
 
