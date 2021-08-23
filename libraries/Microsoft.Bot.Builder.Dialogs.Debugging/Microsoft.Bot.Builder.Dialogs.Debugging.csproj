@@ -27,9 +27,17 @@
     <NoWarn>$(NoWarn);CA1812</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(BuildTarget)' == 'netcoreapp21' Or '$(BuildTarget)' == ''" >
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(BuildTarget)' == 'netcoreapp31'" >
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Adaptive" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
