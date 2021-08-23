@@ -32,7 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
         private readonly List<JsonConverterFactory> converterFactories = new List<JsonConverterFactory>();
         private readonly ResourceExplorerOptions options;
-        private readonly ConcurrentDictionary<string, (JToken, SourceRange)> _resourceTokenCache = new ConcurrentDictionary<string, (JToken, SourceRange)>();
 
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private List<IComponentDeclarativeTypes> declarativeTypes;
@@ -488,14 +487,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>The resulting <see cref="JToken"/> and <see cref="SourceRange"/> for the requested resource.</returns>
         internal async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advanceJsonReader = false)
         {
-            if (!string.IsNullOrEmpty(resource.FullName))
-            {
-                if (_resourceTokenCache.TryGetValue(resource.FullName, out (JToken, SourceRange) cachedResult))
-                {
-                    return await Task.FromResult(cachedResult).ConfigureAwait(false);
-                }
-            }
-
             using (var readerText = new StreamReader(await resource.OpenStreamAsync().ConfigureAwait(false)))
             using (var readerJson = new JsonTextReader(readerText))
             {
@@ -511,10 +502,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
                 AutoAssignId(resource, token, sourceContext, range);
                 range.Path = resource.FullName ?? resource.Id;
-                if (!string.IsNullOrEmpty(resource.FullName))
-                {
-                    _resourceTokenCache.AddOrUpdate(resource.FullName, (token, range), (key, oldValue) => (token, range));
-                }
 
                 return (token, range);
             }

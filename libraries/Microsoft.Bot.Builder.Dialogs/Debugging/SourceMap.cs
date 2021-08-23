@@ -1,9 +1,7 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -17,18 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// Initializes a read-only new instance of the <see cref="SourceMap"/>.
         /// </summary>
         public static readonly SourceMap Instance = new SourceMap();
-        
+
         private readonly object _gate = new object();
         private readonly Dictionary<object, SourceRange> _items = new Dictionary<object, SourceRange>(ReferenceEquality<object>.Instance);
         private readonly Dictionary<SourceRange, object> _reverseLookup = new Dictionary<SourceRange, object>();
 
         void ISourceMap.Add(object item, SourceRange range)
         {
-            if (range.Path != null && !Path.IsPathRooted(range.Path))
-            {
-                throw new ArgumentOutOfRangeException(range.Path);
-            }
-
             lock (_gate)
             {
                 if (_reverseLookup.TryGetValue(range, out object foundRef))
