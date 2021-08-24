@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 using static Microsoft.Bot.Connector.Streaming.Session.StreamingSession;
+using RequestModel = Microsoft.Bot.Connector.Streaming.Payloads.RequestPayload;
+using ResponseModel = Microsoft.Bot.Connector.Streaming.Payloads.ResponsePayload;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests
 {
@@ -178,7 +180,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             var responseCompletionSource = new TaskCompletionSource<bool>();
 
             transportHandler
-                .Setup(t => t.SendResponseAsync(It.IsAny<Guid>(), It.Is<ResponsePayload>(r => r.StatusCode == 200), CancellationToken.None))
+                .Setup(t => t.SendResponseAsync(It.IsAny<Guid>(), It.Is<ResponseModel>(r => r.StatusCode == 200), CancellationToken.None))
                 .Callback(() => responseCompletionSource.SetResult(true));
 
             // Act
@@ -242,7 +244,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
             var responseCompletionSource = new TaskCompletionSource<bool>();
 
-            var transportHandlerSetup = transportHandler.Setup(t => t.SendRequestAsync(It.IsAny<Guid>(), It.IsAny<RequestPayload>(), CancellationToken.None));
+            var transportHandlerSetup = transportHandler.Setup(t => t.SendRequestAsync(It.IsAny<Guid>(), It.IsAny<RequestModel>(), CancellationToken.None));
 
             var session = new StreamingSession(requestHandler.Object, transportHandler.Object, NullLogger.Instance);
 

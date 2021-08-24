@@ -1,7 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Buffers;
 using System.IO.Pipelines;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;

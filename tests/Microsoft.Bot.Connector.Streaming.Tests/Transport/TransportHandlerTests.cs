@@ -18,6 +18,8 @@ using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Xunit;
+using RequestModel = Microsoft.Bot.Connector.Streaming.Payloads.RequestPayload;
+using ResponseModel = Microsoft.Bot.Connector.Streaming.Payloads.ResponsePayload;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests
 {
@@ -95,7 +97,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         [Fact]
         public async Task TransportHandler_SendRequest_TransportReceivesHeaderAndPayload()
         {
-            var request = new RequestPayload()
+            var request = new RequestModel()
             {
                 Verb = "GET",
                 Path = "api/version",
@@ -156,7 +158,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         [Fact]
         public async Task TransportHandler_SendResponse_TransportReceivesHeaderAndPayload()
         {
-            var response = new ResponsePayload()
+            var response = new ResponseModel()
             {
                 StatusCode = 200,
                 Streams = new List<StreamDescription>()

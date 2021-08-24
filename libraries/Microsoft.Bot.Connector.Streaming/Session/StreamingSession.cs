@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Streaming.Payloads;
 using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
@@ -407,7 +408,14 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 // When we move out of 2.1 we could use the Span<byte> overload of GetString that uses the span in the stack avoiding heap
                 // allocations alltogether. Another alternative is to use the Utf8JsonTextReader from the native json library which takes 
                 // stack-allocated bytes instead of json.net.
-                return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(payload.ToArray()));
+                using (var stream = new MemoryStream(payload.ToArray()))
+                using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+                using (var jsonReader = new JsonTextReader(streamReader))
+                {
+                    // We don't just deserialize the utf8 string because the legacy client wraps the json with double quotes. This  can
+                    // be optimized but for now solves the issue of supporting new and legacy clients
+                    return JsonSerializer.Create(SerializationSettings.DefaultDeserializationSettings).Deserialize<T>(jsonReader);
+                }       
             }
 
             private static void CreatePlaceholderStreams(Header header, List<IContentStream> placeholders, List<StreamDescription> streamInfo)

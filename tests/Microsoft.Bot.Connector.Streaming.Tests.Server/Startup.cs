@@ -14,12 +14,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Server
     public class Startup
     {
         private readonly IConfiguration _configuration;
-        private readonly IHostApplicationLifetime _hostAppLifetime;
+        
+        //1private readonly IHostApplicationLifetime _hostAppLifetime;
 
-        public Startup(IConfiguration configuration, IHostApplicationLifetime appLifetime)
+        public Startup(IConfiguration configuration)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _hostAppLifetime = appLifetime ?? throw new ArgumentNullException(nameof(appLifetime));
+            
+            //_hostAppLifetime = appLifetime ?? throw new ArgumentNullException(nameof(appLifetime));
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

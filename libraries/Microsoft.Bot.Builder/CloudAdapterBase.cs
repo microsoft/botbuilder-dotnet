@@ -247,7 +247,8 @@ namespace Microsoft.Bot.Builder
             Logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {continuationActivity.Conversation.Id}");
 
             // Create the connector factory.
-            var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
+            // Assumption: we always need an http connector client
+            var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity); 
 
             // Create the connector client to use for outbound requests.
             using (var connectorClient = await connectorFactory.CreateAsync(continuationActivity.ServiceUrl, audience, cancellationToken).ConfigureAwait(false))

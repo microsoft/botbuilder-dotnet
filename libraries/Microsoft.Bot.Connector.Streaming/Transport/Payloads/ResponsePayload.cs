@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Streaming.Payloads
+namespace Microsoft.Bot.Connector.Streaming.Payloads
 {
     internal class ResponsePayload
     {

@@ -72,6 +72,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Features
                 _input = input;
                 _output = output;
                 _sync = sync;
+                _state = WebSocketState.Open;
             }
 
             public override WebSocketCloseStatus? CloseStatus => _closeStatus;
@@ -135,7 +136,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Features
             {
                 try
                 {
-                    if (_internalBuffer.Buffer == null || _internalBuffer.Buffer.Length == 0)
+                    while (_internalBuffer.Buffer == null || _internalBuffer.Buffer.Length == 0)
                     {
                         await _input.WaitToReadAsync(cancellationToken).ConfigureAwait(false);
 
@@ -150,6 +151,10 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Features
                             }
 
                             _internalBuffer = message;
+                        }
+                        else
+                        {
+                            await Task.Delay(100).ConfigureAwait(false);
                         }
                     }
 

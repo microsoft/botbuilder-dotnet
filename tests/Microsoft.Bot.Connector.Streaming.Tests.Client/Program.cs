@@ -88,16 +88,15 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
 
         private static async Task ConnectAsync(bool automaticallyReconnect = false)
         {
-            //var url = AskUser("Bot url:");
-            //var appId = AskUser("Bot app id:");
-            //var appPassword = AskUser("Bot app password:");
+            var url = AskUser("Bot url:");
+            var appId = AskUser("Bot app id:");
+            var appPassword = AskUser("Bot app password:");
 
             var headers = new Dictionary<string, string>() { { "channelId", "Test" } };
 
-            //if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appPassword))
+            if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appPassword))
             {
-                //var credentials = new MicrosoftAppCredentials(appId, appPassword);
-                var credentials = new MicrosoftAppCredentials("48f6fcb9-d595-4d53-bba0-4b59c926768e", "h0Ux2pb.Ij0CxrK~71Ttt4SerA~zjqVW_1");
+                var credentials = new MicrosoftAppCredentials(appId, appPassword);
                 var token = await credentials.GetTokenAsync();
 
                 headers.Add("Authorization", $"Bearer {token}");

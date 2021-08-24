@@ -14,26 +14,26 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests
 {
-    public class WebSocketStreamingConnectionTests
+    public class InteropApplicationIntegrationTests
     {
         private readonly ITestOutputHelper _outputHelper;
 
-        public WebSocketStreamingConnectionTests(ITestOutputHelper outputHelper)
+        public InteropApplicationIntegrationTests(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
         }
 
         [Fact]
-        public async Task Integration_ListenSendShutDownServer()
+        public async Task Integration_Interop_LegacyClient()
         {
             // TODO: Transform this test into a theory and do multi-message, multi-thread, multi-client, etc.
             var logger = XUnitLogger.CreateLogger(_outputHelper);
 
-            using (var webSocketFeature = new TestWebSocketConnectionFeature())            
+            using (var webSocketFeature = new TestWebSocketConnectionFeature())
             {
                 // Bot / server setup
                 var botRequestHandler = new Mock<RequestHandler>();
-                
+
                 botRequestHandler
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
@@ -45,35 +45,34 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
 
                 // Client / channel setup
                 var clientRequestHandler = new Mock<RequestHandler>();
-                
+
                 clientRequestHandler
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var client = new WebSocketClient(clientRequestHandler.Object, logger: logger);
-                
-                var clientTask = Task.Run(() => client.ConnectInternalAsync(webSocketFeature.Client, CancellationToken.None));
+                using (var client = new Microsoft.Bot.Streaming.Transport.WebSockets.WebSocketClient("wss://test", clientRequestHandler.Object))
+                {
+                    await client.ConnectInternalAsync(webSocketFeature.Client).ConfigureAwait(false);
 
-                // Send request bot (server) -> channel (client)
-                const string path = "api/version";
-                const string botToClientPayload = "Hello human, I'm Bender!";
-                var request = StreamingRequest.CreatePost(path, new StringContent(botToClientPayload));
+                    // Send request bot (server) -> channel (client)
+                    const string path = "api/version";
+                    const string botToClientPayload = "Hello human, I'm Bender!";
+                    var request = StreamingRequest.CreatePost(path, new StringContent(botToClientPayload));
 
-                var responseFromClient = await connection.SendStreamingRequestAsync(request).ConfigureAwait(false);
+                    var responseFromClient = await connection.SendStreamingRequestAsync(request).ConfigureAwait(false);
 
-                Assert.Equal(200, responseFromClient.StatusCode);
+                    Assert.Equal(200, responseFromClient.StatusCode);
 
-                const string clientToBotPayload = "Hello bot, I'm Calculon!";
-                var clientRequest = StreamingRequest.CreatePost(path, new StringContent(clientToBotPayload));
+                    const string clientToBotPayload = "Hello bot, I'm Calculon!";
+                    var clientRequest = StreamingRequest.CreatePost(path, new StringContent(clientToBotPayload));
 
-                // Send request bot channel (client) -> (server) 
-                var clientToBotResult = await client.SendAsync(clientRequest).ConfigureAwait(false);
+                    // Send request bot channel (client) -> (server) 
+                    var clientToBotResult = await client.SendAsync(clientRequest).ConfigureAwait(false);
 
-                Assert.Equal(200, clientToBotResult.StatusCode);
+                    Assert.Equal(200, clientToBotResult.StatusCode);
+                    client.Disconnect();
+                }
 
-                await client.DisconnectAsync().ConfigureAwait(false);
-
-                await clientTask.ConfigureAwait(false);
                 await serverTask.ConfigureAwait(false);
             }
         }
