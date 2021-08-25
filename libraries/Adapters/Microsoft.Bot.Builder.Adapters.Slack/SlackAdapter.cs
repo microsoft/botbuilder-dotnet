@@ -343,7 +343,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     context.TurnState.Add("httpStatus", ((int)HttpStatusCode.OK).ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    SendActivityToBotAsync(context.Activity.GetConversationReference(), activity, bot, cancellationToken);
 
                     var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
                     var statusCode = (HttpStatusCode)code;
@@ -366,6 +367,19 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             return !string.IsNullOrEmpty(configuration.GetValue<string>(SlackBotTokenKey))
                 && !string.IsNullOrEmpty(configuration.GetValue<string>(SlackClientSigningSecretKey))
                 && !string.IsNullOrEmpty(configuration.GetValue<string>(SlackVerificationTokenKey));
+        }
+
+        protected async Task SendActivityToBotAsync(ConversationReference conversationReference, Activity activity, IBot bot, CancellationToken cancellationToken)
+        {
+            BotCallbackHandler callback = async (ITurnContext turnContext, CancellationToken ct) =>
+            {
+                using (var newContext = new TurnContext(this, activity))
+                {
+                    await RunPipelineAsync(newContext, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                }
+            };
+
+            await this.ContinueConversationAsync(conversationReference, callback, default(CancellationToken)).ConfigureAwait(false);
         }
     }
 }
