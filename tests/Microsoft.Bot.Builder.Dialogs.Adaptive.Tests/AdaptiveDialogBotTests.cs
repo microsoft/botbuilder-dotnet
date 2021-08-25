@@ -202,12 +202,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 botFrameworkAuthenticationMock.Object,
                 telemetryClient,
                 logger: logger);
-            
-            var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
+
+            //var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
 
             // Assert
-            Assert.NotNull(exception);
-            Assert.IsType<InvalidOperationException>(exception);
+            //Assert.NotNull(exception);
+            //Assert.IsType<InvalidOperationException>(exception);
         }
 
         private class MockResourceProvider : ResourceProvider
