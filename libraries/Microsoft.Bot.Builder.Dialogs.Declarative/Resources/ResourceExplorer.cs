@@ -519,7 +519,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
                 AutoAssignId(resource, token, sourceContext, range);
                 range.Path = resource.FullName ?? resource.Id;
-
                 return (token, range);
             }
         }

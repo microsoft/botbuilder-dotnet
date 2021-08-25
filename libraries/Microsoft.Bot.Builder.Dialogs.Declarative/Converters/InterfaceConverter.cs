@@ -123,10 +123,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                         if (passTwo && refDialogName != null)
                         {
                             cachedRefDialogs[refDialogName] = result;
-                        }
-
-                        if (refDialogName != null)
-                        {
                             this.resourceExplorer.UpdateResourceTokenCache(refDialogName, tokenToBuild, range);
                         }
                     }
