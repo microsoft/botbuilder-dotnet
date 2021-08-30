@@ -84,6 +84,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.NotNull(turnContext.TurnState.Get<LanguageGenerator>());
             Assert.NotNull(turnContext.TurnState.Get<LanguageGeneratorManager>());
             Assert.NotNull(turnContext.TurnState.Get<LanguagePolicy>());
+            Assert.NotNull(turnContext.TurnState.Get<IBotTelemetryClient>());
+
+            Assert.Null(turnContext.TurnState.Get<MemoryScope>());
+            Assert.Null(turnContext.TurnState.Get<Memory.IPathResolver>());
+            Assert.Null(turnContext.TurnState.Get<Dialog>());
 
             // Assert no TestOptions
             var testOptionsAccessor = conversationState.CreateProperty<JObject>("TestOptions");
@@ -202,12 +207,658 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 botFrameworkAuthenticationMock.Object,
                 telemetryClient,
                 logger: logger);
-            
-            var exception = await Record.ExceptionAsync(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
 
-            // Assert
-            Assert.NotNull(exception);
-            Assert.IsType<InvalidOperationException>(exception);
+            await Assert.ThrowsAsync<InvalidOperationException>(() => ((IBot)bot).OnTurnAsync(turnContext, CancellationToken.None));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullAdaptiveDialogId()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                null,
+                "main.lg",
+                resourceExplorer, 
+                conversationState, 
+                userState, 
+                skillConversationIdFactory, 
+                languagePolicy, 
+                botFrameworkAuthenticationMock.Object, 
+                telemetryClient, 
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullLanguageGeneratorId()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                null,
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullResourceExplorer()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                null,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullConversationState()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                null,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullUserState()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                null,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullSkillConversationIdFactoryBase()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                null,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullLanguagePolicy()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                null,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullBotFrameworkAuthentication()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                null,
+                telemetryClient,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldThrowOnNullTelemetryClient()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            Assert.Throws<ArgumentNullException>(() => new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                null,
+                logger: logger));
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldNotThrowOnNullMemoryScope()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                scopes: null);
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldNotThrowOnNullPathResolver()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                pathResolvers: null);
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldNotThrowOnNullDialog()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                dialogs: null);
+        }
+
+        [Fact]
+        public void AdaptiveDialogBot_ShouldNotThrowOnNullLogger()
+        {
+            // Arrange
+            var logger = NullLogger<AdaptiveDialogBot>.Instance;
+
+            var storage = new MemoryStorage();
+            var conversationState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var skillConversationIdFactory = new SkillConversationIdFactory(storage);
+            var languagePolicy = new LanguagePolicy("en-US");
+
+            var resourceExplorer = new ResourceExplorer();
+            var resourceProvider = new MockResourceProvider(resourceExplorer);
+            resourceExplorer.AddResourceProvider(resourceProvider);
+
+            var botFrameworkClientMock = new Mock<BotFrameworkClient>();
+
+            var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
+            botFrameworkAuthenticationMock.Setup(bfa => bfa.CreateBotFrameworkClient()).Returns(botFrameworkClientMock.Object);
+
+            // The test dialog being used here happens to not send anything so we only need to mock the type.
+            var adapterMock = new Mock<BotAdapter>();
+
+            // ChannelId and Conversation.Id are required for ConversationState and
+            // ChannelId and From.Id are required for UserState.
+            var activity = new Activity
+            {
+                ChannelId = "test-channel",
+                Conversation = new ConversationAccount { Id = "test-conversation-id" },
+                From = new ChannelAccount { Id = "test-id" }
+            };
+
+            var turnContext = new TurnContext(adapterMock.Object, activity);
+
+            var telemetryClient = new NullBotTelemetryClient();
+
+            new AdaptiveDialogBot(
+                "main.dialog",
+                "main.lg",
+                resourceExplorer,
+                conversationState,
+                userState,
+                skillConversationIdFactory,
+                languagePolicy,
+                botFrameworkAuthenticationMock.Object,
+                telemetryClient,
+                logger: null);
         }
 
         private class MockResourceProvider : ResourceProvider
