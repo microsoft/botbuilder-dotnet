@@ -49,13 +49,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             var supportsSuggestedActions = Channel.SupportsSuggestedActions(channelId, list.Count);
             var supportsCardActions = Channel.SupportsCardActions(channelId, list.Count);
             var maxActionTitleLength = Channel.MaxActionTitleLength(channelId);
-            var hasMessageFeed = Channel.HasMessageFeed(channelId);
             var longTitles = maxTitleLength > maxActionTitleLength;
 
             if (!longTitles && !supportsSuggestedActions && supportsCardActions)
             {
                 // SuggestedActions is the preferred approach, but for channels that don't
-                // support them (e.g. Teams, Cortana) we should use a HeroCard with CardActions
+                // support them (e.g. Teams) we should use a HeroCard with CardActions
                 return HeroCard(list, text, speak);
             }
 

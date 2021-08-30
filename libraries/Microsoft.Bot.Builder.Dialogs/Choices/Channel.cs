@@ -71,7 +71,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Directline:
                 case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
-                case Connector.Channels.Cortana:
                     return buttonCnt <= 100;
 
                 default:
@@ -86,11 +85,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// <returns>True if the Channel has a Message Feed, False if it does not.</returns>
         public static bool HasMessageFeed(string channelId)
         {
+            // The removed 'cortana' channel was the only channel that returned false.
+            // This channel is no longer available for bot developers and was removed from
+            // the Channels enum while addressing issues #3603, #5671
+            // Since this is publically available but not documented in the official reference docs, the method is retained.
             switch (channelId)
-            {
-                case Connector.Channels.Cortana:
-                    return false;
-
+            { 
                 default:
                     return true;
             }

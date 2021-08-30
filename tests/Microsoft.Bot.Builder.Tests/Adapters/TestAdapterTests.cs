@@ -567,7 +567,6 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
         [InlineData(Channels.Emulator)]
         [InlineData(Channels.Msteams)]
         [InlineData(Channels.Webchat)]
-        [InlineData(Channels.Cortana)]
         [InlineData(Channels.Directline)]
         [InlineData(Channels.Facebook)]
         [InlineData(Channels.Slack)]

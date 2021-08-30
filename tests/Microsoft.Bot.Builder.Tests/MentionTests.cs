@@ -104,13 +104,7 @@ namespace Microsoft.Bot.Builder.Tests
         public void Mention_Email()
         {
             // TODO: for now: Email mentions not included in Activity.Text?
-        }
-
-        [Fact]
-        public void Mention_Cortana()
-        {
-            // TODO: no-op for now: Cortana mentions unknown at this time
-        }
+        }        
 
         [Fact]
         public void Mention_Kik()
