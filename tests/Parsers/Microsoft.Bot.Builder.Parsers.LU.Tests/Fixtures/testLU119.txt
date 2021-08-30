@@ -7,7 +7,7 @@
     - @PROPERTYName PROPERTYName
 
 @ list PROPERTYName
-    - Quantity:
+	- Quantity:
 		- property
 
 @ prebuilt number

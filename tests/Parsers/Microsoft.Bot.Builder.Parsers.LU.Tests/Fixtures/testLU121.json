@@ -4,7 +4,7 @@
       "Errors": [],
       "SectionType": "simpleIntentSection",
       "Id": "simpleIntentSection_test",
-      "Body": "- remove {@RemoveFromQuantity={@number=99}}\r\n\r\n@ml AddToQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n@ml RemoveFromQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n\r\n@ prebuilt number hasRole Quantity\r\n@ list PROPERTYName\r\n    - Quantity:\r\n\t\t- property\r\n\r\n",
+      "Body": "- remove {@RemoveFromQuantity={@number=99}}\r\n\r\n@ml AddToQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n@ml RemoveFromQuantity = \r\n    - @number number\r\n    - @PROPERTYName PROPERTYName\r\n\r\n@ prebuilt number hasRole Quantity\r\n@ list PROPERTYName\r\n\t- Quantity:\r\n\t\t- property\r\n\r\n",
       "UtteranceAndEntitiesMap": [
         {
           "utterance": "remove 99",
@@ -106,7 +106,7 @@
           "Type": "list",
           "SynonymsList": [
             {
-              "NormalizedValue": "Quantity",
+              "NormalizedValue": "Quantity:",
               "Synonyms": [
                 "property"
               ]
@@ -138,6 +138,6 @@
       }
     }
   ],
-  "Content": "\n# test\n- remove {@RemoveFromQuantity={@number=99}}\n\n@ml AddToQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n@ml RemoveFromQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n\n@ prebuilt number hasRole Quantity\n@ list PROPERTYName\n    - Quantity:\n\t\t- property\n\n",
+  "Content": "\n# test\n- remove {@RemoveFromQuantity={@number=99}}\n\n@ml AddToQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n@ml RemoveFromQuantity = \n    - @number number\n    - @PROPERTYName PROPERTYName\n\n@ prebuilt number hasRole Quantity\n@ list PROPERTYName\n\t- Quantity:\n\t\t- property\n\n",
   "Errors": []
 }

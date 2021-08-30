@@ -11,6 +11,6 @@
 
 @ prebuilt number hasRole Quantity
 @ list PROPERTYName
-    - Quantity:
+	- Quantity:
 		- property
 

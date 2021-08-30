@@ -65,7 +65,7 @@
           "Roles": "r2",
           "SynonymsList": [
             {
-              "NormalizedValue": "one",
+              "NormalizedValue": "one:",
               "Synonyms": [
                 "uno"
               ]
