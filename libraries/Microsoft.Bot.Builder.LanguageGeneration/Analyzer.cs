@@ -50,7 +50,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Analyze result including variables and template references.</returns>
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            if (!_templateMap.ContainsKey(templateName) || _evaluationTargetStack.Any(e => e.TemplateName == templateName))
+            var missingName = !_templateMap.ContainsKey(templateName);
+            var stackHasName = _evaluationTargetStack.Any(e => e.TemplateName == templateName);
+
+            if (Templates.LgOptions?.ThrowOnRecursive == true)
+            {
+                if (missingName)
+                {
+                    throw new ArgumentException(TemplateErrors.TemplateNotExist(templateName));
+                }
+
+                if (stackHasName)
+                {
+                    throw new InvalidOperationException($"{TemplateErrors.LoopDetected} {string.Join(" => ", _evaluationTargetStack.Reverse().Select(e => e.TemplateName))} => {templateName}");
+                }
+            }
+
+            if (missingName || stackHasName)
             {
                 return new AnalyzerResult();
             }
@@ -210,7 +226,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    if (!result.TemplateReferences.Contains(templateName))
+                    if (Templates.LgOptions?.ThrowOnRecursive == true || !result.TemplateReferences.Contains(templateName))
                     {
                         // if template has parameters, just get the template ref without variables.
                         result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));

@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             CheckErrors();
-            var analyzer = new Analyzer(this);
+            var analyzer = new Analyzer(this, this.LgOptions);
             return analyzer.AnalyzeTemplate(templateName);
         }
 

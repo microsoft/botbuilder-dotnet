@@ -289,6 +289,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var lgFile = GetTemplates("LoopDetected.lg");
             var exception = Assert.Throws<InvalidOperationException>(() => lgFile.Evaluate("wPhrase"));
             Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
+
+            lgFile.Options = new List<string> { "@throwOnRecursive=true" };
+
+            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("wPhrase"));
+            Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
+
+            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("shouldFail"));
+            Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
         }
 
         [Fact]
