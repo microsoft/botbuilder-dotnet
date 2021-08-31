@@ -243,7 +243,7 @@
                     "Type": "list",
                     "SynonymsList": [
                         {
-                            "NormalizedValue": "thermostat",
+                            "NormalizedValue": "thermostat :",
                             "Synonyms": [
                                 "Thermostat",
                                 "Heater",
@@ -252,7 +252,7 @@
                             ]
                         },
                         {
-                            "NormalizedValue": "refrigerator",
+                            "NormalizedValue": "refrigerator :",
                             "Synonyms": [
                                 "Fridge",
                                 "Cooler"

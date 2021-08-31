@@ -9,9 +9,9 @@
       "Type": "list",
       "SynonymsList": [
         {
-          "NormalizedValue": "something",
+          "NormalizedValue": "something:",
           "Synonyms": [
-
+            "something:"
           ]
         }
       ],

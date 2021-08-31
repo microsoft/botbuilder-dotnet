@@ -10,14 +10,14 @@
       "Roles": "r1, r2",
       "SynonymsList": [
         {
-          "NormalizedValue": "a1",
+          "NormalizedValue": "a1:",
           "Synonyms": [
             "one",
             "two"
           ]
         },
         {
-          "NormalizedValue": "a2",
+          "NormalizedValue": "a2:",
           "Synonyms": [
             "three",
             "four"

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.Bot.Builder.Parsers.LU
@@ -150,12 +151,15 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                 }
 
                 var bodyElement = new SynonymElement();
+                var maxTabCountSeen = int.MaxValue;
                 foreach (var normalItemStr in parseTree.newEntityDefinition().newEntityListbody().normalItemString())
                 {
-                    var trimedItemStr = normalItemStr.GetText().Trim();
-                    var normalizedValueMatch = Regex.Match(trimedItemStr, @"(?: |\t)*-(?: |\t)*(.*)(?: |\t)*:$");
-                    if (normalizedValueMatch.Success)
+                    var trimedItemStr = normalItemStr.GetText();
+                    var normalizedValueMatch = Regex.Match(trimedItemStr, @"(?: |\t)*-(?: |\t)*(.*)(?: |\t)*$");
+                    var tabCount = trimedItemStr.IndexOf('-');
+                    if (tabCount <= maxTabCountSeen)
                     {
+                        maxTabCountSeen = Math.Min(maxTabCountSeen, tabCount);
                         if (bodyElement.NormalizedValue != null)
                         {
                             // This is not the first value in the list
@@ -181,6 +185,11 @@ namespace Microsoft.Bot.Builder.Parsers.LU
                 if (bodyElement.NormalizedValue != null)
                 {
                     // There was at least one
+                    if (bodyElement.Synonyms.Count == 0) 
+                    {
+                        bodyElement.Synonyms.Add(bodyElement.NormalizedValue);
+                    }
+
                     synonymsOrPhraseList.Add(bodyElement);
                 }
             }
