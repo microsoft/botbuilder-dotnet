@@ -83,18 +83,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// </summary>
         /// <param name="channelId">The Channel to check for Message Feed.</param>
         /// <returns>True if the Channel has a Message Feed, False if it does not.</returns>
-        public static bool HasMessageFeed(string channelId)
-        {
-            // The removed 'cortana' channel was the only channel that returned false.
-            // This channel is no longer available for bot developers and was removed from
-            // the Channels enum while addressing issues #3603, #5671
-            // Since this is publically available but not documented in the official reference docs, the method is retained.
-            switch (channelId)
-            { 
-                default:
-                    return true;
-            }
-        }
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the channelId parameter without breaking binary compatibility)
+        public static bool HasMessageFeed(string channelId) => true;
+#pragma warning restore CA1801 // Review unused parameters
 
         /// <summary>
         /// Maximum length allowed for Action Titles.
