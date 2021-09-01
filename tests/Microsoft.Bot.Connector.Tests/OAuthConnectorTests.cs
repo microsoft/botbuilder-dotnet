@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Connector.Tests
         [Fact]
         public async Task SendEmulateOAuthCardsAsync_ShouldThrowOnNullClient()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(
+            await Assert.ThrowsAsync<NullReferenceException>(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(
                 null, true));
         }
 
