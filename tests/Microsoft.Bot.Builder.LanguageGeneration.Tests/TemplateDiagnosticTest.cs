@@ -290,12 +290,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var exception = Assert.Throws<InvalidOperationException>(() => lgFile.Evaluate("wPhrase"));
             Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
 
-            lgFile.Options = new List<string> { "@throwOnRecursive=true" };
+            // Without ThrowOnRecursive does not throw exception when loop is detected
+            var wPhraseResult = lgFile.AnalyzeTemplate("wPhrase");
+            Assert.Equal("welcome_user", wPhraseResult.TemplateReferences[0]);
+            Assert.Equal("wPhrase", wPhraseResult.TemplateReferences[1]);
 
-            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("wPhrase"));
-            Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
+            var selfLoopResult = lgFile.AnalyzeTemplate("selfLoop");
+            Assert.Equal("selfLoop", selfLoopResult.TemplateReferences[0]);
+            Assert.Equal("x", selfLoopResult.Variables[0]);
 
-            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("shouldFail"));
+            // ThrowOnRecursive throws InvalidOperationException
+            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("wPhrase", true));
+            Assert.Contains(TemplateErrors.LoopDetected, exception.Message);            
+
+            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("selfLoop", true));
             Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
         }
 
