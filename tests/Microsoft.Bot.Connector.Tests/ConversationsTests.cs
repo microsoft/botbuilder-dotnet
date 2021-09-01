@@ -85,17 +85,6 @@ namespace Microsoft.Bot.Connector.Tests
                 "dummyContinuationToken"));
         }
 
-        //[Fact]
-        //public async Task GetConversationMemberWithHttpMessagesAsync_ShouldThrowOnNoLocalBot()
-        //{
-        //    var client = new ConnectorClient(HostUri, new BotAccessTokenStub("token"));
-        //    var c = new Conversations();
-        //    var conversationId = (new ITurnContext.Activity.Conversation.Id;
-        //    ServiceClientTracing.IsEnabled = true;
-        //    await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetConversationMemberAsync(
-        //        client.Conversations, "dummyUserId", "dummyConversationId"));
-        //}
-
         [Fact]
         public async Task CreateConversation_WithTracing()
             => await AssertTracingFor(CreateConversation, nameof(ConversationsExtensions.CreateConversationAsync));

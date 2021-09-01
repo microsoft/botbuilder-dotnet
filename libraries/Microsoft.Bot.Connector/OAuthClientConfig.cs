@@ -45,11 +45,6 @@ namespace Microsoft.Bot.Connector
         /// <returns>A task that represents the work queued to execute.</returns>
         public static async Task SendEmulateOAuthCardsAsync(OAuthClient client, bool emulateOAuthCards)
         {
-            if (client == null)
-            {
-                throw new System.ArgumentNullException(nameof(client));
-            }
-
             // Tracing
             bool shouldTrace = ServiceClientTracing.IsEnabled;
             string invocationId = null;

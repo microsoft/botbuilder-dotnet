@@ -53,9 +53,8 @@ namespace Microsoft.Bot.Connector.Tests
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Automated Windows build exception:
+                // Automated Windows build does not throw an exception.
                 await client.UserToken.GetTokenAsync("dummyUserid", "dummyConnectionName", "dummyChannelId", "dummyCode");
-                Assert.True(true, "No exception thrown.");
             }
             else
             {
@@ -65,16 +64,17 @@ namespace Microsoft.Bot.Connector.Tests
             }
         }
 
-        // [Fact] - Disabled due to bug in service
-        // public async Task GetTokenWithHttpMessagesAsync_ShouldReturnTokenWithNoMagicCode()
-        // {
-        //    await UseOAuthClientFor(async client =>
-        //     {
-        //         var token = await client.UserToken.GetTokenAsync("default-user", "mygithubconnection", null, null);
-        //         Assert.NotNull(token);
-        //         Assert.False(string.IsNullOrEmpty(token.Token));
-        //     });
-        // }
+        [Fact]
+        public async Task GetTokenWithHttpMessagesAsync_ShouldReturnTokenWithNoMagicCode()
+        {
+            await UseOAuthClientFor(async client =>
+             {
+                 var token = await client.UserToken.GetTokenAsync("default-user", "mygithubconnection", null, null);
+                 Assert.NotNull(token);
+                 Assert.False(string.IsNullOrEmpty(token.Token));
+             });
+        }
+
         [Fact]
         public async Task GetTokenWithHttpMessagesAsync_ShouldReturnNullOnInvalidConnectionString()
         {
