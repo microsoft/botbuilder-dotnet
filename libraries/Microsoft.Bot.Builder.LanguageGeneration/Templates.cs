@@ -326,8 +326,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             CheckErrors();
 
-            this.Options = new List<string> { $"@throwOnRecursive={throwOnRecursive}" };
-            var analyzer = new Analyzer(this, this.LgOptions);
+            if (throwOnRecursive)
+            {
+                if (this.Options == null)
+                {
+                    this.Options = new List<string>();
+                }
+
+                this.Options.Add($"@throwOnRecursive={throwOnRecursive}");
+            }
+
+            var analyzer = new Analyzer(this);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
