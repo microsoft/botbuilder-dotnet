@@ -2,10 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -83,12 +86,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
-            if (bfAdapter == null)
-            {
-                throw new InvalidOperationException("GetActivityMembers() only works with BotFrameworkAdapter");
-            }
-
             string id = dc.Context.Activity.Id;
             if (this.ActivityId != null)
             {
@@ -101,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 id = value as string;
             }
 
-            var result = await bfAdapter.GetActivityMembersAsync(dc.Context, id, cancellationToken).ConfigureAwait(false);
+            var result = await GetActivityMembersAsync(dc.Context, id, cancellationToken).ConfigureAwait(false);
 
             dc.State.SetValue(this.Property.GetValue(dc.State), result);
 
@@ -112,6 +109,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{GetType().Name}[{this.ActivityId?.ToString() ?? string.Empty},{this.Property?.ToString() ?? string.Empty}]";
+        }
+
+        private async Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext turnContext, string activityId, CancellationToken cancellationToken)
+        {
+            // If no activity was passed in, use the current activity.
+            if (activityId == null)
+            {
+                activityId = turnContext.Activity.Id;
+            }
+
+            if (turnContext.Activity.Conversation == null)
+            {
+                throw new ArgumentException($"{nameof(GetActivityMembers)}.{nameof(GetActivityMembersAsync)}(): missing conversation");
+            }
+
+            if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
+            {
+                throw new ArgumentException($"{nameof(GetActivityMembers)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
+            }
+
+            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var conversationId = turnContext.Activity.Conversation.Id;
+
+            var accounts = await connectorClient.Conversations.GetActivityMembersAsync(conversationId, activityId, cancellationToken).ConfigureAwait(false);
+
+            return accounts;
         }
     }
 }
