@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Builder.Teams;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -74,13 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
-            if (bfAdapter == null)
-            {
-                throw new InvalidOperationException("GetConversationMembersAsync() only works with BotFrameworkAdapter");
-            }
-
-            var result = await bfAdapter.GetConversationMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+            var result = await TeamsInfo.GetMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
 
             if (this.Property != null)
             {
