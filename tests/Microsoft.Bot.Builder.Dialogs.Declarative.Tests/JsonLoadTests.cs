@@ -371,8 +371,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                     }
                 }
             }
-
-            //Assert.True(retries == 99, $"Bot communication failed in {retries} tries.");
         }
 
         [Fact]
