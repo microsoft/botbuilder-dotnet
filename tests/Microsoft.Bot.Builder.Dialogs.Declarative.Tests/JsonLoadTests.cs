@@ -337,18 +337,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         [Fact]
         public async Task JsonDialogLoad_HttpRequest()
         {
-            await BuildTestFlow("HttpRequest.main.dialog", nameof(JsonDialogLoad_HttpRequest))
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
-            .Send("TestPetName")
-            .AssertReply("Great! Your pet's name is TestPetName")
-            .AssertReply("Now please enter the id of your pet, this could help you find your pet later.")
-            .Send("12121")
-            .AssertReply("Done! You have added a pet named \"TestPetName\" with id \"12121\"")
-            .AssertReply("Now try to specify the id of your pet, and I will help your find it out from the store.")
-            .Send("12121")
-            .AssertReply("Great! I found your pet named \"TestPetName\"")
-            .StartTestAsync();
+            int retries = 12;
+
+            while (retries > 0)
+            {
+                try
+                {
+                    await BuildTestFlow("HttpRequest.main.dialog", nameof(JsonDialogLoad_HttpRequest))
+                    .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
+                    .AssertReply("Welcome! Here is a http request sample, please enter a name for you visual pet.")
+                    .Send("TestPetName")
+                    .AssertReply("Great! Your pet's name is TestPetName")
+                    .AssertReply("Now please enter the id of your pet, this could help you find your pet later.")
+                    .Send("12121")
+                    .AssertReply("Done! You have added a pet named \"TestPetName\" with id \"12121\"")
+                    .AssertReply("Now try to specify the id of your pet, and I will help your find it out from the store.")
+                    .Send("12121")
+                    .AssertReply("Great! I found your pet named \"TestPetName\"")
+                    .StartTestAsync();
+
+                    retries = -1;
+                }
+                catch (Exception ex)
+                {
+                    retries--;
+                    if (retries > 0)
+                    {
+                        await Task.Delay(5000);
+                    } 
+                    else
+                    {
+                        throw ex;
+                    }
+                }
+            }
         }
 
         [Fact]
