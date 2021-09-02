@@ -320,11 +320,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Analyzes a template to get the static analyzer results including variables and template references.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
+        /// <param name="analyzerOptions ">Options used to determine behavior of the analyzer.</param>
         /// <returns>Analyzer result.</returns>
-        public AnalyzerResult AnalyzeTemplate(string templateName)
+        public AnalyzerResult AnalyzeTemplate(string templateName, AnalyzerOptions analyzerOptions = null)
         {
             CheckErrors();
-            var analyzer = new Analyzer(this);
+
+            var analyzer = new Analyzer(this, this.LgOptions, analyzerOptions);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
