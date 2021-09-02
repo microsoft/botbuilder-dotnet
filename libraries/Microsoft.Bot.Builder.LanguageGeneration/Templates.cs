@@ -320,23 +320,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Analyzes a template to get the static analyzer results including variables and template references.
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
-        /// <param name="throwOnRecursive">Default is 'false'. When true, throw an exception if a recursive call is detected.</param>
+        /// <param name="analyzerOptions ">Options used to determine behavior of the analyzer.</param>
         /// <returns>Analyzer result.</returns>
-        public AnalyzerResult AnalyzeTemplate(string templateName, bool throwOnRecursive = false)
+        public AnalyzerResult AnalyzeTemplate(string templateName, AnalyzerOptions analyzerOptions = null)
         {
             CheckErrors();
 
-            if (throwOnRecursive)
-            {
-                if (this.Options == null)
-                {
-                    this.Options = new List<string>();
-                }
-
-                this.Options.Add($"@throwOnRecursive={throwOnRecursive}");
-            }
-
-            var analyzer = new Analyzer(this);
+            var analyzer = new Analyzer(this, this.LgOptions, analyzerOptions);
             return analyzer.AnalyzeTemplate(templateName);
         }
 

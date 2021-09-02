@@ -19,16 +19,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly IExpressionParser _expressionParser;
 
         private readonly Stack<EvaluationTarget> _evaluationTargetStack = new Stack<EvaluationTarget>();
+        
+        private readonly AnalyzerOptions _analyzerOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Analyzer"/> class.
         /// </summary>
         /// <param name="templates">Templates.</param>
         /// <param name="opt">Options for LG. </param>
-        public Analyzer(Templates templates, EvaluationOptions opt = null)
+        /// <param name="analyzerOptions">Options for the analyzer.</param>
+        public Analyzer(Templates templates, EvaluationOptions opt = null, AnalyzerOptions analyzerOptions = null)
         {
             Templates = templates;
             _templateMap = templates.ToDictionary(t => t.Name);
+            _analyzerOptions = analyzerOptions;
 
             // create an evaluator to leverage it's customized function look up for checking
             var evaluator = new Evaluator(Templates, opt);
@@ -53,7 +57,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var missingName = !_templateMap.ContainsKey(templateName);
             var stackHasName = _evaluationTargetStack.Any(e => e.TemplateName == templateName);
 
-            if (Templates.LgOptions?.ThrowOnRecursive == true)
+            if (_analyzerOptions?.ThrowOnRecursive == true)
             {
                 if (missingName)
                 {
@@ -226,7 +230,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    if (Templates.LgOptions?.ThrowOnRecursive == true || !result.TemplateReferences.Contains(templateName))
+                    if (_analyzerOptions?.ThrowOnRecursive == true || !result.TemplateReferences.Contains(templateName))
                     {
                         // if template has parameters, just get the template ref without variables.
                         result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));

@@ -55,7 +55,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private readonly string _replaceNullKey = "@replaceNull";
         private readonly string _lineBreakKey = "@lineBreakStyle";
         private readonly string _cacheScope = "@cacheScope";
-        private readonly string _throwOnRecursive = "@throwOnRecursive";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EvaluationOptions"/> class.
@@ -68,7 +67,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Locale = null;
             OnEvent = null;
             CacheScope = null;
-            ThrowOnRecursive = null;
         }
 
         /// <summary>
@@ -83,7 +81,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Locale = opt.Locale ?? Thread.CurrentThread.CurrentCulture.Name;
             OnEvent = opt.OnEvent;
             CacheScope = opt.CacheScope;
-            ThrowOnRecursive = opt.ThrowOnRecursive;
         }
 
         /// <summary>
@@ -125,13 +122,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                                     CacheScope = item;
                                     break;
                                 }
-                            }
-                        }
-                        else if (key.Equals(_throwOnRecursive, StringComparison.OrdinalIgnoreCase))
-                        {
-                            if (value.ToLowerInvariant() == "true")
-                            {
-                                ThrowOnRecursive = true;
                             }
                         }
                     }
@@ -187,14 +177,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Cache scope of the evaluation result.
         /// </value>
         public LGCacheScope? CacheScope { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets a value determining if recursive calls throw an exception.
-        /// </summary>
-        /// <value>
-        /// When true, throw an exception if a recursive call is detected.
-        /// </value>
-        public bool? ThrowOnRecursive { get; set; } = null;
 
         /// <summary>
         /// Merge a incoming option to current option. If a property in incoming option is not null while it is null in current

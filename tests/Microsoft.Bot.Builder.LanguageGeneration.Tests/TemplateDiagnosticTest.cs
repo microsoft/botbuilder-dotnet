@@ -300,10 +300,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("x", selfLoopResult.Variables[0]);
 
             // ThrowOnRecursive throws InvalidOperationException
-            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("wPhrase", true));
+            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("wPhrase", new AnalyzerOptions() { ThrowOnRecursive = true }));
             Assert.Contains(TemplateErrors.LoopDetected, exception.Message);            
 
-            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("selfLoop", true));
+            exception = Assert.Throws<InvalidOperationException>(() => lgFile.AnalyzeTemplate("selfLoop", new AnalyzerOptions() { ThrowOnRecursive = true }));
             Assert.Contains(TemplateErrors.LoopDetected, exception.Message);
         }
 
