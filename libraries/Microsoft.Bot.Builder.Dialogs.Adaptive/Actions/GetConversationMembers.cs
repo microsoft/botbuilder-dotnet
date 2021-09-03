@@ -77,8 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var conversationId = dc.Context.Activity?.Conversation?.Id;
-            var result = await GetMembersAsync(GetConnectorClient(dc.Context), conversationId, cancellationToken).ConfigureAwait(false);
+            var result = await GetMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
 
             if (this.Property != null)
             {
@@ -94,20 +93,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{GetType().Name}[{this.Property?.ToString() ?? string.Empty}]";
         }
 
-        private static async Task<IEnumerable<ChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
+        private static async Task<IEnumerable<ChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
+            var conversationId = turnContext.Activity?.Conversation?.Id;
             if (conversationId == null)
             {
                 throw new InvalidOperationException("The GetMembersAsync operation needs a valid conversation Id.");
             }
 
+            var connectorClient = turnContext.TurnState.Get<IConnectorClient>() ?? throw new InvalidOperationException("This method requires a connector client.");
+
             var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
             return teamMembers;
-        }
-
-        private static IConnectorClient GetConnectorClient(ITurnContext turnContext)
-        {
-            return turnContext.TurnState.Get<IConnectorClient>() ?? throw new InvalidOperationException("This method requires a connector client.");
         }
     }
 }
