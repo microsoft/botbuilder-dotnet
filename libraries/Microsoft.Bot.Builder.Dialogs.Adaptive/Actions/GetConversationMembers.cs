@@ -2,10 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -43,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// A boolean expression. 
         /// </value>
         [JsonProperty("disabled")]
-        public BoolExpression Disabled { get; set; } 
+        public BoolExpression Disabled { get; set; }
 
         /// <summary>
         /// Gets or sets property path to put the value in.
@@ -74,13 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
-            var bfAdapter = dc.Context.Adapter as BotFrameworkAdapter;
-            if (bfAdapter == null)
-            {
-                throw new InvalidOperationException("GetConversationMembersAsync() only works with BotFrameworkAdapter");
-            }
-
-            var result = await bfAdapter.GetConversationMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
+            var result = await GetMembersAsync(dc.Context, cancellationToken).ConfigureAwait(false);
 
             if (this.Property != null)
             {
@@ -94,6 +91,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             return $"{GetType().Name}[{this.Property?.ToString() ?? string.Empty}]";
+        }
+
+        private static async Task<IEnumerable<ChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var conversationId = turnContext.Activity?.Conversation?.Id;
+            if (conversationId == null)
+            {
+                throw new InvalidOperationException("The GetMembersAsync operation needs a valid conversation Id.");
+            }
+
+            var connectorClient = turnContext.TurnState.Get<IConnectorClient>() ?? throw new InvalidOperationException("This method requires a connector client.");
+
+            var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
+            return teamMembers;
         }
     }
 }
