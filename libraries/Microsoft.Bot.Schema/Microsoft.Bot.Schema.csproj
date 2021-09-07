@@ -10,6 +10,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Schema</PackageId>
     <Description>This library implements C# schema classes for using the Bot Framework.</Description>
     <Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
   </PropertyGroup>
@@ -27,4 +28,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ApiCompatLocalRun) == ''">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted $(SolutionDir)build\ExecuteApiCompat.ps1 -Path $(SolutionDir) -Name $(PackageId) -Version 4.6.3 -ApiCompatVersion $(ApiCompatVersion) -$(Configuration)Build" />
+  </Target>
 </Project>

@@ -100,6 +100,14 @@ On the menu bar, choose **Build** > **Build Solution**.
 
 When the solution is built, local NuGet package files (.nupkg) are generated for each project and are available under the `outputPackages` directory.  You can add this folder to your NuGet Package Manager source list in Visual Studio (choose **Tools > NuGet Package Manager > Package Manager Settings** from the Visual Studio menu and add an additional **Package Sources** from there), allowing you to consume these in your local projects.
 
+### Check for breaking changes
+Build process will run an API comparisson script located in `build/ExecuteApiCompat.ps1` as a post build. This script makes use of [ApiCompat](https://github.com/dotnet/arcade/blob/main/src/Microsoft.DotNet.ApiCompat/README.md) tool to test for breaking changes between current implementation (aka project that is being built) and its latest version located in package manager (or any version that we provide as a parameter). If this comparison fails, the build process will fail and debugging information will be printed both on console and into an incremental log file located in `ApiCompat/ApiCompatResult.log`. The script itself is standalone and can be run manually from console. For more information on how to run the script from console: `Get-Help ./build/ExecuteApiCompat.ps1 -full`
+
+This process can be removed from post build via editing each individual project's `csproj` file. 
+ApiCompat version to use can be configured in `Directory.Build.props` file via the property `<ApiCompatVersion>`. ApiCompat versions are available at [Microsoft.DotNet.ApiCompat](https://dev.azure.com/dnceng/public/_packaging?_a=package&feed=dotnet-eng&view=versions&package=Microsoft.DotNet.ApiCompat&protocolType=NuGet).
+
+If anything breaks or if ApiCompat fails to update, removing `ApiCompat` folder, located in the root of the project, will force the script start fresh and re-download all dependencies.
+
 ## Getting support and providing feedback
 Below are the various channels that are available to you for obtaining support and providing feedback. Please pay carful attention to which channel should be used for which type of content. e.g. general "how do I..." questions should be asked on Stack Overflow, Twitter or Gitter, with GitHub issues being for feature requests and bug reports.
 

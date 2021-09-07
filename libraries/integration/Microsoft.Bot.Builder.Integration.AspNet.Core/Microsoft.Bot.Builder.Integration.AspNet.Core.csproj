@@ -10,6 +10,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
+    <PackageId>Microsoft.Bot.Builder.Integration.AspNet.Core</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET Core. It offers idiomatic configuration APIs in addition to providing all the plumbing to direct incoming bot messages to a configured bot.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET Core.</Summary>
   </PropertyGroup>
@@ -45,4 +46,8 @@
     <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Configuration\Microsoft.Bot.Configuration.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ApiCompatLocalRun) == ''">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted $(SolutionDir)build\ExecuteApiCompat.ps1 -Path $(SolutionDir) -Name $(PackageId) -Version 4.6.3 -ApiCompatVersion $(ApiCompatVersion) -$(Configuration)Build" />
+  </Target>
 </Project>

@@ -39,4 +39,7 @@
     <Folder Include="Inspection\" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ApiCompatLocalRun) == ''">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted $(SolutionDir)build\ExecuteApiCompat.ps1 -Path $(SolutionDir) -Name $(PackageId) -Version 4.6.3 -ApiCompatVersion $(ApiCompatVersion) -$(Configuration)Build" />
+  </Target>
 </Project>

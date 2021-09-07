@@ -11,6 +11,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.Dialogs</PackageId>
     <Description>
       This library implements .NET Simple Dialog classes
       Library for building bots using Microsoft Bot Framework Connector
@@ -34,4 +35,7 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ApiCompatLocalRun) == ''">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted $(SolutionDir)build\ExecuteApiCompat.ps1 -Path $(SolutionDir) -Name $(PackageId) -Version 4.6.3 -ApiCompatVersion $(ApiCompatVersion) -$(Configuration)Build" />
+  </Target>
 </Project>

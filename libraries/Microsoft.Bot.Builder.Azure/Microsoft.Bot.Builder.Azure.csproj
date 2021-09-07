@@ -10,6 +10,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.Azure</PackageId>
     <Description>Azure classes for using Azure Services on the Microsoft Bot Builder SDK</Description>
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
@@ -48,4 +49,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ApiCompatLocalRun) == ''">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted $(SolutionDir)build\ExecuteApiCompat.ps1 -Path $(SolutionDir) -Name $(PackageId) -Version 4.6.3 -ApiCompatVersion $(ApiCompatVersion) -$(Configuration)Build" />
+  </Target>
 </Project>

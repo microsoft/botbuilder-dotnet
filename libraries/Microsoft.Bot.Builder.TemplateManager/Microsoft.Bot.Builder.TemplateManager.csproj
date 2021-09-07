@@ -10,6 +10,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Builder.TemplateManager</PackageId>
     <Description>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Description>
     <Summary>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Summary>
   </PropertyGroup>
@@ -33,4 +34,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ApiCompatLocalRun) == ''">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted $(SolutionDir)build\ExecuteApiCompat.ps1 -Path $(SolutionDir) -Name $(PackageId) -Version 4.6.3 -ApiCompatVersion $(ApiCompatVersion) -$(Configuration)Build" />
+  </Target>
 </Project>
