@@ -38,6 +38,16 @@
     <Content Include="**/*.qna" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(BuildTarget)' == 'netcoreapp21' Or '$(BuildTarget)' == ''" >
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(BuildTarget)' == 'netcoreapp31'" >
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
@@ -45,8 +55,6 @@
     <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
     <PackageReference Include="AdaptiveExpressions" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
     <PackageReference Include="AdaptiveExpressions" Condition=" '$(ReleasePackageVersion)' != '' " Version="$(ReleasePackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.1.0" />
     <PackageReference Include="Microsoft.Recognizers.Text" Version="1.3.2" />
     <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.3.2" />
     <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.3.2" />

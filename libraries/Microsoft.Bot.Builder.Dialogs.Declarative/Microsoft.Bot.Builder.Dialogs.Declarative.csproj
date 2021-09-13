@@ -35,8 +35,15 @@
     <Content Include="**/*.qna" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(BuildTarget)' == 'netcoreapp21' Or '$(BuildTarget)' == ''" >
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(BuildTarget)' == 'netcoreapp31'" >
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NuGet.Packaging" Version="5.5.1" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(ReleasePackageVersion)' == '' " Version="$(LocalPackageVersion)" />
