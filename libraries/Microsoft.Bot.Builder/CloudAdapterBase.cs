@@ -234,6 +234,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Gets streaming connector factory.
+        /// </summary>
+        /// <param name="activity">The activity.</param>
+        /// <returns>Streaming Connector Factory.</returns>
+        protected abstract ConnectorFactory GetStreamingConnectorFactory(Activity activity);
+
+        /// <summary>
         /// The implementation for continue conversation.
         /// </summary>
         /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
@@ -247,8 +254,9 @@ namespace Microsoft.Bot.Builder
             Logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {continuationActivity.Conversation.Id}");
 
             // Create the connector factory.
-            // Assumption: we always need an http connector client
-            var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity); 
+            var connectorFactory = continuationActivity.IsFromStreamingConnection()
+                ? GetStreamingConnectorFactory(continuationActivity)
+                : BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
 
             // Create the connector client to use for outbound requests.
             using (var connectorClient = await connectorFactory.CreateAsync(continuationActivity.ServiceUrl, audience, cancellationToken).ConfigureAwait(false))

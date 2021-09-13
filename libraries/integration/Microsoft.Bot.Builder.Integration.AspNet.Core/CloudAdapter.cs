@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -25,6 +26,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     public class CloudAdapter : CloudAdapterBase, IBotFrameworkHttpAdapter
     {
+        private readonly ConcurrentDictionary<Guid, StreamingActivityProcessor> _streamingConnections = new ConcurrentDictionary<Guid, StreamingActivityProcessor>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
         /// </summary>
@@ -155,6 +158,20 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
+        /// <inheritdoc/>
+        protected override ConnectorFactory GetStreamingConnectorFactory(Activity activity)
+        {
+            foreach (var connection in _streamingConnections.Values)
+            {
+                if (connection.HandlesActivity(activity))
+                {
+                    return connection.GetConnectorFactory();
+                }
+            }
+
+            throw new ApplicationException($"No streaming connection found for activity: {activity}");
+        }
+
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
         {
             Logger.LogInformation($"Received request for web socket connect.");
@@ -181,7 +198,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     {
                         // Start receiving activities on the socket
                         // TODO: pass asp.net core lifetime for cancellation here.
+                        var connectionId = Guid.NewGuid();
+                        _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
                         await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                        _streamingConnections.TryRemove(connectionId, out _);
                     }
                 }
             }
@@ -240,6 +260,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 // Fix up the connector factory so connector create from it will send over this connection
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
+            }
+
+            public bool HandlesActivity(Activity activity)
+            {
+                return _requestHandler.ServiceUrl.Equals(activity.ServiceUrl, StringComparison.OrdinalIgnoreCase) &&
+                       _requestHandler.HasConversation(activity.Conversation.Id);
+            }
+
+            public ConnectorFactory GetConnectorFactory()
+            {
+                return _authenticateRequestResult.ConnectorFactory;
             }
 
             public void Dispose()
