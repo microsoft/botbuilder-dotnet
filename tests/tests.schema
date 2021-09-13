@@ -1265,6 +1265,26 @@
           "description": "The activity to send to the skill.",
           "$ref": "#/definitions/Microsoft.IActivityTemplate"
         },
+        "deliveryMode": {
+          "$ref": "#/definitions/stringExpression",
+          "title": "Delivery mode",
+          "description": "Defines the expected delivery response type for the call to the skill.",
+          "oneOf": [
+            {
+              "type": "string",
+              "title": "Delivery mode",
+              "description": "Delivery mode type.",
+              "enum": [
+                "normal",
+                "expectReplies"
+              ],
+              "default": ""
+            },
+            {
+              "$ref": "#/definitions/equalsExpression"
+            }
+          ]
+        },
         "allowInterruptions": {
           "$ref": "#/definitions/booleanExpression",
           "title": "Allow interruptions",

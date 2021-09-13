@@ -76,6 +76,26 @@
             "title": "Activity",
             "description": "The activity to send to the skill."
         },
+        "deliveryMode": {
+            "$ref": "schema:#/definitions/stringExpression",
+            "title": "Delivery mode",
+            "description": "Defines the expected delivery response type for the call to the skill.",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "Delivery mode",
+                    "description": "Delivery mode type.",
+                    "enum": [
+                        "normal",
+                        "expectReplies"
+                    ],
+                    "default": ""
+                },
+                {
+                    "$ref": "schema:#/definitions/equalsExpression"
+                }
+            ]
+        },
         "allowInterruptions": {
             "$ref": "schema:#/definitions/booleanExpression",
             "title": "Allow interruptions",
