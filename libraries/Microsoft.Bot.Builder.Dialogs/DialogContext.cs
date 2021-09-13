@@ -355,7 +355,16 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var dialog = this.FindDialog(ActiveDialog.Id);
                     if (dialog == null)
                     {
-                        throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                        var rootDialog = this.DialogManager.RootDialog;
+
+                        try
+                        {
+                            return await this.ReplaceDialogAsync(rootDialog.Id, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+                        catch (Exception)
+                        {
+                            throw new InvalidOperationException($"DialogContext.EndDialogAsync(): Can't resume previous dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                        }                         
                     }
 
                     // Return result to previous dialog
