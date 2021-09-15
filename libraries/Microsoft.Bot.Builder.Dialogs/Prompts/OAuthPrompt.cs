@@ -590,7 +590,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             switch (channelId)
             {
-                case Channels.Cortana:
                 case Channels.Skype:
                 case Channels.Skypeforbusiness:
                     return false;

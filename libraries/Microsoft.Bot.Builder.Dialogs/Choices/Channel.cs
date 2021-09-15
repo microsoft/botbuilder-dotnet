@@ -71,7 +71,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 case Connector.Channels.Directline:
                 case Connector.Channels.DirectlineSpeech:
                 case Connector.Channels.Webchat:
-                case Connector.Channels.Cortana:
                     return buttonCnt <= 100;
 
                 default:
@@ -84,17 +83,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         /// </summary>
         /// <param name="channelId">The Channel to check for Message Feed.</param>
         /// <returns>True if the Channel has a Message Feed, False if it does not.</returns>
-        public static bool HasMessageFeed(string channelId)
-        {
-            switch (channelId)
-            {
-                case Connector.Channels.Cortana:
-                    return false;
-
-                default:
-                    return true;
-            }
-        }
+#pragma warning disable CA1801 // Review unused parameters (we can't remove the channelId parameter without breaking binary compatibility)
+        public static bool HasMessageFeed(string channelId) => true;
+#pragma warning restore CA1801 // Review unused parameters
 
         /// <summary>
         /// Maximum length allowed for Action Titles.

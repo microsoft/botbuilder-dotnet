@@ -95,14 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var supports = Channel.SupportsCardActions(Channels.Line, 100);
             Assert.False(supports);
         }
-
-        [Fact]
-        public void ShouldReturnTrueForSupportsCardActionsWithCortanaAnd100()
-        {
-            var supports = Channel.SupportsCardActions(Channels.Cortana, 100);
-            Assert.True(supports);
-        }
-
+       
         [Fact]
         public void ShouldReturnTrueForSupportsCardActionsWithSlackAnd100()
         {
@@ -125,10 +118,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
-        public void ShouldReturnFalseForHasMessageFeedWithCortana()
+        public void ShouldReturnTrueForHasMessageFeedWithAllChannels()
         {
-            var supports = Channel.HasMessageFeed(Channels.Cortana);
-            Assert.False(supports);
+            var supports = Channel.HasMessageFeed(Channels.Directline);
+            Assert.True(supports);
         }
 
         [Fact]

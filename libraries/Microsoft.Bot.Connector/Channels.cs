@@ -20,12 +20,7 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Console channel.
         /// </summary>
-        public const string Console = "console";
-
-        /// <summary>
-        /// Cortana channel.
-        /// </summary>
-        public const string Cortana = "cortana";
+        public const string Console = "console";       
 
         /// <summary>
         /// Direct Line channel.

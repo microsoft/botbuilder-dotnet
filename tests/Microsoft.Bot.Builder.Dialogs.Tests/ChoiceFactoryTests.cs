@@ -15,7 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class ChoiceFactoryTests
     {
         private static List<Choice> colorChoices = new List<Choice> { new Choice("red"), new Choice("green"), new Choice("blue") };
-        private static List<Choice> extraChoices = new List<Choice> { new Choice("red"), new Choice("green"), new Choice("blue"), new Choice("alpha") };
         private static List<Choice> choicesWithActions = new List<Choice>
         {
             new Choice("ImBack") { Action = new CardAction(ActionTypes.ImBack, "ImBack Action", value: "ImBack Value") },
@@ -99,28 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.Equal(ActionTypes.ImBack, activity.SuggestedActions.Actions[2].Type);
             Assert.Equal("blue", activity.SuggestedActions.Actions[2].Value);
             Assert.Equal("blue", activity.SuggestedActions.Actions[2].Title);
-        }
-
-        [Fact]
-        public void ShouldChooseCorrectStylesForCortana()
-        {
-            var activity = ChoiceFactory.ForChannel(Channels.Cortana, colorChoices, "select from:");
-
-            Assert.NotNull(activity.Attachments);
-
-            var heroCard = (HeroCard)activity.Attachments.First().Content;
-
-            Assert.Equal(3, heroCard.Buttons.Count);
-            Assert.Equal(ActionTypes.ImBack, heroCard.Buttons[0].Type);
-            Assert.Equal("red", heroCard.Buttons[0].Value);
-            Assert.Equal("red", heroCard.Buttons[0].Title);
-            Assert.Equal(ActionTypes.ImBack, heroCard.Buttons[1].Type);
-            Assert.Equal("green", heroCard.Buttons[1].Value);
-            Assert.Equal("green", heroCard.Buttons[1].Title);
-            Assert.Equal(ActionTypes.ImBack, heroCard.Buttons[2].Type);
-            Assert.Equal("blue", heroCard.Buttons[2].Value);
-            Assert.Equal("blue", heroCard.Buttons[2].Title);
-        }
+        }        
 
         [Fact]
         public void ShouldChooseCorrectStylesForTeams()
