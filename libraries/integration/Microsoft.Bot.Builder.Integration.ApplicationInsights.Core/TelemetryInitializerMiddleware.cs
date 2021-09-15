@@ -45,6 +45,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         {
             BotAssert.ContextNotNull(context);
 
+            context.TurnState.Set(_telemetryLoggerMiddleware.TelemetryClient);
+
             if (context.Activity != null)
             {
                 var activity = context.Activity;

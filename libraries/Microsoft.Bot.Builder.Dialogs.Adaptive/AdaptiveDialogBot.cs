@@ -146,6 +146,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // put this on the TurnState using Set because some adapters (like BotFrameworkAdapter and CloudAdapter) will have already added it
             turnContext.TurnState.Set<BotCallbackHandler>(OnTurnAsync);
+
+            if (turnContext.TurnState.Get<IBotTelemetryClient>() == null)
+            {
+                turnContext.TurnState.Add<IBotTelemetryClient>(new NullBotTelemetryClient());
+            }
         }
 
         private async Task<Dialog> CreateDialogAsync()
