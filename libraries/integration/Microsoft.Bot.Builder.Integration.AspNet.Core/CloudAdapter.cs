@@ -189,16 +189,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             // TODO: Get this from IConfiguration so it acts as a circuit breaker / emergency switch to go back to the legacy implementation
             // while we transition to the new pipelines-based implementation.
+            var connectionId = Guid.NewGuid();
             if (useNewStreaming)
             {
-                using (var scope = Logger.BeginScope(Guid.NewGuid()))
+                using (var scope = Logger.BeginScope(connectionId))
                 {
                     var connection = new WebSocketStreamingConnection(httpRequest.HttpContext, Logger);
                     using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
                     {
                         // Start receiving activities on the socket
                         // TODO: pass asp.net core lifetime for cancellation here.
-                        var connectionId = Guid.NewGuid();
                         _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
                         await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
                         _streamingConnections.TryRemove(connectionId, out _);
@@ -215,7 +215,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 {
                     // Start receiving activities on the socket
                     // TODO: pass asp.net core lifetime for cancellation here.
+                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
                     await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                    _streamingConnections.TryRemove(connectionId, out _);
                 }
             }
         }
