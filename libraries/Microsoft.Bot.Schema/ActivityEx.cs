@@ -170,14 +170,14 @@ namespace Microsoft.Bot.Schema
             {
                 Type = ActivityTypes.Message,
                 Timestamp = DateTime.UtcNow,
-                From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
-                Recipient = new ChannelAccount(id: this.From?.Id, name: this.From?.Name),
-                ReplyToId = !string.Equals(this.Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(this.ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(this.ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? this.Id : null,
-                ServiceUrl = this.ServiceUrl,
-                ChannelId = this.ChannelId,
-                Conversation = new ConversationAccount(isGroup: this.Conversation.IsGroup, id: this.Conversation.Id, name: this.Conversation.Name),
+                From = new ChannelAccount(id: Recipient?.Id, name: Recipient?.Name),
+                Recipient = new ChannelAccount(id: From?.Id, name: From?.Name),
+                ReplyToId = !string.Equals(Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? Id : null,
+                ServiceUrl = ServiceUrl,
+                ChannelId = ChannelId,
+                Conversation = new ConversationAccount(isGroup: Conversation.IsGroup, id: Conversation.Id, name: Conversation.Name),
                 Text = text ?? string.Empty,
-                Locale = locale ?? this.Locale,
+                Locale = locale ?? Locale,
                 Attachments = new List<Attachment>(),
                 Entities = new List<Entity>(),
             };
@@ -199,12 +199,12 @@ namespace Microsoft.Bot.Schema
             {
                 Type = ActivityTypes.Trace,
                 Timestamp = DateTime.UtcNow,
-                From = new ChannelAccount(id: this.Recipient?.Id, name: this.Recipient?.Name),
-                Recipient = new ChannelAccount(id: this.From?.Id, name: this.From?.Name),
-                ReplyToId = !string.Equals(this.Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(this.ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(this.ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? this.Id : null,
-                ServiceUrl = this.ServiceUrl,
-                ChannelId = this.ChannelId,
-                Conversation = this.Conversation,
+                From = new ChannelAccount(id: Recipient?.Id, name: Recipient?.Name),
+                Recipient = new ChannelAccount(id: From?.Id, name: From?.Name),
+                ReplyToId = !string.Equals(Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? Id : null,
+                ServiceUrl = ServiceUrl,
+                ChannelId = ChannelId,
+                Conversation = Conversation,
                 Name = name,
                 Label = label,
                 ValueType = valueType ?? value?.GetType().Name,
@@ -366,22 +366,22 @@ namespace Microsoft.Bot.Schema
         /// <see cref="ActivityTypes.Message"/>.</remarks>
         public bool HasContent()
         {
-            if (!string.IsNullOrWhiteSpace(this.Text))
+            if (!string.IsNullOrWhiteSpace(Text))
             {
                 return true;
             }
 
-            if (!string.IsNullOrWhiteSpace(this.Summary))
+            if (!string.IsNullOrWhiteSpace(Summary))
             {
                 return true;
             }
 
-            if (this.Attachments != null && this.Attachments.Any())
+            if (Attachments != null && Attachments.Any())
             {
                 return true;
             }
 
-            if (this.ChannelData != null)
+            if (ChannelData != null)
             {
                 return true;
             }
@@ -400,7 +400,7 @@ namespace Microsoft.Bot.Schema
         /// <seealso cref="Mention"/>
         public Mention[] GetMentions()
         {
-            return this.Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
+            return Entities?.Where(entity => string.Compare(entity.Type, "mention", StringComparison.OrdinalIgnoreCase) == 0)
                 .Select(e => e.Properties.ToObject<Mention>()).ToArray() ?? Array.Empty<Mention>();
         }
 
@@ -415,17 +415,17 @@ namespace Microsoft.Bot.Schema
         public TypeT GetChannelData<TypeT>()
 #pragma warning restore CA1715 // Identifiers should have correct prefix
         {
-            if (this.ChannelData == null)
+            if (ChannelData == null)
             {
-                return default(TypeT);
+                return default;
             }
 
-            if (this.ChannelData.GetType() == typeof(TypeT))
+            if (ChannelData.GetType() == typeof(TypeT))
             {
-                return (TypeT)this.ChannelData;
+                return (TypeT)ChannelData;
             }
 
-            return ((JObject)this.ChannelData).ToObject<TypeT>();
+            return ((JObject)ChannelData).ToObject<TypeT>();
         }
 
         /// <summary>
@@ -444,16 +444,16 @@ namespace Microsoft.Bot.Schema
         public bool TryGetChannelData<TypeT>(out TypeT instance)
 #pragma warning restore CA1715 // Identifiers should have correct prefix
         {
-            instance = default(TypeT);
+            instance = default;
 
             try
             {
-                if (this.ChannelData == null)
+                if (ChannelData == null)
                 {
                     return false;
                 }
 
-                instance = this.GetChannelData<TypeT>();
+                instance = GetChannelData<TypeT>();
                 return true;
             }
 #pragma warning disable CA1031 // Do not catch general exception types (we just return false here if the conversion fails for any reason)
@@ -472,13 +472,13 @@ namespace Microsoft.Bot.Schema
         {
             var reference = new ConversationReference
             {
-                ActivityId = !string.Equals(this.Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(this.ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(this.ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? this.Id : null,
-                User = this.From,
-                Bot = this.Recipient,
-                Conversation = this.Conversation,
-                ChannelId = this.ChannelId,
-                Locale = this.Locale,
-                ServiceUrl = this.ServiceUrl,
+                ActivityId = !string.Equals(Type, ActivityTypes.ConversationUpdate, StringComparison.OrdinalIgnoreCase) || (!string.Equals(ChannelId, "directline", StringComparison.OrdinalIgnoreCase) && !string.Equals(ChannelId, "webchat", StringComparison.OrdinalIgnoreCase)) ? Id : null,
+                User = From,
+                Bot = Recipient,
+                Conversation = Conversation,
+                ChannelId = ChannelId,
+                Locale = Locale,
+                ServiceUrl = ServiceUrl,
             };
 
             return reference;
@@ -512,27 +512,27 @@ namespace Microsoft.Bot.Schema
         /// <returns>This activy, updated with the delivery information.</returns>
         public Activity ApplyConversationReference(ConversationReference reference, bool isIncoming = false)
         {
-            this.ChannelId = reference.ChannelId;
-            this.ServiceUrl = reference.ServiceUrl;
-            this.Conversation = reference.Conversation;
-            this.Locale = reference.Locale ?? this.Locale;
+            ChannelId = reference.ChannelId;
+            ServiceUrl = reference.ServiceUrl;
+            Conversation = reference.Conversation;
+            Locale = reference.Locale ?? Locale;
 
             if (isIncoming)
             {
-                this.From = reference.User;
-                this.Recipient = reference.Bot;
+                From = reference.User;
+                Recipient = reference.Bot;
                 if (reference.ActivityId != null)
                 {
-                    this.Id = reference.ActivityId;
+                    Id = reference.ActivityId;
                 }
             }
             else
             {// Outgoing
-                this.From = reference.Bot;
-                this.Recipient = reference.User;
+                From = reference.Bot;
+                Recipient = reference.User;
                 if (reference.ActivityId != null)
                 {
-                    this.ReplyToId = reference.ActivityId;
+                    ReplyToId = reference.ActivityId;
                 }
             }
 
@@ -549,7 +549,7 @@ namespace Microsoft.Bot.Schema
         public bool IsFromStreamingConnection()
         {
             var isHttp = ServiceUrl?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase);
-            return isHttp.HasValue ? !isHttp.Value : false;
+            return isHttp.HasValue && !isHttp.Value;
         }
 
         /// <summary>
@@ -568,7 +568,7 @@ namespace Microsoft.Bot.Schema
              * "pseudo-cast" the activity based on its type.
              */
 
-            var type = this.Type;
+            var type = Type;
 
             // If there's no type set then we can't tell if it's the type they're looking for
             if (type == null)

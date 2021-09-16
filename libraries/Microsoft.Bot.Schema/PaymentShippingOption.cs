@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Schema
         /// item.</param>
         /// <param name="selected">Indicates whether this is the default
         /// selected PaymentShippingOption.</param>
-        public PaymentShippingOption(string id = default(string), string label = default(string), PaymentCurrencyAmount amount = default(PaymentCurrencyAmount), bool? selected = default(bool?))
+        public PaymentShippingOption(string id = default, string label = default, PaymentCurrencyAmount amount = default, bool? selected = default)
         {
             Id = id;
             Label = label;

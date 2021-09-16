@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="modifiers">Contains modifiers for particular payment
         /// method identifiers.</param>
         /// <param name="error">Error description.</param>
-        public PaymentDetails(PaymentItem total = default(PaymentItem), IList<PaymentItem> displayItems = default(IList<PaymentItem>), IList<PaymentShippingOption> shippingOptions = default(IList<PaymentShippingOption>), IList<PaymentDetailsModifier> modifiers = default(IList<PaymentDetailsModifier>), string error = default(string))
+        public PaymentDetails(PaymentItem total = default, IList<PaymentItem> displayItems = default, IList<PaymentShippingOption> shippingOptions = default, IList<PaymentDetailsModifier> modifiers = default, string error = default)
         {
             Total = total;
             DisplayItems = displayItems;

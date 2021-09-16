@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Schema
         /// complex object of type `Map`).</param>
         /// <param name="type">The type of the thing.</param>
         /// <param name="name">The name of the thing.</param>
-        public Place(object address = default(object), object geo = default(object), object hasMap = default(object), string type = default(string), string name = default(string))
+        public Place(object address = default, object geo = default, object hasMap = default, string type = default, string name = default)
         {
             Address = address;
             Geo = geo;

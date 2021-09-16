@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="statusCode">HttpStatusCode from failed request.</param>
         /// <param name="body">Body from failed request.</param>
-        public InnerHttpError(int? statusCode = default(int?), object body = default(object))
+        public InnerHttpError(int? statusCode = default, object body = default)
         {
             StatusCode = statusCode;
             Body = body;

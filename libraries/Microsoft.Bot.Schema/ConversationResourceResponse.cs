@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="activityId">ID of the Activity (if sent).</param>
         /// <param name="serviceUrl">Service endpoint where operations concerning the conversation may be performed.</param>
         /// <param name="id">Id of the resource.</param>
-        public ConversationResourceResponse(string activityId = default(string), string serviceUrl = default(string), string id = default(string))
+        public ConversationResourceResponse(string activityId = default, string serviceUrl = default, string id = default)
         {
             ActivityId = activityId;
             ServiceUrl = serviceUrl;

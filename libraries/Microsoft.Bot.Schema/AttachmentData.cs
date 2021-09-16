@@ -3,7 +3,6 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary> Attachment data. </summary>
@@ -20,7 +19,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="name">Name of the attachment.</param>
         /// <param name="originalBase64">Attachment content.</param>
         /// <param name="thumbnailBase64">Attachment thumbnail.</param>
-        public AttachmentData(string type = default(string), string name = default(string), byte[] originalBase64 = default(byte[]), byte[] thumbnailBase64 = default(byte[]))
+        public AttachmentData(string type = default, string name = default, byte[] originalBase64 = default, byte[] thumbnailBase64 = default)
         {
             Type = type;
             Name = name;

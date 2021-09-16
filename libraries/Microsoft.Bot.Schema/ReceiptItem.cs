@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="quantity">Number of items of given kind.</param>
         /// <param name="tap">This action will be activated when user taps on
         /// the Item bubble.</param>
-        public ReceiptItem(string title = default(string), string subtitle = default(string), string text = default(string), CardImage image = default(CardImage), string price = default(string), string quantity = default(string), CardAction tap = default(CardAction))
+        public ReceiptItem(string title = default, string subtitle = default, string text = default, CardImage image = default, string price = default, string quantity = default, CardAction tap = default)
         {
             Title = title;
             Subtitle = subtitle;

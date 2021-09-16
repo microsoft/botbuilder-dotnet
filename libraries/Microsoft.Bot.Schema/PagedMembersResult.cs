@@ -3,9 +3,7 @@
 
 namespace Microsoft.Bot.Schema
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -26,7 +24,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="continuationToken">Paging token.</param>
         /// <param name="members">The Channel Accounts.</param>
-        public PagedMembersResult(string continuationToken = default(string), IList<ChannelAccount> members = default(IList<ChannelAccount>))
+        public PagedMembersResult(string continuationToken = default, IList<ChannelAccount> members = default)
         {
             ContinuationToken = continuationToken;
             Members = members;

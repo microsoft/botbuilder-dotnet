@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Schema
         /// the shippingType field may be used to influence the way the user
         /// agent presents the user interface for gathering the shipping
         /// address.</param>
-        public PaymentOptions(bool? requestPayerName = default(bool?), bool? requestPayerEmail = default(bool?), bool? requestPayerPhone = default(bool?), bool? requestShipping = default(bool?), string shippingType = default(string))
+        public PaymentOptions(bool? requestPayerName = default, bool? requestPayerEmail = default, bool? requestPayerPhone = default, bool? requestShipping = default, string shippingType = default)
         {
             RequestPayerName = requestPayerName;
             RequestPayerEmail = requestPayerEmail;

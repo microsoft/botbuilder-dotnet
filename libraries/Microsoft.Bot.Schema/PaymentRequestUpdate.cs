@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Schema
         /// <param name="details">Update payment details.</param>
         /// <param name="shippingAddress">Updated shipping address.</param>
         /// <param name="shippingOption">Updated shipping options.</param>
-        public PaymentRequestUpdate(string id = default(string), PaymentDetails details = default(PaymentDetails), PaymentAddress shippingAddress = default(PaymentAddress), string shippingOption = default(string))
+        public PaymentRequestUpdate(string id = default, PaymentDetails details = default, PaymentAddress shippingAddress = default, string shippingOption = default)
         {
             Id = id;
             Details = details;

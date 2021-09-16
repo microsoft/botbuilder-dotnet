@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         /// <param name="uri">URI.</param>
         /// <param name="token">Token.</param>
-        public TokenExchangeRequest(string uri = default(string), string token = default(string))
+        public TokenExchangeRequest(string uri = default, string token = default)
         {
             Uri = uri;
             Token = token;

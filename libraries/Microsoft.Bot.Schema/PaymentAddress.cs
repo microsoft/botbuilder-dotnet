@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Schema
         /// contact person.</param>
         /// <param name="phone">This is the phone number of the recipient or
         /// contact person.</param>
-        public PaymentAddress(string country = default(string), IList<string> addressLine = default(IList<string>), string region = default(string), string city = default(string), string dependentLocality = default(string), string postalCode = default(string), string sortingCode = default(string), string languageCode = default(string), string organization = default(string), string recipient = default(string), string phone = default(string))
+        public PaymentAddress(string country = default, IList<string> addressLine = default, string region = default, string city = default, string dependentLocality = default, string postalCode = default, string sortingCode = default, string languageCode = default, string organization = default, string recipient = default, string phone = default)
         {
             Country = country;
             AddressLine = addressLine;
