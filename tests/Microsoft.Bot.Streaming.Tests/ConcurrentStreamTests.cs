@@ -295,6 +295,35 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.Equal(0, readCount2);
         }
 
+        [Fact]
+        public async void DoneProducing_Data_WillCauseZeroRead_And_End()
+        {
+            const int expectedReadCount = 100;
+            var producerBuffer = new byte[100];
+            var consumerBuffer = new byte[expectedReadCount];
+            var readCount = 0;
+
+            var streamManager = new StreamManager(e => { });
+            var id = Guid.NewGuid();
+
+            var assembler = streamManager.GetPayloadAssembler(id);
+            assembler.ContentLength = 0;
+
+            var random = new Random();
+            random.NextBytes(producerBuffer);
+
+            var stream = new PayloadStream(assembler);
+
+            await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
+            stream.DoneProducing();
+
+            readCount = stream.Read(consumerBuffer, 0, expectedReadCount);
+            Assert.Equal(100, readCount);
+
+            readCount = stream.Read(consumerBuffer, readCount, expectedReadCount);
+            Assert.Equal(0, readCount);
+        }
+
         private async Task ProducerConsumerMultithreadedTest(
             int producerTotalCount,
             int producerChunkCount,

@@ -79,6 +79,15 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
+        public async void ReceiveAsync_With_Null_Stream()
+        {
+            var pipe = new NamedPipeTransport(null);
+            var result = await pipe.ReceiveAsync(new byte[0], 0, 0);
+
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
         public void ClosedStream_Not_IsConnected()
         {
             var pipeName = Guid.NewGuid().ToString();
