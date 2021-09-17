@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using Microsoft.Bot.Streaming.Payloads;
+using Microsoft.Bot.Streaming.Transport;
 using Xunit;
 
 namespace Microsoft.Bot.Streaming.UnitTests.Payloads
@@ -187,6 +188,30 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             Assert.Throws<InvalidDataException>(() =>
             {
                 HeaderSerializer.Deserialize(bytes, 0, bytes.Length);
+            });
+        }
+
+        [Fact]
+        public void Header_ClampLength_When_Value_Is_Greater_Than_Max_Throws()
+        {
+            Assert.Throws<InvalidDataException>(() =>
+            {
+                new Header()
+                {
+                    PayloadLength = TransportConstants.MaxLength + 1,
+                };
+            });
+        }
+
+        [Fact]
+        public void Header_ClampLength_When_Value_Is_Lower_Than_Max_Throws()
+        {
+            Assert.Throws<InvalidDataException>(() =>
+            {
+                new Header()
+                {
+                    PayloadLength = TransportConstants.MinLength - 1,
+                };
             });
         }
     }
