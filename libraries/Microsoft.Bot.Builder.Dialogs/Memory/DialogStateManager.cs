@@ -46,14 +46,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             {
                 Configuration = new DialogStateManagerConfiguration();
 
-                // Legacy memory scopes from static ComponentRegistration which is now obsolete.
-                var memoryScopes = ComponentRegistration.Components
-                    .OfType<IComponentMemoryScopes>()
-                    .SelectMany(c => c.GetMemoryScopes())
-                    .ToList();
-
                 // Merge new registrations from turn state
+                var memoryScopes = new List<MemoryScope>();
+
                 memoryScopes.AddRange(dc.Context.TurnState.Get<IEnumerable<MemoryScope>>() ?? Enumerable.Empty<MemoryScope>());
+
+                if (memoryScopes.Count == 0)
+                {
+                    ComponentRegistration.Add(new DialogsComponentRegistration());
+                    
+                    // Legacy memory scopes from static ComponentRegistration which is now obsolete.
+                    memoryScopes = ComponentRegistration.Components
+                        .OfType<IComponentMemoryScopes>()
+                        .SelectMany(c => c.GetMemoryScopes())
+                        .ToList();
+                }
 
                 // Get all of the component memory scopes.
                 foreach (var scope in memoryScopes)
