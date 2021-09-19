@@ -9348,7 +9348,8 @@
                                 "description": "Content type of response.",
                                 "enum": [
                                     "String",
-                                    "ByteArray"
+                                    "ByteArray",
+                                    "GZipString"
                                 ],
                                 "examples": [
                                     "String"

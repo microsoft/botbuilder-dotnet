@@ -2,7 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
+using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
 {
@@ -40,6 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                 case HttpResponseMock.ResponseContentType.ByteArray:
                     content = Convert.FromBase64String(httpResponseMock.Content == null ? string.Empty : httpResponseMock.Content.ToString());
                     break;
+                case HttpResponseMock.ResponseContentType.GZipString:
+                    content = CompressToGZip(httpResponseMock.Content == null ? string.Empty : httpResponseMock.Content.ToString());
+                    break;
                 default:
                     throw new NotSupportedException($"{httpResponseMock.ContentType} is not supported yet!");
             }
@@ -57,9 +63,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Testing.HttpRequestMocks
                     return new StringContent((string)content);
                 case HttpResponseMock.ResponseContentType.ByteArray:
                     return new ByteArrayContent((byte[])content);
+                case HttpResponseMock.ResponseContentType.GZipString:
+                    return new StringContent(DecompressFromGZip((byte[])content));
                 default:
                     throw new NotSupportedException($"{contentType} is not supported yet!");
             }
+        }
+
+        private byte[] CompressToGZip(string content)
+        {
+            var from = Encoding.Default.GetBytes(content);
+
+            using var to = new MemoryStream();
+            using (var gzipStream = new GZipStream(to, CompressionMode.Compress))
+            {
+                gzipStream.Write(from, 0, from.Length);
+                gzipStream.Close();
+            }
+
+            return to.ToArray();
+        }
+
+        private string DecompressFromGZip(byte[] content)
+        {
+            using var from = new MemoryStream(content);
+            using var to = new MemoryStream();
+            using var gzipStream = new GZipStream(from, CompressionMode.Decompress);
+            gzipStream.CopyTo(to);
+            return Encoding.Default.GetString(to.ToArray());
         }
     }
 }
