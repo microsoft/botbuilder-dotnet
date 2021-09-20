@@ -20,30 +20,6 @@ namespace Microsoft.Bot.Connector.Authentication
 #pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
     {
         /// <summary>
-        /// TO SKILL FROM BOT and TO BOT FROM SKILL: Token validation parameters when connecting a bot to a skill.
-        /// </summary>
-        private static readonly TokenValidationParameters _tokenValidationParameters =
-            new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuers = new[]
-                {
-                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
-                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
-                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
-                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
-                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
-                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",           // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0",       // Auth for US Gov, 2.0 token
-                },
-                ValidateAudience = false, // Audience validation takes place manually in code.
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(5),
-                RequireSignedTokens = true
-            };
-
-        /// <summary>
         /// Determines if a given Auth header is from from a skill to bot or bot to skill request.
         /// </summary>
         /// <param name="authHeader">Bearer Token, in the "Bearer [Long String]" Format.</param>
@@ -144,9 +120,37 @@ namespace Microsoft.Bot.Connector.Authentication
                 GovernmentAuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl : 
                 AuthenticationConstants.ToBotFromEmulatorOpenIdMetadataUrl;
 
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuers = new[]
+                {
+                    "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/", // Auth v3.1, 1.0 token
+                    "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0", // Auth v3.1, 2.0 token
+                    "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
+                    "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
+                    "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth for US Gov, 1.0 token
+                    "https://login.microsoftonline.us/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth for US Gov, 2.0 token
+                },
+                ValidateAudience = false, // Audience validation takes place manually in code.
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(5),
+                RequireSignedTokens = true
+            };
+
+            // Add allowed token issuers from configuration (if present)
+            if (authConfig.ValidTokenIssuers != null && authConfig.ValidTokenIssuers.Any())
+            {
+                var validIssuers = tokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(authConfig.ValidTokenIssuers);
+                tokenValidationParameters.ValidIssuers = validIssuers;
+            }
+
             var tokenExtractor = new JwtTokenExtractor(
                 httpClient,
-                _tokenValidationParameters,
+                tokenValidationParameters,
                 openIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 

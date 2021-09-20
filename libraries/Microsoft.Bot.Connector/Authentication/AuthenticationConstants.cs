@@ -76,6 +76,26 @@ namespace Microsoft.Bot.Connector.Authentication
         public const string ToBotFromEnterpriseChannelOpenIdMetadataUrlFormat = "https://{0}.enterprisechannel.botframework.com/v1/.well-known/openidconfiguration";
 
         /// <summary>
+        /// The V1 Azure AD token issuer URL template that will contain the tenant id where the token was issued from.
+        /// </summary>
+        public const string ValidTokenIssuerUrlTemplateV1 = "https://sts.windows.net/{0}/";
+
+        /// <summary>
+        /// The V2 Azure AD token issuer URL template that will contain the tenant id where the token was issued from.
+        /// </summary>
+        public const string ValidTokenIssuerUrlTemplateV2 = "https://login.microsoftonline.com/{0}/v2.0";
+
+        /// <summary>
+        /// The Government V1 Azure AD token issuer URL template that will contain the tenant id where the token was issued from.
+        /// </summary>
+        public const string ValidGovernmentTokenIssuerUrlTemplateV1 = "https://login.microsoftonline.us/{0}/";
+
+        /// <summary>
+        /// The Government V2 Azure AD token issuer URL template that will contain the tenant id where the token was issued from.
+        /// </summary>
+        public const string ValidGovernmentTokenIssuerUrlTemplateV2 = "https://login.microsoftonline.us/{0}/v2.0";
+
+        /// <summary>
         /// "azp" Claim.
         /// Authorized party - the party to which the ID Token was issued.
         /// This claim follows the general format set forth in the OpenID Spec.

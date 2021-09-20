@@ -180,6 +180,11 @@ namespace Microsoft.Bot.Builder.Azure
 
                 foreach (var blob in segment.Results.Cast<CloudBlockBlob>())
                 {
+                    if (!blob.Metadata.ContainsKey("Timestamp"))
+                    {
+                        continue;
+                    }
+
                     if (DateTime.Parse(blob.Metadata["Timestamp"], CultureInfo.InvariantCulture).ToUniversalTime() >= startDate)
                     {
                         if (continuationToken != null)

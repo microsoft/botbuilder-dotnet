@@ -26,6 +26,9 @@ steps:
   inputs:
     version: 3.1.101
 
+- powershell: 'gci env:* | sort-object name | Format-Table -AutoSize -Wrap'
+  displayName: 'Display env vars'
+
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
 
