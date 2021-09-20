@@ -101,8 +101,8 @@ namespace Microsoft.Bot.Builder.Streaming
 
             Audience = audience;
             _logger = logger ?? NullLogger.Instance;
-#pragma warning disable CA2000 // Dispose objects before losing scope  (The WebSocketServer gets disposed bythe LegacyStreamingConnection)
-            _innerConnection = new LegacyStreamingConnection(new WebSocketServer(socket, this), _logger);
+#pragma warning disable CA2000 // Dispose objects before losing scope  (The WebSocketServer gets disposed by the LegacyStreamingConnection)
+            _innerConnection = new LegacyStreamingConnection(new StreamingTransportServerFactory(socket), _logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
@@ -148,8 +148,8 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             Audience = audience;
-#pragma warning disable CA2000 // Dispose objects before losing scope (The NamedPipeServer gets disposed bythe LegacyStreamingConnection)
-            _innerConnection = new LegacyStreamingConnection(new NamedPipeServer(pipeName, this), _logger);
+#pragma warning disable CA2000 // Dispose objects before losing scope (The NamedPipeServer gets disposed by the LegacyStreamingConnection)
+            _innerConnection = new LegacyStreamingConnection(new StreamingTransportServerFactory(pipeName), _logger);
 #pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
@@ -537,90 +537,6 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             return null;
-        }
-
-        private class LegacyStreamingConnection : StreamingConnection, IDisposable
-        {
-            private readonly IStreamingTransportServer _server;
-            private readonly ILogger _logger;
-
-            private bool _serverIsConnected;
-            private bool _disposedValue;
-
-            public LegacyStreamingConnection(IStreamingTransportServer server, ILogger logger)
-            {
-                _server = server ?? throw new ArgumentNullException(nameof(server));
-                _serverIsConnected = true;
-                _server.Disconnected += Server_Disconnected;
-                _logger = logger;
-            }
-
-            public override async Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default)
-            {
-                await _server.StartAsync().ConfigureAwait(false);
-            }
-
-            public override async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default)
-            {
-                if (!_serverIsConnected)
-                {
-                    throw new InvalidOperationException("Error while attempting to send: Streaming transport is disconnected.");
-                }
-
-                return await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            }
-
-            public void Dispose()
-            {
-                // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-                Dispose(disposing: true);
-                GC.SuppressFinalize(this);
-            }
-
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions while disconnecting.")]
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!_disposedValue)
-                {
-                    if (disposing)
-                    {
-                        try
-                        {
-                            if (_server != null)
-                            {
-                                _server.Disconnected -= Server_Disconnected;
-
-                                if (_server is WebSocketServer webSocketServer)
-                                {
-                                    webSocketServer.Disconnect();
-                                }
-                                else if (_server is NamedPipeServer namedPipeServer)
-                                {
-                                    namedPipeServer.Disconnect();
-                                }
-
-                                if (_server is IDisposable disposable)
-                                {
-                                    disposable.Dispose();
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Failed to gracefully disconnect server while tearing down streaming connection.");
-                        }
-                    }
-
-                    // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                    // TODO: set large fields to null
-                    _disposedValue = true;
-                }
-            }
-
-            private void Server_Disconnected(object sender, DisconnectedEventArgs e)
-            {
-                _serverIsConnected = false;
-            }
         }
     }
 }
