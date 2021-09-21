@@ -234,6 +234,22 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Gets the correct streaming connector factory that is processing the given activity.
+        /// </summary>
+        /// <param name="activity">The activity that is being processed.</param>
+        /// <returns>The Streaming Connector Factory responsible for processing the activity.</returns>
+        /// <remarks>
+        /// For HTTP requests, we usually create a new connector factory and reply to the activity over a new HTTP request.
+        /// However, when processing activities over a streaming connection, we need to reply over the same connection that is talking to a web socket.
+        /// This abstract method will look up all active streaming connections in cloud adapter and return the connector factory that is processing the activity.
+        /// This method will only be needed when sending proactive messages since we do not have an active conversation that we need to reply to.
+        /// </remarks>
+        protected virtual ConnectorFactory GetStreamingConnectorFactory(Activity activity)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// The implementation for continue conversation.
         /// </summary>
         /// <param name="claimsIdentity">A <see cref="ClaimsIdentity"/> for the conversation.</param>
@@ -247,8 +263,9 @@ namespace Microsoft.Bot.Builder
             Logger.LogInformation($"ProcessProactiveAsync for Conversation Id: {continuationActivity.Conversation.Id}");
 
             // Create the connector factory.
-            // Assumption: we always need an http connector client
-            var connectorFactory = BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity); 
+            var connectorFactory = continuationActivity.IsFromStreamingConnection()
+                ? GetStreamingConnectorFactory(continuationActivity)
+                : BotFrameworkAuthentication.CreateConnectorFactory(claimsIdentity);
 
             // Create the connector client to use for outbound requests.
             using (var connectorClient = await connectorFactory.CreateAsync(continuationActivity.ServiceUrl, audience, cancellationToken).ConfigureAwait(false))
