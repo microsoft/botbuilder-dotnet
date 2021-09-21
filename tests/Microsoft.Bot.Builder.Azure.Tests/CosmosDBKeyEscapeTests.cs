@@ -60,6 +60,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
+        public void Sanitize_Key_With_Shuffix_Should_Escape_Illegal_Character()
+        {
+            // Ascii code of "?" is "3f".
+            var sanitizedKey = CosmosDbKeyEscape.EscapeKey("?test?", "test", true);
+            Assert.Equal("*3ftest*3ftest", sanitizedKey);
+        }
+
+        [Fact]
         public void Sanitize_Key_Should_Escape_Illegal_Character()
         {
             // Ascii code of "?" is "3f".
@@ -81,6 +89,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // Ascii code of "*" is "2a".
             var sanitizedKey5 = CosmosDbKeyEscape.EscapeKey("*test*");
             Assert.Equal("*2atest*2a", sanitizedKey5);
+
+            // Ascii code of "*" is "2a".
+            var sanitizedKey6 = CosmosDbKeyEscape.EscapeKey("test*");
+            Assert.Equal("test*2a", sanitizedKey6);
 
             // Check a compound key
             var compoundSanitizedKey = CosmosDbKeyEscape.EscapeKey("?#/");

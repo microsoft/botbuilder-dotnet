@@ -49,6 +49,59 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
+        public async Task TestBlobStorageWriteWithNullChangesShouldFail()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                // Arrange
+                var storage = GetStorage();
+
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(() => storage.WriteAsync(null));
+            }
+        }
+
+        [Fact]
+        public async Task TestBlobStorageWriteWithEmptyKeyChangesShouldFail()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                // Arrange
+                var storage = GetStorage();
+
+                var changes = new Dictionary<string, object>
+                {
+                    { string.Empty, "hello" },
+                };
+
+                // Act
+                await Assert.ThrowsAsync<ArgumentNullException>(() => storage.WriteAsync(changes));
+            }
+        }
+
+        [Fact]
+        public async Task TestBlobStorageWriteReadWithNullKeysShouldFail()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                // Arrange
+                var storage = GetStorage();
+
+                var changes = new Dictionary<string, object>
+                {
+                    { "x", "hello" },
+                    { "y", "world" },
+                };
+
+                // Act
+                await storage.WriteAsync(changes);
+
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(() => storage.ReadAsync(null));
+            }
+        }
+
+        [Fact]
         public async Task TestBlobStorageWriteDeleteRead()
         {
             if (StorageEmulatorHelper.CheckEmulator())
@@ -70,6 +123,28 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 // Assert
                 Assert.Equal(1, result.Count);
                 Assert.Equal("world", result["y"]);
+            }
+        }
+
+        [Fact]
+        public async Task TestBlobStorageWriteDeleteWithNullKeysShouldFail()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                // Arrange
+                var storage = GetStorage();
+
+                var changes = new Dictionary<string, object>
+                {
+                    { "x", "hello" },
+                    { "y", "world" },
+                };
+
+                // Act
+                await storage.WriteAsync(changes);
+
+                // Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(() => storage.DeleteAsync(null));
             }
         }
 

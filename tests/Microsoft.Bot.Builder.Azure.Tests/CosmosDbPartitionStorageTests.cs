@@ -54,6 +54,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             // No Options. Should throw.
             Assert.Throws<ArgumentNullException>(() => new CosmosDbPartitionedStorage(null));
 
+            // No JsonSerializer. Should throw.
+            Assert.Throws<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions(), null));
+
             // No Endpoint. Should throw.
             Assert.Throws<ArgumentException>(() => new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions()
             {
@@ -183,6 +186,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             var changes = new Dictionary<string, object>();
             await _storage.WriteAsync(changes);
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [IgnoreOnNoEmulatorFact]
+        public async Task DeletingNullStoreItemsThrowException()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _storage.DeleteAsync(null));
         }
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
