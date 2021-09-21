@@ -24,11 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return ProcessActivityAsync(authHeader, activity, (tc, c) => callback(new InterceptTurnContext(this, tc), c), cancellationToken);
         }
 
-        protected override ConnectorFactory GetStreamingConnectorFactory(Activity activity)
-        {
-            throw new System.NotImplementedException();
-        }
-
         private class InterceptTurnContext : ITurnContext
         {
             private TestCloudAdapter _testAdapter;
