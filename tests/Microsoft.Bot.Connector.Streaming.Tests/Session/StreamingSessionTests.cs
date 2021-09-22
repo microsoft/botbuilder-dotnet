@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             ReceiveResponse response = null;
 
             transportHandlerSetup.Callback(
-                (Guid requestId, RequestPayload requestPayload, CancellationToken cancellationToken) =>
+                (Guid requestId, RequestModel requestPayload, CancellationToken cancellationToken) =>
                 {
                     responseHeader = new Header() { Id = requestId, Type = PayloadTypes.Response };
                     response = new ReceiveResponse() { StatusCode = 200, Streams = StreamingDataGenerator.CreateStreams(requestId, streamLength, streamCount, chunkCount, PayloadTypes.Response) };
