@@ -42,7 +42,6 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// </summary>
         public const string EntitiesProperty = "entityResult";
 
-        public const string NoneIntentLabel = "None";
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, OrchestratorDictionaryEntry> orchestratorMap = new ConcurrentDictionary<string, OrchestratorDictionaryEntry>();
         private OrchestratorDictionaryEntry _orchestrator = null;
@@ -170,12 +169,12 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // if top scoring intent is less than threshold, return None
                 if (topScore < UnknownIntentFilterScore)
                 {
-                    ((List<Result>)recognizerResult.Properties[ResultProperty]).Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = NoneIntentLabel, Type = LabelType.Intent } });
+                    ((List<Result>)recognizerResult.Properties[ResultProperty]).Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = NoneIntent, Type = LabelType.Intent } });
 
                     // add all scores
                     foreach (var result in results)
                     {
-                        if (result.Label.Name != NoneIntentLabel)
+                        if (result.Label.Name != NoneIntent)
                         {
                             recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
                             {
