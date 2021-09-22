@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 Id = twilioMessage.MessageSid,
                 Timestamp = DateTime.UtcNow,
-                ChannelId = Channels.Twilio,
+                ChannelId = Channels.Sms,
                 Conversation = new ConversationAccount()
                 {
                     Id = twilioMessage.From ?? twilioMessage.Author,

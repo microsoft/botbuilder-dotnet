@@ -6,7 +6,7 @@
       "localTimestamp":null,
       "localTimezone":null,
       "serviceUrl":null,
-      "channelId":"twilio-sms",
+      "channelId":"sms",
       "from":{  
          "id":"redacted",
          "name":null,
