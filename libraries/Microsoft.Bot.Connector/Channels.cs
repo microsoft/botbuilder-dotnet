@@ -116,5 +116,10 @@ namespace Microsoft.Bot.Connector
         /// Telephony channel.
         /// </summary>
         public const string Telephony = "telephony";
+
+        /// <summary>
+        /// Omni channel.
+        /// </summary>
+        public const string Omni = "omnichannel";
     }
 }
