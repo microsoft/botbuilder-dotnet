@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdaptiveExpressions.Properties;
@@ -43,6 +44,80 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.Equal(1, result.Intents.Count);
             Assert.True(result.Intents.ContainsKey("mockLabel"));
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
+        }
+
+        [Fact]
+        public async Task TestIntentRecognizeLowScore()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.1,
+                Label = new Label { Name = "mockLabel" }
+            };
+
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath")
+            };
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
+
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
+            Assert.Equal(1.0, result.Intents["None"].Score);
+        }
+
+        [Fact]
+        public async Task TestIntentRecognizeEmptyMessage()
+        {
+            var mockResult = new Result
+            {
+                Score = 0.9,
+                Label = new Label { Name = "mockLabel" }
+            };
+
+            var mockScore = new List<Result> { mockResult };
+            var mockResolver = new MockResolver(mockScore);
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath")
+            };
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text(string.Empty);
+            var context = new TurnContext(adapter, activity);
+
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
+            Assert.Empty(result.Text);
+        }
+
+        [Fact]
+        public void TestOrchestratorRecognizerNullModelFolder()
+        {
+            Assert.Throws<ArgumentNullException>(() => new OrchestratorRecognizer(null, null));
+        }
+
+        [Fact]
+        public void TestOrchestratorRecognizerNullSnapshotFile()
+        {
+            Assert.Throws<ArgumentNullException>(() => new OrchestratorRecognizer(string.Empty, null));
+        }
+
+        [Fact]
+        public void TestOrchestratorRecognizerWithInvalidPath()
+        {
+            Assert.Throws<InvalidOperationException>(() => new OrchestratorRecognizer("C:/", "C:/")
+            {
+                ModelFolder = new StringExpression("C:/"),
+                SnapshotFile = new StringExpression("C:/")
+            });
         }
 
         [Theory]
