@@ -174,7 +174,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     // add all scores
                     foreach (var result in results)
                     {
-                        if (result.Label.Name != NoneIntent)
+                        if (results[0].Label.Name != NoneIntent || result.Label.Name != NoneIntent)
                         {
                             recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
                             {
