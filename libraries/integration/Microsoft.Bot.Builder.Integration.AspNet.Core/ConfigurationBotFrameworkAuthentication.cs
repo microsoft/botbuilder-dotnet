@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
@@ -108,9 +107,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         }
 
         /// <inheritdoc />
-        protected override bool ShouldUseLegacyStreamingConnection()
+        public override async Task<StreamingConnection> CreateWebSocketConnectionAsync(HttpContext httpContext, ILogger logger)
         {
-            return _useLegacyStreamingConnection;
+            if (_useLegacyStreamingConnection)
+            {
+                var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                return new LegacyStreamingConnection(socket, logger);
+            }
+
+            return await base.CreateWebSocketConnectionAsync(httpContext, logger).ConfigureAwait(false);
         }
     }
 }

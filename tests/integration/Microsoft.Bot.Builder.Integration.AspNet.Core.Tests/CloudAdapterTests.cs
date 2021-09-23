@@ -177,10 +177,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Audience = "audience",
             };
 
+            var streamingConnection = new Mock<StreamingConnection>();
             var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
             botFrameworkAuthenticationMock.Setup(
                 x => x.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authenticateRequestResult);
+            botFrameworkAuthenticationMock.Setup(a => a.CreateWebSocketConnectionAsync(It.IsAny<HttpContext>(), It.IsAny<ILogger>()))
+                .Returns(Task.FromResult(streamingConnection.Object));
 
             var bot = new MessageBot();
 

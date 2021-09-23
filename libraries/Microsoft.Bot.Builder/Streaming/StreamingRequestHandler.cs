@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
             Audience = audience;
             _logger = logger ?? NullLogger.Instance;
-            _innerConnection = BotFrameworkAuthenticationFactory.Create().CreateLegacyWebSocketConnection(socket, logger);
+            _innerConnection = new LegacyStreamingConnection(socket, logger);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             Audience = audience;
-            _innerConnection = BotFrameworkAuthenticationFactory.Create().CreateNamedPipeConnection(pipeName, logger);
+            _innerConnection = new LegacyStreamingConnection(pipeName, logger);
         }
 
         /// <summary>

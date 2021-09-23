@@ -189,6 +189,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             using (var scope = Logger.BeginScope(connectionId))
             {
                 var connection = await BotFrameworkAuthentication.CreateWebSocketConnectionAsync(httpRequest.HttpContext, Logger).ConfigureAwait(false);
+
                 using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
                 {
                     // Start receiving activities on the socket

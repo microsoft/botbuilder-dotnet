@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,36 +88,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <returns><see cref="StreamingConnection"/> that uses web socket.</returns>
-        public virtual async Task<StreamingConnection> CreateWebSocketConnectionAsync(HttpContext httpContext, ILogger logger)
+        public virtual Task<StreamingConnection> CreateWebSocketConnectionAsync(HttpContext httpContext, ILogger logger)
         {
             if (httpContext == null)
             {
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            if (ShouldUseLegacyStreamingConnection())
-            {
-                var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                return CreateLegacyWebSocketConnection(socket, logger);
-            }
-
-            return new WebSocketStreamingConnection(httpContext, logger);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="StreamingConnection"/> that uses web sockets.
-        /// </summary>
-        /// <param name="socket">The <see cref="WebSocket"/> instance to use for legacy streaming connection.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        /// <returns>A <see cref="StreamingConnection"/> that uses web sockets.</returns>
-        public virtual StreamingConnection CreateLegacyWebSocketConnection(WebSocket socket, ILogger logger)
-        {
-            if (socket == null)
-            {
-                throw new ArgumentNullException(nameof(socket));
-            }
-
-            return new LegacyStreamingConnection(socket, logger);
+            return Task.FromResult<StreamingConnection>(new WebSocketStreamingConnection(httpContext, logger));
         }
 
         /// <summary>
@@ -135,15 +112,6 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return new LegacyStreamingConnection(pipeName, logger);
-        }
-
-        /// <summary>
-        /// Whether to use the legacy implementation of <see cref="StreamingConnection"/> for streaming requests.
-        /// </summary>
-        /// <returns>false by default, but can be overridden by appsettings configuration.</returns>
-        protected internal virtual bool ShouldUseLegacyStreamingConnection()
-        {
-            return false;
         }
 
         /// <summary>
