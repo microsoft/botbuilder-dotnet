@@ -1,12 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -19,6 +22,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class ConfigurationBotFrameworkAuthentication : BotFrameworkAuthentication
     {
         private readonly BotFrameworkAuthentication _inner;
+        private readonly bool _useLegacyStreamingConnection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationBotFrameworkAuthentication"/> class.
@@ -54,6 +58,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 authConfiguration ?? new AuthenticationConfiguration(),
                 httpClientFactory,
                 logger);
+
+            // A circuit breaker / emergency switch to go back to the legacy implementation of streaming connection
+            // while we transition to the new pipelines-based implementation.
+            var useLegacyStreamingConnection = configuration.GetSection("UseLegacyStreamingConnection")?.Value;
+            _useLegacyStreamingConnection = bool.Parse(useLegacyStreamingConnection ?? bool.FalseString);
         }
 
         /// <inheritdoc />
@@ -96,6 +105,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         public override BotFrameworkClient CreateBotFrameworkClient()
         {
             return _inner.CreateBotFrameworkClient();
+        }
+
+        /// <inheritdoc />
+        protected override bool ShouldUseLegacyStreamingConnection()
+        {
+            return _useLegacyStreamingConnection;
         }
     }
 }

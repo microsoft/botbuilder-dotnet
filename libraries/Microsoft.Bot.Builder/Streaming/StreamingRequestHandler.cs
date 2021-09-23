@@ -101,9 +101,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
             Audience = audience;
             _logger = logger ?? NullLogger.Instance;
-#pragma warning disable CA2000 // Dispose objects before losing scope  (The WebSocketServer gets disposed by the LegacyStreamingConnection)
-            _innerConnection = new LegacyStreamingConnection(new StreamingTransportServerFactory(socket), _logger);
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            _innerConnection = BotFrameworkAuthenticationFactory.Create().CreateLegacyWebSocketConnection(socket, logger);
         }
 
         /// <summary>
@@ -148,9 +146,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             Audience = audience;
-#pragma warning disable CA2000 // Dispose objects before losing scope (The NamedPipeServer gets disposed by the LegacyStreamingConnection)
-            _innerConnection = new LegacyStreamingConnection(new StreamingTransportServerFactory(pipeName), _logger);
-#pragma warning restore CA2000 // Dispose objects before losing scope
+            _innerConnection = BotFrameworkAuthenticationFactory.Create().CreateNamedPipeConnection(pipeName, logger);
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Streaming.Application;
@@ -10,27 +11,40 @@ using Microsoft.Bot.Streaming.Transport;
 using Microsoft.Bot.Streaming.Transport.NamedPipes;
 using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.Builder.Streaming
+namespace Microsoft.Bot.Connector.Authentication
 {
     internal sealed class LegacyStreamingConnection : StreamingConnection, IDisposable
     {
-        private readonly IStreamingTransportServerFactory _serverFactory;
+        private readonly WebSocket _socket;
+        private readonly string _pipeName;
         private readonly ILogger _logger;
 
         private IStreamingTransportServer _server;
         private bool _serverIsConnected;
         private bool _disposedValue;
 
-        public LegacyStreamingConnection(IStreamingTransportServerFactory serverFactory, ILogger logger)
+        public LegacyStreamingConnection(WebSocket socket, ILogger logger)
         {
-            _serverFactory = serverFactory ?? throw new ArgumentNullException(nameof(serverFactory));
-            _logger = logger;
+            _socket = socket ?? throw new ArgumentNullException(nameof(socket));
+            _logger = logger ?? NullLogger.Instance;
+        }
+
+        public LegacyStreamingConnection(string pipeName, ILogger logger)
+        {
+            if (string.IsNullOrWhiteSpace(pipeName))
+            {
+                throw new ArgumentNullException(nameof(pipeName));
+            }
+
+            _pipeName = pipeName;
+            _logger = logger ?? NullLogger.Instance;
         }
 
         public override async Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default)
         {
-            _server = _serverFactory.Create(requestHandler);
+            _server = CreateStreamingTransportServer(requestHandler);
             _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
 
@@ -97,6 +111,21 @@ namespace Microsoft.Bot.Builder.Streaming
         private void Server_Disconnected(object sender, DisconnectedEventArgs e)
         {
             _serverIsConnected = false;
+        }
+
+        private IStreamingTransportServer CreateStreamingTransportServer(RequestHandler requestHandler)
+        {
+            if (_socket != null)
+            {
+                return new WebSocketServer(_socket, requestHandler);
+            }
+
+            if (!string.IsNullOrWhiteSpace(_pipeName))
+            {
+                return new NamedPipeServer(_pipeName, requestHandler);
+            }
+
+            throw new ApplicationException("Neither web socket, nor named pipe found to instantiate a streaming transport server!");
         }
     }
 }

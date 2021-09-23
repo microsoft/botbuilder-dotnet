@@ -247,12 +247,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Text = "hi",
             };
 
-            var auth = new Mock<BotFrameworkAuthentication>();
-            auth.Setup(a => a.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult(authResult));
-            auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
-
             var streamingConnection = new Mock<StreamingConnection>();
             streamingConnection
                 .Setup(c => c.ListenAsync(It.IsAny<RequestHandler>(), It.IsAny<CancellationToken>()))
@@ -275,10 +269,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                     null,
                     cancellationToken: cancellationToken));
 
-            var streamingConnectionFactory = new Mock<IStreamingConnectionFactory>();
-            streamingConnectionFactory
-                .Setup(f => f.CreateWebSocketConnection(It.IsAny<HttpContext>(), It.IsAny<ILogger>()))
-                .Returns(streamingConnection.Object);
+            var auth = new Mock<BotFrameworkAuthentication>();
+            auth.Setup(a => a.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(authResult));
+            auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
+            auth.Setup(a => a.CreateWebSocketConnectionAsync(It.IsAny<HttpContext>(), It.IsAny<ILogger>()))
+                .Returns(Task.FromResult(streamingConnection.Object));
 
             var webSocketManager = new Mock<WebSocketManager>();
             webSocketManager.Setup(m => m.IsWebSocketRequest).Returns(true);
@@ -300,7 +297,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
 
             // Act
-            var adapter = new CloudAdapter(auth.Object, NullLogger.Instance, streamingConnectionFactory.Object);
+            var adapter = new CloudAdapter(auth.Object);
             var processRequest = adapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, CancellationToken.None);
 
             var validContinuation = adapter.ContinueConversationAsync(
@@ -310,7 +307,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 {
                     var connectorFactory = turn.TurnState.Get<ConnectorFactory>();
                     Assert.NotNull(connectorFactory);
-                    Assert.EndsWith("StreamingConnectorFactory", connectorFactory.GetType().FullName);
+                    var connectorFactoryTypeName = connectorFactory.GetType().FullName ?? string.Empty;
+                    Assert.EndsWith("StreamingConnectorFactory", connectorFactoryTypeName);
                     verifiedValidContinuation = true;
 
                     return Task.CompletedTask;

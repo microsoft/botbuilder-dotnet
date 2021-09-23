@@ -27,8 +27,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     {
         private readonly ConcurrentDictionary<Guid, StreamingActivityProcessor> _streamingConnections = new ConcurrentDictionary<Guid, StreamingActivityProcessor>();
 
-        private readonly IStreamingConnectionFactory _streamingConnectionFactory;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
         /// </summary>
@@ -42,14 +40,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// </summary>
         /// <param name="botFrameworkAuthentication">The <see cref="BotFrameworkAuthentication"/> this adapter should use.</param>
         /// <param name="logger">The <see cref="ILogger"/> implementation this adapter should use.</param>
-        /// <param name="streamingConnectionFactory">The <see cref="IStreamingConnectionFactory"/> implementation this adapter should use.</param>
         public CloudAdapter(
             BotFrameworkAuthentication botFrameworkAuthentication,
-            ILogger logger = null,
-            IStreamingConnectionFactory streamingConnectionFactory = null)
+            ILogger logger = null)
             : base(botFrameworkAuthentication, logger)
         {
-            _streamingConnectionFactory = streamingConnectionFactory ?? new StreamingConnectionFactory();
         }
 
         /// <summary>
@@ -153,7 +148,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 CallerId = callerId
             };
 
-            var connection = _streamingConnectionFactory.CreateLegacyNamedPipeConnection(pipeName, Logger);
+            var connection = BotFrameworkAuthentication.CreateNamedPipeConnection(pipeName, Logger);
 
             // Tie the authentication results, the named pipe, the adapter and the bot together to be ready to handle any inbound activities
             using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
@@ -189,35 +184,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var channelIdHeader = httpRequest.Headers["channelid"];
 
             var authenticationRequestResult = await BotFrameworkAuthentication.AuthenticateStreamingRequestAsync(authHeader, channelIdHeader, cancellationToken).ConfigureAwait(false);
-            
-            // TODO: From IConfiguration
-            bool useNewStreaming = true;
 
-            // TODO: Get this from IConfiguration so it acts as a circuit breaker / emergency switch to go back to the legacy implementation
-            // while we transition to the new pipelines-based implementation.
             var connectionId = Guid.NewGuid();
-            if (useNewStreaming)
+            using (var scope = Logger.BeginScope(connectionId))
             {
-                using (var scope = Logger.BeginScope(connectionId))
-                {
-                    var connection = _streamingConnectionFactory.CreateWebSocketConnection(httpRequest.HttpContext, Logger);
-                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
-                    {
-                        // Start receiving activities on the socket
-                        // TODO: pass asp.net core lifetime for cancellation here.
-                        _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                        await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
-                        _streamingConnections.TryRemove(connectionId, out _);
-                    }
-                }
-            }
-            else
-            {
-                // Transition the request to a WebSocket connection
-                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var connection = _streamingConnectionFactory.CreateLegacyWebSocketConnection(socket, Logger);
-
-                // Tie the authentication results, the socket, the adapter and the bot together to be ready to handle any inbound activities
+                var connection = await BotFrameworkAuthentication.CreateWebSocketConnectionAsync(httpRequest.HttpContext, Logger).ConfigureAwait(false);
                 using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
                 {
                     // Start receiving activities on the socket
