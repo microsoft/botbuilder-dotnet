@@ -172,15 +172,24 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                     ((List<Result>)recognizerResult.Properties[ResultProperty]).Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = NoneIntent, Type = LabelType.Intent } });
 
                     // add all scores
-                    foreach (var result in results)
+                    bool duplicateNoneRemoved = false;
+                    for (int i = 0; i < results.Count; ++i)
                     {
-                        if (results[0].Label.Name != NoneIntent || result.Label.Name != NoneIntent)
+                        var result = results[i];
+                        string label = result.Label.Name;
+                        if (!duplicateNoneRemoved && label == NoneIntent && result.Score < 1.0)
                         {
-                            recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
+                            // remove duplicate None intents
+                            results.RemoveAt(i--);
+                            duplicateNoneRemoved = true;
+                        }
+                        else
+                        {
+                            recognizerResult.Intents.Add(label, new IntentScore()
                             {
                                 Score = result.Score
                             });
-                        }
+                        }  
                     }
                 }
                 else
