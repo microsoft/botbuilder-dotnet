@@ -169,27 +169,22 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // if top scoring intent is less than threshold, return None
                 if (topScore < UnknownIntentFilterScore)
                 {
-                    ((List<Result>)recognizerResult.Properties[ResultProperty]).Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = NoneIntent, Type = LabelType.Intent } });
-
-                    // add all scores
-                    bool duplicateNoneRemoved = false;
+                    // remove existing None intents
                     for (int i = 0; i < results.Count; ++i)
                     {
-                        var result = results[i];
-                        string label = result.Label.Name;
-                        if (!duplicateNoneRemoved && label == NoneIntent && result.Score < 1.0)
+                        if (results[i].Label.Name == NoneIntent)
                         {
-                            // remove duplicate None intents
                             results.RemoveAt(i--);
-                            duplicateNoneRemoved = true;
                         }
-                        else
+                    }
+
+                    results.Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = NoneIntent, Type = LabelType.Intent } });
+                    foreach (var result in results)
+                    {
+                        recognizerResult.Intents.Add(result.Label.Name, new IntentScore()
                         {
-                            recognizerResult.Intents.Add(label, new IntentScore()
-                            {
-                                Score = result.Score
-                            });
-                        }  
+                            Score = result.Score
+                        });
                     }
                 }
                 else
