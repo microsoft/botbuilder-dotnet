@@ -99,22 +99,6 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Creates a <see cref="StreamingConnection"/> that uses named pipes.
-        /// </summary>
-        /// <param name="pipeName">The name of the named pipe.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        /// <returns>A <see cref="StreamingConnection"/> that uses named pipes.</returns>
-        public virtual StreamingConnection CreateNamedPipeConnection(string pipeName, ILogger logger)
-        {
-            if (string.IsNullOrWhiteSpace(pipeName))
-            {
-                throw new ArgumentNullException(nameof(pipeName));
-            }
-
-            return new LegacyStreamingConnection(pipeName, logger);
-        }
-
-        /// <summary>
         /// Generates the appropriate callerId to write onto the activity, this might be null.
         /// </summary>
         /// <param name="credentialFactory">A <see cref="ServiceClientCredentialsFactory"/> to use.</param>

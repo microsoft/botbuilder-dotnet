@@ -148,10 +148,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 CallerId = callerId
             };
 
-            var connection = BotFrameworkAuthentication.CreateNamedPipeConnection(pipeName, Logger);
-
             // Tie the authentication results, the named pipe, the adapter and the bot together to be ready to handle any inbound activities
-            using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+            using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, pipeName, this, bot))
             {
                 // Start receiving activities on the named pipe
                 // TODO /*_applicationLifetime?.ApplicationStopped ?? */ 
@@ -214,6 +212,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 // Internal reuse of the existing StreamingRequestHandler class
                 _requestHandler = new StreamingRequestHandler(bot, this, connection, authenticateRequestResult.Audience, logger: adapter.Logger);
+
+                // Fix up the connector factory so connector create from it will send over this connection
+                _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
+            }
+
+            public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, string pipeName, CloudAdapter adapter, IBot bot)
+            {
+                _authenticateRequestResult = authenticateRequestResult;
+                _adapter = adapter;
+
+                // Internal reuse of the existing StreamingRequestHandler class
+                _requestHandler = new StreamingRequestHandler(bot, this, pipeName, _authenticateRequestResult.Audience, adapter.Logger);
 
                 // Fix up the connector factory so connector create from it will send over this connection
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);

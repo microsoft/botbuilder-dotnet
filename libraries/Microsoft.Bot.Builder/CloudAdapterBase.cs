@@ -241,8 +241,9 @@ namespace Microsoft.Bot.Builder
         /// <remarks>
         /// For HTTP requests, we usually create a new connector factory and reply to the activity over a new HTTP request.
         /// However, when processing activities over a streaming connection, we need to reply over the same connection that is talking to a web socket.
-        /// This abstract method will look up all active streaming connections in cloud adapter and return the connector factory that is processing the activity.
-        /// This method will only be needed when sending proactive messages since we do not have an active conversation that we need to reply to.
+        /// This method will look up all active streaming connections in cloud adapter and return the connector factory that is processing the activity.
+        /// Messages between bot and channel go through the StreamingConnection (bot -> channel) and RequestHandler (channel -> bot), both created by the adapter.
+        /// However, proactive messages don't know which connection to talk to, so this method is designed to aid in the connection resolution for such proactive messages.
         /// </remarks>
         protected virtual ConnectorFactory GetStreamingConnectorFactory(Activity activity)
         {
