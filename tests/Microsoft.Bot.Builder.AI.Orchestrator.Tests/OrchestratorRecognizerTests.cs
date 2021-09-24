@@ -13,10 +13,10 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
 {
-    public class OrchestratorRecognizerTest
+    public class OrchestratorRecognizerTests
     {
         [Fact]
-        public async Task LogsTelemetryThrowsArgumentNullExcetionOnNullDialogContext()
+        public async Task LogsTelemetryThrowsArgumentNullExceptionOnNullDialogContext()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
 
