@@ -267,7 +267,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 RequestHandlers.Add(requestHandler);
 
+                Log.WebSocketConnectionStarted(Logger);
                 await requestHandler.ListenAsync().ConfigureAwait(false);
+                Log.WebSocketConnectionCompleted(Logger);
             }
             catch (Exception ex)
             {
@@ -354,6 +356,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             return null;
+        }
+
+        private class Log
+        {
+            private static readonly Action<ILogger, Exception> _webSocketConnectionStarted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(WebSocketConnectionStarted)), "WebSocket connection started.");
+
+            private static readonly Action<ILogger, Exception> _webSocketConnectionCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(WebSocketConnectionCompleted)), "WebSocket connection completed.");
+
+            public static void WebSocketConnectionStarted(ILogger logger) => _webSocketConnectionStarted(logger, null);
+
+            public static void WebSocketConnectionCompleted(ILogger logger) => _webSocketConnectionCompleted(logger, null);
         }
     }
 }

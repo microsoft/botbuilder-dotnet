@@ -193,8 +193,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     // Start receiving activities on the socket
                     // TODO: pass asp.net core lifetime for cancellation here.
                     _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                    Log.WebSocketConnectionStarted(Logger);
                     await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
                     _streamingConnections.TryRemove(connectionId, out _);
+                    Log.WebSocketConnectionCompleted(Logger);
                 }
             }
         }
@@ -314,6 +316,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     }
                 }
             }
+        }
+
+        private class Log
+        {
+            private static readonly Action<ILogger, Exception> _webSocketConnectionStarted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(WebSocketConnectionStarted)), "WebSocket connection started.");
+
+            private static readonly Action<ILogger, Exception> _webSocketConnectionCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(WebSocketConnectionCompleted)), "WebSocket connection completed.");
+
+            public static void WebSocketConnectionStarted(ILogger logger) => _webSocketConnectionStarted(logger, null);
+
+            public static void WebSocketConnectionCompleted(ILogger logger) => _webSocketConnectionCompleted(logger, null);
         }
     }
 }
