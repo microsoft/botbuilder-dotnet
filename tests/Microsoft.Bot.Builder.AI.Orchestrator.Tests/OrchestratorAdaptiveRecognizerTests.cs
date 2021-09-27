@@ -45,6 +45,51 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
             Assert.Equal(0.9, result.Intents["mockLabel"].Score);
         }
 
+        [Fact]
+        public async Task TestIntentNoneRecognize()
+        {
+            var mockResult1 = new Result
+            {
+                Score = 0.3,
+                Label = new Label { Name = "mockLabel" }
+            };
+            var mockResultNone = new Result
+            {
+                Score = 0.8,
+                Label = new Label { Name = "None" }
+            };
+            var mockResult2 = new Result
+            {
+                Score = 0.6,
+                Label = new Label { Name = "mockLabel2" }
+            };
+
+            var mockScore = new List<Result> { mockResult1, mockResultNone, mockResult2 }.AsReadOnly();
+            var mockResolver = new MockResolver(mockScore);
+            var recognizer = new OrchestratorRecognizer(string.Empty, string.Empty, mockResolver)
+            {
+                ModelFolder = new StringExpression("fakePath"),
+                SnapshotFile = new StringExpression("fakePath")
+            };
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation("ds"));
+            var activity = MessageFactory.Text("hi");
+            var context = new TurnContext(adapter, activity);
+
+            var dc = new DialogContext(new DialogSet(), context, new DialogState());
+            var result = await recognizer.RecognizeAsync(dc, activity, default);
+            Assert.Equal(3, result.Intents.Count);
+            List<Result> results = (List<Result>)result.Properties[OrchestratorRecognizer.ResultProperty];
+            Assert.Equal(AdaptiveRecognizer.NoneIntent, results[0].Label.Name);
+            Assert.Equal(3, results.Count);
+            Assert.True(result.Intents.ContainsKey("mockLabel"));
+            Assert.Equal(0.3, result.Intents["mockLabel"].Score);
+            Assert.True(result.Intents.ContainsKey(AdaptiveRecognizer.NoneIntent));
+            Assert.Equal(1.0, result.Intents[AdaptiveRecognizer.NoneIntent].Score);
+            Assert.True(result.Intents.ContainsKey("mockLabel2"));
+            Assert.Equal(0.6, result.Intents["mockLabel2"].Score);
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
