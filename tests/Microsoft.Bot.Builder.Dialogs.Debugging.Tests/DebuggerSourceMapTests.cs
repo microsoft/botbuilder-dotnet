@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             var sourceRange = new SourceRange
             {
                 Designer = "testDesigner",
-                Path = "c:/test/path",
+                Path = "/test/path",
                 StartPoint = new SourcePoint(0, 0),
                 EndPoint = new SourcePoint(10, 10)
             };
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
             var sourceRange = new SourceRange
             {
                 Designer = "testDesigner",
-                Path = "c:/test/path",
+                Path = "/test/path",
                 StartPoint = new SourcePoint(0, 0),
                 EndPoint = new SourcePoint(10, 10)
             };
