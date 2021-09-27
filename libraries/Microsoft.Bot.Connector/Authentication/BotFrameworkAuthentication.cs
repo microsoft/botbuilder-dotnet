@@ -5,11 +5,8 @@ using System;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Skills;
-using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -80,22 +77,6 @@ namespace Microsoft.Bot.Connector.Authentication
         public virtual Task<ClaimsIdentity> AuthenticateChannelRequestAsync(string authHeader, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Creates a <see cref="StreamingConnection"/> that uses web sockets.
-        /// </summary>
-        /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
-        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        /// <returns><see cref="StreamingConnection"/> that uses web socket.</returns>
-        public virtual Task<StreamingConnection> CreateWebSocketConnectionAsync(HttpContext httpContext, ILogger logger)
-        {
-            if (httpContext == null)
-            {
-                throw new ArgumentNullException(nameof(httpContext));
-            }
-
-            return Task.FromResult<StreamingConnection>(new WebSocketStreamingConnection(httpContext, logger));
         }
 
         /// <summary>

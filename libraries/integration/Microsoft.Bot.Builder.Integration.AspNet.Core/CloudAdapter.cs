@@ -171,6 +171,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             throw new ApplicationException($"No streaming connection found for activity: {activity}");
         }
 
+        /// <summary>
+        /// Creates a <see cref="StreamingConnection"/> that uses web sockets.
+        /// </summary>
+        /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        /// <returns><see cref="StreamingConnection"/> that uses web socket.</returns>
+        protected virtual StreamingConnection CreateWebSocketConnection(HttpContext httpContext, ILogger logger)
+        {
+            if (httpContext == null)
+            {
+                throw new ArgumentNullException(nameof(httpContext));
+            }
+
+            return new WebSocketStreamingConnection(httpContext, logger);
+        }
+
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
         {
             Logger.LogInformation($"Received request for web socket connect.");
@@ -186,7 +202,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-                var connection = await BotFrameworkAuthentication.CreateWebSocketConnectionAsync(httpRequest.HttpContext, Logger).ConfigureAwait(false);
+                var connection = CreateWebSocketConnection(httpRequest.HttpContext, Logger);
 
                 using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
                 {

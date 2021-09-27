@@ -177,13 +177,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 Audience = "audience",
             };
 
-            var streamingConnection = new Mock<StreamingConnection>();
             var botFrameworkAuthenticationMock = new Mock<BotFrameworkAuthentication>();
             botFrameworkAuthenticationMock.Setup(
                 x => x.AuthenticateStreamingRequestAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(authenticateRequestResult);
-            botFrameworkAuthenticationMock.Setup(a => a.CreateWebSocketConnectionAsync(It.IsAny<HttpContext>(), It.IsAny<ILogger>()))
-                .Returns(Task.FromResult(streamingConnection.Object));
 
             var bot = new MessageBot();
 
@@ -277,8 +274,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 .Returns(Task.FromResult(authResult));
             auth.Setup(a => a.CreateUserTokenClientAsync(It.IsAny<ClaimsIdentity>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult<UserTokenClient>(userTokenClient));
-            auth.Setup(a => a.CreateWebSocketConnectionAsync(It.IsAny<HttpContext>(), It.IsAny<ILogger>()))
-                .Returns(Task.FromResult(streamingConnection.Object));
 
             var webSocketManager = new Mock<WebSocketManager>();
             webSocketManager.Setup(m => m.IsWebSocketRequest).Returns(true);
@@ -300,7 +295,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 .Returns(Task.Factory.StartNew(() => { continueConversationWaiter.WaitOne(); })); // Simulate listening on web socket
 
             // Act
-            var adapter = new CloudAdapter(auth.Object);
+            var adapter = new StreamingTestCloudAdapter(auth.Object, streamingConnection.Object);
             var processRequest = adapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, CancellationToken.None);
 
             var validContinuation = adapter.ContinueConversationAsync(
@@ -989,6 +984,22 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             public int? Length { get; set; }
             
             public Stream Stream { get; set; }
+        }
+
+        private class StreamingTestCloudAdapter : CloudAdapter
+        {
+            private readonly StreamingConnection _connection;
+
+            public StreamingTestCloudAdapter(BotFrameworkAuthentication auth, StreamingConnection connection)
+                : base(auth)
+            {
+                _connection = connection;
+            }
+
+            protected override StreamingConnection CreateWebSocketConnection(HttpContext httpContext, ILogger logger)
+            {
+                return _connection;
+            }
         }
     }
 }
