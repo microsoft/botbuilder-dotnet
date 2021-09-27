@@ -113,11 +113,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator.Tests
         [Fact]
         public void TestOrchestratorRecognizerWithInvalidPath()
         {
-            Assert.Throws<InvalidOperationException>(() => new OrchestratorRecognizer("C:/", "C:/")
-            {
-                ModelFolder = new StringExpression("C:/"),
-                SnapshotFile = new StringExpression("C:/")
-            });
+            Assert.Throws<InvalidOperationException>(() => new OrchestratorRecognizer("C:/", "C:/"));
         }
 
         [Theory]
