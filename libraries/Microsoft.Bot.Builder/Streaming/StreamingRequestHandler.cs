@@ -174,8 +174,9 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <returns>A task that completes once the server is no longer listening.</returns>
         public async Task ListenAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _innerConnection.ListenAsync(this, cancellationToken).ConfigureAwait(false);
             _logger.LogInformation("Streaming request handler started listening");
+            await _innerConnection.ListenAsync(this, cancellationToken).ConfigureAwait(false);
+            _logger.LogInformation("Streaming request handler completed listening");
         }
 
         /// <summary>
