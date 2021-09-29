@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +25,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     public class CloudAdapter : CloudAdapterBase, IBotFrameworkHttpAdapter
     {
+        private readonly ConcurrentDictionary<Guid, StreamingActivityProcessor> _streamingConnections = new ConcurrentDictionary<Guid, StreamingActivityProcessor>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudAdapter"/> class. (Public cloud. No auth. For testing.)
         /// </summary>
@@ -155,6 +157,36 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
+        /// <inheritdoc/>
+        protected override ConnectorFactory GetStreamingConnectorFactory(Activity activity)
+        {
+            foreach (var connection in _streamingConnections.Values)
+            {
+                if (connection.HandlesActivity(activity))
+                {
+                    return connection.GetConnectorFactory();
+                }
+            }
+
+            throw new ApplicationException($"No streaming connection found for activity: {activity}");
+        }
+
+        /// <summary>
+        /// Creates a <see cref="StreamingConnection"/> that uses web sockets.
+        /// </summary>
+        /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        /// <returns><see cref="StreamingConnection"/> that uses web socket.</returns>
+        protected virtual StreamingConnection CreateWebSocketConnection(HttpContext httpContext, ILogger logger)
+        {
+            if (httpContext == null)
+            {
+                throw new ArgumentNullException(nameof(httpContext));
+            }
+
+            return new WebSocketStreamingConnection(httpContext, logger);
+        }
+
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
         {
             Logger.LogInformation($"Received request for web socket connect.");
@@ -166,36 +198,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var channelIdHeader = httpRequest.Headers["channelid"];
 
             var authenticationRequestResult = await BotFrameworkAuthentication.AuthenticateStreamingRequestAsync(authHeader, channelIdHeader, cancellationToken).ConfigureAwait(false);
-            
-            // TODO: From IConfiguration
-            bool useNewStreaming = true;
 
-            // TODO: Get this from IConfiguration so it acts as a circuit breaker / emergency switch to go back to the legacy implementation
-            // while we transition to the new pipelines-based implementation.
-            if (useNewStreaming)
+            var connectionId = Guid.NewGuid();
+            using (var scope = Logger.BeginScope(connectionId))
             {
-                using (var scope = Logger.BeginScope(Guid.NewGuid()))
-                {
-                    var connection = new WebSocketStreamingConnection(httpRequest.HttpContext, Logger);
-                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
-                    {
-                        // Start receiving activities on the socket
-                        // TODO: pass asp.net core lifetime for cancellation here.
-                        await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
-                    }
-                }
-            }
-            else
-            {
-                // Transition the request to a WebSocket connection
-                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                var connection = CreateWebSocketConnection(httpRequest.HttpContext, Logger);
 
-                // Tie the authentication results, the socket, the adapter and the bot together to be ready to handle any inbound activities
-                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, socket, this, bot))
+                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
                 {
                     // Start receiving activities on the socket
                     // TODO: pass asp.net core lifetime for cancellation here.
+                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                    Log.WebSocketConnectionStarted(Logger);
                     await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                    _streamingConnections.TryRemove(connectionId, out _);
+                    Log.WebSocketConnectionCompleted(Logger);
                 }
             }
         }
@@ -218,18 +235,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
             }
 
-            public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, WebSocket socket, CloudAdapter adapter, IBot bot)
-            {
-                _authenticateRequestResult = authenticateRequestResult;
-                _adapter = adapter;
-
-                // Internal reuse of the existing StreamingRequestHandler class
-                _requestHandler = new StreamingRequestHandler(bot, this, socket, _authenticateRequestResult.Audience, adapter.Logger);
-
-                // Fix up the connector factory so connector create from it will send over this connection
-                _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
-            }
-
             public StreamingActivityProcessor(AuthenticateRequestResult authenticateRequestResult, string pipeName, CloudAdapter adapter, IBot bot)
             {
                 _authenticateRequestResult = authenticateRequestResult;
@@ -240,6 +245,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 // Fix up the connector factory so connector create from it will send over this connection
                 _authenticateRequestResult.ConnectorFactory = new StreamingConnectorFactory(_requestHandler);
+            }
+
+            public bool HandlesActivity(Activity activity)
+            {
+                return _requestHandler.ServiceUrl.Equals(activity.ServiceUrl, StringComparison.OrdinalIgnoreCase) &&
+                       _requestHandler.HasConversation(activity.Conversation.Id);
+            }
+
+            public ConnectorFactory GetConnectorFactory()
+            {
+                return _authenticateRequestResult.ConnectorFactory;
             }
 
             public void Dispose()
@@ -316,6 +332,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     }
                 }
             }
+        }
+
+        private class Log
+        {
+            private static readonly Action<ILogger, Exception> _webSocketConnectionStarted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(WebSocketConnectionStarted)), "WebSocket connection started.");
+
+            private static readonly Action<ILogger, Exception> _webSocketConnectionCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(WebSocketConnectionCompleted)), "WebSocket connection completed.");
+
+            public static void WebSocketConnectionStarted(ILogger logger) => _webSocketConnectionStarted(logger, null);
+
+            public static void WebSocketConnectionCompleted(ILogger logger) => _webSocketConnectionCompleted(logger, null);
         }
     }
 }

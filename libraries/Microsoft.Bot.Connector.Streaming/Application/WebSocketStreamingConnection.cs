@@ -88,8 +88,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
 
         private async Task ListenImplAsync(Func<WebSocketTransport, Task> socketConnectFunc, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
         {
-            Log.ConnectionStarted(_logger);
-
             var duplexPipePair = DuplexPipe.CreateConnectionPair(PipeOptions.Default, PipeOptions.Default);
 
             var transport = new WebSocketTransport(duplexPipePair.Application, _logger);
@@ -109,21 +107,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
-
-            Log.ConnectionCompleted(_logger);
-        }
-
-        private class Log
-        {
-            private static readonly Action<ILogger, Exception> _connectionStarted =
-                LoggerMessage.Define(LogLevel.Information, new EventId(1, nameof(ConnectionStarted)), "WebSocket connection started.");
-
-            private static readonly Action<ILogger, Exception> _connectionCompleted =
-                LoggerMessage.Define(LogLevel.Information, new EventId(2, nameof(ConnectionCompleted)), "WebSocket connection completed.");
-
-            public static void ConnectionStarted(ILogger logger) => _connectionStarted(logger, null);
-
-            public static void ConnectionCompleted(ILogger logger) => _connectionCompleted(logger, null);
         }
     }
 }
