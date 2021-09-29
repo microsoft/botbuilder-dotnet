@@ -24,6 +24,8 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private readonly string _pipeName;
         private readonly ILogger _logger;
 
+        private readonly DisconnectedEventHandler _onServerDisconnect;
+
         private IStreamingTransportServer _server;
         private bool _serverIsConnected;
         private bool _disposedValue;
@@ -33,10 +35,12 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// </summary>
         /// <param name="socket">The <see cref="WebSocket"/> instance to use for legacy streaming connection.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public LegacyStreamingConnection(WebSocket socket, ILogger logger)
+        /// <param name="onServerDisconnect">Additional handling code to be run when the transport server is disconnected.</param>
+        public LegacyStreamingConnection(WebSocket socket, ILogger logger, DisconnectedEventHandler onServerDisconnect = null)
         {
             _socket = socket ?? throw new ArgumentNullException(nameof(socket));
             _logger = logger ?? NullLogger.Instance;
+            _onServerDisconnect = onServerDisconnect;
         }
 
         /// <summary>
@@ -44,7 +48,8 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// </summary>
         /// <param name="pipeName">The name of the named pipe.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
-        public LegacyStreamingConnection(string pipeName, ILogger logger)
+        /// <param name="onServerDisconnect">Additional handling code to be run when the transport server is disconnected.</param>
+        public LegacyStreamingConnection(string pipeName, ILogger logger, DisconnectedEventHandler onServerDisconnect = null)
         {
             if (string.IsNullOrWhiteSpace(pipeName))
             {
@@ -53,6 +58,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
 
             _pipeName = pipeName;
             _logger = logger ?? NullLogger.Instance;
+            _onServerDisconnect = onServerDisconnect;
         }
 
         /// <inheritdoc />
@@ -61,6 +67,11 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             _server = CreateStreamingTransportServer(requestHandler);
             _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
+
+            if (_onServerDisconnect != null)
+            {
+                _server.Disconnected += _onServerDisconnect;
+            }
 
             await _server.StartAsync().ConfigureAwait(false);
         }

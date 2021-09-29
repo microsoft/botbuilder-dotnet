@@ -30,36 +30,39 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             emptyClient = new HttpClient();
         }
 
-        [Fact]
-        public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
-        {
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-            var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", string.Empty);
-            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, "https://webchat.botframework.com/", client);
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
+        //{
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider("", string.Empty);
+        //    var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, "https://webchat.botframework.com/", client);
 
-            Assert.True(result.IsAuthenticated);
-        }
+        //    Assert.True(result.IsAuthenticated);
+        //}
 
-        [Fact]
-        public async void Connector_AuthHeader_BotAppIdDiffers_ShouldNotValidate()
-        {
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-            var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Connector_AuthHeader_BotAppIdDiffers_ShouldNotValidate()
+        //{
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
 
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, client));
-        }
+        //    await Assert.ThrowsAsync<UnauthorizedAccessException>(
+        //        async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, client));
+        //}
 
-        [Fact]
-        public async void Connector_AuthHeader_BotWithNoCredentials_ShouldNotValidate()
-        {
-            // token received and auth disabled
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-            var credentials = new SimpleCredentialProvider(string.Empty, string.Empty);
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Connector_AuthHeader_BotWithNoCredentials_ShouldNotValidate()
+        //{
+        //    // token received and auth disabled
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider(string.Empty, string.Empty);
 
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, client));
-        }
+        //    await Assert.ThrowsAsync<UnauthorizedAccessException>(
+        //        async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, client));
+        //}
 
         [Fact]
         public async void EmptyHeader_BotWithNoCredentials_ShouldThrow()
@@ -71,24 +74,26 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));
         }
 
-        [Fact]
-        public async void Emulator_MsaHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
-        {
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-            var credentials = new SimpleCredentialProvider("2cd87869-38a0-4182-9251-d056e8f0ac24", string.Empty);
-            var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, "https://webchat.botframework.com/", emptyClient);
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Emulator_MsaHeader_CorrectAppIdAndServiceUrl_ShouldValidate()
+        //{
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider("", string.Empty);
+        //    var result = await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, "https://webchat.botframework.com/", emptyClient);
 
-            Assert.True(result.IsAuthenticated);
-        }
+        //    Assert.True(result.IsAuthenticated);
+        //}
 
-        [Fact]
-        public async void Emulator_MsaHeader_BotAppIdDiffers_ShouldNotValidate()
-        {
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
-            var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(
-                async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));
-        }
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Emulator_MsaHeader_BotAppIdDiffers_ShouldNotValidate()
+        //{
+        //    string header = $"Bearer {await new MicrosoftAppCredentials("", "").GetTokenAsync()}";
+        //    var credentials = new SimpleCredentialProvider("00000000-0000-0000-0000-000000000000", string.Empty);
+        //    await Assert.ThrowsAsync<UnauthorizedAccessException>(
+        //        async () => await JwtTokenValidation.ValidateAuthHeader(header, credentials, new SimpleChannelProvider(), string.Empty, null, emptyClient));
+        //}
 
         /// <summary>
         /// Tests with no authentication header and makes sure the service URL is not added to the trusted list.
@@ -135,32 +140,35 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             Assert.Equal(AuthenticationConstants.AnonymousSkillAppId, JwtTokenValidation.GetAppIdFromClaims(claimsPrincipal.Claims));
         }
 
-        [Fact]
-        public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
-        {
-            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
-                "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
-                "2.30Vs3VQLKt974F",
-                GovernmentAuthenticationConstants.ChannelService);
-        }
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
+        //{
+        //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
+        //        "",         // emulator creds
+        //        "",
+        //        GovernmentAuthenticationConstants.ChannelService);
+        //}
 
-        [Fact]
-        public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithPrivateChannelService_ShouldValidate()
-        {
-            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
-                "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
-                "2.30Vs3VQLKt974F",
-                "TheChannel");
-        }
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Emulator_AuthHeader_CorrectAppIdAndServiceUrl_WithPrivateChannelService_ShouldValidate()
+        //{
+        //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
+        //        "",         // emulator creds
+        //        "",
+        //        "TheChannel");
+        //}
 
-        [Fact]
-        public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
-        {
-            await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
-                "2cd87869-38a0-4182-9251-d056e8f0ac24",         // emulator creds
-                "2.30Vs3VQLKt974F",
-                GovernmentAuthenticationConstants.ChannelService);
-        }
+        // Disabled after appid was deleted. Issue created to move tests to functional tests
+        //[Fact]
+        //public async void Connector_AuthHeader_CorrectAppIdAndServiceUrl_WithGovChannelService_ShouldValidate()
+        //{
+        //    await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(
+        //        "",         // emulator creds
+        //        "",
+        //        GovernmentAuthenticationConstants.ChannelService);
+        //}
 
         [Fact]
         public async void GovernmentChannelValidation_Succeeds()

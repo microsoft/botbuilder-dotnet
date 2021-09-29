@@ -210,6 +210,14 @@ namespace Microsoft.Bot.Connector.Authentication
                     RequireSignedTokens = true
                 };
 
+            // Add allowed token issuers from configuration (if present)
+            if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
+            {
+                var validIssuers = tokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
+                tokenValidationParameters.ValidIssuers = validIssuers;
+            }
+
             // TODO: what should the openIdMetadataUrl be here?
             var tokenExtractor = new JwtTokenExtractor(
                 _authHttpClient,
@@ -289,6 +297,14 @@ namespace Microsoft.Bot.Connector.Authentication
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true,
                 };
+
+            // Add allowed token issuers from configuration (if present)
+            if (_authConfiguration.ValidTokenIssuers != null && _authConfiguration.ValidTokenIssuers.Any())
+            {
+                var validIssuers = toBotFromEmulatorTokenValidationParameters.ValidIssuers.ToList();
+                validIssuers.AddRange(_authConfiguration.ValidTokenIssuers);
+                toBotFromEmulatorTokenValidationParameters.ValidIssuers = validIssuers;
+            }
 
             var tokenExtractor = new JwtTokenExtractor(
                     _authHttpClient,

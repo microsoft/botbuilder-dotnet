@@ -41,6 +41,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         /// Property key used when storing extracted entities in a custom event within telemetry.
         /// </summary>
         public const string EntitiesProperty = "entityResult";
+
         private const float UnknownIntentFilterScore = 0.4F;
         private static ConcurrentDictionary<string, OrchestratorDictionaryEntry> orchestratorMap = new ConcurrentDictionary<string, OrchestratorDictionaryEntry>();
         private OrchestratorDictionaryEntry _orchestrator = null;
@@ -168,9 +169,16 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
                 // if top scoring intent is less than threshold, return None
                 if (topScore < UnknownIntentFilterScore)
                 {
-                    ((List<Result>)recognizerResult.Properties[ResultProperty]).Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = "None", Type = LabelType.Intent } });
+                    // remove existing None intents
+                    for (int i = 0; i < results.Count; ++i)
+                    {
+                        if (results[i].Label.Name == NoneIntent)
+                        {
+                            results.RemoveAt(i--);
+                        }
+                    }
 
-                    // add all scores
+                    results.Insert(0, new Result() { Score = 1.0, Label = new Label() { Name = NoneIntent, Type = LabelType.Intent } });
                     foreach (var result in results)
                     {
                         recognizerResult.Intents.Add(result.Label.Name, new IntentScore()

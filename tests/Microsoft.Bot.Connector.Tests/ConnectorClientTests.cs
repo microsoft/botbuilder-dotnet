@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Connector.Tests
 {
-    public class ConnectorClientTest : BaseTest
+    public class ConnectorClientTests : BaseTest
     {
         [Fact]
         public void ConnectorClient_CustomHttpClient_UserAgentContainsAspNetVersion()

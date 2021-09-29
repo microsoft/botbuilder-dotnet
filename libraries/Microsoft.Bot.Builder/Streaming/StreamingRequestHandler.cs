@@ -18,8 +18,6 @@ using Microsoft.Bot.Connector.Streaming.Application;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Transport;
-using Microsoft.Bot.Streaming.Transport.NamedPipes;
-using Microsoft.Bot.Streaming.Transport.WebSockets;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
@@ -101,7 +99,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
             Audience = audience;
             _logger = logger ?? NullLogger.Instance;
-            _innerConnection = new LegacyStreamingConnection(socket, _logger);
+            _innerConnection = new LegacyStreamingConnection(socket, _logger, ServerDisconnected);
         }
 
         /// <summary>
@@ -146,7 +144,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             Audience = audience;
-            _innerConnection = new LegacyStreamingConnection(pipeName, _logger);
+            _innerConnection = new LegacyStreamingConnection(pipeName, _logger, ServerDisconnected);
         }
 
         /// <summary>
@@ -170,9 +168,18 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
         /// </summary>
+        /// <returns>A task that completes once the server is no longer listening.</returns>
+        public virtual async Task ListenAsync()
+        {
+            await ListenAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Begins listening for incoming requests over this StreamingRequestHandler's server.
+        /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that completes once the server is no longer listening.</returns>
-        public async Task ListenAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ListenAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Streaming request handler started listening");
             await _innerConnection.ListenAsync(this, cancellationToken).ConfigureAwait(false);
@@ -387,7 +394,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="activity">The activity to send.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         /// <returns>A task that resolves to a <see cref="ResourceResponse"/>.</returns>
-        public async Task<ResourceResponse> SendActivityAsync(Activity activity, CancellationToken cancellationToken = default)
+        public virtual async Task<ResourceResponse> SendActivityAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             string requestPath;
             if (!string.IsNullOrWhiteSpace(activity.ReplyToId) && activity.ReplyToId.Length >= 1)
@@ -459,6 +466,16 @@ namespace Microsoft.Bot.Builder.Streaming
 
                 _disposedValue = true;
             }
+        }
+
+        /// <summary>
+        /// An event handler for server disconnected events.
+        /// </summary>
+        /// <param name="sender">The source of the disconnection event.</param>
+        /// <param name="e">The arguments specified by the disconnection event.</param>
+        protected virtual void ServerDisconnected(object sender, DisconnectedEventArgs e)
+        {
+            // Subtypes can override this method to add logging when an underlying transport server is disconnected
         }
 
         /// <summary>
