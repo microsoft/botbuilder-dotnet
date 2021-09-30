@@ -111,6 +111,36 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
+        public void PayloadSender_Connect_ShouldFail()
+        {
+            var sender = new PayloadSender();
+            var transport = new MockTransportSender();
+            sender.Connect(transport);
+
+            Assert.Throws<InvalidOperationException>(() => sender.Connect(transport));
+        }
+
+        [Fact]
+        public void PayloadSender_Dispose()
+        {
+            var sender = new PayloadSender();
+
+            var header = new Header()
+            {
+                Type = PayloadTypes.Stream,
+                Id = Guid.NewGuid(),
+                PayloadLength = 55,
+                End = false,
+            };
+
+            var stream = new MemoryStream(new byte[100]);
+
+            sender.Dispose();
+
+            Assert.Throws<ObjectDisposedException>(() => sender.SendPayload(header, stream, true, (Header sentHeader) => Task.CompletedTask));
+        }
+
+        [Fact]
         public async Task HttpContentStreamDisassembler_StringContent_SendsAsFixedLength()
         {
             var sender = new PayloadSender();
@@ -193,6 +223,24 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             sender.Connect(transport);
 
             var disassembler = new ResponseDisassembler(sender, Guid.NewGuid(), StreamingResponse.OK());
+
+            await disassembler.DisassembleAsync();
+
+            Assert.Equal(2, transport.Buffers.Count);
+        }
+
+        [Fact]
+        public async Task ResponseDisassembler_With_HttpContent_SendsAsFixedLength()
+        {
+            var sender = new PayloadSender();
+            var transport = new MockTransportSender();
+            sender.Connect(transport);
+
+            var content = new StringContent("{'a': 55}", Encoding.UTF8, "application/json");
+
+            var response = StreamingResponse.CreateResponse(System.Net.HttpStatusCode.OK, content);
+
+            var disassembler = new ResponseDisassembler(sender, Guid.NewGuid(), response);
 
             await disassembler.DisassembleAsync();
 
