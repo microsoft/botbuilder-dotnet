@@ -54,5 +54,76 @@ namespace Microsoft.Bot.Streaming.UnitTests
                 writeStream.Dispose();
             }
         }
+
+        [Fact]
+        public void NamedPipeClient_ctor_With_Empty_BaseName()
+        {
+            Assert.Throws<ArgumentNullException>(() => new NamedPipeClient(string.Empty));
+        }
+
+        [Fact]
+        public async void NamedPipeClient_SendAsync_With_No_Message()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            var pipe = new NamedPipeClient(pipeName);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => pipe.SendAsync(null));
+        }
+
+        [Fact]
+        public async void NamedPipeClient_SendAsync_With_No_Connected_Client()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            var pipe = new NamedPipeClient(pipeName);
+            var message = new StreamingRequest();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => pipe.SendAsync(message));
+        }
+
+        [Fact]
+        public void NamedPipeServer_IsConnected()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var pipe = new NamedPipeServer(pipeName, requestHandler);
+
+            Assert.False(pipe.IsConnected);
+        }
+
+        [Fact]
+        public void NamedPipeServer_ctor_With_Empty_BaseName()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            Assert.Throws<ArgumentNullException>(() => new NamedPipeServer(string.Empty, requestHandler));
+        }
+
+        [Fact]
+        public void NamedPipeServer_ctor_With_No_RequestHandler()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            Assert.Throws<ArgumentNullException>(() => new NamedPipeServer(pipeName, null));
+        }
+
+        [Fact]
+        public async void NamedPipeServer_SendAsync_With_No_Message()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var pipe = new NamedPipeServer(pipeName, requestHandler);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => pipe.SendAsync(null));
+        }
+
+        [Fact]
+        public async void NamedPipeServer_SendAsync_With_No_Connected_Client()
+        {
+            var pipeName = Guid.NewGuid().ToString().Substring(0, 18);
+            var requestHandler = new StreamingRequestHandler(new MockBot(), new BotFrameworkHttpAdapter(), pipeName);
+            var pipe = new NamedPipeServer(pipeName, requestHandler);
+            var message = new StreamingRequest();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => pipe.SendAsync(message));
+        }
     }
 }
