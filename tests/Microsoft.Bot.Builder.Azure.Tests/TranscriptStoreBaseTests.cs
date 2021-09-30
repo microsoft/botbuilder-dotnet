@@ -104,6 +104,32 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         [Fact]
+        public async Task TranscriptListTestWithContinuationToken()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                var a = CreateActivity(0, 0, ConversationIds);
+                await TranscriptStore.LogActivityAsync(a);
+                var result = await TranscriptStore.ListTranscriptsAsync(a.ChannelId, a.Id);
+
+                Assert.Empty(result.Items);
+            }
+        }
+
+        [Fact]
+        public async Task TranscriptListTestWithoutContinuationToken()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                var a = CreateActivity(0, 0, ConversationIds);
+                await TranscriptStore.LogActivityAsync(a);
+                var result = await TranscriptStore.ListTranscriptsAsync(a.ChannelId);
+
+                Assert.Single(result.Items);
+            }
+        }
+
+        [Fact]
         public async Task ActivityAddSpecialCharsTest()
         {
             if (StorageEmulatorHelper.CheckEmulator())
