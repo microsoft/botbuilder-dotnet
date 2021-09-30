@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Enumerate child dialog dependencies required to be exposed for parent containers dialogset.
         /// </summary>
         /// <returns>dialog enumeration.</returns>
-        public virtual IEnumerable<Dialog> GetExternalDependencies()
+        public IEnumerable<Dialog> GetExternalDependencies()
         {
             return this.GetDependencies();
         }
