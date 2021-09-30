@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Debugging.Identifiers;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests.Identifiers
 {
     public sealed class IdentifierTests
     {
