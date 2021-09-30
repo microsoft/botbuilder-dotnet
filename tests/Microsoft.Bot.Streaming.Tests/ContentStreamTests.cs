@@ -24,8 +24,10 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var id = Guid.NewGuid();
             var assembler = new PayloadStreamAssembler(null, id);
             var c = new ContentStream(id, assembler);
+            var stream = assembler.GetPayloadAsStream();
 
             Assert.Equal(id, c.Id);
+            Assert.Equal(stream, c.Stream);
 
             c.Cancel();
         }
@@ -43,6 +45,21 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.Equal(type, c.ContentType);
 
             c.Cancel();
+        }
+
+        [Fact]
+        public void ContentStream_Length()
+        {
+            var id = Guid.NewGuid();
+            var assembler = new PayloadStreamAssembler(null, id);
+            var content = new ContentStream(id, assembler);
+            var length = 3;
+
+            content.Length = 3;
+
+            Assert.Equal(length, content.Length);
+
+            content.Cancel();
         }
     }
 }
