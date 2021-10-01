@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// Gets or sets the source map instance.
         /// </summary>
         /// <value>The <see cref="SourceMap"/> instance.</value>
-        public static ISourceMap SourceMap { get; set; } = Debugging.SourceMap.Instance;
+        public static ISourceMap SourceMap { get; set; } = Debugging.NullSourceMap.Instance;
 
         /// <summary>
         /// Extension method to get IDialogDebugger from TurnContext.

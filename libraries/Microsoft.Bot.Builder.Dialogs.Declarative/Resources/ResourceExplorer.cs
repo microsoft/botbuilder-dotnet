@@ -418,8 +418,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="sourceContext">source context to build debugger source map.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>resolved object the reference refers to.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
         public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
+        {
+            var result = await ResolveRefInternalAsync(refToken, sourceContext, cancellationToken).ConfigureAwait(false);
+            return result.Item1;
+        }
+
+        /// <summary>
+        /// Resolves a ref to the actual object.
+        /// </summary>
+        /// <param name="refToken">reference.</param>
+        /// <param name="sourceContext">source context to build debugger source map.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>resolved object the reference refers to.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
+        internal async Task<(JToken token, SourceRange range)> ResolveRefInternalAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
         {
             var refTarget = GetRefTarget(refToken);
@@ -481,7 +494,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // if we have a source range for the resource, then make it available to InterfaceConverter
             DebugSupport.SourceMap.Add(json, range);
 
-            return json;
+            return (json, range);
         }
 
         /// <summary>
@@ -736,17 +749,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     Task.Delay(1000, cancelReloadToken.Token)
                         .ContinueWith(
                             t =>
-                        {
-                            if (t.IsCanceled)
                             {
-                                return;
-                            }
+                                if (t.IsCanceled)
+                                {
+                                    return;
+                                }
 
-                            var changed = changedResources.ToArray();
-                            changedResources = new ConcurrentBag<Resource>();
-                            OnChanged(changed);
+                                var changed = changedResources.ToArray();
+                                changedResources = new ConcurrentBag<Resource>();
+                                OnChanged(changed);
 #pragma warning disable VSTHRD110 // Observe result of async calls
-                        }, TaskScheduler.Default).ContinueWith(t => t.Status, TaskScheduler.Default);
+                            }, TaskScheduler.Default).ContinueWith(t => t.Status, TaskScheduler.Default);
 #pragma warning restore VSTHRD110 // Observe result of async calls
                 }
             }
