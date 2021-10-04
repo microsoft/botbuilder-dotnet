@@ -597,6 +597,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="resources">A collection of resources to pass to the event handler.</param>
         protected virtual void OnChanged(Resource[] resources)
         {
+            _resourceTokenCache.Clear();
             Changed?.Invoke(this, resources);
         }
 
@@ -734,6 +735,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         private void ResourceProvider_Changed(object sender, IEnumerable<Resource> resources)
         {
+            _resourceTokenCache.Clear();
             if (Changed != null)
             {
                 foreach (var resource in resources)
