@@ -8,8 +8,7 @@
         "triggers",
         "generator",
         "selector",
-        "schema",
-        "dialogs"
+        "schema"
       ],
       "label": "Adaptive dialog",
       "order": [
