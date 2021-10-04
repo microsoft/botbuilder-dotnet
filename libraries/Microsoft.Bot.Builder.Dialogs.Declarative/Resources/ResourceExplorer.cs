@@ -508,9 +508,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             if (!string.IsNullOrEmpty(resource.FullName))
             {
-                if (_resourceTokenCache.TryGetValue(resource.FullName, out (JToken, SourceRange) cachedResult))
+                if (_resourceTokenCache.TryGetValue(resource.FullName, out (JToken Token, SourceRange SourceRange) cachedResult))
                 {
-                    if (cachedResult.Item2.Path == resource.FullName)
+                    if (cachedResult.SourceRange.Path == resource.FullName)
                     {
                         return await Task.FromResult(cachedResult).ConfigureAwait(false);
                     }
