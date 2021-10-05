@@ -890,7 +890,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 _json = json;
             }
 
-            public override Task<Stream> OpenStreamAsync() => throw new NotImplementedException();
+            public override Task<Stream> OpenStreamAsync() => Task.FromResult(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(_json)) as Stream);
 
             public override Task<string> ReadTextAsync() => Task.FromResult(_json);
         }
