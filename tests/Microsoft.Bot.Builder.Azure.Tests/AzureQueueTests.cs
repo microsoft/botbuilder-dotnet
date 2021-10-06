@@ -68,5 +68,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 Assert.Equal(JsonConvert.SerializeObject(cr), JsonConvert.SerializeObject(cr2));
             }
         }
+
+        [Fact]
+        public void AzureQueueStorageNullConnectionString()
+        {
+            Assert.Throws<ArgumentNullException>(() => new AzureQueueStorage(null, "test-queue"));
+        }
+
+        [Fact]
+        public void AzureQueueStorageNullQueueName()
+        {
+            Assert.Throws<ArgumentNullException>(() => new AzureQueueStorage(ConnectionString, null));
+        }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -80,6 +81,52 @@ namespace Microsoft.Bot.Streaming.UnitTests
             await ops.SendRequestAsync(Guid.NewGuid(), request);
 
             Assert.Equal(4, transport.Buffers.Count);
+        }
+
+        [Fact]
+        public async Task SendResponseAsync()
+        {
+            var sender = new PayloadSender();
+            var transport = new MockTransportSender();
+            sender.Connect(transport);
+            var ops = new SendOperations(sender);
+
+            var content = new StringContent("/a/b", Encoding.ASCII);
+            var response = StreamingResponse.CreateResponse(HttpStatusCode.OK, content);
+
+            await ops.SendResponseAsync(Guid.NewGuid(), response);
+
+            Assert.Equal(4, transport.Buffers.Count);
+        }
+
+        [Fact]
+        public async Task SendCancelAllAsync()
+        {
+            var guid = Guid.NewGuid();
+            var sender = new MockPayloadSender();
+            var ops = new SendOperations(sender);
+
+            await ops.SendCancelAllAsync(guid);
+            
+            var header = sender.SentHeaders.FirstOrDefault();
+            Assert.Equal(guid, header.Id);
+            Assert.Equal(PayloadTypes.CancelAll, header.Type);
+            Assert.True(header.End);
+        }
+
+        [Fact]
+        public async Task SendCancelStreamAsync()
+        {
+            var guid = Guid.NewGuid();
+            var sender = new MockPayloadSender();
+            var ops = new SendOperations(sender);
+
+            await ops.SendCancelStreamAsync(guid);
+
+            var header = sender.SentHeaders.FirstOrDefault();
+            Assert.Equal(guid, header.Id);
+            Assert.Equal(PayloadTypes.CancelStream, header.Type);
+            Assert.True(header.End);
         }
 
         // Creates a stream that throws if read from after Disposal. Otherwise returns a buffer of byte data

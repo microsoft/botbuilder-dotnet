@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         private readonly List<IJsonLoadObserver> observers = new List<IJsonLoadObserver>();
         private readonly SourceContext sourceContext;
         private readonly Dictionary<string, T> cachedRefDialogs = new Dictionary<string, T>();
+        private readonly Dictionary<JToken, SourceRange> rangeReferences = new Dictionary<JToken, SourceRange>(JToken.EqualityComparer);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InterfaceConverter{T}"/> class.
@@ -70,12 +71,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             using (new SourceScope(sourceContext, range))
             {
                 string refDialogName = null;
+
                 if (resourceExplorer.IsRef(jToken))
                 {
                     refDialogName = jToken.Value<string>();
 
                     // We can't do this asynchronously as the Json.NET interface is synchronous
-                    jToken = resourceExplorer.ResolveRefAsync(jToken, sourceContext).GetAwaiter().GetResult();
+                    var reference = resourceExplorer.ResolveRefInternalAsync(jToken, sourceContext).GetAwaiter().GetResult();
+                    jToken = reference.token;
+                    if (!rangeReferences.ContainsKey(jToken))
+                    {
+                        rangeReferences.Add(jToken, reference.range);
+                    }
                 }
 
                 var kind = (string)jToken["$kind"];
@@ -83,20 +90,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 if (kind == null)
                 {
                     // see if there is jObject resolver
-                    var result = ResolveUnknownObject(jToken);
-                    if (result != null)
+                    var unKnownResult = ResolveUnknownObject(jToken);
+                    if (unKnownResult != null)
                     {
-                        return result;
+                        return unKnownResult;
                     }
 
                     throw new ArgumentNullException($"$kind was not found: {JsonConvert.SerializeObject(jToken)}");
                 }
 
                 // if reference resolution made a source context available for the JToken, then add it to the context stack
-                var found = DebugSupport.SourceMap.TryGetValue(jToken, out var rangeResolved);
+                var found = rangeReferences.TryGetValue(jToken, out var rangeResolved);
                 using (var newScope = found ? new SourceScope(sourceContext, rangeResolved) : null)
                 {
                     var passTwo = false;
+
                     foreach (var observer in this.observers)
                     {
                         if (observer is CycleDetectionObserver cycDetectObserver && cycDetectObserver.CycleDetectionPass == CycleDetectionPasses.PassTwo)
@@ -123,6 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                         if (passTwo && refDialogName != null)
                         {
                             cachedRefDialogs[refDialogName] = result;
+                            this.resourceExplorer.UpdateResourceTokenCache(refDialogName, tokenToBuild, range);
                         }
                     }
 

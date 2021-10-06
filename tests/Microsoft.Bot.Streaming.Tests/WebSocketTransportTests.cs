@@ -60,6 +60,44 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
+        public void WebSocketServer_ctor_With_No_Socket()
+        {
+            var requestHandlerMock = new Mock<RequestHandler>();
+
+            Assert.Throws<ArgumentNullException>(() => new WebSocketServer(null, requestHandlerMock.Object));
+        }
+
+        [Fact]
+        public void WebSocketServer_ctor_With_No_RequestHandler()
+        {
+            var requestHandlerMock = new Mock<RequestHandler>();
+            var socketMock = new Mock<WebSocket>();
+
+            Assert.Throws<ArgumentNullException>(() => new WebSocketServer(socketMock.Object, null));
+        }
+
+        [Fact]
+        public async void WebSocketServer_SendAsync_With_No_Message()
+        {
+            var socketMock = new Mock<WebSocket>();
+            var requestHandlerMock = new Mock<RequestHandler>();
+            var server = new WebSocketServer(socketMock.Object, requestHandlerMock.Object);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => server.SendAsync(null));
+        }
+
+        [Fact]
+        public async void WebSocketServer_SendAsync_With_No_Connected_Client()
+        {
+            var socketMock = new Mock<WebSocket>();
+            var requestHandlerMock = new Mock<RequestHandler>();
+            var server = new WebSocketServer(socketMock.Object, requestHandlerMock.Object);
+            var message = new StreamingRequest();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => server.SendAsync(message));
+        }
+
+        [Fact]
         public async Task WebSocketClient_ThrowsOnEmptyUrl()
         {
             Exception result = null;
@@ -74,6 +112,23 @@ namespace Microsoft.Bot.Streaming.UnitTests
             }
 
             Assert.IsType<ArgumentNullException>(result);
+        }
+
+        [Fact]
+        public async void WebSocketClient_SendAsync_With_No_Message()
+        {
+            var client = new WebSocketClient("url");
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.SendAsync(null));
+        }
+
+        [Fact]
+        public async void WebSocketClient_SendAsync_With_No_Connected_Client()
+        {
+            var client = new WebSocketClient("url");
+            var message = new StreamingRequest();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => client.SendAsync(message));
         }
 
         [Fact]

@@ -35,5 +35,17 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             Assert.Equal("done", result);
         }
+
+        [Fact]
+        public void PayloadReceiver_Connect_ShouldFail()
+        {
+            var buffer = new byte[20];
+
+            var transport = new MockTransportReceiver(buffer);
+            var receiver = new PayloadReceiver();
+            receiver.Connect(transport);
+
+            Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
+        }
     }
 }

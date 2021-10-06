@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming.Payloads;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -162,6 +165,26 @@ namespace Microsoft.Bot.Streaming.UnitTests
         }
 
         [Fact]
+        public void ResponseExtensions_SetBodyObject_Null_Does_Not_Throw()
+        {
+            var r = new StreamingResponse();
+            Exception ex = null;
+
+            try
+            {
+                r.SetBody(null as object);
+            }
+            catch (Exception caughtEx)
+            {
+                ex = caughtEx;
+            }
+            finally
+            {
+                Assert.Null(ex);
+            }
+        }
+
+        [Fact]
         public async Task ResponseExtensions_SetBody_Success()
         {
             var r = new StreamingResponse();
@@ -206,6 +229,59 @@ namespace Microsoft.Bot.Streaming.UnitTests
             var result = r.ReadBodyAsString();
 
             Assert.Equal(string.Empty, result);
+        }
+
+        [Fact]
+
+        public void ReceiveExtensions_ReadBodyAsJson_Streams()
+        {
+            var activity = new Activity { Type = ActivityTypes.Message };
+            var stringInput = JsonConvert.SerializeObject(activity);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(stringInput));
+            var mockContentStream = new Mock<IContentStream>();
+            mockContentStream.Setup(e => e.Stream).Returns(stream);
+
+            var response = new ReceiveResponse
+            {
+                Streams = new List<IContentStream> { mockContentStream.Object }
+            };
+            var result = response.ReadBodyAsJson<Activity>();
+
+            Assert.NotNull(result);
+            Assert.Equal(activity.Type, result.Type);
+        }
+
+        [Fact]
+
+        public void ReceiveExtensions_ReadBodyAsJson_Streams_Zero()
+        {
+            var response = new ReceiveResponse
+            {
+                StatusCode = 3,
+            };
+            var result = response.ReadBodyAsJson<dynamic>();
+
+            Assert.Null(result);
+            Assert.Equal(3, response.StatusCode);
+        }
+
+        [Fact]
+
+        public void ReceiveExtensions_ReadBodyAsString_Streams()
+        {
+            const string stringInput = "message";
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(stringInput));
+            var mockContentStream = new Mock<IContentStream>();
+            mockContentStream.Setup(e => e.Stream).Returns(stream);
+
+            var response = new ReceiveResponse
+            {
+                Streams = new List<IContentStream> { mockContentStream.Object }
+            };
+            var result = response.ReadBodyAsString();
+
+            Assert.NotNull(result);
+            Assert.Equal(stringInput, result);
         }
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Xunit;
 using Xunit.Abstractions;
@@ -70,7 +71,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     var a = CreateActivity(0, 0, LongId);
 
                     await TranscriptStore.LogActivityAsync(a);
-                    
+
                     throw new XunitException("Should have thrown an error");
                 }
                 catch (StorageException)
@@ -88,6 +89,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 Assert.Throws<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
 
+                Assert.Throws<ArgumentNullException>(() => new AzureBlobTranscriptStore(new CloudStorageAccount(new StorageCredentials(), false), string.Empty));
+
                 Assert.Throws<ArgumentNullException>(() =>
                     new AzureBlobTranscriptStore((CloudStorageAccount)null, ContainerName));
 
@@ -98,6 +101,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     new AzureBlobTranscriptStore((CloudStorageAccount)null, null));
 
                 Assert.Throws<ArgumentNullException>(() => new AzureBlobTranscriptStore((string)null, null));
+            }
+        }
+
+        // These tests require Azure Storage Emulator v5.7
+        [Fact]
+        public async void ListTranscriptsAsyncWithEmptyChannelIdShouldFail()
+        {
+            if (StorageEmulatorHelper.CheckEmulator())
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>(() => TranscriptStore.ListTranscriptsAsync(string.Empty));
             }
         }
     }
