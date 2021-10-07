@@ -52,5 +52,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>True if the <see cref="OAuthPrompt"/> should automatically end upon receiving
         /// an invalid message.</value>
         public bool EndOnInvalidMessage { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional boolean value to force the display of a Sign In link overriding
+        /// the default behavior.
+        /// </summary>
+        /// <value>True to display the SignInLink.</value>
+        public bool? ShowSignInLink { get; set; }
     }
 }
