@@ -581,6 +581,108 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task OAuthPromptWithShowSignInLinkSettingOverridesDefaultChannelBehavior()
+        {
+            var channelId = Channels.Test; //Default ChannelRequiresSingInLink() returns false
+
+            var oAuthPromptSettings = new OAuthPromptSettings();
+            oAuthPromptSettings.ShowSignInLink = true; //Value overrides default behavior
+
+            TestAdapter adapter = null;
+            BotCallbackHandler botCallbackHandler = null;
+            Activity initialActivity = null;
+            PrepareTest(channelId, ref adapter, ref oAuthPromptSettings, ref botCallbackHandler, ref initialActivity);
+
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send(initialActivity)
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
+                    var cardAction = oAuthCard.Buttons[0];
+                    Assert.NotNull(cardAction.Value); //verify the link is not null
+                })
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task OAuthPromptWithoutShowSignInLinkSettingFollowsDefaultChannelBehavior_NoLink()
+        {
+            var channelId = Channels.Test; //Default ChannelRequiresSingInLink() returns false
+
+            var oAuthPromptSettings = new OAuthPromptSettings(); // settings do not include ShowSignInLink
+
+            TestAdapter adapter = null;
+            BotCallbackHandler botCallbackHandler = null;
+            Activity initialActivity = null;
+            PrepareTest(channelId, ref adapter, ref oAuthPromptSettings, ref botCallbackHandler, ref initialActivity);
+
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send(initialActivity)
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
+                    var cardAction = oAuthCard.Buttons[0];
+                    Assert.Null(cardAction.Value); //verify the link is null
+                })
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task OAuthPromptWithShowSignInLinkSettingOverridesDefaultChannelBehavior_NoLink()
+        {
+            var channelId = Channels.Msteams; //Default ChannelRequiresSingInLink() returns true
+
+            var oAuthPromptSettings = new OAuthPromptSettings();
+            oAuthPromptSettings.ShowSignInLink = false; //Value overrides default behavior
+
+            TestAdapter adapter = null;
+            BotCallbackHandler botCallbackHandler = null;
+            Activity initialActivity = null;
+            PrepareTest(channelId, ref adapter, ref oAuthPromptSettings, ref botCallbackHandler, ref initialActivity);
+
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send(initialActivity)
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
+                    var cardAction = oAuthCard.Buttons[0];
+                    Assert.Null(cardAction.Value); //verify the link is null
+                })
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task OAuthPromptWithoutShowSignInLinkSettingFollowsDefaultChannelBehavior_ShowLink()
+        {
+            var channelId = Channels.Msteams; //Default ChannelRequiresSingInLink() returns true
+
+            var oAuthPromptSettings = new OAuthPromptSettings(); // settings do not include ShowSignInLink
+
+            TestAdapter adapter = null;
+            BotCallbackHandler botCallbackHandler = null;
+            Activity initialActivity = null;
+            PrepareTest(channelId, ref adapter, ref oAuthPromptSettings, ref botCallbackHandler, ref initialActivity);
+
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send(initialActivity)
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
+                    var cardAction = oAuthCard.Buttons[0];
+                    Assert.NotNull(cardAction.Value); //verify the link is not null
+                })
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task TestAdapterTokenExchange()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -867,6 +969,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
 
             return eventActivity;
+        }
+
+        private void PrepareTest(string channelId, ref TestAdapter adapter, ref OAuthPromptSettings oAuthPromptSettings, ref BotCallbackHandler botCallbackHandler, ref Activity initialActivity)
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", oAuthPromptSettings));
+
+            botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                }
+            };
+
+            initialActivity = new Activity()
+            {
+                ChannelId = channelId,
+                Text = "hello"
+            };
         }
     }
 }
