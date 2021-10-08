@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private readonly ConcurrentDictionary<Type, List<string>> typeToKinds = new ConcurrentDictionary<Type, List<string>>();
         private readonly List<JsonConverterFactory> converterFactories = new List<JsonConverterFactory>();
         private readonly ResourceExplorerOptions options;
+        private readonly ConcurrentDictionary<string, (JToken, SourceRange)> _resourceTokenCache = new ConcurrentDictionary<string, (JToken, SourceRange)>();
 
         private List<ResourceProvider> resourceProviders = new List<ResourceProvider>();
         private List<IComponentDeclarativeTypes> declarativeTypes;
@@ -417,8 +418,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="sourceContext">source context to build debugger source map.</param>
         /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
         /// <returns>resolved object the reference refers to.</returns>
-#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
         public async Task<JToken> ResolveRefAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
+        {
+            var result = await ResolveRefInternalAsync(refToken, sourceContext, cancellationToken).ConfigureAwait(false);
+            return result.Item1;
+        }
+
+        /// <summary>
+        /// Resolves a ref to the actual object.
+        /// </summary>
+        /// <param name="refToken">reference.</param>
+        /// <param name="sourceContext">source context to build debugger source map.</param>
+        /// <param name="cancellationToken">the <see cref="CancellationToken"/> for the task.</param>
+        /// <returns>resolved object the reference refers to.</returns>
+#pragma warning disable CA1801 // Review unused parameters (we can't remove cancellationToken without breaking binary compat)
+        internal async Task<(JToken token, SourceRange range)> ResolveRefInternalAsync(JToken refToken, SourceContext sourceContext, CancellationToken cancellationToken = default)
 #pragma warning restore CA1801 // Review unused parameters
         {
             var refTarget = GetRefTarget(refToken);
@@ -472,10 +486,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 }
             }
 
+            if (!string.IsNullOrEmpty(resource.FullName) && range.Path == resource.FullName)
+            {
+                _resourceTokenCache.AddOrUpdate(resource.FullName, (json, range), (key, oldValue) => (json, range));
+            }
+
             // if we have a source range for the resource, then make it available to InterfaceConverter
             DebugSupport.SourceMap.Add(json, range);
 
-            return json;
+            return (json, range);
         }
 
         /// <summary>
@@ -487,8 +506,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <returns>The resulting <see cref="JToken"/> and <see cref="SourceRange"/> for the requested resource.</returns>
         internal async Task<(JToken, SourceRange)> ReadTokenRangeAsync(Resource resource, SourceContext sourceContext, bool advanceJsonReader = false)
         {
-            var text = await resource.ReadTextAsync().ConfigureAwait(false);
-            using (var readerText = new StringReader(text))
+            if (!string.IsNullOrEmpty(resource.FullName))
+            {
+                if (_resourceTokenCache.TryGetValue(resource.FullName, out (JToken Token, SourceRange SourceRange) cachedResult))
+                {
+                    if (cachedResult.SourceRange.Path == resource.FullName)
+                    {
+                        return await Task.FromResult(cachedResult).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            using (var readerText = new StreamReader(await resource.OpenStreamAsync().ConfigureAwait(false)))
             using (var readerJson = new JsonTextReader(readerText))
             {
                 if (advanceJsonReader)
@@ -504,6 +533,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 AutoAssignId(resource, token, sourceContext, range);
                 range.Path = resource.FullName ?? resource.Id;
                 return (token, range);
+            }
+        }
+
+        internal void UpdateResourceTokenCache(string refToken, JToken token, SourceRange range)
+        {
+            if (string.IsNullOrEmpty(refToken))
+            {
+                throw new InvalidOperationException($"{refToken} is missing.");
+            }
+
+            // see if there is a dialog file for this resource.id
+            if (!this.TryGetResource($"{refToken}.dialog", out Resource resource))
+            {
+                // if not, try loading the resource directly.
+                if (!this.TryGetResource(refToken, out resource))
+                {
+                    throw new FileNotFoundException($"Failed to find resource named {refToken}.dialog while updating the Resource Explorer Cache.");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(resource.FullName))
+            {
+                _resourceTokenCache.AddOrUpdate(resource.FullName, (token, range), (key, oldValue) => (token, range));
             }
         }
 
@@ -545,6 +597,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <param name="resources">A collection of resources to pass to the event handler.</param>
         protected virtual void OnChanged(Resource[] resources)
         {
+            _resourceTokenCache.Clear();
             Changed?.Invoke(this, resources);
         }
 
@@ -682,6 +735,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         private void ResourceProvider_Changed(object sender, IEnumerable<Resource> resources)
         {
+            _resourceTokenCache.Clear();
             if (Changed != null)
             {
                 foreach (var resource in resources)
@@ -697,17 +751,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     Task.Delay(1000, cancelReloadToken.Token)
                         .ContinueWith(
                             t =>
-                        {
-                            if (t.IsCanceled)
                             {
-                                return;
-                            }
+                                if (t.IsCanceled)
+                                {
+                                    return;
+                                }
 
-                            var changed = changedResources.ToArray();
-                            changedResources = new ConcurrentBag<Resource>();
-                            OnChanged(changed);
+                                var changed = changedResources.ToArray();
+                                changedResources = new ConcurrentBag<Resource>();
+                                OnChanged(changed);
 #pragma warning disable VSTHRD110 // Observe result of async calls
-                        }, TaskScheduler.Default).ContinueWith(t => t.Status, TaskScheduler.Default);
+                            }, TaskScheduler.Default).ContinueWith(t => t.Status, TaskScheduler.Default);
 #pragma warning restore VSTHRD110 // Observe result of async calls
                 }
             }

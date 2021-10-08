@@ -327,6 +327,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [Fact]
         public async Task ResourceExplorer_LoadType_VerifyTokenRangeAndIdAssigned()
         {
+            DebugSupport.SourceMap = SourceMap.Instance;
+            
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             const string resourcesFolder = "resources";
             const string resourceId = "test.dialog";
@@ -357,6 +359,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [Fact]
         public async Task ResourceExplorer_LoadType_VerifyTokenRangeAndIdHonored()
         {
+            DebugSupport.SourceMap = SourceMap.Instance;
+
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             const string resourcesFolder = "resources";
             const string resourceId = "testWithId.dialog";
