@@ -111,8 +111,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
 
             _cancellationSource = new CancellationTokenSource();
 
-            //_client = new WebSocketClient(url, new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("WebSocketClient"));
-            _client = new WebSocketClient("wss://localhost:44360/api/messages", new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("WebSocketClient"));
+            _client = new WebSocketClient(url, new ConsoleRequestHandler(), logger: loggerFactory.CreateLogger("WebSocketClient"));
             _client.Disconnected += Client_Disconnected;
             _clientTask = _client.ConnectAsync(headers, _cancellationSource.Token);
         }

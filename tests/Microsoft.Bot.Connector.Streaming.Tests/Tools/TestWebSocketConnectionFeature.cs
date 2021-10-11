@@ -159,9 +159,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Features
                     }
 
                     var length = _internalBuffer.Buffer.Length;
-                    if (buffer.Count - buffer.Offset < _internalBuffer.Buffer.Length)
+                    if (buffer.Count < _internalBuffer.Buffer.Length)
                     {
-                        length = Math.Min(buffer.Count - buffer.Offset, _internalBuffer.Buffer.Length);
+                        length = Math.Min(buffer.Count, _internalBuffer.Buffer.Length);
                         Buffer.BlockCopy(_internalBuffer.Buffer, 0, buffer.Array, buffer.Offset, length);
                     }
                     else

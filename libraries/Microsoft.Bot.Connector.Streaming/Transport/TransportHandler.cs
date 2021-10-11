@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     await input.CompleteAsync(ex).ConfigureAwait(false);
 
                     aborted = true;
-                        
+
                     return;
                 }
                 finally
@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             };
 
             await WriteAsync(
-                header: requestHeader, 
+                header: requestHeader,
                 writeFunc: async pipeWriter => await pipeWriter.WriteAsync(requestBytes).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
@@ -240,7 +240,14 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 return false;
             }
 
-            var headerBuffer = buffer.Slice(0, Math.Min(TransportConstants.MaxHeaderLength, buffer.Length));
+            var length = Math.Min(TransportConstants.MaxHeaderLength, buffer.Length);
+            var headerBuffer = buffer.Slice(0, length);
+
+            if (headerBuffer.Length != TransportConstants.MaxHeaderLength)
+            {
+                header = null;
+                return false;
+            }
 
             // Optimization opportunity: instead of headerBuffer.ToArray() which does a 48 byte heap allocation,
             // do a best effort attempt to use MemoryMashal.TryGetArray. Since it has a lot of corner cases, 
@@ -254,16 +261,14 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
         private async Task WriteAsync(Header header, Func<PipeWriter, Task> writeFunc, CancellationToken cancellationToken = default)
         {
+            var output = _transport.Output;
+            Log.SendingPayload(_logger, header);
+
             if (await _writeLock.WaitAsync(_semaphoreTimeout, cancellationToken).ConfigureAwait(false))
             {
                 try
                 {
                     HeaderSerializer.Serialize(header, _sendHeaderBuffer, 0);
-
-                    Log.SendingPayload(_logger, header);
-
-                    var output = _transport.Output;
-
                     await output.WriteAsync(_sendHeaderBuffer).ConfigureAwait(false);
                     await writeFunc(output).ConfigureAwait(false);
                 }
@@ -281,16 +286,16 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
         private static class Log
         {
             private static readonly Action<ILogger, Header, Exception> _payloadReceived =
-                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(1, nameof(PayloadReceived)), "Payload received. Header: {Header}.");
+                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(1, nameof(PayloadReceived)), "Payload received. Header: ID {Header.Id} Type {Header.Type} Payload length:{Header.PayloadLength}. End :{Header.End}.");
 
             private static readonly Action<ILogger, Exception> _readFrameFailed =
                 LoggerMessage.Define(LogLevel.Error, new EventId(2, nameof(ReadFrameFailed)), "Failed to read frame from transport.");
 
             private static readonly Action<ILogger, Header, Exception> _payloadSending =
-                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(3, nameof(SendingPayload)), "Sending Payload. Header: {Header}.");
+                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(3, nameof(SendingPayload)), "Sending Payload. Header: ID {Header.Id} Type {Header.Type} Payload length:{Header.PayloadLength}. End :{Header.End}.");
 
             private static readonly Action<ILogger, Header, Exception> _semaphoreTimeOut =
-                LoggerMessage.Define<Header>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: {Header}.");
+                LoggerMessage.Define<Header>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: ID {Header.Id} Type {Header.Type} Payload length:{Header.PayloadLength}. End :{Header.End}.");
 
             public static void PayloadReceived(ILogger logger, Header header) => _payloadReceived(logger, header, null);
 

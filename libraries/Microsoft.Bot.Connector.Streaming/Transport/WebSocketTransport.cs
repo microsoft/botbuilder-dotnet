@@ -169,7 +169,8 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
                     var memory = _application.Output.GetMemory();
 
-                    var receiveResult = await socket.ReceiveAsync(GetArraySegment(memory), cancellationToken).ConfigureAwait(false);
+                    var arraySegment = GetArraySegment(memory);
+                    var receiveResult = await socket.ReceiveAsync(arraySegment, cancellationToken).ConfigureAwait(false);
 
                     // Need to check again for netcoreapp3.0 and later because a close can happen between a 0-byte read and the actual read
                     if (receiveResult.MessageType == WebSocketMessageType.Close)

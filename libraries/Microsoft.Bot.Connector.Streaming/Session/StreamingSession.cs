@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Streaming.Payloads;
@@ -19,20 +20,28 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace Microsoft.Bot.Connector.Streaming.Session
 {
     internal class StreamingSession
     {
-        private readonly ConcurrentDictionary<Guid, StreamDefinition> _streamDefinitions = new ConcurrentDictionary<Guid, StreamDefinition>();
-        private readonly ConcurrentDictionary<Guid, ReceiveRequest> _requests = new ConcurrentDictionary<Guid, ReceiveRequest>();
-        private readonly ConcurrentDictionary<Guid, ReceiveResponse> _responses = new ConcurrentDictionary<Guid, ReceiveResponse>();
+        // Utf byte order mark constant as defined
+        // Dotnet runtime: https://github.com/dotnet/runtime/blob/main/src/libraries/System.Text.Json/src/System/Text/Json/JsonConstants.cs#L35
+        // Unicode.org spec: https://www.unicode.org/faq/utf_bom.html#bom5
+        private static byte[] _utf8Bom = { 0xEF, 0xBB, 0xBF };
+
+        private readonly Dictionary<Guid, StreamDefinition> _streamDefinitions = new Dictionary<Guid, StreamDefinition>();
+        private readonly Dictionary<Guid, ReceiveRequest> _requests = new Dictionary<Guid, ReceiveRequest>();
+        private readonly Dictionary<Guid, ReceiveResponse> _responses = new Dictionary<Guid, ReceiveResponse>();
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>> _pendingResponses = new ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>>();
 
         private readonly RequestHandler _receiver;
         private readonly TransportHandler _sender;
 
         private readonly ILogger _logger;
+
+        private readonly object _receiveSync = new object();
 
         public StreamingSession(RequestHandler receiver, TransportHandler sender, ILogger logger)
         {
@@ -138,18 +147,21 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
             Log.PayloadReceived(_logger, header);
 
-            _requests.TryAdd(header.Id, request);
+            lock (_receiveSync)
+            {
+                _requests.Add(header.Id, request);
 
-            if (request.Streams.Any())
-            {
-                foreach (var streamDefinition in request.Streams)
+                if (request.Streams.Any())
                 {
-                    _streamDefinitions.TryAdd(streamDefinition.Id, streamDefinition as StreamDefinition);
+                    foreach (var streamDefinition in request.Streams)
+                    {
+                        _streamDefinitions.Add(streamDefinition.Id, streamDefinition as StreamDefinition);
+                    }
                 }
-            }
-            else
-            {
-                ProcessRequest(header.Id, request);
+                else
+                {
+                    ProcessRequest(header.Id, request);
+                }
             }
         }
 
@@ -172,20 +184,24 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
             Log.PayloadReceived(_logger, header);
 
-            if (response.Streams.Count == 0)
+            lock (_receiveSync)
             {
-                if (_pendingResponses.TryRemove(header.Id, out TaskCompletionSource<ReceiveResponse> responseTask))
+                if (!response.Streams.Any())
                 {
-                    responseTask.SetResult(response);
+                    if (_pendingResponses.TryGetValue(header.Id, out TaskCompletionSource<ReceiveResponse> responseTask))
+                    {
+                        responseTask.SetResult(response);
+                        _pendingResponses.TryRemove(header.Id, out TaskCompletionSource<ReceiveResponse> removedResponse);
+                    }
                 }
-            }
-            else
-            {
-                _responses.TryAdd(header.Id, response);
-
-                foreach (var streamDefinition in response.Streams)
+                else
                 {
-                    _streamDefinitions.TryAdd(streamDefinition.Id, streamDefinition as StreamDefinition);
+                    _responses.Add(header.Id, response);
+
+                    foreach (var streamDefinition in response.Streams)
+                    {
+                        _streamDefinitions.Add(streamDefinition.Id, streamDefinition as StreamDefinition);
+                    }
                 }
             }
         }
@@ -243,28 +259,34 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
                         if (streams != null)
                         {
-                            // Have we completed all the streams we expect for this request?
-                            bool allStreamsDone = streams.All(s => s is StreamDefinition streamDef && streamDef.Complete);
-
-                            // If we received all the streams, then it's time to pass this request to the request handler!
-                            // For example, if this request is a send activity, the request handler will deserialize the first stream
-                            // into an activity and pass to the adapter.
-                            if (allStreamsDone)
+                            lock (_receiveSync)
                             {
-                                if (streamDef.PayloadType == PayloadTypes.Request)
+                                // Have we completed all the streams we expect for this request?
+                                bool allStreamsDone = streams.All(s => s is StreamDefinition streamDef && streamDef.Complete);
+
+                                // If we received all the streams, then it's time to pass this request to the request handler!
+                                // For example, if this request is a send activity, the request handler will deserialize the first stream
+                                // into an activity and pass to the adapter.
+                                if (allStreamsDone)
                                 {
-                                    if (_requests.TryRemove(streamDef.PayloadId, out ReceiveRequest request))
+                                    if (streamDef.PayloadType == PayloadTypes.Request)
                                     {
-                                        ProcessRequest(streamDef.PayloadId, request);
-                                    }
-                                }
-                                else if (streamDef.PayloadType == PayloadTypes.Response)
-                                {
-                                    if (_responses.TryRemove(streamDef.PayloadId, out ReceiveResponse response))
-                                    {
-                                        if (_pendingResponses.TryRemove(streamDef.PayloadId, out TaskCompletionSource<ReceiveResponse> responseTask))
+                                        if (_requests.TryGetValue(streamDef.PayloadId, out ReceiveRequest request))
                                         {
-                                            responseTask.SetResult(response);
+                                            ProcessRequest(streamDef.PayloadId, request);
+                                            _requests.Remove(streamDef.PayloadId);
+                                        }
+                                    }
+                                    else if (streamDef.PayloadType == PayloadTypes.Response)
+                                    {
+                                        if (_responses.TryGetValue(streamDef.PayloadId, out ReceiveResponse response))
+                                        {
+                                            if (_pendingResponses.TryGetValue(streamDef.PayloadId, out TaskCompletionSource<ReceiveResponse> responseTask))
+                                            {
+                                                responseTask.SetResult(response);
+                                                _responses.Remove(streamDef.PayloadId);
+                                                _pendingResponses.TryRemove(streamDef.PayloadId, out TaskCompletionSource<ReceiveResponse> removedResponse);
+                                            }
                                         }
                                     }
                                 }
@@ -329,7 +351,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 var streamingResponse = await _receiver.ProcessRequestAsync(request, null).ConfigureAwait(false);
                 await SendResponseAsync(new Header() { Id = id, Type = PayloadTypes.Response }, streamingResponse, CancellationToken.None).ConfigureAwait(false);
 
-                request.Streams.ForEach(s => _streamDefinitions.TryRemove(s.Id, out StreamDefinition removedStream));
+                request.Streams.ForEach(s => _streamDefinitions.Remove(s.Id));
             });
         }
 
@@ -402,20 +424,29 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
             private static T DeserializeTo<T>(ReadOnlySequence<byte> payload)
             {
-                // Perf note: ToArray() allocates a buffer in the heap and makes a copy. However, the request payload itself 
-                // constrained in terms of size so we can do ToArray(). For Stream payloads we do not do allocations given that 
-                // size is more unbounded.
-                // When we move out of 2.1 we could use the Span<byte> overload of GetString that uses the span in the stack avoiding heap
-                // allocations alltogether. Another alternative is to use the Utf8JsonTextReader from the native json library which takes 
-                // stack-allocated bytes instead of json.net.
-                using (var stream = new MemoryStream(payload.ToArray()))
-                using (var streamReader = new StreamReader(stream, Encoding.UTF8))
-                using (var jsonReader = new JsonTextReader(streamReader))
+                // The payload here will likely have a UTF-8 byte-order-mark (BOM). 
+                // The JsonSerializer and UtfJsonReader explicitly expect no BOM in this overload that takes a ReadOnlySequence<byte>.
+                // With that in mind, we check for a UTF-8 BOM and remove it if present. The main reason to call this specific flow instead of
+                // the stream version or using Json.Net is that the ReadOnlySequence<T> API allows us to do a no-copy deserialization.
+                // The ReadOnlySequence was allocated from the memory pool by the transport layer and gets sent all the way here without copies.
+
+                // Check for UTF-8 BOM and remove if present: https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-use-dom-utf8jsonreader-utf8jsonwriter?pivots=dotnet-5-0#filter-data-using-utf8jsonreader 
+                var potentialBomSequence = payload.Slice(payload.Start, _utf8Bom.Length);
+                var potentialBomSpan = potentialBomSequence.IsSingleSegment
+                    ? potentialBomSequence.First.Span
+                    : potentialBomSequence.ToArray();
+
+                ReadOnlySequence<byte> mainPayload = payload;
+
+                if (potentialBomSpan.StartsWith(_utf8Bom))
                 {
-                    // We don't just deserialize the utf8 string because the legacy client wraps the json with double quotes. This  can
-                    // be optimized but for now solves the issue of supporting new and legacy clients
-                    return JsonSerializer.Create(SerializationSettings.DefaultDeserializationSettings).Deserialize<T>(jsonReader);
-                }       
+                    mainPayload = payload.Slice(_utf8Bom.Length);
+                }
+
+                var reader = new Utf8JsonReader(mainPayload);
+                return System.Text.Json.JsonSerializer.Deserialize<T>(
+                    ref reader,
+                    new JsonSerializerOptions() { IgnoreNullValues = true, PropertyNameCaseInsensitive = true });
             }
 
             private static void CreatePlaceholderStreams(Header header, List<IContentStream> placeholders, List<StreamDescription> streamInfo)
