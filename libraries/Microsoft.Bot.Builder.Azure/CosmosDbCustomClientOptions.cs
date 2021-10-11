@@ -5,6 +5,7 @@ namespace Microsoft.Bot.Builder.Azure
     /// <summary>
     /// CosmosDB options for custom client.
     /// </summary>
+    [Obsolete("This class is deprecated. Please use CosmosDbPartitionedStorageOptions with CosmosDbPartitionedStorage instead.", false)]
     public class CosmosDbCustomClientOptions
     {
         /// <summary>
