@@ -43,9 +43,5 @@
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />        
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector.Streaming\Microsoft.Bot.Connector.Streaming.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Application\" />
-  </ItemGroup>
 </Project>
 

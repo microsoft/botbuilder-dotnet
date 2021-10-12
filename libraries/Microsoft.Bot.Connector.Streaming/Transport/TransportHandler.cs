@@ -285,25 +285,25 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
         private static class Log
         {
-            private static readonly Action<ILogger, Header, Exception> _payloadReceived =
-                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(1, nameof(PayloadReceived)), "Payload received. Header: ID {Header.Id} Type {Header.Type} Payload length:{Header.PayloadLength}. End :{Header.End}.");
+            private static readonly Action<ILogger, Guid, char, int, bool, Exception> _payloadReceived =
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(1, nameof(PayloadReceived)), "Payload received. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
 
             private static readonly Action<ILogger, Exception> _readFrameFailed =
                 LoggerMessage.Define(LogLevel.Error, new EventId(2, nameof(ReadFrameFailed)), "Failed to read frame from transport.");
 
-            private static readonly Action<ILogger, Header, Exception> _payloadSending =
-                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(3, nameof(SendingPayload)), "Sending Payload. Header: ID {Header.Id} Type {Header.Type} Payload length:{Header.PayloadLength}. End :{Header.End}.");
+            private static readonly Action<ILogger, Guid, char, int, bool, Exception> _payloadSending =
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(3, nameof(SendingPayload)), "Sending Payload. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
 
-            private static readonly Action<ILogger, Header, Exception> _semaphoreTimeOut =
-                LoggerMessage.Define<Header>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: ID {Header.Id} Type {Header.Type} Payload length:{Header.PayloadLength}. End :{Header.End}.");
+            private static readonly Action<ILogger, Guid, char, int, bool, Exception> _semaphoreTimeOut =
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
 
-            public static void PayloadReceived(ILogger logger, Header header) => _payloadReceived(logger, header, null);
+            public static void PayloadReceived(ILogger logger, Header header) => _payloadReceived(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
 
             public static void ReadFrameFailed(ILogger logger, Exception ex) => _readFrameFailed(logger, ex);
 
-            public static void SendingPayload(ILogger logger, Header header) => _payloadSending(logger, header, null);
+            public static void SendingPayload(ILogger logger, Header header) => _payloadSending(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
 
-            public static void SemaphoreTimeOut(ILogger logger, Header header) => _semaphoreTimeOut(logger, header, null);
+            public static void SemaphoreTimeOut(ILogger logger, Header header) => _semaphoreTimeOut(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
         }
     }
 }

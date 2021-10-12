@@ -84,7 +84,6 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         [Theory]
         [InlineData(32, 1024)]
         [InlineData(4, 1000)]
-        [InlineData(4, 10000)]
         [InlineData(4, 100)]
         [InlineData(8, 100)]
         [InlineData(16, 100)]
