@@ -23,6 +23,7 @@ variables:
   PreviewPackageVersion: 5.0.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   ReleasePackageVersion: 5.0.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
   runCodesignValidationInjection: false # Disables unnecessary CodeSign Validation step
+  skipComponentGovernanceDetection: true
 #  Not used: DotNetCoverallsToken: define this in Azure
 #  Not used: GitHubCommentApiKey: define this in Azure
 #  Not used: ApiCompatExcludeClasses: (optional) define this in Azure
