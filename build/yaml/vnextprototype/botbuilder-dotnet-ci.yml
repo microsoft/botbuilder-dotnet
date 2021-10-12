@@ -17,7 +17,7 @@ pr: none # pr trigger is set in ADO
 variables:
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
-  IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
+  IsBuildServer: true # This is consumed by tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\SchemaTestsFixture.cs.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 5.0.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.

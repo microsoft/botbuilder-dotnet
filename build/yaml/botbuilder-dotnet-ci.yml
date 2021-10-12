@@ -19,7 +19,7 @@ variables:
   BotBuilderDll: Microsoft.Bot.Builder.AI.Luis,Microsoft.Bot.Builder.AI.QnA,Microsoft.Bot.Builder.ApplicationInsights,Microsoft.Bot.Builder.Azure,Microsoft.Bot.Builder.Dialogs,Microsoft.Bot.Builder.Integration.ApplicationInsights.Core,Microsoft.Bot.Builder.Integration.AspNet.Core,Microsoft.Bot.Builder.TemplateManager,Microsoft.Bot.Builder.Testing,Microsoft.Bot.Builder,Microsoft.Bot.Configuration,Microsoft.Bot.Connector,Microsoft.Bot.Schema,Microsoft.Bot.Streaming
   BuildConfiguration: Debug-Windows
   BuildPlatform: any cpu
-  IsBuildServer: true # This activates package versioning in the projects in Microsoft.Bot.Builder.sln.
+  IsBuildServer: true # This is consumed by tests\Microsoft.Bot.Builder.Dialogs.Declarative.Tests\SchemaTestsFixture.cs.
   MSBuildArguments: -p:SignAssembly=false -p:delaySign=false
   Parameters.solution: Microsoft.Bot.Builder.sln
   PreviewPackageVersion: 4.9.0-preview-$(Build.BuildNumber) # This is consumed by projects in Microsoft.Bot.Builder.sln.
