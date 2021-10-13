@@ -3,22 +3,34 @@
 
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Streaming.Tests.Features;
 using Microsoft.Bot.Connector.Streaming.Tests.Tools;
 using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Xunit;
+using Xunit.Abstractions;
 using static Microsoft.Bot.Connector.Streaming.Tests.Features.TestWebSocketConnectionFeature;
 
 namespace Microsoft.Bot.Connector.Streaming.Tests
 {
     public class WebSocketTransportTests
     {
+        private readonly ITestOutputHelper _testOutput;
+
+        public WebSocketTransportTests(ITestOutputHelper testOutput)
+        {
+            _testOutput = testOutput;
+        }
+
         [Fact]
         public async Task WebSocketTransport_WhatIsReceivedIsWritten()
         {
@@ -300,6 +312,195 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 Assert.Single(messages.Received[1].Buffer);
                 Assert.Equal(15, messages.Received[1].Buffer[0]);
                 Assert.True(messages.Received[1].EndOfMessage);
+            }
+        }
+
+        [Fact]
+        public void ServerTransportCanReceiveMessages()
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var client = connection.Client;
+
+                var fromTransport = new Pipe(PipeOptions.Default);
+                var toTransport = new Pipe(PipeOptions.Default);
+                var listenerRunning = ListenAsync(fromTransport.Reader);
+
+                var webSocketManager = new Mock<WebSocketManager>();
+                webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult(server));
+                var httpContext = new Mock<HttpContext>();
+                httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
+
+                var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
+                var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
+
+                var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
+                SendBinaryAsync(client, messages).Wait();
+                client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None).Wait();
+
+                serverTransportRunning.Wait();
+
+                var output = listenerRunning.GetAwaiter().GetResult();
+
+                Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
+            }
+        }
+
+        [Fact]
+        public void ServerTransportCanSendMessages()
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var client = connection.Client;
+                var receiverRunning = ReceiveAsync(client);
+
+                var fromTransport = new Pipe(PipeOptions.Default);
+                var toTransport = new Pipe(PipeOptions.Default);
+
+                var webSocketManager = new Mock<WebSocketManager>();
+                webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult(server));
+                var httpContext = new Mock<HttpContext>();
+                httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
+
+                var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
+                var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
+
+                var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
+                WriteAsync(toTransport.Writer, messages).Wait();
+                toTransport.Writer.CompleteAsync().GetAwaiter().GetResult();
+
+                serverTransportRunning.Wait();
+
+                var output = receiverRunning.GetAwaiter().GetResult();
+
+                Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
+            }
+        }
+
+        [Fact]
+        public void ClientTransportCanReceiveMessages()
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var client = connection.Client;
+
+                var fromTransport = new Pipe(PipeOptions.Default);
+                var toTransport = new Pipe(PipeOptions.Default);
+                var listenerRunning = ListenAsync(fromTransport.Reader);
+
+                var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
+                var clientTransportRunning = sut.ProcessSocketAsync(client, CancellationToken.None);
+
+                var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
+                SendBinaryAsync(server, messages).Wait();
+                server.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None).Wait();
+
+                clientTransportRunning.Wait();
+
+                var output = listenerRunning.GetAwaiter().GetResult();
+
+                Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
+            }
+        }
+
+        [Fact]
+        public void ClientTransportCanSendMessages()
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var client = connection.Client;
+                var receiverRunning = ReceiveAsync(server);
+
+                var fromTransport = new Pipe(PipeOptions.Default);
+                var toTransport = new Pipe(PipeOptions.Default);
+
+                var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
+                var clientTransportRunning = sut.ProcessSocketAsync(client, CancellationToken.None);
+
+                var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
+                WriteAsync(toTransport.Writer, messages).Wait();
+                toTransport.Writer.CompleteAsync().GetAwaiter().GetResult();
+
+                clientTransportRunning.Wait();
+
+                var output = receiverRunning.GetAwaiter().GetResult();
+
+                Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
+            }
+        }
+
+        private static async Task<List<byte[]>> ListenAsync(PipeReader input)
+        {
+            var messages = new List<byte[]>();
+
+            while (true)
+            {
+                var result = await input.ReadAsync();
+
+                var buffer = result.Buffer;
+                input.AdvanceTo(buffer.Start, buffer.End);
+
+                messages.Add(buffer.ToArray());
+
+                if (result.IsCompleted)
+                {
+                    break;
+                }
+            }
+
+            await input.CompleteAsync();
+
+            return messages;
+        }
+
+        private static async Task SendBinaryAsync(WebSocket socket, List<byte[]> messages)
+        {
+            foreach (var message in messages)
+            {
+                var buffer = new ArraySegment<byte>(message);
+                await socket.SendAsync(buffer, WebSocketMessageType.Binary, endOfMessage: true, CancellationToken.None);
+            }
+        }
+
+        private static async Task<List<byte[]>> ReceiveAsync(WebSocket socket)
+        {
+            var messages = new List<byte[]>();
+
+            while (true)
+            {
+                var buffer = new byte[1024 * 4];
+                var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                    break;
+                }
+
+                messages.Add(buffer.Take(result.Count).ToArray());
+            }
+
+            return messages;
+        }
+
+        private static async Task WriteAsync(PipeWriter output, List<byte[]> messages)
+        {
+            foreach (var message in messages)
+            {
+                var buffer = new ReadOnlyMemory<byte>(message);
+                await output.WriteAsync(buffer);
             }
         }
     }
