@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
             await server.StartAsync();
 
-            await SendMessage("hello streaming!", outgoingStream);
+            //await SendMessage("hello streaming!", outgoingStream);
         }
 
         private async Task SendMessage(string text, Stream stream)
