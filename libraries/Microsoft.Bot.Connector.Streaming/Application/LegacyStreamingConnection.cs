@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     /// The <see cref="StreamingConnection"/> to be used by legacy bots.
     /// </summary>
     [Obsolete("Use `WebSocketStreamingConnection` instead.", false)]
-    public sealed class LegacyStreamingConnection : StreamingConnection, IDisposable
+    public class LegacyStreamingConnection : StreamingConnection, IDisposable
     {
         private readonly WebSocket _socket;
         private readonly string _pipeName;
@@ -95,8 +95,25 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             GC.SuppressFinalize(this);
         }
 
+        internal virtual IStreamingTransportServer CreateStreamingTransportServer(RequestHandler requestHandler)
+        {
+            if (_socket != null)
+            {
+                return new WebSocketServer(_socket, requestHandler);
+            }
+
+            if (!string.IsNullOrWhiteSpace(_pipeName))
+            {
+                return new NamedPipeServer(_pipeName, requestHandler);
+            }
+
+            throw new ApplicationException("Neither web socket, nor named pipe found to instantiate a streaming transport server!");
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions while disconnecting.")]
+#pragma warning disable CA1063 // Implement IDisposable Correctly
         private void Dispose(bool disposing)
+#pragma warning restore CA1063 // Implement IDisposable Correctly
         {
             if (!_disposedValue)
             {
@@ -106,8 +123,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                     {
                         if (_server != null)
                         {
-                            _server.Disconnected -= Server_Disconnected;
-
                             if (_server is WebSocketServer webSocketServer)
                             {
                                 webSocketServer.Disconnect();
@@ -121,6 +136,8 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                             {
                                 disposable.Dispose();
                             }
+
+                            _server.Disconnected -= Server_Disconnected;
                         }
                     }
                     catch (Exception ex)
@@ -138,21 +155,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private void Server_Disconnected(object sender, DisconnectedEventArgs e)
         {
             _serverIsConnected = false;
-        }
-
-        private IStreamingTransportServer CreateStreamingTransportServer(RequestHandler requestHandler)
-        {
-            if (_socket != null)
-            {
-                return new WebSocketServer(_socket, requestHandler);
-            }
-
-            if (!string.IsNullOrWhiteSpace(_pipeName))
-            {
-                return new NamedPipeServer(_pipeName, requestHandler);
-            }
-
-            throw new ApplicationException("Neither web socket, nor named pipe found to instantiate a streaming transport server!");
         }
     }
 }
