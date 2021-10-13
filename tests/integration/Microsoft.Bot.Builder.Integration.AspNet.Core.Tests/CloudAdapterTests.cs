@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 CancellationToken.None);
 
             var invalidContinuation = adapter.ContinueConversationAsync(
-                authResult.ClaimsIdentity, invalidActivity, (_, _) => Task.CompletedTask, CancellationToken.None);
+                authResult.ClaimsIdentity, invalidActivity, (turn, cancellationToken) => Task.CompletedTask, CancellationToken.None);
 
             continueConversationWaiter.Set();
             processRequest.Wait();
