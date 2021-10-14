@@ -88,6 +88,11 @@ namespace Microsoft.Bot.Connector.Authentication
                 return Task.FromResult<ServiceClientCredentials>(MicrosoftAppCredentials.Empty);
             }
 
+            if (appId != AppId)
+            {
+                throw new InvalidOperationException($"Invalid appId {appId} does not match expected {AppId}");
+            }
+
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftAppCredentials(
