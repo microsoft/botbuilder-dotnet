@@ -316,13 +316,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         }
 
         [Fact]
-        public void ServerTransportCanReceiveMessages()
+        public async Task ServerTransportCanReceiveMessages()
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
 
             using (var connection = new TestWebSocketConnectionFeature())
             {
-                var server = connection.AcceptAsync().GetAwaiter().GetResult();
+                var server = connection.AcceptAsync();
                 var client = connection.Client;
 
                 var fromTransport = new Pipe(PipeOptions.Default);
@@ -330,22 +330,23 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 var listenerRunning = ListenAsync(fromTransport.Reader);
 
                 var webSocketManager = new Mock<WebSocketManager>();
-                webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult(server));
+                webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(server);
                 var httpContext = new Mock<HttpContext>();
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
                 var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
 
-                var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
+                var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo"), Encoding.UTF8.GetBytes("bar") };
                 SendBinaryAsync(client, messages).Wait();
                 client.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done sending.", CancellationToken.None).Wait();
 
                 serverTransportRunning.Wait();
 
-                var output = listenerRunning.GetAwaiter().GetResult();
+                var output = await listenerRunning;
 
                 Assert.Equal("foo", Encoding.UTF8.GetString(output[0]));
+                Assert.Equal("bar", Encoding.UTF8.GetString(output[1]));
             }
         }
 
@@ -444,15 +445,22 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         private static async Task<List<byte[]>> ListenAsync(PipeReader input)
         {
             var messages = new List<byte[]>();
+            const int messageLength = 3;
 
             while (true)
             {
                 var result = await input.ReadAsync();
 
                 var buffer = result.Buffer;
-                input.AdvanceTo(buffer.Start, buffer.End);
 
-                messages.Add(buffer.ToArray());
+                while (!buffer.IsEmpty)
+                {
+                    var payload = buffer.Slice(0, messageLength);
+                    messages.Add(payload.ToArray());
+                    buffer = buffer.Slice(messageLength);
+                }
+
+                input.AdvanceTo(buffer.Start, buffer.End);
 
                 if (result.IsCompleted)
                 {

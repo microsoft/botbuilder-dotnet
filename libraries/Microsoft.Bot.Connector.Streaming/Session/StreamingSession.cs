@@ -91,6 +91,8 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
             }
 
+            // Timeout: We could be waiting for this TaskCompletionSource forever if the connection is broken
+            // before this response gets back, blocking termination on this thread. 
             using (var timeoutCancellationTokenSource = new CancellationTokenSource())
             {
                 var completedTask = await Task.WhenAny(responseCompletionSource.Task, Task.Delay(TimeSpan.FromSeconds(5), timeoutCancellationTokenSource.Token)).ConfigureAwait(false);
