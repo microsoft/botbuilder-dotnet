@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Microsoft.Bot.Connector.Streaming.Session;
 using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Bot.Streaming;
@@ -59,7 +60,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var requestHandler = new Mock<RequestHandler>();
 
-            var session = new Mock<StreamingSession>(requestHandler.Object, transportHandler.Object, NullLogger.Instance);
+            var session = new Mock<StreamingSession>(requestHandler.Object, transportHandler.Object, NullLogger.Instance, CancellationToken.None);
 
             session.Setup(
                 s => s.ReceiveRequest(It.IsAny<Header>(), It.IsAny<ReceiveRequest>()))
@@ -119,7 +120,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var requestHandler = new Mock<RequestHandler>();
 
-            var session = new Mock<StreamingSession>(requestHandler.Object, transportHandler.Object, NullLogger.Instance);
+            var session = new Mock<StreamingSession>(requestHandler.Object, transportHandler.Object, NullLogger.Instance, CancellationToken.None);
 
             session.Setup(
                 s => s.ReceiveResponse(It.IsAny<Header>(), It.IsAny<ReceiveResponse>()))
@@ -168,7 +169,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
             var transportHandler = new Mock<TransportHandler>(new Mock<IDuplexPipe>().Object, NullLogger.Instance);
             var requestHandler = new Mock<RequestHandler>();
 
-            var session = new Mock<StreamingSession>(requestHandler.Object, transportHandler.Object, NullLogger.Instance);
+            var session = new Mock<StreamingSession>(requestHandler.Object, transportHandler.Object, NullLogger.Instance, CancellationToken.None);
 
             session
                 .Setup(s => s.ReceiveStream(It.IsAny<Header>(), It.IsAny<ArraySegment<byte>>()))

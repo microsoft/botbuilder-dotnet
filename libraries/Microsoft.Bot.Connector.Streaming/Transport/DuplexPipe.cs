@@ -28,7 +28,6 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             return new DuplexPipePair(transport, application);
         }
 
-        // This class exists to work around issues with value tuple on .NET Framework
         internal readonly struct DuplexPipePair
         {
             public DuplexPipePair(IDuplexPipe transport, IDuplexPipe application)

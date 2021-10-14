@@ -114,8 +114,9 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     // This failure means we are tearing down the connection, so return and let the cancellation 
                     // and draining take place.
                     await input.CompleteAsync(ex).ConfigureAwait(false);
-
                     aborted = true;
+
+                    Log.ListenError(_logger, ex);
 
                     return;
                 }
@@ -131,6 +132,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             await input.CompleteAsync().ConfigureAwait(false);
 
             await _transport.Output.CompleteAsync().ConfigureAwait(false);
+            Log.ListenCompleted(_logger);
         }
 
         public Task StopAsync()
@@ -252,6 +254,8 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             // Optimization opportunity: instead of headerBuffer.ToArray() which does a 48 byte heap allocation,
             // do a best effort attempt to use MemoryMashal.TryGetArray. Since it has a lot of corner cases, 
             // keeping it simple for now and we can optimize further if data says we required it.
+            // Alternatively we can have a 48 byte buffer that we reuse, considering that we always
+            // have a single thread running a given transportHandler instance.
             header = HeaderSerializer.Deserialize(headerBuffer.ToArray(), 0, TransportConstants.MaxHeaderLength);
 
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
@@ -297,6 +301,12 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             private static readonly Action<ILogger, Guid, char, int, bool, Exception> _semaphoreTimeOut =
                 LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(4, nameof(SemaphoreTimeOut)), "Timed out trying to acquire write semaphore. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
 
+            private static readonly Action<ILogger, Exception> _listenError =
+                LoggerMessage.Define(LogLevel.Error, new EventId(5, nameof(ListenError)), "TransportHandler encountered an error and will stop listening.");
+
+            private static readonly Action<ILogger, Exception> _listenCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(6, nameof(ListenCompleted)), "TransportHandler listen task completed.");
+
             public static void PayloadReceived(ILogger logger, Header header) => _payloadReceived(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
 
             public static void ReadFrameFailed(ILogger logger, Exception ex) => _readFrameFailed(logger, ex);
@@ -304,6 +314,10 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             public static void SendingPayload(ILogger logger, Header header) => _payloadSending(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
 
             public static void SemaphoreTimeOut(ILogger logger, Header header) => _semaphoreTimeOut(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
+
+            public static void ListenError(ILogger logger, Exception ex) => _listenError(logger, ex);
+
+            public static void ListenCompleted(ILogger logger) => _listenCompleted(logger, null);
         }
     }
 }

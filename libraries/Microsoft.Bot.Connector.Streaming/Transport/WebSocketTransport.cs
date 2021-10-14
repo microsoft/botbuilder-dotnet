@@ -205,12 +205,14 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 if (!_aborted && !cancellationToken.IsCancellationRequested)
                 {
                     await _application.Output.CompleteAsync(ex).ConfigureAwait(false);
+                    Log.TransportError(_logger, ex);
                 }
             }
             finally
             {
                 // We're done writing.
                 await _application.Output.CompleteAsync().ConfigureAwait(false);
+                Log.ReceivingCompleted(_logger);
             }
         }
 
@@ -290,6 +292,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     }
                 }
 
+                Log.SendingCompleted(_logger);
                 await _application.Input.CompleteAsync().ConfigureAwait(false);
             }
         }
@@ -340,6 +343,15 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             private static readonly Action<ILogger, Exception> _closingWebSocketFailed =
                 LoggerMessage.Define(LogLevel.Debug, new EventId(10, nameof(ClosingWebSocketFailed)), "Closing webSocket failed.");
 
+            private static readonly Action<ILogger, Exception> _sendingCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(11, nameof(SendingCompleted)), "Socket transport sending task completed.");
+
+            private static readonly Action<ILogger, Exception> _receivingCompleted =
+                LoggerMessage.Define(LogLevel.Information, new EventId(12, nameof(ReceivingCompleted)), "Socket transport receiving task completed.");
+
+            private static readonly Action<ILogger, Exception> _transportError =
+                LoggerMessage.Define(LogLevel.Error, new EventId(13, nameof(TransportError)), "Transport error deteted.");
+
             public static void SocketOpened(ILogger logger) => _socketOpened(logger, null);
 
             public static void SocketClosed(ILogger logger) => _socketClosed(logger, null);
@@ -359,6 +371,12 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             public static void ClosedPrematurely(ILogger logger, Exception ex) => _closedPrematurely(logger, ex);
 
             public static void ClosingWebSocketFailed(ILogger logger, Exception ex) => _closingWebSocketFailed(logger, ex);
+
+            public static void SendingCompleted(ILogger logger) => _sendingCompleted(logger, null);
+
+            public static void ReceivingCompleted(ILogger logger) => _receivingCompleted(logger, null);
+
+            public static void TransportError(ILogger logger, Exception ex) => _transportError(logger, ex);
         }
     }
 }

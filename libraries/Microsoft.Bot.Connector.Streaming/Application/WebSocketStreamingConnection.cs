@@ -24,9 +24,11 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     {
         private readonly ILogger _logger;
         private readonly HttpContext _httpContext;
+        private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
 
         private StreamingSession _session;
-
+        private CancellationToken _cancellationToken;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketStreamingConnection"/> class.
         /// </summary>
@@ -49,6 +51,15 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
+            }
+
+            // This request could come fast while the session, transport and application are still being set up.
+            // Wait for the session to signal that application and transport started before using the session.
+            await _sessionInitializedTask.Task.ConfigureAwait(false);
+
+            if (_session == null)
+            {
+                throw new InvalidOperationException("Cannot send streaming request since the session is not set up.");
             }
 
             return await _session.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -89,23 +100,25 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private async Task ListenImplAsync(Func<WebSocketTransport, Task> socketConnectFunc, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
         {
             var duplexPipePair = DuplexPipe.CreateConnectionPair(PipeOptions.Default, PipeOptions.Default);
+            _cancellationToken = cancellationToken;
 
+            // Create transport and application
             var transport = new WebSocketTransport(duplexPipePair.Application, _logger);
             var application = new TransportHandler(duplexPipePair.Transport, _logger);
 
-            _session = new StreamingSession(requestHandler, application, _logger);
+            // Create session
+            _session = new StreamingSession(requestHandler, application, _logger, _cancellationToken);
 
+            // Start transport and application
             var transportTask = socketConnectFunc(transport);
-
             var applicationTask = application.ListenAsync(cancellationToken);
 
             var tasks = new List<Task>() { transportTask, applicationTask };
 
-            if (!Debugger.IsAttached)
-            {
-                tasks.Add(Task.Delay(TimeSpan.FromSeconds(10)));
-            }
+            // Signal that session is ready to be used
+            _sessionInitializedTask.SetResult(true);
 
+            // Let application and transport run
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }

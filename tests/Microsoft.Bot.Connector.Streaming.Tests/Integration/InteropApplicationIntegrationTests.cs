@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
         }
 
         [Theory]
-        [InlineData(32, 10000)]
+        [InlineData(32, 1000)]
         public async Task Integration_NewClient_MiniLoad(int threadCount, int messageCount)
         {
             // TODO: Transform this test into a theory and do multi-message, multi-thread, multi-client, etc.

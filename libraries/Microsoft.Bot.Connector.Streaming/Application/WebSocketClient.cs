@@ -190,6 +190,10 @@ namespace Microsoft.Bot.Connector.Streaming.Application
 
                 // Block until transport or application ends.
                 await combinedTask.ConfigureAwait(false);
+
+                // Signal that we're done
+                _disconnectCts.Cancel();
+                Log.ClientTransportApplicationCompleted(_logger, _url);
             }
             finally
             {
@@ -302,6 +306,9 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             private static readonly Action<ILogger, string, int, Exception> _clientKeepAliveFail =
                 LoggerMessage.Define<string, int>(LogLevel.Error, new EventId(4, nameof(ClientKeepAliveFail)), "WebSocket client heartbeat to {string} failed with status code {int}.");
 
+            private static readonly Action<ILogger, string, Exception> _clientTransportApplicationCompleted =
+                LoggerMessage.Define<string>(LogLevel.Debug, new EventId(5, nameof(ClientTransportApplicationCompleted)), "WebSocket client heartbeat to {string} completed transport and application tasks.");
+
             public static void ClientStarted(ILogger logger, string url) => _clientStarted(logger, url ?? string.Empty, null);
 
             public static void ClientCompleted(ILogger logger, string url) => _clientCompleted(logger, url ?? string.Empty, null);
@@ -309,6 +316,8 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             public static void ClientKeepAliveSucceed(ILogger logger, string url) => _clientKeepAliveSucceed(logger, url ?? string.Empty, null);
 
             public static void ClientKeepAliveFail(ILogger logger, string url, int statusCode = 0, Exception e = null) => _clientKeepAliveFail(logger, url ?? string.Empty, statusCode, e);
+
+            public static void ClientTransportApplicationCompleted(ILogger logger, string url) => _clientTransportApplicationCompleted(logger, url ?? string.Empty, null);
         }
     }
 }

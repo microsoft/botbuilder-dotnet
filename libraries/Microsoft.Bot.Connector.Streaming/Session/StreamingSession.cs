@@ -40,16 +40,18 @@ namespace Microsoft.Bot.Connector.Streaming.Session
         private readonly TransportHandler _sender;
 
         private readonly ILogger _logger;
+        private readonly CancellationToken _connectionCancellationToken;
 
         private readonly object _receiveSync = new object();
 
-        public StreamingSession(RequestHandler receiver, TransportHandler sender, ILogger logger)
+        public StreamingSession(RequestHandler receiver, TransportHandler sender, ILogger logger, CancellationToken connectionCancellationToken = default)
         {
             _receiver = receiver ?? throw new ArgumentNullException(nameof(receiver));
             _sender = sender ?? throw new ArgumentNullException(nameof(sender));
             _sender.Subscribe(new ProtocolDispatcher(this));
 
             _logger = logger ?? NullLogger.Instance;
+            _connectionCancellationToken = connectionCancellationToken;
         }
 
         public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
@@ -89,7 +91,19 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
             }
 
-            return await responseCompletionSource.Task.ConfigureAwait(false);
+            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+            {
+                var completedTask = await Task.WhenAny(responseCompletionSource.Task, Task.Delay(TimeSpan.FromSeconds(5), timeoutCancellationTokenSource.Token)).ConfigureAwait(false);
+                if (completedTask == responseCompletionSource.Task)
+                {
+                    timeoutCancellationTokenSource.Cancel();
+                    return await responseCompletionSource.Task.ConfigureAwait(false); 
+                }
+                else
+                {
+                    throw new TimeoutException($"The operation has timed out");
+                }
+            }
         }
 
         public async Task SendResponseAsync(Header header, StreamingResponse response, CancellationToken cancellationToken)
@@ -349,7 +363,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             _ = Task.Run(async () =>
             {
                 var streamingResponse = await _receiver.ProcessRequestAsync(request, null).ConfigureAwait(false);
-                await SendResponseAsync(new Header() { Id = id, Type = PayloadTypes.Response }, streamingResponse, CancellationToken.None).ConfigureAwait(false);
+                await SendResponseAsync(new Header() { Id = id, Type = PayloadTypes.Response }, streamingResponse, _connectionCancellationToken).ConfigureAwait(false);
 
                 request.Streams.ForEach(s => _streamDefinitions.Remove(s.Id));
             });
@@ -493,15 +507,15 @@ namespace Microsoft.Bot.Connector.Streaming.Session
 
         private class Log
         {
-            private static readonly Action<ILogger, Header, Exception> _orphanedStream =
-                LoggerMessage.Define<Header>(LogLevel.Error, new EventId(1, nameof(OrphanedStream)), "Stream has no associated payload. Header: {Header}.");
+            private static readonly Action<ILogger, Guid, char, int, bool, Exception> _orphanedStream =
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Error, new EventId(1, nameof(OrphanedStream)), "Stream has no associated payload. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}.");
 
-            private static readonly Action<ILogger, Header, Exception> _payloadReceived =
-                LoggerMessage.Define<Header>(LogLevel.Debug, new EventId(2, nameof(PayloadReceived)), "Payload received in session. Header: {Header}.");
+            private static readonly Action<ILogger, Guid, char, int, bool, Exception> _payloadReceived =
+                LoggerMessage.Define<Guid, char, int, bool>(LogLevel.Debug, new EventId(2, nameof(PayloadReceived)), "Payload received in session. Header: ID {Guid} Type {char} Payload length:{int}. End :{bool}..");
 
-            public static void OrphanedStream(ILogger logger, Header header) => _orphanedStream(logger, header, null);
+            public static void OrphanedStream(ILogger logger, Header header) => _orphanedStream(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
 
-            public static void PayloadReceived(ILogger logger, Header header) => _payloadReceived(logger, header, null);
+            public static void PayloadReceived(ILogger logger, Header header) => _payloadReceived(logger, header.Id, header.Type, header.PayloadLength, header.End, null);
         }
     }
 }
