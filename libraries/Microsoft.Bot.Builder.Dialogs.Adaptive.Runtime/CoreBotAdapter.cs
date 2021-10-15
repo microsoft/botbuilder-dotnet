@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Runtime
         public CoreBotAdapter(
             BotFrameworkAuthentication botFrameworkAuthentication,
             IEnumerable<IMiddleware> middlewares,
-            ILogger logger = null)
+            ILogger<CoreBotAdapter> logger = null)
             : base(botFrameworkAuthentication, logger)
         {
             // Pick up feature based middlewares such as telemetry or transcripts

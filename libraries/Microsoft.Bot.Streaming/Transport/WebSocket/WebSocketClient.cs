@@ -188,6 +188,36 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
         }
 
         /// <summary>
+        /// Establish a connection with injected web socket for more control in tests.
+        /// </summary>
+        /// <param name="socket">A <see cref="WebSocket"/> for the client which msut already be .</param>
+        /// <returns>A <see cref="Task"/> that will not resolve until the client stops listening for incoming messages.</returns>
+        internal Task ConnectInternalAsync(WebSocket socket)
+        {
+            if (IsConnected)
+            {
+                return Task.CompletedTask;
+            }
+
+            // We don't dispose the websocket, since WebSocketTransport is now
+            // the owner of the web socket.
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            var socketTransport = new WebSocketTransport(socket);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
+            // Listen for disconnected events.
+            _sender.Disconnected += OnConnectionDisconnected;
+            _receiver.Disconnected += OnConnectionDisconnected;
+
+            _sender.Connect(socketTransport);
+            _receiver.Connect(socketTransport);
+
+            IsConnected = true;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Disposes objected used by the class.
         /// </summary>
         /// <param name="disposing">A Boolean that indicates whether the method call comes from a Dispose method (its value is true) or from a finalizer (its value is false).</param>
