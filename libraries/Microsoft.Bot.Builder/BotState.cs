@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder
                 {
                     { key, cachedState.State },
                 };
-                await _storage.WriteAsync(changes).ConfigureAwait(false);
+                await _storage.WriteAsync(changes, cancellationToken).ConfigureAwait(false);
                 cachedState.Hash = CachedBotState.ComputeHash(cachedState.State);
                 return;
             }
