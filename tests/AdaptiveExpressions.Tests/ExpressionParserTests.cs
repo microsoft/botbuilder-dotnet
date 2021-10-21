@@ -1100,6 +1100,8 @@ namespace AdaptiveExpressions.Tests
             Test("getProperty('bag').index", 3),
             Test("getProperty('a:b')", "stringa:b"),
             Test("getProperty(concat('he', 'llo'))", "hello"),
+            Test("getProperty({IncidentCaptionNormal: \"value\"}, \"IncidentCaptionNormal\")", "value"),
+            Test("{IncidentCaptionNormal: \"value\"}.IncidentCaptionNormal", "value"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> { "bag.list", "bag.index" }),
             Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items", "nestedItems[1].x" }),
@@ -1273,7 +1275,7 @@ namespace AdaptiveExpressions.Tests
         [MemberData(nameof(Data))]
         public void EvaluateInOtherCultures(string input, object expected, HashSet<string> expectedRefs)
         {
-            var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES" };
+            var cultureList = new List<string>() { "de-DE", "fr-FR", "es-ES", "tr-TR" };
             foreach (var newCultureInfo in cultureList)
             {
                 var originalCulture = Thread.CurrentThread.CurrentCulture;
