@@ -25,12 +25,12 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
-        public void ConnectorClient_CustomHttpClient_ContainsAcceptJson()
+        public void ConnectorClient_CustomHttpClient_ContainsAcceptAll()
         {
             var customHttpClient = new HttpClient();
             ConnectorClient.AddDefaultRequestHeaders(customHttpClient);
 
-            Assert.Contains("application/json", customHttpClient.DefaultRequestHeaders.Accept.ToString());
+            Assert.Contains("*/*", customHttpClient.DefaultRequestHeaders.Accept.ToString());
         }
 
         [Fact]
