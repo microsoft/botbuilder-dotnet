@@ -86,9 +86,12 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             // Send request
             await _sender.SendRequestAsync(requestId, payload, cancellationToken).ConfigureAwait(false);
 
-            foreach (var stream in request.Streams)
+            if (request.Streams != null)
             {
-                await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
+                foreach (var stream in request.Streams)
+                {
+                    await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
+                }
             }
 
             // Timeout: We could be waiting for this TaskCompletionSource forever if the connection is broken
@@ -142,6 +145,14 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             }
 
             await _sender.SendResponseAsync(header.Id, payload, cancellationToken).ConfigureAwait(false);
+
+            if (response.Streams != null)
+            {
+                foreach (var stream in response.Streams)
+                {
+                    await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
 
         public virtual void ReceiveRequest(Header header, ReceiveRequest request)

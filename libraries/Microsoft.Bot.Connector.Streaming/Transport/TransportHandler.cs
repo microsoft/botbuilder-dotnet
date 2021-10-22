@@ -46,15 +46,15 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
                 result = await input.ReadAsync().ConfigureAwait(false);
 
+                if (result.IsCanceled)
+                {
+                    break;
+                }
+
                 var buffer = result.Buffer;
 
                 try
                 {
-                    if (result.IsCanceled)
-                    {
-                        break;
-                    }
-
                     if (!buffer.IsEmpty)
                     {
                         while (TryParseHeader(ref buffer, out Header header))
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
                             if (header.PayloadLength > 0)
                             {
-                                if (buffer.Length < header.PayloadLength)
+                                while (buffer.Length < header.PayloadLength)
                                 {
                                     input.AdvanceTo(buffer.Start, buffer.End);
 
@@ -79,15 +79,13 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                                     buffer = result.Buffer;
                                 }
 
-                                if (buffer.Length >= header.PayloadLength)
-                                {
-                                    payload = buffer.Slice(buffer.Start, header.PayloadLength);
-                                    buffer = buffer.Slice(header.PayloadLength);
-                                }
-                                else
+                                if (result.IsCanceled)
                                 {
                                     break;
                                 }
+
+                                payload = buffer.Slice(buffer.Start, header.PayloadLength);
+                                buffer = buffer.Slice(header.PayloadLength);
                             }
 
                             _observer.OnNext((header, payload));
