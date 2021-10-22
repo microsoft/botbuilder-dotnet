@@ -190,15 +190,29 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var streamHeader = new Header()
+            // Break stream into chunks of size `TransportConstants.MaxPayloadLength`
+            var remaining = stream.Length;
+            while (remaining > 0)
             {
-                Type = PayloadTypes.Stream,
-                Id = id,
-                PayloadLength = (int)stream.Length,
-                End = true,
-            };
+                var current = Math.Min(remaining, TransportConstants.MaxPayloadLength);
+                var chunk = new byte[current];
+                current = await stream.ReadAsync(chunk, 0, (int)current).ConfigureAwait(false);
 
-            await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
+                var streamHeader = new Header
+                {
+                    Type = PayloadTypes.Stream,
+                    Id = id,
+                    PayloadLength = (int)current,
+                    End = !(remaining > current)
+                };
+
+                await WriteAsync(
+                        header: streamHeader,
+                        writeFunc: async pipeWriter => await pipeWriter.WriteAsync(chunk).ConfigureAwait(false))
+                    .ConfigureAwait(false);
+
+                remaining -= current;
+            }
         }
 
         public IDisposable Subscribe(IObserver<(Header, ReadOnlySequence<byte>)> observer)
