@@ -251,6 +251,12 @@ namespace Microsoft.Bot.Connector
                 }
 
                 httpClient.DefaultRequestHeaders.ExpectContinue = false;
+
+                var jsonAcceptHeader = new MediaTypeWithQualityHeaderValue("application/json");
+                if (!httpClient.DefaultRequestHeaders.Accept.Contains(jsonAcceptHeader))
+                {
+                    httpClient.DefaultRequestHeaders.Accept.Add(jsonAcceptHeader);
+                }
             }
         }
 
