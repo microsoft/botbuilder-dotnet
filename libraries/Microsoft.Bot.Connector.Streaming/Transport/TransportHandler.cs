@@ -195,8 +195,6 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             while (remaining > 0)
             {
                 var current = Math.Min(remaining, TransportConstants.MaxPayloadLength);
-                var chunk = new byte[current];
-                current = await stream.ReadAsync(chunk, 0, (int)current).ConfigureAwait(false);
 
                 var streamHeader = new Header
                 {
@@ -206,10 +204,23 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                     End = !(remaining > current)
                 };
 
-                await WriteAsync(
-                        header: streamHeader,
-                        writeFunc: async pipeWriter => await pipeWriter.WriteAsync(chunk).ConfigureAwait(false))
-                    .ConfigureAwait(false);
+                if (current == stream.Length)
+                {
+                    // No chunking needed, copy the entire stream to pipe directly
+                    await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
+                }
+                else
+                {
+                    var chunk = new byte[current];
+                    current = await stream.ReadAsync(chunk, 0, (int)current).ConfigureAwait(false);
+                    streamHeader.PayloadLength = (int)current;
+                    streamHeader.End = !(remaining > current);
+
+                    await WriteAsync(
+                            header: streamHeader,
+                            writeFunc: async pipeWriter => await pipeWriter.WriteAsync(chunk).ConfigureAwait(false))
+                        .ConfigureAwait(false);
+                }
 
                 remaining -= current;
             }
