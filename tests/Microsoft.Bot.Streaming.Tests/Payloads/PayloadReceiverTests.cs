@@ -55,7 +55,6 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 // MacLinux environment does not throw.
                 receiver.Connect(transport);
             }
-
         }
     }
 }
