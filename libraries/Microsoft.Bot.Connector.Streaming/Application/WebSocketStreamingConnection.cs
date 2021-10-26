@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             }
 
             await ListenImplAsync(
-                socketConnectFunc: t => t.ConnectAsync(_httpContext, CancellationToken.None),
+                socketConnectFunc: t => t.ConnectAsync(_httpContext, cancellationToken),
                 requestHandler: requestHandler,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }

@@ -262,11 +262,35 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
         }
 
-        private static HttpRequest CreateWebSocketUpgradeRequest(TestWebSocketConnectionFeature connection)
+        [Fact]
+        public void ServerStopsGracefullyOnClientCrash()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => clientWebSocket.Abort());
+        }
+
+        [Fact]
+        public void ServerStopsGracefullyOnClientDisconnect()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => client.Disconnect());
+        }
+
+        [Fact]
+        public void ServerStopsGracefullyOnClientCancellation()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => cts.Cancel());
+        }
+
+        [Fact]
+        public void ClientStopsGracefullyOnServerCrash()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => webSocket.Abort());
+        }
+
+        private static HttpRequest CreateWebSocketUpgradeRequest(WebSocket webSocket)
         {
             var webSocketManager = new Mock<WebSocketManager>();
             webSocketManager.Setup(m => m.IsWebSocketRequest).Returns(true);
-            webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(connection.AcceptAsync());
+            webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult(webSocket));
 
             var httpContext = new Mock<HttpContext>();
             httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
@@ -289,12 +313,15 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 
             using (var connection = new TestWebSocketConnectionFeature())
             {
+                var webSocket = connection.AcceptAsync().Result;
+                var clientWebSocket = connection.Client;
+
                 IBotFrameworkHttpAdapter server = useLegacyServer
                     ? new BotFrameworkHttpAdapter()
                     : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
-                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(connection), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
+                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
 
-                using (var client = new TestStreamingTransportClient("wss://test", clientRequestHandler, connection.Client, logger, useLegacyClient))
+                using (var client = new TestStreamingTransportClient("wss://test", clientRequestHandler, clientWebSocket, logger, useLegacyClient))
                 {
                     var clientRunning = client.ConnectAsync();
 
@@ -305,7 +332,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                         Assert.Equal(200, response.StatusCode);
                     }
 
-                    connection.Client.CloseAsync(WebSocketCloseStatus.NormalClosure, "End of test", CancellationToken.None).Wait();
+                    clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "End of test", CancellationToken.None).Wait();
 
                     clientRunning.Wait();
                     Assert.Equal(TaskStatus.RanToCompletion, clientRunning.Status);
@@ -313,6 +340,56 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 
                 serverRunning.Wait();
                 Assert.Equal(TaskStatus.RanToCompletion, serverRunning.Status);
+            }
+        }
+
+        private void RunStreamingCrashTest(Action<WebSocket, TestWebSocketConnectionFeature.WebSocketChannel, WebSocketClient, CancellationTokenSource> induceCrash)
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+            var cts = new CancellationTokenSource();
+
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var webSocket = connection.AcceptAsync().Result;
+                var clientWebSocket = connection.Client;
+
+                var bot = new StreamingTestBot((turnContext, cancellationToken) => Task.CompletedTask);
+
+                var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
+
+                var clientRequestHandler = new Mock<RequestHandler>();
+                clientRequestHandler
+                    .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(StreamingResponse.OK()));
+                using (var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger))
+                {
+                    var clientRunning = client.ConnectInternalAsync(clientWebSocket, cts.Token);
+
+                    var activity = new Activity
+                    {
+                        Id = Guid.NewGuid().ToString("N"),
+                        Type = ActivityTypes.Message,
+                        From = new ChannelAccount { Id = "testUser" },
+                        Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                        Recipient = new ChannelAccount { Id = "testBot" },
+                        ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                        ChannelId = "test",
+                        Text = "hi"
+                    };
+
+                    var content = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
+                    var response = client.SendAsync(StreamingRequest.CreatePost("/api/messages", content)).Result;
+                    Assert.Equal(200, response.StatusCode);
+
+                    induceCrash(webSocket, clientWebSocket, client, cts);
+
+                    clientRunning.Wait();
+                    Assert.True(clientRunning.IsCompletedSuccessfully);
+                }
+
+                serverRunning.Wait();
+                Assert.True(serverRunning.IsCompletedSuccessfully);
             }
         }
 
