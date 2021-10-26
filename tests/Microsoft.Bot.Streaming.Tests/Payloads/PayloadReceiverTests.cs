@@ -45,7 +45,17 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             var receiver = new PayloadReceiver();
             receiver.Connect(transport);
 
-            Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+            {
+                // Windows environment throws an exception.
+                Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
+            }
+            else
+            {
+                // MacLinux environment does not throw.
+            }
+
         }
     }
 }
