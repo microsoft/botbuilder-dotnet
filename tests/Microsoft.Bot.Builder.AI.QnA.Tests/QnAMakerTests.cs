@@ -394,7 +394,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 },
                 new QnAMakerOptions
                 {
-                   Top = 5,
+                    Top = 5,
                 });
 
             var results = await qna.GetAnswersAsync(GetContext("Q11"));
@@ -408,7 +408,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             mockHttp = new MockHttpMessageHandler();
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer_DisableActiveLearning.json"));
-           
+
             results = await qna.GetAnswersAsync(GetContext("Q11"));
             Assert.NotNull(results);
             Assert.Equal(4, results.Length);
@@ -732,11 +732,14 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = _endpointKey, Host = _hostname,
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
                 },
                 new QnAMakerOptions
                 {
-                    Top = -1, ScoreThreshold = 0.5F,
+                    Top = -1,
+                    ScoreThreshold = 0.5F,
                 }));
         }
 
@@ -750,7 +753,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
                 new QnAMaker(
                     new QnAMakerEndpoint
                     {
-                        KnowledgeBaseId = string.Empty, EndpointKey = _endpointKey, Host = _hostname,
+                        KnowledgeBaseId = string.Empty,
+                        EndpointKey = _endpointKey,
+                        Host = _hostname,
                     });
             });
         }
@@ -763,7 +768,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = string.Empty, Host = _hostname,
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = string.Empty,
+                    Host = _hostname,
                 }));
         }
 
@@ -775,7 +782,9 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.Throws<ArgumentException>(() => new QnAMaker(
                 new QnAMakerEndpoint
                 {
-                    KnowledgeBaseId = _knowledgeBaseId, EndpointKey = _endpointKey, Host = string.Empty,
+                    KnowledgeBaseId = _knowledgeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = string.Empty,
                 }));
         }
 
@@ -810,7 +819,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
 
             // Verify that we added the bot.builder package details.
-            Assert.Contains("Microsoft.Bot.Builder.AI.QnA/4", interceptHttp.UserAgent);
+            Assert.Contains("Microsoft.Bot.Builder.AI.QnA/5", interceptHttp.UserAgent);
         }
 
         [Fact]
@@ -873,7 +882,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
             var options = new QnAMakerOptions
             {
-               Top = 1,
+                Top = 1,
             };
 
             var results = await qna.GetAnswersAsync(GetContext("who loves me?"), options);
@@ -1142,7 +1151,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
 
                                 Host = _hostname,
                             }, oneFilteredOption);
-            
+
             var context = GetContext("up");
             var noFilterResults1 = await qna.GetAnswersAsync(context, oneFilteredOption);
             var requestContent1 = JsonConvert.DeserializeObject<CapturedRequest>(interceptHttp.Content);
@@ -1631,7 +1640,7 @@ namespace Microsoft.Bot.Builder.AI.Tests
                     await dc.Context.SendActivityAsync("Yippee ki-yay!");
                     return EndOfTurn;
                 }
-                
+
                 return await dc.BeginDialogAsync("qnaDialog");
             }
 
@@ -1843,6 +1852,6 @@ namespace Microsoft.Bot.Builder.AI.Tests
             public Metadata[] MetadataBoost { get; set; }
 
             public float ScoreThreshold { get; set; }
-           }
+        }
     }
 }
