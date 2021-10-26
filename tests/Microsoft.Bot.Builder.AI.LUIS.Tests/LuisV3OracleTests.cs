@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             var userAgent = clientHandler.UserAgent;
 
             // And that we added the bot.builder package details.
-            Assert.Contains("Microsoft.Bot.Builder.AI.Luis/4", userAgent);
+            Assert.Contains("Microsoft.Bot.Builder.AI.Luis/5", userAgent);
         }
 
         [Fact]
