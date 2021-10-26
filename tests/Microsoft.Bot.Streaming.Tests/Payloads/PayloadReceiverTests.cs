@@ -37,13 +37,12 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
         }
 
         [Fact]
-        public void PayloadReceiver_Connect_ShouldFail()
+        public void PayloadReceiver_Connect_ShouldFail_In_Windows()
         {
             var buffer = new byte[20];
 
             var transport = new MockTransportReceiver(buffer);
             var receiver = new PayloadReceiver();
-            receiver.Connect(transport);
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
@@ -54,6 +53,7 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             else
             {
                 // MacLinux environment does not throw.
+                receiver.Connect(transport);
             }
 
         }
