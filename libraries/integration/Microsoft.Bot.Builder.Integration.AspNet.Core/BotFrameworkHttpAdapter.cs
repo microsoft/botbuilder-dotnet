@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             if (httpRequest.Method == HttpMethods.Get)
             {
-                await ConnectWebSocketAsync(bot, httpRequest, httpResponse).ConfigureAwait(false);
+                await ConnectWebSocketAsync(bot, httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
             }
             else
             {
