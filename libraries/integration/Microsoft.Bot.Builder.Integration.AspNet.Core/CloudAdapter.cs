@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     // TODO: pass asp.net core lifetime for cancellation here.
                     _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
                     Log.WebSocketConnectionStarted(Logger);
-                    await streamingActivityProcessor.ListenAsync(CancellationToken.None).ConfigureAwait(false);
+                    await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
                     _streamingConnections.TryRemove(connectionId, out _);
                     Log.WebSocketConnectionCompleted(Logger);
                 }

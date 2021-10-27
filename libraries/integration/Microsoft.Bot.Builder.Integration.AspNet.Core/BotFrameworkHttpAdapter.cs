@@ -243,8 +243,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="bot">The <see cref="IBot"/> instance.</param>
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Returns on task completion.</returns>
-        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task ConnectWebSocketAsync(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
             {
@@ -290,7 +291,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 RequestHandlers.Add(requestHandler);
 
                 Log.WebSocketConnectionStarted(Logger);
-                await requestHandler.ListenAsync().ConfigureAwait(false);
+                await requestHandler.ListenAsync(cancellationToken).ConfigureAwait(false);
                 Log.WebSocketConnectionCompleted(Logger);
             }
             catch (Exception ex)

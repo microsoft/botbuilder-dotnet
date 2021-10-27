@@ -27,7 +27,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
 
         private StreamingSession _session;
-        private CancellationToken _cancellationToken;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketStreamingConnection"/> class.
@@ -100,14 +99,13 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private async Task ListenImplAsync(Func<WebSocketTransport, Task> socketConnectFunc, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
         {
             var duplexPipePair = DuplexPipe.CreateConnectionPair(PipeOptions.Default, PipeOptions.Default);
-            _cancellationToken = cancellationToken;
 
             // Create transport and application
             var transport = new WebSocketTransport(duplexPipePair.Application, _logger);
             var application = new TransportHandler(duplexPipePair.Transport, _logger);
 
             // Create session
-            _session = new StreamingSession(requestHandler, application, _logger, _cancellationToken);
+            _session = new StreamingSession(requestHandler, application, _logger, cancellationToken);
 
             // Start transport and application
             var transportTask = socketConnectFunc(transport);

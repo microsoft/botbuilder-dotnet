@@ -165,7 +165,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 _transportHandler = new TransportHandler(_duplexPipePair.Transport, _logger);
 
                 // Session
-                _session = new StreamingSession(_requestHandler, _transportHandler, _logger);
+                _session = new StreamingSession(_requestHandler, _transportHandler, _logger, cancellationToken);
 
                 // Set up cancellation
                 _disconnectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
