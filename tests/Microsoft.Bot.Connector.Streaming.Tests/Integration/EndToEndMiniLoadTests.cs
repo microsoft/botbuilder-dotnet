@@ -46,6 +46,8 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         [InlineData(false, true)] // new client, legacy server
         public void SimpleActivityTest(bool useLegacyClient, bool useLegacyServer)
         {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
             // Arrange
             var activities = new[]
             {
@@ -72,10 +74,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(activityClone, cancellationToken);
             });
 
+            IBotFrameworkHttpAdapter server = useLegacyServer
+                ? new BotFrameworkHttpAdapter()
+                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
                 .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
-                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, logger, context, cancellationToken) =>
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
                 {
                     var body = request.ReadBodyAsString();
                     var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
@@ -89,7 +95,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            RunActivityStreamingTest(activities, bot, clientRequestHandler.Object, useLegacyClient, useLegacyServer);
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
 
             // Assert
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
@@ -102,6 +108,8 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         [InlineData(false, true)] // new client, legacy server
         public void ActivityWithSuggestedActionsTest(bool useLegacyClient, bool useLegacyServer)
         {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
             // Arrange
             var activities = new[]
             {
@@ -137,10 +145,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(activityClone, cancellationToken);
             });
 
+            IBotFrameworkHttpAdapter server = useLegacyServer
+                ? new BotFrameworkHttpAdapter()
+                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
                 .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
-                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, logger, context, cancellationToken) =>
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
                 {
                     var body = request.ReadBodyAsString();
                     var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
@@ -155,7 +167,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            RunActivityStreamingTest(activities, bot, clientRequestHandler.Object, useLegacyClient, useLegacyServer);
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
 
             // Assert
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
@@ -168,6 +180,8 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         [InlineData(false, true)] // new client, legacy server
         public void ActivityWithAttachmentsTest(bool useLegacyClient, bool useLegacyServer)
         {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
             // Arrange
             var activities = new[]
             {
@@ -232,10 +246,14 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 }
             });
 
+            IBotFrameworkHttpAdapter server = useLegacyServer
+                ? new BotFrameworkHttpAdapter()
+                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
                 .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
-                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, logger, context, cancellationToken) =>
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
                 {
                     try
                     {
@@ -256,7 +274,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 });
 
             // Act
-            RunActivityStreamingTest(activities, bot, clientRequestHandler.Object, useLegacyClient, useLegacyServer);
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
 
             // Assert
             Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
@@ -307,18 +325,13 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             return httpRequest.Object;
         }
 
-        private void RunActivityStreamingTest(Activity[] activities, IBot bot, RequestHandler clientRequestHandler, bool useLegacyClient, bool useLegacyServer)
+        private void RunActivityStreamingTest(Activity[] activities, IBot bot, IBotFrameworkHttpAdapter server, RequestHandler clientRequestHandler, ILogger logger, bool useLegacyClient)
         {
-            var logger = XUnitLogger.CreateLogger(_testOutput);
-
             using (var connection = new TestWebSocketConnectionFeature())
             {
                 var webSocket = connection.AcceptAsync().Result;
                 var clientWebSocket = connection.Client;
 
-                IBotFrameworkHttpAdapter server = useLegacyServer
-                    ? new BotFrameworkHttpAdapter()
-                    : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
                 var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
 
                 using (var client = new TestStreamingTransportClient("wss://test", clientRequestHandler, clientWebSocket, logger, useLegacyClient))
