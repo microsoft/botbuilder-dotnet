@@ -641,7 +641,19 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 
                 if (Disconnected != null)
                 {
-                    Disconnected(_useLegacyClient ? _innerLegacy : _inner, DisconnectedEventArgs.Empty);
+                    Disconnected(GetDisconnectedEventSender(), DisconnectedEventArgs.Empty);
+                }
+            }
+
+            private object GetDisconnectedEventSender()
+            {
+                if (_useLegacyClient)
+                {
+                    return _innerLegacy;
+                }
+                else
+                {
+                    return _inner;
                 }
             }
         }
