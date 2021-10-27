@@ -76,9 +76,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(activityClone, cancellationToken);
             });
 
-            IBotFrameworkHttpAdapter server = useLegacyServer
-                ? new BotFrameworkHttpAdapter()
-                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -147,9 +145,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(activityClone, cancellationToken);
             });
 
-            IBotFrameworkHttpAdapter server = useLegacyServer
-                ? new BotFrameworkHttpAdapter()
-                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -248,9 +244,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 }
             });
 
-            IBotFrameworkHttpAdapter server = useLegacyServer
-                ? new BotFrameworkHttpAdapter()
-                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -354,9 +348,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 return turnContext.SendActivityAsync(response, cancellationToken);
             });
 
-            IBotFrameworkHttpAdapter server = useLegacyServer
-                ? new BotFrameworkHttpAdapter()
-                : new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
 
             var clientRequestHandler = new Mock<RequestHandler>();
             clientRequestHandler
@@ -389,6 +381,18 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             }
 
             Task.WhenAll(connections).Wait();
+        }
+
+        private static IBotFrameworkHttpAdapter CreateTestStreamingTransportServer(bool useLegacyServer, ILogger logger)
+        {
+            if (useLegacyServer)
+            {
+                return new BotFrameworkHttpAdapter();
+            }
+            else
+            {
+                return new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            }
         }
 
         private static HttpRequest CreateWebSocketUpgradeRequest(WebSocket webSocket)
