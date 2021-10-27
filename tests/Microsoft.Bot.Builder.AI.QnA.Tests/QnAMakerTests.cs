@@ -819,7 +819,17 @@ namespace Microsoft.Bot.Builder.AI.Tests
             Assert.StartsWith("BaseCamp: You can use a damp rag to clean around the Power Pack", results[0].Answer);
 
             // Verify that we added the bot.builder package details.
-            Assert.Contains("Microsoft.Bot.Builder.AI.QnA/5", interceptHttp.UserAgent);
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+            {
+                // In Windows we get v5.
+                Assert.Contains("microsoft.bot.builder.ai.qna/5", interceptHttp.UserAgent.ToLower());
+            }
+            else
+            {
+                // In MacLinux we get v4.
+                Assert.Contains("microsoft.bot.builder.ai.qna/4", interceptHttp.UserAgent.ToLower());
+            }
         }
 
         [Fact]

@@ -337,7 +337,17 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.Contains("Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.LUISRuntimeClient", userAgent);
 
             // And that we added the bot.builder package details.
-            Assert.Contains("microsoft.bot.builder.ai.luis/5", userAgent.ToLower());
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
+            {
+                // In Windows we get v5.
+                Assert.Contains("microsoft.bot.builder.ai.luis/5", userAgent.ToLower());
+            }
+            else
+            {
+                // In MacLinux we get v4.
+                Assert.Contains("microsoft.bot.builder.ai.luis/4", userAgent.ToLower());
+            }
         }
 
         [Fact]

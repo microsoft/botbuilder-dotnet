@@ -43,16 +43,18 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
 
             var transport = new MockTransportReceiver(buffer);
             var receiver = new PayloadReceiver();
+            // First connection succeeds.
+            receiver.Connect(transport);
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
             {
-                // Windows environment throws an exception.
+                // In Windows the second connection throws an exception.
                 Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
             }
             else
             {
-                // MacLinux environment does not throw.
+                // In MacLinux the second connection does not throw.
                 receiver.Connect(transport);
             }
         }
