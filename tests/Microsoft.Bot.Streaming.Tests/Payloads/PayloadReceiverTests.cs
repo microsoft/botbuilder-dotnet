@@ -47,17 +47,8 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             // First connection succeeds.
             receiver.Connect(transport);
 
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS")) &&
-                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT"))
-            {
-                // In Windows the second connection throws an exception.
-                Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
-            }
-            else
-            {
-                // In MacLinux the second connection does not throw.
-                receiver.Connect(transport);
-            }
+            // The second connection throws an exception.
+            Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
         }
     }
 }
