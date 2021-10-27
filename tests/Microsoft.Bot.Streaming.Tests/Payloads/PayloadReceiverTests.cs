@@ -47,8 +47,21 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             // First connection succeeds.
             receiver.Connect(transport);
 
-            // The second connection throws an exception.
-            Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
+            bool onBuildAgent = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("AGENT_OS"));
+            bool winNtOnAgent = onBuildAgent &&
+                Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT");
+            bool netCore46 = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Contains("Core 4.6");
+
+            if (!onBuildAgent || winNtOnAgent || !netCore46)
+            {
+                // In 1) Windows and 2) MacLinux .NET Core 3.1 the second connection throws an exception.
+                Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
+            }
+            else
+            {
+                // In MacLinux .NET Core 4.6 the second connection does not throw.
+                receiver.Connect(transport);
+            }
         }
     }
 }
