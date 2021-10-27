@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (appId != AppId)
             {
-                throw new InvalidOperationException("Invalid appId");
+                throw new InvalidOperationException($"Invalid appId {appId} does not match expected {AppId}");
             }
 
             if (loginEndpoint.StartsWith(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))

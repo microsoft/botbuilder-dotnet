@@ -40,6 +40,7 @@
                 <!--<ModulePath>.*\Microsoft.Bot.Configuration.dll$</ModulePath>-->
                 <ModulePath>.*\Microsoft.Bot.Connector.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Schema.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Connector.Streaming.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Streaming.dll$</ModulePath>
               </Include>
               <Exclude>

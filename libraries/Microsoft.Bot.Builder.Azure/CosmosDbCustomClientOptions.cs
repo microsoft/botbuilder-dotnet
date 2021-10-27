@@ -1,10 +1,15 @@
-﻿using Microsoft.Azure.Documents.Client;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using Microsoft.Azure.Documents.Client;
 
 namespace Microsoft.Bot.Builder.Azure
 {
     /// <summary>
     /// CosmosDB options for custom client.
     /// </summary>
+    [Obsolete("This class is deprecated. Please use CosmosDbPartitionedStorageOptions with CosmosDbPartitionedStorage instead.", false)]
     public class CosmosDbCustomClientOptions
     {
         /// <summary>

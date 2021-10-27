@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             Assert.Equal(StreamingRequest.GET, r.Verb);
             Assert.Null(r.Path);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             Assert.Equal(StreamingRequest.POST, r.Verb);
             Assert.Null(r.Path);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             Assert.Equal(StreamingRequest.DELETE, r.Verb);
             Assert.Null(r.Path);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             Assert.Equal(StreamingRequest.PUT, r.Verb);
             Assert.Null(r.Path);
-            Assert.Null(r.Streams);
+            Assert.Empty(r.Streams);
         }
 
         [Fact]
