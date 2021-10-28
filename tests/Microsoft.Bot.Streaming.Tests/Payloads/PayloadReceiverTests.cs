@@ -52,6 +52,8 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT");
             bool netCore46 = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Contains("Core 4.6");
 
+            Assert.True(false, $"Debug: FrameworkDescription={System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}");
+
             if (!onBuildAgent || winNtOnAgent || netCore46)
             {
                 Assert.True(false, $"Top: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
