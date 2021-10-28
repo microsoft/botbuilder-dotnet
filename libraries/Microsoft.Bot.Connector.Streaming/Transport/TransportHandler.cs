@@ -76,15 +76,15 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                                         break;
                                     }
 
-                                    if (result.IsCompleted)
+                                    if (!result.Buffer.IsEmpty)
                                     {
-                                        if (result.Buffer.IsEmpty)
-                                        {
-                                            break;
-                                        }
+                                        buffer = result.Buffer;
                                     }
 
-                                    buffer = result.Buffer;
+                                    if (result.IsCompleted)
+                                    {
+                                        break;
+                                    }
                                 }
 
                                 if (buffer.Length < header.PayloadLength)

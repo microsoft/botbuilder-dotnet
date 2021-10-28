@@ -302,9 +302,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 
         [Theory]
         [InlineData(3, 50, 4, false, false)] // new client, new server
-        [InlineData(3, 50, 4, true, true)] // legacy client, legacy server
-        [InlineData(3, 50, 4, true, false)] // legacy client, new server
-        [InlineData(3, 50, 4, false, true)] // new client, legacy server
+        [InlineData(3, 100, 32, false, false)] // new client, new server
         public void ConcurrencyTest(int connectionCount, int messageCount, int threadCount, bool useLegacyClient, bool useLegacyServer)
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
@@ -416,7 +414,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             return httpRequest.Object;
         }
 
-        private static void SimulateMultiTurnConversation(int conversationId, Activity[] activities, IStreamingTransportClient client, ILogger logger, SemaphoreSlim throttler)
+        private static void SimulateMultiTurnConversation(int conversationId, Activity[] activities, IStreamingTransportClient client, ILogger logger, SemaphoreSlim throttler = null)
         {
             try
             {
@@ -432,7 +430,10 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             }
             finally
             {
-                throttler.Release();
+                if (throttler != null)
+                {
+                    throttler.Release();
+                }
             }
         }
 
@@ -447,18 +448,25 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
                 var clientRunning = client.ConnectAsync();
 
-                var conversations = new Task[messageCount];
-                var throttler = new SemaphoreSlim(threadCount);
-
-                for (var i = 0; i < messageCount; i++)
+                if (messageCount == 1)
                 {
-                    throttler.Wait();
-
-                    var conversationId = i;
-                    conversations[i] = Task.Factory.StartNew(() => SimulateMultiTurnConversation(conversationId, activities, client, logger, throttler));
+                    SimulateMultiTurnConversation(1, activities, client, logger);
                 }
+                else
+                {
+                    var conversations = new Task[messageCount];
+                    var throttler = new SemaphoreSlim(threadCount);
 
-                Task.WhenAll(conversations).Wait();
+                    for (var i = 0; i < messageCount; i++)
+                    {
+                        throttler.Wait();
+
+                        var conversationId = i;
+                        conversations[i] = Task.Factory.StartNew(() => SimulateMultiTurnConversation(conversationId, activities, client, logger, throttler));
+                    }
+
+                    Task.WhenAny(Task.WhenAll(conversations), Task.Delay(new TimeSpan(0, 0, 5, 0))).Wait();
+                }
 
                 clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "End of test", CancellationToken.None).Wait();
 
