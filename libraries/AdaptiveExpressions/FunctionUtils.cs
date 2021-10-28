@@ -917,7 +917,7 @@ namespace AdaptiveExpressions
                 }
                 else if (instance is JObject jobj)
                 {
-                    value = jobj.GetValue(property, StringComparison.CurrentCultureIgnoreCase);
+                    value = jobj.GetValue(property, StringComparison.OrdinalIgnoreCase);
                     isPresent = value != null;
                 }
                 else

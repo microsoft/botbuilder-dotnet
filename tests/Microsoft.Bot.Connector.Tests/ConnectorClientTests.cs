@@ -25,6 +25,15 @@ namespace Microsoft.Bot.Connector.Tests
         }
 
         [Fact]
+        public void ConnectorClient_CustomHttpClient_ContainsAcceptAll()
+        {
+            var customHttpClient = new HttpClient();
+            ConnectorClient.AddDefaultRequestHeaders(customHttpClient);
+
+            Assert.Contains("*/*", customHttpClient.DefaultRequestHeaders.Accept.ToString());
+        }
+
+        [Fact]
         public void ConnectorClient_CustomHttpClient_AndMicrosoftCredentials()
         {
             var baseUri = new Uri("https://test.coffee");
