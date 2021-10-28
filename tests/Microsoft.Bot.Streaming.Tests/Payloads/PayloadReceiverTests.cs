@@ -55,12 +55,14 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
             if (!onBuildAgent || winNtOnAgent || netCore46)
             {
                 Assert.True(false, $"Top: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
+
                 // In 1) Windows and 2) MacLinux .NET Core 4.6 the second connection throws an exception.
                 Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
             }
             else
             {
                 Assert.True(false, $"Bottom: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
+
                 // In MacLinux .NET Core 3.1 the second connection does not throw.
                 receiver.Connect(transport);
             }
