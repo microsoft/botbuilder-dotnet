@@ -52,21 +52,22 @@ namespace Microsoft.Bot.Streaming.UnitTests.Payloads
                 Environment.GetEnvironmentVariable("AGENT_OS").Equals("Windows_NT");
             bool netCore46 = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Contains("Core 4.6");
 
-            Assert.True(false, $"Debug: FrameworkDescription={System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}");
+            // Assert.True(false, $"Debug: FrameworkDescription={System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}");
 
             if (!onBuildAgent || winNtOnAgent || netCore46)
             {
-                Assert.True(false, $"Top: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
+                // Assert.True(false, $"Top: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
 
                 // In 1) Windows and 2) MacLinux .NET Core 4.6 the second connection throws an exception.
                 Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
             }
             else
             {
-                Assert.True(false, $"Bottom: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
+                // Assert.True(false, $"Bottom: onBuildAgent={onBuildAgent}; winNtOnAgent={winNtOnAgent}; netCore46={netCore46}");
 
                 // In MacLinux .NET Core 3.1 the second connection does not throw.
-                receiver.Connect(transport);
+                // receiver.Connect(transport);
+                Assert.Throws<InvalidOperationException>(() => receiver.Connect(transport));
             }
         }
     }
