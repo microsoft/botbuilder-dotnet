@@ -8,7 +8,6 @@ using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -27,20 +26,22 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             _logger = logger ?? NullLogger.Instance;
         }
 
-        public async Task ConnectAsync(HttpContext context, CancellationToken cancellationToken)
+        public async Task ConnectAsync(WebSocket socket, CancellationToken cancellationToken)
         {
-            using (var ws = await context.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false))
+            if (socket == null)
             {
-                Log.SocketOpened(_logger);
+                throw new ArgumentNullException(nameof(socket));
+            }
 
-                try
-                {
-                    await ProcessSocketAsync(ws, cancellationToken).ConfigureAwait(false);
-                }
-                finally
-                {
-                    Log.SocketClosed(_logger);
-                }
+            Log.SocketOpened(_logger);
+
+            try
+            {
+                await ProcessSocketAsync(socket, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                Log.SocketClosed(_logger);
             }
         }
 

@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Streaming.Session;
 using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Bot.Streaming;
@@ -22,21 +20,21 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     /// </summary>
     public class WebSocketStreamingConnection : StreamingConnection
     {
+        private readonly WebSocket _socket;
         private readonly ILogger _logger;
-        private readonly HttpContext _httpContext;
         private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
 
         private StreamingSession _session;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketStreamingConnection"/> class.
         /// </summary>
-        /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
+        /// <param name="socket"><see cref="WebSocket"/> instance on which streams are transported between client and server.</param>
         /// <param name="logger"><see cref="ILogger"/> for the connection.</param>
-        public WebSocketStreamingConnection(HttpContext httpContext, ILogger logger)
+        public WebSocketStreamingConnection(WebSocket socket, ILogger logger)
             : this(logger)
         {
-            _httpContext = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
+            _socket = socket ?? throw new ArgumentNullException(nameof(socket));
         }
 
         internal WebSocketStreamingConnection(ILogger logger)
@@ -73,7 +71,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             }
 
             await ListenImplAsync(
-                socketConnectFunc: t => t.ConnectAsync(_httpContext, cancellationToken),
+                socketConnectFunc: t => t.ConnectAsync(_socket, cancellationToken),
                 requestHandler: requestHandler,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }

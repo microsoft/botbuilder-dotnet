@@ -201,14 +201,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             if (stream.Length > TransportConstants.MaxPayloadLength)
             {
                 // Break stream into chunks of size `TransportConstants.MaxPayloadLength`
-                if (stream is MemoryStream memoryStream)
-                {
-                    await SendMemoryStreamInChunksAsync(id, memoryStream).ConfigureAwait(false);
-                }
-                else
-                {
-                    await SendStreamInChunksAsync(id, stream).ConfigureAwait(false);
-                }
+                await SendStreamInChunksAsync(id, stream).ConfigureAwait(false);
             }
             else
             {
@@ -283,40 +276,6 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 
             return true;
-        }
-
-        private async Task SendMemoryStreamInChunksAsync(Guid id, MemoryStream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            var buffer = stream.ToArray();
-
-            var remaining = stream.Length;
-            while (remaining > 0)
-            {
-                var current = Math.Min(remaining, TransportConstants.MaxPayloadLength);
-
-                var streamHeader = new Header
-                {
-                    Type = PayloadTypes.Stream,
-                    Id = id,
-                    PayloadLength = (int)current,
-                    End = !(remaining > current)
-                };
-
-                //var payload = new ReadOnlyMemory<byte>(stream.GetBuffer(), (int)(stream.Length - remaining), (int)current);
-                var payload = new ReadOnlyMemory<byte>(buffer, (int)(stream.Length - remaining), (int)current);
-
-                await WriteAsync(
-                        header: streamHeader,
-                        writeFunc: async pipeWriter => await pipeWriter.WriteAsync(payload).ConfigureAwait(false))
-                    .ConfigureAwait(false);
-
-                remaining -= current;
-            }
         }
 
         private async Task SendStreamInChunksAsync(Guid id, Stream stream)

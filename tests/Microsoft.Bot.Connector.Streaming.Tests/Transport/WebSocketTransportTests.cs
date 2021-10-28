@@ -335,7 +335,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
+                var serverTransportRunning = sut.ConnectAsync(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), CancellationToken.None);
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo"), Encoding.UTF8.GetBytes("bar") };
                 SendBinaryAsync(client, messages).Wait();
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                 httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
 
                 var sut = new WebSocketTransport(new DuplexPipe(toTransport.Reader, fromTransport.Writer), logger);
-                var serverTransportRunning = sut.ConnectAsync(httpContext.Object, CancellationToken.None);
+                var serverTransportRunning = sut.ConnectAsync(httpContext.Object.WebSockets.AcceptWebSocketAsync().GetAwaiter().GetResult(), CancellationToken.None);
 
                 var messages = new List<byte[]> { Encoding.UTF8.GetBytes("foo") };
                 WriteAsync(toTransport.Writer, messages).Wait();
