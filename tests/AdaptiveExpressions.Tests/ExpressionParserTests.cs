@@ -297,6 +297,12 @@ namespace AdaptiveExpressions.Tests
                     new { x = 2, y = 2 },
                     new { x = 1, y = 1, z = 1 }
                 }
+            },
+            {
+                "numberJArray", new JArray
+                {
+                    1, 2
+                }
             }
         };
 
