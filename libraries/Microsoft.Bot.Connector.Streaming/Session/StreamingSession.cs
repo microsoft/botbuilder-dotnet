@@ -5,6 +5,7 @@ using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -94,21 +95,7 @@ namespace Microsoft.Bot.Connector.Streaming.Session
                 }
             }
 
-            // Timeout: We could be waiting for this TaskCompletionSource forever if the connection is broken
-            // before this response gets back, blocking termination on this thread. 
-            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
-            {
-                var completedTask = await Task.WhenAny(responseCompletionSource.Task, Task.Delay(TimeSpan.FromSeconds(5), timeoutCancellationTokenSource.Token)).ConfigureAwait(false);
-                if (completedTask == responseCompletionSource.Task)
-                {
-                    timeoutCancellationTokenSource.Cancel();
-                    return await responseCompletionSource.Task.ConfigureAwait(false); 
-                }
-                else
-                {
-                    throw new TimeoutException($"The operation has timed out");
-                }
-            }
+            return await responseCompletionSource.Task.DefaultTimeOutAsync().ConfigureAwait(false);            
         }
 
         public async Task SendResponseAsync(Header header, StreamingResponse response, CancellationToken cancellationToken)
