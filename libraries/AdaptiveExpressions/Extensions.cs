@@ -25,7 +25,9 @@ namespace AdaptiveExpressions
         /// <param name="value">Value to check.</param>
         /// <returns>True if numeric type.</returns>
         public static bool IsNumber(this object value)
-            => value is sbyte
+        {
+            value = FunctionUtils.ResolveValue(value);
+            return value is sbyte
             || value is byte
             || value is short
             || value is ushort
@@ -36,6 +38,7 @@ namespace AdaptiveExpressions
             || value is float
             || value is double
             || value is decimal;
+        }
 
         /// <summary>
         /// Test an object to see if it is an integer type.
@@ -43,7 +46,9 @@ namespace AdaptiveExpressions
         /// <param name="value">Value to check.</param>
         /// <returns>True if numeric type.</returns>
         public static bool IsInteger(this object value)
-            => value is sbyte
+        {
+            value = FunctionUtils.ResolveValue(value);
+            return value is sbyte
             || value is byte
             || value is short
             || value is ushort
@@ -51,6 +56,7 @@ namespace AdaptiveExpressions
             || value is uint
             || value is long
             || value is ulong;
+        }
 
         /// <summary>
         /// Generator random seed and value from properties.

@@ -954,6 +954,7 @@ namespace AdaptiveExpressions.Tests
             #endregion
 
             #region  collection functions test
+            Test("sum(numberJArray)", 3),
             Test("sum(createArray(1, 2))", 3),
             Test("sum(createArray(one, two, 3))", 6.0),
             Test("average(createArray(1, 2))", 1.5),
