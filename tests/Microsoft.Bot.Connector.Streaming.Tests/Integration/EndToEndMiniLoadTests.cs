@@ -279,25 +279,31 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
         [Fact]
         public void ServerStopsGracefullyOnClientCrash()
         {
-            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => clientWebSocket.Abort());
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => clientWebSocket.Abort());
         }
 
         [Fact]
         public void ServerStopsGracefullyOnClientDisconnect()
         {
-            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => client.Disconnect());
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => client.Disconnect());
         }
 
         [Fact]
         public void ServerStopsGracefullyOnClientCancellation()
         {
-            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => cts.Cancel());
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => clientCts.Cancel());
         }
 
         [Fact]
         public void ClientStopsGracefullyOnServerCrash()
         {
-            RunStreamingCrashTest((webSocket, clientWebSocket, client, cts) => webSocket.Abort());
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => webSocket.Abort());
+        }
+
+        [Fact]
+        public void ClientStopsGracefullyOnServerCancellation()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => serverCts.Cancel());
         }
 
         [Theory]
@@ -478,10 +484,12 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
             }
         }
 
-        private void RunStreamingCrashTest(Action<WebSocket, TestWebSocketConnectionFeature.WebSocketChannel, WebSocketClient, CancellationTokenSource> induceCrash)
+        private void RunStreamingCrashTest(Action<WebSocket, TestWebSocketConnectionFeature.WebSocketChannel, WebSocketClient, CancellationTokenSource, CancellationTokenSource> induceCrash)
         {
             var logger = XUnitLogger.CreateLogger(_testOutput);
-            var cts = new CancellationTokenSource();
+
+            var serverCts = new CancellationTokenSource();
+            var clientCts = new CancellationTokenSource();
 
             using (var connection = new TestWebSocketConnectionFeature())
             {
@@ -491,7 +499,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                 var bot = new StreamingTestBot((turnContext, cancellationToken) => Task.CompletedTask);
 
                 var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
-                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
+                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, serverCts.Token);
 
                 var clientRequestHandler = new Mock<RequestHandler>();
                 clientRequestHandler
@@ -499,7 +507,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                     .Returns(Task.FromResult(StreamingResponse.OK()));
                 using (var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger))
                 {
-                    var clientRunning = client.ConnectInternalAsync(clientWebSocket, cts.Token);
+                    var clientRunning = client.ConnectInternalAsync(clientWebSocket, clientCts.Token);
 
                     var activity = new Activity
                     {
@@ -517,7 +525,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
                     var response = client.SendAsync(StreamingRequest.CreatePost("/api/messages", content)).Result;
                     Assert.Equal(200, response.StatusCode);
 
-                    induceCrash(webSocket, clientWebSocket, client, cts);
+                    induceCrash(webSocket, clientWebSocket, client, serverCts, clientCts);
 
                     clientRunning.Wait();
                     Assert.True(clientRunning.IsCompletedSuccessfully);
