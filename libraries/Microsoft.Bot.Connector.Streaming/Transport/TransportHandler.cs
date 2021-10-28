@@ -198,39 +198,23 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            // Break stream into chunks of size `TransportConstants.MaxPayloadLength`
-            var remaining = stream.Length;
-            while (remaining > 0)
+            if (stream.Length > TransportConstants.MaxPayloadLength)
             {
-                var current = Math.Min(remaining, TransportConstants.MaxPayloadLength);
-
+                // Break stream into chunks of size `TransportConstants.MaxPayloadLength`
+                await SendStreamInChunksAsync(id, stream).ConfigureAwait(false);
+            }
+            else
+            {
+                // No chunking needed, copy the entire stream to pipe directly
                 var streamHeader = new Header
                 {
                     Type = PayloadTypes.Stream,
                     Id = id,
-                    PayloadLength = (int)current,
-                    End = !(remaining > current)
+                    PayloadLength = (int)stream.Length,
+                    End = true
                 };
 
-                if (current == stream.Length)
-                {
-                    // No chunking needed, copy the entire stream to pipe directly
-                    await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
-                }
-                else
-                {
-                    var chunk = new byte[current];
-                    current = await stream.ReadAsync(chunk, 0, (int)current).ConfigureAwait(false);
-                    streamHeader.PayloadLength = (int)current;
-                    streamHeader.End = !(remaining > current);
-
-                    await WriteAsync(
-                            header: streamHeader,
-                            writeFunc: async pipeWriter => await pipeWriter.WriteAsync(chunk).ConfigureAwait(false))
-                        .ConfigureAwait(false);
-                }
-
-                remaining -= current;
+                await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
             }
         }
 
@@ -292,6 +276,56 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 
             return true;
+        }
+
+        private async Task SendMemoryStreamInChunksAsync(Guid id, MemoryStream stream)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            await Task.CompletedTask.ConfigureAwait(false);
+        }
+
+        private async Task SendStreamInChunksAsync(Guid id, Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var chunk = new byte[TransportConstants.MaxPayloadLength];
+
+            var remaining = stream.Length;
+            while (remaining > 0)
+            {
+                var current = Math.Min(remaining, TransportConstants.MaxPayloadLength);
+
+                current = await stream.ReadAsync(chunk, 0, (int)current).ConfigureAwait(false);
+
+                var streamHeader = new Header
+                {
+                    Type = PayloadTypes.Stream,
+                    Id = id,
+                    PayloadLength = (int)current,
+                    End = !(remaining > current)
+                };
+
+                var payload = new ReadOnlyMemory<byte>(chunk, 0, (int)current);
+
+                await WriteAsync(
+                        header: streamHeader,
+                        writeFunc: async pipeWriter => await pipeWriter.WriteAsync(payload).ConfigureAwait(false))
+                    .ConfigureAwait(false);
+
+                remaining -= current;
+            }
         }
 
         private async Task WriteAsync(Header header, Func<PipeWriter, Task> writeFunc, CancellationToken cancellationToken = default)

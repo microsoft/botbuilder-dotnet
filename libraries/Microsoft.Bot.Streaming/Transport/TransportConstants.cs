@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Streaming.Transport
         /// <summary>
         /// The maximum length of a single payload segment.
         /// </summary>
-        public const int MaxPayloadLength = 3 * 1024;
+        public const int MaxPayloadLength = 4096;
 
         /// <summary>
         /// The maximum length of a <see cref="Microsoft.Bot.Streaming.Payloads.Header"/>.
