@@ -203,20 +203,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-                using (var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false))
-                {
-                    var connection = CreateWebSocketConnection(socket, Logger);
+                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                var connection = CreateWebSocketConnection(socket, Logger);
 
-                    using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
-                    {
-                        // Start receiving activities on the socket
-                        // TODO: pass asp.net core lifetime for cancellation here.
-                        _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
-                        Log.WebSocketConnectionStarted(Logger);
-                        await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
-                        _streamingConnections.TryRemove(connectionId, out _);
-                        Log.WebSocketConnectionCompleted(Logger);
-                    }
+                using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
+                {
+                    // Start receiving activities on the socket
+                    _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
+                    Log.WebSocketConnectionStarted(Logger);
+                    await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
+                    _streamingConnections.TryRemove(connectionId, out _);
+                    Log.WebSocketConnectionCompleted(Logger);
                 }
             }
         }
