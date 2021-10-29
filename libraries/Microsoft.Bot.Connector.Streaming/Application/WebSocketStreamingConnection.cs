@@ -33,13 +33,8 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// <param name="socket"><see cref="WebSocket"/> instance on which streams are transported between client and server.</param>
         /// <param name="logger"><see cref="ILogger"/> for the connection.</param>
         public WebSocketStreamingConnection(WebSocket socket, ILogger logger)
-            : this(logger)
         {
             _socket = socket ?? throw new ArgumentNullException(nameof(socket));
-        }
-
-        internal WebSocketStreamingConnection(ILogger logger)
-        {
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -73,24 +68,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
 
             await ListenImplAsync(
                 socketConnectFunc: t => t.ConnectAsync(_socket, cancellationToken),
-                requestHandler: requestHandler,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
-        internal async Task ListenInternalAsync(WebSocket webSocket, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (requestHandler == null)
-            {
-                throw new ArgumentNullException(nameof(requestHandler));
-            }
-
-            if (requestHandler == null)
-            {
-                throw new ArgumentNullException(nameof(requestHandler));
-            }
-
-            await ListenImplAsync(
-                socketConnectFunc: t => t.ProcessSocketAsync(webSocket, cancellationToken),
                 requestHandler: requestHandler,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }
