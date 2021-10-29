@@ -261,7 +261,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             public void Dispose()
             {
-                ((IDisposable)_requestHandler)?.Dispose();
+                _requestHandler?.Dispose();
             }
 
             public Task ListenAsync(CancellationToken cancellationToken) => _requestHandler.ListenAsync(cancellationToken);

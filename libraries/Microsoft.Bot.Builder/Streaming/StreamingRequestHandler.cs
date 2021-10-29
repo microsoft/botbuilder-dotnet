@@ -458,10 +458,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (disposing)
                 {
-                    if (_innerConnection is IDisposable disposable)
-                    {
-                        disposable?.Dispose();
-                    }
+                    _innerConnection?.Dispose();
                 }
 
                 _disposedValue = true;

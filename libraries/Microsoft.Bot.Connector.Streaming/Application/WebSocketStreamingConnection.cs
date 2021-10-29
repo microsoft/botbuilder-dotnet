@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
 
         private StreamingSession _session;
+        private bool _disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketStreamingConnection"/> class.
@@ -92,6 +93,20 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 socketConnectFunc: t => t.ProcessSocketAsync(webSocket, cancellationToken),
                 requestHandler: requestHandler,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _socket?.Dispose();
+                }
+
+                _disposedValue = true;
+            }
         }
 
         private async Task ListenImplAsync(Func<WebSocketTransport, Task> socketConnectFunc, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
