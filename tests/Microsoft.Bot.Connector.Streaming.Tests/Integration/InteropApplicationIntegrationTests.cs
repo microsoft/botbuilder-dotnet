@@ -42,10 +42,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var connection = new WebSocketStreamingConnection(logger);
-
                 var socket = await webSocketFeature.AcceptAsync().ConfigureAwait(false);
-                var serverTask = Task.Run(() => connection.ListenInternalAsync(socket, botRequestHandler.Object));
+                var connection = new WebSocketStreamingConnection(socket, logger);
+                var serverTask = Task.Run(() => connection.ListenAsync(botRequestHandler.Object));
 
                 // Client / channel setup
                 var clientRequestHandler = new Mock<RequestHandler>();
@@ -100,10 +99,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var connection = new WebSocketStreamingConnection(logger);
-
                 var socket = await webSocketFeature.AcceptAsync().ConfigureAwait(false);
-                var serverTask = Task.Run(() => connection.ListenInternalAsync(socket, botRequestHandler.Object));
+                var connection = new WebSocketStreamingConnection(socket, logger);
+                var serverTask = Task.Run(() => connection.ListenAsync(botRequestHandler.Object));
                 await Task.Delay(TimeSpan.FromSeconds(1));
                 var clients = new List<Microsoft.Bot.Streaming.Transport.WebSockets.WebSocketClient>();
 
@@ -203,10 +201,9 @@ namespace Microsoft.Bot.Connector.Streaming.Tests
                     .Setup(r => r.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), null, null, CancellationToken.None))
                     .ReturnsAsync(() => new StreamingResponse() { StatusCode = 200 });
 
-                var connection = new WebSocketStreamingConnection(logger);
-
                 var socket = await webSocketFeature.AcceptAsync().ConfigureAwait(false);
-                var serverTask = Task.Run(() => connection.ListenInternalAsync(socket, botRequestHandler.Object));
+                var connection = new WebSocketStreamingConnection(socket, logger);
+                var serverTask = Task.Run(() => connection.ListenAsync(botRequestHandler.Object));
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
                 //Parallel.For(0, clientCount, async i => 

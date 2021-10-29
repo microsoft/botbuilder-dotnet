@@ -996,7 +996,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 _connection = connection;
             }
 
-            protected override StreamingConnection CreateWebSocketConnection(HttpContext httpContext, ILogger logger)
+            protected override StreamingConnection CreateWebSocketConnection(WebSocket socket, ILogger logger)
             {
                 return _connection;
             }

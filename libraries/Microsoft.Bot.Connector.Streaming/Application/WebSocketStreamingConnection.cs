@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Streaming.Session;
 using Microsoft.Bot.Connector.Streaming.Transport;
 using Microsoft.Bot.Streaming;
@@ -22,26 +20,21 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     /// </summary>
     public class WebSocketStreamingConnection : StreamingConnection
     {
+        private readonly WebSocket _socket;
         private readonly ILogger _logger;
-        private readonly HttpContext _httpContext;
         private readonly TaskCompletionSource<bool> _sessionInitializedTask = new TaskCompletionSource<bool>();
 
         private StreamingSession _session;
-        private CancellationToken _cancellationToken;
-        
+        private bool _disposedValue;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebSocketStreamingConnection"/> class.
         /// </summary>
-        /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
+        /// <param name="socket"><see cref="WebSocket"/> instance on which streams are transported between client and server.</param>
         /// <param name="logger"><see cref="ILogger"/> for the connection.</param>
-        public WebSocketStreamingConnection(HttpContext httpContext, ILogger logger)
-            : this(logger)
+        public WebSocketStreamingConnection(WebSocket socket, ILogger logger)
         {
-            _httpContext = httpContext ?? throw new ArgumentNullException(nameof(httpContext));
-        }
-
-        internal WebSocketStreamingConnection(ILogger logger)
-        {
+            _socket = socket ?? throw new ArgumentNullException(nameof(socket));
             _logger = logger ?? NullLogger.Instance;
         }
 
@@ -74,40 +67,35 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             }
 
             await ListenImplAsync(
-                socketConnectFunc: t => t.ConnectAsync(_httpContext, CancellationToken.None),
+                socketConnectFunc: t => t.ConnectAsync(_socket, cancellationToken),
                 requestHandler: requestHandler,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        internal async Task ListenInternalAsync(WebSocket webSocket, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            if (requestHandler == null)
+            if (!_disposedValue)
             {
-                throw new ArgumentNullException(nameof(requestHandler));
-            }
+                if (disposing)
+                {
+                    _socket?.Dispose();
+                }
 
-            if (requestHandler == null)
-            {
-                throw new ArgumentNullException(nameof(requestHandler));
+                _disposedValue = true;
             }
-
-            await ListenImplAsync(
-                socketConnectFunc: t => t.ProcessSocketAsync(webSocket, cancellationToken),
-                requestHandler: requestHandler,
-                cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         private async Task ListenImplAsync(Func<WebSocketTransport, Task> socketConnectFunc, RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken))
         {
             var duplexPipePair = DuplexPipe.CreateConnectionPair(PipeOptions.Default, PipeOptions.Default);
-            _cancellationToken = cancellationToken;
 
             // Create transport and application
             var transport = new WebSocketTransport(duplexPipePair.Application, _logger);
             var application = new TransportHandler(duplexPipePair.Transport, _logger);
 
             // Create session
-            _session = new StreamingSession(requestHandler, application, _logger, _cancellationToken);
+            _session = new StreamingSession(requestHandler, application, _logger, cancellationToken);
 
             // Start transport and application
             var transportTask = socketConnectFunc(transport);

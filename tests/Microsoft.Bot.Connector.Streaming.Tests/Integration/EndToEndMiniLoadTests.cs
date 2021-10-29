@@ -3,11 +3,708 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.WebSockets;
+using System.Security.Claims;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Connector.Streaming.Application;
+using Microsoft.Bot.Connector.Streaming.Tests.Features;
+using Microsoft.Bot.Connector.Streaming.Tests.Tools;
+using Microsoft.Bot.Schema;
+using Microsoft.Bot.Streaming;
+using Microsoft.Bot.Streaming.Transport;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Moq;
+using Newtonsoft.Json;
+using Xunit;
+using Xunit.Abstractions;
+using Activity = Microsoft.Bot.Schema.Activity;
 
-namespace Microsoft.Bot.Connector.Streaming.Tests
+namespace Microsoft.Bot.Connector.Streaming.Tests.Integration
 {
     public class EndToEndMiniLoadTests
     {
+        private readonly ITestOutputHelper _testOutput;
+
+        public EndToEndMiniLoadTests(ITestOutputHelper testOutput)
+        {
+            _testOutput = testOutput;
+        }
+
+        [Theory]
+        [InlineData(false, false)] // new client, new server
+        [InlineData(true, true)] // legacy client, legacy server
+        [InlineData(true, false)] // legacy client, new server
+        [InlineData(false, true)] // new client, legacy server
+        public void SimpleActivityTest(bool useLegacyClient, bool useLegacyServer)
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            // Arrange
+            var activities = new[]
+            {
+                new Activity
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Type = ActivityTypes.Message,
+                    From = new ChannelAccount { Id = "testUser" },
+                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                    Recipient = new ChannelAccount { Id = "testBot" },
+                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                    ChannelId = "test",
+                    Text = "hi"
+                }
+            };
+
+            var verifiedResponses = activities.ToDictionary(a => a.Id, a => false);
+
+            var bot = new StreamingTestBot((turnContext, cancellationToken) =>
+            {
+                var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(turnContext.Activity));
+                activityClone.Text = $"Echo: {turnContext.Activity.Text}";
+
+                return turnContext.SendActivityAsync(activityClone, cancellationToken);
+            });
+
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+
+            var clientRequestHandler = new Mock<RequestHandler>();
+            clientRequestHandler
+                .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
+                {
+                    var body = request.ReadBodyAsString();
+                    var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+
+                    Assert.NotNull(response);
+                    Assert.Equal("Echo: hi", response.Text);
+
+                    verifiedResponses[response.ReplyToId] = true;
+
+                    return Task.FromResult(StreamingResponse.OK());
+                });
+
+            // Act
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
+
+            // Assert
+            Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
+        }
+
+        [Theory]
+        [InlineData(false, false)] // new client, new server
+        [InlineData(true, true)] // legacy client, legacy server
+        [InlineData(true, false)] // legacy client, new server
+        [InlineData(false, true)] // new client, legacy server
+        public void ActivityWithSuggestedActionsTest(bool useLegacyClient, bool useLegacyServer)
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            // Arrange
+            var activities = new[]
+            {
+                new Activity
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Type = ActivityTypes.Message,
+                    From = new ChannelAccount { Id = "testUser" },
+                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                    Recipient = new ChannelAccount { Id = "testBot" },
+                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                    ChannelId = "test",
+                    Text = "hi",
+                    SuggestedActions = new SuggestedActions
+                    {
+                        Actions = new List<CardAction>
+                        {
+                            new CardAction() { Title = "Red", Type = ActionTypes.ImBack, Value = "Red", Image = "https://via.placeholder.com/20/FF0000?text=R", ImageAltText = "R" },
+                            new CardAction() { Title = "Yellow", Type = ActionTypes.ImBack, Value = "Yellow", Image = "https://via.placeholder.com/20/FFFF00?text=Y", ImageAltText = "Y" },
+                            new CardAction() { Title = "Blue", Type = ActionTypes.ImBack, Value = "Blue", Image = "https://via.placeholder.com/20/0000FF?text=B", ImageAltText = "B" }
+                        }
+                    }
+                }
+            };
+
+            var verifiedResponses = activities.ToDictionary(a => a.Id, a => false);
+
+            var bot = new StreamingTestBot((turnContext, cancellationToken) =>
+            {
+                var activityClone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(turnContext.Activity));
+                activityClone.Text = $"Echo: {turnContext.Activity.Text}";
+
+                return turnContext.SendActivityAsync(activityClone, cancellationToken);
+            });
+
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+
+            var clientRequestHandler = new Mock<RequestHandler>();
+            clientRequestHandler
+                .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
+                {
+                    var body = request.ReadBodyAsString();
+                    var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+
+                    Assert.NotNull(response);
+                    Assert.Equal("Echo: hi", response.Text);
+                    Assert.Equal(3, response.SuggestedActions.Actions.Count);
+
+                    verifiedResponses[response.ReplyToId] = true;
+
+                    return Task.FromResult(StreamingResponse.OK());
+                });
+
+            // Act
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
+
+            // Assert
+            Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
+        }
+
+        [Theory]
+        [InlineData(false, false)] // new client, new server
+        [InlineData(true, true)] // legacy client, legacy server
+        [InlineData(true, false)] // legacy client, new server
+        [InlineData(false, true)] // new client, legacy server
+        public void ActivityWithAttachmentsTest(bool useLegacyClient, bool useLegacyServer)
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            // Arrange
+            var activities = new[]
+            {
+                new Activity
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Type = ActivityTypes.Message,
+                    From = new ChannelAccount { Id = "testUser" },
+                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                    Recipient = new ChannelAccount { Id = "testBot" },
+                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                    ChannelId = "test",
+                    Text = "1"
+                },
+                new Activity
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Type = ActivityTypes.Message,
+                    From = new ChannelAccount { Id = "testUser" },
+                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                    Recipient = new ChannelAccount { Id = "testBot" },
+                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                    ChannelId = "test",
+                    Text = "2",
+                    Attachments = new List<Attachment>
+                    {
+                        new Attachment
+                        {
+                            Name = @"Resources\architecture-resize.png",
+                            ContentType = "image/png",
+                            ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
+                        }
+                    }
+                }
+            };
+
+            var verifiedResponses = activities.ToDictionary(a => a.Id, a => false);
+
+            var bot = new StreamingTestBot((turnContext, cancellationToken) =>
+            {
+                switch (turnContext.Activity.Text)
+                {
+                    case "1":
+                        var response1 = MessageFactory.Text("Echo: 1");
+                        response1.Attachments = new List<Attachment>
+                        {
+                            new Attachment
+                            {
+                                Name = @"Resources\architecture-resize.png",
+                                ContentType = "image/png",
+                                ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
+                            }
+                        };
+                        return turnContext.SendActivityAsync(response1, cancellationToken);
+
+                    case "2":
+                        var response2 = MessageFactory.Text("Echo: 2");
+                        return turnContext.SendActivityAsync(response2, cancellationToken);
+
+                    default:
+                        throw new ApplicationException("Unknown Activity!");
+                }
+            });
+
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+
+            var clientRequestHandler = new Mock<RequestHandler>();
+            clientRequestHandler
+                .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
+                {
+                    try
+                    {
+                        var body = request.ReadBodyAsString();
+                        var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+
+                        Assert.NotNull(response);
+                        Assert.Equal($"Echo: {activities.FirstOrDefault(a => a.Id == response.ReplyToId)?.Text}", response.Text);
+
+                        verifiedResponses[response.ReplyToId] = true;
+
+                        return Task.FromResult(StreamingResponse.OK());
+                    }
+                    catch (Exception e)
+                    {
+                        return Task.FromResult(StreamingResponse.InternalServerError(new StringContent(e.ToString())));
+                    }
+                });
+
+            // Act
+            RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient);
+
+            // Assert
+            Assert.True(verifiedResponses.Values.All(verifiedResponse => verifiedResponse));
+        }
+
+        [Fact]
+        public void ServerStopsGracefullyOnClientCrash()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => clientWebSocket.Abort());
+        }
+
+        [Fact]
+        public void ServerStopsGracefullyOnClientDisconnect()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => client.Disconnect());
+        }
+
+        [Fact]
+        public void ServerStopsGracefullyOnClientCancellation()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => clientCts.Cancel());
+        }
+
+        [Fact]
+        public void ClientStopsGracefullyOnServerCrash()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => webSocket.Abort());
+        }
+
+        [Fact]
+        public void ClientStopsGracefullyOnServerCancellation()
+        {
+            RunStreamingCrashTest((webSocket, clientWebSocket, client, serverCts, clientCts) => serverCts.Cancel());
+        }
+
+        [Theory]
+        [InlineData(3, 50, 4, false, false)] // new client, new server
+        [InlineData(3, 100, 32, false, false)] // new client, new server
+        public void ConcurrencyTest(int connectionCount, int messageCount, int threadCount, bool useLegacyClient, bool useLegacyServer)
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            var activities = new[]
+            {
+                new Activity
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Type = ActivityTypes.Message,
+                    From = new ChannelAccount { Id = "testUser" },
+                    Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                    Recipient = new ChannelAccount { Id = "testBot" },
+                    ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                    ChannelId = "test",
+                    Text = "hi",
+                    Attachments = new List<Attachment>
+                    {
+                        new Attachment
+                        {
+                            Name = @"Resources\architecture-resize.png",
+                            ContentType = "image/png",
+                            ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
+                        }
+                    }
+                }
+            };
+
+            var bot = new StreamingTestBot((turnContext, cancellationToken) =>
+            {
+                var response = MessageFactory.Text("Echo: hi");
+                response.Attachments = new List<Attachment>
+                {
+                    new Attachment
+                    {
+                        Name = @"Resources\architecture-resize.png",
+                        ContentType = "image/png",
+                        ContentUrl = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Environment.CurrentDirectory, @"Resources", "architecture-resize.png")))}",
+                    }
+                };
+                return turnContext.SendActivityAsync(response, cancellationToken);
+            });
+
+            var server = CreateTestStreamingTransportServer(useLegacyServer, logger);
+
+            var clientRequestHandler = new Mock<RequestHandler>();
+            clientRequestHandler
+                .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                .Returns<ReceiveRequest, ILogger<RequestHandler>, object, CancellationToken>((request, anonLogger, context, cancellationToken) =>
+                {
+                    try
+                    {
+                        var body = request.ReadBodyAsString();
+                        var response = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+                        Assert.NotNull(response);
+
+                        Assert.Equal($"Echo: {activities.FirstOrDefault(a => a.Id == response.ReplyToId)?.Text}", response.Text);
+                        Assert.Equal(1, response.Attachments.Count);
+
+                        return Task.FromResult(StreamingResponse.OK());
+                    }
+                    catch (Exception e)
+                    {
+                        return Task.FromResult(StreamingResponse.InternalServerError(new StringContent(e.ToString())));
+                    }
+                });
+
+            var connections = new Task[connectionCount];
+
+            for (var i = 0; i < connectionCount; i++)
+            {
+                connections[i] = Task.Factory.StartNew(() =>
+                    RunActivityStreamingTest(activities, bot, server, clientRequestHandler.Object, logger, useLegacyClient, messageCount, threadCount));
+            }
+
+            Task.WhenAll(connections).Wait();
+        }
+
+        private static IBotFrameworkHttpAdapter CreateTestStreamingTransportServer(bool useLegacyServer, ILogger logger)
+        {
+            if (useLegacyServer)
+            {
+                return new BotFrameworkHttpAdapter();
+            }
+            else
+            {
+                return new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+            }
+        }
+
+        private static HttpRequest CreateWebSocketUpgradeRequest(WebSocket webSocket)
+        {
+            var webSocketManager = new Mock<WebSocketManager>();
+            webSocketManager.Setup(m => m.IsWebSocketRequest).Returns(true);
+            webSocketManager.Setup(m => m.AcceptWebSocketAsync()).Returns(Task.FromResult(webSocket));
+
+            var httpContext = new Mock<HttpContext>();
+            httpContext.Setup(c => c.WebSockets).Returns(webSocketManager.Object);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.Setup(r => r.Method).Returns("GET");
+            httpRequest.Setup(r => r.HttpContext).Returns(httpContext.Object);
+            httpRequest.Setup(r => r.Headers).Returns(new HeaderDictionary
+            {
+                { "Authorization", new StringValues("Bearer token") },
+                { "channelid", new StringValues("test") }
+            });
+
+            return httpRequest.Object;
+        }
+
+        private static void SimulateMultiTurnConversation(int conversationId, Activity[] activities, IStreamingTransportClient client, ILogger logger, SemaphoreSlim throttler = null)
+        {
+            try
+            {
+                foreach (var activity in activities)
+                {
+                    var timer = Stopwatch.StartNew();
+
+                    var content = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
+                    var response = client.SendAsync(StreamingRequest.CreatePost("/api/messages", content)).Result;
+
+                    logger.LogInformation($"Conversation {conversationId} latency: {timer.ElapsedMilliseconds}. Status code: {response.StatusCode}");
+                }
+            }
+            finally
+            {
+                if (throttler != null)
+                {
+                    throttler.Release();
+                }
+            }
+        }
+
+        private static void RunActivityStreamingTest(Activity[] activities, IBot bot, IBotFrameworkHttpAdapter server, RequestHandler clientRequestHandler, ILogger logger, bool useLegacyClient = false, int messageCount = 1, int threadCount = 1)
+        {
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var webSocket = connection.AcceptAsync().Result;
+                var clientWebSocket = connection.Client;
+                var client = new TestStreamingTransportClient("wss://test", clientRequestHandler, clientWebSocket, logger, useLegacyClient);
+
+                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, CancellationToken.None);
+                var clientRunning = client.ConnectAsync();
+
+                if (messageCount == 1)
+                {
+                    SimulateMultiTurnConversation(1, activities, client, logger);
+                }
+                else
+                {
+                    var conversations = new Task[messageCount];
+                    var throttler = new SemaphoreSlim(threadCount);
+
+                    for (var i = 0; i < messageCount; i++)
+                    {
+                        throttler.Wait();
+
+                        var conversationId = i;
+                        conversations[i] = Task.Factory.StartNew(() => SimulateMultiTurnConversation(conversationId, activities, client, logger, throttler));
+                    }
+
+                    Task.WhenAny(Task.WhenAll(conversations), Task.Delay(new TimeSpan(0, 0, 5, 0))).Wait();
+                }
+
+                clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "End of test", CancellationToken.None).Wait();
+
+                clientRunning.Wait();
+                Assert.Equal(TaskStatus.RanToCompletion, clientRunning.Status);
+
+                serverRunning.Wait();
+                Assert.Equal(TaskStatus.RanToCompletion, serverRunning.Status);
+            }
+        }
+
+        private void RunStreamingCrashTest(Action<WebSocket, TestWebSocketConnectionFeature.WebSocketChannel, WebSocketClient, CancellationTokenSource, CancellationTokenSource> induceCrash)
+        {
+            var logger = XUnitLogger.CreateLogger(_testOutput);
+
+            var serverCts = new CancellationTokenSource();
+            var clientCts = new CancellationTokenSource();
+
+            using (var connection = new TestWebSocketConnectionFeature())
+            {
+                var webSocket = connection.AcceptAsync().Result;
+                var clientWebSocket = connection.Client;
+
+                var bot = new StreamingTestBot((turnContext, cancellationToken) => Task.CompletedTask);
+
+                var server = new CloudAdapter(new StreamingTestBotFrameworkAuthentication(), logger);
+                var serverRunning = server.ProcessAsync(CreateWebSocketUpgradeRequest(webSocket), new Mock<HttpResponse>().Object, bot, serverCts.Token);
+
+                var clientRequestHandler = new Mock<RequestHandler>();
+                clientRequestHandler
+                    .Setup(h => h.ProcessRequestAsync(It.IsAny<ReceiveRequest>(), It.IsAny<ILogger<RequestHandler>>(), It.IsAny<object>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(StreamingResponse.OK()));
+                using (var client = new WebSocketClient("wss://test", clientRequestHandler.Object, logger: logger))
+                {
+                    var clientRunning = client.ConnectInternalAsync(clientWebSocket, clientCts.Token);
+
+                    var activity = new Activity
+                    {
+                        Id = Guid.NewGuid().ToString("N"),
+                        Type = ActivityTypes.Message,
+                        From = new ChannelAccount { Id = "testUser" },
+                        Conversation = new ConversationAccount { Id = Guid.NewGuid().ToString("N") },
+                        Recipient = new ChannelAccount { Id = "testBot" },
+                        ServiceUrl = "wss://InvalidServiceUrl/api/messages",
+                        ChannelId = "test",
+                        Text = "hi"
+                    };
+
+                    var content = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
+                    var response = client.SendAsync(StreamingRequest.CreatePost("/api/messages", content)).Result;
+                    Assert.Equal(200, response.StatusCode);
+
+                    induceCrash(webSocket, clientWebSocket, client, serverCts, clientCts);
+
+                    clientRunning.Wait();
+                    Assert.True(clientRunning.IsCompletedSuccessfully);
+                }
+
+                serverRunning.Wait();
+                Assert.True(serverRunning.IsCompletedSuccessfully);
+            }
+        }
+
+        private class StreamingTestBot : ActivityHandler
+        {
+            private readonly Func<ITurnContext<IMessageActivity>, CancellationToken, Task> _onMessageActivityAsync;
+
+            public StreamingTestBot(Func<ITurnContext<IMessageActivity>, CancellationToken, Task> onMessageActivityAsync)
+            {
+                _onMessageActivityAsync = onMessageActivityAsync ?? throw new ArgumentNullException(nameof(onMessageActivityAsync));
+            }
+
+            protected override Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+            {
+                return _onMessageActivityAsync(turnContext, cancellationToken);
+            }
+        }
+
+        private class StreamingTestBotFrameworkAuthentication : BotFrameworkAuthentication
+        {
+            public override Task<AuthenticateRequestResult> AuthenticateRequestAsync(Activity activity, string authHeader, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<AuthenticateRequestResult> AuthenticateStreamingRequestAsync(string authHeader, string channelIdHeader, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new AuthenticateRequestResult
+                {
+                    Audience = "aud",
+                    CallerId = "caller",
+                    ClaimsIdentity = new ClaimsIdentity(new List<Claim>
+                    {
+                        new Claim("aud", "aud"),
+                        new Claim("iss", "https://login.microsoftonline.com/tid"),
+                        new Claim("azp", "appId"),
+                        new Claim("tid", "tid"),
+                        new Claim("ver", "2.0")
+                    })
+                });
+            }
+
+            public override ConnectorFactory CreateConnectorFactory(ClaimsIdentity claimsIdentity)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<UserTokenClient> CreateUserTokenClientAsync(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
+            {
+                return Task.FromResult<UserTokenClient>(new TestUserTokenClient());
+            }
+        }
+
+        private class TestStreamingTransportClient : IStreamingTransportClient
+        {
+            private readonly WebSocket _client;
+            private readonly bool _useLegacyClient;
+
+            private readonly WebSocketClient _inner;
+            private readonly Bot.Streaming.Transport.WebSockets.WebSocketClient _innerLegacy;
+
+            public TestStreamingTransportClient(string url, RequestHandler requestHandler, WebSocket client, ILogger logger, bool useLegacyClient = false)
+            {
+                _client = client ?? throw new ArgumentNullException(nameof(client));
+                _useLegacyClient = useLegacyClient;
+
+                if (useLegacyClient)
+                {
+                    _innerLegacy = new Bot.Streaming.Transport.WebSockets.WebSocketClient(url, requestHandler);
+                }
+                else
+                {
+                    _inner = new WebSocketClient(url, requestHandler, logger: logger);
+                }
+            }
+
+            public event DisconnectedEventHandler Disconnected;
+
+            public bool IsConnected => _useLegacyClient ? _innerLegacy.IsConnected : _inner.IsConnected;
+
+            public Task ConnectAsync()
+            {
+                return _useLegacyClient
+                    ? _innerLegacy.ConnectInternalAsync(_client)
+                    : _inner.ConnectInternalAsync(_client, CancellationToken.None);
+            }
+
+            public Task ConnectAsync(IDictionary<string, string> requestHeaders)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<ReceiveResponse> SendAsync(StreamingRequest message, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                return _useLegacyClient
+                    ? _innerLegacy.SendAsync(message, cancellationToken)
+                    : _inner.SendAsync(message, cancellationToken);
+            }
+
+            public void Disconnect()
+            {
+                if (_useLegacyClient)
+                {
+                    _innerLegacy.Disconnect();
+                }
+                else
+                {
+                    _inner.Disconnect();
+                }
+            }
+
+            public void Dispose()
+            {
+                if (_useLegacyClient)
+                {
+                    _innerLegacy.Dispose();
+                }
+                else
+                {
+                    _inner.Dispose();
+                }
+
+                if (Disconnected != null)
+                {
+                    Disconnected(GetDisconnectedEventSender(), DisconnectedEventArgs.Empty);
+                }
+            }
+
+            private object GetDisconnectedEventSender()
+            {
+                if (_useLegacyClient)
+                {
+                    return _innerLegacy;
+                }
+                else
+                {
+                    return _inner;
+                }
+            }
+        }
+
+        private class TestUserTokenClient : UserTokenClient
+        {
+            public override Task<TokenResponse> ExchangeTokenAsync(string userId, string connectionName, string channelId, TokenExchangeRequest exchangeRequest, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new TokenResponse());
+            }
+
+            public override Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(string userId, string connectionName, string[] resourceUrls, string channelId, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new Dictionary<string, TokenResponse>());
+            }
+
+            public override Task<SignInResource> GetSignInResourceAsync(string connectionName, Activity activity, string finalRedirect, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new SignInResource());
+            }
+
+            public override Task<TokenStatus[]> GetTokenStatusAsync(string userId, string channelId, string includeFilter, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(Array.Empty<TokenStatus>());
+            }
+
+            public override Task<TokenResponse> GetUserTokenAsync(string userId, string connectionName, string channelId, string magicCode, CancellationToken cancellationToken)
+            {
+                return Task.FromResult(new TokenResponse());
+            }
+
+            public override Task SignOutUserAsync(string userId, string connectionName, string channelId, CancellationToken cancellationToken)
+            {
+                return Task.CompletedTask;
+            }
+        }
     }
 }

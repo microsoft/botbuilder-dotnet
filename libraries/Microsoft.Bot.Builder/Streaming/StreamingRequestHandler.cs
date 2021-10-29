@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.Streaming
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A task that completes once the server is no longer listening.</returns>
-        public async Task ListenAsync(CancellationToken cancellationToken)
+        public virtual async Task ListenAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Streaming request handler started listening");
             await _innerConnection.ListenAsync(this, cancellationToken).ConfigureAwait(false);
@@ -458,10 +458,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (disposing)
                 {
-                    if (_innerConnection is IDisposable disposable)
-                    {
-                        disposable?.Dispose();
-                    }
+                    _innerConnection?.Dispose();
                 }
 
                 _disposedValue = true;
