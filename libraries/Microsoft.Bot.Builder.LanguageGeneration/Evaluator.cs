@@ -593,11 +593,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(template, FunctionUtils.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
-            const string fromFile = "fromFile";
-
-            if (name.Equals(fromFile, StringComparison.Ordinal))
+            if (LanguageGeneration.Templates.EnableFromFile)
             {
-                return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(FromFile()), ReturnType.String, ValidateFromFile);
+                const string fromFile = "fromFile";
+
+                if (name.Equals(fromFile, StringComparison.Ordinal))
+                {
+                    return new ExpressionEvaluator(fromFile, FunctionUtils.Apply(FromFile()), ReturnType.String, ValidateFromFile);
+                }
             }
 
             const string activityAttachment = "ActivityAttachment";
