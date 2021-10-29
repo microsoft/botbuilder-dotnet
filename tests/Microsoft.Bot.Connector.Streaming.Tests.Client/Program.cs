@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Client
 
             if (!string.IsNullOrEmpty(appId) && !string.IsNullOrEmpty(appPassword))
             {
-                var credentials = new MicrosoftAppCredentials(appId, appPassword);
+                var credentials = new MsalAppCredentials(appId, appPassword, null, appId);
                 var token = await credentials.GetTokenAsync();
 
                 headers.Add("Authorization", $"Bearer {token}");
