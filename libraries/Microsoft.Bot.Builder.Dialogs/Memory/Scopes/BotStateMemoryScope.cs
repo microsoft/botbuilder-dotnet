@@ -31,10 +31,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <returns>memory for the scope.</returns>
         public override object GetMemory(DialogContext dialogContext)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (dialogContext == null)
             {
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var botState = GetBotState(dialogContext);
             var cachedState = botState?.GetCachedState(dialogContext.Context);
@@ -49,10 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="memory">memory.</param>
         public override void SetMemory(DialogContext dialogContext, object memory)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (dialogContext == null)
             {
                 throw new ArgumentNullException($"{nameof(dialogContext)} is null");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var botState = GetBotState(dialogContext);
 

@@ -114,7 +114,9 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             date = date.ToUniversalTime();
             if (date <= DateTime.UtcNow)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(Date)} must be in the future");
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentOutOfRangeException(paramName: $"{nameof(Date)} must be in the future");
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
             // create ContinuationActivity from the conversation reference.

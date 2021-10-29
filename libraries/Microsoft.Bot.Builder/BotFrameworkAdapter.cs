@@ -344,7 +344,7 @@ namespace Microsoft.Bot.Builder
 
             if (string.IsNullOrWhiteSpace(audience))
             {
-                throw new ArgumentNullException($"{nameof(audience)} cannot be null or white space.");
+                throw new ArgumentNullException(nameof(audience));
             }
 
             // Reusing the code from the above override, ContinueConversationAsync()
@@ -647,6 +647,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         public virtual async Task DeleteConversationMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (turnContext.Activity.Conversation == null)
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation");
@@ -656,6 +657,7 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(DeleteConversationMemberAsync)}(): missing conversation.id");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
 
@@ -678,7 +680,7 @@ namespace Microsoft.Bot.Builder
             {
                 activityId = turnContext.Activity.Id;
             }
-
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (turnContext.Activity.Conversation == null)
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation");
@@ -688,6 +690,7 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetActivityMembersAsync)}(): missing conversation.id");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var conversationId = turnContext.Activity.Conversation.Id;
@@ -705,6 +708,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>List of Members of the current conversation.</returns>
         public virtual async Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (turnContext.Activity.Conversation == null)
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation");
@@ -714,6 +718,7 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetConversationMembersAsync)}(): missing conversation.id");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var conversationId = turnContext.Activity.Conversation.Id;
@@ -789,10 +794,12 @@ namespace Microsoft.Bot.Builder
         public virtual async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, AppCredentials oAuthAppCredentials, string connectionName, string magicCode, CancellationToken cancellationToken = default)
         {
             BotAssert.ContextNotNull(turnContext);
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (turnContext.Activity.From == null || string.IsNullOrWhiteSpace(turnContext.Activity.From.Id))
             {
                 throw new ArgumentNullException($"{nameof(BotFrameworkAdapter)}.{nameof(GetUserTokenAsync)}(): missing from or from.id");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (string.IsNullOrWhiteSpace(connectionName))
             {

@@ -64,6 +64,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             _resolver = resolver;
             if (modelPath == null)
             {
+#pragma warning disable IDE0016 // Use 'throw' expression
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
                 throw new ArgumentNullException($"Missing `ModelPath` information.");
             }
 
@@ -71,6 +73,8 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 throw new ArgumentNullException($"Missing `SnapshotPath` information.");
             }
+#pragma warning restore IDE0016 // Use 'throw' expression
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             _modelPath = modelPath;
             _snapshotPath = snapshotPath;
@@ -295,6 +299,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         {
             if (_modelPath == null)
             {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
                 throw new ArgumentNullException($"Missing `ModelPath` information.");
             }
 
@@ -302,6 +307,7 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
             {
                 throw new ArgumentNullException($"Missing `ShapshotPath` information.");
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (orchestrator == null && _resolver == null)
             {
