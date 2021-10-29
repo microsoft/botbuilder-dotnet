@@ -480,6 +480,12 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
                 await base.ListenAsync();
             }
 
+            public override Task ListenAsync(CancellationToken cancellationToken)
+            {
+                _methodCalls.Add("ListenAsync()");
+                return base.ListenAsync(cancellationToken);
+            }
+
             protected override void ServerDisconnected(object sender, DisconnectedEventArgs e)
             {
                 _methodCalls.Add("ServerDisconnected()");

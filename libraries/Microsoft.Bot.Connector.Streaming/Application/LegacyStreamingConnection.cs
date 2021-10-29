@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     /// The <see cref="StreamingConnection"/> to be used by legacy bots.
     /// </summary>
     [Obsolete("Use `WebSocketStreamingConnection` instead.", false)]
-    public class LegacyStreamingConnection : StreamingConnection, IDisposable
+    public class LegacyStreamingConnection : StreamingConnection
     {
         private readonly WebSocket _socket;
         private readonly string _pipeName;
@@ -87,14 +87,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             return await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
         internal virtual IStreamingTransportServer CreateStreamingTransportServer(RequestHandler requestHandler)
         {
             if (_socket != null)
@@ -110,10 +102,9 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             throw new ApplicationException("Neither web socket, nor named pipe found to instantiate a streaming transport server!");
         }
 
+        /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We want to catch all exceptions while disconnecting.")]
-#pragma warning disable CA1063 // Implement IDisposable Correctly
-        private void Dispose(bool disposing)
-#pragma warning restore CA1063 // Implement IDisposable Correctly
+        protected override void Dispose(bool disposing)
         {
             if (!_disposedValue)
             {

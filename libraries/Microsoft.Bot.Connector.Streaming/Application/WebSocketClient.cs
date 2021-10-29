@@ -57,14 +57,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             _keepAlive = keepAlive;
         }
 
-        internal WebSocketClient(RequestHandler requestHandler, TimeSpan? closeTimeOut = null, TimeSpan? keepAlive = null, ILogger logger = null)
-        {
-            _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
-            _logger = logger ?? NullLogger.Instance;
-            _closeTimeout = closeTimeOut ?? TimeSpan.FromSeconds(15);
-            _keepAlive = keepAlive;
-        }
-
         /// <inheritdoc/>
         public event DisconnectedEventHandler Disconnected;
 
@@ -92,7 +84,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         public async Task ConnectAsync(IDictionary<string, string> requestHeaders, CancellationToken cancellationToken)
         {
             await ConnectInternalAsync(
-                connectFunc: transport => transport.ConnectAsync(_url, requestHeaders, CancellationToken.None),
+                connectFunc: transport => transport.ConnectAsync(_url, requestHeaders, cancellationToken),
                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
@@ -142,7 +134,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         internal async Task ConnectInternalAsync(WebSocket clientSocket, CancellationToken cancellationToken)
         {
             await ConnectInternalAsync(
-                connectFunc: transport => transport.ProcessSocketAsync(clientSocket, CancellationToken.None),
+                connectFunc: transport => transport.ProcessSocketAsync(clientSocket, cancellationToken),
                 cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
@@ -165,7 +157,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
                 _transportHandler = new TransportHandler(_duplexPipePair.Transport, _logger);
 
                 // Session
-                _session = new StreamingSession(_requestHandler, _transportHandler, _logger);
+                _session = new StreamingSession(_requestHandler, _transportHandler, _logger, cancellationToken);
 
                 // Set up cancellation
                 _disconnectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

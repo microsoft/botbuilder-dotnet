@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +18,6 @@ using Microsoft.Bot.Streaming.Payloads;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace Microsoft.Bot.Connector.Streaming.Session
 {
@@ -86,26 +83,15 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             // Send request
             await _sender.SendRequestAsync(requestId, payload, cancellationToken).ConfigureAwait(false);
 
-            foreach (var stream in request.Streams)
+            if (request.Streams != null)
             {
-                await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
+                foreach (var stream in request.Streams)
+                {
+                    await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
+                }
             }
 
-            // Timeout: We could be waiting for this TaskCompletionSource forever if the connection is broken
-            // before this response gets back, blocking termination on this thread. 
-            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
-            {
-                var completedTask = await Task.WhenAny(responseCompletionSource.Task, Task.Delay(TimeSpan.FromSeconds(5), timeoutCancellationTokenSource.Token)).ConfigureAwait(false);
-                if (completedTask == responseCompletionSource.Task)
-                {
-                    timeoutCancellationTokenSource.Cancel();
-                    return await responseCompletionSource.Task.ConfigureAwait(false); 
-                }
-                else
-                {
-                    throw new TimeoutException($"The operation has timed out");
-                }
-            }
+            return await responseCompletionSource.Task.DefaultTimeOutAsync().ConfigureAwait(false);            
         }
 
         public async Task SendResponseAsync(Header header, StreamingResponse response, CancellationToken cancellationToken)
@@ -142,6 +128,14 @@ namespace Microsoft.Bot.Connector.Streaming.Session
             }
 
             await _sender.SendResponseAsync(header.Id, payload, cancellationToken).ConfigureAwait(false);
+
+            if (response.Streams != null)
+            {
+                foreach (var stream in response.Streams)
+                {
+                    await _sender.SendStreamAsync(stream.Id, await stream.Content.ReadAsStreamAsync().ConfigureAwait(false), cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
 
         public virtual void ReceiveRequest(Header header, ReceiveRequest request)

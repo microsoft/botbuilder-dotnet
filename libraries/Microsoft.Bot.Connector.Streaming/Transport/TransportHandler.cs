@@ -46,15 +46,15 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
                 result = await input.ReadAsync().ConfigureAwait(false);
 
+                if (result.IsCanceled)
+                {
+                    break;
+                }
+
                 var buffer = result.Buffer;
 
                 try
                 {
-                    if (result.IsCanceled)
-                    {
-                        break;
-                    }
-
                     if (!buffer.IsEmpty)
                     {
                         while (TryParseHeader(ref buffer, out Header header))
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
 
                             if (header.PayloadLength > 0)
                             {
-                                if (buffer.Length < header.PayloadLength)
+                                while (buffer.Length < header.PayloadLength)
                                 {
                                     input.AdvanceTo(buffer.Start, buffer.End);
 
@@ -76,18 +76,24 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                                         break;
                                     }
 
-                                    buffer = result.Buffer;
+                                    if (!result.Buffer.IsEmpty)
+                                    {
+                                        buffer = result.Buffer;
+                                    }
+
+                                    if (result.IsCompleted)
+                                    {
+                                        break;
+                                    }
                                 }
 
-                                if (buffer.Length >= header.PayloadLength)
-                                {
-                                    payload = buffer.Slice(buffer.Start, header.PayloadLength);
-                                    buffer = buffer.Slice(header.PayloadLength);
-                                }
-                                else
+                                if (buffer.Length < header.PayloadLength)
                                 {
                                     break;
                                 }
+
+                                payload = buffer.Slice(buffer.Start, header.PayloadLength);
+                                buffer = buffer.Slice(header.PayloadLength);
                             }
 
                             _observer.OnNext((header, payload));
@@ -192,15 +198,24 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var streamHeader = new Header()
+            if (stream.Length > TransportConstants.MaxPayloadLength)
             {
-                Type = PayloadTypes.Stream,
-                Id = id,
-                PayloadLength = (int)stream.Length,
-                End = true,
-            };
+                // Break stream into chunks of size `TransportConstants.MaxPayloadLength`
+                await SendStreamInChunksAsync(id, stream).ConfigureAwait(false);
+            }
+            else
+            {
+                // No chunking needed, copy the entire stream to pipe directly
+                var streamHeader = new Header
+                {
+                    Type = PayloadTypes.Stream,
+                    Id = id,
+                    PayloadLength = (int)stream.Length,
+                    End = true
+                };
 
-            await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
+                await WriteAsync(streamHeader, pipeWriter => stream.CopyToAsync(pipeWriter)).ConfigureAwait(false);
+            }
         }
 
         public IDisposable Subscribe(IObserver<(Header, ReadOnlySequence<byte>)> observer)
@@ -261,6 +276,41 @@ namespace Microsoft.Bot.Connector.Streaming.Transport
             buffer = buffer.Slice(TransportConstants.MaxHeaderLength);
 
             return true;
+        }
+
+        private async Task SendStreamInChunksAsync(Guid id, Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var chunk = new byte[TransportConstants.MaxPayloadLength];
+
+            var remaining = stream.Length;
+            while (remaining > 0)
+            {
+                var current = Math.Min(remaining, TransportConstants.MaxPayloadLength);
+
+                current = await stream.ReadAsync(chunk, 0, (int)current).ConfigureAwait(false);
+
+                var streamHeader = new Header
+                {
+                    Type = PayloadTypes.Stream,
+                    Id = id,
+                    PayloadLength = (int)current,
+                    End = !(remaining > current)
+                };
+
+                var payload = new ReadOnlyMemory<byte>(chunk, 0, (int)current);
+
+                await WriteAsync(
+                        header: streamHeader,
+                        writeFunc: async pipeWriter => await pipeWriter.WriteAsync(payload).ConfigureAwait(false))
+                    .ConfigureAwait(false);
+
+                remaining -= current;
+            }
         }
 
         private async Task WriteAsync(Header header, Func<PipeWriter, Task> writeFunc, CancellationToken cancellationToken = default)
