@@ -1349,6 +1349,18 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("10", evaled.ToString());
         }
 
+        [TestMethod]
+        public void TestFileOperationDisabled()
+        {
+            Templates.EnableFromFile = false;
+
+            Assert.ThrowsException<Exception>(() =>
+            {
+                var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+                var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            });
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }

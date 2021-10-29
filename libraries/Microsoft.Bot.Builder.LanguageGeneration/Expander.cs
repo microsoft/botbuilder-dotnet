@@ -511,11 +511,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(template, ExpressionFunctions.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
-            const string fromFile = "fromFile";
-
-            if (name.Equals(fromFile))
+            if (LanguageGeneration.Templates.EnableFromFile)
             {
-                return new ExpressionEvaluator(fromFile, ExpressionFunctions.Apply(this.FromFile()), ReturnType.String, ExpressionFunctions.ValidateUnaryString);
+                const string fromFile = "fromFile";
+
+                if (name.Equals(fromFile, StringComparison.Ordinal))
+                {
+                    return new ExpressionEvaluator(fromFile, ExpressionFunctions.Apply(this.FromFile()), ReturnType.String, ValidateFromFile);
+                }
             }
 
             const string activityAttachment = "ActivityAttachment";
@@ -538,6 +541,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return null;
         };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            ExpressionFunctions.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String);
+        }
 
         private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
             (IReadOnlyList<object> args) =>
