@@ -57,14 +57,6 @@ namespace Microsoft.Bot.Connector.Streaming.Application
             _keepAlive = keepAlive;
         }
 
-        internal WebSocketClient(RequestHandler requestHandler, TimeSpan? closeTimeOut = null, TimeSpan? keepAlive = null, ILogger logger = null)
-        {
-            _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
-            _logger = logger ?? NullLogger.Instance;
-            _closeTimeout = closeTimeOut ?? TimeSpan.FromSeconds(15);
-            _keepAlive = keepAlive;
-        }
-
         /// <inheritdoc/>
         public event DisconnectedEventHandler Disconnected;
 

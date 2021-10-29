@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -174,17 +175,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Creates a <see cref="StreamingConnection"/> that uses web sockets.
         /// </summary>
-        /// <param name="httpContext"><see cref="HttpContext"/> instance on which to accept the web socket.</param>
+        /// <param name="socket"><see cref="WebSocket"/> instance on which streams are transported between client and server.</param>
         /// <param name="logger">Logger implementation for tracing and debugging information.</param>
         /// <returns><see cref="StreamingConnection"/> that uses web socket.</returns>
-        protected virtual StreamingConnection CreateWebSocketConnection(HttpContext httpContext, ILogger logger)
+        protected virtual StreamingConnection CreateWebSocketConnection(WebSocket socket, ILogger logger)
         {
-            if (httpContext == null)
+            if (socket == null)
             {
-                throw new ArgumentNullException(nameof(httpContext));
+                throw new ArgumentNullException(nameof(socket));
             }
 
-            return new WebSocketStreamingConnection(httpContext, logger);
+            return new WebSocketStreamingConnection(socket, logger);
         }
 
         private async Task ConnectAsync(HttpRequest httpRequest, IBot bot, CancellationToken cancellationToken)
@@ -202,12 +203,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var connectionId = Guid.NewGuid();
             using (var scope = Logger.BeginScope(connectionId))
             {
-                var connection = CreateWebSocketConnection(httpRequest.HttpContext, Logger);
+                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                var connection = CreateWebSocketConnection(socket, Logger);
 
                 using (var streamingActivityProcessor = new StreamingActivityProcessor(authenticationRequestResult, connection, this, bot))
                 {
                     // Start receiving activities on the socket
-                    // TODO: pass asp.net core lifetime for cancellation here.
                     _streamingConnections.TryAdd(connectionId, streamingActivityProcessor);
                     Log.WebSocketConnectionStarted(Logger);
                     await streamingActivityProcessor.ListenAsync(cancellationToken).ConfigureAwait(false);
@@ -260,7 +261,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             public void Dispose()
             {
-                ((IDisposable)_requestHandler)?.Dispose();
+                _requestHandler?.Dispose();
             }
 
             public Task ListenAsync(CancellationToken cancellationToken) => _requestHandler.ListenAsync(cancellationToken);

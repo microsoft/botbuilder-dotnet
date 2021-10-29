@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Streaming;
@@ -14,7 +12,7 @@ namespace Microsoft.Bot.Connector.Streaming.Application
     /// A streaming based connection that can listen for incoming requests and send them to a <see cref="RequestHandler"/>, 
     /// and can also send requests to the other end of the connection.
     /// </summary>
-    public abstract class StreamingConnection
+    public abstract class StreamingConnection : IDisposable
     {
         /// <summary>
         /// Sends a streaming request through the connection.
@@ -33,5 +31,19 @@ namespace Microsoft.Bot.Connector.Streaming.Application
         /// Once the token is cancelled, the connection will be gracefully shut down, finishing pending sends and receives.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public abstract Task ListenAsync(RequestHandler requestHandler, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Disposes managed and unmanaged resources of the underlying <see cref="StreamingConnection"/>.
+        /// </summary>
+        /// <param name="disposing">Whether we are disposing managed resources.</param>
+        protected abstract void Dispose(bool disposing);
     }
 }

@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Connector.Streaming.Tests.Application
             GC.WaitForPendingFinalizers();
 
             // Make sure the finalizer runs
-            await tcs.Task.TimeoutAfter(TimeSpan.FromSeconds(30));
+            await tcs.Task.TimeoutAfterAsync(TimeSpan.FromSeconds(30));
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
