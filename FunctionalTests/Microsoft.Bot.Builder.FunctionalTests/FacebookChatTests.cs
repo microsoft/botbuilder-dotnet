@@ -29,6 +29,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             GetEnvironmentVars();
 
+            // Clear the message queue in case of an old message.
+            await ReceiveMessageAsync();
+
             var echoGuid = Guid.NewGuid().ToString();
             await SendMessageAsync(echoGuid);
 
@@ -38,7 +41,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         private async Task SendMessageAsync(string echoGuid)
-        {            
+        {
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
@@ -52,7 +55,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 request.RequestUri = new Uri(_botEndpoint);
 
                 await client.SendAsync(request);
-            }            
+            }
         }
 
         private async Task<string> ReceiveMessageAsync()
