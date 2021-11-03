@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var response = await ReceiveMessageAsync();
 
             //Assert.AreEqual($"Echo: {echoGuid}", response);
-            Assert.IsTrue(response.Equals($"Echo: {echoGuid}") || response.Equals($"Echo Secondary: {echoGuid}"));
+            Assert.IsTrue(
+                response.Equals($"Echo: {echoGuid}") || response.Equals($"Echo Secondary: {echoGuid}"),
+                $"Expected: [...{echoGuid}]. Actual: [{response}]");
         }
 
         private async Task SendMessageAsync(string echoGuid)
