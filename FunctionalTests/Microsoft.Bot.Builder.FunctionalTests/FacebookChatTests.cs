@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             //Assert.AreEqual($"Echo: {echoGuid}", response);
             Assert.IsTrue(
                 response.Equals($"Echo: {echoGuid}") || response.Equals($"Echo Secondary: {echoGuid}"),
-                $"Expected: [...{echoGuid}]. Actual: [{response}]");
+                $"Expected:<Echo...{echoGuid}>. Actual:<{response}>");
         }
 
         private async Task SendMessageAsync(string echoGuid)
