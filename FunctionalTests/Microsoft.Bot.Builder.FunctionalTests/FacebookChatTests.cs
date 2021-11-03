@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             var response = await ReceiveMessageAsync();
 
-            //Assert.AreEqual($"Echo: {echoGuid}", response);
+            //Accept response from either primary or secondary test bot.
             Assert.IsTrue(
                 response.Equals($"Echo: {echoGuid}") || response.Equals($"Echo Secondary: {echoGuid}"),
                 $"Expected:<Echo...{echoGuid}>. Actual:<{response}>");
