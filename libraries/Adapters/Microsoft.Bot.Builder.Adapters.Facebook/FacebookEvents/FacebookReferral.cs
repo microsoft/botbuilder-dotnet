@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// Gets or sets the type parameter in the referral event.
         /// </summary>
         /// <value>The identifier for the referral. For referrals coming from m.me links, it will always be "OPEN_THREAD".</value>
+        [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
     }
 }
