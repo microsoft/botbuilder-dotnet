@@ -154,6 +154,10 @@ steps:
     inlineScript: |
      call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\PublishedBot\PublishedBot.zip"
 
+- powershell: |
+   Start-Sleep -Seconds 60
+  displayName: 'Sleep 1 minute for bot to settle'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
