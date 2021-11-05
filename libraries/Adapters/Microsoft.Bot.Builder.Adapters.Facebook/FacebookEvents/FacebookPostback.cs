@@ -29,6 +29,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// </summary>
         /// <value>The referral of the post back message.</value>
         [JsonProperty(PropertyName = "referral")]
-        public string Referral { get; set; }
+        public FacebookReferral Referral { get; set; }
     }
 }

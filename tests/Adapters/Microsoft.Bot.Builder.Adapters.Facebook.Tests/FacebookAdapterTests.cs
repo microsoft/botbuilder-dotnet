@@ -120,6 +120,24 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
+        public async void ProcessAsyncShouldSucceedWithPostBackMessages()
+        {
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"/Files/PayloadWithPostBack.json");
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object, _adapterOptions);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+
+            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            await facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
+            bot.Verify(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        }
+
+        [Fact]
         public async void ProcessAsyncShouldVerifyWebhookOnHubModeSubscribe()
         {
             var testOptionsVerifyEnabled = new FacebookAdapterOptions()
@@ -359,7 +377,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             Assert.Equal(testResponse, responses[0].Id);
             facebookClientWrapper.Verify(api => api.RequestThreadControlAsync(It.IsAny<string>(), It.IsAny<string>(), default), Times.Once);
         }
-        
+
         [Fact]
         public async Task UpdateActivityAsyncShouldThrowNotImplementedException()
         {
