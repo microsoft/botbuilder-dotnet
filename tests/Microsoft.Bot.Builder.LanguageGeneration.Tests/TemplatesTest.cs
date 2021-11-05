@@ -1837,7 +1837,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void TestFileOperationDisabled()
         {
-            // the default is false... Templates.EnableFromFile
+            Templates.EnableFromFile = false;
 
             Assert.Throws<InvalidOperationException>(() =>
             {
