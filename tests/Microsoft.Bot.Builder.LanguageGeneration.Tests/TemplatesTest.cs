@@ -1818,6 +1818,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void TestFileOperation()
         {
+            Templates.EnableFromFile = true;
+
             var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
             var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
             Assert.Equal("hi ${name}", evaluated);
@@ -1835,7 +1837,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void TestFileOperationDisabled()
         {
-            Templates.EnableFromFile = false;
+            // the default is false... Templates.EnableFromFile
 
             Assert.Throws<InvalidOperationException>(() =>
             {
