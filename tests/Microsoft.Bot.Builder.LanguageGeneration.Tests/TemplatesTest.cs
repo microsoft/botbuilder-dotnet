@@ -1641,6 +1641,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [Fact]
         public void TestFileOperation()
         {
+            Templates.EnableFromFile = true;
+
             var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
             var evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
             Assert.Equal("hi Lucy", evaluated);
