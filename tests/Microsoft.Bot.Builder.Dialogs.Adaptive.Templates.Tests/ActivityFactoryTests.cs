@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public ActivityFactoryTests()
         {
+            Templates.EnableFromFile = true;
+
             ComponentRegistration.Add(new DialogsComponentRegistration());
             ComponentRegistration.Add(new DeclarativeComponentRegistration());
             ComponentRegistration.Add(new AdaptiveComponentRegistration());
