@@ -575,7 +575,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(template, FunctionUtils.Apply(this.TemplateFunction()), ReturnType.Object, this.ValidateTemplateFunction);
             }
 
-            if (Templates.EnableFromFile)
+            if (LanguageGeneration.Templates.EnableFromFile)
             {
                 const string fromFile = "fromFile";
 
@@ -612,6 +612,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return null;
         };
+
+        private void ValidateFromFile(Expression expression)
+        {
+            FunctionUtils.ValidateOrder(expression, new[] { ReturnType.String }, ReturnType.String);
+        }
 
         private Func<IReadOnlyList<object>, object> ExpandText()
        => (IReadOnlyList<object> args) =>
