@@ -49,6 +49,10 @@ namespace AdaptiveExpressions.BuiltinFunctions
                         {
                             result = dt.ToString(FunctionUtils.DefaultDateTimeFormat, locale);
                         }
+                        else if (args[0] is string str)
+                        {
+                            result = str;
+                        }
                         else
                         {
                             result = JsonConvert.SerializeObject(args[0]).TrimStart('"').TrimEnd('"');

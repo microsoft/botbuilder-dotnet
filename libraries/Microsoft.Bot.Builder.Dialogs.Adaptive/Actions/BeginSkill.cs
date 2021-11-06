@@ -119,6 +119,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("activity")]
         public ITemplate<Activity> Activity { get; set; }
 
+        /// <summary>
+        /// Gets or sets intteruption policy. 
+        /// </summary>
+        /// <value>
+        /// Bool or expression which evalutes to bool.
+        /// </value>
+        [JsonProperty("allowInterruptions")]
+        public BoolExpression AllowInterruptions { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             if (Disabled != null && Disabled.GetValue(dc.State))
@@ -206,6 +215,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return $"{GetType().Name}['{appId}','{activity}']";
+        }
+
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                // Ask parent to perform recognition
+                await dc.Parent.EmitEventAsync(AdaptiveEvents.RecognizeUtterance, value: dc.Context.Activity, bubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // Should we allow interruptions
+                var canInterrupt = true;
+                if (this.AllowInterruptions != null)
+                {
+                    var (allowInterruptions, error) = this.AllowInterruptions.TryGetValue(dc.State);
+                    canInterrupt = error == null && allowInterruptions;
+                }
+
+                // Stop bubbling if interruptions ar NOT allowed
+                return !canInterrupt;
+            }
+
+            return false;
         }
 
         /// <summary>

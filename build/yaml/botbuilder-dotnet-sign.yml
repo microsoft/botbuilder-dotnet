@@ -33,7 +33,7 @@ variables:
   TestConfiguration: Release
   BuildPlatform: any cpu
   IsBuildServer: true # Consumed by projects in Microsoft.Bot.Builder.sln.
-  MSBuildArguments: -p:PublishRepositoryUrl=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+  MSBuildArguments: -p:PublishRepositoryUrl=true -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg -t:Restore;Build
   Parameters.solution: Microsoft.Bot.Builder.sln
 #  PreviewPackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.
 #  ReleasePackageVersion: 4.8.0-preview-$(Build.BuildNumber) # Consumed by projects in Microsoft.Bot.Builder.sln. Define this in Azure to be settable at queue time.

@@ -211,7 +211,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private static T GetBodyContent<T>(string content)
         {
-            return JsonConvert.DeserializeObject<T>(content);
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(content);
+            }
+            catch (JsonException)
+            {
+                // This will only happen when the skill didn't return valid json in the content (e.g. when the status code is 500 or there's a bug in the skill)
+                return default;
+            }
         }
 
         private async Task<InvokeResponse<T>> SecurePostActivityAsync<T>(Uri toUrl, Activity activity, string token, CancellationToken cancellationToken)

@@ -153,12 +153,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
@@ -294,12 +294,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
-                throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (string.IsNullOrEmpty(conversationId))
             {
-                throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 

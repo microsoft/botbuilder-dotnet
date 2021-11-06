@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     /// bf plugins:install @microsoft/bf-dialog
     /// </remarks>
     [TestClass]
+    [TestCategory("IgnoreInAutomatedBuild")]
     public class SchemaMergeTests
     {
         public static ResourceExplorer ResourceExplorer { get; set; }

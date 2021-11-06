@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 policy.AddRange(targetpolicy);
             }
 
-            if (activity.Locale.Length != 0 && LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
+            if (LanguagePolicy.TryGetValue(string.Empty, out string[] defaultPolicy))
             {
                 // we now explictly add defaultPolicy instead of coding that into target's policy
                 policy.AddRange(defaultPolicy);

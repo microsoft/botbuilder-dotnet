@@ -207,17 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Single command running with a copy of the original data
             client.DefaultRequestHeaders.Clear();
 
-            JToken instanceBody = null;
-            if (this.Body != null)
-            {
-                var (body, err) = this.Body.TryGetValue(dc.State);
-                if (err != null)
-                {
-                    throw new ArgumentException(err);
-                }
-
-                instanceBody = (JToken)JToken.FromObject(body).DeepClone();
-            }
+            var instanceBody = Body?.EvaluateExpression(dc.State);
 
             var instanceHeaders = Headers == null ? null : Headers.ToDictionary(kv => kv.Key, kv => kv.Value.GetValue(dc.State));
 
@@ -226,9 +216,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException(instanceUrlError);
             }
-
-            // Bind each string token to the data in state
-            instanceBody = instanceBody?.ReplaceJTokenRecursively(dc.State);
 
             // Set headers
             if (instanceHeaders != null)

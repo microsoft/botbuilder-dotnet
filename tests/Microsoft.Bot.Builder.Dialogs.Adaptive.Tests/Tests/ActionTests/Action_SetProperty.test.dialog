@@ -87,6 +87,20 @@
                     {
                         "$kind": "Microsoft.SendActivity",
                         "activity": "${user.profile.name}"
+                    },
+                    {
+                        "$kind": "Microsoft.TextInput",
+                        "property": "user.profile.newname",
+                        "prompt": "Please input the name"
+                    },
+                    {
+                        "$kind": "Microsoft.SetProperty",
+                        "property": "user.profile.result",
+                        "value": "=user.profile.newname"
+                    },
+                    {
+                        "$kind": "Microsoft.SendActivity",
+                        "activity": "${user.profile.result}"
                     }
                 ]
             }
@@ -111,6 +125,18 @@
         {
             "$kind": "Microsoft.Test.AssertReply",
             "text": "Jack"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "Please input the name"
+        },
+        {
+            "$kind": "Microsoft.Test.UserSays",
+            "text": "=cool"
+        },
+        {
+            "$kind": "Microsoft.Test.AssertReply",
+            "text": "=cool"
         }
     ]
 }

@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (dialogContext == null)
             {
-                throw new ArgumentNullException($"{nameof(dialogContext)} is null");
+                throw new ArgumentNullException(nameof(dialogContext));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (dialogContext == null)
             {
-                throw new ArgumentNullException($"{nameof(dialogContext)} is null");
+                throw new ArgumentNullException(nameof(dialogContext));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 

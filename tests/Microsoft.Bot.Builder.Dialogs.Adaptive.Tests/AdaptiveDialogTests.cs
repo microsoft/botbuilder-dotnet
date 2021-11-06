@@ -97,6 +97,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_BeginDialog_With_Dup_Dialog_Ref()
+        {
+            await TestUtils.RunTestScript(ResourceExplorer);
+        }
+
+        [TestMethod]
         public async Task AdaptiveDialog_BindingCaptureValueWithinSameAdaptive()
         {
             await TestUtils.RunTestScript(ResourceExplorer);

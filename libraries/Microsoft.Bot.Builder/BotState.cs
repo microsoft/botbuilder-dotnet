@@ -339,7 +339,11 @@ namespace Microsoft.Bot.Builder
         public class CachedBotState
 #pragma warning restore CA1034 // Nested types should not be visible
         {
-            internal CachedBotState(IDictionary<string, object> state = null)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CachedBotState"/> class.
+            /// </summary>
+            /// <param name="state">Initial state for the <see cref="CachedBotState"/>.</param>
+            public CachedBotState(IDictionary<string, object> state = null)
             {
                 State = state ?? new Dictionary<string, object>();
                 Hash = ComputeHash(State);

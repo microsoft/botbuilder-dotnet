@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     public class JsonLoadTests
     {
         private static ResourceExplorer resourceExplorer;
+        private static ResourceExplorer noCycleResourceExplorer;
 
         public TestContext TestContext { get; set; }
 
@@ -28,12 +29,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = new ResourceExplorer()
                 .LoadProject(projPath, monitorChanges: false);
+            noCycleResourceExplorer = new ResourceExplorer(new ResourceExplorerOptions() { AllowCycles = false })
+                .LoadProject(projPath, monitorChanges: false);
         }
 
         [ClassCleanup]
         public static void ClassCleanup()
         {
             resourceExplorer.Dispose();
+            noCycleResourceExplorer.Dispose();
         }
 
         [TestMethod]
@@ -58,6 +62,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Send("World what?")
                 .AssertReply("Hello")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void JsonDialogLoad_CycleDetectionWithNoCycleMode()
+        {
+            BuildNoCycleTestFlow(@"Root.dialog", nameof(JsonDialogLoad_CycleDetectionWithNoCycleMode));
         }
 
         [TestMethod]
@@ -439,11 +450,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             return adapter;
         }
 
-        private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter)
+        private TestFlow GetTestFlow(Dialog dialog, TestAdapter adapter, bool allowCycle = true)
         {
             var dm = new DialogManager(dialog)
-                .UseResourceExplorer(resourceExplorer)
+                .UseResourceExplorer(allowCycle ? resourceExplorer : noCycleResourceExplorer)
                 .UseLanguageGeneration();
+
             dm.InitialTurnState.Add<IQnAMakerClient>(new MockQnAMakerClient());
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -457,6 +469,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             var adapter = InitializeAdapter(sendTrace);
             var dialog = resourceExplorer.LoadType<Dialog>(resourceName);
             return GetTestFlow(dialog, adapter);
+        }
+
+        private TestFlow BuildNoCycleTestFlow(string resourceName, string testName, bool sendTrace = false)
+        {
+            var adapter = InitializeAdapter(sendTrace);
+            var dialog = noCycleResourceExplorer.LoadType<Dialog>(resourceName);
+            return GetTestFlow(dialog, adapter, false);
         }
     }
 }

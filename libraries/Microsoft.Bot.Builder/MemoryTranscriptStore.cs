@@ -116,12 +116,12 @@ namespace Microsoft.Bot.Builder
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (channelId == null)
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (conversationId == null)
             {
-                throw new ArgumentNullException($"missing {nameof(conversationId)}");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
@@ -180,12 +180,12 @@ namespace Microsoft.Bot.Builder
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (channelId == null)
             {
-                throw new ArgumentNullException($"{nameof(channelId)} should not be null");
+                throw new ArgumentNullException(nameof(channelId));
             }
 
             if (conversationId == null)
             {
-                throw new ArgumentNullException($"{nameof(conversationId)} should not be null");
+                throw new ArgumentNullException(nameof(conversationId));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (channelId == null)
             {
-                throw new ArgumentNullException($"missing {nameof(channelId)}");
+                throw new ArgumentNullException(nameof(channelId));
             }
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
 

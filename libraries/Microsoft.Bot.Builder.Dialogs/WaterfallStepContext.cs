@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             _parentWaterfall = parentWaterfall;
             _nextCalled = false;
+            Parent = dc.Parent;
             Index = index;
             Options = options;
             Reason = reason;
