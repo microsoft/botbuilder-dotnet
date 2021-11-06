@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Boolean where true indicates fromFile is allowed.
         /// </value>
-        public static bool EnableFromFile { get; set; } = true;
+        public static bool EnableFromFile { get; set; } = false;
 
         /// <summary>
         /// Gets get all templates from current lg file and reference lg files.
