@@ -1642,17 +1642,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestFileOperation()
         {
             var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
-            var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
-            Assert.Equal("hi ${name}", evaluated);
-
-            evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            var evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
             Assert.Equal("hi Lucy", evaluated);
 
             evaluated = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
             Assert.Equal("hi Lucy", evaluated);
-
-            evaluated = templates.Evaluate("FromFileBinary");
-            Assert.Equal("hi ${name}", evaluated);
         }
 
         [Fact]
@@ -1660,7 +1654,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             Templates.EnableFromFile = false;
 
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<Exception>(() =>
             {
                 var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
                 var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
