@@ -1347,6 +1347,55 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var scope2 = new { i = 1, j = 2, k = 3, l = 4 };
             (evaled, error) = Expression.Parse("common.sumFourNumbers(i, j, k, l)").TryEvaluate(scope2);
             Assert.AreEqual("10", evaled.ToString());
+            Assert.Equal("10", evaled.ToString());
+        }
+
+        [Fact]
+        public void TestInjectLGWithoutNamespace()
+        {
+            // using Id as the namespace
+            var lgPath = GetExampleFilePath("./InjectionTest/injectWithoutNamespace.lg");
+            var resource = new LGResource("myId", lgPath, File.ReadAllText(lgPath));
+            Templates.ParseResource(resource);
+
+            var (evaled, error) = Expression.Parse("myId.greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Null(error);
+            Assert.Equal("hi Alice", evaled.ToString());
+
+            // using the fuileName parsed from Id as the namespace
+            resource = new LGResource("./path/myNewId.lg", lgPath, File.ReadAllText(lgPath));
+            Templates.ParseResource(resource);
+
+            (evaled, error) = Expression.Parse("myNewId.greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Null(error);
+            Assert.Equal("hi Alice", evaled.ToString());
+
+            // With empty id
+            resource = new LGResource(string.Empty, lgPath, File.ReadAllText(lgPath));
+            Templates.ParseResource(resource);
+
+            (evaled, error) = Expression.Parse("greeting()").TryEvaluate(new { name = "Alice" });
+            Assert.Null(error);
+            Assert.Equal("hi Alice", evaled.ToString());
+        }
+
+        [Fact]
+        public void TestFileOperation()
+        {
+            Templates.EnableFromFile = true;
+
+            var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+            var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            Assert.Equal("hi ${name}", evaluated);
+
+            evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
+
+            evaluated = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
+
+            evaluated = templates.Evaluate("FromFileBinary");
+            Assert.Equal("hi ${name}", evaluated);
         }
 
         [TestMethod]
