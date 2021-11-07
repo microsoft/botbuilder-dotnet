@@ -1714,6 +1714,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.Equal("hi Alice", evaled.ToString());
         }
 
+        [Fact]
+        public void TestFileOperation()
+        {
+            Templates.EnableFromFile = true;
+
+            var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+            var evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
+
+            evaluated = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
+            Assert.Equal("hi Lucy", evaluated);
+        }
+
+        [Fact]
+        public void TestFileOperationDisabled()
+        {
+            Templates.EnableFromFile = false;
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+                var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            });
+        }
+
         public class LoopClass
         {
             public string Name { get; set; }
