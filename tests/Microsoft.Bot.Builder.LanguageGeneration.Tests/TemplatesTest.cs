@@ -1347,6 +1347,32 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var scope2 = new { i = 1, j = 2, k = 3, l = 4 };
             (evaled, error) = Expression.Parse("common.sumFourNumbers(i, j, k, l)").TryEvaluate(scope2);
             Assert.AreEqual("10", evaled.ToString());
+            Assert.AreEqual("10", evaled.ToString());
+        }
+
+        [TestMethod]
+        public void TestFileOperation()
+        {
+            Templates.EnableFromFile = true;
+
+            var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+            var evaluated = templates.Evaluate("FromFileWithEvaluation1", new { name = "Lucy" });
+            Assert.AreEqual("hi Lucy", evaluated);
+
+            evaluated = templates.Evaluate("FromFileWithEvaluation2", new { name = "Lucy" });
+            Assert.AreEqual("hi Lucy", evaluated);
+        }
+
+        [TestMethod]
+        public void TestFileOperationDisabled()
+        {
+            Templates.EnableFromFile = false;
+
+            Assert.ThrowsException<Exception>(() =>
+            {
+                var templates = Templates.ParseFile(GetExampleFilePath("FileOperation.lg"));
+                var evaluated = templates.Evaluate("FromFileWithoutEvaluation");
+            });
         }
 
         public class LoopClass
