@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.Azure.Queues
             if (date <= DateTime.UtcNow)
             {
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                throw new ArgumentOutOfRangeException(nameof(Date), $"{nameof(Date)} must be in the future");
+                throw new ArgumentOutOfRangeException(paramName: $"{nameof(Date)} must be in the future");
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 

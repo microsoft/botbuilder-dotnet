@@ -151,6 +151,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>PagedResult of activities.</returns>
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException(nameof(channelId));
@@ -160,6 +161,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 throw new ArgumentNullException(nameof(conversationId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var pagedResult = new PagedResult<IActivity>();
 
@@ -224,10 +226,12 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>A <see cref="Task"/> A task that represents the work queued to execute.</returns>
         public async Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException(nameof(channelId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var dirName = GetDirName(channelId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);
@@ -288,6 +292,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
         public async Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException(nameof(channelId));
@@ -297,6 +302,7 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 throw new ArgumentNullException(nameof(conversationId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var dirName = GetDirName(channelId, conversationId);
             var dir = this.Container.Value.GetDirectoryReference(dirName);

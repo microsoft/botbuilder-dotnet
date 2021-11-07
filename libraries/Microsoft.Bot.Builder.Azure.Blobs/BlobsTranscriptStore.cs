@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default)
         {
             const int PageSize = 20;
-
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException(nameof(channelId));
@@ -160,6 +160,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 throw new ArgumentNullException(nameof(conversationId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var pagedResult = new PagedResult<IActivity>();
 
@@ -228,11 +229,12 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         public async Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
             const int PageSize = 20;
-
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException(nameof(channelId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             string token = null;
             List<TranscriptInfo> conversations = new List<TranscriptInfo>();
@@ -289,6 +291,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
         /// <returns>A <see cref="Task"/>A task that represents the work queued to execute.</returns>
         public async Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (string.IsNullOrEmpty(channelId))
             {
                 throw new ArgumentNullException(nameof(channelId));
@@ -298,6 +301,7 @@ namespace Microsoft.Bot.Builder.Azure.Blobs
             {
                 throw new ArgumentNullException(nameof(conversationId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             string token = null;
             do

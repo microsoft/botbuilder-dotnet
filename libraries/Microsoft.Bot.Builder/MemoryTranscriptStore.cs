@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the task completes successfully, the result contains a page of matching activities.</remarks>
         public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (channelId == null)
             {
                 throw new ArgumentNullException(nameof(channelId));
@@ -122,6 +123,7 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException(nameof(conversationId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var pagedResult = new PagedResult<IActivity>();
             lock (_channels)
@@ -175,6 +177,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         public Task DeleteTranscriptAsync(string channelId, string conversationId)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (channelId == null)
             {
                 throw new ArgumentNullException(nameof(channelId));
@@ -184,6 +187,7 @@ namespace Microsoft.Bot.Builder
             {
                 throw new ArgumentNullException(nameof(conversationId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             lock (_channels)
             {
@@ -208,10 +212,12 @@ namespace Microsoft.Bot.Builder
         /// <remarks>If the task is successful, the result contains a page of conversations.</remarks>
         public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (channelId == null)
             {
                 throw new ArgumentNullException(nameof(channelId));
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             var pagedResult = new PagedResult<TranscriptInfo>();
             lock (_channels)

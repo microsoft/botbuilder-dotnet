@@ -62,15 +62,19 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
         public OrchestratorAdaptiveRecognizer(string modelPath, string snapshotPath, ILabelResolver resolver = null)
         {
             _resolver = resolver;
+#pragma warning disable IDE0016 // Use 'throw' expression
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (modelPath == null)
             {
-                throw new ArgumentNullException(nameof(modelPath));
+                throw new ArgumentNullException($"Missing `ModelPath` information.");
             }
 
             if (snapshotPath == null)
             {
                 throw new ArgumentNullException(nameof(snapshotPath));
             }
+#pragma warning restore IDE0016 // Use 'throw' expression
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             _modelPath = modelPath;
             _snapshotPath = snapshotPath;
@@ -293,19 +297,17 @@ namespace Microsoft.Bot.Builder.AI.Orchestrator
 
         private void InitializeModel()
         {
+#pragma warning disable CA2208 // Instantiate argument exceptions correctly
             if (_modelPath == null)
             {
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                throw new ArgumentNullException("ModelPath");
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
+                throw new ArgumentNullException($"Missing `ModelPath` information.");
             }
 
             if (_snapshotPath == null)
             {
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
                 throw new ArgumentNullException("ShapshotPath");
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
+#pragma warning restore CA2208 // Instantiate argument exceptions correctly
 
             if (orchestrator == null && _resolver == null)
             {
