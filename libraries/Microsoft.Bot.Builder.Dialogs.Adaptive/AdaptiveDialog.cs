@@ -11,14 +11,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaptiveExpressions;
 using AdaptiveExpressions.Properties;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Functions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -750,7 +747,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// OnSetScopedServices provides ability to set scoped services for the current dialogContext.
         /// </summary>
         /// <remarks>
-        /// Use dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
+        /// USe dialogContext.Services.Set(object) to set a scoped object that will be inherited by all children dialogContexts.
         /// </remarks>
         /// <param name="dialogContext">dialog Context.</param>
         protected virtual void OnSetScopedServices(DialogContext dialogContext)
@@ -758,7 +755,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Generator != null)
             {
                 dialogContext.Services.Set(this.Generator);
-                Expression.Functions.Add(MissingPropertiesFunction.Name, new MissingPropertiesFunction(dialogContext));
             }
         }
 
