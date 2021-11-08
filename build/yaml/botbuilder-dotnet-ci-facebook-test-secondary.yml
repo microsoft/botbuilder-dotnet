@@ -87,7 +87,7 @@ steps:
 
 - powershell: |
    # Set values in appsettings.json file.
-   $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\appsettings.json";
+   $file = "$(Build.SourcesDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\appsettings.json";
    
    $content = Get-Content -Raw $file | ConvertFrom-Json;
    $content.FacebookVerifyToken = "$(FacebookTestBotFacebookVerifyToken)";
@@ -103,12 +103,12 @@ steps:
     verbosityRestore: 'Detailed'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet publish primarytestbot'
+  displayName: 'dotnet publish secondarytestbot'
   inputs:
     command: publish
     publishWebProjects: false
-    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
+    projects: '$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\PublishedBot -p:TreatWarningsAsErrors=false -p:RestoreUseSkipNonexistentTargets=false'
     modifyOutputPath: false
 
 - task: AzureCLI@2
@@ -152,7 +152,11 @@ steps:
     azureSubscription: $(AzureSubscription)
     scriptLocation: inlineScript
     inlineScript: |
-     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot\PublishedBot\PublishedBot.zip"
+     call az webapp deployment source config-zip --resource-group "$(BotGroup)" --name "$(BotName)" --src "$(System.DefaultWorkingDirectory)\tests\Adapters\Microsoft.Bot.Builder.Adapters.Facebook.SecondaryTestBot\PublishedBot\PublishedBot.zip"
+
+- powershell: |
+   Start-Sleep -Seconds 60
+  displayName: 'Sleep 1 minute for bot to settle'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
