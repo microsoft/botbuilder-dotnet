@@ -126,9 +126,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             turnContext.TurnState.Add(_languagePolicy);
             turnContext.TurnState.Add(_telemetryClient);
 
-            // put global language policy into turn scope for lg functions fallback
-            ObjectPath.SetPathValue(turnContext.TurnState, TurnPath.LanguagePolicy, _languagePolicy);
-
             // Catch "SetTestOptions" event and save into "Conversation.TestOptions".
             // Note: This is consumed by AdaptiveExpressions Extensions.RandomNext
             if (turnContext.Activity.Type == ActivityTypes.Event)
