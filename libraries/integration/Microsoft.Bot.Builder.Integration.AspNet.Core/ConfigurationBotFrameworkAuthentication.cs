@@ -54,6 +54,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 authConfiguration ?? new AuthenticationConfiguration(),
                 httpClientFactory,
                 logger);
+
+            // Update the OpenId metadata endpoint if configured in appsettings
+            var openIdEndpoint = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
+            if (!string.IsNullOrEmpty(openIdEndpoint))
+            {
+                // Indicate which Cloud we are using, for example, Public or Sovereign.
+                ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
+                GovernmentChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
+            }
         }
 
         /// <inheritdoc />
