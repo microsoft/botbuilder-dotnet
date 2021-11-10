@@ -37,9 +37,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             facebookMessage.Message.Text = activity.Text;
 
-            facebookMessage.MessagingType = "MESSAGE_TAG";
-            facebookMessage.Tag = "ACCOUNT_UPDATE";
-
             if (activity.ChannelData != null)
             {
                 facebookMessage = activity.GetChannelData<FacebookMessage>();
