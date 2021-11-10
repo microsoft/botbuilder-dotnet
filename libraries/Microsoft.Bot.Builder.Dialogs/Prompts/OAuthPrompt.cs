@@ -153,7 +153,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                         cardActionType = ActionTypes.OpenUrl;
                     }
                 }
-                else if (!ChannelRequiresSignInLink(turnContext.Activity.ChannelId))
+                else if ((settings.ShowSignInLink != null && settings.ShowSignInLink == false) || 
+                    (settings.ShowSignInLink == null && !ChannelRequiresSignInLink(turnContext.Activity.ChannelId)))
                 {
                     value = null;
                 }

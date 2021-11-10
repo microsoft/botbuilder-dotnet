@@ -589,6 +589,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
+        [Theory]
+        [InlineData(null, Channels.Test, false)] //Do not override; ChannelRequiresSingInLink() returns false; Result: no link
+        [InlineData(null, Channels.Msteams, true)] //Do not override; ChannelRequiresSingInLink() returns true; Result: show link
+        [InlineData(false, Channels.Test, false)] //Override: no link; ChannelRequiresSingInLink() returns false; Result: no link
+        [InlineData(true, Channels.Test, true)] //Override: show link; ChannelRequiresSingInLink() returns false; Result: show link
+        [InlineData(false, Channels.Msteams, false)] //Override: no link; ChannelRequiresSingInLink() returns true; Result: no link
+        [InlineData(true, Channels.Msteams, true)] //Override: show link;  ChannelRequiresSingInLink() returns true; Result: show link
+        public async Task OAuthPromptSignInLinkSettingsCases(bool? showSignInLinkValue, string channelId, bool shouldHaveSignInLink)
+        {
+            var oAuthPromptSettings = new OAuthPromptSettings();
+            oAuthPromptSettings.ShowSignInLink = showSignInLinkValue;
+
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", oAuthPromptSettings));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                }
+            };
+
+            var initialActivity = new Activity()
+            {
+                ChannelId = channelId,
+                Text = "hello"
+            };
+            await new TestFlow(adapter, botCallbackHandler)
+                .Send(initialActivity)
+                .AssertReply(activity =>
+                {
+                    Assert.Single(((Activity)activity).Attachments);
+                    Assert.Equal(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+                    var oAuthCard = (OAuthCard)((Activity)activity).Attachments[0].Content;
+                    var cardAction = oAuthCard.Buttons[0];
+                    Assert.Equal(shouldHaveSignInLink, cardAction.Value != null);
+                })
+                .StartTestAsync();
+        }
+
         private async Task OAuthPrompt(IStorage storage)
         {
             var convoState = new ConversationState(storage);
