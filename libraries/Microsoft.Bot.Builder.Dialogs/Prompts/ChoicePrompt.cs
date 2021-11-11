@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return Task.FromResult(result);
                 }
 
-                var opt = RecognizerOptions ?? new FindChoicesOptions();
+                var opt = ObjectPath.Assign<FindChoicesOptions>(RecognizerOptions ?? new FindChoicesOptions(), options.RecognizerOptions ?? new FindChoicesOptions());
                 opt.Locale = DetermineCulture(activity, opt);
                 var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
                 if (results != null && results.Count > 0)

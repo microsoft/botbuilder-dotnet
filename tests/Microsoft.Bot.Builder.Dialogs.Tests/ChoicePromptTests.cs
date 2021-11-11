@@ -504,6 +504,99 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [Fact]
+        public async Task ShouldRecognizeAChoiceWithDefaultRecognizerOptions()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English)
+            {
+                Style = ListStyle.None,
+            };
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = _colorChoices,
+                        },
+                        cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var choiceResult = (FoundChoice)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"{choiceResult.Value}"), cancellationToken);
+                }
+            })
+                .Send("hello")
+                .AssertReply(StartsWithValidator("favorite color?"))
+                .Send("3")
+                .AssertReply("blue")
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task ShouldRecognizeAChoiceWithCustomRecognizerOptions()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            var listPrompt = new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English)
+            {
+                Style = ListStyle.None,
+            };
+            dialogs.Add(listPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
+                            Choices = _colorChoices,
+                            RecognizerOptions = new FindChoicesOptions { RecognizeNumbers = false }
+                        },
+                        cancellationToken); 
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var choiceResult = (FoundChoice)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"{choiceResult.Value}"), cancellationToken);
+                }
+            })
+                .Send("hello")
+                .AssertReply(StartsWithValidator("favorite color?"))
+                .Send("3")
+                .AssertReply("favorite color?")
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task ShouldNotRecognizeOtherText()
         {
             var convoState = new ConversationState(new MemoryStorage());
