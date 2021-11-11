@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 #endif
     public class FacebookChatTests
     {
-        private const string FacebookUrlBase = "https://graph.facebook.com/v5.0";
+        private const string FacebookUrlBase = "https://graph.facebook.com/v12.0";
         private string _appSecret;
         private string _accessToken;
         private string _botEndpoint;

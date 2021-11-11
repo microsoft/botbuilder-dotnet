@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="accessToken">The Facebook access token.</param>
         /// <param name="apiHost">A token for validating the origin of incoming webhooks.</param>
         /// <param name="apiVersion">A token for a bot to work on a single workspace.</param>
-        public FacebookClientWrapperOptions(string verifyToken, string appSecret, string accessToken, string apiHost = "graph.facebook.com", string apiVersion = "v3.2")
+        public FacebookClientWrapperOptions(string verifyToken, string appSecret, string accessToken, string apiHost = "graph.facebook.com", string apiVersion = "v12.0")
         {
             FacebookVerifyToken = verifyToken;
             FacebookAppSecret = appSecret;
