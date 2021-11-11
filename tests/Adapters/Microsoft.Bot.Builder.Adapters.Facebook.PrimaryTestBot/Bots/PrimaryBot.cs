@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.PrimaryTestBot.Bots
                         activity = FacebookHelper.GenerateTypingActivity(turnContext.Activity.Conversation.Id);
                         break;
                     default:
-                        activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
+                        activity = MessageFactory.Text($"Account Update: {turnContext.Activity.Text}");
                         break;
                 }
 
