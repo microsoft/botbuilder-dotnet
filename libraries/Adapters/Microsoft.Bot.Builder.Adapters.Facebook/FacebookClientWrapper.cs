@@ -92,7 +92,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                         // Or by App Service/Diagnose and solve problems/Diagnostic Tools/Application Event Logs
                         // throw new HttpRequestException($"SendMessageAsync():\r\nRequest payload: {json}\r\n\r\nResponse: {res.ToString()}");
                         throw new HttpRequestException($"SendMessageAsync(): \r\nRequest: {request.ToString()}\r\n\r\nRequest payload: {json}\r\n\r\nResponse: {res.ToString()}");
-
                     }
                 }
             }
