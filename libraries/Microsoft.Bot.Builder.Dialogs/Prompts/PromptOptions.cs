@@ -51,5 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>Additional options for use with a prompt validator.</value>
         public object Validations { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional options passed to the underlying
+        /// <see cref="ChoiceRecognizers.RecognizeChoices(string, IList{Choice}, FindChoicesOptions)"/> method.
+        /// </summary>
+        /// <value>Options to control the recognition strategy.</value>
+        public FindChoicesOptions RecognizerOptions { get; set; }
     }
 }
