@@ -1,0 +1,43 @@
+name: create-v5-parity-issue.yml
+
+on:
+  workflow_dispatch:
+    inputs:
+      prDescription:
+        description: PR description
+        default: 'No description provided'
+        required: true
+      prNumber:
+        description: PR number
+        required: true
+      prTitle:
+        description: PR title
+        required: true
+      sourceRepo:
+        description: repository PR is sourced from
+        required: true
+
+jobs:
+  createIssue:
+    name: create issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: joshgummersall/create-issue@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          title: |
+            port to v5: ${{ github.event.inputs.prTitle }} (#${{ github.event.inputs.prNumber }})
+          labels: |
+            ["parity", "needs-triage", "ExemptFromDailyDRIReport"]
+          body: |
+             The changes in [${{ github.event.inputs.prTitle }} (#${{ github.event.inputs.prNumber }})](https://github.com/${{ github.event.inputs.sourceRepo }}/pull/${{ github.event.inputs.prNumber }}) may need to be ported to maintain parity with `${{ github.event.inputs.sourceRepo }}` main branch.
+
+             <blockquote>
+             ${{ github.event.inputs.prDescription }}
+             </blockquote>
+
+             Please review and, if necessary, port the changes.
