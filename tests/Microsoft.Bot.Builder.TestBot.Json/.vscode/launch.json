@@ -27,7 +27,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.1/Microsoft.Bot.Builder.TestBot.Json.dll",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/Microsoft.Bot.Builder.TestBot.Json.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
