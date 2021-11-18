@@ -2,7 +2,7 @@
 
 ### [What's new with Bot Framework](https://docs.microsoft.com/en-us/azure/bot-service/what-is-new?view=azure-bot-service-4.0)
 
-DUMMY CHANGE TO This CLONED repository contains code for the .NET version of the [Microsoft Bot Framework SDK](https://github.com/Microsoft/botframework-sdk), which is part of the Microsoft Bot Framework - a comprehensive framework for building enterprise-grade conversational AI experiences. 
+DUMMY CHANGE 2 TO This CLONED repository contains code for the .NET version of the [Microsoft Bot Framework SDK](https://github.com/Microsoft/botframework-sdk), which is part of the Microsoft Bot Framework - a comprehensive framework for building enterprise-grade conversational AI experiences. 
 
 This SDK enables developers to model conversation and build sophisticated bot applications using .NET. SDKs for [JavaScript](https://github.com/Microsoft/botbuilder-js), [Python](https://github.com/Microsoft/botbuilder-python) and [Java (preview)](https://github.com/Microsoft/botbuilder-java) are also available.
 
