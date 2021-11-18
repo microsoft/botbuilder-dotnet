@@ -65,5 +65,5 @@ jobs:
             }
           ref: main
           repo: microsoft/botbuilder-${{ matrix.repo }}
-          token: "${{ secrets.BOTBUILDER_JS_ACCESS_TOKEN }}"
+          token: "${{ secrets.GITHUB_TOKEN }}"
           workflow: create-v5-parity-issue.yml
