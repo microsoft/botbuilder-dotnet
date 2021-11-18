@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Connector.Tests
     ///
     ///    To re-record:
     ///      1. All from live/unmocked, except set HttpRecorderMode to Record.
-    ///      2. Once done recording, copy recording sessions from ...Microsoft.Bot.Connector.Tests\bin\Debug\netcoreapp2.1\SessionRecords
+    ///      2. Once done recording, copy recording sessions from ...Microsoft.Bot.Connector.Tests\bin\Debug\netcoreapp3.1\SessionRecords
     ///             to ...Microsoft.Bot.Connector.Tests\SessionRecords.
     /// </summary>
     public class BaseTest
