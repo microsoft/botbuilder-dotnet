@@ -34,10 +34,10 @@ jobs:
           labels: |
             ["parity with v5", "needs-triage", "ExemptFromDailyDRIReport"]
           body: |
-             The changes in PR [${{ github.event.inputs.prTitle }} (#${{ github.event.inputs.prNumber }})](https://github.com/${{ github.event.inputs.sourceRepo }}/pull/${{ github.event.inputs.prNumber }}) merged to `main` may need to be ported to the `v5` branch to maintain parity.
+             The changes in PR [${{ github.event.inputs.prTitle }} (#${{ github.event.inputs.prNumber }})](https://github.com/${{ github.event.inputs.sourceRepo }}/pull/${{ github.event.inputs.prNumber }}), merged to `main`, may need to be ported to the `v5` branch to maintain parity.
 
              <blockquote>
              ${{ github.event.inputs.prDescription }}
              </blockquote>
 
-             Please review and, if necessary, port the changes.
+             Please review and if necessary port the changes.
