@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             // Only generate schemas on Windows.
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
+                BotFrameworkCLIPrerequisite();
+
                 // Save an in memory copy of the current schema file.
                 var oldSchema = File.Exists(schemaPath) ? File.ReadAllText(schemaPath) : string.Empty;
                 File.Delete(schemaPath);
@@ -108,6 +110,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             process.WaitForExit();
 
             return process.ExitCode != 0 ? process.StandardError.ReadToEnd() : string.Empty;
+        }
+
+        /// <summary>
+        /// Validates if BotFramework-CLI is installed in the Operative System (OS).
+        /// If there isn't installed, an error will be thrown, requiring the prerequisite to be installed to be able to execute the test.
+        /// </summary>
+        private static void BotFrameworkCLIPrerequisite()
+        {
+            var error = RunCommand("/C bf");
+            if (error.Length != 0)
+            {
+                throw new InvalidOperationException("This test requires BotFramework-CLI! go to https://github.com/microsoft/botframework-cli#installation to install it.");
+            }
         }
     }
 }
