@@ -9,7 +9,7 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
+  solution: '**/Microsoft.Bot.Builder.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
