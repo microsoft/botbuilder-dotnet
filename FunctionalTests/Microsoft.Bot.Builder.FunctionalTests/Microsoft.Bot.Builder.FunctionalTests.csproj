@@ -23,12 +23,9 @@
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
     <PackageReference Include="NAudio" Version="1.9.0" />
-    <PackageReference Include="Twilio" Version="5.37.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj" />
-    <ProjectReference Include="..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Slack\Microsoft.Bot.Builder.Adapters.Slack.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
     <ProjectReference Include="..\..\tests\Microsoft.Bot.Builder.AI.LUIS.Tests\Microsoft.Bot.Builder.AI.Luis.Tests.csproj" />
   </ItemGroup>

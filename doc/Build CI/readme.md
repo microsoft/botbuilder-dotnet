@@ -73,35 +73,6 @@ The next table shows a comparison of the Build CI process between the BotBuilder
         <td></td>
     </tr>
     <tr align="center">
-        <td rowspan="4">Adapters</td>
-        <td>Facebook</td>
-        <td>✔️</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr align="center">
-        <td>Slack</td>
-        <td>✔️</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr align="center">
-        <td>Webex</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr align="center">
-        <td>Twilio</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr align="center">
         <td rowspan="2">Misc</td>
         <td>Functional Test Bot Image</td>
         <td></td>

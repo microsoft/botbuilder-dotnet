@@ -1,1 +1,0 @@
-token=VerificationToken&team_id=teamId&team_domain=testTeamDomain&channel_id=testChannelId&channel_name=directmessage&user_id=testUserId&user_name=testUserName&command=%2Ftest&text=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT03CWQ0QB%2F769792719332%2F5WvhrI4tX5xxFY2HmKwz0jI2&trigger_id=testTriggerId
