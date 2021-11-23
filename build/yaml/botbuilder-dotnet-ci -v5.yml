@@ -3,7 +3,7 @@
 #
 
 trigger:
-- main
+- v5
 
 pool:
   vmImage: 'windows-latest'
