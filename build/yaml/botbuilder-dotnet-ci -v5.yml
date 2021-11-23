@@ -36,7 +36,7 @@ steps:
       **\*Tests.dll
       !**\*TestAdapter.dll
       !**\obj\**
-      !**\*.FunctionalTests.dll
+      !**\FunctionalTests\**\*Tests.dll
       !**\Microsoft.Bot.Builder.Adapters.*.dll
       !**\AdaptiveExpressions*.dll
       !**\Microsoft.Bot.Builder.Dialogs.Adaptive.*.dll
