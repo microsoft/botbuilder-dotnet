@@ -1,1 +1,0 @@
-ToCountry=US&ToState=CA&SmsMessageSid=1111&NumMedia=0&ToCity=&FromZip=&SmsSid=2222&FromState=Amba&SmsStatus=received&FromCity=&Body=Hello&FromCountry=US&To=%2B1111&ToZip=&NumSegments=1&MessageSid=3333&AccountSid=4444&From=%2B2222&ApiVersion=2010-04-01

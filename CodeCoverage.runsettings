@@ -13,10 +13,6 @@
               <Include>
                 <ModulePath>.*\AdaptiveExpressions.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
-                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Webex.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Orchestrator.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>
@@ -49,36 +45,11 @@
             </ModulePaths>
             <Sources>
               <Exclude>
-                <Source>.*\\WebexMessageRequest.cs</Source>
-                <Source>.*\\WebexClientWrapper.cs</Source>
-                <Source>.*\\TwilioMessage.cs</Source>
-                <Source>.*\\TwilioAdapterOptions.cs</Source>
-                <Source>.*\\NewSlackMessage.cs</Source>
-                <Source>.*\\SlackResponse.cs</Source>
                 <Source>.*\\ActivityResourceResponse.cs</Source>
-                <Source>.*\\SlackAdapterOptions.cs</Source>
-                <Source>.*\\SlackClientWrapper.cs</Source>
-                <Source>.*\\SlackMessage.cs</Source>
-                <Source>.*\\SlackAction.cs</Source>
-                <Source>.*\\SlackEvent.cs</Source>
-                <Source>.*\\SlackPayload.cs</Source>
-                <Source>.*\\SlackRequestBody.cs</Source>
                 <Source>.*\\Button.cs</Source>
                 <Source>.*\\DefaultAction.cs</Source>
                 <Source>.*\\Element.cs</Source>
-                <Source>.*\\FacebookAttachment.cs</Source>
-                <Source>.*\\FacebookBotUser.cs</Source>
-                <Source>.*\\FacebookEntry.cs</Source>
-                <Source>.*\\FacebookPostback.cs</Source>
-                <Source>.*\\FacebookRecipient.cs</Source>
-                <Source>.*\\FacebookResponseEvent.cs</Source>
-                <Source>.*\\FacebookResponseOk.cs</Source>
-                <Source>.*\\FacebookQuickReply.cs</Source>
                 <Source>.*\\MessagePayload.cs</Source>
-                <Source>.*\\FacebookPassThreadControl.cs</Source>
-                <Source>.*\\FacebookRequestThreadControl.cs</Source>
-                <Source>.*\\FacebookTakeThreadControl.cs</Source>
-                <Source>.*\\FacebookThreadControl.cs</Source>
                 <Source>.*\\HandoverConstants.cs</Source>
                 <Source>.*\\AttachmentPayload.cs</Source>
                 <Source>.*\\CommonRegexLexer.cs</Source>
